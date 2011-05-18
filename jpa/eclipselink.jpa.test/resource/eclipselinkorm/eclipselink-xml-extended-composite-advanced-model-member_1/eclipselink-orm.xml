@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="2.2" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>XML extended composite advanced member_1 Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1</package>
     <mapped-superclass class="Person" access="PROPERTY">

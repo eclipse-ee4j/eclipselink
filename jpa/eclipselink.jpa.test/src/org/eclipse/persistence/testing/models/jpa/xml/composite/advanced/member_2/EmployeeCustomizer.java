@@ -23,28 +23,5 @@ public class EmployeeCustomizer implements DescriptorCustomizer {
     
     public void customize(ClassDescriptor descriptor) {
         descriptor.setShouldDisableCacheHits(false);
-
-        String prefix = "xml-composite-advanced-member_";
-        // Employee is defined in member_2 persistence unit
-        String containedSessionNameSuffix = "2";
-        for(DatabaseMapping mapping : descriptor.getMappings()) {
-            if(mapping.isDirectCollectionMapping()) {
-                DirectCollectionMapping dcMapping = ((DirectCollectionMapping)mapping);
-                String tableName = dcMapping.getReferenceTable().getName();
-                String tableBrSuffix = null;
-                if(tableName.indexOf("XML_MBR1") >= 0) {
-                    tableBrSuffix = "1";
-                } else if(tableName.indexOf("XML_MBR2") >= 0) {
-                    tableBrSuffix = "2";
-                } else if(tableName.indexOf("XML_MBR3") >= 0) {
-                    tableBrSuffix = "3";
-                } else {
-                    throw new RuntimeException(mapping + ": reference table name " + tableName + " is wrong: should contain MBR1 or MBR2 or MBR3");
-                }
-                if(!containedSessionNameSuffix.equals(tableBrSuffix)) {
-                    dcMapping.setSessionName(prefix + tableBrSuffix);
-                }
-            }
-        }
     }
 }

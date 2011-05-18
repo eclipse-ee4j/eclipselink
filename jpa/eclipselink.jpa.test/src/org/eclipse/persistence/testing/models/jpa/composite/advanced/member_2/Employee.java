@@ -19,6 +19,7 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ChangeTracking;
+import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Customizer;
@@ -498,9 +499,9 @@ public class Employee implements Serializable, Cloneable {
         return projects; 
     }
     
-//    @BasicCollection(valueColumn=@Column(name="DESCRIPTION"))
     @ElementCollection(targetClass=String.class)
     @CollectionTable(name = "MBR1_RESPONS", joinColumns=@JoinColumn(name="EMP_ID"))
+    @CompositeMember("composite-advanced-member_1")
     @Column(name = "DESCRIPTION")
     // generics left off the Collection on purpose ...
     @Property(name="attributeName", value="responsibilities")
@@ -550,9 +551,9 @@ public class Employee implements Serializable, Cloneable {
         return version; 
     }
     
-//    @BasicCollection
     @ElementCollection
     @CollectionTable(name="MBR1_WORKWEEK", joinColumns=@JoinColumn(name="EMP_ID"))
+    @CompositeMember("composite-advanced-member_1")
     @Column(name="WORKWEEK")
     @Property(name="attributeName", value="workWeek")
     public Set<Weekdays> getWorkWeek() {

@@ -2227,6 +2227,7 @@
     <xsd:attribute name="fetch" type="orm:fetch-type"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="attribute-type" type="xsd:string"/>
+    <xsd:attribute name="composite-member" type="xsd:string"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->

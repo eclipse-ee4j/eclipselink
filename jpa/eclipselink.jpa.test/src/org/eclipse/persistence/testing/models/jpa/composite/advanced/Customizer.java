@@ -61,34 +61,6 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                 }
             }
         });
-        
-        if(session.isSessionBroker()) {
-            String prefix = "composite-advanced-member_";
-            for(ClassDescriptor descriptor : session.getDescriptors().values()) {
-                String containedSessionName = ((SessionBroker)session).getSessionForClass(descriptor.getJavaClass()).getName();
-                // "1", "2" or "3"
-                String containedSessionNameSuffix = containedSessionName.substring(containedSessionName.length() - 1);
-                for(DatabaseMapping mapping : descriptor.getMappings()) {
-                    if(mapping.isDirectCollectionMapping()) {
-                        DirectCollectionMapping dcMapping = ((DirectCollectionMapping)mapping);
-                        String tableName = dcMapping.getReferenceTable().getName();
-                        String tableBrSuffix = null;
-                        if(tableName.indexOf("MBR1") >= 0) {
-                            tableBrSuffix = "1";
-                        } else if(tableName.indexOf("MBR2") >= 0) {
-                            tableBrSuffix = "2";
-                        } else if(tableName.indexOf("MBR3") >= 0) {
-                            tableBrSuffix = "3";
-                        } else {
-                            throw new RuntimeException(mapping + ": reference table name " + tableName + " is wrong: should contain MBR1 or MBR2 or MBR3");
-                        }
-                        if(!containedSessionNameSuffix.equals(tableBrSuffix)) {
-                            dcMapping.setSessionName(prefix + tableBrSuffix);
-                        }
-                    }
-                }
-            }
-        }
     }
     
     public void customize(ClassDescriptor descriptor) {

@@ -64,6 +64,7 @@ import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
+import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -134,6 +135,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private String m_mapKeyClassName;
     private String m_targetClassName;
     private String m_orderBy;
+    private String m_compositeMember;
     
     private TemporalMetadata m_mapKeyTemporal;
     
@@ -188,6 +190,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Set the collection table if one is defined.
         if (isAnnotationPresent(CollectionTable.class)) {
             setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), this, true));
+        }
+        
+        if (isAnnotationPresent(CompositeMember.class)) {
+            m_compositeMember = (String) getAnnotation(CompositeMember.class).getAttributeString("value");
         }
         
         // Set the order if one is present.
@@ -287,6 +293,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 return false;
             }
             
+            if (! valuesMatch(m_compositeMember, elementCollectionAccessor.getCompositeMember())) {
+                return false;
+            }
+            
             if (! valuesMatch(m_mapKeyColumn, elementCollectionAccessor.getMapKeyColumn())) {
                 return false;
             }
@@ -367,6 +377,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     public ColumnMetadata getColumn() {
         return m_column;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public String getCompositeMember() {
+        return m_compositeMember;
     }
     
     /**
@@ -712,8 +730,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             processDirectEmbeddableCollectionMapping(getReferenceDescriptor());
         } else if (isValidDirectCollectionType()) {
             processDirectCollectionMapping();
+            if (m_compositeMember != null) {
+                ((CollectionMapping)this.getMapping()).setSessionName(m_compositeMember);
+            }
         } else if (isValidDirectMapType()) {
             processDirectMapMapping();
+            if (m_compositeMember != null) {
+                ((CollectionMapping)this.getMapping()).setSessionName(m_compositeMember);
+            }
         } else {
             throw ValidationException.invalidTargetClass(getAttributeName(), getJavaClass());
         }
@@ -883,6 +907,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     public void setColumn(ColumnMetadata column) {
         m_column = column;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setCompositeMember(String compositeMember) {
+        m_compositeMember = compositeMember;
     }
     
     /**

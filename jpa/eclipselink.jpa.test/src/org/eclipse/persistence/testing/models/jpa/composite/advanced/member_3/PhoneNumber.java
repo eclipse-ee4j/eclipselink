@@ -20,6 +20,7 @@ import javax.persistence.*;
 
 import static javax.persistence.EnumType.STRING;
 
+import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Employee;
 
@@ -83,6 +84,7 @@ public class PhoneNumber implements Serializable {
     @ElementCollection
     @CollectionTable(name="MBR1_PHONE_STATUS", 
             joinColumns={@JoinColumn(name="OWNER_ID", referencedColumnName="OWNER_ID"), @JoinColumn(name="TYPE", referencedColumnName="TYPE")})
+    @CompositeMember("composite-advanced-member_1")
     @Column(name="STATUS")
     @Enumerated(STRING)
     public Collection<PhoneStatus> getStatus() {

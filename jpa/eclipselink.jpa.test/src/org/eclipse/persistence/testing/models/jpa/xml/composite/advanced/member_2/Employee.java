@@ -300,7 +300,7 @@ public class Employee implements Serializable {
         return projects; 
     }
     
-    public Collection getResponsibilities() {
+    public Collection<String> getResponsibilities() {
         return responsibilities;
     }
     

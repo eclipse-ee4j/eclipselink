@@ -22,6 +22,7 @@ import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.InheritanceType.*;
 
+import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Employee;
 
@@ -108,6 +109,7 @@ public class Project implements Serializable {
 
     @ElementCollection()
     @CollectionTable(name="MBR1_PROJ_PROPS", joinColumns=@JoinColumn(name="PROJ_ID"))
+    @CompositeMember("composite-advanced-member_1")
     @Column(name="PROPS")
     public List<String> getProperties() { 
         return m_properties; 

@@ -1134,6 +1134,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getAttributeTypeAttributeMapping());
+        descriptor.addMapping(getCompositeMemberAttributeMapping());
         
         return descriptor;
     }
@@ -3791,6 +3792,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         columnNamesMapping.setSetMethodName("setColumnNames");
         columnNamesMapping.setXPath("orm:column-name");
         return columnNamesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getCompositeMemberAttributeMapping() {
+        XMLDirectMapping attributeTypeMapping = new XMLDirectMapping();
+        attributeTypeMapping.setAttributeName("m_compositeMember");
+        attributeTypeMapping.setGetMethodName("getCompositeMember");
+        attributeTypeMapping.setSetMethodName("setCompositeMember");
+        attributeTypeMapping.setXPath("@composite-member");
+        return attributeTypeMapping;
     }
     
     /**

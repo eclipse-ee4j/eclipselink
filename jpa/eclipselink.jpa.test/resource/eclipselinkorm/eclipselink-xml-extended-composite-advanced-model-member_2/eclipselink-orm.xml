@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="2.2" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <description>XML extended composite advanced member__2 Test Model Instance Document</description>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>XML extended composite advanced member_2 Test Model Instance Document</description>
     <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2</package>
     <type-converter name="String2String" data-type="String" object-type="String"/>
     <entity class="Employee" existence-checking="CHECK_DATABASE">
@@ -74,17 +74,35 @@
                 <enumerated>STRING</enumerated>
                 <property name="attributeName" value="payScale"/>
             </basic>
-            <basic-collection name="responsibilities">
-                <value-column name="DESCRIPTION"/>
+            <element-collection name="responsibilities" composite-member="xml-composite-advanced-member_3">
+                <column name="DESCRIPTION"/>
                 <convert>String2String</convert>
-                <collection-table name="XML_MBR3_RESPONS"/>
+                <collection-table name="XML_MBR3_RESPONS">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
                 <property name="attributeName" value="responsibilities"/>
-            </basic-collection>
-            <basic-map name="creditCards" fetch="EAGER">
-                <key-column name="CARD"/>
-                <key-converter>CreditCard</key-converter>
-                <value-column name="NUMB"/>
-                <value-converter>Long2String</value-converter>
+            </element-collection>
+            <element-collection name="creditLines" fetch="EAGER" composite-member="xml-composite-advanced-member_3">
+                <map-key-convert>CreditLine</map-key-convert>
+                <map-key-column name="BANK"/>
+                <column name="ACCOUNT"/>
+                <convert>Long2String</convert>
+                <object-type-converter name="CreditLine">
+                    <conversion-value data-value="RBC" object-value="RoyalBank"/>
+                    <conversion-value data-value="CIBC" object-value="CanadianImperial"/>
+                    <conversion-value data-value="SB" object-value="Scotiabank"/>
+                    <conversion-value data-value="TD" object-value="TorontoDominion"/>
+                </object-type-converter>
+                <collection-table name="XML_MBR3_EMP_CREDITLINES">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+                <property name="attributeName" value="creditLines"/>
+            </element-collection>
+            <element-collection name="creditCards" fetch="EAGER" composite-member="xml-composite-advanced-member_3">
+                <map-key-convert>CreditCard</map-key-convert>
+                <map-key-column name="CARD"/>
+                <column name="NUMB"/>
+                <convert>Long2String</convert>
                 <object-type-converter name="CreditCard">
                     <conversion-value data-value="VI" object-value="Visa"/>
                     <conversion-value data-value="AM" object-value="Amex"/>
@@ -96,7 +114,7 @@
                     <join-column name="EMP_ID"/>
                 </collection-table>
                 <property name="attributeName" value="creditCards"/>
-            </basic-map>
+            </element-collection>
             <version name="version">
                 <column name="VERSION"/>
                 <property name="attributeName" value="version"/>
@@ -147,7 +165,7 @@
                 </cascade>
                 <property name="attributeName" value="projects"/>
             </many-to-many>
-            <element-collection name="creditLines" fetch="EAGER">
+            <element-collection name="creditLines" fetch="EAGER" composite-member="xml-composite-advanced-member_3">
                 <map-key-convert>CreditLine</map-key-convert>
                 <map-key-column name="BANK"/>
                 <column name="ACCOUNT"/>
