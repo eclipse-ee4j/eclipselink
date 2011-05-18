@@ -83,6 +83,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 8)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -109,7 +111,6 @@ import org.eclipse.persistence.annotations.Indexes;
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -1150,11 +1151,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Set the table on the descriptor.
         getDescriptor().setPrimaryTable(table.getDatabaseTable());
-        
-        // Now process the multitenancy if present. (must be done after the
-        // primary table has been set)
-        // Process the multitenant metadata.
-        table.processMultitenant(getDescriptor());
     }
     
     /**

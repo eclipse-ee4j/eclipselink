@@ -849,6 +849,7 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="multitenant" type="orm:multitenant" minOccurs="0"/>
       <xsd:element name="additional-criteria" type="orm:additional-criteria" minOccurs="0"/>
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
@@ -4865,7 +4866,6 @@
     <xsd:sequence>
       <xsd:element name="unique-constraint" type="orm:unique-constraint" 
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="multitenant" type="orm:multitenant" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>

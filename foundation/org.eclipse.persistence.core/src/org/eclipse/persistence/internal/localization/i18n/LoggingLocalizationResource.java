@@ -23,6 +23,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 8)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -296,7 +298,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_mapped_superclass_read_only", "Ignoring the read only setting on the mapped superclass [{1}] for the entity class [{0}] since read only metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_fetch_group", "Ignoring the fetch group named [{2}] on the mapped superclass [{1}] for the entity class [{0}] since a fetch group with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." }, 
         { "metadata_warning_ignore_mapped_superclass_existence_checking", "Ignoring the existence checking setting on the mapped superclass [{1}] for the entity class [{0}] since existence checking metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
-        { "metadata_warning_ignore_mapped_superclass_primary_key", "Ignoring the primary key setting on the mapped superclass [{1}] for the entity class [{0}] since primary key metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." }, 
+        { "metadata_warning_ignore_mapped_superclass_primary_key", "Ignoring the primary key setting on the mapped superclass [{1}] for the entity class [{0}] since primary key metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
+        { "metadata_warning_ignore_mapped_superclass_multitenant", "Ignoring the multitenant setting on the mapped superclass [{1}] for the entity class [{0}] since multitenant metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_annotation", "Ignoring the metadata [{0}] setting on the mapped superclass [{1}] for the entity class [{2}] since the metadata was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },                               
 
         { "metadata_warning_ignore_fetch_group", "Ignoring the fetch groups specified on class [{0}] for the entity [{1}] since weaving is not enabled and the entity class does not implement the FetchGroupTracker interface." },

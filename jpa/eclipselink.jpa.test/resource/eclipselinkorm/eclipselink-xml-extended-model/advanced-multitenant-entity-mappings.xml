@@ -4,11 +4,10 @@
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant</package>
     
     <entity name="XMLMafiaFamily" class="MafiaFamily">
-        <table name="XML_MAFIA_FAMILY">
-            <multitenant>
-                <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
-            </multitenant>
-        </table>
+        <multitenant>
+            <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
+        </multitenant>
+        <table name="XML_MAFIA_FAMILY"/>
         <secondary-table name="XML_FAMILY_REVENUE"/>
         <named-query name="findJPQLXMLMafiaFamilies">
             <query>SELECT s from XMLMafiaFamily s</query>
@@ -37,11 +36,10 @@
     </entity>
     
     <entity name="XMLMafioso" class="Mafioso">
-        <table name="XML_MAFIOSO">
-            <multitenant>
-                <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
-            </multitenant>
-        </table>
+        <multitenant>
+            <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
+        </multitenant>
+        <table name="XML_MAFIOSO"/>
         <inheritance strategy="JOINED"/>
         <discriminator-column name="DTYPE"/>
         <attributes>
@@ -115,15 +113,14 @@
     </entity>
     
     <entity name="XMLContract" class="Contract">
+        <multitenant type="SINGLE_TABLE"/>
         <named-query name="FindAllXmlContracts">
             <query>SELECT c FROM XMLContract c</query>
         </named-query>
         <named-query name="UpdateAllXmlContractDescriptions">
             <query>UPDATE XMLContract c SET c.description = 'voided'</query>
         </named-query>
-        <table name="XML_CONTRACT">
-            <multitenant type="SINGLE_TABLE"/>
-        </table>
+        <table name="XML_CONTRACT"/>
         <attributes>
             <id name="id">
                 <column name="ID"/>

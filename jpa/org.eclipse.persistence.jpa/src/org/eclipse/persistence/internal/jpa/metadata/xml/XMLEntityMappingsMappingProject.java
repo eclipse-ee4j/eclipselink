@@ -59,6 +59,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     03/28/2011-2.3 Guy Pelletier 
  *       - 341152: From XML cache interceptor and query redirector metadata don't support package specification
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 8)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1285,6 +1287,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getMultitenantMapping());
         descriptor.addMapping(getAdditionalCriteriaMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
@@ -3038,7 +3041,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getUniqueConstraintMapping());
-        descriptor.addMapping(getMultitenantMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());

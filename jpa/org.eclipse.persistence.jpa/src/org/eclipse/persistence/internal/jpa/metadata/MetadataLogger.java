@@ -41,6 +41,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 8)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -120,6 +122,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP = "metadata_warning_ignore_mapped_superclass_fetch_group";
     public static final String IGNORE_MAPPED_SUPERCLASS_ANNOTATION = "metadata_warning_ignore_mapped_superclass_annotation";
     public static final String IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY = "metadata_warning_ignore_mapped_superclass_primary_key";
+    public static final String IGNORE_MAPPED_SUPERCLASS_MULTITENANT = "metadata_warning_ignore_mapped_superclass_multitenant";
     
     public static final String IGNORE_FETCH_GROUP = "metadata_warning_ignore_fetch_group";
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
@@ -265,6 +268,7 @@ public class MetadataLogger {
         addContextString(IGNORE_MAPPED_SUPERCLASS_FETCH_GROUP);
         addContextString(IGNORE_MAPPED_SUPERCLASS_ANNOTATION);
         addContextString(IGNORE_MAPPED_SUPERCLASS_PRIMARY_KEY);
+        addContextString(IGNORE_MAPPED_SUPERCLASS_MULTITENANT);
         
         addContextString(IGNORE_FETCH_GROUP);
         addContextString(IGNORE_MAPPING_METADATA);

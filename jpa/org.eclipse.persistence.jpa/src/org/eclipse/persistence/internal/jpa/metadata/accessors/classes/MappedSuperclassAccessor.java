@@ -62,6 +62,8 @@
  *       - 337323: Multi-tenant with shared schema support
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     03/24/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 8)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -1118,21 +1120,19 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      * Process the multitenant metadata specified on a mapped superclass and 
-     * apply it to a sub-entity that has no multitenant metadata specified. We 
-     * do not want to process when we are an entity since it will be processed 
-     * during the table processing. 
+     * apply it to a sub-entity that has no multitenant metadata specified.
      */
     protected void processMultitenant() {
-        if ((m_multitenant != null || isAnnotationPresent(Multitenant.class)) && isMappedSuperclass()) {
+        if (m_multitenant != null || isAnnotationPresent(Multitenant.class)) {
             // We have multitenant metadata available. If the descriptor already
             // has multi-tenant settings ignore the multi-tenant metadata.
             if (getDescriptor().hasMultitenant()) {
-                // Ignore additional criteria on mapped superclass if additional
-                // criteria is already defined on the entity.
-                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA, getDescriptor().getJavaClass(), getJavaClass());    
+                // Ignore multitenant on mapped superclass if multitenant is 
+                // already defined on the entity.
+                getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_MULTITENANT, getDescriptor().getJavaClass(), getJavaClass());    
             } else if (m_multitenant != null) {
                 // We have multitenant metadata loaded from XML. Log a warning
-                // if equivalent annotaiton metadata is specified.
+                // if equivalent annotation metadata is specified.
                 if (isAnnotationPresent(Multitenant.class)) {
                     getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(Multitenant.class), getJavaClassName(), getLocation());
                 }
