@@ -70,9 +70,9 @@ public class EntityManagerFactoryProvider {
      * @param setup
      */
     public static void addEntityManagerSetupImpl(String name, EntityManagerSetupImpl setup){
-    	if (name == null){
-    		emSetupImpls.put("", setup);
-    	}
+        if (name == null){
+            emSetupImpls.put("", setup);
+        }
         emSetupImpls.put(name, setup);
     }
 

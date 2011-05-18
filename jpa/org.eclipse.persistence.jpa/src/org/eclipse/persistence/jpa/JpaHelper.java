@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa; 
 
+import java.util.Map;
+
 import javax.persistence.EntityManagerFactory; 
 import javax.persistence.Query; 
 import org.eclipse.persistence.internal.jpa.*; 
@@ -146,14 +148,35 @@ public class JpaHelper {
     } 
 
     /** 
-     * Given a JPA EntityManagerFactory attempt to cast it to a EclipseLink EMF. 
+     * Given a JPA EntityManagerFactory attempt to cast it to a EclipseLink EMF.
+     * 
+     * Although this method currently returns an instance of EntityManagerFactoryImpl, it
+     * is recommended that users cast to JpaEntityManagerFactory.  Future versions of EclipseLink will
+     * return that interface from this method instead
+     * 
+     * @see JpaEntityManagerFactory
      */ 
     public static EntityManagerFactoryImpl getEntityManagerFactory(EntityManagerFactory emf) { 
         if (emf instanceof EntityManagerFactoryImpl) { 
-            return (EntityManagerFactoryImpl)emf; 
+            return ((EntityManagerFactoryImpl)emf); 
         }
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_entity_manager_factory", new Object[]{emf.getClass()}));
+    }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_entity_manager_factory" + emf.getClass()));
+    /** 
+     * Refresh the metadata on an EntityManagerFactory.  Use this method if you are using the
+     * extensibility api to refresh the metadata.  The factory will be rebootstrapped so that
+     * any new metadata in your metadata sources will be used.
+     * 
+     *  Existing entityManagers will continue to function on the old metadata, but new EntityManagers
+     *  will work with the new metadata.
+     */ 
+    public static void refreshMetadata(EntityManagerFactory emf, Map properties) { 
+        if (emf instanceof EntityManagerFactoryImpl) { 
+            ((EntityManagerFactoryImpl)emf).refreshMetadata(properties); 
+            return;
+        }
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_entity_manager_factory_for_refresh", new Object[]{emf.getClass()}));
     } 
 
     /** 
@@ -192,7 +215,7 @@ public class JpaHelper {
      * 
      * The application would be required to manage this singleton EMF. 
      */ 
-    public static EntityManagerFactoryImpl createEntityManagerFactory(String sessionName) { 
+    public static EntityManagerFactory createEntityManagerFactory(String sessionName) { 
         SessionFactory sf = new SessionFactory(sessionName); 
         // Verify that shared session is a ServerSession 
         return new EntityManagerFactoryImpl((ServerSession)sf.getSharedSession()); 

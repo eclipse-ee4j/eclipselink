@@ -13,6 +13,9 @@
 package org.eclipse.persistence.transaction;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import javax.naming.*;
 
 import org.eclipse.persistence.sessions.broker.SessionBroker;
@@ -24,7 +27,6 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
 import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 
@@ -45,7 +47,7 @@ import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 public abstract class AbstractTransactionController implements ExternalTransactionController {
 
     /** Table of external transaction object keys and unit of work values */
-    protected Map unitsOfWork;
+    protected ConcurrentMap unitsOfWork;
 
     /** The session this controller is responsible for controlling */
     protected AbstractSession session;
@@ -58,14 +60,14 @@ public abstract class AbstractTransactionController implements ExternalTransacti
 
     /** Table of external transaction object keys and sequencing listeners values. */
     /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback > 0 */
-    protected Map<Object, AbstractSynchronizationListener> sequencingListeners;
+    protected ConcurrentMap<Object, AbstractSynchronizationListener> sequencingListeners;
 
     /** Table of external transaction object keys and listeners that are currently in beforeCompletion. */
     /** Request for a new sequencing callback may be triggered by beforeCompletion of existing listener - */
     /** in this case avoid creating yet another listener for sequencing but rather use the listener */
     /** that has initiated the request */
     /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback > 0 */
-    protected Map<Object, AbstractSynchronizationListener> currentlyProcessedListeners;
+    protected ConcurrentMap<Object, AbstractSynchronizationListener> currentlyProcessedListeners;
 
     /** Indicates how many sessions require sequencing callbacks: */
     /** 0 - sequencing callbacks not used; */
@@ -79,7 +81,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * Return a new controller.
      */
     public AbstractTransactionController() {
-        this.unitsOfWork = JavaPlatform.getConcurrentMap();
+        this.unitsOfWork = new ConcurrentHashMap();
         this.activeUnitOfWorkThreadLocal = new ThreadLocal();
     }
 
@@ -381,7 +383,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * INTERNAL:
      * Set the table of transactions to units of work.
      */
-    protected void setUnitsOfWork(Map unitsOfWork) {
+    protected void setUnitsOfWork(ConcurrentMap unitsOfWork) {
         this.unitsOfWork = unitsOfWork;
     }
 
@@ -480,11 +482,11 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         if (newNumSessionsRequiringSequencingCallback > numSessionsRequiringSequencingCallback) {
             // keep the old map if already exists, never remove existing map
             if (this.sequencingListeners == null) {
-                this.sequencingListeners = JavaPlatform.getConcurrentMap();
+                this.sequencingListeners = new ConcurrentHashMap();
             }
             // keep the old map if already exists, never remove existing map
             if (this.currentlyProcessedListeners == null) {
-                this.currentlyProcessedListeners = JavaPlatform.getConcurrentMap();
+                this.currentlyProcessedListeners = new ConcurrentHashMap();
             }
             this.numSessionsRequiringSequencingCallback = newNumSessionsRequiringSequencingCallback;
         }

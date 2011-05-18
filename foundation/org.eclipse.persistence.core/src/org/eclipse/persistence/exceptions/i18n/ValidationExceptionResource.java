@@ -302,7 +302,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7323", "The table with name [{1}] from [{2}] has multiple unique constraints with the name [{0}]. This is not allowed, unique constaints names must be unique across all tables." },
                                            { "7324", "The entity class [{1}] specifies both a @ClassExtractor and discriminator metadata. When using a @ClassExtractor, a @DiscriminatorColumn and/or @DiscriminatorValue should not be specified on this class nor should any discriminator value metadata be defined on its subclasses." },
                                            { "7325", "The sql result set mapping [{0}] used with the named query [{1}] from [{2}] is not a recognized sql result set mapping. Ensure the name is correct and that a sql result set mapping with that name exists." },
-                                           { "7326", "The attribute [{0}] from the class [{1}] mapped in [{2}] which uses NAME access does not specify an attribute-type. When using NAME access, an attribute-type must be specified. Note: For a one-to-one or a many-to-one, the attribute-type is specified using the target-entity. For a variable-one-to-one it is specified using the target-class." },
+                                           { "7326", "The attribute [{0}] from the class [{1}] mapped in [{2}] which uses VIRTUAL access does not specify an attribute-type. When using VIRTUAL access, an attribute-type must be specified. Note: For a one-to-one or a many-to-one, the attribute-type is specified using the target-entity. For a variable-one-to-one it is specified using the target-class." },
                                            { "7327", "The embeddable class [{0}] is used in classes with conflicting access methods. Class [{1}] uses access methods [{2}] and class [{3}] uses access methods [{4}]. When sharing an embeddable object between classes, the access methods of those embedding class must be the same."},
                                            { "7328", "When using VIRTUAL access a DynamicClassLoader must be provided when creating the entity manager factory using the eclipselink property [eclipselink.classloader]. That is, createEntityManagerFactory(String persistenceUnitName, Map properties) and add a new DynamicClassLoader() to the Map properties."},
                                            { "7329", "Attribute {1} of {0} is not mapped."},
@@ -317,8 +317,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7338", "You cannot add sequences to a SessionBroker." },
                                            { "7339", "Alias [{0}] is used by both [{1}] and [{2}] classes. Descriptor alias must be unique." },
                                            { "7340", "There are multiple mapping files called [{0}] in classpath."},
-                                           { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataSource.  Please specify one using either persitence unit property eclipselink.metadata-source.xml.file or eclipselink.metadata-source.xml.url"},
-                                           { "7342", "Weaving is being attempted for attribute [{1}] on class [{0}] with VIRTUAL access type.  Weaving of ObjectReferenceMappings (e.g. OneToOne mappings and ManyToOne mappings) with VIRTUAL access is not supported."},
+                                           { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataSource.  Please specify one using either persitence unit property eclipselink.metadata-source.xml.file or eclipselink.metadata-source.xml.url"}
                                            
  };
     

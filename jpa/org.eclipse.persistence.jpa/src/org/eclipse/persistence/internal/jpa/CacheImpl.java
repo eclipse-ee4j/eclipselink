@@ -38,12 +38,12 @@ import org.eclipse.persistence.sessions.Session;
 public class CacheImpl implements JpaCache {
 
     /** The EntityManagerFactory associated with this Cache */
-    private EntityManagerFactoryImpl emf;
+    private EntityManagerFactoryDelegate emf;
 
     /**
      * @param emf
      */
-    public CacheImpl(EntityManagerFactoryImpl emf) {
+    public CacheImpl(EntityManagerFactoryDelegate emf) {
         this.emf = emf;
     }
 
@@ -379,7 +379,7 @@ public class CacheImpl implements JpaCache {
      * Return the EntityManagerFactory associated with this CacheImpl.
      * @return
      */
-    protected EntityManagerFactoryImpl getEntityManagerFactory() {
+    protected EntityManagerFactoryDelegate getEntityManagerFactory() {
         return this.emf;
     }
     

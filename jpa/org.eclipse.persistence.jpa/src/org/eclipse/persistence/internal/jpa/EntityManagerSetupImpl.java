@@ -257,6 +257,13 @@ public class EntityManagerSetupImpl {
     boolean weaveFetchGroups;
     boolean weaveInternal;
     
+    /**
+     * Used to indicate that an EntityManagerFactoryImpl based on this
+     * EntityManagerSetupImpl has been refreshed.  This means this EntityManagerSetupImpl
+     * will no longer be associated with new EntityManagerFactories
+     */
+    protected boolean isMetadataExpired = false;
+
     public EntityManagerSetupImpl(String persistenceUnitUniqueName, String sessionName) {
         this.persistenceUnitUniqueName = persistenceUnitUniqueName;
         this.sessionName = sessionName;
@@ -343,11 +350,10 @@ public class EntityManagerSetupImpl {
                     session.logout();
                 }
             } finally {
-                SessionManager.getManager().getSessions().remove(session.getName());
+                SessionManager.getManager().getSessions().remove(session.getName(), session);
             }
         }
     }
-    
     
     /**
      * Deploy a persistence session and return an EntityManagerFactory.
@@ -1935,7 +1941,16 @@ public class EntityManagerSetupImpl {
     public void setIsInContainerMode(boolean isInContainerMode) {
         this.isInContainerMode = isInContainerMode;
     }
-
+    
+    /**
+     * Used to indicate that an EntityManagerFactoryImpl based on this
+     * EntityManagerSetupImpl has been refreshed.  This means this EntityManagerSetupImpl
+     * will no longer be associated with new EntityManagerFactories
+     */
+    public void setIsMetadataExpired(boolean hasExpiredMetadata) {
+        this.isMetadataExpired = hasExpiredMetadata;
+    }
+    
     protected void processSessionCustomizer(Map m, ClassLoader loader) {
         String sessionCustomizerClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_CUSTOMIZER, m, session);
         if (sessionCustomizerClassName == null) {
@@ -2032,7 +2047,16 @@ public class EntityManagerSetupImpl {
     public boolean isInitial() {
         return state == STATE_INITIAL;
     }
-
+    
+    /**
+     * Used to indicate that an EntityManagerFactoryImpl based on this
+     * EntityManagerSetupImpl has been refreshed.  This means this EntityManagerSetupImpl
+     * will no longer be associated with new EntityManagerFactories
+     */
+    public boolean isMetadataExpired() {
+        return isMetadataExpired;
+    }
+    
     public boolean isPredeployed() {
         return state == STATE_PREDEPLOYED;
     }
@@ -2097,7 +2121,9 @@ public class EntityManagerSetupImpl {
                 state = STATE_UNDEPLOYED;
                 removeSessionFromGlobalSessionManager();
                 // remove undeployed emSetupImpl from the map
-                EntityManagerFactoryProvider.emSetupImpls.remove(session.getName());
+                if (EntityManagerFactoryProvider.emSetupImpls.get(sessionName).equals(this)){
+                    EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
+                }
             }
         } finally {
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});

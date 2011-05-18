@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -39,7 +40,7 @@ public class Employee {
 
     private String lastName;
     
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     private Address address;
 
     @Version

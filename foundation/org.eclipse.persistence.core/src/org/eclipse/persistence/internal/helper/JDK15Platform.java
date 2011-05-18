@@ -28,14 +28,7 @@ public class JDK15Platform implements JDKPlatform {
      * to avoid re-compilation on every usage.
      */
     protected static ConcurrentHashMap patternCache = new ConcurrentHashMap();
-	
-    /**
-     * Get a concurrent Map that allow concurrent gets but block on put.
-     */
-    public Map getConcurrentMap(){
-    	return new java.util.concurrent.ConcurrentHashMap();
-    }
-    
+
     /**
      * INTERNAL:
      * An implementation of in memory queries with Like which uses the JDK 1.4

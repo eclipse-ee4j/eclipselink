@@ -31,6 +31,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 
 import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
 import org.eclipse.persistence.sessions.SessionEvent;
@@ -283,7 +284,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
             factoryProperties.putAll(serverSessionProxyProperties);
         }
         EntityManagerFactory factory = this.getEntityManagerFactory(factoryProperties);
-        ServerSession ss = ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)factory).getServerSession();
+        ServerSession ss = ((JpaEntityManagerFactory)factory).getServerSession();
         
         if(shoulUseExclusiveIsolatedSession) {
             ss.getDefaultConnectionPolicy().setExclusiveMode(ConnectionPolicy.ExclusiveMode.Always);

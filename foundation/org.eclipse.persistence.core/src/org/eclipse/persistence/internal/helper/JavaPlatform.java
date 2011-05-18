@@ -81,14 +81,6 @@ public class JavaPlatform {
 
     /**
      * INTERNAL:
-     * Get the Map to store the query cache in
-     */
-    public static Map getConcurrentMap() {
-        return getPlatform().getConcurrentMap();
-    }
-
-    /**
-     * INTERNAL:
      * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
      */
     public static boolean isSQLXML(Object object) {

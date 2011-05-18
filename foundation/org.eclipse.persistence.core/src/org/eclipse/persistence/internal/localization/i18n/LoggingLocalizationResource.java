@@ -323,6 +323,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "weaver_class_not_in_project", "Weaver found a class that is not part of the project: {0}."},
         { "weaver_processing_class", "Weaver processing class: {0}."},
         { "cannot_weave_changetracking", "Class {0} could not be weaved for change tracking as it is not supported by its mappings."},
+        { "cannot_weave_virtual_one_to_one", "Class {0} has attribute {1} that uses a OneToOne or ManyToOne mapping on a virtual attribute.  Weaving of these types of mappings is not supported.  Weaving will be disabled for {0}."},
 
         { "overriding_cache_isolation", "Parent Entity {0} has an isolation level of: {1} which is more protective then the subclass {2} with isolation: {3} so the subclass has been set to the isolation level {1}."},
 

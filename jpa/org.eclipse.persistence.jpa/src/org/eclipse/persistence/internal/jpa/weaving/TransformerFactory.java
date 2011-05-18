@@ -56,6 +56,7 @@ public class TransformerFactory {
     public static final String WEAVER_CLASS_NOT_IN_PROJECT = "weaver_class_not_in_project";
     public static final String WEAVER_PROCESSING_CLASS = "weaver_processing_class";
     public static final String CANNOT_WEAVE_CHANGETRACKING = "cannot_weave_changetracking";
+    public static final String CANNOT_WEAVE_VIRTUAL_ONE_TO_ONE = "cannot_weave_virtual_one_to_one";
 
     protected Session session;
     protected Collection<MetadataClass> entityClasses;
@@ -414,10 +415,14 @@ public class TransformerFactory {
                 if (weaveValueHolders && (foreignReferenceMapping.getIndirectionPolicy() instanceof BasicIndirectionPolicy) &&
                         (typeClass != null)  && (!typeClass.extendsInterface(ValueHolderInterface.class))) {
                     if (mapping.isObjectReferenceMapping() && attributeDetails.isVirtualProperty()){
-                        throw ValidationException.unsupportedWeavingOfVirtualOneToOne(classDetails.getClassName(), attributeDetails.getAttributeName());
+                        classDetails.setShouldWeaveValueHolders(false);
+                        classDetails.setShouldWeaveChangeTracking(false);
+                        classDetails.setShouldWeaveFetchGroups(false);
+                        log(SessionLog.WARNING, CANNOT_WEAVE_VIRTUAL_ONE_TO_ONE, new Object[]{classDetails.getClassName(), attributeDetails.getAttributeName()});
+                    } else {
+                        lazyMappings.add(foreignReferenceMapping);
+                        attributeDetails.weaveVH(weaveValueHolders, foreignReferenceMapping);
                     }
-                    lazyMappings.add(foreignReferenceMapping);
-                    attributeDetails.weaveVH(weaveValueHolders, foreignReferenceMapping);
                 }
             }
 

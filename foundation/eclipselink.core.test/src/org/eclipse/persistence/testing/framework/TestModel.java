@@ -14,9 +14,12 @@ package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Login;
@@ -354,7 +357,7 @@ public class TestModel extends TestCollection {
             }
             ConversionManager.setDefaultManager(null);
             getSession().getDatasourceLogin().getDatasourcePlatform().setConversionManager(null);
-            SessionManager.getManager().setSessions(new Hashtable(5));
+            SessionManager.getManager().setSessions(new ConcurrentHashMap<String, Session>());
             getDatabaseSession().login();
         }
         setIsSetup(false);

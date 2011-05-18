@@ -15,6 +15,9 @@ package org.eclipse.persistence.sessions.factories;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.logging.*;
 import org.eclipse.persistence.sessions.*;
@@ -49,7 +52,7 @@ public class SessionManager {
     
     protected static SessionManager manager = initializeManager();
     protected AbstractSession defaultSession;
-    protected Map sessions = JavaPlatform.getConcurrentMap();
+    protected ConcurrentMap<String, Session> sessions = null;
     protected static boolean shouldPerformDTDValidation;
 
     /**
@@ -75,7 +78,7 @@ public class SessionManager {
      * The default constructor to create a new session manager.
      */
     public SessionManager() {
-        sessions = new Hashtable(5);
+        sessions = new ConcurrentHashMap<String, Session>(5);
     }
 
     /**
@@ -434,7 +437,7 @@ public class SessionManager {
      * INTERNAL:
      * Set a hashtable of all sessions
      */
-    public void setSessions(Hashtable sessions) {
+    public void setSessions(ConcurrentMap sessions) {
         this.sessions = sessions;
     }
 
@@ -442,7 +445,7 @@ public class SessionManager {
      * INTERNAL:
      * Return a hashtable on all sessions.
      */
-    public Map getSessions() {
+    public ConcurrentMap getSessions() {
         return sessions;
     }
 

@@ -17,6 +17,7 @@ import junit.framework.Test;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import javax.persistence.*;
 
 /**
@@ -38,7 +39,7 @@ public class JPAPerformanceServerTestSuite extends JUnitTestCase {
     public void testPerformance() throws Throwable {
         TestExecutor executor = new TestExecutor();
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("performance");
-        executor.setSession(((EntityManagerFactoryImpl)factory).getServerSession());
+        executor.setSession(((JpaEntityManagerFactory)factory).getServerSession());
         executor.setEntityManagerFactory(factory);
         JPAPerformanceRegressionModel test = new JPAPerformanceRegressionModel();
         executor.runTest(test);

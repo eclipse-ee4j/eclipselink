@@ -93,7 +93,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * References to the parent factory that has created this entity manager.
      * Ensures that the factory is not garbage collected.
      */
-    protected EntityManagerFactoryImpl factory;
+    protected EntityManagerFactoryDelegate factory;
 
     /**
      * Join existing transaction property, allows reading through write
@@ -321,7 +321,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            to be passed into this EntityManager, but there are currently
      *            no such properties implemented
      */
-    public EntityManagerImpl(EntityManagerFactoryImpl factory, Map properties) {
+    public EntityManagerImpl(EntityManagerFactoryDelegate factory, Map properties) {
         this.factory = factory;
         this.databaseSession = factory.getDatabaseSession();
         this.beginEarlyTransaction = factory.getBeginEarlyTransaction();

@@ -31,12 +31,6 @@ public interface JDKPlatform {
      * Conforming queries with LIKE will act differently in different JDKs.
      */
     Boolean conformLike(Object left, Object right);
-
-
-    /**
-     * Get a concurrent Map that allow concurrent gets but block on put.
-     */
-    Map getConcurrentMap();
     
     /**
      * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6

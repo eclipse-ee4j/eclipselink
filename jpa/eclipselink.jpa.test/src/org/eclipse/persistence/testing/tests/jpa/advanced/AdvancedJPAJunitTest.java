@@ -62,7 +62,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
@@ -606,7 +606,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // pre-clear metamodel to enable test reentry (SE only - not EE)
         if(!this.isOnServer()) {
-            ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+            ((EntityManagerFactoryDelegate)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
         }
         Metamodel metamodel = em.getMetamodel();
         // get declared attributes

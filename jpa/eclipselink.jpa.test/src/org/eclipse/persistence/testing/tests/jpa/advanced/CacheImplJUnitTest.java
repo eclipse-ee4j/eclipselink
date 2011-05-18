@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.JpaCache;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
@@ -178,7 +179,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         EntityManager em3 = createEntityManager("default1");
         EntityManager em4=createEntityManager("default1");
         try {
-            Employee emp1 = (Employee) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e2);
+            Employee emp1 = (Employee) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e2);
             emp1.setFirstName("foo");
             beforeCache = em3.find(Employee.class, 121).getFirstName();
             getEntityManagerFactory("default1").getCache().evict(Employee.class, 121);
@@ -206,7 +207,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         EntityManager em6 = createEntityManager("default1");
         EntityManager em7 = createEntityManager("default1");
         try {
-            Employee emp2 = (Employee) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e4);
+            Employee emp2 = (Employee) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e4);
             emp2.setFirstName("food");
             String expected = em6.find(Employee.class, 131).getFirstName();
             getEntityManagerFactory("default1").getCache().evict(Employee.class);
@@ -239,8 +240,8 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         closeEntityManager(em8);
         EntityManager em9 = createEntityManager("default1");
         try {
-            Employee emp3 = (Employee) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e6);
-            Department dept1 = (Department) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(d1);
+            Employee emp3 = (Employee) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e6);
+            Department dept1 = (Department) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(d1);
             emp3.setFirstName("foo");
             dept1.setName("science");
             getEntityManagerFactory("default1").getCache().evictAll();
@@ -324,9 +325,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             EntityManager em1 = createEntityManager("default1");
             EntityManager em2 = createEntityManager("default1");
             try {
-                ChestProtector e2 = (ChestProtector) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                ChestProtector e2 = (ChestProtector) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
@@ -399,9 +400,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             EntityManager em1 = createEntityManager("default1");
             EntityManager em2 = createEntityManager("default1");
             try {
-                ChestProtector e2 = (ChestProtector) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                ChestProtector e2 = (ChestProtector) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
@@ -474,9 +475,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             EntityManager em1 = createEntityManager("default1");
             EntityManager em2 = createEntityManager("default1");
             try {
-                ChestProtector e2 = (ChestProtector) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                ChestProtector e2 = (ChestProtector) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
@@ -543,9 +544,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             EntityManager em1 = createEntityManager("default1");
             EntityManager em2 = createEntityManager("default1");
             try {
-                GoalieGear c2 = (GoalieGear) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                GoalieGear c2 = (GoalieGear) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 c2.setDescription("new_chest_protector");
@@ -597,7 +598,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             EntityManager em1 = createEntityManager("default1");
             EntityManager em2 = createEntityManager("default1");
             try {
-                GoalieGear e2 = (GoalieGear) ((EntityManagerFactoryImpl) getEntityManagerFactory("default1"))
+                GoalieGear e2 = (GoalieGear) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_gear");

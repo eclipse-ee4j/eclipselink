@@ -423,8 +423,6 @@ public class ValidationException extends EclipseLinkException {
     // XML Metadata Repository
     public static final int NON_UNIQUE_REPOSITORY_FILE_NAME = 7340;
     public static final int  MISSING_XML_FILE_FOR_METADATA_SOURCE = 7341;
-    
-    public static final int UNSUPPORTED_WEAVING_VIRTUAL_ONE_TO_ONE = 7342;
 
     /**
      * INTERNAL:
@@ -2871,14 +2869,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, SHARED_DESCRIPTOR_ALIAS, args));
         validationException.setErrorCode(SHARED_DESCRIPTOR_ALIAS);
-        return validationException;
-    }
-    
-    public static ValidationException unsupportedWeavingOfVirtualOneToOne(String className, String attributeName) {
-        Object[] args = { className, attributeName };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNSUPPORTED_WEAVING_VIRTUAL_ONE_TO_ONE, args));
-        validationException.setErrorCode(UNSUPPORTED_WEAVING_VIRTUAL_ONE_TO_ONE);
         return validationException;
     }
     

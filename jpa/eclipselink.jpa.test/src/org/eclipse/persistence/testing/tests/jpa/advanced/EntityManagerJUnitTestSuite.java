@@ -99,6 +99,7 @@ import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -2123,7 +2124,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
             
-        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
         
         // If FOR UPDATE NOWAIT is not supported then FOR UPDATE is used - and that could lock the test (em2) for a long time (depending on db setting). 
         boolean shouldSpawnThread = !isSelectForUpateNoWaitSupported();
@@ -8792,7 +8793,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         boolean shouldForceFinest = false;
         int originalLogLevel = -1; 
         
-        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
         
         // make sure the id hasn't been already used - it will be assigned to a new object (in case sequencing is not used). 
         int id = (ss.getNextSequenceNumberValue(Employee.class)).intValue();
@@ -8995,8 +8996,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
         
         // cache the driver name
-        String driverName = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
-        String originalConnectionString = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession().getLogin().getConnectionString();
+        String driverName = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
+        String originalConnectionString = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession().getLogin().getConnectionString();
         
         // disconnect the session
         closeEntityManagerFactory();
@@ -9095,7 +9096,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         
-        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
         
         Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
         if (ss.getPlatform().isSymfoware()) {
@@ -9275,7 +9276,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         
-        ServerSession server = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        ServerSession server = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
                 
         // cache the original driver name and connection string.
         String originalDriverName = server.getLogin().getDriverClassName();
@@ -9366,7 +9367,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         
-        ServerSession server = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        ServerSession server = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
                 
         // cache the original driver name and connection string.
         DatabaseLogin originalLogin = (DatabaseLogin)server.getLogin().clone();
