@@ -1,0 +1,60 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.persistence.internal.jpa.jpql;
+  uses:="org.eclipse.persistence.jpa.jpql.spi,
+   org.eclipse.persistence.expressions,
+   org.eclipse.persistence.queries,
+   org.eclipse.persistence.jpa.internal.jpql.parser,
+   org.eclipse.persistence.jpa.internal.jpql,
+   org.eclipse.persistence.jpa.jpql,
+   org.eclipse.persistence.internal.sessions,
+   org.eclipse.persistence.internal.security,
+   org.eclipse.persistence.descriptors,
+   org.eclipse.persistence.internal.expressions,
+   org.eclipse.persistence.internal.queries,
+   org.eclipse.persistence.mappings,
+   org.eclipse.persistence.mappings.querykeys,
+   org.eclipse.persistence.internal.databaseaccess,
+   org.eclipse.persistence.internal.helper,
+   org.eclipse.persistence.mappings.foundation,
+   org.eclipse.persistence.internal.descriptors"
+Private-Package: .
+Implementation-Version: 2.3.0.qualifier
+Specification-Vendor: Eclipse.org - EclipseLink Project
+Tool: Bnd-0.0.366
+DSTAMP: 20110513
+Bundle-Name: EclipseLink JPQL Extension for Hermes Parser
+TODAY: May 13 2011
+Created-By: 1.6.0_21 (Sun Microsystems Inc.)
+TSTAMP: 1307
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core.
+ jpql
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Fragment-Host: org.eclipse.persistence.core;bundle-version="2.3.0.qual
+ ifier"
+Bundle-Version: 2.3.0.qualifier
+Bnd-LastModified: 1305306457510
+Bundle-ManifestVersion: 2
+Include-Resource: ../../about.html,../../readme.html,../../license.htm
+ l
+Import-Package: org.eclipse.persistence.descriptors,
+ org.eclipse.persistence.expressions,
+ org.eclipse.persistence.internal.databaseaccess,
+ org.eclipse.persistence.internal.descriptors,
+ org.eclipse.persistence.internal.expressions,
+ org.eclipse.persistence.internal.helper,
+ org.eclipse.persistence.internal.queries,
+ org.eclipse.persistence.internal.security,
+ org.eclipse.persistence.internal.sessions,
+ org.eclipse.persistence.jpa.internal.jpql,
+ org.eclipse.persistence.jpa.internal.jpql.parser,
+ org.eclipse.persistence.jpa.jpql,
+ org.eclipse.persistence.jpa.jpql.spi,
+ org.eclipse.persistence.mappings,
+ org.eclipse.persistence.mappings.foundation,
+ org.eclipse.persistence.mappings.querykeys,
+ org.eclipse.persistence.queries
+Specification-Version: 2.3.0
+Bundle-SymbolicName: org.eclipse.persistence.core.jpql
+
