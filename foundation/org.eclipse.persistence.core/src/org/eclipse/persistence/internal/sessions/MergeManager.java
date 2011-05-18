@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
@@ -196,6 +197,13 @@ public class MergeManager {
             // If original does not exist then we must merge the entire object.
             if (original == null){
                 original = ((UnitOfWorkImpl) this.session).buildOriginal(source);
+                //ensure new original has PKs populated as they may be needed later.
+                if (descriptor.getCopyPolicy().buildsNewInstance()){
+                    List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
+                    for (DatabaseMapping mapping : pkMappings){
+                        mapping.buildClone(source, null, original, targetSession);
+                    }
+                }
             }
             return original;
         }else if (shouldMergeWorkingCopyIntoRemote()) {
