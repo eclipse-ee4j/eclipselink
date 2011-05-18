@@ -58,7 +58,7 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${elhermes.build.location}/build.properties"/>
+    <property file="${elhermes.build.location}/antbuild.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.prefix" value="bnd"/>
