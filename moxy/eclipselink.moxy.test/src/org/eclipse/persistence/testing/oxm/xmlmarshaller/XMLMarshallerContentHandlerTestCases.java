@@ -42,55 +42,35 @@ public class XMLMarshallerContentHandlerTestCases extends OXTestCase {
         emp.setEmailAddress(new EmailAddress());
         try {
             xmlContext.createMarshaller().marshal(emp, new ContentHandler() {
-                @Override
-                public void startPrefixMapping(String prefix, String uri) throws SAXException {
-                }
+                public void startPrefixMapping(String prefix, String uri) throws SAXException {}
 
-                @Override
                 public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
                     if(uri == null) {
                         throw new NullPointerException();
                     }
                 }
             
-                @Override
-                public void startDocument() throws SAXException {
-                }
+                public void startDocument() throws SAXException {}
                 
-                @Override
-                public void skippedEntity(String name) throws SAXException {
-                }
+                public void skippedEntity(String name) throws SAXException {}
                 
-                @Override
-                public void setDocumentLocator(Locator locator) {
-                }
+                public void setDocumentLocator(Locator locator) {}
                 
-                @Override
-                public void processingInstruction(String target, String data) throws SAXException {
-                }
+                public void processingInstruction(String target, String data) throws SAXException {}
                 
-                @Override
-                public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
-                }
+                public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
                 
-                @Override
-                public void endPrefixMapping(String prefix) throws SAXException {
-                }
+                public void endPrefixMapping(String prefix) throws SAXException {}
                 
-                @Override
                 public void endElement(String uri, String localName, String qName) throws SAXException {
                     if(uri == null) {
                         throw new NullPointerException();
                     }
                 }
                 
-                @Override
-                public void endDocument() throws SAXException {
-                }
-                
-                @Override
-                public void characters(char[] ch, int start, int length) throws SAXException {
-                }
+                public void endDocument() throws SAXException {}
+ 
+                public void characters(char[] ch, int start, int length) throws SAXException {}
             }); 
         } catch(Exception ex) {
             fail("Exception caught when marshalling to content handler " + ex.getMessage());
