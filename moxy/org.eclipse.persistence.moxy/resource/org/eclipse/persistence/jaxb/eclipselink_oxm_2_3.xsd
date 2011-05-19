@@ -54,6 +54,7 @@
             <xs:attribute name="xml-mapping-metadata-complete" type="xs:boolean" default="false" />
             <xs:attribute name="package-name" type="xs:string" default="##default" />
             <xs:attribute name="xml-name-transformer" type="xs:string" />
+            <xs:attribute name="version" type="supported-versions" />
         </xs:complexType>
     </xs:element>
     <xs:element name="xml-registry">
@@ -159,6 +160,14 @@
             <xs:enumeration value="EMPTY_NODE" />
         </xs:restriction>
     </xs:simpleType>
+    <xs:simpleType name="supported-versions">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="2.0"/>
+            <xs:enumeration value="2.1"/>
+            <xs:enumeration value="2.2"/>
+            <xs:enumeration value="2.3"/>
+        </xs:restriction>
+    </xs:simpleType> 
 
     <!-- @Target(value=PACKAGE) -->
     <xs:element name="xml-schema">
