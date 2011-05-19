@@ -179,8 +179,9 @@ public class BeanValidationJunitTest extends JUnitTestCase {
      * 2. Assert no lazy relationships are loaded as side effect
      */
     public void testTraversableResolverPreventsLoadingOfLazyRelationships() {
-        EntityManager em = createBVEntityManager();
-        EntityManagerFactory emf = em.getEntityManagerFactory();
+        EntityManagerFactory emf = createBVEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+
 
         //Empty the cache to make sure that lazy fields of Employee are uninstantiated
         emf.getCache().evictAll();
@@ -216,5 +217,9 @@ public class BeanValidationJunitTest extends JUnitTestCase {
 
     public EntityManager createBVEntityManager() {
         return JUnitTestCase.createEntityManager("beanvalidation");
+    }
+    
+    public EntityManagerFactory createBVEntityManagerFactory() {
+        return JUnitTestCase.getEntityManagerFactory("beanvalidation");
     }
 }
