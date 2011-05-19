@@ -20,4 +20,49 @@ public class Address {
     public String street;
     public String city;
     public String zip;
+    
+    public boolean equals(Object obj) {
+        if (obj == null) { return false; }
+        
+        Address addObj;
+        try {
+            addObj = (Address) obj;
+        } catch (ClassCastException e) {
+            return false;
+        }
+
+        if(city == null){
+        	if(addObj.city != null){
+        		return false;
+        	}        	
+        }else if(!city.equals(addObj.city)){
+        	return false;
+        }
+        
+        if(street == null){
+        	if(addObj.street != null){
+        		return false;
+        	}        	
+        }else if(!street.equals(addObj.street)){
+        	return false;
+        }
+        
+        if(state == null){
+        	if(addObj.state != null){
+        		return false;
+        	}        	
+        }else if(!state.equals(addObj.state)){
+        	return false;
+        }
+        
+        if(zip == null){
+        	if(addObj.zip != null){
+        		return false;
+        	}        	
+        }else if(!zip.equals(addObj.zip)){
+        	return false;
+        }
+        
+        return true;
+    }
 }

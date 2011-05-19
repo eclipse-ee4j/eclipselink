@@ -454,6 +454,11 @@ public class XMLProcessor {
                 
                 processJavaAttribute(typeInfo, javaAttribute, propToProcess, nsInfo, javaType);
 
+                // (Bug 346081) if discover a transient attribute apply same behavior as transient annotation and remove
+                if(propToProcess.isTransient()){
+                    typeInfo.getPropertyList().remove(propToProcess);
+                }
+                
                 // if we are dealing with multiple mappings for the same attribute, leave the existing
                 // property as-is and update the additionalProperties list on the owning TypeInfo
                 if (alreadyProcessed) {
