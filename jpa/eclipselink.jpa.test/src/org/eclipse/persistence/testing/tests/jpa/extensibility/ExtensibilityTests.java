@@ -73,6 +73,9 @@ public class ExtensibilityTests extends JUnitTestCase {
         return suite;
     }
     
+    public String getPersistenceUnitName(){
+        return "extensibility";
+    }
     
     public void persistEmployeeData(EntityManager em){
         beginTransaction(em);
@@ -103,21 +106,21 @@ public class ExtensibilityTests extends JUnitTestCase {
     }
     
     public void testSetup() {
-        new ExtensibilityTableCreator().replaceTables(JUnitTestCase.getServerSession("extensibility"));
+        new ExtensibilityTableCreator().replaceTables(JUnitTestCase.getServerSession());
 
         // Force uppercase for Postgres.
-        if (getServerSession("extensibility").getPlatform().isPostgreSQL()) {
-            getServerSession("extensibility").getLogin().setShouldForceFieldNamesToUpperCase(true);
+        if (getServerSession().getPlatform().isPostgreSQL()) {
+            getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
     }
     
     public void testDescriptors(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         ServerSession session = (ServerSession)JpaHelper.getDatabaseSession(emf);
         
         RelationalDescriptor empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") != null);
-        if (isWeavingEnabled("extensibility")){
+        if (isWeavingEnabled()){
             assertTrue(empDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
         }
         assertTrue(empDescriptor.getVirtualAttributeMethods() != null);
@@ -128,7 +131,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         
         RelationalDescriptor addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") != null);
-        if (isWeavingEnabled("extensibility")){
+        if (isWeavingEnabled()){
             assertTrue(addDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
         }
         assertTrue(addDescriptor.getVirtualAttributeMethods() != null);
@@ -142,13 +145,13 @@ public class ExtensibilityTests extends JUnitTestCase {
         Map props = new HashMap();
         props.put(PersistenceUnitProperties.SESSION_NAME, "bla1");
         
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
         
         em.clear();
-        clearCache("extensibility");
+        clearCache();
         try{
             beginTransaction(em);
             Employee emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
@@ -161,7 +164,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             assertTrue("The pobox was not properly saved", emp.getAddress().get("pobox").equals("111"));
             
             em.clear();
-            clearCache("extensibility");
+            clearCache();
             
             add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.pobox = '111'").getSingleResult();
             assertTrue("queries on extended Basic mappings fail", add != null);
@@ -171,19 +174,19 @@ public class ExtensibilityTests extends JUnitTestCase {
             deleteEmployeeData(em);
             commitTransaction(em);
             em.close();
-            clearCache("extensibility");
+            clearCache();
         }
     }
 
     
     public void testOneToManyMapping(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
         
         em.clear();
-        clearCache("extensibility");
+        clearCache();
         PhoneNumber pn = new PhoneNumber();
         Employee emp = null;
         try{
@@ -204,7 +207,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             assertTrue("The phoneNumbers were not properly saved", numbers.size() == 1);
             
             em.clear();
-            clearCache("extensibility");
+            clearCache();
             
             emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e join e.phoneNumbers p where p.areaCode = '613'").getSingleResult();
             assertTrue("queries on extended OneToMany mappings fail", emp != null);
@@ -220,12 +223,12 @@ public class ExtensibilityTests extends JUnitTestCase {
             deleteEmployeeData(em);
             commitTransaction(em);
             em.close();
-            clearCache("extensibility");
+            clearCache();
         }
     }
     
     public void testSimpleRefresh(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         WeakReference<EntityManagerFactoryDelegate> emfRef = new WeakReference<EntityManagerFactoryDelegate>(((JpaEntityManagerFactory)emf).unwrap());
         EntityManager em = emf.createEntityManager();
         ServerSession session = (ServerSession)JpaHelper.getDatabaseSession(emf);
@@ -257,7 +260,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             commitTransaction(em);
             
             em.clear();
-            clearCache("extensibility");
+            clearCache();
             
             emp = em.find(Employee.class, emp.getId());
             
@@ -266,7 +269,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             beginTransaction(em);
             deleteEmployeeData(em);
             commitTransaction(em);
-            clearCache("extensibility");
+            clearCache();
         }
         em.close();
         System.gc();
@@ -274,13 +277,13 @@ public class ExtensibilityTests extends JUnitTestCase {
     }
     
     public void testMergeRefreshed(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
         
         em.clear();
-        clearCache("extensibility");
+        clearCache();
         try{
             beginTransaction(em);
             Employee emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
@@ -312,18 +315,18 @@ public class ExtensibilityTests extends JUnitTestCase {
             beginTransaction(em);
             deleteEmployeeData(em);
             commitTransaction(em);
-            clearCache("extensibility");
+            clearCache();
         }
     }
     
     public void testMergeRefreshedManyToMany(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
         
         em.clear();
-        clearCache("extensibility");
+        clearCache();
         Employee emp = null;
         PhoneNumber pn = null;
         try{
@@ -355,17 +358,17 @@ public class ExtensibilityTests extends JUnitTestCase {
             em.remove(pn);
             deleteEmployeeData(em);
             commitTransaction(em);
-            clearCache("extensibility");
+            clearCache();
         }
     }
     
     public void testUntriggerVHOnDetached(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         WeakReference<ServerSession> sesRef = new WeakReference<ServerSession>(((JpaEntityManagerFactory)emf).unwrap().getServerSession());
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
-        clearCache("extensibility");
+        clearCache();
         em.clear();
         Employee emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
         try{
@@ -388,11 +391,14 @@ public class ExtensibilityTests extends JUnitTestCase {
     }
     
     public void testFetchGroupOnRefresh(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        if (!isWeavingEnabled()){
+            return;
+        }
+        EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
-        clearCache("extensibility");
+        clearCache();
         em.clear();
         Address add = null;
         try {
@@ -415,11 +421,11 @@ public class ExtensibilityTests extends JUnitTestCase {
     }
     
     public void testExistingEntityManagerAfterRefresh(){
-        EntityManagerFactory emf = getEntityManagerFactory("extensibility");
+        EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
-        clearCache("extensibility");
+        clearCache();
         em.clear();
         Address add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.city = 'Herestowm'").getSingleResult();
         try {
@@ -431,7 +437,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             beginTransaction(em);
             add.set("appartmentNumber", "333");
             commitTransaction(em);
-            clearCache("extensibility");
+            clearCache();
             em.clear();
             add = em.find(Address.class, add.getId());
             assertTrue(add.get("appartmentNumber").equals("333"));
@@ -440,7 +446,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             add = em2.find(Address.class, add.getId());
             add.set("pobox", "1");
             commitTransaction(em2);
-            clearCache("extensibility");
+            clearCache();
             em.clear();
             add = em2.find(Address.class, add.getId());
             assertTrue(add.get("pobox").equals("1"));

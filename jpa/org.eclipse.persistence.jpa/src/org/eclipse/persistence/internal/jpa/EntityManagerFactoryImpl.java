@@ -192,6 +192,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
         EntityManagerSetupImpl newSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
         newSetupImpl.setIsInContainerMode(setupImpl.isInContainerMode);
+        newSetupImpl.enableWeaving = setupImpl.enableWeaving;
         newSetupImpl.predeploy(setupImpl.getPersistenceUnitInfo(), deployProperties);
         // newSetupImpl has been already predeployed, predeploy will just increment factoryCount.
         if (!setupImpl.isInContainerMode) {
