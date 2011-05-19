@@ -166,10 +166,16 @@ public class XMLProjectReader {
 
         String version = document.getDocumentElement().getAttribute("version");
         // If 10.1.3 format use old format read.
-        if ((version != null) && (version.indexOf("10.1.3") != -1)) {
-            return read1013Format(document, classLoader);
-        } else if ((version != null) && (version.indexOf("11.1.1") != -1)){
-        	return read1111Format(document, classLoader);
+        if (version != null) {
+            if (version.indexOf("10.1.3") != -1) {
+                return read1013Format(document, classLoader);
+            } else if (version.indexOf("11.1.1") != -1) {
+               	return read1111Format(document, classLoader);
+            }
+            if (version.indexOf("TopLink") != -1) {
+                //default to read 11.1.1
+            	return read1111Format(document, classLoader);
+            }
         }
 
         
