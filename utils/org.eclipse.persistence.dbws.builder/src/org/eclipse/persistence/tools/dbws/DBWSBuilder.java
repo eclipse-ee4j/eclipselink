@@ -161,7 +161,6 @@ import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
 import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
 import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
@@ -1815,8 +1814,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         xdesc.setAlias(tablenameAlias);
         NamespaceResolver nr = new NamespaceResolver();
         nr.setDefaultNamespaceURI(getTargetNamespace());
-        nr.put(SCHEMA_INSTANCE_PREFIX,
-            W3C_XML_SCHEMA_INSTANCE_NS_URI); // to support xsi:nil policy
         xdesc.setNamespaceResolver(nr);
         xdesc.setDefaultRootElement(tablenameAlias);
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
@@ -1949,10 +1946,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         xdm.setXPath(xPath);
         XMLField xmlField = (XMLField)xdm.getField();
         xmlField.setSchemaType(qName);
-        if (binaryAttach && qName == BASE_64_BINARY_QNAME) {
-            // need xsd namespaces
-            xdesc.getNamespaceResolver().put("xsd", W3C_XML_SCHEMA_NS_URI);
-        }
         if (dbColumn.isPK()) {
             xmlField.setRequired(true);
         }

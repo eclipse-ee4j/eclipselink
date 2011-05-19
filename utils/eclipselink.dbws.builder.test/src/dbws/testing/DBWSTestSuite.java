@@ -14,28 +14,22 @@
 package dbws.testing;
 
 //javase imports
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
-import org.w3c.dom.Document;
 
-//java eXtension imports
 import javax.wsdl.WSDLException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-//JUnit4 imports
-
-//EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
@@ -53,26 +47,14 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.XRPackager;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 // domain-specific (testing) imports
 
 public class DBWSTestSuite {
-
-    public final static String DATABASE_USERNAME_KEY = "db.user";
-    public final static String DATABASE_PASSWORD_KEY = "db.pwd";
-    public final static String DATABASE_URL_KEY = "db.url";
-    public final static String DATABASE_DRIVER_KEY = "db.driver";
-    public final static String DATABASE_PLATFORM_KEY = "db.platform";
     public final static String DEFAULT_DATABASE_USERNAME = "MNORMAN";
     public final static String DEFAULT_DATABASE_PASSWORD = "password";
     public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://tlsvrdb4.ca.oracle.com/" +
         DEFAULT_DATABASE_USERNAME;
-    public final static String DEFAULT_DATABASE_DRIVER = "com.mysql.jdbc.Driver";
-    public final static String DEFAULT_DATABASE_PLATFORM =
-        "org.eclipse.persistence.platform.database.MySQLPlatform";
 
     public static final String SFAULT = "sfault_table";
     public static final String SFAULT_TEST = SFAULT + "Test";
@@ -136,11 +118,11 @@ public class DBWSTestSuite {
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
 
     public static void setUp() throws WSDLException {
-        final String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-        final String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-        final String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        final String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-        final String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
+        final String username = System.getProperty(DBWSTestProviderHelper.DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        final String password = System.getProperty(DBWSTestProviderHelper.DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+        final String url = System.getProperty(DBWSTestProviderHelper.DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+        final String driver = System.getProperty(DBWSTestProviderHelper.DATABASE_DRIVER_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER);
+        final String platform = System.getProperty(DBWSTestProviderHelper.DATABASE_PLATFORM_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM);
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
         password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
         DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
@@ -227,20 +209,5 @@ public class DBWSTestSuite {
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(
             new StringReader(DBWS_SERVICE_STREAM.toString()));
         xrService = factory.buildService(model);
-    }
-
-    public static String documentToString(Document doc) {
-        DOMSource domSource = new DOMSource(doc);
-        StringWriter stringWriter = new StringWriter();
-        StreamResult result = new StreamResult(stringWriter);
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty("indent", "yes");
-            transformer.transform(domSource, result);
-            return stringWriter.toString();
-        } catch (Exception e) {
-            // e.printStackTrace();
-            return "<empty/>";
-        }
     }
 }

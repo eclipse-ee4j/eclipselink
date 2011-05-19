@@ -13,23 +13,31 @@
 package dbws.testing.simpletablewithnestedsql;
 
 //javase imports
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_DRIVER_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_PLATFORM_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
+import static org.eclipse.persistence.internal.dbws.ProviderHelper.MATCH_SCHEMA;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-//java eXtension imports
 import javax.wsdl.WSDLException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-//JUnit4 imports
-import org.junit.Test;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
@@ -40,13 +48,8 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
-import static org.eclipse.persistence.internal.dbws.ProviderHelper.MATCH_SCHEMA;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+import org.junit.Test;
 
-//domain-specific (testing) imports
 import dbws.testing.DBWSTestSuite;
 
 public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {

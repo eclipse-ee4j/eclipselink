@@ -96,7 +96,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
     }
     public static final String CRUD1_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<crud_tableType xmlns=\"urn:crud\">" +
           "<id>1</id>" +
           "<name>crud1</name>" +
         "</crud_tableType>";
@@ -122,15 +122,15 @@ public class CRUDTestSuite extends DBWSTestSuite {
     public static final String FIND_ALL_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
         "<all>" +
-           "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+           "<crud_tableType xmlns=\"urn:crud\">" +
             "<id>1</id>" +
             "<name>crud1</name>" +
           "</crud_tableType>" +
-          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
             "<id>2</id>" +
             "<name>crud2</name>" +
           "</crud_tableType>" +
-          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
             "<id>3</id>" +
             "<name>other</name>" +
           "</crud_tableType>" +
@@ -157,11 +157,11 @@ public class CRUDTestSuite extends DBWSTestSuite {
     public static final String FIND_BY_NAME_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
         "<some>" +
-          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
             "<id>1</id>" +
             "<name>crud1</name>" +
           "</crud_tableType>" +
-          "<crud_tableType xmlns=\"urn:crud\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<crud_tableType xmlns=\"urn:crud\">" +
             "<id>2</id>" +
             "<name>crud2</name>" +
           "</crud_tableType>" +

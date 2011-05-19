@@ -173,7 +173,7 @@ public class OverloadedPLSQLStoredProcedureSimpleArgsTestSuite extends WebServic
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:" + PROC8_TEST + "1Response xmlns:srvc=\"" + PROC8_SERVICE_NAMESPACE + "\">" +
@@ -183,7 +183,7 @@ public class OverloadedPLSQLStoredProcedureSimpleArgsTestSuite extends WebServic
         "</SOAP-ENV:Envelope>";
 
     static final String TEST_RESPONSE_2 =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:" + PROC8_TEST + "2Response xmlns:srvc=\"" + PROC8_SERVICE_NAMESPACE + "\">" +

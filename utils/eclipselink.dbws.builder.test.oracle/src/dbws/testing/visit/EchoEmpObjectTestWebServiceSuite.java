@@ -132,18 +132,25 @@ public class EchoEmpObjectTestWebServiceSuite extends WebServiceTestSuite implem
             getTransformer().transform(src, result);
             Document resultDoc = (Document)result.getNode();
             Document controlDoc = xmlParser.parse(new StringReader(TEST_RESPONSE));
+            /*
+            System.out.println("\n---- Control Document ----");
+            System.out.println(DBWSTestHelper.documentToString(controlDoc));
+            System.out.println("---- Result Document ----");
+            System.out.println(DBWSTestHelper.documentToString(resultDoc));
+            System.out.println("\n");
+            */
             assertTrue("control document not same as instance document",
                 comparer.isNodeEqual(controlDoc, resultDoc));
         }
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_ECHO_EMPOBJECT_TEST + "Response xmlns=\"" + ADVJDBC_ECHO_EMPOBJECT_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_ECHO_EMPOBJECT_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
-                     "<emp_objectType xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                     "<emp_objectType>" +
                          "<employee_id>55</employee_id>" +
                          "<address>" +
                             "<street>20 Pinetrail Cres.</street>" +

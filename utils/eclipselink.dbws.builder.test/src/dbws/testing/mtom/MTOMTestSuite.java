@@ -13,15 +13,37 @@
 package dbws.testing.mtom;
 
 //javase imports
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
+import static dbws.testing.DBWSTestSuite.MTOM;
+import static dbws.testing.DBWSTestSuite.MTOM_NAMESPACE;
+import static dbws.testing.DBWSTestSuite.MTOM_PORT;
+import static dbws.testing.DBWSTestSuite.MTOM_SERVICE;
+import static dbws.testing.DBWSTestSuite.MTOM_SERVICE_NAMESPACE;
+import static dbws.testing.DBWSTestSuite.MTOM_TEST;
+import static javax.xml.ws.Service.Mode.MESSAGE;
+import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
-import org.xml.sax.InputSource;
 
-//java eXtension imports
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -44,25 +66,13 @@ import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
-import static javax.xml.ws.Service.Mode.MESSAGE;
-import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
 
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-//import org.junit.Ignore;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-//EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.ByteArrayDataSource;
-import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLLogin;
@@ -76,29 +86,13 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import org.eclipse.persistence.tools.dbws.OperationModel;
 import org.eclipse.persistence.tools.dbws.TableOperationModel;
-import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
-
-//domain-specific (test) imports
-import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DRIVER;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PLATFORM;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
-import static dbws.testing.DBWSTestSuite.MTOM;
-import static dbws.testing.DBWSTestSuite.MTOM_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.MTOM_PORT;
-import static dbws.testing.DBWSTestSuite.MTOM_SERVICE;
-import static dbws.testing.DBWSTestSuite.MTOM_SERVICE_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.MTOM_TEST;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.xml.sax.InputSource;
 
 @WebServiceProvider(
     targetNamespace = MTOM_SERVICE_NAMESPACE,

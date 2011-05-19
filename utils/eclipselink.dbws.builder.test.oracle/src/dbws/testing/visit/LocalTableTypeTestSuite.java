@@ -387,7 +387,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
           "</SOAP-ENV:Body>" +
         "</SOAP-ENV:Envelope>";
     static final String RESPONSE_MSG =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:localTableTestResponse " +
@@ -396,12 +396,12 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                     ">" +
               "<srvc:result>" +
                 "<LTBL_PKG_LTBL_TAB>" +
-                  "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<item>" +
                     "<empno>123</empno>" +
                     "<fname>Mike</fname>" +
                     "<lname>Norman</lname>" +
                   "</item>" +
-                  "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                  "<item>" +
                     "<empno>789</empno>" +
                     "<fname>John</fname>" +
                     "<lname>Blair</lname>" +

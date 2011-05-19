@@ -73,18 +73,19 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.OperationModel;
 import org.eclipse.persistence.tools.dbws.TableOperationModel;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
+
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports
-import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DRIVER;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
 import static dbws.testing.DBWSTestSuite.ROOTCAUSE;

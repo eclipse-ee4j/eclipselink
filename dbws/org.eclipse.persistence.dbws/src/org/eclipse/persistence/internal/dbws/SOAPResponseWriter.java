@@ -14,12 +14,21 @@
 package org.eclipse.persistence.internal.dbws;
 
 // Javase imports
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-// Java extension imports
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
@@ -27,12 +36,7 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-// EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -48,8 +52,6 @@ import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY;
 
 public class SOAPResponseWriter {
 
@@ -173,6 +175,8 @@ public class SOAPResponseWriter {
             messageFactory = MessageFactory.newInstance();
         }
         SOAPMessage message = messageFactory.createMessage();
+        message.getSOAPPart().getEnvelope().addNamespaceDeclaration(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
+        message.getSOAPPart().getEnvelope().addNamespaceDeclaration(SCHEMA_INSTANCE_PREFIX, W3C_XML_SCHEMA_INSTANCE_NS_URI);
         SOAPBody body = message.getSOAPPart().getEnvelope().getBody();
         QName serverQName = null;
         if (useSOAP12) {
@@ -194,6 +198,8 @@ public class SOAPResponseWriter {
             messageFactory = MessageFactory.newInstance();
         }
         SOAPMessage message = messageFactory.createMessage();
+        message.getSOAPPart().getEnvelope().addNamespaceDeclaration(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
+        message.getSOAPPart().getEnvelope().addNamespaceDeclaration(SCHEMA_INSTANCE_PREFIX, W3C_XML_SCHEMA_INSTANCE_NS_URI);
         SOAPBody body = message.getSOAPPart().getEnvelope().getBody();
 
         XMLDescriptor descriptor = resultDescriptors.get(op.getName());

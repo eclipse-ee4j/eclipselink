@@ -143,12 +143,12 @@ public class P5testWebServiceSuite extends WebServiceTestSuite implements Provid
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:" + PROC5_TEST + "Response xmlns=\"" + PROC5_NAMESPACE + "\" xmlns:srvc=\"" + PROC5_SERVICE_NAMESPACE + "\">" +
               "<srvc:result>" +
-                "<SOMEPACKAGE_ARECORD xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<SOMEPACKAGE_ARECORD>" +
                   "<t1>" +
                     "<item>this</item>" +
                     "<item>is</item>" +

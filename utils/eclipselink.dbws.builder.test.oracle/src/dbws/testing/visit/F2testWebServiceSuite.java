@@ -147,12 +147,12 @@ public class F2testWebServiceSuite extends WebServiceTestSuite implements Provid
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:" + FUNC2_TEST + "Response xmlns=\"" + FUNC2_NAMESPACE + "\" xmlns:srvc=\"" + FUNC2_SERVICE_NAMESPACE + "\">" +
               "<srvc:result>" +
-                "<SOMEPACKAGE_TBL2 xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<SOMEPACKAGE_TBL2>" +
                     "<item>3000</item>" +
                     "<item>4050.01</item>" +
                     "<item>6000.07</item>" +

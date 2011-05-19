@@ -92,6 +92,12 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(COUNT_CUSTOM_CONTROL_DOC));
+        /*
+        String resultString = DBWSTestProviderHelper.documentToString(doc);
+        System.out.println(resultString);
+        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
+        System.out.println(controlString);
+        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
@@ -114,6 +120,12 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(COUNT_MAXSAL_CONTROL_DOC));
+        /*
+        String resultString = DBWSTestProviderHelper.documentToString(doc);
+        System.out.println(resultString);
+        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
+        System.out.println(controlString);
+        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
@@ -138,20 +150,26 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(FINDBYPK_7788_CONTROL_DOC));
+        /*
+        String resultString = DBWSTestProviderHelper.documentToString(doc);
+        System.out.println(resultString);
+        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
+        System.out.println(controlString);
+        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
 
     public static final String FINDBYPK_7788_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7788</empno>" +
           "<ename>SCOTT</ename>" +
           "<job>ANALYST</job>" +
           "<mgr>7566</mgr>" +
           "<hiredate>1981-06-09</hiredate>" +
           "<sal>3000.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
         "</customType>";
 
@@ -170,6 +188,12 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
             marshaller.marshal(r, ec);
         }
         Document controlDoc = xmlParser.parse(new StringReader(FIND_ALL_CONTROL_DOC));
+        /*
+        String resultString = DBWSTestProviderHelper.documentToString(doc);
+        System.out.println(resultString);
+        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
+        System.out.println(controlString);
+        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
@@ -177,17 +201,17 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     public static final String FIND_ALL_CONTROL_DOC =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<collection>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7369</empno>" +
           "<ename>SMITH</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7902</mgr>" +
           "<hiredate>1980-12-17</hiredate>" +
           "<sal>800.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7499</empno>" +
           "<ename>ALLEN</ename>" +
           "<job>SALESMAN</job>" +
@@ -197,7 +221,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<comm>300.00</comm>" +
           "<deptno>30</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7521</empno>" +
           "<ename>WARD</ename>" +
           "<job>SALESMAN</job>" +
@@ -207,17 +231,17 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<comm>500.00</comm>" +
           "<deptno>30</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7566</empno>" +
           "<ename>JONES</ename>" +
           "<job>MANAGER</job>" +
           "<mgr>7839</mgr>" +
           "<hiredate>1981-04-02</hiredate>" +
           "<sal>2975.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7654</empno>" +
           "<ename>MARTIN</ename>" +
           "<job>SALESMAN</job>" +
@@ -227,47 +251,47 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<comm>1400.00</comm>" +
           "<deptno>30</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7698</empno>" +
           "<ename>BLAKE</ename>" +
           "<job>MANAGER</job>" +
           "<mgr>7839</mgr>" +
           "<hiredate>1981-05-01</hiredate>" +
           "<sal>2850.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>30</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7782</empno>" +
           "<ename>CLARK</ename>" +
           "<job>MANAGER</job>" +
           "<mgr>7839</mgr>" +
           "<hiredate>1981-06-09</hiredate>" +
           "<sal>2450.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>10</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7788</empno>" +
           "<ename>SCOTT</ename>" +
           "<job>ANALYST</job>" +
           "<mgr>7566</mgr>" +
           "<hiredate>1981-06-09</hiredate>" +
           "<sal>3000.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7839</empno>" +
           "<ename>KING</ename>" +
           "<job>PRESIDENT</job>" +
-          "<mgr xsi:nil=\"true\"/>" +
+          "<mgr xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<hiredate>1981-11-17</hiredate>" +
           "<sal>5000.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>10</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7844</empno>" +
           "<ename>TURNER</ename>" +
           "<job>SALESMAN</job>" +
@@ -277,44 +301,44 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<comm>0.00</comm>" +
           "<deptno>30</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7876</empno>" +
           "<ename>ADAMS</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7788</mgr>" +
           "<hiredate>1987-05-23</hiredate>" +
           "<sal>1100.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7900</empno>" +
           "<ename>JAMES</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7698</mgr>" +
           "<hiredate>1981-12-03</hiredate>" +
           "<sal>950.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>30</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7902</empno>" +
           "<ename>FORD</ename>" +
           "<job>ANALYST</job>" +
           "<mgr>7566</mgr>" +
           "<hiredate>1981-12-03</hiredate>" +
           "<sal>3000.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
         "</customType>" +
-        "<customType xmlns=\"urn:customSQL\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<customType xmlns=\"urn:customSQL\">" +
           "<empno>7934</empno>" +
           "<ename>MILLER</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7782</mgr>" +
           "<hiredate>1982-01-23</hiredate>" +
           "<sal>1300.00</sal>" +
-          "<comm xsi:nil=\"true\"/>" +
+          "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>10</deptno>" +
         "</customType>" +
       "</collection>";

@@ -2461,8 +2461,14 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
         marshaller.marshal(p, resultDoc);
         Document controlDoc = xmlParser.parse(new StringReader(oxProject));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
+        /*
+        System.out.println("\n---- Control Document ----");
+        System.out.println(DBWSTestHelper.documentToString(controlDoc));
+        System.out.println("---- Result Document ----");
+        System.out.println(DBWSTestHelper.documentToString(resultDoc));
+        System.out.println("\n");
+        */
+        assertTrue("control document not same as instance document", comparer.isNodeEqual(controlDoc, resultDoc));
 
         SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
         SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();

@@ -120,18 +120,25 @@ public class BuildARecordTestWebServiceSuite extends WebServiceTestSuite impleme
             getTransformer().transform(src, result);
             Document resultDoc = (Document)result.getNode();
             Document controlDoc = xmlParser.parse(new StringReader(TEST_RESPONSE));
+            /*
+            System.out.println("\n---- Control Document ----");
+            System.out.println(DBWSTestHelper.documentToString(controlDoc));
+            System.out.println("---- Result Document ----");
+            System.out.println(DBWSTestHelper.documentToString(resultDoc));
+            System.out.println("\n");
+            */
             assertTrue("control document not same as instance document",
                 comparer.isNodeEqual(controlDoc, resultDoc));
         }
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"" + URI_NS_SOAP_1_1_ENVELOPE + "\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"" + URI_NS_SOAP_1_1_ENVELOPE + "\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_BUILD_ARECORD_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_ARECORD_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_ARECORD_SERVICE_NAMESPACE + "\">" +
                 "<srvc:result>" +
-                   "<somepackage_arecordType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                   "<somepackage_arecordType>" +
                       "<t1>" +
                          "<item>entry 1</item>" +
                          "<item>entry 2</item>" +

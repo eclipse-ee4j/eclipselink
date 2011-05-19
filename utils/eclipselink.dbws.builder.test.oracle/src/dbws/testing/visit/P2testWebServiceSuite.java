@@ -138,7 +138,7 @@ public class P2testWebServiceSuite extends WebServiceTestSuite implements Provid
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:" + PROC2_TEST + "Response xmlns:srvc=\"" + PROC2_SERVICE_NAMESPACE + "\">" +

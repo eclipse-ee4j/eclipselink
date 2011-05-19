@@ -125,21 +125,21 @@ public class BuildEmpArrayTestWebServiceSuite extends WebServiceTestSuite implem
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_BUILD_EMPARRAY_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_EMPARRAY_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_EMPARRAY_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
                      "<emp_info_arrayType>" +
-                        "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                        "<item>" +
                            "<id>1</id>" +
                            "<name>entry 1</name>" +
                         "</item>" +
-                        "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                        "<item>" +
                            "<id>2</id>" +
                            "<name>entry 2</name>" +
                         "</item>" +
-                        "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                        "<item>" +
                            "<id>3</id>" +
                            "<name>entry 3</name>" +
                         "</item>" +

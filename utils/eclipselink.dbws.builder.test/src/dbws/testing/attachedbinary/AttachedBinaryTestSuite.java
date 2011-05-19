@@ -97,23 +97,29 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             marshaller.marshal(r, ec);
         }
         Document controlDoc = xmlParser.parse(new StringReader(ATTACHED_BINARY_COLLECTION_XML));
+        /*
+        String resultString = DBWSTestProviderHelper.documentToString(doc);
+        System.out.println(resultString);
+        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
+        System.out.println(controlString);
+        */        
         assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String ATTACHED_BINARY_COLLECTION_XML =
         "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +
         "<attachedbinary-collection>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
                 "<id>1</id>" +
                 "<name>one</name>" +
                 "<b>cid:ref1</b>" +
             "</attachedbinaryType>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
                 "<id>2</id>" +
                 "<name>two</name>" +
                 "<b>cid:ref2</b>" +
             "</attachedbinaryType>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
                 "<id>3</id>" +
                 "<name>three</name>" +
                 "<b>cid:ref3</b>" +

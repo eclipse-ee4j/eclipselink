@@ -81,20 +81,21 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import org.eclipse.persistence.tools.dbws.SQLOperationModel;
+
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports
-import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DRIVER;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_DRIVER_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_PLATFORM_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
 import static dbws.testing.DBWSTestSuite.NONSENCE_WHERE_SQL;
@@ -338,6 +339,17 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          SOAPPart part = request.getSOAPPart();
          DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
              new InputSource(new StringReader(COUNT_REQUEST_MSG))));
+
+         
+
+        /*         
+         Document requestDoc = (Document)domSource.getNode();
+         String requestString = DBWSTestProviderHelper.documentToString(requestDoc);
+         System.out.println(requestString);
+        */
+ 		        
+
+         
          part.setContent(domSource);
          Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
              Service.Mode.MESSAGE);
@@ -361,13 +373,13 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          }
      }
      static final String COUNT_RESPONSE_MSG =
-         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
          "<SOAP-ENV:Body>" +
            "<srvc:countSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
                    "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
              "<srvc:result>" +
-               "<secondaryAggregate xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryAggregate>" +
                  "<count>14</count>" +
                  "<max-salary>5000.00</max-salary>" +
                "</secondaryAggregate>" +
@@ -378,7 +390,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
 
      static final String ALL_REQUEST_MSG =
          "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
            "<env:Header/>" +
            "<env:Body>" +
              "<allSecondary xmlns=\"" + SECONDARY_SERVICE_NAMESPACE + "\"/>" +
@@ -409,18 +421,25 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              transformer.transform(src, result);
              Document resultDoc = (Document)result.getNode();
              Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
+             /*
+             System.out.println("\n---- Control Document ----");
+             System.out.println(DBWSTestProviderHelper.documentToString(controlDoc));
+             System.out.println("---- Result Document ----");
+             System.out.println(DBWSTestProviderHelper.documentToString(resultDoc));
+             System.out.println("\n");
+              */
              assertTrue("control document not same as instance document",
                  comparer.isNodeEqual(controlDoc, resultDoc));
          }
      }
      static final String ALL_RESPONSE_MSG =
-       "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+       "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
          "<SOAP-ENV:Body>" +
            "<srvc:allSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
                "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
              "<srvc:result>" +
-                "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<secondaryType>" +
                   "<empno>7369</empno>" +
                   "<ename>SMITH</ename>" +
                   "<job>CLERK</job>" +
@@ -430,7 +449,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
                 "</secondaryType>" +
-                "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<secondaryType>" +
                   "<empno>7499</empno>" +
                   "<ename>ALLEN</ename>" +
                   "<job>SALESMAN</job>" +
@@ -440,7 +459,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm>300.00</comm>" +
                   "<deptno>30</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7521</empno>" +
                   "<ename>WARD</ename>" +
                   "<job>SALESMAN</job>" +
@@ -450,7 +469,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm>500.00</comm>" +
                   "<deptno>30</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7566</empno>" +
                   "<ename>JONES</ename>" +
                   "<job>MANAGER</job>" +
@@ -460,7 +479,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7654</empno>" +
                   "<ename>MARTIN</ename>" +
                   "<job>SALESMAN</job>" +
@@ -470,7 +489,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm>1400.00</comm>" +
                   "<deptno>30</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7698</empno>" +
                   "<ename>BLAKE</ename>" +
                   "<job>MANAGER</job>" +
@@ -480,7 +499,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>30</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7782</empno>" +
                   "<ename>CLARK</ename>" +
                   "<job>MANAGER</job>" +
@@ -490,7 +509,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>10</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7788</empno>" +
                   "<ename>SCOTT</ename>" +
                   "<job>ANALYST</job>" +
@@ -500,7 +519,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7839</empno>" +
                   "<ename>KING</ename>" +
                   "<job>PRESIDENT</job>" +
@@ -510,7 +529,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>10</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7844</empno>" +
                   "<ename>TURNER</ename>" +
                   "<job>SALESMAN</job>" +
@@ -520,7 +539,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm>0.00</comm>" +
                   "<deptno>30</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7876</empno>" +
                   "<ename>ADAMS</ename>" +
                   "<job>CLERK</job>" +
@@ -530,7 +549,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7900</empno>" +
                   "<ename>JAMES</ename>" +
                   "<job>CLERK</job>" +
@@ -540,7 +559,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>30</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7902</empno>" +
                   "<ename>FORD</ename>" +
                   "<job>ANALYST</job>" +
@@ -550,7 +569,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
                "</secondaryType>" +
-               "<secondaryType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+               "<secondaryType>" +
                   "<empno>7934</empno>" +
                   "<ename>MILLER</ename>" +
                   "<job>CLERK</job>" +

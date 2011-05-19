@@ -125,12 +125,12 @@ public class BuildTbl1TestWebServiceSuite extends WebServiceTestSuite implements
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_BUILD_TBL1_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_TBL1_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_TBL1_SERVICE_NAMESPACE + "\">" +
                  "<srvc:result>" +
-                     "<somepackage_tbl1Type xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                     "<somepackage_tbl1Type>" +
                         "<item>entry 1</item>" +
                         "<item>entry 2</item>" +
                         "<item>entry 3</item>" +

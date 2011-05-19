@@ -126,12 +126,12 @@ public class BuildCRecordTestWebServiceSuite extends WebServiceTestSuite impleme
     }
 
     static final String TEST_RESPONSE =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"" + URI_NS_SOAP_1_1_ENVELOPE + "\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"" + URI_NS_SOAP_1_1_ENVELOPE + "\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
              "<srvc:" + ADVJDBC_BUILD_CRECORD_TEST + "Response xmlns=\"" + ADVJDBC_BUILD_CRECORD_NAMESPACE +"\" xmlns:srvc=\"" + ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE + "\">" +
                 "<srvc:result>" +
-                   "<somepackage_crecordType xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                   "<somepackage_crecordType>" +
                    "<c1>" +
                       "<t1>" +
                          "<item>entry 1</item>" +

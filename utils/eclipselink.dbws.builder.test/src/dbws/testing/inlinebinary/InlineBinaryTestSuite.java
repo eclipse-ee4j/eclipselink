@@ -86,17 +86,17 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
     public static final String INLINEBINARY_COLLECTION_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<inlinebinary-collection>" +
-            "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<inlinebinaryType xmlns=\"urn:inlinebinary\">" +
                 "<id>1</id>" +
                 "<name>one</name>" +
                 "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
             "</inlinebinaryType>" +
-            "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<inlinebinaryType xmlns=\"urn:inlinebinary\">" +
                 "<id>2</id>" +
                 "<name>two</name>" +
                 "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
             "</inlinebinaryType>" +
-            "<inlinebinaryType xmlns=\"urn:inlinebinary\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<inlinebinaryType xmlns=\"urn:inlinebinary\">" +
                 "<id>3</id>" +
                 "<name>three</name>" +
                 "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +

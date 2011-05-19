@@ -201,7 +201,7 @@ public class P1P4testWebServiceSuite extends WebServiceTestSuite implements Prov
     }
 
     static final String TEST_RESPONSE_1 =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:" + PROC4_TEST + "Response xmlns:srvc=\"" + PROC4_SERVICE_NAMESPACE + "\">" +
@@ -211,7 +211,7 @@ public class P1P4testWebServiceSuite extends WebServiceTestSuite implements Prov
         "</SOAP-ENV:Envelope>";
 
     static final String TEST_RESPONSE_2 =
-        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<SOAP-ENV:Header/>" +
           "<SOAP-ENV:Body>" +
             "<srvc:" + PROC1_TEST + "Response xmlns:srvc=\"" + PROC4_SERVICE_NAMESPACE + "\">" +

@@ -384,5 +384,6 @@
         <SetupCompileRunTeardown testsuite-name="OptLock"/>
         <SetupCompileRunTeardown testsuite-name="MTOM"/>
         <SetupCompileRunTeardown testsuite-name="SecondarySQL"/>
+        <SetupCompileRunTeardown testsuite-name="SQLAsCollection"/>
     </target>
 </project>
