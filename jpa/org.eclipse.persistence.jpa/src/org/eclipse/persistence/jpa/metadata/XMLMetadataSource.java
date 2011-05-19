@@ -40,7 +40,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         String mappingURLName = EntityManagerFactoryProvider.getConfigPropertyAsString(
                 PersistenceUnitProperties.METADATA_SOURCE_XML_URL,
                 properties);
-        if (mappingURLName !=null && !mappingURLName.isEmpty()) {
+        if (mappingURLName !=null && mappingURLName.length()!=0) {
             try {
                 URL url = new URL(mappingURLName);
                 reader = new InputStreamReader(url.openStream());
