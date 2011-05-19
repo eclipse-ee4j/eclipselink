@@ -48,7 +48,6 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypePkgSchemaGen() {
         String metadataFile = PATH + "eclipselink-oxm-package.xml";
-
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
@@ -99,6 +98,35 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
         MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { EmployeeWithAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "schema1.xsd";
+        //System.out.println(ExternalizedMetadataTestCases.getFileAsText(outputResolver.schemaFiles.get(EMPTY_NAMESPACE)));
+        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+    }
+
+    /**
+     * Tests xml-schema-type schema generation via eclipselink-oxm.xml when 
+     * combined with xml-id.
+     * 
+     * Positive test.
+     */
+    public void testXmlSchemaTypeWithIDSchemaGen() {
+        String metadataFile = PATH + "eclipselink-oxm-method.xml";
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { EmployeeWithMethods.class }, CONTEXT_PATH, metadataFile, 1);
+        // validate schema
+        String controlSchema = PATH + "schema2.xsd";
+        //System.out.println(ExternalizedMetadataTestCases.getFileAsText(outputResolver.schemaFiles.get(EMPTY_NAMESPACE)));
+        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+    }
+
+    /**
+     * Tests @XmlSchemaType schema generation combined with @XmlID.
+     * 
+     * Positive test.
+     */
+    public void testXmlSchemaTypeWithIDAnnotationSchemaGen() {
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { EmployeeWithAnnotationOnMethod.class }, 1);
+        // validate schema
+        String controlSchema = PATH + "schema3.xsd";
+        //System.out.println(ExternalizedMetadataTestCases.getFileAsText(outputResolver.schemaFiles.get(EMPTY_NAMESPACE)));
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
     }
 

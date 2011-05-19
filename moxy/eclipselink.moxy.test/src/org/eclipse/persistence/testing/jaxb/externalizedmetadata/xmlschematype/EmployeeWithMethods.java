@@ -8,11 +8,19 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - December 08/2009 - 2.0 - Initial implementation
+ * dmccann - 2.3 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype;
 
-public class Employee {
-    public int id;
-    public java.util.GregorianCalendar hireDate;
+public class EmployeeWithMethods {
+    private int id;
+    private java.util.GregorianCalendar hireDate;
+
+    public int getId() {
+        return id;
+    }
+
+    public java.util.GregorianCalendar getHireDate() {
+        return hireDate;
+    }
 }

@@ -4,6 +4,11 @@
     <java-types>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype.Employee">
             <xml-root-element name="employee" />
+            <java-attributes>
+                <xml-attribute java-attribute="id" xml-id="true">
+                    <xml-schema-type name="string" />
+                </xml-attribute>
+            </java-attributes>
         </java-type>
     </java-types>
 </xml-bindings>

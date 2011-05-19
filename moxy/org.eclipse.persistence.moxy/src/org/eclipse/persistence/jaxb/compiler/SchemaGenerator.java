@@ -1475,7 +1475,13 @@ public class SchemaGenerator {
         TypeInfo info = (TypeInfo) typeInfo.get(property.getActualType().getQualifiedName());
         String typeName = null;
         if (property.isXmlId()) {
-            typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
+            // handle user-set schema-type
+            if (property.getSchemaType() != null) {
+                typeName = getTypeName(property, property.getActualType(), schema);                    
+            } else {
+                // default to xsd:ID
+                typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
+            }
         } else if (property.isXmlIdRef()) {
             typeName = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
         } else if (info != null && !info.isComplexType()) {
@@ -2041,7 +2047,13 @@ public class SchemaGenerator {
     private String getTypeNameForElement(Property property, Schema schema, JavaClass javaClass, Element element) {
         String typeName = null;
         if (property.isXmlId()) {
-            typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
+            // handle user-set schema-type
+            if (property.getSchemaType() != null) {
+                typeName = getTypeName(property, property.getActualType(), schema);                    
+            } else {
+                // default to xsd:ID
+                typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
+            }
         } else if (property.isXmlIdRef()) {
             typeName = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
         } else {

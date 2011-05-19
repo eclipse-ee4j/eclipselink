@@ -13,6 +13,10 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype;
 
 public class EmployeeWithAnnotation {
+    @javax.xml.bind.annotation.XmlAttribute
+    @javax.xml.bind.annotation.XmlID
+    @javax.xml.bind.annotation.XmlSchemaType(name="string")
+    public int id;
     @javax.xml.bind.annotation.XmlElement
     @javax.xml.bind.annotation.XmlSchemaType(name="date")
     public java.util.GregorianCalendar hireDate;

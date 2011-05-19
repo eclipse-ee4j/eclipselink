@@ -4,6 +4,7 @@
       <xsd:sequence>
          <xsd:element name="hireDate" type="xsd:date" minOccurs="0" />
       </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:string" use="required" />
    </xsd:complexType>
    <xsd:element name="employee" type="employee" />
 </xsd:schema>

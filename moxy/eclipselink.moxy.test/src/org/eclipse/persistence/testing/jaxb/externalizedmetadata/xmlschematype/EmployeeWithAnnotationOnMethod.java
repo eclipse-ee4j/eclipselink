@@ -8,11 +8,29 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - December 08/2009 - 2.0 - Initial implementation
+ * dmccann - 2.3 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype;
 
-public class Employee {
-    public int id;
-    public java.util.GregorianCalendar hireDate;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class EmployeeWithAnnotationOnMethod {
+    private int id;
+    private java.util.GregorianCalendar hireDate;
+
+
+    @javax.xml.bind.annotation.XmlElement
+    @javax.xml.bind.annotation.XmlID
+    @javax.xml.bind.annotation.XmlSchemaType(name="string")
+    public int getId() {
+        return id;
+    }
+
+    @javax.xml.bind.annotation.XmlElement
+    @javax.xml.bind.annotation.XmlSchemaType(name="date")
+    public java.util.GregorianCalendar getHireDate() {
+        return hireDate;
+    }
 }

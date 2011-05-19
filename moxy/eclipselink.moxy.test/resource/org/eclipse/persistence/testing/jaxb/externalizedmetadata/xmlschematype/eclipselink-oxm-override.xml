@@ -5,6 +5,9 @@
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype.Employee">
             <xml-root-element name="employee" />
             <java-attributes>
+                <xml-attribute java-attribute="id" xml-id="true">
+                    <xml-schema-type name="string" />
+                </xml-attribute>
                 <xml-element java-attribute="hireDate">
                     <xml-schema-type name="date" />
                 </xml-element>
