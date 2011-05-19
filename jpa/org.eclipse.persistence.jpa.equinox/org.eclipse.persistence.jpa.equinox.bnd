@@ -1,4 +1,4 @@
-Private-Package: org.eclipse.persistence*;-noimport:=true,
+Private-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
 Implementation-Version: ${version.string}
 JPA-Initializer: org.eclipse.persistence.internal.jpa.deployment.osgi.equinox.EquinoxInitializer
 Specification-Vendor: ${specification.vendor}
@@ -7,7 +7,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
-Fragment-Host: org.eclipse.persistence.jpa.osgi;bundle-version="${version.string}"
+Fragment-Host: org.eclipse.persistence.jpa.osgi;bundle-version="${release.version}"
 Bundle-Version: ${version.string}
 Include-Resource:\
  ${equinox.2.base.dir}/about.html,\

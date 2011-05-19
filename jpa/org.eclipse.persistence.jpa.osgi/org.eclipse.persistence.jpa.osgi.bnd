@@ -5,8 +5,8 @@ Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink OSGi Integration (deprecatated, non Gemini)
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
-Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}", \
- org.eclipse.persistence.jpa;bundle-version="${version.string}"
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${release.version}",\
+ org.eclipse.persistence.jpa;bundle-version="${release.version}"
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
