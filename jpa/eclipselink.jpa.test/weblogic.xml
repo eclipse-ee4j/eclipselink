@@ -117,6 +117,14 @@
             <replacefilter token="%%DBURL%%" value="${db.url}"/>
             <replacefilter token="%%DBUSR%%" value="${db.user}"/>
             <replacefilter token="%%DBPWD%%" value="${db.pwd}"/>
+            <replacefilter token="%%DB2DRV%%" value="${db2.driver}"/>
+            <replacefilter token="%%DB2URL%%" value="${db2.url}"/>
+            <replacefilter token="%%DB2USR%%" value="${db2.user}"/>
+            <replacefilter token="%%DB2PWD%%" value="${db2.pwd}"/>
+            <replacefilter token="%%DB3DRV%%" value="${db3.driver}"/>
+            <replacefilter token="%%DB3URL%%" value="${db3.url}"/>
+            <replacefilter token="%%DB3USR%%" value="${db3.user}"/>
+            <replacefilter token="%%DB3PWD%%" value="${db3.pwd}"/>
         </replace>
     </target>
 
@@ -193,6 +201,30 @@
     <target name="weblogic-domain-reset">
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_domain_reset.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Create three datasources aginst Oracle, DB2 and MySQL for running composite test models. -->
+    <target name="weblogic-composite-setup">
+        <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="wls_composite*.py"/>
+        </copy>
+        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_composite_setup.py"/>
+            <classpath>
+                <path refid="wls.path"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Remove three datasources created for running composite test models. -->
+    <target name="weblogic-composite-reset">
+        <java classname="weblogic.WLST" fork="yes">
+            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_composite_reset.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>

@@ -2063,7 +2063,7 @@
     </target>
 
     <!-- Build server test ejb jar. -->
-    <target name="server-build-ejb-jar" depends="config-trunk, config-flat">
+    <target name="server-build-ejb-jar" depends="config-trunk, config-flat, check-model-name">
         <property file="${user.home}/${server.name}.properties"/>
         <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <mkdir dir="${eclipselink.jpa.test}/stage/META-INF"/>
@@ -2270,14 +2270,125 @@
     <target name="create-ejb-jar" depends="create-ejb-jar-without-static-weaving,create-ejb-jar-with-static-weaving"/>
 
     <target name="create-ejb-jar-without-static-weaving" unless="is.static.server.weaving">
+        <antcall target="remove-composite-classes"/>
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
     </target>
 
     <target name="create-ejb-jar-with-static-weaving" if="is.static.server.weaving">
+        <antcall target="remove-composite-classes"/>
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/unwoven-${MODEL_NAME}_ejb.jar" basedir="stage"/>
         <antcall target="run-weaver-server-test" inheritRefs="true">
             <param name="MODEL_NAME" value="${MODEL_NAME}"/>
         </antcall>
+    </target>
+    <target name="check-model-name">
+        <condition property="run.jpa.composite.advanced">
+            <equals arg1="${MODEL_NAME}" arg2="eclipselink-composite-advanced-model" />
+        </condition>
+        <condition property="run.jpa.composite.advanced.member1">
+            <equals arg1="${MODEL_NAME}" arg2="eclipselink-composite-advanced-model-member_1" />
+        </condition>
+        <condition property="run.jpa.composite.advanced.member2">
+            <equals arg1="${MODEL_NAME}" arg2="eclipselink-composite-advanced-model-member_2" />
+        </condition>
+        <condition property="run.jpa.composite.advanced.member3">
+            <equals arg1="${MODEL_NAME}" arg2="eclipselink-composite-advanced-model-member_3" />
+        </condition>
+        <condition property="run.jpa.xml.extended.or.not.composite.advanced">
+            <or>
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-composite-advanced-model" />
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-extended-composite-advanced-model" />
+            </or>
+        </condition>
+        <condition property="run.jpa.xml.extended.or.not.composite.advanced.member1">
+            <or>
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-composite-advanced-model-member_1" />
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-extended-composite-advanced-model-member_1" />
+            </or>
+        </condition>
+        <condition property="run.jpa.xml.extended.or.not.composite.advanced.member2">
+            <or>
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-composite-advanced-model-member_2" />
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-extended-composite-advanced-model-member_2" />
+            </or>
+        </condition>
+        <condition property="run.jpa.xml.extended.or.not.composite.advanced.member3">
+            <or>
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-composite-advanced-model-member_3" />
+                <equals arg1="${MODEL_NAME}" arg2="eclipselink-xml-extended-composite-advanced-model-member_3" />
+            </or>
+        </condition>
+    </target>
+
+    <target name="remove-composite-classes">
+        <antcall target="remove-composite-memeber-classes"/>
+        <antcall target="remove-composite-memeber23-classes"/>
+        <antcall target="remove-composite-memeber13-classes"/>
+        <antcall target="remove-composite-memeber12-classes"/>
+        <antcall target="remove-xml-composite-memeber-classes"/>
+        <antcall target="remove-xml-composite-memeber23-classes"/>
+        <antcall target="remove-xml-composite-memeber13-classes"/>
+        <antcall target="remove-xml-composite-memeber12-classes"/>
+    </target>
+
+    <target name="remove-composite-advanced-main-classes">
+        <delete>
+            <fileset dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced" includes="*.class"/>
+        </delete>
+    </target>
+
+    <target name="remove-xml-composite-advanced-main-classes">
+        <delete>
+            <fileset dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced" includes="*.class"/>
+        </delete>
+    </target>
+
+    <target name="remove-composite-memeber-classes" if="run.jpa.composite.advanced">
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_1"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_2"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_3"/>
+    </target>
+
+    <target name="remove-composite-memeber23-classes" if="run.jpa.composite.advanced.member1">
+        <antcall target="remove-composite-advanced-main-classes"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_2"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_3"/>
+    </target>
+
+    <target name="remove-composite-memeber13-classes" if="run.jpa.composite.advanced.member2">
+        <antcall target="remove-composite-advanced-main-classes"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_1"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_3"/>
+    </target>
+
+    <target name="remove-composite-memeber12-classes" if="run.jpa.composite.advanced.member3">
+        <antcall target="remove-composite-advanced-main-classes"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_1"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/composite/advanced/member_2"/>
+    </target>
+
+    <target name="remove-xml-composite-memeber-classes" if="run.jpa.xml.extended.or.not.composite.advanced">
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"/>
+    </target>
+
+    <target name="remove-xml-composite-memeber23-classes" if="run.jpa.xml.extended.or.not.composite.advanced.member1">
+        <antcall target="remove-xml-composite-advanced-main-classes"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"/>
+    </target>
+
+    <target name="remove-xml-composite-memeber13-classes" if="run.jpa.xml.extended.or.not.composite.advanced.member2">
+        <antcall target="remove-xml-composite-advanced-main-classes"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"/>
+    </target>
+
+    <target name="remove-xml-composite-memeber12-classes" if="run.jpa.xml.extended.or.not.composite.advanced.member3">
+        <antcall target="remove-xml-composite-advanced-main-classes"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"/>
+        <delete dir="stage/org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"/>
     </target>
 
     <target name="copy-criteria-api-canonical-model" if="is.criteria.server.test">
@@ -2313,9 +2424,162 @@
     <!-- Build the client jar, ejb jar, and ear. -->
     <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
 
+    <target name="server-build-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-composite-advanced-jar,server-build-composite-advanced-ear"/>
+
+    <target name="server-build-xml-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-xml-composite-advanced-jar,server-build-xml-composite-advanced-ear"/>
+
+    <target name="server-build-xml-extended-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-xml-extended-composite-advanced-jar,server-build-xml-extended-composite-advanced-ear"/>
+
+    <target name="server-build-ejb-composite-advanced-jar">
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/composite/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-composite-advanced-model"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_1"/>
+            <param name="MODEL_NAME" value="eclipselink-composite-advanced-model-member_1"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_2"/>
+            <param name="MODEL_NAME" value="eclipselink-composite-advanced-model-member_2"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_3"/>
+            <param name="MODEL_NAME" value="eclipselink-composite-advanced-model-member_3"/>
+        </antcall>
+    </target>
+
+    <target name="server-build-composite-advanced-ear">
+        <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
+        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="eclipselink-composite-advanced-model">
+            <include name="*.xml"/>
+        </replace>
+        <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}" 
+               includes ="eclipselink-composite-advanced-model_ejb.jar,
+                   eclipselink-composite-advanced-model-member_1_ejb.jar,
+                   eclipselink-composite-advanced-model-member_2_ejb.jar,
+                   eclipselink-composite-advanced-model-member_3_ejb.jar"/>
+        </ear>
+        <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
+    </target>
+
+    <target name="server-build-ejb-xml-composite-advanced-jar">
+        <copyfile src="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_1/orm.xml" dest="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_1/server/orm.xml" forceoverwrite="true"/>
+
+        <copyfile src="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_2/orm.xml" dest="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_2/server/orm.xml" forceoverwrite="true"/>
+
+        <copyfile src="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_3/orm.xml" dest="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_3/server/orm.xml" forceoverwrite="true"/>
+
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model-member_1"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model-member_2"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model-member_3"/>
+        </antcall>
+
+        <delete file="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_1/server/orm.xml" failonerror="false"/>
+        <delete file="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_2/server/orm.xml" failonerror="false"/>
+        <delete file="${eclipselink.jpa.test}/resource/eclipselink-xml-composite-advanced-model-member_3/server/orm.xml" failonerror="false"/>
+    </target>
+
+    <target name="server-build-xml-composite-advanced-ear">
+        <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
+        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="eclipselink-xml-composite-advanced-model">
+            <include name="*.xml"/>
+        </replace>
+        <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}" 
+               includes ="eclipselink-xml-composite-advanced-model_ejb.jar,
+                   eclipselink-xml-composite-advanced-model-member_1_ejb.jar,
+                   eclipselink-xml-composite-advanced-model-member_2_ejb.jar,
+                   eclipselink-xml-composite-advanced-model-member_3_ejb.jar"/>
+        </ear>
+        <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
+    </target>
+
+    <target name="server-build-ejb-xml-extended-composite-advanced-jar">
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-xml-extended-composite-advanced-model-member_1/server" overwrite="true" failonerror="false">
+           <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/eclipselink-xml-extended-composite-advanced-model-member_1/" includes="eclipselink-orm.xml, advanced-extended-entity-mappings_1.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-xml-extended-composite-advanced-model-member_2/server" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/eclipselink-xml-extended-composite-advanced-model-member_2/" includes="eclipselink-orm.xml, advanced-extended-entity-mappings_2.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-xml-extended-composite-advanced-model-member_3/server" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/eclipselink-xml-extended-composite-advanced-model-member_3/" includes="eclipselink-orm.xml, advanced-extended-entity-mappings_3.xml"/>
+        </copy>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model-member_1"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model-member_2"/>
+        </antcall>
+        <antcall target="server-build-ejb-jar" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"/>
+            <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model-member_3"/>
+        </antcall>
+        <delete>
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-extended-composite-advanced-model-member_1/server/"
+                includes="eclipselink-orm.xml, advanced-extended-entity-mappings_1.xml"/>
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-extended-composite-advanced-model-member_2/server/"
+                includes="eclipselink-orm.xml, advanced-extended-entity-mappings_2.xml"/>
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-extended-composite-advanced-model-member_3/server/"
+                includes="eclipselink-orm.xml,advanced-extended-entity-mappings_3.xml"/>
+        </delete>
+    </target>
+
+    <target name="server-build-xml-extended-composite-advanced-ear">
+        <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
+        <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="eclipselink-xml-extended-composite-advanced-model">
+            <include name="*.xml"/>
+        </replace>
+        <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}" 
+               includes ="eclipselink-xml-extended-composite-advanced-model_ejb.jar,
+                   eclipselink-xml-extended-composite-advanced-model-member_1_ejb.jar,
+                   eclipselink-xml-extended-composite-advanced-model-member_2_ejb.jar,
+                   eclipselink-xml-extended-composite-advanced-model-member_3_ejb.jar"/>
+        </ear>
+        <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
+    </target>
     <!-- Build, deploy and run a test suite on the server. -->
     <target name="server-run-all" depends="detect-os,set-server-properties">
         <antcall target="server-build" inheritRefs="true"/>
+        <antcall target="server-deploy-runtest-undeploy" inheritRefs="true"/>
+    </target>
+
+    <target name="server-run-all-composite-advanced" depends="detect-os,set-server-properties">
+        <antcall target="server-build-composite-advanced" inheritRefs="true"/>
+        <antcall target="server-deploy-runtest-undeploy" inheritRefs="true"/>
+    </target>
+
+    <target name="server-run-all-xml-composite-advanced" depends="detect-os,set-server-properties">
+        <antcall target="server-build-xml-composite-advanced" inheritRefs="true"/>
+        <antcall target="server-deploy-runtest-undeploy" inheritRefs="true"/>
+    </target>
+
+    <target name="server-run-all-xml-extended-composite-advanced" depends="detect-os,set-server-properties">
+        <antcall target="server-build-xml-extended-composite-advanced" inheritRefs="true"/>
+        <antcall target="server-deploy-runtest-undeploy" inheritRefs="true"/>
+    </target>
+
+    <target name="server-deploy-runtest-undeploy" depends="detect-os,set-server-properties">
         <antcall target="recover-server-sessionbeans" inheritRefs="true"/>
         <antcall target="cleanup-non-jta-ds-servertest" inheritRefs="true"/>
         <antcall target="server-deploy" inheritRefs="true">
@@ -2946,41 +3210,42 @@
     </target>
 
     <target name="server-test-composite-advanced">
-        <antcall target="server-run-all" inheritRefs="true">
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>
+        <antcall target="server-run-all-composite-advanced" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="composite-advanced"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/composite/advanced"/>
-            <param name="MODEL_NAME" value="eclipselink-composite-advanced-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/composite/advanced"/>
             <param name="TEST_NAME" value="eclipselink-composite-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-composite-advanced-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite"/>
-            <param name="MODEL_DIR_CONTAINED_1" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/contained_1"/>
-            <param name="MODEL_NAME_CONTAINED_1" value="eclipselink-composite-advanced-model-contained_1"/>
-            <param name="MODEL_DIR_CONTAINED_2" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/contained_2"/>
-            <param name="MODEL_NAME_CONTAINED_2" value="eclipselink-composite-advanced-model-contained_2"/>
-            <param name="MODEL_DIR_CONTAINED_3" value="org/eclipse/persistence/testing/models/jpa/composite/advanced/contained_3"/>
-            <param name="MODEL_NAME_CONTAINED_3" value="eclipselink-composite-advanced-model-contained_3"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
     </target>
 
     <target name="server-test-xml-composite-advanced">
-        <antcall target="server-run-all" inheritRefs="true">
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>
+        <antcall target="server-run-all-xml-composite-advanced" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="xml-composite-advanced"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite"/>
-            <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/xml/composite"/>
             <param name="TEST_NAME" value="eclipselink-xml-composite-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-xml-composite-advanced-model"/>
-            <!-- TODO param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.composite.compositeJUnitTestSuite"/-->
-            <param name="MODEL_DIR_CONTAINED_1" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/contained_1"/>
-            <param name="MODEL_NAME_CONTAINED_1" value="eclipselink-xml-composite-advanced-model-contained_1"/>
-            <param name="MODEL_DIR_CONTAINED_2" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/contained_2"/>
-            <param name="MODEL_NAME_CONTAINED_2" value="eclipselink-xml-composite-advanced-model-contained_2"/>
-            <param name="MODEL_DIR_CONTAINED_3" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/contained_3"/>
-            <param name="MODEL_NAME_CONTAINED_3" value="eclipselink-xml-composite-advanced-model-contained_3"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced.EntityMappingsAdvancedJUnitTestCase"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
+    </target>
+
+    <target name="server-test-xml-extended-composite-advanced">
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>
+        <antcall target="server-run-all-xml-extended-composite-advanced" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="xml-extended-composite-advanced"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/xml/composite"/>
+            <param name="TEST_NAME" value="eclipselink-xml-extended-composite-advanced-model"/>
+            <param name="EAR_NAME" value="eclipselink-xml-extended-composite-advanced-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced.EntityMappingsAdvancedJUnitTestCase"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
     </target>
 
     <target name="server-test-oracle-timestamptz" if="is.oracle">
