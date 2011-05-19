@@ -124,13 +124,6 @@ public class OverloadedPLSQLStoredProcedureSimpleArgsTestSuite extends WebServic
             getTransformer().transform(src, result);
             Document resultDoc = (Document)result.getNode();
             Document controlDoc = xmlParser.parse(new StringReader(TEST_RESPONSE));
-            /*
-            System.out.println("\n---- Control Document ----");
-            System.out.println(DBWSTestHelper.documentToString(controlDoc));
-            System.out.println("---- Result Document ----");
-            System.out.println(DBWSTestHelper.documentToString(resultDoc));
-            System.out.println("\n");
-            */
             assertTrue("control document not same as instance document",
                 comparer.isNodeEqual(controlDoc, resultDoc));
         }
@@ -160,13 +153,6 @@ public class OverloadedPLSQLStoredProcedureSimpleArgsTestSuite extends WebServic
             getTransformer().transform(src, result);
             Document resultDoc = (Document)result.getNode();
             Document controlDoc = xmlParser.parse(new StringReader(TEST_RESPONSE_2));
-            /*
-            System.out.println("\n---- Control Document ----");
-            System.out.println(DBWSTestHelper.documentToString(controlDoc));
-            System.out.println("---- Result Document ----");
-            System.out.println(DBWSTestHelper.documentToString(resultDoc));
-            System.out.println("\n");
-            */
             assertTrue("control document not same as instance document",
                 comparer.isNodeEqual(controlDoc, resultDoc));
         }
