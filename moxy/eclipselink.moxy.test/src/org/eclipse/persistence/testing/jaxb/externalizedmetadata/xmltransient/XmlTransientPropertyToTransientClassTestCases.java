@@ -79,6 +79,7 @@ public class XmlTransientPropertyToTransientClassTestCases extends JAXBTestCases
 	        "<java-types>" +
 	        "<java-type name='org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.ContactInfo'>" + 
 	        "<java-attributes>" +
+	        "<xml-element java-attribute='phoneNumber'/>" +	        
 	        "<xml-transient java-attribute='addresses'/>" +
 	        "<xml-transient java-attribute='primaryAddress'/>" +	      
 	        "</java-attributes> " +

@@ -1579,34 +1579,39 @@ public class AnnotationsProcessor {
         }
 
         for (Iterator<JavaField> fieldIt = cls.getDeclaredFields().iterator(); fieldIt.hasNext();) {
+        	Property property = null;
             JavaField nextField = fieldIt.next();
             int modifiers = nextField.getModifiers();
-            if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
-                if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
-                    if (!Modifier.isStatic(modifiers)) {
-                        if ((onlyExplicit && hasJAXBAnnotations(nextField)) || !onlyExplicit) {
-                            Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
-                            properties.add(property);
+
+            if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
+                if (!Modifier.isStatic(modifiers)) {
+                    if ((onlyExplicit && hasJAXBAnnotations(nextField)) || !onlyExplicit) {
+                         property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
+                         properties.add(property);
+                    }
+                } else if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
+                    try {
+                        property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
+                        Object value = ((JavaFieldImpl) nextField).get(null);
+                        if (value != null) {
+                            String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                            property.setFixedValue(stringValue);
+                        } else {
+                            property.setWriteOnly(true);
                         }
-                    } else if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
-                        try {
-                            Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
-                            Object value = ((JavaFieldImpl) nextField).get(null);
-                            if (value != null) {
-                                String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
-                                property.setFixedValue(stringValue);
-                            } else {
-                                property.setWriteOnly(true);
-                            }
-                            properties.add(property);
-                        } catch (ClassCastException e) {
-                            // do Nothing
-                        } catch (IllegalAccessException e) {
-                            // do Nothing
-                        }
+                        properties.add(property);
+                    } catch (ClassCastException e) {
+                        // do Nothing
+                    } catch (IllegalAccessException e) {
+                        // do Nothing
                     }
                 }
-            } else {
+            }
+
+            if (helper.isAnnotationPresent(nextField, XmlTransient.class)) {
+            	if(property != null){
+            		property.setTransient(true);
+            	}
                 // If a property is marked transient ensure it doesn't exist in
                 // the propOrder
                 List<String> propOrderList = Arrays.asList(info.getPropOrder());
@@ -2579,19 +2584,24 @@ public class AnnotationsProcessor {
             // - in the case of a collision if one is annotated use it,
             // otherwise
             // use the field.
-            HashMap fieldPropertyMap = getPropertyMapFromArrayList(publicFieldProperties);
-
+            HashMap<String, Property> fieldPropertyMap = getPropertyMapFromArrayList(publicFieldProperties);       
             for (int i = 0; i < publicMethodProperties.size(); i++) {
                 Property next = (Property) publicMethodProperties.get(i);
-                if (fieldPropertyMap.get(next.getPropertyName()) == null) {
+                Property fieldProp = fieldPropertyMap.get(next.getPropertyName());                
+                if ( fieldProp == null) {
                     publicFieldProperties.add(next);
+                } else if (fieldProp.isTransient()){
+                    //bug 346461 - if a public field is transient and the public methods are not
+                    // then use the method
+                	publicFieldProperties.remove(fieldProp);
+                	publicFieldProperties.add(next);
                 }
             }
             return publicFieldProperties;
         }
     }
 
-    public HashMap getPropertyMapFromArrayList(ArrayList<Property> props) {
+    public HashMap<String, Property> getPropertyMapFromArrayList(ArrayList<Property> props) {
         HashMap propMap = new HashMap(props.size());
 
         Iterator propIter = props.iterator();

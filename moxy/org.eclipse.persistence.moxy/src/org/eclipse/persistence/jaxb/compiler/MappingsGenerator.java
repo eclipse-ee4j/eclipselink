@@ -2019,7 +2019,7 @@ public class MappingsGenerator {
         List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
         for (int i = 0; i < propertiesInOrder.size(); i++) {
             Property next = propertiesInOrder.get(i);
-            if (next != null){
+            if (next != null && !next.isTransient()){
                 DatabaseMapping mapping = generateMapping(next, descriptor, namespaceInfo);
                 if (next.isVirtual()) {
                     VirtualAttributeAccessor accessor = new VirtualAttributeAccessor();

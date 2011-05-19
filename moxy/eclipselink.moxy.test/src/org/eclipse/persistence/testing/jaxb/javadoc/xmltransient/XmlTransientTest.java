@@ -35,6 +35,7 @@ public class XmlTransientTest extends JAXBTestCases{
 		example.country = "Canada";
 		example.city = "Ottawa";
 		example.street = "Mean Street";
+		example.setSomeTransientProperty("someValue");
         return example;
 	}
 

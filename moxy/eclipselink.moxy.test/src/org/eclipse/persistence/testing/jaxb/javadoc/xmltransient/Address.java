@@ -22,8 +22,20 @@ public class Address {
     @XmlTransient
     public String name;
     
+    @XmlTransient
+    public String someTransientProperty;
+    
     public String getName(){
     	return name;
+    }
+    
+    @XmlTransient
+    public void setSomeTransientProperty(String someTransientProperty){
+    	this.someTransientProperty = someTransientProperty;
+    }
+    
+    public String getSomeTransientProperty(){
+    	return someTransientProperty;
     }
    
     public void setName(String name){

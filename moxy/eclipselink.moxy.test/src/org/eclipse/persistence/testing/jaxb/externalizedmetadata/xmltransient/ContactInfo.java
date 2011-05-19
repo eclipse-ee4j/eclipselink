@@ -21,7 +21,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name="contact-info")
 public class ContactInfo {
     public List<Address> addresses;
-    public Address primaryAddress;   
+    public Address primaryAddress;
+    @XmlTransient
     public String phoneNumber;   
     
     public ContactInfo(){
