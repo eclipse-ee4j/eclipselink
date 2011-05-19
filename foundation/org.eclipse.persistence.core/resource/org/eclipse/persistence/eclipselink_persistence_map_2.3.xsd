@@ -2974,6 +2974,11 @@
               <xsd:documentation>The name of the stored procedure.</xsd:documentation>
             </xsd:annotation>
           </xsd:element>
+          <xsd:element minOccurs="0" name="cursor-output-procedure" type="xsd:boolean">
+            <xsd:annotation>
+              <xsd:documentation>Define the call to use a cursor output parameter to define the result set.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
           <xsd:element minOccurs="0" name="arguments">
             <xsd:annotation>
               <xsd:documentation>The list of input and output arguments.</xsd:documentation>

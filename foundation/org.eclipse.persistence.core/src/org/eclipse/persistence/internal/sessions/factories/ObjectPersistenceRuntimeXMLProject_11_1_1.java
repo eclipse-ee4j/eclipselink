@@ -1070,6 +1070,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         XMLDirectMapping cursorOutputProcedureMapping = new XMLDirectMapping();
         cursorOutputProcedureMapping.setAttributeName("isCursorOutputProcedure");
         cursorOutputProcedureMapping.setXPath(getPrimaryNamespaceXPath() + "cursor-output-procedure/text()");
+        cursorOutputProcedureMapping.setNullValue(false);
         descriptor.addMapping(cursorOutputProcedureMapping);
 
         XMLCompositeCollectionMapping storedProcArgumentsMapping = new XMLCompositeCollectionMapping();
@@ -1736,6 +1737,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          procedureNameMapping.setAttributeName("procedureName");
          procedureNameMapping.setXPath(getPrimaryNamespaceXPath() + "procedure-name/text()");
          descriptor.addMapping(procedureNameMapping);
+
+         XMLDirectMapping cursorOutputProcedureMapping = new XMLDirectMapping();
+         cursorOutputProcedureMapping.setAttributeName("isCursorOutputProcedure");
+         cursorOutputProcedureMapping.setXPath(getPrimaryNamespaceXPath() + "cursor-output-procedure/text()");
+         cursorOutputProcedureMapping.setNullValue(false);
+         descriptor.addMapping(cursorOutputProcedureMapping);
 
          XMLCompositeCollectionMapping argumentsMapping = new XMLCompositeCollectionMapping();
          argumentsMapping.setAttributeName("arguments");

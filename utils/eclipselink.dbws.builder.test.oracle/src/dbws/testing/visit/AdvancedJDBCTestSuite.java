@@ -114,7 +114,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<bind-all-parameters>true</bind-all-parameters>" +
               "<call xsi:type=\"stored-function-call\">" +
                  "<procedure-name>ADVANCED_OBJECT_DEMO.ECHOREGION</procedure-name>" +
-                 "<cursor-output-procedure>false</cursor-output-procedure>" +
                  "<arguments>" +
                     "<argument>" +
                        "<procedure-argument-name>AREGION</procedure-argument-name>" +
@@ -326,7 +325,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<bind-all-parameters>true</bind-all-parameters>" +
              "<call xsi:type=\"stored-function-call\">" +
                 "<procedure-name>advanced_object_demo.ECHOEMPADDRESS</procedure-name>" +
-                "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
                    "<argument>" +
                       "<procedure-argument-name>ANEMPADDRESS</procedure-argument-name>" +
@@ -662,7 +660,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<bind-all-parameters>true</bind-all-parameters>" +
              "<call xsi:type=\"stored-function-call\">" +
                 "<procedure-name>advanced_object_demo.ECHOEMPOBJECT</procedure-name>" +
-                "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
                    "<argument>" +
                       "<procedure-argument-name>ANEMPOBJECT</procedure-argument-name>" +
@@ -1097,7 +1094,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<bind-all-parameters>true</bind-all-parameters>" +
              "<call xsi:type=\"stored-function-call\">" +
                 "<procedure-name>another_advanced_demo.BUILDEMPARRAY</procedure-name>" +
-                "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
                    "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
@@ -1333,7 +1329,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<bind-all-parameters>true</bind-all-parameters>" +
              "<call xsi:type=\"stored-function-call\">" +
                 "<procedure-name>SF_TBL1</procedure-name>" +
-                "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
                    "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
@@ -1489,7 +1484,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<bind-all-parameters>true</bind-all-parameters>" +
              "<call xsi:type=\"stored-function-call\">" +
                 "<procedure-name>BUILDTBL5</procedure-name>" +
-                "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
                    "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
@@ -1715,7 +1709,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<bind-all-parameters>true</bind-all-parameters>" +
              "<call xsi:type=\"stored-function-call\">" +
                 "<procedure-name>BUILDARECORD</procedure-name>" +
-                "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
                    "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
@@ -2120,7 +2113,6 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<bind-all-parameters>true</bind-all-parameters>" +
                  "<call xsi:type=\"stored-function-call\">" +
                     "<procedure-name>BUILDCRECORD</procedure-name>" +
-                    "<cursor-output-procedure>false</cursor-output-procedure>" +
                     "<arguments>" +
                        "<argument>" +
                           "<procedure-argument-name>NUM</procedure-argument-name>" +
