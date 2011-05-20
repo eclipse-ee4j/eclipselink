@@ -372,8 +372,6 @@ public class ExtensibilityTests extends JUnitTestCase {
         Employee emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
         try{
             JpaHelper.refreshMetadata(emf, null);
-            System.gc();
-            assertNotNull(sesRef.get());
             assertTrue(emp.getAddress().getCity().equals("Herestowm"));
             em.close();
             em = null;
