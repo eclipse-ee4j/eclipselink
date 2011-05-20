@@ -167,10 +167,20 @@ public class SessionBroker extends DatabaseSessionImpl {
      * if applicable releases accessor.
      */
     public void releaseJTSConnection() {
+        RuntimeException exception = null;
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
             AbstractSession session = (AbstractSession)sessionEnum.next();
-            session.releaseJTSConnection();
+            try {
+                session.releaseJTSConnection();
+            } catch (RuntimeException ex) {
+                if (exception == null) {
+                    exception = ex;
+                }
+            }
+        }
+        if (exception != null) {
+            throw exception;
         }
     }
 
@@ -844,12 +854,39 @@ public class SessionBroker extends DatabaseSessionImpl {
         if (isClientSessionBroker()) {
             log(SessionLog.FINER, SessionLog.CONNECTION, "releasing_client_session_broker");
         }
+        RuntimeException exception = null;
         AbstractSession session;
         for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
             session = (AbstractSession)enumtr.next();
-            session.release();
+            try {
+                session.release();
+            } catch (RuntimeException ex) {
+                if (exception == null) {
+                    exception = ex;
+                }
+            }
         }
         super.release();
+        if (exception != null) {
+            throw exception;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * A query execution failed due to an invalid query.
+     * Re-connect and retry the query.
+     */
+    @Override
+    public Object retryQuery(DatabaseQuery query, AbstractRecord row, DatabaseException databaseException, int retryCount, AbstractSession executionSession) {
+        // If not in a transaction and has a write connection, must release it if invalid.
+        if (isClientSessionBroker()) {
+            for (Iterator it = getSessionsByName().values().iterator(); it.hasNext();) {
+                ClientSession clientSession = (ClientSession)it.next();
+                clientSession.getParent().releaseInvalidClientSession(clientSession);
+            }
+        }
+        return super.retryQuery(query, row, databaseException, retryCount, executionSession);
     }
 
     /**

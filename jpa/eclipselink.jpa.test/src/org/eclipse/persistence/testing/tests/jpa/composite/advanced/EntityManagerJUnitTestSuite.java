@@ -201,8 +201,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         List<String> tests = new ArrayList<String>();
         tests.add("testClearEntityManagerWithoutPersistenceContext");
-//TODO        tests.add("testDeadConnectionFailover");
-//TODO        tests.add("testDeadPoolFailover");
+        tests.add("testDeadConnectionFailover");
+        tests.add("testDeadPoolFailover");
         tests.add("testDeleteEmployee");
         tests.add("testDeleteEmployee_with_status_enum_collection_instantiated");
         // Man Woman tests.add("testDeleteMan");
@@ -358,10 +358,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testFlushMode");
         tests.add("testEmbeddedNPE");
         tests.add("testCollectionAddNewObjectUpdate");
-//TODO        tests.add("testEMCloseAndOpen");
-//TODO        tests.add("testEMFactoryCloseAndOpen");
-//TODO        tests.add("testPostAcquirePreReleaseEvents_InternalConnectionPool");
-//TODO        tests.add("testPostAcquirePreReleaseEvents_ExternalConnectionPool");
+        tests.add("testEMCloseAndOpen");
+        tests.add("testEMFactoryCloseAndOpen");
+        tests.add("testPostAcquirePreReleaseEvents_InternalConnectionPool");
+        tests.add("testPostAcquirePreReleaseEvents_ExternalConnectionPool");
         tests.add("testNoPersistOnCommit");
         tests.add("testNoPersistOnCommitProperties");
 // can't join different dbs tests.add("testForUOWInSharedCacheWithBatchQueryHint");
@@ -398,6 +398,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testSetStartTime");
         tests.add("testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping");
         tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
+// Vegetable        tests.add("testCharFieldDefaultNullValue");
+        tests.add("testMergeNewReferencingOldChanged");
+        // Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache.
+        // Uncomment testMergeNewReferencingOldChangedClearCache when the bug is fixed.
+        // tests.add("testMergeNewReferencingOldChangedClearCache");
         tests.add("testAggregateObjectMappingReferenceDescriptor");
         if (!isJPA10()) {
             tests.add("testDetachNull");
@@ -8364,7 +8369,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         SessionBroker broker = ((JpaEntityManagerFactory)getEntityManagerFactory()).getSessionBroker();
         // Testing ExclusiveConnectionMode.Isolated requires a session that has isolated descriptors.
         ServerSession ss = (ServerSession)broker.getSessionForClass(Address.class);
-                
+        
         // make sure the id hasn't been already used - it will be assigned to a new object (in case sequencing is not used). 
         int id = (ss.getNextSequenceNumberValue(Address.class)).intValue();
         
@@ -10447,35 +10452,61 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue(emp.getPeriod() != empShared.getPeriod());
     }
     
-    public void testRollbackBroker() {
+	// Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache
+    // Uncomment the test when the bug is fixed
+/*    public void testMergeNewReferencingOldChangedClearCache() {
+        internalTestMergeNewReferencingOldChanged(true);
+    }*/
+    // Bug 340802 - merge problem: existing object referenced by new not cascade merged 
+    public void testMergeNewReferencingOldChanged() {
+        internalTestMergeNewReferencingOldChanged(false);
+    }
+    void internalTestMergeNewReferencingOldChanged(boolean shouldClearCache) {
+        // create and persist Address
+        Address address = new Address();
+        address.setCountry("Original");
+        address.setProvince("Original");
+        address.setPostalCode("Original");
+        address.setCity("Original");
+        address.setStreet("Original");
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        try {
-            Employee emp = new Employee();
-            emp.setFirstName("testRollbackBroker");
-            em.persist(emp);
-            em.flush();
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
+        em.persist(address);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        if (shouldClearCache) {
+            clearCache();
         }
-    }
-
-    public void testMustBeCompositeMember() {
-        String errorMsg = "";
-        for(int i=1; i<=3; i++) {
-            String puName = "composite-advanced-member_" + Integer.toString(i);
-            try {
-                EntityManager em = createEntityManager(puName);
-                errorMsg += "createEntityManager(" + puName +") succeeded - should have failed\n";
-            } catch (IllegalStateException ex){
-                // expected exception
-            } catch (Exception exWrong) {
-                errorMsg += "createEntityManager(" + puName +") threw wrong exception: " + exWrong +"\n";
-            } finally {
-                closeEntityManagerFactory(puName);
-            }
-        }
+        
+        // alter the Address, Create a new Employee, assign it the Address, merge the Employee in the new EntityManager.
+        address.setCountry("Updated");
+        address.setProvince("Updated");
+        address.setPostalCode("Updated");
+        address.setCity("Updated");
+        address.setStreet("Updated");
+        Employee emp = new Employee();
+        emp.setFirstName("New");
+        emp.setAddress(address);
+        address.getEmployees().add(emp);
+        em = createEntityManager();
+        beginTransaction(em);
+        Employee empMerged = em.merge(emp);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        Address addressMerged = empMerged.getAddress();
+        
+        // compare would fail unless emp also has id and version
+        emp.setId(empMerged.getId());
+        emp.setVersion(1);
+        compareObjects(emp, empMerged);
+        // compare would fail unless address has the same version as addressMerged
+        address.setVersion(addressMerged.getVersion());
+        compareObjects(address, addressMerged);
+        
+        verifyObjectInCacheAndDatabase(empMerged);
+        verifyObjectInCacheAndDatabase(addressMerged);
     }
 
     public void testAggregateObjectMappingReferenceDescriptor() {
@@ -10510,6 +10541,37 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    public void testRollbackBroker() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Employee emp = new Employee();
+            emp.setFirstName("testRollbackBroker");
+            em.persist(emp);
+            em.flush();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testMustBeCompositeMember() {
+        String errorMsg = "";
+        for(int i=1; i<=3; i++) {
+            String puName = "composite-advanced-member_" + Integer.toString(i);
+            try {
+                EntityManager em = createEntityManager(puName);
+                errorMsg += "createEntityManager(" + puName +") succeeded - should have failed\n";
+            } catch (IllegalStateException ex){
+                // expected exception
+            } catch (Exception exWrong) {
+                errorMsg += "createEntityManager(" + puName +") threw wrong exception: " + exWrong +"\n";
+            } finally {
+                closeEntityManagerFactory(puName);
+            }
+        }
+    }
+
     // Bug 332581 - SessionBroker session event issues to consider and resolve when implementing JPA Session Broker
     public void testSessionEventListeners() {        
         EntityManager em = createEntityManager();

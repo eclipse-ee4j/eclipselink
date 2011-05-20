@@ -1442,7 +1442,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // The number of SQL statements been prepared need be stored into UOW 
             // before any exception being thrown.
             copyStatementsCountIntoProperties();
-            rollbackTransaction(commitTransaction);
+            try {
+                rollbackTransaction(commitTransaction);
+            } catch (RuntimeException ignore) {
+                // Ignore
+            }
             if (hasExceptionHandler()) {
                 getExceptionHandler().handleException(exception);
             } else {
@@ -1502,10 +1506,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             try {
                                 commitTransaction();
                             } catch (RuntimeException commitFailed) {
-                                rollbackTransaction();
+                                try {
+                                    rollbackTransaction();
+                                } catch (RuntimeException ignore) {
+                                    // Ignore
+                                }
                                 throw commitFailed;
                             } catch (Error error) {
-                                rollbackTransaction();
+                                try {
+                                    rollbackTransaction();
+                                } catch (RuntimeException ignore) {
+                                    // Ignore
+                                }
                                 throw error;
                             }
                         }
@@ -1569,12 +1581,20 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 commitTransaction();
             } catch (RuntimeException exception) {
                 releaseWriteLocks();
-                rollbackTransaction(false);
+                try {
+                    rollbackTransaction(false);
+                } catch (RuntimeException ignore) {
+                    // Ignore
+                }
                 setLifecycle(WriteChangesFailed);
                 handleException(exception);
             } catch (Error throwable) {
                 releaseWriteLocks();
-                rollbackTransaction();
+                try {
+                    rollbackTransaction();
+                } catch (RuntimeException ignore) {
+                    // Ignore
+                }
                 throw throwable;
             }
         }
@@ -4367,11 +4387,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             this.eventManager.preReleaseUnitOfWork();
         }
 
+        RuntimeException exception = null;
         // If already succeeded at a writeChanges(), then transaction still open.
         // As already issued sql must at least mark the external transaction for rollback only.        
         if (this.lifecycle == CommitTransactionPending) {
             if (hasModifications() || wasTransactionBegunPrematurely()) {
-                rollbackTransaction(false);
+                try {
+                    rollbackTransaction(false);
+                } catch (RuntimeException ex) {
+                    exception = ex;
+                }
                 setWasTransactionBegunPrematurely(false);
             }
         } else if (wasTransactionBegunPrematurely() && (!this.isNestedUnitOfWork)) {
@@ -4389,6 +4414,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.parent.releaseUnitOfWork(this);
         if (this.eventManager != null) {
             this.eventManager.postReleaseUnitOfWork();
+        }
+        if (exception != null) {
+            throw exception;
         }
     }
 

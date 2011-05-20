@@ -224,7 +224,12 @@ public class DriverWrapper implements Driver {
         }
         String decodedUrl = decodeUrl(url);
         if(driverName != null) {
-            ConnectionWrapper conn = new ConnectionWrapper(getDriver().connect(decodedUrl, info));
+            Connection internalConn = getDriver().connect(decodedUrl, info);
+            if (internalConn == null) {
+                // The driver should return "null" if it realizes it is the wrong kind of driver to connect to the given URL.
+                return null;
+            }
+            ConnectionWrapper conn = new ConnectionWrapper(internalConn);
             connections.add(conn);
             return conn;
         } else {
