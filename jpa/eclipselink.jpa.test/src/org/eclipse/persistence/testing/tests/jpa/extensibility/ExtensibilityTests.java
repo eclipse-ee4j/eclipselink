@@ -364,7 +364,6 @@ public class ExtensibilityTests extends JUnitTestCase {
     
     public void testUntriggerVHOnDetached(){
         EntityManagerFactory emf = getEntityManagerFactory();
-        WeakReference<ServerSession> sesRef = new WeakReference<ServerSession>(((JpaEntityManagerFactory)emf).unwrap().getServerSession());
         EntityManager em = emf.createEntityManager();
         
         persistEmployeeData(em);
@@ -379,8 +378,6 @@ public class ExtensibilityTests extends JUnitTestCase {
             em.close();
             em = null;
             emp = null;
-            System.gc();
-            assertNull(sesRef.get());
         } finally {
             em = emf.createEntityManager();
             beginTransaction(em);
