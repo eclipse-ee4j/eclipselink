@@ -5077,8 +5077,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             UnitOfWork uow1;
             uow1 = em.unwrap(org.eclipse.persistence.sessions.UnitOfWork.class);
             assertEquals("Does not return unit of work", uow, uow1);
-            JpaEntityManager jem1;
-            jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
+            JpaEntityManager jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
             assertEquals("Does not return underlying entitymanager", jem, jem1);
             // TODO: This should be supported.
             /*Connection conn1;
@@ -8777,15 +8776,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     public void testEMCloseAndOpen(){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
         Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
-            return;
-        }
-        
-        if (isOnServer()) {
-            // Uses DefaultConnector.
             return;
         }
         
@@ -8995,9 +8994,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
         
+        ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
+        
         // cache the driver name
-        String driverName = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession().getLogin().getDriverClassName();
-        String originalConnectionString = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession().getLogin().getConnectionString();
+        String driverName = ss.getLogin().getDriverClassName();
+        String originalConnectionString = ss.getLogin().getConnectionString();
         
         // disconnect the session
         closeEntityManagerFactory();

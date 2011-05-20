@@ -108,6 +108,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -166,7 +167,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 
 import org.eclipse.persistence.testing.framework.ConnectionWrapper;
-//import org.eclipse.persistence.testing.framework.DriverWrapper;
+import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
@@ -200,8 +201,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         List<String> tests = new ArrayList<String>();
         tests.add("testClearEntityManagerWithoutPersistenceContext");
-// Using DriverWrapper breaks SessionBroker tests.add("testDeadConnectionFailover");
-// Using DriverWrapper breaks SessionBroker tests.add("testDeadPoolFailover");
+//TODO        tests.add("testDeadConnectionFailover");
+//TODO        tests.add("testDeadPoolFailover");
         tests.add("testDeleteEmployee");
         tests.add("testDeleteEmployee_with_status_enum_collection_instantiated");
         // Man Woman tests.add("testDeleteMan");
@@ -357,12 +358,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testFlushMode");
         tests.add("testEmbeddedNPE");
         tests.add("testCollectionAddNewObjectUpdate");
-        // Using DriverWrapper breaks SessionBroker
-        // tests.add("testEMCloseAndOpen");
-        // should be reworked for SessionBroker
-        // tests.add("testEMFactoryCloseAndOpen");
-// Using DriverWrapper breaks SessionBroker tests.add("testPostAcquirePreReleaseEvents_InternalConnectionPool");
-// Using DriverWrapper breaks SessionBroker tests.add("testPostAcquirePreReleaseEvents_ExternalConnectionPool");
+//TODO        tests.add("testEMCloseAndOpen");
+//TODO        tests.add("testEMFactoryCloseAndOpen");
+//TODO        tests.add("testPostAcquirePreReleaseEvents_InternalConnectionPool");
+//TODO        tests.add("testPostAcquirePreReleaseEvents_ExternalConnectionPool");
         tests.add("testNoPersistOnCommit");
         tests.add("testNoPersistOnCommitProperties");
 // can't join different dbs tests.add("testForUOWInSharedCacheWithBatchQueryHint");
@@ -386,7 +385,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testSequenceObjectDefinition");
         tests.add("testTemporalOnClosedEm");
         tests.add("testTransientMapping");
-// can't join different tables        tests.add("testUpdateAllProjects");
+// can't join different dbs        tests.add("testUpdateAllProjects");
 // can't join different dbs        tests.add("testUpdateUsingTempStorage");
         tests.add("testWeaving");
         tests.add("testRefreshForFlush");
@@ -557,7 +556,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     	// The NPE would be thrown if the EnityManager 
     	// was created through the constructor
     	String errorMsg = "";
-    	EntityManagerFactory em = new EntityManagerFactoryImpl(JUnitTestCase.getServerSession());
+    	EntityManagerFactory em = new EntityManagerFactoryImpl(getSessionBroker());
         try {
         	em.close();
         } catch (RuntimeException ex) {
@@ -847,7 +846,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             
             //Ensure shared cache being used.
-            boolean isIsolated = ((EntityManagerImpl)em1).getServerSession().getClassDescriptorForAlias("Address").isIsolated();
+            boolean isIsolated = ((EntityManagerImpl)em1).getSessionBroker().getClassDescriptorForAlias("Address").isIsolated();
             if(isIsolated){
                 throw new Exception("This test should use non-isolated cache setting class descriptor for test.");
             }
@@ -2994,7 +2993,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
             clearCache();
-            counter = new QuerySQLTracker(getServerSession());
+            counter = new QuerySQLTracker(getSessionBroker());
             em = createEntityManager();
             beginTransaction(em);
             // Count SQL.
@@ -8307,7 +8306,753 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("The Employee wasn't updated correctly in the db");
         }
     }
+    
+    // Bug 256296: Reconnect fails when session loses connectivity
+    static class AcquireReleaseListener extends SessionEventAdapter {
+        HashSet<Accessor> acquiredReadConnections = new HashSet(); 
+        HashSet<Accessor> acquiredWriteConnections = new HashSet(); 
+        public void postAcquireConnection(SessionEvent event) {
+            Accessor accessor = (Accessor)event.getResult();
+            Session session = event.getSession();
+            if(session.isServerSession()) {
+                acquiredReadConnections.add(accessor);
+                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireReadConnection: " + nAcquredReadConnections(), (Object[])null, accessor, false);
+            } else {
+                acquiredWriteConnections.add(accessor);
+                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.acquireWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
+            }
+        }
+        public void preReleaseConnection(SessionEvent event) {
+            Accessor accessor = (Accessor)event.getResult();
+            Session session = event.getSession();
+            if(session.isServerSession()) {
+                acquiredReadConnections.remove(accessor);
+                ((ServerSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseReadConnection: " + nAcquredReadConnections(), (Object[])null, accessor, false);
+            } else {
+                acquiredWriteConnections.remove(accessor);
+                ((ClientSession)session).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireReleaseListener.releaseWriteConnection: " + nAcquredWriteConnections(), (Object[])null, accessor, false);
+            }
+        }
+        int nAcquredReadConnections() {
+            return acquiredReadConnections.size(); 
+        }
+        int nAcquredWriteConnections() {
+            return acquiredWriteConnections.size(); 
+        }
+        void clear() {
+            acquiredReadConnections.clear(); 
+            acquiredWriteConnections.clear(); 
+        }
+    }
+    public void testEMCloseAndOpen(){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  getPlatform(Address.class).isSybase());
+        if (getPlatform(Address.class).isSymfoware()) {
+            getDatabaseSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
+                            + "Symfoware platform doesn't support failover.");
+            return;
+        }
+        
+        // normally false; set to true for debug output for just this single test
+        boolean shouldForceFinest = false;
+        int originalLogLevel = -1; 
+        
+        SessionBroker broker = ((JpaEntityManagerFactory)getEntityManagerFactory()).getSessionBroker();
+        // Testing ExclusiveConnectionMode.Isolated requires a session that has isolated descriptors.
+        ServerSession ss = (ServerSession)broker.getSessionForClass(Address.class);
+                
+        // make sure the id hasn't been already used - it will be assigned to a new object (in case sequencing is not used). 
+        int id = (ss.getNextSequenceNumberValue(Address.class)).intValue();
+        
+        // cache the original driver name and connection string.
+        String originalDriverName = ss.getLogin().getDriverClassName();
+        String originalConnectionString = ss.getLogin().getConnectionString();
+        
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalConnectionString);
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(originalDriverName);
+        
+        // The test need to connect with the new driver and connection string.
+        // That could be done in JPA:
+        //    // close the existing emf
+        //    closeEntityManagerFactory();
+        //    HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        //    properties.put(PersistenceUnitProperties.JDBC_DRIVER, newDriverName);
+        //    properties.put(PersistenceUnitProperties.JDBC_URL, newConnectionString);
+        //    emf = getEntityManagerFactory(properties);
+        // However this only works in case closeEntityManagerFactory disconnects the original SessionBroker,
+        // which requires the factory to be the only one using the persistence unit.
+        // Alternative - and faster - approach is to disconnect the original session directly
+        // and then reconnected it with the new driver and connection string.        
+        broker.logout();
+        ss.getLogin().setDriverClassName(newDriverName);
+        ss.getLogin().setConnectionString(newConnectionString);
+        AcquireReleaseListener listener = new AcquireReleaseListener();  
+        ss.getEventManager().addListener(listener);
+        if(shouldForceFinest) {
+            if(broker.getLogLevel() != SessionLog.FINEST) {
+                originalLogLevel = broker.getLogLevel();
+                broker.setLogLevel(SessionLog.FINEST);
+            }
+        }
+        broker.login();
+        
+        String errorMsg = "";
+        // test several configurations:
+        // all exclusive connection modes
+        String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+        
+        // Workaround for Bug 309881 - problems with CallQueryMechanism.prepareCall method
+        // Because of this bug em.find ignores QueryHints.JDBC_TIMEOUT,
+        // have to set it directly into the Descriptor's ReadObjectQuery.
+        // This should be removed from the test after the bug is fixed.
+        ReadObjectQuery addressFindQuery = broker.getDescriptor(Address.class).getQueryManager().getReadObjectQuery(); 
+        int originalQueryTimeout = addressFindQuery.getQueryTimeout();
+        if(originalQueryTimeout > 0) {
+            ss.setQueryTimeoutDefault(0);
+            addressFindQuery.setQueryTimeout(0);
+            // The same bug 309881 requires the query to be reprepaired for queryTimeOut to be set on its call
+            addressFindQuery.setIsPrepared(false);
+            addressFindQuery.checkPrepare(ss, null);
+        }
+        
+        // currently reconnection is not attempted if query time out is not zero.
+        HashMap noTimeOutHint = new HashMap(1);
+        noTimeOutHint.put(QueryHints.JDBC_TIMEOUT, 0);
+        try {
+            
+            for(int i=0; i<3; i++) {
+                String exclusiveConnectionMode = exclusiveConnectionModeArray[i];                
+                for(int j=0; j<2; j++) {
+                    // either using or not using sequencing 
+                    boolean useSequencing = (j==0);                   
+                    broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: " + (useSequencing ? "sequencing" : "no sequencing"), (Object[])null, null, false);
+                    HashMap emProperties = new HashMap(1);
+                    HashMap mapOfProperties = new HashMap(1);
+                    emProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, mapOfProperties);
+                    HashMap memberProperties = new HashMap();
+                    mapOfProperties.put(ss.getName(), memberProperties);
+                    memberProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                    EntityManager em = createEntityManager(emProperties);
+                    
+                    em.find(Address.class, 1, noTimeOutHint);
+                    Address address = null;
+                    boolean hasUnexpectedlyCommitted = false;
+                    try{
+                        em.getTransaction().begin();
+    
+                        // imitate disconnecting from network:
+                        // driver's connect method and any method on any connection will throw SQLException
+                        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.breakDriver(); DriverWrapper.breakOldConnections();", (Object[])null, null, false);
+                        DriverWrapper.breakDriver();
+                        DriverWrapper.breakOldConnections();
+                        
+                        address = new Address();
+                        if(!useSequencing) {
+                            address.setID(id);
+                        }
+                        em.persist(address);
+                        em.getTransaction().commit();
+    
+                        // should never get here - all connections should be broken.
+                        hasUnexpectedlyCommitted = true;
+                        errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = " + ss.getLogin().getDriverClassName() + "; url = " + ss.getLogin().getConnectionString();
+                    } catch (Exception e){
+                        // expected exception - connection is invalid and cannot be reconnected.
+                        if(em.getTransaction().isActive()) {
+                            em.getTransaction().rollback();
+                        }            
+                    }
+                    closeEntityManager(em);
+                    
+                    // verify - all connections should be released
+                    String localErrorMsg = "";
+                    if(listener.nAcquredWriteConnections() > 0) {
+                        localErrorMsg += "writeConnection not released; ";
+                    }
+                    if(listener.nAcquredReadConnections() > 0) {
+                        localErrorMsg += "readConnection not released; ";
+                    }
+                    if(localErrorMsg.length() > 0) {
+                        localErrorMsg = exclusiveConnectionMode + " useSequencing="+useSequencing + ": " + localErrorMsg;
+                        errorMsg += localErrorMsg;
+                        listener.clear();
+                    }
+                    
+                    // imitate  reconnecting to network:
+                    // driver's connect method will now work, all newly acquired connections will work, too;
+                    // however the old connections cached in the connection pools are still invalid.
+                    DriverWrapper.repairDriver();
+                    broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: DriverWrapper.repairDriver();", (Object[])null, null, false);
+                    
+                    boolean failed = true;
+                    try {
+                        em = createEntityManager();
+                        em.find(Address.class, 1);
+                        if(!hasUnexpectedlyCommitted) {
+                            em.getTransaction().begin();
+                            address = new Address();
+                            if(!useSequencing) {
+                                address.setID(id);
+                            }
+                            em.persist(address);
+                            em.getTransaction().commit();
+                            failed = false;
+                        }
+                    } finally {
+                        if(failed) {
+                            // This should not happen
+                            if(em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }
+                            closeEntityManager(em);
+                            
+                            if(errorMsg.length() > 0) {
+                                broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testEMCloseAndOpen: errorMsg: " + "\n" + errorMsg, (Object[])null, null, false);
+                            }
+                        }
+                    }
+    
+                    // clean-up
+                    // remove the inserted object
+                    em.getTransaction().begin();
+                    em.remove(address);
+                    em.getTransaction().commit();
+                    closeEntityManager(em);                
+                }
+            }
 
+        } finally {
+
+            // Workaround for Bug 309881 - problems with CallQueryMechanism.prepareCall method
+            // Because of this bug em.find ignores QueryHints.JDBC_TIMEOUT,
+            // have to set it directly into the Descriptor's ReadObjectQuery.
+            // This should be removed from the test after the bug is fixed.
+            if(originalQueryTimeout > 0) {
+                ss.setQueryTimeoutDefault(originalQueryTimeout);
+                addressFindQuery.setQueryTimeout(originalQueryTimeout);
+                // The same bug 309881 requires the query to be reprepaired for queryTimeOut to be set on its call
+                addressFindQuery.setIsPrepared(false);
+                addressFindQuery.checkPrepare(ss, null);
+            }
+            // clear the driver wrapper
+            DriverWrapper.clear();
+    
+            // reconnect the session using the original driver and connection string
+            ss.getEventManager().removeListener(listener);
+            broker.logout();
+            if(originalLogLevel >= 0) {
+                broker.setLogLevel(originalLogLevel);
+            }
+            ss.getLogin().setDriverClassName(originalDriverName);
+            ss.getLogin().setConnectionString(originalConnectionString);
+            broker.login();
+            
+            if(errorMsg.length() > 0) {
+                fail(errorMsg);
+            }
+        }
+    }
+
+    // Bug 256284: Closing an EMF where the database is unavailable results in deployment exception on redeploy
+    public void testEMFactoryCloseAndOpen(){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  getPlatform(Employee.class).isSybase());
+        
+        SessionBroker broker = ((JpaEntityManagerFactory)getEntityManagerFactory()).getSessionBroker();
+        ServerSession ss = (ServerSession)broker.getSessionForClass(Employee.class);
+        
+        // cache the driver name
+        String driverName = ss.getLogin().getDriverClassName();
+        String originalConnectionString = ss.getLogin().getConnectionString();
+        
+        // disconnect the session
+        closeEntityManagerFactory();
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(driverName);
+        
+        // connect the session using the wrapper driver
+        HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
+        Map mapOfProperties = (Map)properties.get(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES);
+        if (mapOfProperties == null) {
+            mapOfProperties = new HashMap(1);
+        } else {
+            mapOfProperties = new HashMap(mapOfProperties);
+        }
+        properties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, mapOfProperties);
+        Map memberProperties = (Map)mapOfProperties.get(ss.getName());
+        if (memberProperties == null) {
+            memberProperties = new HashMap(2);
+        } else {
+            memberProperties = new HashMap(memberProperties);
+        }
+        mapOfProperties.put(ss.getName(), memberProperties);
+        memberProperties.put(PersistenceUnitProperties.JDBC_DRIVER, DriverWrapper.class.getName());
+        memberProperties.put(PersistenceUnitProperties.JDBC_URL, DriverWrapper.codeUrl(originalConnectionString));
+        getEntityManagerFactory(properties);
+
+        // this connects the session
+        EntityManager em = createEntityManager();
+        
+        // imitate disconnecting from network:
+        // driver's connect method and any method on any connection will throw SQLException
+        DriverWrapper.breakDriver();
+        DriverWrapper.breakOldConnections();
+
+        // close factory
+        try {
+            closeEntityManagerFactory();
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
+        }
+
+        String errorMsg = "";
+        //reconnect the session
+        em = createEntityManager();
+        //verify connections
+        Iterator<ConnectionPool> itPools = ((ServerSession)((EntityManagerImpl)em).getSessionBroker().getSessionForName(ss.getName())).getConnectionPools().values().iterator();
+        while (itPools.hasNext()) {
+            ConnectionPool pool = itPools.next();
+            int disconnected = 0;
+            for (int i=0; i < pool.getConnectionsAvailable().size(); i++) {
+                if (!(pool.getConnectionsAvailable().get(i)).isConnected()) {
+                    disconnected++;
+                }
+            }
+            if (disconnected > 0) {
+                errorMsg += pool.getName() + " has " + disconnected + " connections; ";
+            }
+        }
+        if (errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    // Bug 332683 - Problems with ClientSession connections
+    // testPostAcquirePreReleaseEvents tests verifies that postAcquireConnection and preReleaseConnection events are risen correctly.
+    // The test is run in two configurations: with Internal and External connection pools.
+    // Each test loops through several modes, the mode is a cartesian product of the following 3 choices: 
+    //    pooled  vs  non-pooled modes;
+    //    ExclusiveConnectionModes: Transactional  vs  Isolated  vs  Always;
+    //    persist and commit  vs   read, begin transaction, persist, commit  vs  uow.beginEarlyTransaction, persist, commit.  
+    static class AcquireRepair_ReleaseBreak_Listener extends SessionEventAdapter {
+        HashSet<Accessor> acquiredConnections = new HashSet();
+        public void postAcquireConnection(SessionEvent event) {
+            Accessor accessor = (Accessor)event.getResult();
+            if(acquiredConnections.contains(accessor)) {
+                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: risen two or more times in a row;", (Object[])null, accessor, false);
+                throw new RuntimeException("AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: risen two or more times in a row");
+            } else {
+                acquiredConnections.add(accessor);
+            }
+            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.postAcquireConnection: repairConnection;", (Object[])null, accessor, false);
+            ((ConnectionWrapper)accessor.getConnection()).repairConnection();
+        }
+        public void preReleaseConnection(SessionEvent event) {
+            Accessor accessor = (Accessor)event.getResult();
+            if(!acquiredConnections.contains(accessor)) {
+                ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: postAcquireConnection has not been risen;", (Object[])null, accessor, false);
+                throw new RuntimeException("AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: postAcquireConnection has not been risen");
+            } else {
+                acquiredConnections.remove(accessor);
+            }
+            ((AbstractSession)event.getSession()).log(SessionLog.FINEST, SessionLog.CONNECTION, "AcquireRepair_ReleaseBreak_Listener.preReleaseConnection: breakConnection;", (Object[])null, accessor, false);
+            ((ConnectionWrapper)accessor.getConnection()).breakConnection();
+        }
+        public boolean hasAcquiredConnections() {
+            return !acquiredConnections.isEmpty();
+        }
+    }
+    public void testPostAcquirePreReleaseEvents_InternalConnectionPool() {
+        internalTestPostAcquirePreReleaseEvents(false);
+    }
+    public void testPostAcquirePreReleaseEvents_ExternalConnectionPool() {
+        internalTestPostAcquirePreReleaseEvents(true);
+    }
+    public void internalTestPostAcquirePreReleaseEvents(boolean useExternalConnectionPool){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        SessionBroker broker = ((JpaEntityManagerFactory)getEntityManagerFactory()).getSessionBroker();
+        // Testing ExclusiveConnectionMode.Isolated requires a session that has isolated descriptors.
+        ServerSession ss = (ServerSession)broker.getSessionForClass(Address.class);
+        
+        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
+        if (ss.getPlatform().isSymfoware()) {
+            broker.logMessage("Test testPostAcquirePreReleaseEvents skipped for this platform, "
+                            + "Symfoware platform doesn't support failover.");
+            return;
+        }
+        
+        // normally false; set to true for debug output for just this single test
+        boolean shouldForceFinest = false;
+        int originalLogLevel = -1; 
+        
+        // cache the original driver name and connection string.
+        String originalDriverName = ss.getLogin().getDriverClassName();
+        String originalConnectionString = ss.getLogin().getConnectionString();
+        // cache original connector for external connection pool case
+        Connector originalConnector = ss.getLogin().getConnector();
+        
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalConnectionString);
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(originalDriverName);
+        
+        // The test need to connect with the new driver and connection string.
+        // That could be done in JPA:
+        //    // close the existing emf
+        //    closeEntityManagerFactory();
+        //    HashMap properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
+        //    properties.put(PersistenceUnitProperties.JDBC_DRIVER, newDriverName);
+        //    properties.put(PersistenceUnitProperties.JDBC_URL, newConnectionString);
+        //    emf = getEntityManagerFactory(properties);
+        // However this only works in case closeEntityManagerFactory disconnects the original ServerSession,
+        // which requires the factory to be the only one using the persistence unit.
+        // Alternative - and faster - approach is to disconnect the original session directly
+        // and then reconnected it with the new driver and connection string.        
+        broker.logout();
+        if(useExternalConnectionPool) {
+            ss.getLogin().setConnector(new JNDIConnector(new DataSourceImpl(null, newConnectionString, null, null)));
+            ss.getLogin().useExternalConnectionPooling();
+        } else {
+            ss.getLogin().setDriverClassName(newDriverName);
+            ss.getLogin().setConnectionString(newConnectionString);
+        }
+        if(shouldForceFinest) {
+            if(broker.getLogLevel() != SessionLog.FINEST) {
+                originalLogLevel = broker.getLogLevel();
+                broker.setLogLevel(SessionLog.FINEST);
+            }
+        }
+        // switch off reconnection
+        boolean originalIsConnectionHealthValidatedOnError = ss.getLogin().isConnectionHealthValidatedOnError();
+        ss.getLogin().setConnectionHealthValidatedOnError(false);
+
+        // Using DriverWrapper the listener will repair connection on postAcquireConnection and break it on preReleaseConnection event.
+        // Also the listener will verify that neither postAcquireConnection nor preReleaseConnection events not called two in a row.
+        AcquireRepair_ReleaseBreak_Listener listener = new AcquireRepair_ReleaseBreak_Listener();  
+        ss.getEventManager().addListener(listener);
+        
+        // Driver's connect method will still work, however any method called on any acquired connection will throw SQLException.
+        // On postAcquireConnection connection will be repaired; on preReleaseConnection - broken again.
+        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: DriverWrapper.breakOldConnections(); DriverWrapper.breakNewConnections();", (Object[])null, null, false);
+        DriverWrapper.breakOldConnections();
+        DriverWrapper.breakNewConnections();
+        
+        broker.login();
+        
+        // test several configurations:
+        // all exclusive connection modes
+        String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+
+        // Normally the user wishing to use not pooled connection would specify user and password properties (and possibly db url, too).
+        // However if these properties have the same values that those in the logging then no non pooled connection is created and the pooled one used instead.
+        // In the test we must use the same user as already in the session login (don't know any others) that forces usage of ConnectionPolicy property.
+        ConnectionPolicy connectionPolicy = (ConnectionPolicy)ss.getDefaultConnectionPolicy().clone();
+        connectionPolicy.setLogin(ss.getLogin());
+        connectionPolicy.setPoolName(null);
+                
+        try {
+            HashMap emProperties = new HashMap(1);
+            HashMap mapOfProperties = new HashMap(1);
+            emProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, mapOfProperties);
+            HashMap memberProperties = new HashMap();
+            mapOfProperties.put(ss.getName(), memberProperties);
+            String mode, pooled = "", exclusiveConnectionMode;
+            for(int k=0; k<2; k++) {
+                if(k==1) {
+                    //use non pooled connections
+                    pooled = "non pooled; ";
+                    memberProperties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
+                }
+                for(int i=0; i<exclusiveConnectionModeArray.length; i++) {
+                    exclusiveConnectionMode = exclusiveConnectionModeArray[i];
+                    for(int j=0; j<3; j++) {
+                        // either beginning early transaction or not 
+                        boolean shouldBeginEarlyTransaction = (j==2);
+                        boolean shouldReadBeforeTransaction = (j==1);
+                        mode = pooled + exclusiveConnectionMode + (shouldBeginEarlyTransaction ? "; beginEarlyTransaction" : "") + (shouldReadBeforeTransaction ? "; readBeforeTransaction" : "");
+                        broker.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: " + mode, (Object[])null, null, false);
+                        memberProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                        EntityManager em = createEntityManager(emProperties);
+                        
+                        if(shouldReadBeforeTransaction) {
+                            em.find(Address.class, 1);
+                        }
+                        Address address = null;
+                        try{
+                            em.getTransaction().begin();
+                            
+                            if(shouldBeginEarlyTransaction) {
+                                em.unwrap(UnitOfWorkImpl.class).beginEarlyTransaction();
+                            }
+        
+                            address = new Address();
+                            address.setCountry("testPostAcquirePreReleaseEvents");
+                            em.persist(address);
+                            em.getTransaction().commit();    
+                        } finally {
+                            // expected exception - connection is invalid and cannot be reconnected.
+                            if(em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }    
+                            closeEntityManager(em);
+                        }
+                        
+                        if(listener.hasAcquiredConnections()) {
+                            fail(mode + " connection was not passed to preReleaseConnection event");
+                        }                    
+                    }
+                }
+            }
+
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
+    
+            // reconnect the session using the original driver and connection string
+            ss.getEventManager().removeListener(listener);
+            // clean-up
+            // remove the inserted object
+            EntityManager em = createEntityManager(); 
+            em.getTransaction().begin();
+            try {
+                em.createQuery("DELETE FROM Address a WHERE a.country = 'testPostAcquirePreReleaseEvents'");
+                em.getTransaction().commit();
+            } finally {
+                if(em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }            
+                closeEntityManager(em);
+
+                broker.logout();
+                if(originalLogLevel >= 0) {
+                    broker.setLogLevel(originalLogLevel);
+                }
+                if(useExternalConnectionPool) {
+                    ss.getLogin().setConnector(originalConnector);
+                    ss.getLogin().dontUseExternalConnectionPooling();
+                } else {
+                    ss.getLogin().setDriverClassName(originalDriverName);
+                    ss.getLogin().setConnectionString(originalConnectionString);
+                }
+                ss.getLogin().setConnectionHealthValidatedOnError(originalIsConnectionHealthValidatedOnError);
+                broker.login();
+            }
+        }
+    }
+
+    /**
+     * Tests that queries will be re-executed if a query fails from a dead connection. 
+     */
+    public void testDeadConnectionFailover(){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        if (getPlatform(Address.class).isSybase()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Sybase Driver does not work with DriverWrapper.");
+            return;
+        }
+        if (getPlatform(Address.class).isSymfoware()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Symfoware platform doesn't support failover.");
+            return;
+        }
+        
+        SessionBroker broker = ((JpaEntityManagerFactory)getEntityManagerFactory()).getSessionBroker();
+        // Testing ExclusiveConnectionMode.Isolated requires a session that has isolated descriptors.
+        ServerSession server = (ServerSession)broker.getSessionForClass(Address.class);
+                
+        // cache the original driver name and connection string.
+        String originalDriverName = server.getLogin().getDriverClassName();
+        String originalConnectionString = server.getLogin().getConnectionString();
+        
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalConnectionString);
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(originalDriverName);
+        
+        broker.logout();
+        server.getLogin().setDriverClassName(newDriverName);
+        server.getLogin().setConnectionHealthValidatedOnError(true);
+        server.getLogin().setConnectionString(newConnectionString);
+        broker.login();        
+        try {
+            EntityManager em = createEntityManager();
+            em.createQuery("Select a from Address a").getResultList();
+            em.getTransaction().begin();
+            em.persist(new Address());
+            em.getTransaction().commit();
+            // test several configurations:
+            // all exclusive connection modes
+            String[] exclusiveConnectionModes = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+            for (String exclusiveConnectionMode : exclusiveConnectionModes) {
+                try {
+                    HashMap emProperties = new HashMap(1);
+                    HashMap mapOfProperties = new HashMap(1);
+                    emProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, mapOfProperties);
+                    HashMap memberProperties = new HashMap(1);
+                    mapOfProperties.put(server.getName(), memberProperties);
+                    memberProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                    em = createEntityManager(emProperties);
+                    List<Address> addresses = em.createQuery("Select a from Address a").getResultList();
+                    DriverWrapper.breakOldConnections();
+                    List<Address> addresses2 = em.createQuery("Select a from Address a").getResultList();
+                    if (addresses.size() != addresses2.size()) {
+                        fail("Query results not the same after failure.");
+                    }
+                    DriverWrapper.breakOldConnections();
+                    em.getTransaction().begin();
+                    em.persist(new Address());
+                    DriverWrapper.breakOldConnections();
+                    em.getTransaction().commit();
+                    em.getTransaction().begin();
+                    em.persist(new Address());
+                    em.flush();
+                    DriverWrapper.breakOldConnections();
+                    boolean failed = false;
+                    try {
+                        em.getTransaction().commit();
+                    } catch (Exception shouldFail) {
+                        failed = true;
+                    }
+                    if (!failed) {
+                        fail("Retry should not work in a transaction.");
+                    }
+                } catch (Exception failed) {
+                    fail("Retry did not work, mode:" + exclusiveConnectionMode + " error:" + failed);
+                } finally {
+                    try {
+                        em.close();
+                    } catch (Exception ignore) {}
+                }
+            }
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
+    
+            // reconnect the session using the original driver and connection string
+            broker.logout();
+            server.getLogin().setDriverClassName(originalDriverName);
+            server.getLogin().setConnectionString(originalConnectionString);
+            broker.login();
+        }
+    }
+
+    /**
+     * Tests that a dead connection pool can fail over. 
+     */
+    public void testDeadPoolFailover(){
+        if (isOnServer()) {
+            // Uses DefaultConnector.
+            return;
+        }
+        
+        if (getPlatform(Address.class).isSybase()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Sybase Driver does not work with DriverWrapper.");
+            return;
+        }
+        if (getPlatform(Address.class).isSymfoware()) {
+            warning("Test testDeadConnectionFailover skipped for this platform, Symfoware platform doesn't support failover.");
+            return;
+        }
+        
+        SessionBroker broker = ((JpaEntityManagerFactory)getEntityManagerFactory()).getSessionBroker();
+        // Testing ExclusiveConnectionMode.Isolated requires a session that has isolated descriptors.
+        ServerSession server = (ServerSession)broker.getSessionForClass(Address.class);
+                
+        // cache the original driver name and connection string.
+        DatabaseLogin originalLogin = (DatabaseLogin)server.getLogin().clone();
+        
+        // the new driver name and connection string to be used by the test
+        String newDriverName = DriverWrapper.class.getName();
+        String newConnectionString = DriverWrapper.codeUrl(originalLogin.getConnectionString());
+        
+        // setup the wrapper driver
+        DriverWrapper.initialize(originalLogin.getDriverClassName());
+        
+        broker.logout();
+        server.getLogin().setDriverClassName(newDriverName);
+        server.getLogin().setConnectionHealthValidatedOnError(true);
+        server.getLogin().setConnectionString(newConnectionString);
+        server.addConnectionPool("backup", originalLogin, 2, 4);
+        server.getDefaultConnectionPool().addFailoverConnectionPool("backup");
+        server.getReadConnectionPool().addFailoverConnectionPool("backup");
+        broker.login();
+        try {
+            EntityManager em = createEntityManager();
+            em.createQuery("Select a from Address a").getResultList();
+            em.getTransaction().begin();
+            em.persist(new Address());
+            em.getTransaction().commit();
+            // test several configurations:
+            // all exclusive connection modes
+            String[] exclusiveConnectionModes = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
+            for (String exclusiveConnectionMode : exclusiveConnectionModes) {
+                try {
+                    HashMap emProperties = new HashMap(1);
+                    HashMap mapOfProperties = new HashMap(1);
+                    emProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, mapOfProperties);
+                    HashMap memberProperties = new HashMap(1);
+                    mapOfProperties.put(server.getName(), memberProperties);
+                    memberProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
+                    em = createEntityManager(emProperties);
+                    List<Address> addresses = em.createQuery("Select a from Address a").getResultList();
+                    DriverWrapper.breakAll();
+                    List<Address> addresses2 = em.createQuery("Select a from Address a").getResultList();
+                    if (addresses.size() != addresses2.size()) {
+                        fail("Query results not the same after failure.");
+                    }
+                    em.getTransaction().begin();
+                    em.persist(new Address());
+                    em.getTransaction().commit();
+                    em.getTransaction().begin();
+                    em.persist(new Address());
+                    em.flush();
+                    em.getTransaction().commit();
+                } catch (Exception failed) {
+                    fail("Retry did not work, mode:" + exclusiveConnectionMode + " error:" + failed);
+                } finally {
+                    try {
+                        em.close();
+                    } catch (Exception ignore) {}
+                }
+            }
+        } finally {
+            // clear the driver wrapper
+            DriverWrapper.clear();
+    
+            // reconnect the session using the original driver and connection string
+            broker.logout();
+            server.getConnectionPools().remove("backup");
+            server.getDefaultConnectionPool().setFailoverConnectionPools(new ArrayList());
+            server.getReadConnectionPool().setFailoverConnectionPools(new ArrayList());
+            server.getLogin().setDriverClassName(originalLogin.getDriverClassName());
+            server.getLogin().setConnectionString(originalLogin.getConnectionString());
+            broker.login();
+        }
+    }
+    
     /**
      * This test ensures that the eclipselink.batch query hint works. It tests
      * two things.

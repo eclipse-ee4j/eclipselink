@@ -17,6 +17,7 @@ import java.util.*;
 import java.io.Writer;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -517,6 +518,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * Allow each descriptor to initialize any dependencies on this session.
      * This is done in two passes to allow the inheritance to be resolved first.
      * Normally the descriptors are added before login, then initialized on login.
+     * Should not be called on client SessoionBroker
      */
     public void initializeDescriptors() {
         // ClientSession initializes sequencing during construction,
@@ -524,35 +526,42 @@ public class SessionBroker extends DatabaseSessionImpl {
         // in initializeDescriptors method. 
         // Because initializeDescriptors() is not called for a session-member of a SessionBroker,
         // initializeSequencing() for the sessions should be called here.
-        if (!isClientSessionBroker()) {
-            for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
-                DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
-                String sessionName = databaseSession.getName();
+        for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
+            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();                
+            String sessionName = databaseSession.getName();
 
-                // Copy jpa queries from member sessions into SessionBroker before descriptors' initialization.
-                int nJPAQueriesSize = databaseSession.getJPAQueries().size();
-                for(int i=0; i < nJPAQueriesSize; i++) {
-                    DatabaseQuery query = databaseSession.getJPAQueries().get(i);
-                    query.setSessionName(sessionName);
-                    getJPAQueries().add(query);
-                }
-
-                // assign session name to each query
-                Iterator<List<DatabaseQuery>> it = databaseSession.getQueries().values().iterator();
-                while(it.hasNext()) {
-                    List<DatabaseQuery> queryList = it.next();
-                    for(int i=0; i < queryList.size(); i++) {
-                        queryList.get(i).setSessionName(sessionName);
-                    }
-                }
-                
-                databaseSession.initializeSequencing();
+            // Initialize partitioning policies.
+            for (PartitioningPolicy policy : databaseSession.getProject().getPartitioningPolicies().values()) {
+                policy.initialize(this);
             }
-            if(hasExternalTransactionController()) {
-                getExternalTransactionController().initializeSequencingListeners();
+            
+            // Copy jpa queries from member sessions into SessionBroker before descriptors' initialization.
+            int nJPAQueriesSize = databaseSession.getJPAQueries().size();
+            for(int i=0; i < nJPAQueriesSize; i++) {
+                DatabaseQuery query = databaseSession.getJPAQueries().get(i);
+                query.setSessionName(sessionName);
+                getJPAQueries().add(query);
             }
+            // processJPAQueries method clears jpa queries after they have been copied to the session.
+            // in broker case jpa queries processed only on the broker, so clear them from member sessions now
+            // otherwise they would be added again (in case of logout, then login).
+            databaseSession.getJPAQueries().clear();
 
+            // assign session name to each query
+            Iterator<List<DatabaseQuery>> it = databaseSession.getQueries().values().iterator();
+            while(it.hasNext()) {
+                List<DatabaseQuery> queryList = it.next();
+                for(int i=0; i < queryList.size(); i++) {
+                    queryList.get(i).setSessionName(sessionName);
+                }
+            }
+            
+            databaseSession.initializeSequencing();
         }
+        if(hasExternalTransactionController()) {
+            getExternalTransactionController().initializeSequencingListeners();
+        }
+
         super.initializeDescriptors();
         // Must reset project options to session broker project, as initialization occurs
         // with local projects.

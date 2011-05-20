@@ -1211,18 +1211,20 @@ public class EntityManagerSetupImpl {
                 session.getPlatform().setConversionManager(new JPAConversionManager());
                 
                 if (this.staticWeaveInfo == null) {
-                    PersistenceUnitTransactionType transactionType=null;
-                    //bug 5867753: find and override the transaction type
-                    String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
-                    if ( transTypeString != null ){
-                        transactionType=PersistenceUnitTransactionType.valueOf(transTypeString);
-                    } else if (persistenceUnitInfo!=null){
-                        transactionType=persistenceUnitInfo.getTransactionType();
-                    }
-                    
-                    if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
-                        if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
-                            throw new PersistenceException(EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName()));
+                    if (!isComposite) {
+                        PersistenceUnitTransactionType transactionType=null;
+                        //bug 5867753: find and override the transaction type
+                        String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
+                        if ( transTypeString != null ){
+                            transactionType=PersistenceUnitTransactionType.valueOf(transTypeString);
+                        } else if (persistenceUnitInfo!=null){
+                            transactionType=persistenceUnitInfo.getTransactionType();
+                        }
+                        
+                        if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
+                            if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
+                                throw new PersistenceException(EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName()));
+                            }
                         }
                     }
                     
