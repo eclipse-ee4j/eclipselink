@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     05/24/2011-2.3 Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -186,12 +188,11 @@ public class QueryException extends ValidationException {
     public final static int CAST_MUST_USE_INHERITANCE = 6167;
     public final static int PREPARE_FAILED = 6168;
     public final static int ORIGINAL_QUERY_MUST_USE_IN = 6169;
-    public final static int ADDITIONAL_CRITERIA_VALUE_MISSING = 6170;
     public final static int PARTIONING_NOT_SUPPORTED = 6171;
     public final static int MISSING_CONNECTION_POOL = 6172;
     public final static int FAILOVER_FAILED = 6173;
-    public final static int TENANT_DISCRIMINATOR_COLUMN_CONTEXT_PROPERTY_MISSING = 6174;
-
+    public final static int MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION = 6174;
+    
     /**
      * INTERNAL:
      * Constructor.
@@ -243,19 +244,11 @@ public class QueryException extends ValidationException {
         return queryException;
     }
     
-    public static QueryException argumentFromAdditionalCriteriaMissing(DatabaseQuery query, String argumentName) {
+    public static QueryException missingContextPropertyForPropertyParameterExpression(DatabaseQuery query, String argumentName) {
         Object[] args = { argumentName };
 
-        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, ADDITIONAL_CRITERIA_VALUE_MISSING, args), query);
-        queryException.setErrorCode(ADDITIONAL_CRITERIA_VALUE_MISSING);
-        return queryException;
-    }
-
-    public static QueryException tenantDiscriminatorColumnContextPropertyValueMissing(DatabaseQuery query, String contextProperty, String fieldName) {
-        Object[] args = { contextProperty, fieldName };
-
-        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, TENANT_DISCRIMINATOR_COLUMN_CONTEXT_PROPERTY_MISSING, args), query);
-        queryException.setErrorCode(TENANT_DISCRIMINATOR_COLUMN_CONTEXT_PROPERTY_MISSING);
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION, args), query);
+        queryException.setErrorCode(MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION);
         return queryException;
     }
     

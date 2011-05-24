@@ -14,6 +14,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
+ *     05/24/2011-2.3 Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -27,12 +29,14 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NamedQuery;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import junit.framework.*;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo;
@@ -527,6 +531,14 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         try {
             clearCache(MULTI_TENANT_PU_123);
             em.clear();
+            
+            try {
+                TypedQuery<MafiaFamily> q = em.createQuery("SELECT m FROM MafiaFamily m ORDER BY m.id DESC", MafiaFamily.class);
+                q.setHint(QueryHints.FETCH, "m.mafiosos");
+                q.getResultList();
+            } catch (Exception e) {
+                fail("Exception encountered on join fetch query (with tenant discriminator columns): " + e);
+            }
             
             MafiaFamily family =  em.find(MafiaFamily.class, family123);
             assertNotNull("The Mafia Family with id: " + family123 + ", was not found", family);

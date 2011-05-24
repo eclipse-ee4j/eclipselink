@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/24/2011-2.3 Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -995,7 +997,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                     DatabaseField field = null;
                     if (parameter instanceof ParameterExpression) {
                         field = ((ParameterExpression)parameter).getField();
-                        value = ((ParameterExpression)parameter).getValue(translationRow, session);
+                        value = ((ParameterExpression)parameter).getValue(translationRow, query, query.getSession());
                     } else {
                         field = (DatabaseField)parameter;
                         value = translationRow.get(field);
