@@ -539,4 +539,15 @@ public class MetadataClass extends MetadataAnnotatedElement {
     public void setSuperclassName(String superclass) {
         m_superclassName = superclass;
     } 
+    
+    /**
+     * INTERNAL:
+     */
+    public void setName(String name) {
+        super.setName(name);
+        if ((!MetadataFactory.ALLOW_JDK) && (name.startsWith("java.") || name.startsWith("javax.")
+                || name.startsWith("org.eclipse.persistence.internal."))) {
+            setIsJDK(true);
+        }
+    }
 }

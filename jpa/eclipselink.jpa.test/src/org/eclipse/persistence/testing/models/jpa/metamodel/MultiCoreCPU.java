@@ -19,9 +19,10 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import static javax.persistence.CascadeType.ALL;
 
-import java.util.Collection;
+import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -36,14 +37,14 @@ import javax.persistence.Table;
 @Table(name="CMP3_MM_MULTICORECPU")
 public class MultiCoreCPU extends CPU {
     
-    private Collection<Core> cores;
+    private Set<Core> cores;
 
-    @OneToMany(cascade=ALL, mappedBy="cpu")
-    public Collection<Core> getCores() {
+    @OneToMany(cascade=ALL, mappedBy="cpu", fetch=FetchType.EAGER)
+    public Set<Core> getCores() {
         return cores;
     }
 
-    public void setCores(Collection<Core> cores) {
+    public void setCores(Set<Core> cores) {
         this.cores = cores;
     }
     

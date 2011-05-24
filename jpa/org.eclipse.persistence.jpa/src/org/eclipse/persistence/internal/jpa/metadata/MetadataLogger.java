@@ -503,6 +503,14 @@ public class MetadataLogger {
      * INTERNAL:
      * Set the session to log to.
      */
+    public AbstractSession getSession() {
+        return m_session;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the session to log to.
+     */
     public void setSession(AbstractSession session) {
         m_session = session;
     }

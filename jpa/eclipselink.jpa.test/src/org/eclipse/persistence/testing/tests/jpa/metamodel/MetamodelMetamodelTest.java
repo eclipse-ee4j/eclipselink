@@ -441,6 +441,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     /**
      * These tests are for states that should never be reached by API implementors.
      */
+    // TODO: This is not testing anything yet.
     public void testObscureInvalidStateUnitTests() {
         boolean exceptionThrown = false;
         EntityManager em = null;            
@@ -493,7 +494,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue("non-declared attribute should throw an IAE", exceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything yet.
     public void testIdentifiableType_getDeclaredId_variant_execution_attribute_is_not_declared_at_all() {
     }
     
@@ -651,6 +653,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything yet.
     public void testAttribute_getPersistentAttributeType_MANY_TO_MANY_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -720,6 +723,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything yet.
     public void testAttribute_getPersistentAttributeType_ELEMENT_COLLECTION_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -1737,6 +1741,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything yet.
     public void testIdentifiableType_getDeclaredId_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -1865,6 +1870,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything different?
     public void testIdentifiableType_getDeclaredVersion_does_not_exist_at_all_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -1903,7 +1909,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testIdentifiableType_getSupertype_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -2278,6 +2285,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything different?
     public void testListAttribute() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -3195,6 +3203,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything different?
     public void testManagedType_getDeclaredAttributes_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3224,7 +3233,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getSingularAttribute_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3254,7 +3264,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getDeclaredSingularAttribute_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3284,7 +3295,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getSingularAttributes_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3314,7 +3326,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getDeclaredSingularAttributes_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3344,7 +3357,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getCollection_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3374,7 +3388,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getDeclaredCollection_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3404,7 +3419,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getSet_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3434,7 +3450,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getDeclaredSet_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3464,7 +3481,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getList_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3494,7 +3512,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything different?
     public void testManagedType_getDeclaredList_Type_param_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -3582,11 +3601,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getDeclaredMap_Type_param_declared_above_Method() {
     
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getDeclaredMap_Type_param_not_found_iae_Method() {
         
     }
@@ -3648,7 +3669,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getPluralAttributes_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4057,7 +4079,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getSingularAttribute_EMBEDDED_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4134,7 +4157,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getCollection_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4164,7 +4188,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getDeclaredCollection_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4218,6 +4243,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             SetAttribute<? super Manufacturer, Computer> computersAttribute = 
             entityManufacturer_.getSet("computers", Computer.class);
             assertNotNull("computers SetAttribute should not be null in Manufacturer_", computersAttribute);
+            EntityTypeImpl<MultiCoreCPU> entityMultiCoreCPU_ = (EntityTypeImpl)metamodel.entity(MultiCoreCPU.class);
+            assertNotNull(entityMultiCoreCPU_);
+            SetAttribute<? super MultiCoreCPU, Core> processorsAttribute = 
+                entityMultiCoreCPU_.getSet("cores", Core.class);
+            assertNotNull("cores SetAttribute should not be null in MultiCoreCPU_", processorsAttribute);
 
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
@@ -4227,7 +4257,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getDeclaredSet_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4257,7 +4288,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getList_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4287,7 +4319,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getDeclaredList_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4317,7 +4350,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testManagedType_getMap_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -4348,6 +4382,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything?
     public void testManagedType_getDeclaredMap_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -5219,6 +5254,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything?
     public void testMapAttribute_getKeyType_UC9_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -5245,7 +5281,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", exceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testMappedSuperclassType() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -5410,6 +5447,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything?
     public void testMetamodel_getEmbeddables_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -5435,7 +5473,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testMetamodel_getEntities_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -5462,7 +5501,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testMetamodel_getManagedTypes_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -5614,7 +5654,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testPluralAttribute_CollectionType_enum() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -5635,6 +5676,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything?
     public void testPluralAttribute_getCollectionType_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -5661,6 +5703,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything?
     public void testPluralAttribute_getElementType_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -5686,7 +5729,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", exceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testSetAttribute() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -5810,7 +5854,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testSingularAttribute_getBindableType_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -5953,7 +5998,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testSingularAttribute_getJavaType_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -5975,7 +6021,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testSingularAttribute_getType_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -6004,7 +6051,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-    
+
+    // TODO: This is not testing anything?
     public void testType_PersistenceType_enum() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -6032,6 +6080,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything?
     public void testType_getPersistenceType_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -6064,6 +6113,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // TODO: This is not testing anything?
     public void testType_getJavaType_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;

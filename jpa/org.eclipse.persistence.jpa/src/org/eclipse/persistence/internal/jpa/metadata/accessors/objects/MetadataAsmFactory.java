@@ -46,8 +46,6 @@ public class MetadataAsmFactory extends MetadataFactory {
     public static final String PRIMITIVES = "VJIBZCSFD";
     /** Set of desc token characters. */
     public static final String TOKENS = "()<>;";
-    /** Backdoor to allow mapping of JDK classes. */
-    public static boolean ALLOW_JDK = false;
 
     /**
      * INTERNAL:
@@ -178,9 +176,6 @@ public class MetadataAsmFactory extends MetadataFactory {
             classMetadata.setSuperclassName(toClassName(superName));
             classMetadata.setModifiers(access);
             classMetadata.setGenericType(processDescription(signature, true));
-            if ((!ALLOW_JDK) && (className.startsWith("java.") || className.startsWith("javax."))) {
-                classMetadata.setIsJDK(true);
-            }
 
             for (String interfaceName : interfaces) {
                 classMetadata.addInterface(toClassName(interfaceName));

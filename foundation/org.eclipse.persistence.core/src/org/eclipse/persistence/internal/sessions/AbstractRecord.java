@@ -271,7 +271,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      */
     public Object get(DatabaseField key) {
         // PERF: Direct variable access.
-        // ** Code duplicated in get, ensure kept in synch **
+        // ** Code duplicated in getIndicatingNoEntry, ensure kept in synch **
         // Optimize check.
         int index = key.getIndex();
         if ((index >= 0) && (index < this.size)) {
@@ -280,13 +280,13 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
                 return this.values.get(index);
             }
         }
-        index = this.fields.indexOf(key);
-        if (index >= 0) {
+        int fieldsIndex = this.fields.indexOf(key);
+        if (fieldsIndex >= 0) {
             // PERF: If the fields index was not set, then set it.
             if (index == -1) {
-                key.setIndex(index);
+                key.setIndex(fieldsIndex);
             }
-            return this.values.get(index);
+            return this.values.get(fieldsIndex);
         } else {
             return null;
         }
@@ -318,13 +318,13 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
                 return this.values.get(index);
             }
         }
-        index = this.fields.indexOf(key);
-        if (index >= 0) {
+        int fieldsIndex = this.fields.indexOf(key);
+        if (fieldsIndex >= 0) {
             // PERF: If the fields index was not set, then set it.
             if (index == -1) {
-                key.setIndex(index);
+                key.setIndex(fieldsIndex);
             }
-            return this.values.get(index);
+            return this.values.get(fieldsIndex);
         } else {
             return AbstractRecord.noEntry;
         }

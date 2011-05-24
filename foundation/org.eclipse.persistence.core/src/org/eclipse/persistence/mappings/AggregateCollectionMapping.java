@@ -380,16 +380,17 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
-        //aggregate objects are not registered but their mappings should be.
-        Object cloneAttribute = null;
-        cloneAttribute = getAttributeValueFromObject(object);
-        if ((cloneAttribute == null) || (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        // Aggregate objects are not registered but their mappings should be.
+        Object attributeValue = getAttributeValueFromObject(object);
+        if ((attributeValue == null)
+            // Also check if the source is new, then must always cascade.
+            || (!this.indirectionPolicy.objectIsInstantiated(attributeValue) && !uow.isObjectNew(object))) {
             return;
         }
 
         ObjectBuilder builder = null;
-        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = this.containerPolicy;
         Object cloneObjectCollection = null;
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);

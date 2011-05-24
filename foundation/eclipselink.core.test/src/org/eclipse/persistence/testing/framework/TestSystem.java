@@ -452,8 +452,8 @@ public class TestSystem {
         login.useSybase();
         login.setDriverClassName("com.sybase.jdbc3.jdbc.SybDriver");
         login.setDriverURLHeader("jdbc:sybase:Tds:");
-        login.setDatabaseURL("tlsvrdb1.ca.oracle.com:5000/TLDEV1");
-        login.setUserName("TLDEV1");
+        login.setDatabaseURL("ottvm031.ca.oracle.com:5000/qa2");
+        login.setUserName("qa2");
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
         setLogin(login);
@@ -467,8 +467,8 @@ public class TestSystem {
         login.useSybase();
         login.setDriverClassName("com.oracle.ias.jdbc.sybase.SybaseDriver");
         login.setDriverURLHeader("jdbc:oracle:sybase://");
-        login.setDatabaseURL("tlsvrdb1.ca.oracle.com:5000"); 
-        login.setUserName("");
+        login.setDatabaseURL("ottvm031.ca.oracle.com:5000/qa2"); 
+        login.setUserName("qa2");
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
         setLogin(login);

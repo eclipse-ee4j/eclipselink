@@ -1804,7 +1804,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
             } else {
                 // Use the supplied collection class type if its not an interface
                 if (mapKey == null || mapKey.equals("")){
-                    mapping.useCollectionClassName(rawClass.getName());
+                    if (rawClass.isList()) {
+                        mapping.useListClassName(rawClass.getName());
+                    } else {
+                        mapping.useCollectionClassName(rawClass.getName());
+                    }
                 } else {
                     mapping.useMapClassName(rawClass.getName(), mapKey);
                 }

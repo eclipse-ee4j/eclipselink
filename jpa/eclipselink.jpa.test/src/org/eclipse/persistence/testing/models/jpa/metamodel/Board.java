@@ -58,8 +58,8 @@ public class Board implements java.io.Serializable{
     private int version;
     
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
-    @OneToMany(cascade=ALL, mappedBy="board")
-    private Collection<Processor> processors = new ArrayList<Processor>();
+    @OneToMany(cascade=ALL, mappedBy="board", fetch=EAGER)
+    private ArrayList<Processor> processors = new ArrayList<Processor>();
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
     @OneToMany(cascade=ALL, mappedBy="board")
@@ -86,7 +86,7 @@ public class Board implements java.io.Serializable{
         return processors;
     }
 
-    public void setProcessors(Collection<Processor> processors) {
+    public void setProcessors(ArrayList<Processor> processors) {
         this.processors = processors;
     }
 

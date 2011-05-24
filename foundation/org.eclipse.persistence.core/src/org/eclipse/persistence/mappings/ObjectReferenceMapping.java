@@ -932,13 +932,15 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         } else {
             attributeValue = object;
         }
-        if ((attributeValue != null) && this.indirectionPolicy.objectIsInstantiated(attributeValue)){
+        if ((attributeValue != null)
+                // Also check if the source is new, then must always cascade.
+                && (this.indirectionPolicy.objectIsInstantiated(attributeValue) || uow.isObjectNew(object))) {
             if (getAttributeValueFromObject){
                 attributeValue = this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
             }
             uow.registerNewObjectForPersist(attributeValue, visitedObjects);
             // add private owned object to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
-            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && attributeValue != null && uow.isObjectNew(object)) {
+            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && (attributeValue != null) && uow.isObjectNew(object)) {
                 uow.addPrivateOwnedObject(this, attributeValue);
             }
         }

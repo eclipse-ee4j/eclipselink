@@ -64,7 +64,7 @@
         
         <properties>
             <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!-- property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>

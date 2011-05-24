@@ -432,15 +432,28 @@
         <copy todir="${jpatest.build.location}/${classes.dir}">
             <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-canonical-meta-model/persistence.xml"/>
         </copy>
+        <copy todir="${jpatest.build.location}/${classes.dir}">
+            <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-metamodel-model/persistence.xml"/>
+        </copy>
         <!-- Copy to META-INF because IBM Compiler apparently is no longer recognizing -A (temporary) -->
         <copy todir="${jpatest.build.location}/${classes.dir}/META-INF">
             <fileset dir="${jpatest.build.location}/${resource.dir}/eclipselink-canonical-meta-model" includes="persistence.xml"/>
+        </copy>
+        <copy todir="${jpatest.build.location}/${classes.dir}/META-INF">
+            <fileset dir="${jpatest.build.location}/${resource.dir}/eclipselink-metamodel-model" includes="persistence.xml"/>
         </copy>
         <antcall target="model-compile" inheritRefs="true">
             <param name="SRC_PATH" value="${eclipselink.jpa.test}/${src.dir}"/>
             <param name="DEST_PATH" value="${eclipselink.jpa.test}/${classes.dir}"/>
             <param name="MODEL_PATH" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
             <param name="PERSISTENCE_XML_PATH" value="eclipselink-canonical-meta-model/persistence.xml"/>
+            <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
+        </antcall>
+        <antcall target="model-compile" inheritRefs="true">
+            <param name="SRC_PATH" value="${eclipselink.jpa.test}/${src.dir}"/>
+            <param name="DEST_PATH" value="${eclipselink.jpa.test}/${classes.dir}"/>
+            <param name="MODEL_PATH" value="org/eclipse/persistence/testing/models/jpa/metamodel"/>
+            <param name="PERSISTENCE_XML_PATH" value="eclipselink-metamodel-model/persistence.xml"/>
             <param name="COMPILE_PATH_REF" value="compile.modelgen.path"/>
         </antcall>
         <!-- This persistence.xml MUST be deleted because tests will pick it up otherwise and fail -->
@@ -460,6 +473,7 @@
                failonerror="true">
             <include name="org/eclipse/persistence/testing/**"/>
             <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
+            <exclude name="org/eclipse/persistence/testing/models/jpa/metamodel/**"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
@@ -467,7 +481,6 @@
                 <path refid="compile.path"/>
             </classpath>
         </javac>
-
     </target>
 
     <target name="compile-fullregression">

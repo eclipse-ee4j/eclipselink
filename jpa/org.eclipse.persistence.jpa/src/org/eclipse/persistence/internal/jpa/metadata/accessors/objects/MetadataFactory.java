@@ -31,6 +31,9 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since EclipseLink 1.2
  */
 public abstract class MetadataFactory {
+    /** Backdoor to allow mapping of JDK classes. */
+    public static boolean ALLOW_JDK = false;
+    
     /** Stores all metadata for classes. */
     private Map<String, MetadataClass> m_metadataClasses;
     

@@ -402,11 +402,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        if (!isCascadePersist()) {
+        if (!this.cascadePersist) {
             return;
         }
-        Object cloneAttribute = getAttributeValueFromObject(object);
-        if ((cloneAttribute == null) || (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
+        Object attributeValue = getAttributeValueFromObject(object);
+        if ((attributeValue == null)
+            // Also check if the source is new, then must always cascade.
+            || (!this.indirectionPolicy.objectIsInstantiated(attributeValue) && !uow.isObjectNew(object))) {
             return;
         }
 

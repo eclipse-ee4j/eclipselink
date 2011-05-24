@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -117,10 +118,14 @@ public class MetadataMirrorFactory extends MetadataFactory {
         MetadataClass metadataClass = roundElements.get(element);
         
         if (metadataClass == null) {
+            // Only log if logging on finest.
+            boolean shouldLog = getLogger().getSession().getLogLevel() == SessionLog.FINEST;
             // As a performance gain, avoid visiting this class if it is not a 
             // round element. We must re-visit round elements.
             if (isRoundElement(element)) {
-                processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
+                if (shouldLog) {
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
+                }
                 metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
                 roundElements.put(element, metadataClass);
                 roundMetadataClasses.add(metadataClass);
@@ -133,6 +138,10 @@ public class MetadataMirrorFactory extends MetadataFactory {
                 // can't call addMetadataClass till we have visited the class.
                 addMetadataClass(metadataClass);
             } else {
+                String name = element.toString();
+                if (metadataClassExists(name))  {
+                    return getMetadataClass(name);
+                }
                 // So we are not a round element, the outcome is as follows:
                 //  - TypeElement or TypeParameterElement in existing class map, 
                 //    return it.
@@ -144,19 +153,23 @@ public class MetadataMirrorFactory extends MetadataFactory {
                 //  - Everything else, return simple non-visited MetadataClass 
                 //    with only a name/type from the toString value.
                 if (element instanceof TypeElement || element instanceof TypeParameterElement) {
-                    String name = element.toString();
-                
-                    if (metadataClassExists(name) || element instanceof TypeElement) {
-                        // If the metadata class exists return it otherwise if 
-                        // we're dealing with a type element getMetadataClass
-                        // will just return a simple, non visited MetadataClass.
-                        metadataClass = getMetadataClass(name);
+                    if (element instanceof TypeElement) {
+                        if (shouldLog) {
+                            processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for type element: " + name);
+                        }
+                        metadataClass = new MetadataClass(MetadataMirrorFactory.this, name);
+                        addMetadataClass(metadataClass);
+                        element.accept(elementVisitor, metadataClass);
+                        addMetadataClass(metadataClass);
                     } else {
                         // Only thing going to get through at this point are
                         // TypeParameterElements (presumably generic ones). Look 
                         // at those further since they 'should' be simple visits.
-                        processingEnv.getMessager().printMessage(Kind.NOTE, "Building type parameter element: " + name);
-                        metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
+                        if (shouldLog) {
+                            processingEnv.getMessager().printMessage(Kind.NOTE, "Building type parameter element: " + name);
+                        }
+                        metadataClass = new MetadataClass(MetadataMirrorFactory.this, name);
+                        addMetadataClass(metadataClass);
                         element.accept(elementVisitor, metadataClass);
                         addMetadataClass(metadataClass);
                     }

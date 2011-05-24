@@ -909,7 +909,7 @@ public class EmployeePopulator {
         proc.addOutputArgument("p_code_v", String.class);
         
         String statement = null;
-        if(session.getPlatform().isSQLServer()) {
+        if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM CMP3_ADDRESS WHERE ADDRESS_ID = @address_id_v";
         } else {
@@ -928,7 +928,7 @@ public class EmployeePopulator {
         proc.addOutputArgument("street_v", String.class);
         
         String statement = null;
-        if(session.getPlatform().isSQLServer()) {
+        if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             statement = "SELECT @address_id_v=ADDRESS_ID, @street_v=STREET from CMP3_ADDRESS where (ADDRESS_ID = @address_id_v)";
         } else {
