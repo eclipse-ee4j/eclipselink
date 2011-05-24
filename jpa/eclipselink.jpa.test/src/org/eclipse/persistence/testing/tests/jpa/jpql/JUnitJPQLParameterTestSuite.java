@@ -174,6 +174,10 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
     
     // Bug 344492
     public void emptyParametersForNonParameterizedNamedQueryTest() {
+        if (isJPA10()) {
+            getServerSession().logMessage("Test emptyParametersForNonParameterizedNamedQueryTest skipped for JPA 1.0");
+            return;
+        }
         EntityManager em = createEntityManager();
         assertNotNull(em);
         Query query = em.createNamedQuery("findAllEmployeesOrderById");
