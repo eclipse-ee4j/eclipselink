@@ -24,6 +24,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
  */
 public abstract class MetadataSourceAdapter implements MetadataSource {
 
-    public abstract XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader);
+    public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
+        return null;
+    }
 
 }
