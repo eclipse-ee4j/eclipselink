@@ -190,6 +190,9 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
      */
     protected Set buildDelegate() {
         Set delegate = (Set)getValueHolder().getValue();
+        if (delegate == null) {
+            delegate = new HashSet(this.initialCapacity, this.loadFactor);
+        }
         // This can either be another indirect set or a HashSet.
         // It can be another indirect list because the mapping's query uses the same container policy.
         // Unwrap any redundent indirection layers, which can cause issues and impact performance.
