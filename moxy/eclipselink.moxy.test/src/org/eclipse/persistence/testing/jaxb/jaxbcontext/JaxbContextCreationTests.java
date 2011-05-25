@@ -1,21 +1,26 @@
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.testing.oxm.classloader.JARClassLoader;
+import org.w3c.dom.Document;
 
 public class JaxbContextCreationTests extends junit.framework.TestCase {
+
+    public String getName() {
+        return "JAXB Context Creation Tests: " + super.getName();
+    }
 
     public void testCreateContextWithObjectFactory() throws Exception {
         JAXBContext context = JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext", Thread.currentThread().getContextClassLoader());
@@ -130,6 +135,34 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         Class[] classes = new Class[1];
         classes[0] = ConcreteClassWithGenerics.class;
         JAXBContextFactory.createContext(classes, null);
+    }
+
+    public void testCreateContextWithPathAndBindings() throws Exception {
+        String oxmString = "org/eclipse/persistence/testing/jaxb/jaxbcontext/eclipselink-oxm.xml";
+        InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(oxmString);
+
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+
+        // Specify some other, unrelated context path -- we want to ensure that we don't fail
+        // due to lack of ObjectFactory/jaxb.index
+        JAXBContext ctx = JAXBContext.newInstance("org.eclipse.persistence.testing.oxm.jaxb",
+                ClassLoader.getSystemClassLoader(), props);
+
+        Employee e = new Employee();
+        e.id = 6;
+        e.name = "Jeeves Sobs";
+        e.put("tag", "tag-value");
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+
+        Marshaller m = ctx.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        m.marshal(e, marshalDoc);
+
+        // Make sure OXM was picked up, "tag" property should have been added.
+        Employee e2 = (Employee) ctx.createUnmarshaller().unmarshal(marshalDoc);
+        assertEquals("OXM file was not processed during context creation.", e.get("tag"), e2.get("tag"));
     }
 
 }

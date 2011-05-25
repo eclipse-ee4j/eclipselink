@@ -20,15 +20,15 @@ import java.util.ListResourceBundle;
  */
 public class JAXBExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
-        {"50000", "The path {0} contains no ObjectFactory or jaxb.index file and no sessions.xml was found"},
+        {"50000", "The context path {0} contains no ObjectFactory or jaxb.index, no external metadata was found in properties Map, and no sessions.xml was found."},
         {"50001", "The class {0} requires a zero argument constructor or a specified factory method.  Note that non-static inner classes do not have zero argument constructors and are not supported."},
-        {"50002", "Factory class specified without factory method on class {0}"},
-        {"50003", "The factory method named {0} is not declared on the class {1}"},
-        {"50004", "XmlAnyAttribute is invalid on property {0}. Must be used with a property of type Map"},
-        {"50005", "Only one property with XmlAnyAttribute allowed on class {0}"},
-        {"50006", "Invalid XmlElementRef on property {0} on class {1}. Referenced Element not declared"},
-        {"50007", "Name collision.  Two classes have the XML type with uri {0} and name {1}"},
-        {"50008", "Unsupported Node class {0}.  The createBinder(Class) method only supports the class org.w3c.dom.Node"},
+        {"50002", "Factory class specified without factory method on class {0}."},
+        {"50003", "The factory method named {0} is not declared on the class {1}."},
+        {"50004", "XmlAnyAttribute is invalid on property {0}. Must be used with a property of type Map."},
+        {"50005", "Only one property with XmlAnyAttribute allowed on class {0}."},
+        {"50006", "Invalid XmlElementRef on property {0} on class {1}. Referenced Element not declared."},
+        {"50007", "Name collision.  Two classes have the XML type with uri {0} and name {1}."},
+        {"50008", "Unsupported Node class {0}.  The createBinder(Class) method only supports the class org.w3c.dom.Node."},
         {"50009", "The property or field {0} is annotated to be transient so can not be included in the proporder annotation."},
         {"50010", "The property or field {0} must be an attribute because another field or property is annotated with XmlValue."},
         {"50011", "The property or field {0} can not be annotated with XmlValue since it is a subclass of another XML-bound class."},
