@@ -1197,9 +1197,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                             aType = aField.getType();
                         }
                         // This attribute is declared as List 
-                        if(List.class.isAssignableFrom(aType)) {                    
+                        if((aType != null) && List.class.isAssignableFrom(aType)) {                    
                             member = new ListAttributeImpl(this, colMapping, true);
-                        } else if(Collection.class.isAssignableFrom(aType)) {
+                        } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {
                             // This attribute is therefore declared as Collection
                             member = new CollectionAttributeImpl(this, colMapping, true);
                         } else {
@@ -1213,9 +1213,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                              * If no getMethod exists, we will secondarily check the getMethodName below.
                              */
                             aType = ((MethodAttributeAccessor)colMapping.getAttributeAccessor()).getAttributeClass();
-                            if(List.class.isAssignableFrom(aType)) {
+                            if((aType != null) && List.class.isAssignableFrom(aType)) {
                                 member = new ListAttributeImpl(this, colMapping, true);
-                            } else if(Collection.class.isAssignableFrom(aType)) {
+                            } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {
                                 member = new CollectionAttributeImpl(this, colMapping, true);
                             } else {
                                 /**
@@ -1246,9 +1246,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                             member = initializePluralAttributeTypeNotFound(this, colMapping, true);
                                         } else {
                                             aType = field.getType();
-                                            if(List.class.isAssignableFrom(aType)) {
+                                            if((aType != null) && List.class.isAssignableFrom(aType)) {
                                                 member = new ListAttributeImpl(this, colMapping, true);
-                                            } else if(Collection.class.isAssignableFrom(aType)) {
+                                            } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {
                                                 member = new CollectionAttributeImpl(this, colMapping, true);
                                             } else {
                                                 member = initializePluralAttributeTypeNotFound(this, colMapping, true);
@@ -1278,9 +1278,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                             member = initializePluralAttributeTypeNotFound(this, colMapping, true);
                                         } else {
                                             aType = aMethod.getReturnType();
-                                            if(List.class.isAssignableFrom(aType)) {
+                                            if((aType != null) && List.class.isAssignableFrom(aType)) {
                                                 member = new ListAttributeImpl(this, colMapping, true);
-                                            } else if(Collection.class.isAssignableFrom(aType)) {
+                                            } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {
                                                 member = new CollectionAttributeImpl(this, colMapping, true);
                                             } else {
                                                 member = initializePluralAttributeTypeNotFound(this, colMapping, true);
@@ -1295,7 +1295,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     }
                 } else {
                     // Handle non-lazy Collection or Set type mappings (IndirectSet.isAssignableFrom(Set.class) == false)
-                    if (Set.class.isAssignableFrom(collectionContainerPolicy.getContainerClass())) {
+                    if ((collectionContainerPolicy.getContainerClass() != null) && Set.class.isAssignableFrom(collectionContainerPolicy.getContainerClass())) {
                         member = new SetAttributeImpl(this, colMapping, true);
                     } else {
                         // Check for non-lazy Collection policy possibly instantiated to a Set or List (both of which is ignored)
