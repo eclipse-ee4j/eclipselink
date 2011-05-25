@@ -462,6 +462,10 @@ public class MappingsGenerator {
         if (referenceClass.isArray()  && !referenceClassName.equals("byte[]")){
             JavaClass componentType = referenceClass.getComponentType();
             TypeInfo reference = typeInfo.get(componentType.getName());
+                        
+            if (reference != null && reference.isEnumerationType()) {
+                return generateEnumCollectionMapping(property,  descriptor, namespaceInfo,(EnumTypeInfo) reference);
+            }            
             if (reference != null || componentType.isArray()){
                 return generateCompositeCollectionMapping(property, descriptor, namespaceInfo, componentType.getQualifiedName());
             }
@@ -1278,42 +1282,11 @@ public class MappingsGenerator {
     }
 
     public XMLCompositeDirectCollectionMapping generateEnumCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo info) {
-        XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
-        mapping.setAttributeName(property.getPropertyName());
-        mapping.setReuseContainer(true);
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
-
-        mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, info));
-
-        JavaClass collectionType = property.getType();
-        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Set.class)) {
-            collectionType = jotHashSet;
-        }
-        mapping.useCollectionClassName(collectionType.getRawName());
-
-        mapping.setField(getXPathForField(property, namespaceInfo, true));
-        if (property.isXmlList()) {
-            mapping.setUsesSingleNode(true);
-        }
-        return mapping;
+    	
+    	XMLCompositeDirectCollectionMapping mapping = generateDirectCollectionMapping(property, descriptor, namespaceInfo);
+    	mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, info));
+    	return mapping;
     }
-
     public XMLAnyAttributeMapping generateAnyAttributeMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
