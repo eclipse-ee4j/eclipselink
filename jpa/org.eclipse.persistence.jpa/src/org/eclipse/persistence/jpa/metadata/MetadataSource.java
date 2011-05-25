@@ -19,14 +19,14 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p><b>Purpose</b>: Interface used to support extensible metadata and mappings by a persistence unit.
- * A MetadataRepository will need to be registered with a persistence unit.  
+ * A MetadataSource will need to be registered with a persistence unit.  
  */
 public interface MetadataSource {
 
     /**
      * PUBLIC:
-     * This is used to return the object representation of the mappings used by EclipseLink from the repository.
+     * This method is responsible for returning the object representation of the MetadataSource.
      * It is called on initial deployment and when the EntityManagerFactoryImpl is reloaded.  
      */
-    public XMLEntityMappings getEntityMappings(Map properties, ClassLoader classLoader, SessionLog log);
+    public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log);
 }

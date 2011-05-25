@@ -29,11 +29,28 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
- * <p><b>Purpose</b>: Support reading metadata for a persistence unit in an XML format from a file
- * or URL.  If undefined, it will look for  repository-orm.xml as a URL and then as a file.  
+ * <p><b>Purpose</b>: Support reading metadata for a persistence unit in an XML format from a URL and if the property is undefined,
+ * it will look for a file.    
  */
 public class XMLMetadataSource extends MetadataSourceAdapter {
-    public Reader getEntityMappingsStream(Map properties, ClassLoader classLoader, SessionLog log) {
+    
+    /**
+     * This class returns a Reader for an EclipseLink-ORM.xml.  It will use the 
+     * PersistenceUnitProperties.METADATA_SOURCE_XML_URL property if available to create an 
+     * InputStreamReader from a URL, and if not available, use the 
+     * PersistenceUnitProperties.METADATA_SOURCE_XML_FILE property will be used to get a file
+     * resource from the classloader. 
+     * It will throw a ValidationException if no reader can be returned. 
+     * 
+     * @param properties
+     * @param classLoader
+     * @param log - SessionLog used for status messages.
+     * @return Reader - a InputStreamReader with data in the form of an EclipseLink-orm.xml
+     * 
+     * 
+     * @see getEntityMappings
+     */
+    public Reader getEntityMappingsReader(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
         InputStreamReader reader = null;
         
         //read from a URL
@@ -78,13 +95,24 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
             }
         }
         if (reader == null) {
+            //being configured to use XMLMetadataSource and not having a source to read from should be an exception
             throw ValidationException.missingXMLMetadataRepositoryConfig();
         }
         return reader;
     }
     
-    public XMLEntityMappings getEntityMappings(Map properties, ClassLoader classLoader, SessionLog log) {
-        Reader reader = getEntityMappingsStream(properties, classLoader, log);
+    /**
+     * This method is responsible for returning the object representation of the MetadataSource.
+     * This implementation makes a call to getEntityMappingsReader to get a Reader which is passed to an 
+     * XMLUnmarshaller, and closes the reader in a finally block.  
+     * 
+     * @return XMLEntityMappings - object representation of the EclipseLink-orm.xml for this repository
+     */
+    public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
+        Reader reader = getEntityMappingsReader(properties, classLoader, log);
+        if (reader == null) {
+            return null;
+        }
         try {
             return XMLEntityMappingsReader.read(getRepositoryName(), reader, classLoader, properties);
         } finally {
@@ -98,6 +126,12 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         }
     }
     
+    /**
+     * Used by getEntityMappings when creating the XMLEntityMappings as a way of describing where it was read from.  
+     * Currently returns the current class's simple name.  
+     * 
+     * @return String - repository name to store in the XMLEntityMappings returned from getEntityMappings
+     */
     public String getRepositoryName() {
         return getClass().getSimpleName();
     }

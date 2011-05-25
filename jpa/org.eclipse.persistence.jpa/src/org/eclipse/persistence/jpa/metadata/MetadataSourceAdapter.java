@@ -27,9 +27,9 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author Chris Delahunt
  * @since EclipseLink 2.3
  */
-public class MetadataSourceAdapter implements MetadataSource {
+public abstract class MetadataSourceAdapter implements MetadataSource {
 
-    public XMLEntityMappings getEntityMappings(Map properties, ClassLoader classLoader, SessionLog log) {
+    public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
         return null;
     }
 

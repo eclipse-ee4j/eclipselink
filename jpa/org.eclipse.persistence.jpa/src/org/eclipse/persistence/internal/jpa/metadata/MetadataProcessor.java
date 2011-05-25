@@ -344,7 +344,10 @@ public class MetadataProcessor {
         }
 
         if (m_metadataSource !=null) {
-            m_project.addEntityMappings(m_metadataSource.getEntityMappings(this.m_predeployProperties/*m_project.getPersistenceUnitInfo().getProperties()*/, m_loader, m_session.getSessionLog()));
+            XMLEntityMappings entityMappings = m_metadataSource.getEntityMappings(this.m_predeployProperties, m_loader, m_session.getSessionLog());
+            if (entityMappings != null) {
+                m_project.addEntityMappings(entityMappings);
+            }
         }
     }
 
