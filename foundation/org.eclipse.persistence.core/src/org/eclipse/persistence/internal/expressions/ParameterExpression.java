@@ -259,7 +259,11 @@ public class ParameterExpression extends BaseExpression {
             // returned if it is a property so check for null and isProperty
             if (value == AbstractRecord.noEntry || (value == null && isProperty())) {
                 if (isProperty()) {
-                    value = session.getProperty(getField().getName());
+                    if (query != null) {
+                        value = query.getSession().getProperty(getField().getName());
+                    } else {
+                        value = session.getProperty(getField().getName());
+                    }
                         
                     if (value == null) {
                         throw QueryException.missingContextPropertyForPropertyParameterExpression(query, getField().getName());

@@ -997,7 +997,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                     DatabaseField field = null;
                     if (parameter instanceof ParameterExpression) {
                         field = ((ParameterExpression)parameter).getField();
-                        value = ((ParameterExpression)parameter).getValue(translationRow, query, query.getSession());
+                        value = ((ParameterExpression)parameter).getValue(translationRow, query, session);
                     } else {
                         field = (DatabaseField)parameter;
                         value = translationRow.get(field);
