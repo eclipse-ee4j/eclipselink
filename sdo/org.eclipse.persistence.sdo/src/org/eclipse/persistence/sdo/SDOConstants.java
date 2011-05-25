@@ -209,6 +209,7 @@ public class SDOConstants {
     public static final QName XML_MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, MIMETYPE_NAME);
     public static final QName ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, ID_PROPERTY_NAME);
     public static final String DOCUMENTATION = "documentation";
+    public static final String APPINFO = "appinfo";
 
     /** Strings and QNames for annotations defined in the commonj.sdo/XML namespace*/
     public static final String SDOXML_ALIASNAME = "aliasName";
@@ -254,6 +255,8 @@ public class SDOConstants {
     /** open content property to be set when defining a Type via a DataObject for reference relationships */
     public static final SDOProperty ID_PROPERTY = new SDOProperty(globalHelperContext, ID_PROPERTY_NAME, SDOConstants.SDO_STRING);
 
+    public static final SDOProperty APPINFO_PROPERTY = new SDOProperty(globalHelperContext, APPINFO, SDOConstants.SDO_OBJECT, true);
+
     /** generate built-in open content property QNames */
     public static final QName MIME_TYPE_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY.getName());
     public static final QName MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, MIME_TYPE_PROPERTY_PROPERTY.getName());
@@ -262,6 +265,7 @@ public class SDOConstants {
     public static final QName XML_DATATYPE_QNAME = new QName(SDOXML_URL, SDOXML_DATATYPE);
     public static final QName XML_ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, ID_PROPERTY.getName());
     public static final QName DOCUMENTATION_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, DOCUMENTATION);
+    public static final QName APPINFO_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, APPINFO);
 
     /** Strings used when generating javadocs in generated Java source files */
     public static final String JAVADOC_START = "/**";

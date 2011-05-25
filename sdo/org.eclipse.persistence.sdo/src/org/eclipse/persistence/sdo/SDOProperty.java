@@ -129,6 +129,12 @@ public class SDOProperty implements Property, Serializable {
         setType(aType);
     }
     
+    public SDOProperty(HelperContext aContext, String aName, SDOType aType, boolean hasMany) {
+        this(aContext, aName);
+        setType(aType);
+        this.hasMany = hasMany;
+    }
+    
     public SDOProperty(HelperContext aContext, String aUri, String aName, SDOType aType) {
     	this(aContext, aName, aType);
     	this.setUri(aUri);

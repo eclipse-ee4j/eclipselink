@@ -726,6 +726,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         addType(type);
         types.add(type);
 
+        type.setAppInfoElements((List) dataObject.get(SDOConstants.APPINFO));
+
         type.setAbstract(dataObject.getBoolean("abstract"));
 
         List baseTypes = dataObject.getList("baseType");
@@ -849,6 +851,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             }
         }
 
+        newProperty.setAppInfoElements((List) dataObject.get(SDOConstants.APPINFO));
+        
         if (dataObject.isSet("containment")) {
             newProperty.setContainment(dataObject.getBoolean("containment"));
         } else {

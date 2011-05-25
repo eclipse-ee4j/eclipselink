@@ -410,6 +410,8 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
 
         getGlobalAttributes().put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
         getGlobalAttributes().put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
+
+        getGlobalAttributes().put(SDOConstants.APPINFO_PROPERTY_QNAME, SDOConstants.APPINFO_PROPERTY);
     }
 
     /**
