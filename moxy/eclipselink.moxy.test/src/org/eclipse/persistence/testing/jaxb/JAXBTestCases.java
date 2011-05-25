@@ -69,6 +69,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 public abstract class JAXBTestCases extends XMLMappingTestCases {
+
+    public static final String ECLIPSELINK_OXM_XSD = "eclipselink_oxm_2_3.xsd";
     protected JAXBContext jaxbContext;
     protected Marshaller jaxbMarshaller;
     protected Unmarshaller jaxbUnmarshaller;
@@ -87,12 +89,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         setupParser();
         setupControlDocs();
 
-        InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
+        InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream(ECLIPSELINK_OXM_XSD);
         if(bindingsFileXSDInputStream == null){
-            bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/eclipselink_oxm_2_1.xsd");
+            bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/" + ECLIPSELINK_OXM_XSD);
         }
         if(bindingsFileXSDInputStream == null){
-            fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
+            fail("ERROR LOADING " + ECLIPSELINK_OXM_XSD);
         }
         bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
     }
@@ -627,12 +629,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         Schema theSchema;
         try {
-            InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_3.xsd");
+            InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream(ECLIPSELINK_OXM_XSD);
             if (bindingsFileXSDInputStream == null){
-                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/eclipselink_oxm_2_3.xsd");
+                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/" + ECLIPSELINK_OXM_XSD);
             }
             if (bindingsFileXSDInputStream == null){
-                fail("ERROR LOADING eclipselink_oxm_2_2.xsd");
+                fail("ERROR LOADING " + ECLIPSELINK_OXM_XSD);
             }
             Source bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
             theSchema = sFact.newSchema(bindingsFileXSDSource);

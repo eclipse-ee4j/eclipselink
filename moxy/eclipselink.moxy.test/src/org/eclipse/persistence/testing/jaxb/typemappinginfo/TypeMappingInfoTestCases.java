@@ -54,6 +54,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MyStreamSchemaOutputResolver;
@@ -62,6 +63,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+
+import static org.eclipse.persistence.testing.jaxb.JAXBTestCases.ECLIPSELINK_OXM_XSD;
 
 public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	protected JAXBContext jaxbContext;
@@ -86,12 +89,12 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	    setupParser();
 	    setupControlDocs();
 	    
-	    InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
+	    InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream(ECLIPSELINK_OXM_XSD);
         if(bindingsFileXSDInputStream == null){
-        	bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/eclipselink_oxm_2_1.xsd");
+        	bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/" + ECLIPSELINK_OXM_XSD);
         }
         if(bindingsFileXSDInputStream == null){
-        	fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
+        	fail("ERROR LOADING " + ECLIPSELINK_OXM_XSD);
         }
         bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
 	}
