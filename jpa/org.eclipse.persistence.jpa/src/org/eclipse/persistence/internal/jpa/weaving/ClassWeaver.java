@@ -840,7 +840,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
         Label label = null;
         for (AttributeDetails attributeDetails : classDetails.getAttributesMap().values()) {
-            if (!attributeDetails.isAttributeOnSuperClass()) {
+            if (!attributeDetails.isAttributeOnSuperClass() && !attributeDetails.isVirtualProperty()) {
                 if (label != null) {
                     cv_get.visitLabel(label);
                 }
@@ -884,7 +884,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
         label = null;
         for (AttributeDetails attribute : classDetails.getAttributesMap().values()) {
-            if (!attribute.isAttributeOnSuperClass()) {
+            if (!attribute.isAttributeOnSuperClass() && !attribute.isVirtualProperty()) {
                 if (label != null) {
                     cv_set.visitLabel(label);
                 }
