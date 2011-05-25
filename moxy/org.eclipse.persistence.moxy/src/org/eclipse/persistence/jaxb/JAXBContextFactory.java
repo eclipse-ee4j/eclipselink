@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -199,11 +200,15 @@ public class JAXBContextFactory {
                         if(metadataSource instanceof List) {
                             for(Object next: (List)metadataSource) {
                                 XmlBindings binding = getXmlBindings(next, classLoader, properties);
-                                xmlBindings.add(binding);
+                                if(binding != null) {
+                                    xmlBindings.add(binding);
+                                }
                             }
                         } else {
                             XmlBindings binding = getXmlBindings(metadataSource, classLoader, properties);
-                            xmlBindings.add(binding);
+                            if(binding != null) {
+                                xmlBindings.add(binding);
+                            }
                         }
                         if (xmlBindings != null) {
                             bindings.put(key, xmlBindings);
@@ -303,6 +308,19 @@ public class JAXBContextFactory {
                 xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLStreamReader) metadata);
             } else if (metadata instanceof MetadataSource){
                 xmlBindings = ((MetadataSource)metadata).getXmlBindings(properties, classLoader);
+            } else if (metadata instanceof String) {
+                URL url = null;
+                try {
+                    url = new URL((String)metadata);
+                } catch(MalformedURLException ex) {
+                    url = classLoader.getResource((String)metadata);
+                }
+                if(url != null) {
+                    xmlBindings = (XmlBindings)unmarshaller.unmarshal(url);
+                } else {
+                    //throw exception
+                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
+                }
             } else {
                 throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
             }

@@ -104,7 +104,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int DUPLICATE_PROPERTY_NAME = 50072;
     public static final int SAME_PROPERTY_IN_MULTIPLE_BINDINGS_FILES = 50073;
     public static final int EXCEPTION_WITH_NAME_TRANSFORMER_CLASS = 50074;
-    public static final int EXCEPTION_DURING_NAME_TRANSFORMATION = 50075;    
+    public static final int EXCEPTION_DURING_NAME_TRANSFORMATION = 50075;
+    public static final int UNABLE_TO_LOAD_METADATA_FROM_LOCATION = 50076;
 
     protected JAXBException(String message) {
         super(message);
@@ -972,6 +973,13 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { nameBeingTransformed, nametransformerClassName };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, EXCEPTION_DURING_NAME_TRANSFORMATION, args), ex);
         validationException.setErrorCode(EXCEPTION_DURING_NAME_TRANSFORMATION);
+        return validationException;
+    }
+    
+    public static JAXBException unableToLoadMetadataFromLocation(String location) {
+        Object[] args = { location };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, UNABLE_TO_LOAD_METADATA_FROM_LOCATION, args));
+        validationException.setErrorCode(UNABLE_TO_LOAD_METADATA_FROM_LOCATION);
         return validationException;
     }
     

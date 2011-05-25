@@ -94,7 +94,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50072", "Duplicate Property named [{0}] found on class [{1}]"},
         {"50073", "Property [{0}] on class [{1}] is specified in multiple external bindings files. Each property can only be specified in one file"},
         {"50074", "An exception occurred accessing the XMLNameTransformer [{0}]"},
-        {"50075", "An exception occurred while attempting to transform name [{0}] with the XMLNameTransformer [{1}]"}
+        {"50075", "An exception occurred while attempting to transform name [{0}] with the XMLNameTransformer [{1}]"},
+        {"50076", "Unable to load external metadata from the provided location: [{0}]. This location must be either a valid URL or a classpath reference."}
     };
 
     /**

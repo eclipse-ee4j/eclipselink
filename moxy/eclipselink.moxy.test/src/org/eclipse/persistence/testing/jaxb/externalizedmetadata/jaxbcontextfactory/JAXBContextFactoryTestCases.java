@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -324,7 +326,85 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestInputSrc(jCtx);
     }
+    
+    public void testBindingFormatString() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, INPUT_SRC_OXM_XML);
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        doTestInputSrc(jCtx);
+    }
+    
+    public void testBindingFormatStringInvalid() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "foobar");
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
+        boolean exceptionThrown = false;
+        try {
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        } catch(Exception ex) {
+            exceptionThrown = true;
+            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50076);
+        }
+        if(!exceptionThrown) {
+            fail("Expected exception now thrown.");
+        }
+    }
 
+    public void testBindingFormatStringURL() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        File file = new File(INPUT_SRC_OXM_XML);
+        URL url = file.toURI().toURL();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, url.toExternalForm());
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        doTestInputSrc(jCtx);
+        
+    }
+    public void testBindingFormatMetadataSourceString() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource(INPUT_SRC_OXM_XML));
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        doTestInputSrc(jCtx);
+    }
+
+    public void testBindingFormatMetadatSourceNull() throws Exception {
+        boolean exception = false;
+        try {
+            Map<String, Object> properties = new HashMap<String, Object>();
+            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource((File)null));
+        } catch(IllegalArgumentException ex) {
+            exception = true;
+        }
+        assertTrue("Expected exception not thrown", exception);
+    }
+    public void testBindingFormatMetadataSourceStringInvalid() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource("foobar"));
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
+        boolean exceptionThrown = false;
+        try {
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        } catch(Exception ex) {
+            exceptionThrown = true;
+            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50076);
+        }
+        if(!exceptionThrown) {
+            fail("Expected exception now thrown.");
+        }
+    }
+    
+    public void testBindingFormatMetadataSourceURLString() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        File file = new File(INPUT_SRC_OXM_XML);
+        URL url = file.toURI().toURL();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new XMLMetadataSource(url.toExternalForm()));
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        doTestInputSrc(jCtx);
+    }
+    
     public void testBindingFormatInputStream() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new FileInputStream(INPUT_STRM_OXM_XML));
