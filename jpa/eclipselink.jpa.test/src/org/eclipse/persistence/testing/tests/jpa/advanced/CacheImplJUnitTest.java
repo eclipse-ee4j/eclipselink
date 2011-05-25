@@ -102,6 +102,10 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         return suite;
     }
     
+    public String getPersistenceUnitName(){
+        return "default1";
+    }
+    
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -117,7 +121,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * Test of contains method, of class CacheImpl.
      */
     public void testContains() {
-        EntityManager em1 = createEntityManager("default1");
+        EntityManager em1 = createEntityManager();
         beginTransaction(em1);
         Employee e1 = new Employee();
         e1.setFirstName("ellie1");
@@ -125,7 +129,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         em1.persist(e1);
         commitTransaction(em1);
         closeEntityManager(em1);
-        boolean result = getEntityManagerFactory("default1").getCache().contains(Employee.class, 101);
+        boolean result = getEntityManagerFactory().getCache().contains(Employee.class, 101);
         assertTrue("Employee not found in cache", result);
     }
     
@@ -133,14 +137,14 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * Test cache API.
      */
     public void testCacheAPI() {
-        EntityManager em = createEntityManager("default1");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee employee = new Employee();
         employee.setFirstName("testCacheAPI");
         em.persist(employee);
         commitTransaction(em);
         closeEntityManager(em);
-        JpaCache cache = (JpaCache)getEntityManagerFactory("default1").getCache();
+        JpaCache cache = (JpaCache)getEntityManagerFactory().getCache();
         assertTrue("Employee not valid in cache", cache.isValid(employee));
         assertTrue("Employee not valid in cache", cache.isValid(Employee.class, employee.getId()));
         cache.timeToLive(employee);
@@ -168,7 +172,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     public void testEvictClassObject() {
         String beforeCache;
         String afterCache;
-        EntityManager em2 = createEntityManager("default1");
+        EntityManager em2 = createEntityManager();
         beginTransaction(em2);
         Employee e2 = new Employee();
         e2.setFirstName("ellie");
@@ -176,13 +180,13 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         em2.persist(e2);
         commitTransaction(em2);
         closeEntityManager(em2);
-        EntityManager em3 = createEntityManager("default1");
-        EntityManager em4=createEntityManager("default1");
+        EntityManager em3 = createEntityManager();
+        EntityManager em4=createEntityManager();
         try {
-            Employee emp1 = (Employee) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e2);
+            Employee emp1 = (Employee) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e2);
             emp1.setFirstName("foo");
             beforeCache = em3.find(Employee.class, 121).getFirstName();
-            getEntityManagerFactory("default1").getCache().evict(Employee.class, 121);
+            getEntityManagerFactory().getCache().evict(Employee.class, 121);
             Employee e3 = em4.find(Employee.class, 121);
             afterCache = e3.getFirstName();
             assertNotSame("Assertion Error", beforeCache, afterCache);
@@ -196,7 +200,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * Test of evict method, of class CacheImpl.
      */
     public void testEvictClass() {
-        EntityManager em5 = createEntityManager("default1");
+        EntityManager em5 = createEntityManager();
         beginTransaction(em5);
         Employee e4 = new Employee();
         e4.setFirstName("ellie");
@@ -204,13 +208,13 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         em5.persist(e4);
         commitTransaction(em5);
         closeEntityManager(em5);
-        EntityManager em6 = createEntityManager("default1");
-        EntityManager em7 = createEntityManager("default1");
+        EntityManager em6 = createEntityManager();
+        EntityManager em7 = createEntityManager();
         try {
-            Employee emp2 = (Employee) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e4);
+            Employee emp2 = (Employee) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e4);
             emp2.setFirstName("food");
             String expected = em6.find(Employee.class, 131).getFirstName();
-            getEntityManagerFactory("default1").getCache().evict(Employee.class);
+            getEntityManagerFactory().getCache().evict(Employee.class);
             Employee e5 = em7.find(Employee.class, 131);
             String actual = e5.getFirstName();
             assertNotSame("Assertion Error", expected, actual);
@@ -224,7 +228,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * Test of evictAll method, of class CacheImpl.
      */
     public void testEvictAll() {
-        EntityManager em8 = createEntityManager("default1");
+        EntityManager em8 = createEntityManager();
         beginTransaction(em8);
         Employee e6 = new Employee();
         e6.setFirstName("ellie");
@@ -238,13 +242,13 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         String expectedEmp = e6.getFirstName();
         String expectedDept = d1.getName();
         closeEntityManager(em8);
-        EntityManager em9 = createEntityManager("default1");
+        EntityManager em9 = createEntityManager();
         try {
-            Employee emp3 = (Employee) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(e6);
-            Department dept1 = (Department) ((JpaEntityManagerFactory) getEntityManagerFactory("default1")).getServerSession().getIdentityMapAccessor().getFromIdentityMap(d1);
+            Employee emp3 = (Employee) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e6);
+            Department dept1 = (Department) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(d1);
             emp3.setFirstName("foo");
             dept1.setName("science");
-            getEntityManagerFactory("default1").getCache().evictAll();
+            getEntityManagerFactory().getCache().evictAll();
             Employee e4 = em9.find(Employee.class, 141);
             String actualEmp = e4.getFirstName();
             Department d2 = em9.find(Department.class, 3);
@@ -258,7 +262,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     }
     
     public void testEvictContains() {
-        EntityManager em =  createEntityManager("default1");
+        EntityManager em =  createEntityManager();
         beginTransaction(em);
         Employee emp = new Employee();
         emp.setFirstName("evictContains");
@@ -302,7 +306,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         if (! isJPA10()) {        
             int ID_PADS = ID_TEST_BASE + 2100;
             int ID_CHESTPROTECTOR = ID_PADS++;
-            final EntityManager em = createEntityManager("default1");
+            final EntityManager em = createEntityManager();
             // Persist both implementing subclasses of GoalieGear
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
@@ -322,12 +326,11 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         
-            EntityManager em1 = createEntityManager("default1");
-            EntityManager em2 = createEntityManager("default1");
+            EntityManager em1 = createEntityManager();
+            EntityManager em2 = createEntityManager();
             try {
-                ChestProtector e2 = (ChestProtector) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
+                ChestProtector e2 = (ChestProtector) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e1);
+                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory())
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
@@ -337,7 +340,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
             
                 // evict the inheriting entities via their MappedSuperclass (without referencing their ID)
-                getEntityManagerFactory("default1").getCache().evict(GoalieGear.class);            
+                getEntityManagerFactory().getCache().evict(GoalieGear.class);            
             
                 // read the inheriting entities directly from the database (because they are no longer in the cache - hopefully)
                 GoalieGear g5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
@@ -377,7 +380,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         if (! isJPA10()) {        
             int ID_PADS = ID_TEST_BASE + 800;
             int ID_CHESTPROTECTOR = ID_PADS++;
-            final EntityManager em = createEntityManager("default1");
+            final EntityManager em = createEntityManager();
             // Persist both implementing subclasses of GoalieGear
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
@@ -397,13 +400,11 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         
-            EntityManager em1 = createEntityManager("default1");
-            EntityManager em2 = createEntityManager("default1");
+            EntityManager em1 = createEntityManager();
+            EntityManager em2 = createEntityManager();
             try {
-                ChestProtector e2 = (ChestProtector) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
+                ChestProtector e2 = (ChestProtector) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e1);
+                Pads p2 = (Pads) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
                 p2.setDescription("new_pads");
@@ -412,7 +413,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
             
                 // evict the inheriting entities via their non-persistable root (without referencing their ID)
-                getEntityManagerFactory("default1").getCache().evict(Gear.class);            
+                getEntityManagerFactory().getCache().evict(Gear.class);            
             
                 // read the inheriting entities directly from the database (because they are no longer in the cache - hopefully)
                 GoalieGear g5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
@@ -452,7 +453,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         if (! isJPA10()) {        
             int ID_PADS = ID_TEST_BASE + 900;
             int ID_CHESTPROTECTOR = ID_PADS++;
-            final EntityManager em = createEntityManager("default1");
+            final EntityManager em = createEntityManager();
             // Persist both implementing subclasses of GoalieGear
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
@@ -472,13 +473,11 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         
-            EntityManager em1 = createEntityManager("default1");
-            EntityManager em2 = createEntityManager("default1");
+            EntityManager em1 = createEntityManager();
+            EntityManager em2 = createEntityManager();
             try {
-                ChestProtector e2 = (ChestProtector) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
+                ChestProtector e2 = (ChestProtector) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e1);
+                Pads p2 = (Pads) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_chest_protector");
                 p2.setDescription("new_pads");
@@ -487,8 +486,8 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
             
                 // evict the inheriting entities via their non-persistable root (without referencing their ID)
-                getEntityManagerFactory("default1").getCache().evict(NonPersistedSubclassOfChestProtector.class);            
-                //getEntityManagerFactory("default1").getCache().evict(Pads.class);                
+                getEntityManagerFactory().getCache().evict(NonPersistedSubclassOfChestProtector.class);            
+                //getEntityManagerFactory().getCache().evict(Pads.class);                
             
                 // read the inheriting entities directly from the cache (because they were not evicted)            
                 GoalieGear g5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
@@ -522,7 +521,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         if (! isJPA10()) {        
             int ID_PADS = ID_TEST_BASE + 200;
             int ID_CHESTPROTECTOR = ID_PADS++;
-            EntityManager em = createEntityManager("default1");
+            EntityManager em = createEntityManager();
             // Persist both implementing subclasses of GoalieGear
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
@@ -541,13 +540,11 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         
-            EntityManager em1 = createEntityManager("default1");
-            EntityManager em2 = createEntityManager("default1");
+            EntityManager em1 = createEntityManager();
+            EntityManager em2 = createEntityManager();
             try {
-                GoalieGear c2 = (GoalieGear) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-                Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
+                GoalieGear c2 = (GoalieGear) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e1);
+                Pads p2 = (Pads) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(p1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 c2.setDescription("new_chest_protector");
                 p2.setDescription("new_pads");
@@ -555,8 +552,8 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 String expected_pads = em1.find(GoalieGear.class, ID_PADS).getDescription();
             
                 // evict the inheriting entity (by Id) via its' MappedSuperclass
-                    getEntityManagerFactory("default1").getCache().evict(GoalieGear.class, c2.getSerialNumber()); // ChestProtector            
-                    getEntityManagerFactory("default1").getCache().evict(GoalieGear.class, p2.getSerialNumber()); // Pad
+                    getEntityManagerFactory().getCache().evict(GoalieGear.class, c2.getSerialNumber()); // ChestProtector            
+                    getEntityManagerFactory().getCache().evict(GoalieGear.class, p2.getSerialNumber()); // Pad
             
                 // read the inheriting entities directly from the database (because they are no longer in the cache - hopefully)
                 GoalieGear c5 = em2.find(GoalieGear.class, ID_CHESTPROTECTOR);
@@ -584,7 +581,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         if (! isJPA10()) {
             int ID = ID_TEST_BASE + 300;
             boolean _exceptionThrown = false;
-            EntityManager em = createEntityManager("default1");
+            EntityManager em = createEntityManager();
             // Persist
             beginTransaction(em);
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
@@ -595,17 +592,16 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         
-            EntityManager em1 = createEntityManager("default1");
-            EntityManager em2 = createEntityManager("default1");
+            EntityManager em1 = createEntityManager();
+            EntityManager em2 = createEntityManager();
             try {
-                GoalieGear e2 = (GoalieGear) ((JpaEntityManagerFactory) getEntityManagerFactory("default1"))
-                    .getServerSession().getIdentityMapAccessor().getFromIdentityMap(e1);
+                GoalieGear e2 = (GoalieGear) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e1);
                 // change the entity in the cache (only) - later a find() will get the unmodified version in the database
                 e2.setDescription("new_gear");
                 String expected = em1.find(GoalieGear.class, ID).getDescription();
                 // The following does not throws an IAE on a plain java (Integer) class - it will leave the cached entities as-is in the cache
                 // This evict exercises the else clause in the evict when the descriptor is null on the session
-                getEntityManagerFactory("default1").getCache().evict(Integer.class);
+                getEntityManagerFactory().getCache().evict(Integer.class);
                 // read the inheriting entities directly from the cache (because they were not evicted)            
                 GoalieGear g5 = em2.find(GoalieGear.class, ID);
                 String actual = g5.getDescription();
@@ -640,10 +636,10 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         
-            EntityManager em1 = createEntityManager("default1");
-            EntityManager em2 = createEntityManager("default1");
-            Cache aJPACache = getEntityManagerFactory("default1").getCache();
-            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory("default1").getCache();
+            EntityManager em1 = createEntityManager();
+            EntityManager em2 = createEntityManager();
+            Cache aJPACache = getEntityManagerFactory().getCache();
+            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
             Object anId = null;
             try {
                 anId = anEclipseLinkCache.getId(anEntity);
@@ -660,8 +656,8 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     public void testGetId_fromUnsupportedJavaLangInteger_throwsIAE_on_null_descriptor() {
         if (!isJPA10()) {
             boolean _exceptionThrown = false;
-            EntityManager em1 = createEntityManager("default1");            
-            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory("default1").getCache();
+            EntityManager em1 = createEntityManager();            
+            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
             try {
                 anEclipseLinkCache.getId(new Integer(1));
             } catch (IllegalArgumentException iae) {
@@ -682,7 +678,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         if (!isJPA10()) {
             int ID = ID_TEST_BASE + 500;
             Object originalId = null;
-            EntityManager em = createEntityManager();//"default1");
+            EntityManager em = createEntityManager();//);
             // Persist both implementing subclasses of GoalieGear
             beginTransaction(em);
             // CacheableTrueMappedSuperclass (MappedSuperclass with Id) << SubCacheableFalseEntity (Entity)
@@ -694,8 +690,8 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
         
-            EntityManager em1 = createEntityManager("default1");
-            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory("default1").getCache();
+            EntityManager em1 = createEntityManager();
+            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
             Object anId = null;
             originalId = anEntity.getId();
         

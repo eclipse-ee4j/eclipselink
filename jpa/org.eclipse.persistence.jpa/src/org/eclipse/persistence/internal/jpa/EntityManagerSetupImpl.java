@@ -2887,4 +2887,41 @@ public class EntityManagerSetupImpl {
         }
         throw PersistenceUnitLoadingException.persistenceUnitNameAlreadyInUse(puName, puUrl, anotherPuUrl);
     }
+    
+    /**
+     * Create a new version of this EntityManagerSetupImpl and cache it.  Prepare "this" EntityManagerSetupImpl
+     * for garbage collection.
+     * 
+     * This call will mean any users of this EntityManagerSetupImpl will get the new version the next time 
+     * they look it up (for instance and EntityManager creation time)
+     * @param properties
+     * @return
+     */
+    public EntityManagerSetupImpl refreshMetadata(Map properties){
+        String sessionName = getSessionName();
+        String uniqueName = getPersistenceUnitUniqueName();
+        EntityManagerSetupImpl newSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
+        newSetupImpl.setIsInContainerMode(isInContainerMode);
+        newSetupImpl.enableWeaving = enableWeaving;
+        Map refreshProperties = new HashMap();
+        refreshProperties.putAll(getSession().getProperties());
+        if (properties != null){
+            refreshProperties.putAll(properties);
+        }
+        newSetupImpl.predeploy(getPersistenceUnitInfo(), refreshProperties);
+        // newSetupImpl has been already predeployed, predeploy will just increment factoryCount.
+        if (!isInContainerMode) {
+            newSetupImpl.predeploy(getPersistenceUnitInfo(), refreshProperties);
+        }
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            SessionManager.getManager().getSessions().remove(sessionName, getSession());
+            if (EntityManagerFactoryProvider.emSetupImpls.get(sessionName).equals(this)){
+                EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
+            }
+            setIsMetadataExpired(true);
+            EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, newSetupImpl);
+        }
+        return newSetupImpl;
+    }
 }
+

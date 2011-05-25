@@ -39,6 +39,14 @@ import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
+/**
+ * Wraps our implementation of EntityManagerFactory
+ * Most operations are forwarded to the delegate.  This wrapper is used to enable
+ * the refreshMetadata functionality which allows you to switch the underlying metadata for
+ * an EMF after deploy time.
+ * @author tware
+ *
+ */
 public class EntityManagerFactoryImpl implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
     
     protected EntityManagerFactoryDelegate delegate;
@@ -183,48 +191,34 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     public void refreshMetadata(Map properties){
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
         String sessionName = setupImpl.getSessionName();
-        String uniqueName = setupImpl.getPersistenceUnitUniqueName();
         Map existingProperties = delegate.getProperties();
         Map deployProperties = new HashMap();
         deployProperties.putAll(existingProperties);
         if (properties != null){
             deployProperties.putAll(properties);
         }
-        EntityManagerSetupImpl newSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
-        newSetupImpl.setIsInContainerMode(setupImpl.isInContainerMode);
-        newSetupImpl.enableWeaving = setupImpl.enableWeaving;
-        newSetupImpl.predeploy(setupImpl.getPersistenceUnitInfo(), deployProperties);
-        // newSetupImpl has been already predeployed, predeploy will just increment factoryCount.
-        if (!setupImpl.isInContainerMode) {
-            newSetupImpl.predeploy(setupImpl.getPersistenceUnitInfo(), deployProperties);
-        }
-        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-            SessionManager.getManager().getSessions().remove(sessionName, setupImpl.getSession());
-            if (EntityManagerFactoryProvider.emSetupImpls.get(sessionName).equals(setupImpl)){
-                EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
-            }
-            setupImpl.setIsMetadataExpired(true);
-            EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, newSetupImpl);
-            EntityManagerFactoryDelegate oldDelegate = delegate;
-            delegate = new EntityManagerFactoryDelegate(newSetupImpl, deployProperties);
-            // This code has been added to allow validation to occur without actually calling createEntityManager
-            try{
-                 if (newSetupImpl.shouldGetSessionOnCreateFactory(deployProperties)) {
-                    getServerSession();
-                 }
-             } catch (RuntimeException ex) {
-                 if(delegate != null) {
-                     delegate.close();
-                 } else {
-                     newSetupImpl.undeploy();
-                 }
+        EntityManagerSetupImpl newSetupImpl = setupImpl.refreshMetadata(properties);
+        EntityManagerFactoryDelegate oldDelegate = delegate;
+        delegate = new EntityManagerFactoryDelegate(newSetupImpl, deployProperties);
+        // This code has been added to allow validation to occur without actually calling createEntityManager
+        try{
+             if (newSetupImpl.shouldGetSessionOnCreateFactory(deployProperties)) {
+                getServerSession();
+             }
+         } catch (RuntimeException ex) {
+             if(delegate != null) {
+                 delegate.close();
+             } else {
+                 newSetupImpl.undeploy();
+             }
+             synchronized(EntityManagerFactoryProvider.emSetupImpls){
                  // bring back the old emSetupImpl and session
                  EntityManagerFactoryProvider.emSetupImpls.put(sessionName, setupImpl);
                  SessionManager.getManager().getSessions().put(sessionName, setupImpl.getSession());
                  setupImpl.setIsMetadataExpired(false);
-                 delegate = oldDelegate;
-                 throw ex;
              }
+             delegate = oldDelegate;
+             throw ex;
         }
     }
     
@@ -290,7 +284,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                 storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
             }
             if (storedImpl != null){
-                delegate = new EntityManagerFactoryDelegate(storedImpl, storedImpl.getSession().getProperties());
+                delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties());
             }
         }
         return delegate.createEntityManagerImpl(properties);

@@ -416,8 +416,6 @@ public class TransformerFactory {
                         (typeClass != null)  && (!typeClass.extendsInterface(ValueHolderInterface.class))) {
                     if (mapping.isObjectReferenceMapping() && attributeDetails.isVirtualProperty()){
                         classDetails.setShouldWeaveValueHolders(false);
-                        classDetails.setShouldWeaveChangeTracking(false);
-                        classDetails.setShouldWeaveFetchGroups(false);
                         log(SessionLog.WARNING, CANNOT_WEAVE_VIRTUAL_ONE_TO_ONE, new Object[]{classDetails.getClassName(), attributeDetails.getAttributeName()});
                     } else {
                         lazyMappings.add(foreignReferenceMapping);

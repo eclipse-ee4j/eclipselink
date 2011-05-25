@@ -39,8 +39,11 @@ import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.extensibility.ExtensibilityTableCreator;
@@ -70,6 +73,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         suite.addTest(new ExtensibilityTests("testUntriggerVHOnDetached"));
         suite.addTest(new ExtensibilityTests("testFetchGroupOnRefresh"));
         suite.addTest(new ExtensibilityTests("testExistingEntityManagerAfterRefresh"));
+        suite.addTest(new ExtensibilityTests("testSetupImplRefresh"));
         return suite;
     }
     
@@ -445,6 +449,38 @@ public class ExtensibilityTests extends JUnitTestCase {
             em.clear();
             add = em2.find(Address.class, add.getId());
             assertTrue(add.get("pobox").equals("1"));
+        } finally {
+            em = emf.createEntityManager();
+            beginTransaction(em);
+            deleteEmployeeData(em);
+            commitTransaction(em);
+        }
+    }
+    
+    public void testSetupImplRefresh(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        
+        persistEmployeeData(em);
+        clearCache();
+        em.clear();
+        try{
+            EntityManagerFactoryDelegate delegate = JpaHelper.getEntityManagerFactory(emf).unwrap();
+            EntityManagerSetupImpl setupImpl = EntityManagerFactoryProvider.emSetupImpls.get(delegate.getSetupImpl().getSessionName());
+            Map properties = new HashMap();
+            properties.putAll(delegate.getProperties());
+            properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
+            setupImpl.refreshMetadata(properties);
+            
+            em = emf.createEntityManager();
+            beginTransaction(em);
+            Address add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.city = 'Herestowm'").getSingleResult();
+            add.set("appartmentNumber", "444");
+            commitTransaction(em);
+            clearCache();
+            em.clear();
+            add = em.find(Address.class, add.getId());
+            assertTrue(add.get("appartmentNumber").equals("444"));
         } finally {
             em = emf.createEntityManager();
             beginTransaction(em);
