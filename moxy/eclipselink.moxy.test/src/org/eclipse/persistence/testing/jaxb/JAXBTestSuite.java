@@ -18,6 +18,10 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.JAXBInheritanceTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByPackageWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCases;
@@ -176,6 +180,11 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlaccessortype.FieldAndPropertyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.XmlVirtualAccessMethodsTestCases.class);
         suite.addTest(RefreshTestSuite.suite());
+        
+        suite.addTestSuite(JAXBContextByClassArrayWithIndexTestCases.class);
+        suite.addTestSuite(JAXBContextByClassArrayWithRefTestCases.class);
+        suite.addTestSuite(JAXBContextByClassArrayWithRefInBindingsTestCases.class);
+        suite.addTestSuite(JAXBContextByPackageWithIndexTestCases.class);
         return suite;
     }
 

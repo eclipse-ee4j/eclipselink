@@ -653,6 +653,9 @@ public class XMLProcessor {
      * @return
      */
     private Property processXmlAnyElement(XmlAnyElement xmlAnyElement, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
+  
+    	processObjectFactory(tInfo);
+    	
         // reset any existing values
         resetProperty(oldProperty, tInfo);
 
@@ -1116,7 +1119,9 @@ public class XMLProcessor {
      * @return
      */
     private Property processXmlElementRef(XmlElementRef xmlElementRef, Property oldProperty, TypeInfo info) {
-        resetProperty(oldProperty, info);
+    	processObjectFactory(info);
+    	
+    	resetProperty(oldProperty, info);
 
         List<XmlElementRef> eltRefs = new ArrayList<XmlElementRef>();
         eltRefs.add(xmlElementRef);
@@ -1168,6 +1173,8 @@ public class XMLProcessor {
      * @return
      */
     private Property processXmlElementRefs(XmlElementRefs xmlElementRefs, Property oldProperty, TypeInfo info) {
+    	processObjectFactory(info);
+    	
         resetProperty(oldProperty, info);
 
         List<XmlElementRef> eltRefs = new ArrayList<XmlElementRef>();
@@ -1682,6 +1689,17 @@ public class XMLProcessor {
         }
         return name;
     }
+    
+    private void processObjectFactory(TypeInfo tInfo){
+      	int index = tInfo.getJavaClassName().lastIndexOf(".");
+      	if(index > -1){
+    	    String objectFactoryClassName = tInfo.getJavaClassName().substring(0, index) + ".ObjectFactory";    	
+    	    aProcessor.findAndProcessObjectFactory(objectFactoryClassName);
+      	}else{
+            aProcessor.findAndProcessObjectFactory("ObjectFactory");
+      	}
+    }
+    
     
     /**
      * Return a Map of user-defined properties.  Typically the key will 

@@ -1,0 +1,9 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="classA">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="theValues" nillable="true" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="theValue" type="xsd:anyType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="classA" type="classA"/>
+</xsd:schema>

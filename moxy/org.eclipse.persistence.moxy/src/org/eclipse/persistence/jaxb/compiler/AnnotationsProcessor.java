@@ -192,6 +192,7 @@ public class AnnotationsProcessor {
     private List<ElementDeclaration> localElements;
     private HashMap<String, JavaMethod> factoryMethods;
     private Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry> xmlRegistries;
+    private List<String> objectFactoryClassNames;
 
     private Map<String, Class> arrayClassesToGeneratedClasses;
     private Map<Class, JavaClass> generatedClassesToArrayClasses;
@@ -415,6 +416,7 @@ public class AnnotationsProcessor {
         typeInfoClasses = new ArrayList<JavaClass>();
         typeInfo = new HashMap<String, TypeInfo>();
         typeQNames = new ArrayList<QName>();
+        objectFactoryClassNames = new ArrayList<String>();
         userDefinedSchemaTypes = new HashMap<String, QName>();
         if (packageToPackageInfoMappings == null) {
             packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
@@ -1632,6 +1634,9 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlElements.class)) {
             property = buildChoiceProperty(javaHasAnnotations);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
+        	
+        	findAndProcessObjectFactory(cls);        	
+        	
             property = buildReferenceProperty(info, javaHasAnnotations, propertyName, ptype);
             if (helper.isAnnotationPresent(javaHasAnnotations, XmlAnyElement.class)) {
                 XmlAnyElement anyElement = (XmlAnyElement) helper.getAnnotation(javaHasAnnotations, XmlAnyElement.class);
@@ -1643,6 +1648,7 @@ public class AnnotationsProcessor {
                 info.setAnyElementPropertyName(propertyName);
             }
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlAnyElement.class)) {
+        	findAndProcessObjectFactory(cls); 
             XmlAnyElement anyElement = (XmlAnyElement) helper.getAnnotation(javaHasAnnotations, XmlAnyElement.class);
             property = new Property(helper);
             property.setIsAny(true);
@@ -2075,7 +2081,8 @@ public class AnnotationsProcessor {
         // Check for mixed context
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlMixed.class)) {
             info.setMixed(true);
-            property.setMixedContent(true);
+            property.setMixedContent(true);            
+            findAndProcessObjectFactory(cls);                                   
         }
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlContainerProperty.class)) {
             XmlContainerProperty container = (XmlContainerProperty) helper.getAnnotation(javaHasAnnotations, XmlContainerProperty.class);
@@ -3023,8 +3030,38 @@ public class AnnotationsProcessor {
     public HashMap<String, UnmarshalCallback> getUnmarshalCallbacks() {
         return this.unmarshalCallbacks;
     }
-
+    
+    private void findAndProcessObjectFactory(JavaClass cls){
+        //need to make sure objectfactory gets processed.        	
+        try{    		
+            String className =cls.getPackageName() + ".ObjectFactory";     		
+            findAndProcessObjectFactory(className);
+        }catch(JAXBException e){}
+    }
+    
+    void findAndProcessObjectFactory(String objectFactoryClassName){
+        //need to make sure objectfactory gets processed.        	
+        try{    		
+            if(objectFactoryClassNames.contains(objectFactoryClassName)){
+                return; 
+            }    			
+            JavaClass javaClass = helper.getJavaClass(objectFactoryClassName);        	
+            if (isXmlRegistry(javaClass)) {       		
+                JavaClass[] processed = this.processObjectFactory(javaClass, new ArrayList());
+                preBuildTypeInfo(processed);
+                buildTypeInfo(processed);
+                updateGlobalElements(processed);
+       	    }
+        }catch(JAXBException e){}
+    }
+    
     public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
+    	
+    	String className = objectFactoryClass.getName();
+    	if(objectFactoryClassNames.contains(className)){
+    		return new JavaClass[0]; 
+    	}
+    	objectFactoryClassNames.add(className);
         // if there is an xml-registry from XML for this JavaClass, create a map
         // of method names to XmlElementDecl objects to simplify processing
         // later on in this method

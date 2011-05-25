@@ -123,6 +123,29 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
     }
 
+    public void setContextPath(String contextPath) throws Exception {
+    	 classLoader = Thread.currentThread().getContextClassLoader();
+
+         Map props = getProperties();
+         if(props != null){
+             Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+             if(overrides != null){
+                 Iterator valuesIter = overrides.values().iterator();
+                 while(valuesIter.hasNext()){
+                 	Object next = valuesIter.next();
+                 	validateBindingsFileAgainstSchema(next);
+                 }
+             }
+         }         
+         jaxbContext = JAXBContextFactory.createContext(contextPath, classLoader, getProperties());
+
+         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
+         setProject(xmlContext.getSession(0).getProject());
+         jaxbMarshaller = jaxbContext.createMarshaller();
+         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    }
+
+    
     public void setTypes(Type[] newTypes) throws Exception {
 
         classLoader = Thread.currentThread().getContextClassLoader();

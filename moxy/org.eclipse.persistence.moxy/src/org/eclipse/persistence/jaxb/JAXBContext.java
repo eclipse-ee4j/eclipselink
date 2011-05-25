@@ -798,7 +798,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
 
             JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
-            typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
 
             JavaModelImpl jModel;
             if(annotationHelper != null) {
@@ -904,32 +903,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 return existingTypes;
             }
         }
-
-        private static TypeMappingInfo[] updateTypesWithObjectFactory(TypeMappingInfo[] typeMappingInfos, ClassLoader loader) {
-            ArrayList<TypeMappingInfo> updatedTypes = new ArrayList<TypeMappingInfo>();
-            for (TypeMappingInfo next : typeMappingInfos) {
-                if (!(updatedTypes.contains(next))) {
-                    updatedTypes.add(next);
-                }
-                Type theType = next.getType();
-                if (theType instanceof Class) {
-                    if (((Class) theType).getPackage() != null) {
-                        String packageName = ((Class) theType).getPackage().getName();
-                        try {
-                            Class objectFactoryClass = loader.loadClass(packageName + ".ObjectFactory");
-                            if (!(updatedTypes.contains(objectFactoryClass))) {
-                                TypeMappingInfo objectFactoryTypeMappingInfo = new TypeMappingInfo();
-                                objectFactoryTypeMappingInfo.setType(objectFactoryClass);
-                                updatedTypes.add(objectFactoryTypeMappingInfo);
-                            }
-                        } catch (Exception ex) {
-                        }
-                    }
-                }
-            }
-            return updatedTypes.toArray(new TypeMappingInfo[updatedTypes.size()]);
-        }
-
     }
 
     private static class JAXBContextState {

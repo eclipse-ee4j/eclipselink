@@ -34,7 +34,7 @@ public class InterfaceTestCases extends OXTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        jaxbContext = JAXBContext.newInstance(Customer.class);
+        jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
     }
 
     public void testLoadAndSave() throws Exception {
