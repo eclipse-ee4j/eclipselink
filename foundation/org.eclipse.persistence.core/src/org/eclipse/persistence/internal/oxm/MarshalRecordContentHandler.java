@@ -12,10 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
  * marshal record.</p>
  */
 
-public class MarshalRecordContentHandler implements ContentHandler {
+public class MarshalRecordContentHandler implements ExtendedContentHandler {
     protected MarshalRecord marshalRecord;
     protected NamespaceResolver resolver;
 
@@ -91,8 +91,14 @@ public class MarshalRecordContentHandler implements ContentHandler {
 
     public void characters(char[] ch, int start, int length) throws SAXException {
         String characters = new String(ch, start, length);
+        characters(characters);
+    }
+
+    public void characters(CharSequence charSequence) throws SAXException {
+        String characters = charSequence.toString();
         if (characters.trim().length() > 0) {
             marshalRecord.characters(characters);
         }
     }
+
 }

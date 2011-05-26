@@ -21,13 +21,13 @@ import java.util.Map;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
@@ -356,7 +356,7 @@ public class OutputStreamRecord extends MarshalRecord {
      *
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      */
-    protected class OutputStreamRecordContentHandler implements ContentHandler, LexicalHandler {
+    protected class OutputStreamRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
         Map<String, String> prefixMappings;
 
         OutputStreamRecordContentHandler() {
@@ -406,8 +406,13 @@ public class OutputStreamRecord extends MarshalRecord {
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
+            String characters = new String (ch, start, length);
+            characters(characters);
+        }
+
+        public void characters(CharSequence characters) throws SAXException {
             if (isProcessingCData) {
-                cdata(new String (ch, start, length));
+                cdata(characters.toString());
                 return;
             }
 
@@ -415,7 +420,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 outputStreamWrite(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
-            writeValue(new String(ch, start, length), true);
+            writeValue(characters.toString(), true);
         }
 
         // --------------------- LEXICALHANDLER METHODS --------------------- //
@@ -495,6 +500,7 @@ public class OutputStreamRecord extends MarshalRecord {
         public void endEntity(String name) throws SAXException {}
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
         public void endDTD() throws SAXException {}
+
     }
 
     public void flush() {

@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLChoiceCollectionMappingUnmarshalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.ObjectUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
@@ -62,7 +63,6 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -87,7 +87,7 @@ import org.xml.sax.ext.Locator2;
  * @author bdoughan
  *
  */
-public class UnmarshalRecord extends XMLRecord implements ContentHandler, LexicalHandler {
+public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler, LexicalHandler {
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
     protected XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
@@ -118,6 +118,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
+    protected CharSequence characters;
 
     protected List<UnmarshalRecord> childRecordPool;
 
@@ -330,7 +331,14 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         this.noNamespaceSchemaLocation = location;
     }
 
-    public StrBuffer getStringBuffer() {
+    protected StrBuffer getStringBuffer() {
+        return getUnmarshaller().getStringBuffer();
+    }
+
+    public CharSequence getCharacters() {
+        if(null != characters) {
+            return characters;
+        }
         return getUnmarshaller().getStringBuffer();
     }
 
@@ -926,6 +934,54 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         }
     }
 
+    public void characters(CharSequence characters) throws SAXException {
+        try {
+            if (null != selfRecords) {
+                for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
+                    UnmarshalRecord selfRecord = selfRecords.get(x);
+                    if(selfRecord != null){
+                        selfRecord.characters(characters);
+                    } else {
+                        getFragmentBuilder().characters(characters);
+                    }
+                }
+            }
+            if(-1 != unmappedLevel && unmappedLevel <= levelIndex) {
+                return;
+            }
+            XPathNode textNode = xPathNode.getTextNode();
+            if (null == textNode) {
+                textNode = xPathNode.getAnyNode();
+                if (textNode != null) {
+                    xpathNodeIsMixedContent = true;
+                    this.xPathFragment.setLocalName(null);
+                    this.xPathFragment.setNamespaceURI(null);
+                    if (0 == characters.length()) {
+                        return;
+                    }
+                    if (!textNode.isWhitespaceAware() && characters.toString().trim().length() == 0) {
+                        return;
+                    }
+                }
+            }
+
+            if (null != textNode) {
+                xPathNode = textNode;
+                unmarshalContext.characters(this);
+            }
+            if (null != xPathNode.getUnmarshalNodeValue()) {
+                this.characters = characters;
+            }
+        } catch (EclipseLinkException e) {
+            if (null == xmlReader.getErrorHandler()) {
+                throw e;
+            } else {
+                SAXParseException saxParseException = new SAXParseException(null, null, null, 0, 0, e);
+                xmlReader.getErrorHandler().error(saxParseException);
+            }
+        }
+    }
+
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
     }
 
@@ -1067,6 +1123,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     public void resetStringBuffer() {
         this.getStringBuffer().reset();
         this.isBufferCDATA = false;
+        this.characters = null;
     }
 
     public boolean isBufferCDATA() {

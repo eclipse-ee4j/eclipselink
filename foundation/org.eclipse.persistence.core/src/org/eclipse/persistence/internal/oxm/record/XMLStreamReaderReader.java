@@ -137,7 +137,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 break;
             }
             case XMLStreamReader.CHARACTERS: {
-                contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
+                parseCharactersEvent(xmlStreamReader);
                 break;
             }
             case XMLStreamReader.COMMENT: {
@@ -170,15 +170,25 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
             case XMLStreamReader.CDATA: {
                 char[] characters = xmlStreamReader.getText().toCharArray();
                 if(null == lexicalHandler) {
-                    contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
+                    parseCharactersEvent(xmlStreamReader);
                 } else {
                     lexicalHandler.startCDATA();
-                    contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
+                    parseCharactersEvent(xmlStreamReader);
                     lexicalHandler.endCDATA();
                 }
                 break;
             }
         }
+    }
+
+    /**
+     * Subclasses of this class can override this method to provide alternate
+     * mechanisms for processing the characters event.  One possibility is 
+     * obtaining a CharSequence and calling the corresponding characters method 
+     * on the extended content handler.
+     */
+    protected void parseCharactersEvent(XMLStreamReader xmlStreamReader) throws SAXException {
+        contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
     }
 
     private static class IndexedAttributeList implements Attributes {

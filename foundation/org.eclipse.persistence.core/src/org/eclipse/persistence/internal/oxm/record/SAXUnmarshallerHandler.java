@@ -34,7 +34,6 @@ import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -57,7 +56,7 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespace
  * @author bdoughan
  *
  */
-public class SAXUnmarshallerHandler implements ContentHandler {
+public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private XMLReader xmlReader;
     private XMLContext xmlContext;
     private UnmarshalRecord rootRecord;
@@ -310,6 +309,9 @@ public class SAXUnmarshallerHandler implements ContentHandler {
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
+    }
+
+    public void characters(CharSequence characters) throws SAXException {
     }
 
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {

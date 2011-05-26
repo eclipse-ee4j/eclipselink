@@ -108,7 +108,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         if (!xmlField.getLastXPathFragment().nameIsText()) {
             return;
         }
-        Object value = unmarshalRecord.getStringBuffer().toString();
+        Object value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
         XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {

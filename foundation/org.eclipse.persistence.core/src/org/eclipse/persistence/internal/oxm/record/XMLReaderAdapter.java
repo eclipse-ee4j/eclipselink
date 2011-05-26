@@ -16,10 +16,13 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
@@ -29,7 +32,7 @@ import org.xml.sax.ext.LexicalHandler;
  */
 public abstract class XMLReaderAdapter extends XMLReader {
 
-    protected ContentHandler contentHandler;
+    protected ExtendedContentHandler contentHandler;
     private DTDHandler dtdHandler;
     private EntityResolver entityResolver;
     private ErrorHandler errorHandler;
@@ -44,23 +47,27 @@ public abstract class XMLReaderAdapter extends XMLReader {
             Schema schema = xmlUnmarshaller.getSchema();
             if(null != schema) {
                 validatorHandler = schema.newValidatorHandler();
+                this.contentHandler = new ExtendedContentHandlerAdapter(validatorHandler);
             }
             setErrorHandler(xmlUnmarshaller.getErrorHandler());
         }
     }
 
     @Override
-    public ContentHandler getContentHandler() {
+    public ExtendedContentHandler getContentHandler() {
         return contentHandler;
     }
 
     @Override
     public void setContentHandler(ContentHandler contentHandler) {
         if(null == validatorHandler) {
-            this.contentHandler = contentHandler;
+            if(contentHandler instanceof  ExtendedContentHandler) {
+                this.contentHandler = (ExtendedContentHandler) contentHandler;
+            } else {
+                this.contentHandler = new ExtendedContentHandlerAdapter(contentHandler);
+            }
         } else {
             validatorHandler.setContentHandler(contentHandler);
-            this.contentHandler = validatorHandler;
         }
     }
 
@@ -133,6 +140,70 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     @Override
     public void parse(String systemId) {
+    }
+
+    /**
+     * Convert a ContentHandler to an ExtendedContentHandler
+     */
+    private static class ExtendedContentHandlerAdapter implements ExtendedContentHandler {
+
+        private ContentHandler contentHandler;
+
+        public ExtendedContentHandlerAdapter(ContentHandler contentHandler) {
+            this.contentHandler = contentHandler; 
+        }
+
+        public void setDocumentLocator(Locator locator) {
+            contentHandler.setDocumentLocator(locator);
+        }
+
+        public void startDocument() throws SAXException {
+            contentHandler.startDocument();
+        }
+
+        public void endDocument() throws SAXException {
+            contentHandler.endDocument();
+        }
+
+        public void startPrefixMapping(String prefix, String uri) throws SAXException {
+            contentHandler.startPrefixMapping(prefix, uri);
+        }
+
+        public void endPrefixMapping(String prefix) throws SAXException {
+            contentHandler.endPrefixMapping(prefix);
+        }
+
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            contentHandler.startElement(uri, localName, qName, atts);
+        }
+
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            contentHandler.endElement(uri, localName, qName);
+        }
+
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            contentHandler.characters(ch, start, length);
+        }
+
+        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+            contentHandler.ignorableWhitespace(ch, start, length);
+        }
+
+        public void processingInstruction(String target, String data) throws SAXException {
+            contentHandler.processingInstruction(target, data);
+        }
+
+        public void skippedEntity(String name) throws SAXException {
+            contentHandler.skippedEntity(name);
+        }
+
+        public void characters(CharSequence characters) throws SAXException {
+            if(null == characters) {
+                return;
+            }
+            contentHandler.characters(characters.toString().toCharArray(), 0, characters.length());
+        }
+
     }
 
 }

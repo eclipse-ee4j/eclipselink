@@ -15,11 +15,11 @@ package org.eclipse.persistence.internal.oxm.record.deferred;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
@@ -31,7 +31,7 @@ import org.xml.sax.ext.LexicalHandler;
  * <li> Return control to the original unmarshalRecord
  * </ul>
  */
-public abstract class DeferredContentHandler implements ContentHandler, LexicalHandler {
+public abstract class DeferredContentHandler implements ExtendedContentHandler, LexicalHandler {
     private int levelIndex;
     private List<SAXEvent> events;
     private UnmarshalRecord parent;
@@ -151,6 +151,12 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
     public void characters(char[] ch, int start, int length) throws SAXException {
         charactersOccurred = true;
         CharactersEvent event = new CharactersEvent(ch, start, length);
+        events.add(event);
+    }
+
+    public void characters(CharSequence characters) {
+        charactersOccurred = true;
+        CharactersEvent event = new CharactersEvent(characters);
         events.add(event);
     }
 

@@ -22,9 +22,16 @@ import org.xml.sax.SAXException;
  * </ul>
  */
 public class CharactersEvent extends SAXEvent {
+
+    private CharSequence charSequence;
     private char[] characters;
     private int start;
     private int end;
+
+    public CharactersEvent(CharSequence charSequence) {
+        super();
+        this.charSequence = charSequence;
+    }
 
     public CharactersEvent(char[] theCharacters, int theStart, int theEnd) {
         super();
@@ -35,6 +42,11 @@ public class CharactersEvent extends SAXEvent {
     }
 
     public void processEvent(UnmarshalRecord unmarshalRecord) throws SAXException {
-        unmarshalRecord.characters(characters, start, end);
+        if(null == charSequence) {
+            unmarshalRecord.characters(characters, start, end);
+        } else {
+            unmarshalRecord.characters(charSequence);
+        }
     }
+
 }

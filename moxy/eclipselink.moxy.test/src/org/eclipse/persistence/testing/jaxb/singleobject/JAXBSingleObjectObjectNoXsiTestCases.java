@@ -26,11 +26,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases.ExtendedXMLStreamReaderReader;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -103,6 +106,21 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
             
             Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, Object.class);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+
+    public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {
+        if(null != XML_INPUT_FACTORY) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            
+            ExtendedXMLStreamReaderReader xmlStreamReaderReaderEx = new ExtendedXMLStreamReaderReader();
+            XMLStreamReaderInputSource xmlStreamReaderInputSource = new XMLStreamReaderInputSource(xmlStreamReader);
+            SAXSource saxSource = new SAXSource(xmlStreamReaderReaderEx, xmlStreamReaderInputSource);
+
+            Object testObject = jaxbUnmarshaller.unmarshal(saxSource, Object.class);
             instream.close();
             xmlToObjectTest(testObject);
         }

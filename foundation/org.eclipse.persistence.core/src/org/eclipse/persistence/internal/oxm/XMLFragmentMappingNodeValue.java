@@ -150,7 +150,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         XPathFragment lastFrag = ((XMLField)xmlFragmentMapping.getField()).getLastXPathFragment();
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         if (lastFrag.nameIsText()) {
-            Object attributeValue = builder.buildTextNode(unmarshalRecord.getStringBuffer().toString());
+            Object attributeValue = builder.buildTextNode(unmarshalRecord.getCharacters().toString());
             unmarshalRecord.resetStringBuffer();
             xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);
         } else if (!lastFrag.isAttribute()) {

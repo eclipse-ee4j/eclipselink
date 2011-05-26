@@ -169,7 +169,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             return;
         }
         
-        Object value = unmarshalRecord.getStringBuffer().toString();
+        Object value = unmarshalRecord.getCharacters().toString();
         Object collection = unmarshalRecord.getContainerInstance(this);
         unmarshalRecord.resetStringBuffer();
 
@@ -187,7 +187,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
-       Object value = unmarshalRecord.getStringBuffer().toString();
+        Object value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
 
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {

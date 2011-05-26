@@ -179,6 +179,18 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     /**
+     * This call back mechanism provides an opportunity for the XMLReader to
+     * provide an alternate conversion.  This optimization is currently only 
+     * leveraged for properties annotated with @XmlInlineBinaryData.
+     * @param characters The characters to be converted.
+     * @param dataType The type to be converted to.
+     * @return The converted value
+     */
+    public Object getValue(CharSequence characters, Class<?> dataType) {
+        return null;
+    }
+
+    /**
      * Performance Optimization:
      * It is expensive to change the LexicalHandler on the underlying XMLReader
      * constantly through the setProperty(String, Object) mechanism.  So instead

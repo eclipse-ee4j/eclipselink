@@ -145,7 +145,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        unmarshalRecord.getStringBuffer().reset();
+        unmarshalRecord.resetStringBuffer();
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object container) {

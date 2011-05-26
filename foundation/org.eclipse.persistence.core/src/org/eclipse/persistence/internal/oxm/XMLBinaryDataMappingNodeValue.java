@@ -250,7 +250,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        unmarshalRecord.getStringBuffer().reset();
+        unmarshalRecord.resetStringBuffer();
     }
 
     /**
@@ -305,6 +305,6 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
     
     public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {
-        unmarshalRecord.getStringBuffer().reset();
+        unmarshalRecord.resetStringBuffer();
     }
 }

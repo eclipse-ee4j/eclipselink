@@ -456,7 +456,11 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             SAXSource saxSource = (SAXSource) source;
             XMLReader xmlReader = null;
             if (saxSource.getXMLReader() != null) {
-                xmlReader = new XMLReader(saxSource.getXMLReader());
+                if(saxSource.getXMLReader() instanceof XMLReader) {
+                    xmlReader = (XMLReader) saxSource.getXMLReader();
+                } else {
+                    xmlReader = new XMLReader(saxSource.getXMLReader());
+                }
             }
             if (null == xmlReader) {
                 return unmarshal(saxSource.getInputSource());
@@ -489,7 +493,11 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             SAXSource saxSource = (SAXSource) source;
             XMLReader xmlReader = null;
             if (saxSource.getXMLReader() != null) {
-                xmlReader = new XMLReader(saxSource.getXMLReader());
+                if(saxSource.getXMLReader() instanceof XMLReader) {
+                    xmlReader = (XMLReader) saxSource.getXMLReader();
+                } else {
+                    xmlReader = new XMLReader(saxSource.getXMLReader());
+                }
             }
             if (null == saxSource.getXMLReader()) {
                 return unmarshal(saxSource.getInputSource(), clazz);

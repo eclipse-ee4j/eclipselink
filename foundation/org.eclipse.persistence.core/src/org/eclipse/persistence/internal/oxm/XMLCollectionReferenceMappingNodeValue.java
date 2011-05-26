@@ -102,7 +102,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             return;
         }
 
-        Object value = unmarshalRecord.getStringBuffer().toString();
+        Object value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
 
         XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();

@@ -40,6 +40,7 @@ import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRe
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsSingleIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.XmlIdRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.object.XmlIdRefsObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.LargeInlineBinaryTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.XmlInlineBinaryDataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBDOMTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
@@ -108,6 +109,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlElementsIdRefTestCases.class);
         suite.addTestSuite(XmlElementsSingleIdRefTestCases.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
+        suite.addTestSuite(LargeInlineBinaryTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumAttributeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementCollectionTestCases.class);

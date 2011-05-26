@@ -204,7 +204,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     }
 
     protected void endElementProcessText(UnmarshalRecord unmarshalRecord, Converter converter, XPathFragment xPathFragment, Object collection) {
-        Object value = unmarshalRecord.getStringBuffer().toString();
+        Object value = unmarshalRecord.getCharacters().toString();
 
         unmarshalRecord.resetStringBuffer();
         if (!XMLConstants.EMPTY_STRING.equals(value)) {

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
+import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,7 +26,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  * <p><b>Purpose</b>:  Build a DOM from SAX events.</p>
  */
 
-public class SAXDocumentBuilder implements ContentHandler {
+public class SAXDocumentBuilder implements ExtendedContentHandler {
     protected Document document;
     protected List<Node> nodes;
     protected XMLPlatform xmlPlatform;
@@ -163,6 +163,10 @@ public class SAXDocumentBuilder implements ContentHandler {
 
     public void characters(char[] ch, int start, int length) throws SAXException {
         stringBuffer.append(ch, start, length);
+    }
+
+    public void characters(CharSequence characters) {
+        stringBuffer.append(characters.toString());
     }
 
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {

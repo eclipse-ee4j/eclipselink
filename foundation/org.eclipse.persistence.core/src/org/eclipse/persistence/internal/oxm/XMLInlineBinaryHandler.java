@@ -40,20 +40,23 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
         this.converter = converter;
         this.setUnmarshaller(parent.getUnmarshaller());
     }
-    
+
     @Override
     public void characters(char[] ch, int offset, int length) throws SAXException {
         this.getStringBuffer().append(ch, offset, length);
     }
     
-   
+    @Override
+    public void characters(CharSequence characters) throws SAXException {
+        this.characters = characters;
+    }
+
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
        //Since we know this was a simple or empty element, we know that we only got a characters event and then this. Process the
        //text.
        XMLField field = null;
-       Object value = this.getStringBuffer().toString();
-       resetStringBuffer();
+       Object value = this.getCharacters();
 
        Class attributeClassification = null;
        boolean isSwaRef = false;
@@ -69,9 +72,9 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            
        if (isSwaRef && (parent.getUnmarshaller().getAttachmentUnmarshaller() != null)) {    	  
            if(attributeClassification != null && attributeClassification == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-               value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler((String)value);
+               value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsDataHandler(value.toString());
            } else {
-               value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray((String)value);
+               value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray(value.toString());
            }
            if (converter != null) {
                if (converter instanceof XMLConverter) {
@@ -81,9 +84,14 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
                }
            }
        } else {
-           value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(value);
+           Object valueFromReader = this.parent.getXMLReader().getValue(this.characters, attributeClassification);
+           if(null != valueFromReader) {
+               value = valueFromReader;
+           } else {
+               value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(value.toString());
+           } 
+           value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
        }
-       value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
        if (converter != null) {
            if (converter instanceof XMLConverter) {
                value = ((XMLConverter)converter).convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
@@ -104,6 +112,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            parent.getXMLReader().setContentHandler(parent);
            parent.endElement(namespaceURI, localName, qName);       
        }
+       resetStringBuffer();
    }
 }
 

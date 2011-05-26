@@ -19,7 +19,7 @@ package org.eclipse.persistence.internal.oxm;
  * @author mmacivor
  */
 
-public class StrBuffer {
+public class StrBuffer implements CharSequence {
 	private int numChar; //The number of characters currently in this buffer
 	private char[] myBuf;
 	
@@ -76,4 +76,13 @@ public class StrBuffer {
 	public String toString() {
 		return new String(this.myBuf, 0, this.numChar);
 	}
+
+    public char charAt(int index) {
+        return myBuf[index];
+    }
+
+    public CharSequence subSequence(int start, int end) {
+        return new String(this.myBuf, start, end);
+    }
+
 }

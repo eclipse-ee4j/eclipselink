@@ -85,7 +85,7 @@ public class FieldTransformerNodeValue extends NodeValue {
     }    
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        Object value = unmarshalRecord.getStringBuffer().toString();
+        Object value = unmarshalRecord.getCharacters().toString();
         boolean isCDATA = unmarshalRecord.isBufferCDATA();
         unmarshalRecord.resetStringBuffer();
         XMLField toWrite = xmlField;

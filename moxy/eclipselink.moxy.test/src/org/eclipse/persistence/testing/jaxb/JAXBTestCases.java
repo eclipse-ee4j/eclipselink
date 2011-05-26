@@ -39,6 +39,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
@@ -46,12 +47,15 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.compiler.Generator;
@@ -66,6 +70,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 public abstract class JAXBTestCases extends XMLMappingTestCases {
@@ -413,6 +418,21 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {
+        if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+
+            ExtendedXMLStreamReaderReader xmlStreamReaderReaderEx = new ExtendedXMLStreamReaderReader();
+            XMLStreamReaderInputSource xmlStreamReaderInputSource = new XMLStreamReaderInputSource(xmlStreamReader);
+            SAXSource saxSource = new SAXSource(xmlStreamReaderReaderEx, xmlStreamReaderInputSource);
+
+            Object testObject = jaxbUnmarshaller.unmarshal(saxSource);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -674,5 +694,17 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
+    public static class ExtendedXMLStreamReaderReader extends XMLStreamReaderReader {
+
+        @Override
+        protected void parseCharactersEvent(XMLStreamReader xmlStreamReader) throws SAXException {
+            try {
+                contentHandler.characters(xmlStreamReader.getElementText());
+            } catch(XMLStreamException e) {
+                super.parseCharactersEvent(xmlStreamReader);
+            }
+        }
+
+    }
 
 }

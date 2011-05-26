@@ -164,10 +164,10 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             return;
         }
         Object value;
-        if(unmarshalRecord.getStringBuffer().length() == 0) {
+        if(unmarshalRecord.getCharacters().length() == 0) {
             value = this.getMapping().getNullValue();
         } else {
-            value = unmarshalRecord.getStringBuffer().toString();
+            value = unmarshalRecord.getCharacters().toString();
         }
         unmarshalRecord.resetStringBuffer();
 

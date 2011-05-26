@@ -172,7 +172,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     private void startElementProcessText(UnmarshalRecord unmarshalRecord, Object collection) {
-        String value = unmarshalRecord.getStringBuffer().toString();
+        String value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
         //if (!XMLConstants.EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
         if (value.length() > 0 && xmlAnyCollectionMapping.isMixedContent()) {
