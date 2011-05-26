@@ -861,6 +861,9 @@
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.extensibility.model}" includes="*.xml"/>
         </copy>
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.extensibility.model}/repository" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/extensibility/**"/>
         </copy>
@@ -868,9 +871,6 @@
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}">
             </fileset>
         </jar>
-        <copy todir="${jpatest.build.location}/${classes.dir}">
-            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.extensibility.model}/repository"/>
-        </copy>
     </target>
 
     <target name="package-beanvalidation" depends="">

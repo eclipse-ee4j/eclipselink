@@ -164,20 +164,22 @@ public class JpaHelper {
     }
 
     /** 
-     * Refresh the metadata on an EntityManagerFactory.  Use this method if you are using the
-     * extensibility api to refresh the metadata.  The factory will be rebootstrapped so that
-     * any new metadata in your metadata sources will be used.
+     * Given an EntityManager return the EntityManagerFactory that created it.  This method must be called
+     * on an open entity manager and will return null if called on a closed entityManager.
      * 
-     *  Existing entityManagers will continue to function on the old metadata, but new EntityManagers
-     *  will work with the new metadata.
+     * This method will return null for non-EclipseLink EntityManagers.
+     * 
+     * @see JpaEntityManagerFactory
      */ 
-    public static void refreshMetadata(EntityManagerFactory emf, Map properties) { 
-        if (emf instanceof EntityManagerFactoryImpl) { 
-            ((EntityManagerFactoryImpl)emf).refreshMetadata(properties); 
-            return;
+    public static JpaEntityManagerFactory getEntityManagerFactory(javax.persistence.EntityManager em) { 
+        JpaEntityManager entityManager = getEntityManager(em);
+        if (entityManager != null){
+            if (entityManager.getEntityManagerFactory() != null){
+                return ((EntityManagerFactoryDelegate)entityManager.getEntityManagerFactory()).getOwner();
+            }
         }
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_entity_manager_factory_for_refresh", new Object[]{emf.getClass()}));
-    } 
+        return null;
+    }
 
     /** 
      * Retrieve the shared database session from the EMF. 

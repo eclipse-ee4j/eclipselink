@@ -37,10 +37,11 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -120,7 +121,7 @@ public class ExtensibilityTests extends JUnitTestCase {
     
     public void testDescriptors(){
         EntityManagerFactory emf = getEntityManagerFactory();
-        ServerSession session = (ServerSession)JpaHelper.getDatabaseSession(emf);
+        ServerSession session = (ServerSession)getDatabaseSession();
         
         RelationalDescriptor empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") != null);
@@ -235,7 +236,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         EntityManagerFactory emf = getEntityManagerFactory();
         WeakReference<EntityManagerFactoryDelegate> emfRef = new WeakReference<EntityManagerFactoryDelegate>(((JpaEntityManagerFactory)emf).unwrap());
         EntityManager em = emf.createEntityManager();
-        ServerSession session = (ServerSession)JpaHelper.getDatabaseSession(emf);
+        ServerSession session = (ServerSession)getDatabaseSession();
         RelationalDescriptor addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") != null);
         RelationalDescriptor empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
@@ -245,8 +246,9 @@ public class ExtensibilityTests extends JUnitTestCase {
         Map properties = new HashMap();
         properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
         
-        JpaHelper.refreshMetadata(emf, properties);
-        session = (ServerSession)JpaHelper.getDatabaseSession(emf);
+        JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
+
+        session = (ServerSession)getDatabaseSession();
         addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") == null);
         assertTrue(addDescriptor.getMappingForAttributeName("appartmentNumber") != null);
@@ -295,15 +297,14 @@ public class ExtensibilityTests extends JUnitTestCase {
             emp.getAddress().set("appartmentNumber", "112");
             commitTransaction(em);
             
-            em.close();
-            
             Map properties = new HashMap();
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension.xml");
             
-            JpaHelper.refreshMetadata(emf, properties);
+            JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
+            
+            em.close();
             
             em = emf.createEntityManager();
-
             
             beginTransaction(em);
             add = em.merge(add);
@@ -345,12 +346,11 @@ public class ExtensibilityTests extends JUnitTestCase {
             emp.putExt("phoneNumbers", numbers);
             commitTransaction(em);
             
-            em.close();
-            
             Map properties = new HashMap();
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
             
-            JpaHelper.refreshMetadata(emf, properties);
+            JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
+            em.close();
             
             em = emf.createEntityManager();
             emp = em.merge(emp);
@@ -375,7 +375,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         em.clear();
         Employee emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
         try{
-            JpaHelper.refreshMetadata(emf, null);
+            JpaHelper.getEntityManagerFactory(em).refreshMetadata(null);
             assertTrue(emp.getAddress().getCity().equals("Herestowm"));
             em.close();
             em = null;
@@ -406,7 +406,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             fetch.addAttribute("city");
             fetch.addAttribute("appartmentNumber");
             add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.city = 'Herestowm'").setHint(QueryHints.FETCH_GROUP, fetch).getSingleResult();
-            JpaHelper.refreshMetadata(emf, null);
+            JpaHelper.getEntityManagerFactory(em).refreshMetadata(null);
             System.gc();
             assertTrue(add.getCity().equals("Herestowm"));
             assertTrue(add.get("appartmentNumber") == null);
@@ -430,7 +430,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         try {
             Map properties = new HashMap();
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension.xml");
-            JpaHelper.refreshMetadata(emf, properties);
+            JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
             EntityManager em2 = emf.createEntityManager();
             
             beginTransaction(em);
@@ -465,7 +465,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         clearCache();
         em.clear();
         try{
-            EntityManagerFactoryDelegate delegate = JpaHelper.getEntityManagerFactory(emf).unwrap();
+            EntityManagerFactoryDelegate delegate = (EntityManagerFactoryDelegate)em.unwrap(JpaEntityManager.class).getEntityManagerFactory();
             EntityManagerSetupImpl setupImpl = EntityManagerFactoryProvider.emSetupImpls.get(delegate.getSetupImpl().getSessionName());
             Map properties = new HashMap();
             properties.putAll(delegate.getProperties());

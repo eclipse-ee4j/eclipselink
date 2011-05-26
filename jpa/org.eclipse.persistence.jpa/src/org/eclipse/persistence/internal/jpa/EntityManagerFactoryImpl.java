@@ -165,11 +165,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @param serverSession
      */
     public EntityManagerFactoryImpl(DatabaseSessionImpl session) {
-        delegate = new EntityManagerFactoryDelegate(session);
+        delegate = new EntityManagerFactoryDelegate(session, this);
     }
 
     public EntityManagerFactoryImpl(EntityManagerSetupImpl setupImpl, Map properties) {
-        delegate = new EntityManagerFactoryDelegate(setupImpl, properties);
+        delegate = new EntityManagerFactoryDelegate(setupImpl, properties, this);
     }
     
     /**
@@ -178,7 +178,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * properties and descriptors.
      */
     public EntityManagerFactoryImpl(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors) {
-        delegate = new EntityManagerFactoryDelegate(persistenceUnitName, properties, descriptors);
+        delegate = new EntityManagerFactoryDelegate(persistenceUnitName, properties, descriptors, this);
     }
     
     /**
@@ -199,7 +199,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
         EntityManagerSetupImpl newSetupImpl = setupImpl.refreshMetadata(properties);
         EntityManagerFactoryDelegate oldDelegate = delegate;
-        delegate = new EntityManagerFactoryDelegate(newSetupImpl, deployProperties);
+        delegate = new EntityManagerFactoryDelegate(newSetupImpl, deployProperties, this);
         // This code has been added to allow validation to occur without actually calling createEntityManager
         try{
              if (newSetupImpl.shouldGetSessionOnCreateFactory(deployProperties)) {
@@ -284,7 +284,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                 storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
             }
             if (storedImpl != null){
-                delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties());
+                delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
             }
         }
         return delegate.createEntityManagerImpl(properties);

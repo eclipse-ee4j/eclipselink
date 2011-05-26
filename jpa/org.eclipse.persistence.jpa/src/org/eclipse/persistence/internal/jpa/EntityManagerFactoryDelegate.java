@@ -123,19 +123,24 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     
     protected boolean commitWithoutPersistRules;
 
+    /** Pointer to the EntityManagerFactoryImpl that created me */
+    protected JpaEntityManagerFactory owner = null;
+
     /**
      * Will return an instance of the Factory. Should only be called by
      * EclipseLink.
      * 
      * @param serverSession
      */
-    public EntityManagerFactoryDelegate(DatabaseSessionImpl databaseSession) {
+    public EntityManagerFactoryDelegate(DatabaseSessionImpl databaseSession, JpaEntityManagerFactory owner) {
         this.session = databaseSession;
+        this.owner = owner;
         processProperties(databaseSession.getProperties());
     }
 
-    public EntityManagerFactoryDelegate(EntityManagerSetupImpl setupImpl, Map properties) {
+    public EntityManagerFactoryDelegate(EntityManagerSetupImpl setupImpl, Map properties, JpaEntityManagerFactory owner) {
         this.setupImpl = setupImpl;
+        this.owner = owner;
         this.properties = properties;
     }
     
@@ -144,8 +149,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * Instead all configuration is driven from the provided persistence unit
      * properties and descriptors.
      */
-    public EntityManagerFactoryDelegate(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors) {
+    public EntityManagerFactoryDelegate(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors, JpaEntityManagerFactory owner) {
         this.properties = properties;
+        this.owner = owner;
         
         SEPersistenceUnitInfo info = new SEPersistenceUnitInfo();
         info.setClassLoader((ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER));
@@ -241,6 +247,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
             // created from the constructor no longer throws a NPE
             setupImpl.undeploy();
         }
+        owner = null;
     }
 
     /**
@@ -585,6 +592,15 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         return this.setupImpl.getMetamodel();
     }
 
+    /**
+     * INTERNAL:
+     * Get the EntityManagerFactoryImpl that created this
+     * @return
+     */
+    public JpaEntityManagerFactory getOwner() {
+        return owner;
+    }
+    
     /**
      * INTERNAL: Convenience function to allow us to reset the Metamodel in the
      * possible case that we want to regenerate it. This function is outside of
