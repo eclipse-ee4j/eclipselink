@@ -15,8 +15,6 @@ package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2;
 import java.io.*;
 import javax.persistence.*;
 
-
-
 /**
  * <p><b>Purpose</b>: Defines the former employment of an Employee.
  *    <p><b>Description</b>: The former employment holds the name of the

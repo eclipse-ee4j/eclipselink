@@ -909,7 +909,7 @@ public class EmployeePopulator {
     
     public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("SProc_Read_Address");
+        proc.setName("SProc_Read_BR1_Address");
         
         proc.addInOutputArgument("address_id_v", Integer.class);
         proc.addOutputArgument("street_v", String.class);

@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
-
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
@@ -130,12 +129,17 @@ public class Project implements Serializable {
     }
 
     // @ManyToMany(targetEntity=Employee.class, mappedBy="projects")
-    // Cannot use with SessionBroker @ManyToMany with mappedBy
-    // because relation table specified in Employee.projects MBR3_EMP_PROJ
-    // should be defined in the same db as the target (Project defined in BR3 db).
-    // Solution is to define an independent @ManyToMany that uses its own
-    // relational table MBR2_PROJ_EMP defined in BR2 (where Employee is defined).
-    // If user maintains both relationships then the two relational tables will be always in sync. 
+    /* If a mapping is between two different composite members uses JoinTable,
+     * then the relationship must be unidirectional - the "invert" mapping cannot use "mappedBy".
+     * That's because JoinTable must be defined in the same composite member with target entity:
+     * master mapping requires it to be in slave's member, slave mapping - in master's.
+     * 
+     * Workaround is to define independent invert mapping with its own JoinTable.
+     * If user maintains both sides of the relationship then the two join tables will be in sync.
+     * 
+     * JoinTable MBR3_EMP_PROJ specified by Employee.projects defined in the same composite member with Project.
+     * This invert mapping specifies its own join table MBR2_PROJ_EMP defined in the same composite member with Employee.
+     */ 
     @ManyToMany()
     @JoinTable(
         name="MBR2_PROJ_EMP",

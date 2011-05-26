@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2;
 
-
-
 /**
  * Used by constructorQuery tests to allow use of a constructor query with parts of Employee
  * @author tware

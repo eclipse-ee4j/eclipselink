@@ -432,6 +432,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // composite specific tests
         tests.add("testRollbackBroker");
         tests.add("testMustBeCompositeMember");
+        tests.add("testNativeQueryWithResultType");
         if (!isJPA10()) {
             tests.add("testSessionEventListeners");
         }
@@ -9757,7 +9758,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         try {
             // native query triggers early begin transaction
-            em.createNativeQuery("SELECT F_NAME FROM CMP3_EMPLOYEE").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, memberPuName).getResultList();
+            em.createNativeQuery("SELECT F_NAME FROM MBR2_EMPLOYEE").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, memberPuName).getResultList();
             // verify that the connection is really not pooled.
             assertTrue("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool() == null);
         } finally {
@@ -10638,5 +10639,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
         return list;
+    }
+    
+    public void testNativeQueryWithResultType() {
+        EntityManager em = createEntityManager();
+        Query query = em.createNamedQuery("findAllSQLEmployees");
+        List<Employee> list = query.getResultList();
+        
+        clearCache();
+        Query query2 = em.createNativeQuery("select * from MBR2_EMPLOYEE where F_NAME = 'John'", Employee.class);
+        List<Employee> list2 = query2.getResultList();
+        closeEntityManager(em);
     }
 }

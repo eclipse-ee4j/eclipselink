@@ -26,7 +26,6 @@ import org.eclipse.persistence.annotations.Property;
  *    @see Employee
  */
 @Embeddable
-@Table(name="CMP3_EMPLOYEE")
 @Property(name="embeddableClassName", value="EmploymentPeriod")
 public class EmploymentPeriod implements Serializable, Cloneable {
     private Date startDate;
@@ -47,28 +46,28 @@ public class EmploymentPeriod implements Serializable, Cloneable {
         endDate = theEndDate;
     }
 
-	@Column(name="S_DATE")
-	public Date getStartDate() { 
+    @Column(name="S_DATE")
+    public Date getStartDate() { 
         return startDate; 
     }
     
-	public void setStartDate(Date date) { 
+    public void setStartDate(Date date) { 
         this.startDate = date; 
     }
 
-	@Column(name="E_DATE")
-	public Date getEndDate() { 
+    @Column(name="E_DATE")
+    public Date getEndDate() { 
         return endDate; 
     }
     
-	public void setEndDate(Date date) { 
+    public void setEndDate(Date date) { 
         this.endDate = date; 
     }
 
-	public Object clone() throws CloneNotSupportedException{
-		return super.clone();
-	}
-	
+    public Object clone() throws CloneNotSupportedException{
+        return super.clone();
+    }
+    
     /**
      * Print the start & end date
      */

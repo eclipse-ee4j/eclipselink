@@ -46,6 +46,7 @@ public class EmploymentPeriod implements Serializable, Cloneable {
         endDate = theEndDate;
     }
 
+    @Column(name="S_DATE")
     public Date getStartDate() { 
         return startDate; 
     }
@@ -54,6 +55,7 @@ public class EmploymentPeriod implements Serializable, Cloneable {
         this.startDate = date; 
     }
 
+    @Column(name="E_DATE")
     public Date getEndDate() { 
         return endDate; 
     }

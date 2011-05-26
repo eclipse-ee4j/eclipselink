@@ -18,6 +18,7 @@ import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
 
+import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.StoredProcedureParameter;
@@ -80,6 +81,19 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
             @StoredProcedureParameter(direction=OUT, name="p_code_v", queryParameter="P_CODE", type=String.class)
         }),
     @NamedStoredProcedureQuery(
+            name="SProcAddressByIndex",
+            resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Address.class,
+            procedureName="SProc_Read_BR1_Address",
+            callByIndex=true,
+            parameters={
+                @StoredProcedureParameter(direction=IN_OUT, queryParameter="ADDRESS_ID", type=Integer.class),
+                @StoredProcedureParameter(direction=OUT, queryParameter="STREET", type=String.class),
+                @StoredProcedureParameter(direction=OUT, queryParameter="CITY", type=String.class),
+                @StoredProcedureParameter(direction=OUT, queryParameter="COUNTRY", type=String.class),
+                @StoredProcedureParameter(direction=OUT, queryParameter="PROVINCE", type=String.class),
+                @StoredProcedureParameter(direction=OUT, queryParameter="P_CODE", type=String.class)
+            }),
+    @NamedStoredProcedureQuery(
             name="SProcAddressWithResultSetMapping",
             resultSetMapping="address-map",
             procedureName="SProc_Read_BR1_Address",
@@ -118,7 +132,7 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
                 @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
                 @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET")
         }),
-        // This query is used to test metadata processing of array types.  The stored procedure is not availble on the database
+        // This query is used to test metadata processing of array types.  The stored procedure is not available on the database
         // Loading of this persistence unit will fail if the processing is not working
         @NamedStoredProcedureQuery(
                 name="TestSprocForArrayInput-not-on-database",
@@ -134,6 +148,13 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
                         @StoredProcedureParameter(queryParameter="byte1", direction=IN, type=byte[].class)}
        )
 })
+@NamedStoredFunctionQuery(
+        name="StoredFunction_BR1_In",
+        functionName="StoredFunction_In",
+        parameters={
+            @StoredProcedureParameter(direction=IN, name="P_IN", queryParameter="P_IN", type=Long.class)
+        },
+        returnParameter=@StoredProcedureParameter(queryParameter="RETURN", type=Long.class))
 @SqlResultSetMappings({
     @SqlResultSetMapping(
         name = "address-map",

@@ -23,7 +23,6 @@ import javax.persistence.*;
  *    @see Employee
  */
 @Embeddable
-@Table(name="CMP3_EMPLOYEE")
 public class FormerEmployment implements Serializable {
     private String company;
     private EmploymentPeriod period;

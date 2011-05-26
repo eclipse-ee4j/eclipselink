@@ -117,6 +117,7 @@ public class Department implements Serializable {
 
     // To test default 1-M mapping
     @OneToMany(cascade = PERSIST)
+    // Explicitly specified name for JoinTable to keep the naming pattern: all tables' names defined in a i-th composite member commence with MBRi_
     @JoinTable(name="MBR2_DEPT_EMP")
     @PrivateOwned
     public Collection<Employee> getManagers() {
