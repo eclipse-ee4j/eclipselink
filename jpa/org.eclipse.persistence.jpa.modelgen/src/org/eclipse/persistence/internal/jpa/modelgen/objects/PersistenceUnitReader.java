@@ -103,7 +103,7 @@ public class PersistenceUnitReader {
         try {
             FileObject fileObject = getFileObject(filename, processingEnv);
             inputStream = fileObject.openInputStream();
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             // If we can't find the persistence.xml from the class output
             // we'll try from the current directory using regular IO.
             try {
