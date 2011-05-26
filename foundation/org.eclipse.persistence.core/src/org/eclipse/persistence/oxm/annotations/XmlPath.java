@@ -119,7 +119,8 @@ public @interface XmlPath {
      * <ul>
      * <li>Attribute - "&#64;id"</li>
      * <li>Element - "address"</li>
-     * <li>Element by Position - "address[1]"
+     * <li>Element by Position - "address[1]"</li>
+     * <li>Element by Predicate - "address[@type='mailing']"</li>
      * <li>Element Text - "name/text()"</li>
      * <li>Text - "text()"</li>
      * <li>Self - "."</li>
