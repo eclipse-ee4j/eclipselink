@@ -3223,7 +3223,7 @@
         </antcall>
     </target>
 
-    <target name="server-test-composite-advanced">
+    <target name="server-test-composite-advanced" depends="clean-test">
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>
         <antcall target="server-run-all-composite-advanced" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="composite-advanced"/>
@@ -3234,9 +3234,10 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
+        <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
 
-    <target name="server-test-xml-composite-advanced">
+    <target name="server-test-xml-composite-advanced" depends="clean-test">
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>
         <antcall target="server-run-all-xml-composite-advanced" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="xml-composite-advanced"/>
@@ -3247,9 +3248,10 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
+        <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
 
-    <target name="server-test-xml-extended-composite-advanced">
+    <target name="server-test-xml-extended-composite-advanced" depends="clean-test">
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>
         <antcall target="server-run-all-xml-extended-composite-advanced" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="xml-extended-composite-advanced"/>
@@ -3260,6 +3262,7 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
+        <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-oracle-timestamptz" if="is.oracle">
