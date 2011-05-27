@@ -1200,11 +1200,13 @@ public class EntityManagerSetupImpl {
                     } else {
                         throw new PersistenceException(EntityManagerSetupException.sessionLoadedFromSessionsXMLMustBeServerSession(persistenceUnitInfo.getPersistenceUnitName(), (String)predeployProperties.get(PersistenceUnitProperties.SESSIONS_XML), tempSession));
                     }
-                    // Must now reset logging and server-platform on the loaded session.
-                    // ServerPlatform must be set prior to setting the loggers.
-                    updateServerPlatform(predeployProperties, privateClassLoader);
-                    // Update loggers and settings for the singleton logger and the session logger.
-                    updateLoggers(predeployProperties, true, privateClassLoader);
+                    if (this.staticWeaveInfo == null) {
+                        // Must now reset logging and server-platform on the loaded session.
+                        // ServerPlatform must be set prior to setting the loggers.
+                        updateServerPlatform(predeployProperties, privateClassLoader);
+                        // Update loggers and settings for the singleton logger and the session logger.
+                        updateLoggers(predeployProperties, true, privateClassLoader);
+                    }
                 }
                 
                 warnOldProperties(predeployProperties, session);
