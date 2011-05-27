@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.documentpreservation;
 
+import java.util.IdentityHashMap;
 import java.util.WeakHashMap;
 
 import org.w3c.dom.Node;
@@ -33,12 +34,12 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
  *
  */
 public class XMLBinderPolicy extends DocumentPreservationPolicy {
-    private WeakHashMap nodesToObjects;
-    private WeakHashMap objectsToNodes;
+    private IdentityHashMap nodesToObjects;
+    private IdentityHashMap objectsToNodes;
     
     public XMLBinderPolicy() {
-        nodesToObjects = new WeakHashMap();
-        objectsToNodes = new WeakHashMap();
+        nodesToObjects = new IdentityHashMap();
+        objectsToNodes = new IdentityHashMap();
         setNodeOrderingPolicy(new RelativePositionOrderingPolicy());
     }
     
