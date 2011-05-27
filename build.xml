@@ -402,6 +402,7 @@
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Release-Designation"    value="${release.designation}"/>
                 <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
+                <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
             </manifest>
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="${asm}_${version.string}.jar"/>
