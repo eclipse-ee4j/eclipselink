@@ -30,6 +30,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
     boolean isCollection = false;
     Converter converter;
     UnmarshalRecord parent;
+    CharSequence characters;
     
     public XMLInlineBinaryHandler(UnmarshalRecord parent, NodeValue nodeValue, DatabaseMapping mapping, Converter converter, boolean isCollection) {
         super(null);
@@ -39,6 +40,14 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
         this.parent = parent;
         this.converter = converter;
         this.setUnmarshaller(parent.getUnmarshaller());
+    }
+
+    @Override
+    public CharSequence getCharacters() {
+        if(null != characters) {
+            return characters;
+        }
+        return super.getCharacters();
     }
 
     @Override
@@ -84,7 +93,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
                }
            }
        } else {
-           Object valueFromReader = this.parent.getXMLReader().getValue(this.characters, attributeClassification);
+           Object valueFromReader = this.parent.getXMLReader().getValue(getCharacters(), attributeClassification);
            if(null != valueFromReader) {
                value = valueFromReader;
            } else {
@@ -114,5 +123,11 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
        }
        resetStringBuffer();
    }
-}
 
+    @Override
+    public void resetStringBuffer() {
+        super.resetStringBuffer();
+        characters = null;
+    }
+
+}
