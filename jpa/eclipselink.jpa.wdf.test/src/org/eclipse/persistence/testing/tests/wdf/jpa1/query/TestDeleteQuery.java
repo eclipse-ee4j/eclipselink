@@ -25,6 +25,8 @@ import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
@@ -133,6 +135,7 @@ public class TestDeleteQuery extends JPA1Base {
     }
 
     @Test
+    @Bugzilla(bugid=338783, databases=Oracle10Platform.class)
     public void testDeleteAllDepartments() throws SQLException {
         EntityManager em = getEnvironment().getEntityManager();
         try {
