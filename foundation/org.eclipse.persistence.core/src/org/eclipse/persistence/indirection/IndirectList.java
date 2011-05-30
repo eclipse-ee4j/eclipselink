@@ -283,7 +283,17 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     public void clear() {
         removeAllElements();
     }
-
+    
+    /**
+     * INTERNAL:
+     * clear any changes that have been deferred to instantiation.
+     * Indirect collections with change tracking avoid instantiation on add/remove.
+     */
+    public void clearDeferredChanges(){
+        addedElements = null;
+        removedElements = null;
+    }
+    
     /**
      * PUBLIC:
      * @see java.util.Vector#clone()

@@ -26,6 +26,13 @@ public interface IndirectCollection extends IndirectContainer {
 
     /**
      * INTERNAL:
+     * clear any changes that have been deferred to instantiation.
+     * Indirect collections with change tracking avoid instantiation on add/remove.
+     */
+    void clearDeferredChanges();
+    
+    /**
+     * INTERNAL:
      * Return if the collection has any changes that have been deferred to instantiation.
      * Indirect collections with change tracking avoid instantiation on add/remove.
      */

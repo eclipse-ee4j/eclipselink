@@ -229,7 +229,17 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
             getDelegate().clear();
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * clear any changes that have been deferred to instantiation.
+     * Indirect collections with change tracking avoid instantiation on add/remove.
+     */
+    public void clearDeferredChanges(){
+        addedElements = null;
+        removedElements = null;
+    }
+    
     /**
      * @see java.lang.Object#clone()
      * This will result in a database query if necessary.

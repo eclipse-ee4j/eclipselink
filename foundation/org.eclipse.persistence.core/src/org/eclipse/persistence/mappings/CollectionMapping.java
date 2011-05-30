@@ -1978,6 +1978,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 ((CollectionChangeTracker)attributeValue)._persistence_setPropertyChangeListener(listener);
             }
         }
+        if (this.indirectionPolicy.usesTransparentIndirection()){
+            ((IndirectCollection)getRealAttributeValueFromObject(clone, uow)).clearDeferredChanges();
+        }
+        
     }
 
     /**

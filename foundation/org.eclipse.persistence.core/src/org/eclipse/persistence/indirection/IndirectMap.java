@@ -130,6 +130,15 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
         }
     }
 
+    
+    /**
+     * INTERNAL:
+     * clear any changes that have been deferred to instantiation.
+     * Indirect collections with change tracking avoid instantiation on add/remove.
+     */
+    public void clearDeferredChanges(){
+    }
+    
     /**
      * @see java.util.Hashtable#clone()
      * This will result in a database query if necessary.

@@ -375,6 +375,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
         tests.add("testCharFieldDefaultNullValue");
         tests.add("testMergeNewReferencingOldChanged");
+        tests.add("testAddAndDeleteSameObject");
         // Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache.
         // Uncomment testMergeNewReferencingOldChangedClearCache when the bug is fixed.
         // tests.add("testMergeNewReferencingOldChangedClearCache");
@@ -11137,4 +11138,45 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         verifyObjectInCacheAndDatabase(empMerged);
         verifyObjectInCacheAndDatabase(addressMerged);
     }
+
+    // Bug 346022
+    public void testAddAndDeleteSameObject(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Employee emp = new Employee();
+        emp.setFirstName("A");
+        em.persist(emp);
+        Project project = new SmallProject();
+        project.setDescription("B");
+        em.persist(project);
+        emp.addProject(project);
+        project.addTeamMember(emp);
+        em.flush();
+        em.clear();
+        clearCache();
+        try{
+            emp = em.find(Employee.class, emp.getId());
+            project = em.find(SmallProject.class, project.getId());
+            emp.removeProject(project);
+            project.removeTeamMember(emp);
+            em.flush();
+            
+            emp.addProject(project);
+            project.addTeamMember(emp);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+            
+            emp = em.find(Employee.class, emp.getId());
+            project = em.find(SmallProject.class, project.getId());
+            
+            assertTrue(emp.getProjects().size() == 1);
+            assertTrue(project.getTeamMembers().size() == 1);
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
 }
+
