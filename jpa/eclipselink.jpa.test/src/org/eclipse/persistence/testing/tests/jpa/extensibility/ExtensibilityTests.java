@@ -103,11 +103,13 @@ public class ExtensibilityTests extends JUnitTestCase {
     }
     
     public void deleteEmployeeData(EntityManager em){
-        Employee emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe' and e.lastName = 'Josephson'").getSingleResult();
-        Address add = emp.getAddress();
-        emp.setAddress(null);
-        em.remove(emp);
-        em.remove(add);
+        beginTransaction(em);
+        em.createNativeQuery("UPDATE EXTENS_EMP SET ADDRESS_ID = NULL").executeUpdate();
+        em.createNativeQuery("DELETE FROM EXTENS_JOIN_TABLE").executeUpdate();
+        em.createNativeQuery("DELETE FROM EXTENS_EMP").executeUpdate();
+        em.createNativeQuery("DELETE FROM EXTENS_ADDR").executeUpdate();
+        em.createNativeQuery("DELETE FROM EXTENS_PHONE").executeUpdate();
+        commitTransaction(em);
     }
     
     public void testSetup() {
@@ -174,10 +176,9 @@ public class ExtensibilityTests extends JUnitTestCase {
             add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.pobox = '111'").getSingleResult();
             assertTrue("queries on extended Basic mappings fail", add != null);
             assertTrue("queries on extended Basic mappings return incorrect results.", add.get("pobox").equals("111"));
+
         } finally {
-            beginTransaction(em);
             deleteEmployeeData(em);
-            commitTransaction(em);
             em.close();
             clearCache();
         }
@@ -197,7 +198,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         try{
             beginTransaction(em);
             emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
-
+    
             pn.setAreaCode("613");
             pn.setNumber("1111111");
             em.persist(pn);
@@ -217,25 +218,22 @@ public class ExtensibilityTests extends JUnitTestCase {
             emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e join e.phoneNumbers p where p.areaCode = '613'").getSingleResult();
             assertTrue("queries on extended OneToMany mappings fail", emp != null);
             assertTrue("queries on extended OneToMany mappings return incorrect results.", ((List)emp.getExt("phoneNumbers")).size() == 1);
-        } catch (Exception e){
-            e.printStackTrace();
         } finally {
-            beginTransaction(em);
-            emp = em.find(Employee.class, emp.getId());
-            pn = (PhoneNumber)((List)emp.getExt("phoneNumbers")).get(0);
-            ((List)emp.getExt("phoneNumbers")).remove(0);
-            em.remove(pn);
-            deleteEmployeeData(em);
-            commitTransaction(em);
-            em.close();
-            clearCache();
+            try {
+                deleteEmployeeData(em);
+                em.close();
+                clearCache();
+            } catch (RuntimeException e){
+                e.printStackTrace();
+                throw e;
+            }
         }
     }
     
     public void testSimpleRefresh(){
         EntityManagerFactory emf = getEntityManagerFactory();
-        WeakReference<EntityManagerFactoryDelegate> emfRef = new WeakReference<EntityManagerFactoryDelegate>(((JpaEntityManagerFactory)emf).unwrap());
         EntityManager em = emf.createEntityManager();
+        WeakReference<EntityManagerFactoryDelegate> emfRef = new WeakReference<EntityManagerFactoryDelegate>(((EntityManagerFactoryImpl)JpaHelper.getEntityManagerFactory(em)).unwrap());
         ServerSession session = (ServerSession)getDatabaseSession();
         RelationalDescriptor addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") != null);
@@ -243,9 +241,10 @@ public class ExtensibilityTests extends JUnitTestCase {
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") != null);
         
         session = null;
+
         Map properties = new HashMap();
         properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
-        
+
         JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
 
         session = (ServerSession)getDatabaseSession();
@@ -254,27 +253,29 @@ public class ExtensibilityTests extends JUnitTestCase {
         assertTrue(addDescriptor.getMappingForAttributeName("appartmentNumber") != null);
         empDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Employee.class);
         assertTrue(empDescriptor.getMappingForAttributeName("phoneNumbers") == null);
-        
+
         
         em = emf.createEntityManager();
         try{
             persistEmployeeData(em);
-            
+            em.clear();
+            clearCache();
+
             beginTransaction(em);
             Employee emp = (Employee)em.createQuery("select e from ExtensibilityEmployee e where e.firstName = 'Joe'").getSingleResult();
             emp.getAddress().set("appartmentNumber", "111");
             commitTransaction(em);
-            
+
             em.clear();
             clearCache();
-            
+
             emp = em.find(Employee.class, emp.getId());
-            
             assertTrue(emp.getAddress().get("appartmentNumber").equals("111"));
+        } catch(RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         } finally {
-            beginTransaction(em);
             deleteEmployeeData(em);
-            commitTransaction(em);
             clearCache();
         }
         em.close();
@@ -317,9 +318,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             assertTrue(add.get("pobox").equals("111"));
             assertTrue(add.get("appartmentNumber") == null);
         } finally {
-            beginTransaction(em);
             deleteEmployeeData(em);
-            commitTransaction(em);
             clearCache();
         }
     }
@@ -356,12 +355,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             emp = em.merge(emp);
             assertNull(emp.getExt("phoneNumbers"));
         } finally {
-            beginTransaction(em);
-            em.createNativeQuery("delete from EXTENS_JOIN_TABLE").executeUpdate();
-            pn = em.find(PhoneNumber.class, pn.getId());
-            em.remove(pn);
             deleteEmployeeData(em);
-            commitTransaction(em);
             clearCache();
         }
     }
@@ -382,9 +376,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             emp = null;
         } finally {
             em = emf.createEntityManager();
-            beginTransaction(em);
             deleteEmployeeData(em);
-            commitTransaction(em);
         }
         
     }
@@ -413,9 +405,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             assertTrue(add.getStreet().equals("Main Street"));
         } finally {
             em = emf.createEntityManager();
-            beginTransaction(em);
             deleteEmployeeData(em);
-            commitTransaction(em);
         }
     }
     
@@ -427,6 +417,8 @@ public class ExtensibilityTests extends JUnitTestCase {
         clearCache();
         em.clear();
         Address add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.city = 'Herestowm'").getSingleResult();
+        // workaround for server testing issue
+        em.find(Address.class, add.getId());
         try {
             Map properties = new HashMap();
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension.xml");
@@ -435,11 +427,15 @@ public class ExtensibilityTests extends JUnitTestCase {
             
             beginTransaction(em);
             add.set("appartmentNumber", "333");
-            commitTransaction(em);
+            em.flush();
+
             clearCache();
             em.clear();
             add = em.find(Address.class, add.getId());
             assertTrue(add.get("appartmentNumber").equals("333"));
+            rollbackTransaction(em);
+            
+            clearCache();
             
             beginTransaction(em2);
             add = em2.find(Address.class, add.getId());
@@ -451,9 +447,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             assertTrue(add.get("pobox").equals("1"));
         } finally {
             em = emf.createEntityManager();
-            beginTransaction(em);
             deleteEmployeeData(em);
-            commitTransaction(em);
         }
     }
     
@@ -483,9 +477,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             assertTrue(add.get("appartmentNumber").equals("444"));
         } finally {
             em = emf.createEntityManager();
-            beginTransaction(em);
             deleteEmployeeData(em);
-            commitTransaction(em);
         }
     }
 }

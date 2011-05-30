@@ -6,6 +6,7 @@
         <properties>
             <property name="eclipselink.metadata-source.xml.file" value="extension.xml"/>
             <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
 
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
