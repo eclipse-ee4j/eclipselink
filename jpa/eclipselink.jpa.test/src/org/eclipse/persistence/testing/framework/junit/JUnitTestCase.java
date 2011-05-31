@@ -182,7 +182,8 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public static boolean isJPA10() {
         try {
-            LockModeType.valueOf("NONE");
+            //LockModeType.valueOf("NONE"); - this class appeared in both 1.1 and 2.0, but "NONE" value only in 2.0
+            SharedCacheMode.valueOf("NONE");
         } catch (Exception e) {
            return true;
         }
