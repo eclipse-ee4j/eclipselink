@@ -14,8 +14,6 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class ProtectedUnitOfWorkTestModel extends UnitOfWorkClientSessionTestModel {

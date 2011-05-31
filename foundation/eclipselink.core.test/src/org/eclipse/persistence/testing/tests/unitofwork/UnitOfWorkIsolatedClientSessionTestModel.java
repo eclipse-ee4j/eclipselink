@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Iterator;
 
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 
@@ -32,7 +33,7 @@ public class UnitOfWorkIsolatedClientSessionTestModel extends UnitOfWorkClientSe
     public void setup() {
         for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-            descriptor.setIsIsolated(true);
+            descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
         getSession().getProject().setHasIsolatedClasses(true);
         super.setup();
@@ -41,7 +42,7 @@ public class UnitOfWorkIsolatedClientSessionTestModel extends UnitOfWorkClientSe
     public void reset() {
         for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-            descriptor.setIsIsolated(false);
+            descriptor.setCacheIsolation(CacheIsolationType.SHARED);
         }
         getSession().getProject().setHasIsolatedClasses(false);
         super.reset();

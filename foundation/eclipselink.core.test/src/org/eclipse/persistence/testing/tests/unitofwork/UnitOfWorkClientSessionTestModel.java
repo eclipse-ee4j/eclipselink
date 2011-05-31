@@ -51,8 +51,7 @@ public class UnitOfWorkClientSessionTestModel extends org.eclipse.persistence.te
     }
 
     public Server buildServerSession() {
-        Server server = 
-            ((org.eclipse.persistence.sessions.Project)getSession().getProject().clone()).createServerSession(1, 1);
+        Server server = getSession().getProject().clone().createServerSession(1, 1);
         server.useReadConnectionPool(1, 1);
         server.setSessionLog(getSession().getSessionLog());
         server.login();

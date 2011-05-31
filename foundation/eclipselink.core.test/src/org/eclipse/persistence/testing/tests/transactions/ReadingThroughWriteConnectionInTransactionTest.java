@@ -264,6 +264,9 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
             return;
         }
         setClientWriteConnection(client.getWriteConnection());
+        if (client.isInTransaction()) {
+            getClientWriteConnection().rollbackTransaction(client);
+        }
         client.setWriteConnection(null);
     }
 

@@ -34,14 +34,15 @@ public class InsertWithHistoryPolicyTest extends TestCase {
     }
 
     protected void setup() {
-        if(getSession().getPlatform().isMySQL()) {
-            throwWarning("This test will not work with MySQL because it doesn't support millisecond granularity.");
+        if(getSession().getPlatform().isMySQL() || getSession().getPlatform().isSybase()) {
+            throwWarning("This test will not work with MySQL or Sybase because it doesn't support millisecond granularity.");
         }
         
         org.eclipse.persistence.sessions.Project project = new BiDirectionInserOrderTestProject();
         DatabaseLogin databaseLogin = (DatabaseLogin)getSession().getLogin().clone();
         project.setLogin(databaseLogin);
         dbSession = project.createDatabaseSession();
+        dbSession.setSessionLog(getSession().getSessionLog());
         HistoryFacade.generateHistoryPolicies(dbSession);
         BiDirectionInsertOrderTableMaker creator = new BiDirectionInsertOrderTableMaker();
         HistoryFacade.generateHistoricalTableDefinitions(creator, dbSession);

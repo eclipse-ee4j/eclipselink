@@ -3219,6 +3219,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         int logLevel = getLogLevelChoice().getSelectedIndex();
         if (logLevel != getSession().getLogLevel()) {
             getSession().setLogLevel(logLevel);
+            getSession().getSessionLog().setShouldDisplayData(true);
             if (logLevel > SessionLog.FINEST) {
                 getSession().getSessionLog().setShouldPrintConnection(false);
                 getSession().getSessionLog().setShouldPrintDate(false);

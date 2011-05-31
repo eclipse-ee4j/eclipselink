@@ -580,7 +580,7 @@ public class EmployeeTableCreator extends TogglingFastTableCreator {
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
-        field.setIsPrimaryKey(false);
+        field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("EMPLOYEE.EMP_ID");
@@ -592,7 +592,7 @@ public class EmployeeTableCreator extends TogglingFastTableCreator {
         field1.setTypeName("VARCHAR");
         field1.setSize(200);
         field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(false);
+        field1.setIsPrimaryKey(true);
         field1.setUnique(false);
         field1.setIsIdentity(false);
         tabledefinition.addField(field1);
