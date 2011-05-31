@@ -82,7 +82,7 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
         }),
     @NamedStoredProcedureQuery(
             name="SProcAddressByIndex",
-            resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Address.class,
+            resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Address.class,
             procedureName="SProc_Read_BR1_Address",
             callByIndex=true,
             parameters={
