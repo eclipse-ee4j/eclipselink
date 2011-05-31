@@ -132,7 +132,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public ErrorHandler getErrorHandler() {
-        return xmlReader.getErrorHandler();
+        return xmlParser.getErrorHandler();
     }
 
     public void setErrorHandler(ErrorHandler errorHandler) {
@@ -182,6 +182,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public void setSchema(Schema schema) {
+        xmlParser.setXMLSchema(schema);
         saxParserFactory.setSchema(schema);
         try {
             saxParser = saxParserFactory.newSAXParser();
@@ -199,7 +200,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     public Schema getSchema() {
         Schema schema = null;
         try {
-            schema = saxParserFactory.getSchema();
+            schema = xmlParser.getXMLSchema();
         } catch(UnsupportedOperationException ex) {
             //if this parser doesn't support the setSchema/getSchema API, just return null;
         }
@@ -271,7 +272,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             saxUnmarshallerHandler.setXMLReader(xmlReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-            setContentHandler(xmlReader, saxUnmarshallerHandler);
+            xmlReader.setContentHandler(saxUnmarshallerHandler);
             xmlReader.parse(inputSource);
 
             // resolve any mapping references
@@ -311,7 +312,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 saxUnmarshallerHandler.setXMLReader(xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-                setContentHandler(xmlReader, saxUnmarshallerHandler);
+                xmlReader.setContentHandler(saxUnmarshallerHandler);
                 xmlReader.parse(inputSource);
             
                 // resolve any mapping references
@@ -333,7 +334,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         try {
             unmarshalRecord.setXMLReader(xmlReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
-            setContentHandler(xmlReader, unmarshalRecord);
+            xmlReader.setContentHandler(unmarshalRecord);
             xmlReader.setLexicalHandler(unmarshalRecord);
             xmlReader.parse(inputSource);
         } catch (IOException e) {
@@ -461,6 +462,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 } else {
                     xmlReader = new XMLReader(saxSource.getXMLReader());
                 }
+                setValidatorHandler(xmlReader);
             }
             if (null == xmlReader) {
                 return unmarshal(saxSource.getInputSource());
@@ -498,6 +500,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 } else {
                     xmlReader = new XMLReader(saxSource.getXMLReader());
                 }
+                setValidatorHandler(xmlReader);
             }
             if (null == saxSource.getXMLReader()) {
                 return unmarshal(saxSource.getInputSource(), clazz);
@@ -767,6 +770,11 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
      * a ValidatorHandler.
      */
     private void setContentHandler(XMLReader xmlReader, ContentHandler contentHandler) {
+        setValidatorHandler(xmlReader);
+        xmlReader.setContentHandler(contentHandler);
+    }
+    
+    private void setValidatorHandler(XMLReader xmlReader) {
         Schema schema = null;
         try {
             schema = saxParserFactory.getSchema();
@@ -774,13 +782,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // Oracle XDK does not support getSchema()
         }
 
-        if (null == schema) {
-            xmlReader.setContentHandler(contentHandler);
-        } else {
+        if (null != schema) {
             ValidatorHandler validatorHandler = schema.newValidatorHandler();
-            validatorHandler.setContentHandler(contentHandler);
-            xmlReader.setContentHandler(validatorHandler);
+            xmlReader.setValidatorHandler(validatorHandler);
+            validatorHandler.setErrorHandler(getErrorHandler());
         }
+        
     }
 
 }

@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import javax.xml.validation.Schema;
-import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.Attributes;
@@ -37,7 +36,6 @@ public abstract class XMLReaderAdapter extends XMLReader {
     private EntityResolver entityResolver;
     private ErrorHandler errorHandler;
     protected LexicalHandler lexicalHandler;
-    private ValidatorHandler validatorHandler;
 
     public XMLReaderAdapter() {
     }

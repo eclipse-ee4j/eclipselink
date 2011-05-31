@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
+import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -50,6 +51,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     private org.xml.sax.XMLReader reader;
     private boolean supportsLexicalHandler;
     private LexicalHandlerWrapper lexicalHandlerWrapper;
+    protected ValidatorHandler validatorHandler;   
 
     public XMLReader(org.xml.sax.XMLReader internalReader) {
         this();
@@ -65,7 +67,11 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public void setContentHandler (ContentHandler handler) {
-        reader.setContentHandler(handler);
+        if(validatorHandler != null) {
+            validatorHandler.setContentHandler(handler);
+        } else {
+            reader.setContentHandler(handler);
+        }
     }
 
     public DTDHandler getDTDHandler () {
@@ -89,7 +95,11 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public void setErrorHandler (ErrorHandler handler) {
-        reader.setErrorHandler(handler);
+        if(validatorHandler != null) {
+            validatorHandler.setErrorHandler(handler);
+        } else {
+            reader.setErrorHandler(handler);
+        }
     }
 
     public LexicalHandler getLexicalHandler() {
@@ -170,6 +180,21 @@ public class XMLReader implements org.xml.sax.XMLReader {
         }
     }
 
+    public void setValidatorHandler(ValidatorHandler validatorHandler) {
+        if(reader != null) {
+            reader.setContentHandler(validatorHandler);
+        }
+        this.validatorHandler = validatorHandler;
+        if(validatorHandler != null) {
+            validatorHandler.setErrorHandler(getErrorHandler());
+        }
+
+    }
+    
+    public ValidatorHandler getValidatorHandler() {
+        return this.validatorHandler;
+    }
+    
     public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
         //no op in this class.
     }

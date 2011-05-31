@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
 
-import javax.xml.XMLConstants;
+import org.eclipse.persistence.oxm.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.parsers.SAXParser;
@@ -61,7 +61,7 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         JAXBContext jc = JAXBContextFactory.createContext(classes, null);
         unmarshaller = (JAXBUnmarshaller) jc.createUnmarshaller();
 
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         InputStream stream = ClassLoader.getSystemResourceAsStream(SCHEMA);
         Schema schema = sf.newSchema(new StreamSource(stream));
         stream.close();
@@ -185,6 +185,7 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
@@ -206,6 +207,7 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
     public void testFailOnSecondErrorSAXSourceWithClass() throws Exception {
         unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
@@ -227,6 +229,7 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
     public void testFailOnSecondErrorSAXSourceWithType() throws Exception {
         unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
         SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
