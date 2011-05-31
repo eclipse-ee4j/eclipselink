@@ -51,7 +51,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         table.setName("JPA_BODY");
         
         FieldDefinition fieldCOUNT = new FieldDefinition();
-        fieldCOUNT.setName("COUNT");
+        fieldCOUNT.setName("BODY_COUNT");
         fieldCOUNT.setTypeName("NUMBER");
         fieldCOUNT.setSize(15);
         fieldCOUNT.setSubSize(0);

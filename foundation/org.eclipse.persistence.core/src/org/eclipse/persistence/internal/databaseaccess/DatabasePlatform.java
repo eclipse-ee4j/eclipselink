@@ -1153,6 +1153,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * INTERNAL:
+     * Returns the minimum time increment supported by the platform.
+     */
+    public long minimumTimeIncrement() {
+        return 1;
+    }
+    
+    /**
      * PUBLIC:
      * Allow for the max batch writing size to be set.
      * This allows for the batch size to be limited as most database have strict limits.
@@ -3012,7 +3020,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     
     /**
      * INTERNAL:
-     * Override this method with the platform's CREATE INDEX statement.
+     * Don't override this method.
      * 
      * @param fullTableName
      *            qualified name of the table the index is to be created on
@@ -3022,11 +3030,54 @@ public class DatabasePlatform extends DatasourcePlatform {
      *            one or more columns the index is created for
      */
     public String buildCreateIndex(String fullTableName, String indexName, String... columnNames) {
-        String columns = columnNames[0];
-        for (int i = 1; i < columnNames.length; i++) {
-            columns += ", " + columnNames[i];
+        return buildCreateIndex(fullTableName, indexName, "", false, columnNames);
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method with the platform's CREATE INDEX statement.
+     * 
+     * @param fullTableName
+     *            qualified name of the table the index is to be created on
+     * @param indexName
+     *            name of the index
+     * @param qualifier
+     *            qualifier to construct qualified name of index if needed
+     * @param isUnique
+     *            Indicates whether unique index is created
+     * @param columnNames
+     *            one or more columns the index is created for
+     */
+    public String buildCreateIndex(String fullTableName, String indexName, String qualifier, boolean isUnique, String... columnNames) {
+        StringBuilder queryString = new StringBuilder();
+        if (isUnique) {
+            queryString.append("CREATE UNIQUE INDEX ");
+        } else {
+            queryString.append("CREATE INDEX ");
         }
-        return "CREATE INDEX " + indexName + " ON " + fullTableName + " (" + columns + ")";
+        if (!qualifier.equals("")) {
+            queryString.append(qualifier).append(".");
+        }
+        queryString.append(indexName).append(" ON ").append(fullTableName).append(" (");
+        queryString.append(columnNames[0]);
+        for (int i = 1; i < columnNames.length; i++) {
+            queryString.append(", ").append(columnNames[i]);
+        }
+        queryString.append(")");
+        return queryString.toString();
+    }
+
+    /**
+     * INTERNAL:
+     * Don't override this method.
+     * 
+     * @param fullTableName
+     *            qualified name of the table the index is to be removed from
+     * @param indexName
+     *            name of the index
+     */
+    public String buildDropIndex(String fullTableName, String indexName) {
+        return buildDropIndex(fullTableName, indexName, "");
     }
 
     /**
@@ -3037,11 +3088,21 @@ public class DatabasePlatform extends DatasourcePlatform {
      *            qualified name of the table the index is to be removed from
      * @param indexName
      *            name of the index
+     * @param qualifier
+     *            qualifier to construct qualified name of index if needed
      */
-    public String buildDropIndex(String fullTableName, String indexName) {
-        return "DROP INDEX " + indexName;
+    public String buildDropIndex(String fullTableName, String indexName, String qualifier) {
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("DROP INDEX ");
+        if (!qualifier.equals("")) {
+            queryString.append(qualifier).append(".");
+        }
+        queryString.append(indexName);
+        if (requiresTableInIndexDropDDL()) {
+            queryString.append(" ON ").append(fullTableName);
+        }
+        return queryString.toString();
     }
-
     
     /**
      * INTERNAL:

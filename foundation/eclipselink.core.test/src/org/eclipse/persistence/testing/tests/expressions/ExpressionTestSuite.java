@@ -543,6 +543,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setName("ExpressionMathTest");
         test.setDescription("Test expression math package");
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addUnsupportedPlatform(SymfowarePlatform.class);
         addTest(test);
     }
 

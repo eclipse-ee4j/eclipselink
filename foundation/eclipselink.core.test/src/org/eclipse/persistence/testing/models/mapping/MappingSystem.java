@@ -81,6 +81,12 @@ public class MappingSystem extends TestSystem {
 
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
+        boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
+        // on Symfoware, to avoid table locking issues only the first invocation
+        // of an instance of this class (drops & re-)creates the tables.
+        if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {
+            SchemaManager.FAST_TABLE_CREATOR = true;
+        }
 
         (new LegacyTableMaker()).replaceTables(session);
         (new MultipleTableTestTableMaker()).replaceTables(session);
@@ -98,12 +104,6 @@ public class MappingSystem extends TestSystem {
             empDefinition.addField("JDESC", Byte[].class);
         }
 
-        boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
-        // on Symfoware, to avoid table locking issues only the first invocation
-        // of an instance of this class (drops & re-)creates the tables.
-        if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {
-            SchemaManager.FAST_TABLE_CREATOR = true;
-        }
         try {
             schemaManager.replaceObject(empDefinition);
             schemaManager.replaceObject(Employee.joinTableDefinition());

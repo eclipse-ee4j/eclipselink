@@ -306,8 +306,14 @@ public abstract class ReadQuery extends DatabaseQuery {
             if (parameters.isEmpty()){
                 parameters = new DatabaseRecord();
             }
-            parameters.add(DatabaseCall.FIRSTRESULT_FIELD, this.getFirstResult());
-            parameters.add(DatabaseCall.MAXROW_FIELD, session.getPlatform().computeMaxRowsForSQL(this.getFirstResult(), this.getMaxRows()));
+            //Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
+            //We should check FirstRow and MaxResults separately.
+            if(databaseCall.shouldIgnoreFirstRowSetting()){
+                parameters.add(DatabaseCall.FIRSTRESULT_FIELD, this.getFirstResult());
+            }
+            if(databaseCall.shouldIgnoreMaxResultsSetting()){
+                parameters.add(DatabaseCall.MAXROW_FIELD, session.getPlatform().computeMaxRowsForSQL(this.getFirstResult(), this.getMaxRows()));
+            }
             this.setTranslationRow(parameters);
         }
     }

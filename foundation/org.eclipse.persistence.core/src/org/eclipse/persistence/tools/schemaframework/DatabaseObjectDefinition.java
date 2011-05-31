@@ -105,7 +105,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     /**
      * INTERNAL:
      * Most major databases support a creator name scope.
-     * This means whenever the database object is referecned, it must be qualified.
+     * This means whenever the database object is referenced, it must be qualified.
      */
     public String getFullName() {
         if (getQualifier().equals("")) {
@@ -127,7 +127,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     /**
      * PUBLIC:
      * Most major databases support a creator name scope.
-     * This means whenever the database object is referecned, it must be qualified.
+     * This means whenever the database object is referenced, it must be qualified.
      */
     public String getQualifier() {
         return qualifier;
@@ -162,7 +162,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     /**
      * PUBLIC:
      * Most major databases support a creator name scope.
-     * This means whenever the database object is referecned, it must be qualified.
+     * This means whenever the database object is referenced, it must be qualified.
      */
     public void setQualifier(String qualifier) {
         this.qualifier = qualifier;

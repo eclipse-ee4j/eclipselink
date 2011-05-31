@@ -712,6 +712,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testIdentityInsideTransaction() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testIdentityInsideTransaction skipped for this platform, "
+            + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         
@@ -728,6 +733,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testIdentityOutsideTransaction() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testIdentityOutsideTransaction skipped for this platform, "
+            + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         
         Query query = em.createQuery("SELECT e FROM PhoneNumber e");
@@ -3610,6 +3620,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if ((getServerPlatform() != null) && getServerPlatform().isSpring()) {
             return;
         }
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testDeleteEmployee skipped for this platform, "
+            + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
+            return;
+        }
         Employee employee = new Employee();
         employee.addPhoneNumber(new PhoneNumber("home", "123", "4567"));
         employee.addPhoneNumber(new PhoneNumber("fax", "456", "4567"));
@@ -4809,6 +4824,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
     // Test that deleting an Man works correctly.
     public void testDeleteMan() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testDeleteMan skipped for this platform, "
+            + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         QuerySQLTracker counter = null;
         try {

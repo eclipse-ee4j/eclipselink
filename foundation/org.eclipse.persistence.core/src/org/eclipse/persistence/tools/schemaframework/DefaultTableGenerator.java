@@ -127,7 +127,7 @@ public class DefaultTableGenerator {
     protected Map<DatabaseField, DatabaseField> databaseFields;
 
     /** When this flag is 'false' EclipseLink will not attempt to create fk constraints. */
-    protected boolean generateFKConstraints = true;
+    protected boolean generateFKConstraints;
 
     /**
      * Default constructor
@@ -136,6 +136,7 @@ public class DefaultTableGenerator {
         this.project = project;
         if (project.getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform){
             this.databasePlatform = (DatabasePlatform)project.getDatasourceLogin().getDatasourcePlatform();
+            this.generateFKConstraints = this.databasePlatform.supportsForeignKeyConstraints();
         }
         this.tableMap = new LinkedHashMap();
         this.fieldMap = new LinkedHashMap();

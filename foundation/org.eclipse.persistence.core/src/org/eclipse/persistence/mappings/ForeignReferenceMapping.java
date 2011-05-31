@@ -1160,6 +1160,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (this.isPrivateOwned && (this.descriptor != null)) {
             this.descriptor.addMappingsPostCalculateChanges(this);
         }
+        if (this.isCascadeOnDeleteSetOnDatabase && !session.getPlatform().supportsForeignKeyConstraints()) {
+            this.isCascadeOnDeleteSetOnDatabase = false;
+        }
         initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);
         this.indirectionPolicy.initialize();

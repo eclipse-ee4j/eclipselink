@@ -14,8 +14,9 @@
 package org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup;
 
 import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 
-public class AdvancedFetchGroupTableCreator extends TableCreator {
+public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
     public AdvancedFetchGroupTableCreator() {
         setName("AdvancedFetchGroupTableCreator");
 

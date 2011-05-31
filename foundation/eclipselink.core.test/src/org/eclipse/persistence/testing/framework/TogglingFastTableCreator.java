@@ -75,14 +75,14 @@ public class TogglingFastTableCreator extends TableCreator {
 
         boolean isFirstCreate = !isFastTableCreator();
         boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
-        session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + this.getClass().getName()
+        session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + getTableCreatorName()
                 + " - isFirstCreate: " + isFirstCreate);
         session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: Current fastTableCreators: "
                 + fastTableCreators);
 
         if (useFastTableCreatorAfterInitialCreate && !isFirstCreate) {
             SchemaManager.FAST_TABLE_CREATOR = true;
-            session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + this.getClass().getName()
+            session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + getTableCreatorName()
                     + " - toggling true");
         }
         try {
@@ -97,24 +97,28 @@ public class TogglingFastTableCreator extends TableCreator {
         // next time just delete the rows instead.
         if (useFastTableCreatorAfterInitialCreate) {
             setFastTableCreator();
-            session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + this.getClass().getName()
+            session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + getTableCreatorName()
                     + " added to fastTableCreators");
         }
     }
 
     public boolean resetFastTableCreator() {
         AbstractSessionLog.getLog().log(SessionLog.FINEST, "TogglingFastTableCreator: removing table creator: "
-                + this.getClass().getName());
-        return fastTableCreators.remove(this.getClass().getName());
+                + getTableCreatorName());
+        return fastTableCreators.remove(getTableCreatorName());
     }
 
     public boolean setFastTableCreator() {
         AbstractSessionLog.getLog().log(SessionLog.FINEST, "TogglingFastTableCreator: adding table creator: "
-                + this.getClass().getName());
-        return fastTableCreators.add(this.getClass().getName());
+                + getTableCreatorName());
+        return fastTableCreators.add(getTableCreatorName());
     }
 
     public boolean isFastTableCreator() {
-        return fastTableCreators.contains(this.getClass().getName());
+        return fastTableCreators.contains(getTableCreatorName());
+    }
+    
+    public String getTableCreatorName() {
+        return this.getClass().getName();
     }
 }

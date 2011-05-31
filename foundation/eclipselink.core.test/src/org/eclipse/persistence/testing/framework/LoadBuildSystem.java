@@ -100,17 +100,17 @@ public class LoadBuildSystem {
             session.executeNonSelectingCall(new SQLCall("ALTER TABLE SUMMARY ADD CONSTRAINT FK_LOADBUILD_lbuildId FOREIGN KEY (lbuildId) REFERENCES LOADBUILD (id)"));
             session.executeNonSelectingCall(new SQLCall("ALTER TABLE SUMMARY ADD CONSTRAINT FK_LOADBUILD_parentId FOREIGN KEY (parentId) REFERENCES SUMMARY (id)"));
         }
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_lbtimestamp", "lbtimestamp")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_loginChoice", "loginChoice")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_toplink_version", "toplink_version")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_machine", "machine")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_lbuserName", "lbuserName")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("RESULT", "IX_RESULT_name", "name")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("RESULT", "IX_RESULT_summaryId", "summaryId")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("RESULT", "IX_RESULT_lbuildId", "lbuildId")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_lbuildId", "lbuildId")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_name", "name")));
-        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_parentId", "parentId")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_lbtimestamp", null, false, "lbtimestamp")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_loginChoice", null, false, "loginChoice")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_toplink_version", null, false, "toplink_version")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_machine", null, false, "machine")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("LOADBUILD", "IX_LOADBUILD_lbuserName", null, false, "lbuserName")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("RESULT", "IX_RESULT_name", null, false, "name")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("RESULT", "IX_RESULT_summaryId", null, false, "summaryId")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("RESULT", "IX_RESULT_lbuildId", null, false, "lbuildId")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_lbuildId", null, false, "lbuildId")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_name", null, false, "name")));
+        session.executeNonSelectingCall(new SQLCall(session.getPlatform().buildCreateIndex("SUMMARY", "IX_SUMMARY_parentId", null, false, "parentId")));
         session.executeNonSelectingCall(new SQLCall("create sequence result_seq increment by 500 start with 1000"));
         session.executeNonSelectingCall(new SQLCall("create sequence RESULTSUM_SEQ increment by 500 start with 1000"));
     }

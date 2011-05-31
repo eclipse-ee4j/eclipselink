@@ -131,11 +131,21 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
         clearCache("fieldaccess");
     }
     
     public void testFirstNamePrefixBLAForAll() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -152,6 +162,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testFirstNamePrefixBLAForSalary() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -169,6 +184,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testDoubleSalaryForAll() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -185,6 +205,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testDoubleSalaryForSalary() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -202,6 +227,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testFirstNamePrefixBLADoubleSalaryForAll() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -219,6 +249,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testFirstNamePrefixBLADoubleSalaryForSalary() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -237,6 +272,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testFirstNamePrefixBLADoubleSalaryForSalaryForFirstName() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -255,6 +295,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testAssignManagerName() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -272,6 +317,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testAssignNullToAddress() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -287,6 +337,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testAssignObjectToAddress() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
 
         if (isOnServer()) {
@@ -316,6 +371,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testAssignExpressionToAddress() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{
@@ -333,6 +393,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void testAggregate() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         try{

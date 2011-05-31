@@ -339,6 +339,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setExpression(expression);
         test.addSupportedPlatform(OraclePlatform.class);
         test.addSupportedPlatform(MySQLPlatform.class);
+        test.addUnsupportedPlatform(SymfowarePlatform.class);
         test.setName("GetFunctionWithArgumentsTest");
         test.setDescription("Test GetFunctionWithArguments expression");
         addTest(test);

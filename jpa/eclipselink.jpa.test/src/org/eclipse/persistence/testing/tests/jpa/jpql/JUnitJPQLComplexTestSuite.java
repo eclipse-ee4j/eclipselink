@@ -36,6 +36,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
@@ -626,6 +627,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexReverseSqrtTest()
     {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test complexReverseSqrtTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         EntityManager em = createEntityManager();                  
          
         ReadAllQuery raq = new ReadAllQuery();
@@ -660,6 +666,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexSqrtTest()
     {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test complexSqrtTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         EntityManager em = createEntityManager();                  
          
         ReadAllQuery raq = new ReadAllQuery();
@@ -2710,6 +2721,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
     
     public void sqrtInSelectTest(){
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test sqrtInSelectTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         EntityManager em = createEntityManager();
         
         String ejbqlString = "select sqrt(e.salary) from Employee e where e.firstName = 'Bob' and e.lastName = 'Smith'";
@@ -2874,6 +2890,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Bug 303540 - JPQL: query fails to compile if variable found only in function parameters 
     public void variableReferencedOnlyInParameterTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test variableReferencedOnlyInParameterTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         // for debug
         boolean shouldPrintJpql = false;
         boolean shouldPrintStackTrace = false;
@@ -3227,6 +3248,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
     
     public void testComplexBetween() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testComplexBetween skipped for this platform, "
+                    + "Symfoware doesn't support subquery used in BETWEEN, LIKE, or NULL predicates.");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.firstName between 'L' and 'Z'");
         query.getResultList();
@@ -3240,6 +3266,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
     
     public void testComplexIn() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testComplexIn skipped for this platform, "
+                    + "Symfoware doesn't support the use of UPPER/LOWER in limit list of IN predicate.");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.firstName in (UPPER('L'), LOWER('Z'))");
         query.getResultList();
@@ -3315,9 +3346,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             assertTrue(results.size() == 1);
             assertTrue(((Employee)results.get(0)).getFirstName().equals("Ellen"));
             
-            results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
-            "or (:payScale IS NULL AND e.payScale IS NULL)").setParameter("payScale", null).getResultList();
-            assertTrue(results.size() == 15);
+            if (getServerSession().getPlatform().isSymfoware()){
+                getServerSession().getSessionLog().log(SessionLog.INFO, "Symfoware doesn't support the format 'NULL IS NULL'.");
+            } else {
+                results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
+                "or (:payScale IS NULL AND e.payScale IS NULL)").setParameter("payScale", null).getResultList();
+                assertTrue(results.size() == 15);
+            }
             
             results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
             "or (:payScale = org.eclipse.persistence.testing.models.jpa.advanced.Employee.SalaryRate.MANAGER)").setParameter("payScale", SalaryRate.MANAGER).getResultList();

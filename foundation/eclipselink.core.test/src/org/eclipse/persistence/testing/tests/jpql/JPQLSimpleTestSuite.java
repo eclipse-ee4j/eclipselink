@@ -69,9 +69,9 @@ public class JPQLSimpleTestSuite extends TestSuite {
         addTest(new SimpleReverseEqualsTest());
         addTest(new SimpleReverseLengthTest());
         addTest(new SimpleReverseParameterTest());
-        addSpecialTest(new SimpleReverseSqrtTest());
+        addSpecialTest2(new SimpleReverseSqrtTest());
         addTest(new SimpleReverseSubstringTest());
-        addSpecialTest(new SimpleSqrtTest());
+        addSpecialTest2(new SimpleSqrtTest());
         addTest(new SimpleSubstringTest());
 
         addTest(new SimpleNullTest());
@@ -171,6 +171,11 @@ public class JPQLSimpleTestSuite extends TestSuite {
 
     public void addSpecialTest(JPQLTestCase theTest) {
         theTest.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
+        addTest(theTest);
+    }
+    public void addSpecialTest2(JPQLTestCase theTest) {
+        theTest.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
+        theTest.addUnsupportedPlatform(org.eclipse.persistence.platform.database.SymfowarePlatform.class);
         addTest(theTest);
     }
 }

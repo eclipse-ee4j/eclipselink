@@ -252,6 +252,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
      * Tests 1=1 returns correct result.
      */
     public void testOneEqualsOne() throws Exception {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testOneEqualsOne skipped for this platform, "
+                    + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 304897)");
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1287,6 +1292,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseSqrtTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test simpleReverseSqrtTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         ExpressionBuilder expbldr = new ExpressionBuilder();
@@ -1335,6 +1345,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
 
     public void simpleSqrtTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test simpleSqrtTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         ExpressionBuilder expbldr = new ExpressionBuilder();

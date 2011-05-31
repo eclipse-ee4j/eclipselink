@@ -165,6 +165,18 @@ public class HistoryPolicy implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Return a minimal time increment supported by the platform.
+     */
+    public long getMinimumTimeIncrement(AbstractSession session) {
+        AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
+        while (readSession.isUnitOfWork()) {
+            readSession = ((UnitOfWorkImpl)readSession).getParent().getSessionForClass(getDescriptor().getJavaClass());
+        }
+        return readSession.getPlatform().minimumTimeIncrement();
+    }
+
+    /**
      * PUBLIC:
      * Return the descriptor of the policy.
      */
@@ -837,7 +849,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 if (isShallow) {
                     // Bug 319276 - increment the timestamp by 1 to avoid unique constraint violation potential 
                     java.sql.Timestamp  incrementedTime = (java.sql.Timestamp) currentTime;
-                    incrementedTime.setTime(incrementedTime.getTime() + 1);
+                    incrementedTime.setTime(incrementedTime.getTime() + getMinimumTimeIncrement(writeQuery.getSession()));
                     originalModifyRow.add(getStart(i), incrementedTime); 
                 } else {
                     originalModifyRow.add(getStart(i), currentTime);

@@ -124,14 +124,18 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                 }
                 if (query.isReadQuery()) {
                     ReadQuery readQuery = (ReadQuery)query;
-                    if (!call.shouldIgnoreMaxResultsSetting()){
-                        call.setMaxRows(readQuery.getMaxRows());
+                    // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
+                    // We should check FirstRow and MaxResults separately.
+                    if (!call.shouldIgnoreFirstRowSetting()){
                         if (readQuery.getFirstResult() != 0) {
                             call.setFirstResult(readQuery.getFirstResult());
                             call.setIsResultSetScrollable(true);
                             call.setResultSetType(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
                             call.setResultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY);
                         }
+                    }
+                    if (!call.shouldIgnoreMaxResultsSetting()){
+                        call.setMaxRows(readQuery.getMaxRows());
                     }
                     call.setResultSetFetchSize(readQuery.getFetchSize());
                 }
@@ -156,14 +160,18 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             }
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
-                if (!call.shouldIgnoreMaxResultsSetting()){
-                    call.setMaxRows(readQuery.getMaxRows());
+                // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
+                // We should check FirstRow and MaxResults separately.
+                if (!call.shouldIgnoreFirstRowSetting()){
                     if (readQuery.getFirstResult() != 0) {
                         call.setFirstResult(readQuery.getFirstResult());
                         call.setIsResultSetScrollable(true);
                         call.setResultSetType(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
                         call.setResultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY);
                     }
+                }
+                if (!call.shouldIgnoreMaxResultsSetting()){
+                    call.setMaxRows(readQuery.getMaxRows());
                 }
                 call.setResultSetFetchSize(((ReadQuery)query).getFetchSize());
             }

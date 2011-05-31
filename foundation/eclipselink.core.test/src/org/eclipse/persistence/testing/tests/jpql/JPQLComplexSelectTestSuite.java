@@ -30,9 +30,9 @@ public class JPQLComplexSelectTestSuite extends TestSuite {
         addSpecialTest(new SelectComplexReverseAbsTest());
         addTest(new SelectComplexReverseLengthTest());
         addTest(new SelectComplexReverseParameterTest());
-        addSpecialTest(new SelectComplexReverseSqrtTest());
+        addSpecialTest2(new SelectComplexReverseSqrtTest());
         addTest(new SelectComplexReverseSubstringTest());
-        addSpecialTest(new SelectComplexSqrtTest());
+        addSpecialTest2(new SelectComplexSqrtTest());
         addTest(new SelectComplexStringInTest());
         addTest(new SelectComplexStringNotInTest());
         addTest(new SelectComplexSubstringTest());
@@ -40,6 +40,12 @@ public class JPQLComplexSelectTestSuite extends TestSuite {
 
     public void addSpecialTest(JPQLTestCase theTest) {
         theTest.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
+        addTest(theTest);
+    }
+
+    public void addSpecialTest2(JPQLTestCase theTest) {
+        theTest.addUnsupportedPlatform(org.eclipse.persistence.platform.database.TimesTenPlatform.class);
+        theTest.addUnsupportedPlatform(org.eclipse.persistence.platform.database.SymfowarePlatform.class);
         addTest(theTest);
     }
 }

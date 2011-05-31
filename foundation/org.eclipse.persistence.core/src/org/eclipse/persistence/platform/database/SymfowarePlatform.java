@@ -88,6 +88,8 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> Columns and literals of different type may need casting to allow them to be compared or assigned. For example: 
  *   'SELECT ... WHERE CAST(PHONE_ORDER_VARCHAR AS INTEGER) BETWEEN 0 AND 1'
  * <li> Subqueries with joins to the outer query are not supported. (see rfe 298193)
+ * <li> Stored functions are not supported. (bug 342409)
+ * <li> The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified. (bug 342413)
  * </ul>
  * <p/><b>Additional Notes</b><br/>
  * ----------------
@@ -853,7 +855,19 @@ public class SymfowarePlatform extends DatabasePlatform {
      */
     @Override
     public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
-        return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
+         // In Symfoware, this API is used in the follow scenario.
+         //   1. construct SELECT ... WITH OPTION LIMIT(comupteMaxRowForSQL());
+         //   2. move the cursor of ResultSet to the row number index of firstResultIndex;
+         //   3. get (computeMaxRowForSQL() - firstResultIndex) number of rows from row number index of firstResultIndex.
+         // There are two different Queries which depend on this API.
+         //   Query#setFirstResult(), Query#setMaxResults() in JPA
+         //   ReadQuery#setFirstResult, ReadQuery#setMaxRows() in EclipseLink specific API.
+         // Note that each method of Query delegates one of ReadQuery respectively.
+         // ReadQuery#setMaxRow() is always passed by a converted maxRows value according to below condition.
+         //   int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
+         // Actually Query#setFirstResult(3) and Query#setMaxResults(6) is equals to ReadQuery#setFirstResult(3) and ReadQuery#setMaxRows(9).
+         // Therefore we don't need to compute a value of MaxRows here and just return maxResults.
+        return maxResults;
     }
 
     /**
@@ -880,19 +894,25 @@ public class SymfowarePlatform extends DatabasePlatform {
      *            qualified name of the table the index is to be created on
      * @param indexName
      *            name of the index
+     * @param qualifier
+     *            qualifier to construct qualified name of index if needed
+     * @param isUnique
+     *            Indicates whether uniqe index is created
      * @param columnNames
-     *            list of columns the index is created for
+     *            one or more columns the index is created for
      */
     @Override
-    public String buildCreateIndex(String fullTableName, String indexName,
-            String... columnNames) {
-        String columns = columnNames[0];
+    public String buildCreateIndex(String fullTableName, String indexName, String qualifier, 
+            boolean isUnique, String... columnNames) {
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("CREATE INDEX ");
+        queryString.append(fullTableName).append(".").append(indexName).append(" KEY (");
+        queryString.append(columnNames[0]);
         for (int i = 1; i < columnNames.length; i++) {
-            columns += ", " + columnNames[i];
+            queryString.append(", ").append(columnNames[i]);
         }
-
-        return "CREATE INDEX " + fullTableName + "." + indexName + " KEY ("
-                + columns + ")";
+        queryString.append(")");
+        return queryString.toString();
     }
 
     /**
@@ -902,10 +922,14 @@ public class SymfowarePlatform extends DatabasePlatform {
      *            qualified name of the table the index is to be created on
      * @param indexName
      *            name of the index
+     * @param qualifier
+     *            qualifier to construct qualified name of index if needed
      */
     @Override
-    public String buildDropIndex(String fullTableName, String indexName) {
-        return "DROP INDEX " + fullTableName + "." + indexName;
+    public String buildDropIndex(String fullTableName, String indexName, String qualifier) {
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("DROP INDEX ").append(fullTableName).append(".").append(indexName);
+        return queryString.toString();
     }
 
     /**
@@ -1030,6 +1054,14 @@ public class SymfowarePlatform extends DatabasePlatform {
         return timestampQuery;
     }
 
+    /**
+     * INTERNAL:
+     * Returns the minimum time increment supported by the platform.
+     */
+    public long minimumTimeIncrement() {
+        return 1000;
+    }
+    
     /**
      * Print the pagination SQL using Symfoware syntax
      * " WITH OPTION LIMIT (<max>)". There is no equivalent to 'OFFSET'.<br/>
@@ -1263,11 +1295,13 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Indicates whether the platform supports stored functions.<br/>
-     * Symfoware does.
+     * Although Symfoware supports some stored functions as function routines,
+     * their functionality is incompatible with the one EclipseLink provides.
+     * So, return false;
      */
     @Override
     public boolean supportsStoredFunctions() {
-        return true;
+        return false;
     }
 
     /**

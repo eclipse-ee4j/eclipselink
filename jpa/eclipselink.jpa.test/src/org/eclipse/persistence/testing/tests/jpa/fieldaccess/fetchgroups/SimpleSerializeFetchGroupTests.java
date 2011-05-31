@@ -853,7 +853,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertEquals(newSalary, empMerged.getSalary());
             assertEquals("newCountry", empMerged.getAddress().getCountry());
             assertEquals("newCity", empMerged.getAddress().getCity());
-            for(PhoneNumber phone : empSerialized.getPhoneNumbers()) {
+            for(PhoneNumber phone : empMerged.getPhoneNumbers()) {
                 assertEquals("000", phone.getAreaCode());
                 assertEquals("0000000", phone.getNumber());
             }

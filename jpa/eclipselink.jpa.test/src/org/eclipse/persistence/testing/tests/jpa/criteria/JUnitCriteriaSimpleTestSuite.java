@@ -1561,6 +1561,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseSqrtTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test simpleReverseSqrtTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         ExpressionBuilder expbldr = new ExpressionBuilder();
@@ -1622,6 +1627,11 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
 
     public void simpleSqrtTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test simpleSqrtTest skipped for this platform, "
+                    + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         ExpressionBuilder expbldr = new ExpressionBuilder();

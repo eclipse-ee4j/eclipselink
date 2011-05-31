@@ -45,6 +45,10 @@ public class IndexDefinition extends DatabaseObjectDefinition {
         return targetTable;
     }
 
+    /**
+     * PUBLIC:
+     * set qualified table name.
+     */
     public void setTargetTable(String targetTable) {
         this.targetTable = targetTable;
     }
@@ -63,20 +67,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
      */
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
-            if (isUnique()) {
-                writer.write("CREATE UNIQUE INDEX ");
-            } else {
-                writer.write("CREATE INDEX ");
-            }
-            writer.write(getFullName() + " ON " + getTargetTable() + " (");
-            for (Iterator<String> iterator = this.fields.iterator(); iterator.hasNext();) {
-                String field = iterator.next();
-                writer.write(field);
-                if (iterator.hasNext()) {
-                    writer.write(", ");
-                }
-            }
-            writer.write(")");
+            writer.write(session.getPlatform().buildCreateIndex(getTargetTable(), getName(), getQualifier(), isUnique(), this.fields.toArray(new String[0])));
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -89,10 +80,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
      */
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
-            writer.write("DROP INDEX " + getFullName());
-            if (session.getPlatform().requiresTableInIndexDropDDL()) {
-                writer.write(" ON " + getTargetTable());
-            }
+            writer.write(session.getPlatform().buildDropIndex(getTargetTable(), getName(), getQualifier()));
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }

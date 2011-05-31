@@ -510,6 +510,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Tests a @PrivateOwned @OneToMany mapping.
      */
     public void testRemoveJillWithPrivateOwnedPhoneNumbers() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            getServerSession("fieldaccess").logMessage("Test testRemoveJillWithPrivateOwnedPhoneNumbers skipped for this platform, "
+            + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
+            return;
+        }
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         

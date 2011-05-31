@@ -18,6 +18,18 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class NativeQueryTableCreator extends AdvancedTableCreator {
     /*
+     * TogglingFastTableCreator uses the name of the table creator class
+     * as a key to control its functionality.
+     * This table creator class and its super class share the same tables.
+     * The super class name has to be passed to TogglingFastTableCreator to
+     * ensure that, in case of 'fast table creation', only at the first invocation of
+     * either of these the table DDL statements are issued.
+     */
+    @Override
+    public String getTableCreatorName() {
+        return this.getClass().getSuperclass().getName();
+    }
+    /*
      * Override Buyer table to change the field for buyer's description to use "Descrip", which will
      * cause issues on case sensitive databases if "Descrip" is not used within EclipseLink queries on case
      * sensitive databases.  
