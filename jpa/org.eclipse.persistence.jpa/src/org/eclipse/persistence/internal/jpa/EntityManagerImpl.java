@@ -752,7 +752,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
         // Apply any EclipseLink defaults if they haven't been set through
         // the properties.
-        if (properties == null || ( !properties.containsKey(QueryHints.CACHE_USAGE) && !properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE) && !properties.containsKey(QueryHints.CACHE_STORE_MODE))) {
+        if (properties == null || ( !properties.containsKey(QueryHints.CACHE_USAGE) && !properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE) && !properties.containsKey(QueryHints.CACHE_STORE_MODE) 
+                && !properties.containsKey("javax.persistence.cacheRetrieveMode") && !properties.containsKey("javax.persistence.cacheStoreMode"))) {
             query.conformResultsInUnitOfWork();
         }
 
@@ -2314,16 +2315,32 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             
                 if (descriptor != null && ! descriptor.isIsolated()) {
                     if (operation != OperationType.LOCK) {
-                        // For a find operation, apply the javax.persistence.cacheRetrieveMode
+                        // For a find operation, apply the javax.persistence.cache.retrieveMode
                         if (operation == OperationType.FIND) {
                             if (properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
                                 queryHints.put(QueryHints.CACHE_RETRIEVE_MODE, properties.get(QueryHints.CACHE_RETRIEVE_MODE));
+                            } else if (properties.containsKey("javax.persistence.cacheRetrieveMode")) { // support legacy property
+                                Session activeSession = getActiveSession();
+                                if (activeSession != null) {
+                                    // log deprecation info
+                                    String[] properties = new String[] { QueryHints.CACHE_RETRIEVE_MODE, "javax.persistence.cacheRetrieveMode" }; 
+                                    ((AbstractSession)activeSession).log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
+                                }
+                                queryHints.put(QueryHints.CACHE_RETRIEVE_MODE, properties.get("javax.persistence.cacheRetrieveMode"));
                             }
                         }
                         
-                        // For both find and refresh operations, apply javax.persistence.cacheStoreMode 
+                        // For both find and refresh operations, apply javax.persistence.cache.storeMode 
                         if (properties.containsKey(QueryHints.CACHE_STORE_MODE)) {
                             queryHints.put(QueryHints.CACHE_STORE_MODE, properties.get(QueryHints.CACHE_STORE_MODE));
+                        } else if (properties.containsKey("javax.persistence.cacheStoreMode")) { // support legacy property
+                            Session activeSession = getActiveSession();
+                            if (activeSession != null) {
+                                // log deprecation info
+                                String[] properties = new String[] { QueryHints.CACHE_STORE_MODE, "javax.persistence.cacheStoreMode" }; 
+                                ((AbstractSession)activeSession).log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
+                            }
+                            queryHints.put(QueryHints.CACHE_STORE_MODE, properties.get("javax.persistence.cacheStoreMode"));
                         }
                     }
                 }

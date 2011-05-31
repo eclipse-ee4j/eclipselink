@@ -248,6 +248,10 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedManyToMany"));
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedElementCollection"));
             suite.addTest(new CacheableModelJunitTest("testIsolationBeforeEarlyTxBegin"));
+            
+            // Bug 340074
+            suite.addTest(new CacheableModelJunitTest("testFindWithLegacyFindProperties"));
+            suite.addTest(new CacheableModelJunitTest("testFindWithEMLegacyProperties"));
         }
         return suite;
     }
@@ -388,6 +392,42 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
+     * Test find using entity manager properties (legacy)
+     */
+    public void testFindWithEMLegacyProperties() {
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) { 
+            EntityManager em = createDSEntityManager();
+            
+            // Put the entity in the UOW and shared cache.
+            CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
+            
+            // Update the entity name in the shared cash through a different EM.
+            updateCacheableTrueEntityNameInSharedCache("testCacheRetrieveModeBypassOnFindThroughEMProperties");
+            
+            // This should pick up the entity from the shared cache
+            EntityManager em2 = createDSEntityManager();
+            CacheableTrueEntity cachedEntity2 = em2.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+            assertTrue("The shared cache was not updated.", cachedEntity2.getName().equals("testCacheRetrieveModeBypassOnFindThroughEMProperties"));
+            closeEM(em2);
+            
+            // This setting should be ignored on a refresh operation ...
+            em.setProperty("javax.persistence.cacheRetrieveMode", CacheRetrieveMode.USE); // legacy property
+            
+            // Set the refresh property.
+            em.setProperty("javax.persistence.cacheStoreMode", CacheStoreMode.REFRESH); // legacy property
+            
+            // Re-issue the find on the original EM.
+            CacheableTrueEntity entity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+            assertTrue("CacheableTrueEntity should have been refreshed.", entity.getName().equals("testCacheRetrieveModeBypassOnFindThroughEMProperties"));
+            assertTrue("CacheableTrueEntity from UOW should have been refreshed.", cachedEntity.getName().equals(entity.getName()));
+            assertTrue("Entity returned should be the same instance from the UOW cache", cachedEntity == entity);
+            
+            closeEM(em);
+        }
+    }
+    
+    /**
      * Test find using find properties  
      */
     public void testFindWithFindProperties() {
@@ -413,6 +453,43 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             // Set the refresh property.
             HashMap properties = new HashMap();
             properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
+            
+            // Re-issue the find on the original EM.
+            CacheableTrueEntity entity = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
+            assertTrue("CacheableTrueEntity should have been refreshed.", entity.getName().equals("testCacheRetrieveModeBypassOnFindThroughFindProperties"));
+            assertTrue("CacheableTrueEntity from UOW should have been refreshed.", cachedEntity.getName().equals(entity.getName()));
+            assertTrue("Entity returned should be the same instance from the UOW cache", cachedEntity == entity);
+            
+            closeEM(em);
+        }
+    }
+    
+    /**
+     * Test find using find properties (legacy)
+     */
+    public void testFindWithLegacyFindProperties() {
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            EntityManager em = createDSEntityManager();
+            
+            // Put the entity in the UOW and shared cache.
+            CacheableTrueEntity cachedEntity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+            
+            // Update the entity name, but BYPASS updating the shared cache through a different EM.
+            updateCacheableTrueEntityNameAndBypassStore("testCacheRetrieveModeBypassOnFindThroughFindProperties");
+            
+            // This should pick up the entity from the shared cache (which should not of been updated
+            EntityManager em2 = createDSEntityManager();
+            CacheableTrueEntity cachedEntity2 = em2.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+            assertFalse("The shared cache was updated.", cachedEntity2.getName().equals("testCacheRetrieveModeBypassOnFindThroughFindProperties"));
+            closeEM(em2);
+            
+            // This setting should be ignored on a refresh operation ...
+            em.setProperty("javax.persistence.cacheRetrieveMode", CacheRetrieveMode.USE);
+            
+            // Set the refresh property.
+            HashMap properties = new HashMap();
+            properties.put("javax.persistence.cacheStoreMode", CacheStoreMode.REFRESH);
             
             // Re-issue the find on the original EM.
             CacheableTrueEntity entity = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);

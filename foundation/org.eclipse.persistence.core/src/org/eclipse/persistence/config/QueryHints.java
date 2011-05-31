@@ -59,25 +59,25 @@ public class QueryHints {
     public static final String PARAMETER_DELIMITER = "eclipselink.jdbc.parameter-delimiter";
     
     /**
-     * "javax.persistence.cacheRetrieveMode"
+     * "javax.persistence.cache.retrieveMode"
      * <p>Configures the behavior when data is retrieved by the find methods and 
-     * by the execution of queries. The cacheRetrieveMode is ignored for the 
+     * by the execution of queries. The cache retrieve mode is ignored for the 
      * refresh method, which always causes data to be retrieved from the 
-     * database and not the cache.
+     * database and not the cache.</p>
      * @see org.eclipse.persistence.queries.DatabaseQuery#dontMaintainCache()
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#shouldCheckDescriptorForCacheUsage()
      */
-    public static final String CACHE_RETRIEVE_MODE = "javax.persistence.cacheRetrieveMode";
+    public static final String CACHE_RETRIEVE_MODE = "javax.persistence.cache.retrieveMode";
     
     /**
-     * "javax.persistence.cacheStoreMode"
-     * <p> Configures the behavior when data is read from the database and when 
-     * data is committed into the database.
+     * "javax.persistence.cache.storeMode"
+     * <p>Configures the behavior when data is read from the database and when 
+     * data is committed into the database.</p>
      * @see org.eclipse.persistence.queries.DatabaseQuery#dontMaintainCache()
      * @see org.eclipse.persistence.queries.DatabaseQuery#maintainCache()
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#refreshIdentityMapResult()
      */
-    public static final String CACHE_STORE_MODE = "javax.persistence.cacheStoreMode";
+    public static final String CACHE_STORE_MODE = "javax.persistence.cache.storeMode";
     
     /**
      * "eclipselink.cache-usage"

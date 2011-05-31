@@ -228,7 +228,9 @@ public class QueryHintsHandler {
             addHint(new BindParametersHint());
             addHint(new CacheUsageHint());
             addHint(new CacheRetrieveModeHint());
+            addHint(new CacheRetrieveModeLegacyHint());
             addHint(new CacheStoreModeHint());
+            addHint(new CacheStoreModeLegacyHint());
             addHint(new QueryTypeHint());
             addHint(new PessimisticLockHint());
             addHint(new PessimisticLockScope());
@@ -474,7 +476,11 @@ public class QueryHintsHandler {
     
     protected static class CacheRetrieveModeHint extends Hint {
         CacheRetrieveModeHint() {
-            super(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE.name());
+            this(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE.name());
+        }
+        
+        CacheRetrieveModeHint(String name, String defaultValue) {
+            super(name, defaultValue);
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
@@ -493,9 +499,27 @@ public class QueryHintsHandler {
         }
     }
     
+    protected static class CacheRetrieveModeLegacyHint extends CacheRetrieveModeHint {
+        CacheRetrieveModeLegacyHint() {
+            super("javax.persistence.cacheRetrieveMode", CacheRetrieveMode.USE.name());
+        }
+        
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (activeSession != null) {
+                String[] properties = new String[] { QueryHints.CACHE_RETRIEVE_MODE, "javax.persistence.cacheRetrieveMode" }; 
+                activeSession.log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
+            }
+            return super.applyToDatabaseQuery(valueToApply, query, loader, activeSession);
+        }
+    }
+    
     protected static class CacheStoreModeHint extends Hint {
         CacheStoreModeHint() {
-            super(QueryHints.CACHE_STORE_MODE, CacheStoreMode.USE.name());
+            this(QueryHints.CACHE_STORE_MODE, CacheStoreMode.USE.name());
+        }
+        
+        CacheStoreModeHint(String name, String defaultValue) {
+            super(name, defaultValue);
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
@@ -512,6 +536,20 @@ public class QueryHintsHandler {
             // CacheStoreMode.USE will use the EclipseLink default maintainCache.
             
             return query;
+        }
+    }
+    
+    protected static class CacheStoreModeLegacyHint extends CacheStoreModeHint {
+        CacheStoreModeLegacyHint() {
+            super("javax.persistence.cacheStoreMode", CacheStoreMode.USE.name());
+        }
+        
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (activeSession != null) {
+                String[] properties = new String[] { QueryHints.CACHE_STORE_MODE, "javax.persistence.cacheStoreMode" }; 
+                activeSession.log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
+            }
+            return super.applyToDatabaseQuery(valueToApply, query, loader, activeSession);
         }
     }
 
