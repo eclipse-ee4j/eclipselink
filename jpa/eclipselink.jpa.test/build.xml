@@ -2165,6 +2165,7 @@
         <copy todir="${eclipselink.jpa.test}/stage/META-INF" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
                 <include name="*.xml"/>
+                <exclude name="extension*.xml"/>
             </fileset>
         </copy>
 
@@ -2174,6 +2175,12 @@
         <copy todir="${eclipselink.jpa.test}/stage/" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
                 <include name="tang*.xml"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${eclipselink.jpa.test}/stage/" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
+                <include name="extension*.xml"/>
             </fileset>
         </copy>
 
@@ -2257,7 +2264,7 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%datasource-type%%' value="jta-data-source">
             <include name="*.xml"/>
         </replace>
-		<replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%NONJTA_DS_NAME%%' value="${NONJTA_DS_NAME}">
+        <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%NONJTA_DS_NAME%%' value="${NONJTA_DS_NAME}">
             <include name="*.xml"/>
         </replace>
     </target>
@@ -2716,12 +2723,13 @@
         <antcall target="server-test-advanced" inheritRefs="true"/>
         <antcall target="server-test-advanced-multitenant" inheritRefs="true"/>
         <antcall target="server-test-cacheable" inheritRefs="true"/>
+        <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
         <antcall target="server-test-criteria" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
-        <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
         <antcall target="server-test-delimited" inheritRefs="true"/>
+        <antcall target="server-test-extensibility" inheritRefs="true"/>
         <antcall target="server-test-fetchgroups" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-fetchgroups" inheritRefs="true"/>
@@ -2790,8 +2798,8 @@
         </antcall>
     </target>
     <!--this model is only used for testing that setting eclipselink as default provider on weblogic domain-->
-	<target name="weblogic-domain-test" depends="clean-test">
-	    <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-setup" inheritRefs="true"/>
+    <target name="weblogic-domain-test" depends="clean-test">
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-setup" inheritRefs="true"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
@@ -2802,8 +2810,8 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
-		<ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-reset" inheritRefs="true"/>
-		<antcall target="generate-servertest-report" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-reset" inheritRefs="true"/>
+        <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-cacheable">
@@ -2888,7 +2896,7 @@
     </target>
 
     <target name="server-test-delimited">
-        <copy file="${eclipselink.jpa.test}/resource/eclipselink-delimited-model/orm.xml" todir="${eclipselink.jpa.test}/resource/eclipselink-delimited-model/server" filtering="true"/>
+        <copy file="${eclipselink.jpa.test}/resource/eclipselink-delimited-model/orm.xml" todir="${eclipselink.jpa.test}/resource/eclipselink-delimited-model/server" overwrite="true" filtering="true"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="delimited"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/delimited"/>
@@ -2897,6 +2905,22 @@
             <param name="TEST_NAME" value="eclipselink-delimited-model"/>
             <param name="EAR_NAME" value="eclipselink-delimited-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-extensibility">
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-extensibility-model/server"  overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-extensibility-model/repository" includes="extension*.xml"/>
+        </copy>
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="extensibility"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/extensibility"/>
+            <param name="MODEL_NAME" value="eclipselink-extensibility-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/extensibility"/>
+            <param name="TEST_NAME" value="eclipselink-extensibility-model"/>
+            <param name="EAR_NAME" value="eclipselink-extensibility-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.extensibility.ExtensibilityTests"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -2983,7 +3007,7 @@
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="plsql"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/plsql"/>
-            <param name="MODEL_NAME" value="eclipselink-inherited-model"/>
+            <param name="MODEL_NAME" value="eclipselink-plsql-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/plsql"/>
             <param name="TEST_NAME" value="eclipselink-plsql-model"/>
             <param name="EAR_NAME" value="eclipselink-plsql-model"/>
@@ -3166,10 +3190,8 @@
     </target>
 
     <target name="server-test-xml-mergeinherited">
-        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited/" overwrite="true" failonerror="false">
-            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/">
-                <include name="merge-*.xml"/>
-            </fileset>
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"  overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model" includes="merge-*.xml"/>
         </copy>
         <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl"/>
         <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
@@ -3191,8 +3213,8 @@
         <available file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" property="server_ddl.exists" value="true" />
     </target>
     
-    <target name="cleanup-merge-inherited-ddl" depends="server-test-dll-existence" if="server_ddl.exists"> 
-        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>        
+    <target name="cleanup-merge-inherited-ddl" depends="server-test-dll-existence" if="server_ddl.exists">
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>
         <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
         <delete>
             <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited/">
