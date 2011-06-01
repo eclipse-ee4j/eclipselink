@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder.Customer">
+            <xml-type prop-order="firstName lastName billingAddress shippingAddress phoneNumbers"/>
+            <java-attributes>
+                <xml-element java-attribute="firstName" name="first-name"/>
+                <xml-element java-attribute="lastName" name="last-name"/>
+                <xml-element java-attribute="shippingAddress" name="shipping-address" type="org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder.Address"/>
+                <xml-element java-attribute="phoneNumbers" name="phone-number" type="org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder.PhoneNumber" container-type="java.util.List"/>
+            </java-attributes>
+        </java-type>
+        <!-- 
+        <java-type name="PhoneNumber">
+            <java-attributes>
+                <xml-attribute java-attribute="type"/>
+                <xml-value java-attribute="number"/>
+            </java-attributes>
+        </java-type>
+        -->
+    </java-types>
+</xml-bindings>

@@ -50,6 +50,7 @@ import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.none.InvalidTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.none.ValidTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder.PropOrderTestCases;
 
 public class JAXBTestSuite extends TestCase {
 
@@ -188,6 +189,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBContextByClassArrayWithRefTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefInBindingsTestCases.class);
         suite.addTestSuite(JAXBContextByPackageWithIndexTestCases.class);
+        
+        suite.addTestSuite(PropOrderTestCases.class);
         return suite;
     }
 

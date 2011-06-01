@@ -1,0 +1,12 @@
+<customer>
+   <first-name>Jane</first-name>
+   <last-name>Doe</last-name>
+   <billingAddress>
+      <street>1 Billing Street</street>
+   </billingAddress>
+   <shipping-address>
+      <street>2 Shipping Road</street>
+   </shipping-address>
+   <phone-number/>
+   <phone-number/>
+</customer>

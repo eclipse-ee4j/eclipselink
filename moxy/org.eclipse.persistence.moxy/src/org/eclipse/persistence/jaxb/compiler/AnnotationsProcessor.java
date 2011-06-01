@@ -670,6 +670,8 @@ public class AnnotationsProcessor {
                 JavaClass[] jClassArray = new JavaClass[] { superClass };
                 buildNewTypeInfo(jClassArray);
             }
+            
+            processVirtualPropertiesForSuperClass(javaClass, info);
 
             // add properties
             info.setProperties(getPropertiesForClass(javaClass, info));
@@ -683,6 +685,20 @@ public class AnnotationsProcessor {
             validatePropOrderForInfo(info);
         }
         return typeInfo;
+    }
+
+    private void processVirtualPropertiesForSuperClass(JavaClass cls, TypeInfo info) {
+        JavaClass superClass = (JavaClass) cls.getSuperclass();
+        if(superClass == null) {
+            return;
+        }
+        TypeInfo superClassInfo = this.typeInfo.get(superClass.getQualifiedName());
+        if(superClassInfo != null) {
+            processVirtualPropertiesForSuperClass(superClass, superClassInfo);
+            if(superClassInfo.getXmlVirtualAccessMethods() != null && info.getXmlVirtualAccessMethods() == null) {
+                info.setXmlVirtualAccessMethods(superClassInfo.getXmlVirtualAccessMethods());
+            }
+        }
     }
 
     /**
@@ -3312,6 +3328,9 @@ public class AnnotationsProcessor {
 
     private void validatePropOrderForInfo(TypeInfo info) {
         if (info.isTransient()) {
+            return;
+        }
+        if(info.getXmlVirtualAccessMethods() != null) {
             return;
         }
         // Ensure that all properties in the propOrder list actually exist
