@@ -12,6 +12,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
+ *     06/1/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 9)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -47,7 +49,16 @@ import static org.eclipse.persistence.annotations.MultitenantType.SINGLE_TABLE;
     query="SELECT c FROM Contract c"),
   @NamedQuery(
     name="UpdateAllContractDescriptions",
-    query="UPDATE Contract c SET c.description = 'voided'")
+    query="UPDATE Contract c SET c.description = 'voided'"),
+  @NamedQuery(
+    name="DeleteAllContractsWithDescription",
+    query="DELETE FROM Contract c WHERE c.description LIKE :description"),
+  @NamedQuery(
+    name="DeleteAllContracts",
+    query="DELETE FROM Contract c"),
+  @NamedQuery(
+    name="DeleteContractByPrimaryKey",
+    query="DELETE FROM Contract c WHERE c.id = :id")
 })
 // Will default the tenant discriminator column to TENANT_ID, which is mapped below.
 public class Contract {

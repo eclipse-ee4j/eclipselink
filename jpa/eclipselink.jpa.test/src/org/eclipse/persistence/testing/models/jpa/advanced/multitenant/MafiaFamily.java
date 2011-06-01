@@ -11,7 +11,9 @@
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1
  *     04/05/2011-2.3 Guy Pelletier 
- *       - 337323: Multi-tenant with shared schema support (part 3))
+ *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     06/1/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 9)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -28,10 +30,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 import org.eclipse.persistence.annotations.Multitenant;
@@ -44,10 +48,14 @@ import static javax.persistence.CascadeType.ALL;
 @SecondaryTable(name="JPA_FAMILY_REVENUE")
 @Multitenant
 @TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id", primaryKey = true)
-@NamedQuery(
-    name="findJPQLMafiaFamilies", 
-    query="SELECT s from MafiaFamily s"
-)
+@NamedQueries({
+    @NamedQuery(
+     name="findAllMafiaFamilies", 
+     query="SELECT s from MafiaFamily s"),
+    @NamedQuery(
+     name="DeleteAllMafiaFamilies",
+     query="DELETE FROM MafiaFamily m")
+})
 public class MafiaFamily implements Serializable {
     private int id;
     private String name;
@@ -70,8 +78,8 @@ public class MafiaFamily implements Serializable {
     }
     
     @Id
-    @Column(name="ID")
     @GeneratedValue
+    @Column(name="ID")
     public int getId() { 
         return id; 
     }
@@ -119,5 +127,9 @@ public class MafiaFamily implements Serializable {
     
     public void setTags(Collection<String> tags) { 
         this.tags = tags; 
+    }
+    
+    public String toString() {
+        return "MafiaFamily[" + getId() + "] : " + name;
     }
 }

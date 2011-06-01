@@ -10,6 +10,8 @@
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     06/1/2011-2.3 Guy Pelletier 
+ *       - 337323: Multi-tenant with shared schema support (part 9)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -20,6 +22,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
     public AdvancedMultiTenantTableCreator() {
         setName("JPA Advanced Multi-Tenant Project");
 
+        addTableDefinition(buildAddressTable());
         addTableDefinition(buildMafiaFamilyTable());
         addTableDefinition(buildMafiaFamily_TagsTable());
         addTableDefinition(buildMafiaFamily_RevenueTable());
@@ -30,6 +33,101 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSoldierTable());
         addTableDefinition(buildContractTable());
         addTableDefinition(buildContract_SoldierTable());
+        addTableDefinition(buildRewardTable());
+    }
+    
+    public TableDefinition buildAddressTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MAFIOSO_ADDRESS");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ADDRESS_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldStreet = new FieldDefinition();
+        fieldStreet.setName("STREET");
+        fieldStreet.setTypeName("VARCHAR2");
+        fieldStreet.setSize(60);
+        fieldStreet.setSubSize(0);
+        fieldStreet.setIsPrimaryKey(false);
+        fieldStreet.setIsIdentity(false);
+        fieldStreet.setUnique(false);
+        fieldStreet.setShouldAllowNull(true);
+        table.addField(fieldStreet);
+
+        FieldDefinition fieldCity = new FieldDefinition();
+        fieldCity.setName("CITY");
+        fieldCity.setTypeName("VARCHAR2");
+        fieldCity.setSize(60);
+        fieldCity.setSubSize(0);
+        fieldCity.setIsPrimaryKey(false);
+        fieldCity.setIsIdentity(false);
+        fieldCity.setUnique(false);
+        fieldCity.setShouldAllowNull(true);
+        table.addField(fieldCity);
+
+        FieldDefinition fieldProvince = new FieldDefinition();
+        fieldProvince.setName("PROVINCE");
+        fieldProvince.setTypeName("VARCHAR2");
+        fieldProvince.setSize(60);
+        fieldProvince.setSubSize(0);
+        fieldProvince.setIsPrimaryKey(false);
+        fieldProvince.setIsIdentity(false);
+        fieldProvince.setUnique(false);
+        fieldProvince.setShouldAllowNull(true);
+        table.addField(fieldProvince);
+
+        FieldDefinition fieldPostalCode = new FieldDefinition();
+        fieldPostalCode.setName("P_CODE");
+        fieldPostalCode.setTypeName("VARCHAR2");
+        fieldPostalCode.setSize(67);
+        fieldPostalCode.setSubSize(0);
+        fieldPostalCode.setIsPrimaryKey(false);
+        fieldPostalCode.setIsIdentity(false);
+        fieldPostalCode.setUnique(false);
+        fieldPostalCode.setShouldAllowNull(true);
+        table.addField(fieldPostalCode);
+
+        FieldDefinition fieldCountry = new FieldDefinition();
+        fieldCountry.setName("COUNTRY");
+        fieldCountry.setTypeName("VARCHAR2");
+        fieldCountry.setSize(60);
+        fieldCountry.setSubSize(0);
+        fieldCountry.setIsPrimaryKey(false);
+        fieldCountry.setIsIdentity(false);
+        fieldCountry.setUnique(false);
+        fieldCountry.setShouldAllowNull(true);
+        table.addField(fieldCountry);
+        
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMERIC");
+        fieldVersion.setSize(15);
+        fieldVersion.setIsPrimaryKey(false);
+        fieldVersion.setUnique(false);
+        fieldVersion.setIsIdentity(false);
+        fieldVersion.setShouldAllowNull(true);
+        table.addField(fieldVersion);
+        
+        FieldDefinition fieldTenantId = new FieldDefinition();
+        fieldTenantId.setName("TENANT_ID");
+        fieldTenantId.setTypeName("VARCHAR2");
+        fieldTenantId.setSize(10);
+        fieldTenantId.setSubSize(0);
+        fieldTenantId.setIsPrimaryKey(false);
+        fieldTenantId.setIsIdentity(false);
+        fieldTenantId.setUnique(false);
+        fieldTenantId.setShouldAllowNull(false);
+        table.addField(fieldTenantId);
+        
+        return table;
     }
     
     public TableDefinition buildMafiaFamilyTable() {
@@ -83,7 +181,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldFamilyId.setIsIdentity(false);
         fieldFamilyId.setUnique(false);
         fieldFamilyId.setShouldAllowNull(false);
-        fieldFamilyId.setForeignKeyFieldName("JPA_MAFIA_FAMILY.ID");
+        //fieldFamilyId.setForeignKeyFieldName("JPA_MAFIA_FAMILY.ID");
         table.addField(fieldFamilyId);
 
         FieldDefinition fieldTag = new FieldDefinition();
@@ -112,7 +210,7 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldFamilyId.setIsIdentity(false);
         fieldFamilyId.setUnique(false);
         fieldFamilyId.setShouldAllowNull(false);
-        fieldFamilyId.setForeignKeyFieldName("JPA_MAFIA_FAMILY.ID");
+        //fieldFamilyId.setForeignKeyFieldName("JPA_MAFIA_FAMILY.ID");
         table.addField(fieldFamilyId);
 
         FieldDefinition fieldRevenue = new FieldDefinition();
@@ -204,6 +302,16 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fielDiscriminatorType.setIsIdentity(false);
         table.addField(fielDiscriminatorType);
     
+        FieldDefinition fieldAddress = new FieldDefinition();
+        fieldAddress.setName("ADDRESS_ID");
+        fieldAddress.setTypeName("NUMERIC");
+        fieldAddress.setSize(15);
+        fieldAddress.setShouldAllowNull(true);
+        fieldAddress.setIsPrimaryKey(false);
+        fieldAddress.setUnique(false);
+        fieldAddress.setIsIdentity(false);
+        table.addField(fieldAddress);
+        
         FieldDefinition fieldTenantId = new FieldDefinition();
         fieldTenantId.setName("TENANT_ID");
         fieldTenantId.setTypeName("VARCHAR2");
@@ -399,5 +507,55 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         table.addField(fieldSoldierId);
         
         return table;   
+    }
+    
+    public TableDefinition buildRewardTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_REWARD");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldDescription = new FieldDefinition();
+        fieldDescription.setName("DESCRIP");
+        fieldDescription.setTypeName("VARCHAR2");
+        fieldDescription.setSize(60);
+        fieldDescription.setSubSize(0);
+        fieldDescription.setIsPrimaryKey(false);
+        fieldDescription.setIsIdentity(false);
+        fieldDescription.setUnique(false);
+        fieldDescription.setShouldAllowNull(true);
+        table.addField(fieldDescription);
+        
+        FieldDefinition fieldTenantId = new FieldDefinition();
+        fieldTenantId.setName("T_ID");
+        fieldTenantId.setTypeName("VARCHAR2");
+        fieldTenantId.setSize(10);
+        fieldTenantId.setSubSize(0);
+        fieldTenantId.setIsPrimaryKey(false);
+        fieldTenantId.setIsIdentity(false);
+        fieldTenantId.setUnique(false);
+        fieldTenantId.setShouldAllowNull(false);
+        table.addField(fieldTenantId);
+        
+        FieldDefinition fieldMafiosoId = new FieldDefinition();
+        fieldMafiosoId.setName("MAFIOSO_ID");
+        fieldMafiosoId.setTypeName("NUMERIC");
+        fieldMafiosoId.setSize(15);
+        fieldMafiosoId.setShouldAllowNull(false);
+        fieldMafiosoId.setIsPrimaryKey(true);
+        fieldMafiosoId.setUnique(false);
+        fieldMafiosoId.setIsIdentity(false);
+        fieldMafiosoId.setForeignKeyFieldName("JPA_MAFIOSO.ID");
+        table.addField(fieldMafiosoId);
+        
+        return table;
     }
 }
