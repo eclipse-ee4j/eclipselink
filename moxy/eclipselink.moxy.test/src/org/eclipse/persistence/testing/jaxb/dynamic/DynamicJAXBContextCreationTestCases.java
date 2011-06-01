@@ -258,6 +258,17 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
 
         DynamicEntity emp = jaxbContext.newDynamicEntity(EMPLOYEE_CLASS_NAME);
         assertNotNull(emp);
+
+        // Until refresh is implemented, throw an UnsupportedOperationException
+        Exception caughtException = null;
+        try {
+            jaxbContext.refeshMetadata();
+        } catch (JAXBException e) {
+            if (e.getLinkedException() instanceof UnsupportedOperationException) {
+                caughtException = e;
+            }
+        }
+        assertNotNull(caughtException);
     }
 
     public void testCreateContextFromXSDNodeError() throws Exception {

@@ -231,4 +231,9 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         }
     }
 
+    @Override
+    public void refeshMetadata() throws JAXBException {
+        throw new JAXBException(new UnsupportedOperationException());
+    }
+
 }
