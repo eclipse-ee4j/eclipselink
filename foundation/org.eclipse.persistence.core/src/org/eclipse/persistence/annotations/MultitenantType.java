@@ -29,8 +29,12 @@ public enum MultitenantType {
     SINGLE_TABLE, 
 
     /**
-     * Specifies that different tables are used for each tenant. The table scan 
-     * be uniquely identified by name, schema/tablespace.
+     * NOTE: The TABLE_PER_TENANT type is currently not supported and 
+     * specifying it on your model classes will result in an exception being 
+     * thrown. This type will be supported in a later release (post 2.3).
+     *  
+     * When supported, this type specifies that different tables are used for 
+     * each tenant. The table scan  be uniquely identified by name, schema/tablespace.
      */
     TABLE_PER_TENANT 
 }
