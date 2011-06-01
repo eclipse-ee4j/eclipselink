@@ -35,8 +35,7 @@ public class LockOnCloneDeadlockAvoidanceTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getSession().getDescriptor(ConcurrentAddress.class).getEventManager().addListener(listener);
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        this.person = ConcurrentPerson.example1();
-        uow.registerObject(this.person);
+        this.person = (ConcurrentPerson) uow.registerObject(ConcurrentPerson.example1());
         uow.commit();
         ConcurrentAddress.RUNNING_TEST = ConcurrentAddress.LOCK_ON_CLONE_DEADLOCK;
 
