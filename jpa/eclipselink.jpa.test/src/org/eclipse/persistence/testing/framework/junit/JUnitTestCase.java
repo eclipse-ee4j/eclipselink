@@ -181,6 +181,11 @@ public abstract class JUnitTestCase extends TestCase {
      * container.
      */
     public static boolean isJPA10() {
+    public static boolean isJPA10() {
+        String property =System.getProperty("RUN_JPA20_TEST");
+        if (property != null && property.toUpperCase().equals("TRUE")) {
+            return false;
+        }
         try {
             LockModeType.valueOf("NONE");
         } catch (Exception e) {
@@ -197,7 +202,7 @@ public abstract class JUnitTestCase extends TestCase {
             if (System.getProperty("TEST_SERVER_PLATFORM") != null) {
                 isOnServer = true;
             } else {
-                isOnServer = false;                
+                isOnServer = false;
             }
         }
         return isOnServer;
