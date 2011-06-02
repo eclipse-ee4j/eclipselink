@@ -780,9 +780,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 fail("Exception encountered on mulitple select statement (with tenant discriminator columns): " + e);
             }
             
-            // The following delete all tests will fail .. currently investigating.
-            /*
-             
             // Try a delete all on single table (Contracts)
             try {
                 beginTransaction(em);
@@ -794,7 +791,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             } catch (Exception e) {
                 fail("Exception encountered on delete all query with single table (with tenant discriminator columns): " + e);
             }
-
+            
             // Try a delete all on multiple table (MafiaFamily)
             try {
                 beginTransaction(em);
@@ -827,17 +824,15 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             } catch (Exception e) {
                 fail("Exception caught: " + e);
             } finally {
+                if (isTransactionActive(em007)) {
+                    rollbackTransaction(em007);
+                }
                 closeEntityManager(em007);
             }
-            
-            */
-        } catch (RuntimeException e) {
+        } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
-            throw e;
-        } finally {
             closeEntityManager(em);
         }
     }

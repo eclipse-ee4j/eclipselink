@@ -109,6 +109,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * (long after the owning query has been) many interesting things happen here.
      */
     public Expression buildBaseSelectionCriteria(boolean isSubSelect, Map clonedExpressions) {
+        return buildBaseSelectionCriteria(isSubSelect, clonedExpressions, true);
+    }
+    /**
+     * Create the appropriate where clause.
+     * Since this is where the selection criteria gets cloned for the first time
+     * (long after the owning query has been) many interesting things happen here.
+     * Ability to switch off AdditionalJoinExpression is required for DeleteAllQuery.
+     */
+    public Expression buildBaseSelectionCriteria(boolean isSubSelect, Map clonedExpressions, boolean shouldUseAdditionalJoinExpression) {
         Expression expression = getSelectionCriteria();
 
         // For Flashback: builder.asOf(value) counts as a non-trivial selection criteria.
@@ -136,7 +145,16 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // Leaf inheritance and multiple table join.
         if (getDescriptor().shouldUseAdditionalJoinExpression()) {
             DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
-            Expression additionalJoin = queryManager.getAdditionalJoinExpression();
+            Expression additionalJoin;
+            if (shouldUseAdditionalJoinExpression) {
+                additionalJoin = queryManager.getAdditionalJoinExpression();
+            } else {
+                additionalJoin = queryManager.getMultipleTableJoinExpression();
+                if (additionalJoin == null) {
+                    additionalJoin.getBuilder().setWasAdditionJoinCriteriaUsed(true);
+                    return expression;
+                }
+            }
     
             // If there's an expression, then we know we'll have to rebuild anyway, so don't clone.
             if (expression == null) {
@@ -164,13 +182,20 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Return the appropriate select statement containing the fields in the table.
      */
     public SQLSelectStatement buildBaseSelectStatement(boolean isSubSelect, Map clonedExpressions) {
+        return buildBaseSelectStatement(isSubSelect, clonedExpressions, true);
+    }
+    /**
+     * Return the appropriate select statement containing the fields in the table.
+     * Ability to switch off AdditionalJoinExpression is required for DeleteAllQuery.
+     */
+    public SQLSelectStatement buildBaseSelectStatement(boolean isSubSelect, Map clonedExpressions, boolean shouldUseAdditionalJoinExpression) {
         SQLSelectStatement selectStatement = new SQLSelectStatement();
         ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
         selectStatement.setQuery(query);
         selectStatement.setLockingClause(query.getLockingClause());
         selectStatement.setDistinctState(query.getDistinctState());
         selectStatement.setTables((Vector)getDescriptor().getTables().clone());
-        selectStatement.setWhereClause(buildBaseSelectionCriteria(isSubSelect, clonedExpressions));
+        selectStatement.setWhereClause(buildBaseSelectionCriteria(isSubSelect, clonedExpressions, shouldUseAdditionalJoinExpression));
         //make sure we use the cloned builder and make sure we get the builder from the query if we have set the type.
         // If we use the expression builder and there are parallel builders and the query builder is on the 'right' 
         //instead of the 'left' we will build the SQL using the wrong builder.
@@ -503,17 +528,18 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * the fields to select.
      */
     protected SQLSelectStatement buildReportQuerySelectStatement(boolean isSubSelect) {
-        return buildReportQuerySelectStatement(isSubSelect, false, null);
+        return buildReportQuerySelectStatement(isSubSelect, false, null, true);
     }
     /**
      * Customary inheritance expression is required for DeleteAllQuery and UpdateAllQuery preparation. 
+     * Ability to switch off AdditionalJoinExpression is required for DeleteAllQuery.
      */
-    protected SQLSelectStatement buildReportQuerySelectStatement(boolean isSubSelect, boolean useCustomaryInheritanceExpression, Expression inheritanceExpression) {
+    protected SQLSelectStatement buildReportQuerySelectStatement(boolean isSubSelect, boolean useCustomaryInheritanceExpression, Expression inheritanceExpression, boolean shouldUseAdditionalJoinExpression) {
         ReportQuery reportQuery = (ReportQuery)getQuery();
         // For bug 2612185: Need to know which original bases were mapped to which cloned bases.
         // For sub-seclets the expressions have already been clones, and identity must be maintained with the outer expression.
         Map clonedExpressions = isSubSelect ? null : new IdentityHashMap();
-        SQLSelectStatement selectStatement = buildBaseSelectStatement(isSubSelect, clonedExpressions);
+        SQLSelectStatement selectStatement = buildBaseSelectStatement(isSubSelect, clonedExpressions, shouldUseAdditionalJoinExpression);
         if (reportQuery.hasGroupByExpressions()) {
             selectStatement.setGroupByExpressions(cloneExpressions(reportQuery.getGroupByExpressions(), clonedExpressions));
         }
@@ -1035,7 +1061,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Pre-build the SQL statement from the expression.
      */
     public void prepareDeleteAll() {
-        prepareDeleteAll(null);
+        prepareDeleteAll(null, false);
     }
 
     /**
@@ -1044,7 +1070,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * NOTE: A similar pattern also used in method buildDeleteAllStatementsForTempTable():
      *  if you are updating this method consider applying a similar update to that method as well.
      */
-    protected void prepareDeleteAll(List<DatabaseTable> tablesToIgnore) {
+    protected void prepareDeleteAll(List<DatabaseTable> tablesToIgnore, boolean isWhereClauseRequired) {
         List<DatabaseTable> tablesInInsertOrder;
         ClassDescriptor descriptor = getDescriptor();
         if (tablesToIgnore == null) {
@@ -1069,6 +1095,20 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         
         if (!tablesInInsertOrder.isEmpty()) {
             Expression whereClause = getSelectionCriteria();
+            if (tablesToIgnore == null) {
+                // It's original (not a nested) method call.
+                // Ignore the passed dummy value of isWhereClauseRequired and calculate it here.
+                // This value will be passed to all other tables.
+                isWhereClauseRequired = whereClause != null;                
+                if (!isWhereClauseRequired) {
+                    Expression additionalExpression = descriptor.getQueryManager().getAdditionalJoinExpression();
+                    if (additionalExpression != null) {
+                        if (!additionalExpression.equals(descriptor.getQueryManager().getMultipleTableJoinExpression())) {
+                            isWhereClauseRequired = true;
+                        }
+                    }
+                }
+            }
             
             SQLCall selectCallForExist = null;
 
@@ -1096,7 +1136,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // Main Case: Descriptor is mapped to more than one table and/or the query references other tables
             boolean isMainCase = selectStatementForExist.requiresAliases();            
             if (isMainCase) {
-                if (whereClause != null) {
+                if (isWhereClauseRequired) {
                     if (getExecutionSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
                         // currently DeleteAll using Oracle anonymous block is not implemented
                         if(!getExecutionSession().getPlatform().isOracle()) {
@@ -1106,7 +1146,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                 
                     if (isSelectCallForNotExistRequired) {
-                        selectStatementForNotExist = createSQLSelectStatementForModifyAll(null, null);
+                        selectStatementForNotExist = createSQLSelectStatementForModifyAll(null, null, descriptor, true, false);
                         selectCallForNotExist = (SQLCall)selectStatementForNotExist.buildCall(getSession());
                     }
                 } else {
@@ -1125,7 +1165,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 }
             } else {
                 // simple case: Descriptor is mapped to a single table and the query references no other tables.
-                if (whereClause != null) {
+                if (isWhereClauseRequired) {
                     if (getExecutionSession().getPlatform().shouldAlwaysUseTempStorageForModifyAll() && tablesToIgnore == null) {
                         // currently DeleteAll using Oracle anonymous block is not implemented
                         if (!getExecutionSession().getPlatform().isOracle()) {
@@ -1141,7 +1181,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
             // Don't use selectCallForExist in case there is no whereClause -
             // a simpler sql will be created if possible.
-            if (whereClause != null) {
+            if (isWhereClauseRequired) {
                 selectCallForExist = (SQLCall)selectStatementForExist.buildCall(getSession());
             }
             
@@ -1229,7 +1269,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                                     // Note that this doesn't work in case LargeProject descriptor was set not to read subclasses:
                                     // in that case the selection expression will have (PROJ_TYPE = 'L') AND (PROJ_TYPE = 'V')
                                     // 
-                                    SQLSelectStatement inheritanceSelectStatementForExist = createSQLSelectStatementForModifyAll(null, inheritanceExpression, desc);
+                                    SQLSelectStatement inheritanceSelectStatementForExist = createSQLSelectStatementForModifyAll(null, inheritanceExpression, desc, true, true);
                                     SQLCall inheritanceSelectCallForExist = (SQLCall)inheritanceSelectStatementForExist.buildCall(getSession());
 
                                     if(isLastTable) {
@@ -1337,7 +1377,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     
                     ExpressionQueryMechanism childMechanism = (ExpressionQueryMechanism)childQuery.getQueryMechanism();
                     // nested call
-                    childMechanism.prepareDeleteAll(tablesToIgnoreForChildren);
+                    childMechanism.prepareDeleteAll(tablesToIgnoreForChildren, isWhereClauseRequired);
                     
                     // Copy the statements from child query mechanism.
                     // In Employee example query for Project will pick up a statement for 
@@ -1409,21 +1449,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     }
     
     protected SQLSelectStatement createSQLSelectStatementForModifyAll(Expression whereClause) {
-        return createSQLSelectStatementForModifyAll(whereClause, null, getDescriptor(), false); 
+        return createSQLSelectStatementForModifyAll(whereClause, null, getDescriptor(), false, true); 
     }
     
-    protected SQLSelectStatement createSQLSelectStatementForModifyAll(Expression whereClause, Expression inheritanceExpression) {
-        return createSQLSelectStatementForModifyAll(whereClause, inheritanceExpression, getDescriptor(), true); 
-    }
-    
+    /**
+     * Customary inheritance expression is required for DeleteAllQuery and UpdateAllQuery preparation. 
+     * Ability to switch off AdditionalJoinExpression is required for DeleteAllQuery.
+     */
     protected SQLSelectStatement createSQLSelectStatementForModifyAll(Expression whereClause, Expression inheritanceExpression,
-                                 ClassDescriptor desc)
-    {
-        return createSQLSelectStatementForModifyAll(whereClause, inheritanceExpression, desc, true); 
-    }
-    
-    protected SQLSelectStatement createSQLSelectStatementForModifyAll(Expression whereClause, Expression inheritanceExpression,
-                                 ClassDescriptor desc, boolean useCustomaryInheritanceExpression) 
+                                 ClassDescriptor desc, boolean useCustomaryInheritanceExpression, boolean shouldUseAdditionalJoinExpression) 
     {
         ExpressionBuilder builder;
         if(whereClause != null) {
@@ -1439,7 +1473,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         reportQuery.setSelectionCriteria(whereClause);
         reportQuery.setSession(getSession());
         
-        SQLSelectStatement selectStatement = ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false, useCustomaryInheritanceExpression, inheritanceExpression);
+        SQLSelectStatement selectStatement = ((ExpressionQueryMechanism)reportQuery.getQueryMechanism()).buildReportQuerySelectStatement(false, useCustomaryInheritanceExpression, inheritanceExpression, shouldUseAdditionalJoinExpression);
         reportQuery.setSession(null);
         return selectStatement;
     }

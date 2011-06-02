@@ -375,10 +375,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
         tests.add("testCharFieldDefaultNullValue");
         tests.add("testMergeNewReferencingOldChanged");
-        tests.add("testAddAndDeleteSameObject");
         // Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache.
         // Uncomment testMergeNewReferencingOldChangedClearCache when the bug is fixed.
         // tests.add("testMergeNewReferencingOldChangedClearCache");
+        tests.add("testAddAndDeleteSameObject");
+        tests.add("testDeleteAllProjects");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -11176,6 +11177,89 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertTrue(project.getTeamMembers().size() == 1);
         } finally {
             rollbackTransaction(em);
+        }
+    }
+    
+    public void testDeleteAllProjects() {
+        String errorMsg = "";
+        SmallProject sp = null;
+        LargeProject lp = null;
+        HugeProject hp = null;
+
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        String[] classesToDelete = {"Project", "SmallProject", "LargeProject", "HugeProject"};
+        try {
+            for (int i=0; i < classesToDelete.length; i++) {
+                if (sp == null) {
+                    sp = new SmallProject();
+                    em.persist(sp);
+                }
+                if (lp == null) {
+                    lp = new LargeProject();
+                    em.persist(lp);
+                }
+                if (hp == null) {
+                    hp = new HugeProject();
+                    em.persist(hp);
+                }
+                em.flush();
+                
+                String classToDelete = classesToDelete[i];
+                em.createQuery("DELETE FROM "+classToDelete+" p").executeUpdate();
+                
+                em.clear();
+                
+                sp = em.find(SmallProject.class, sp.getId());
+                lp = em.find(LargeProject.class, lp.getId());
+                hp = em.find(HugeProject.class, hp.getId());
+                
+                String unexpectedlyDeleted = "";
+                String unexpectedlyNotDeleted = "";
+                if (sp == null) {
+                    if (classToDelete.equals("LargeProject") || classToDelete.equals("HugeProject")) {
+                        unexpectedlyDeleted += "SmallProject; ";
+                    }
+                } else {
+                    if (classToDelete.equals("Project") || classToDelete.equals("SmallProject")) {
+                        unexpectedlyNotDeleted += "SmallProject; ";
+                    }
+                }
+                if (lp == null) {
+                    if (classToDelete.equals("SmallProject") || classToDelete.equals("HugeProject")) {
+                        unexpectedlyDeleted += "LargeProject; ";
+                    }
+                } else {
+                    if (classToDelete.equals("Project") || classToDelete.equals("LargeProject")) {
+                        unexpectedlyNotDeleted += "LargeProject; ";
+                    }
+                }
+                if (hp == null) {
+                    if (classToDelete.equals("SmallProject")) {
+                        unexpectedlyDeleted += "HugeProject; ";
+                    }
+                } else {
+                    if (classToDelete.equals("Project") || classToDelete.equals("LargeProject") || classToDelete.equals("HugeProject")) {
+                        unexpectedlyNotDeleted += "HugeProject; ";
+                    }
+                }
+                String localErrorMsg = "";
+                if (unexpectedlyDeleted.length() > 0) {
+                    localErrorMsg += "\n\t\tUnexpectedlyDeleted: " + unexpectedlyDeleted;
+                }
+                if (unexpectedlyNotDeleted.length() > 0) {
+                    localErrorMsg += "\n\t\tUnexpectedlyNotDeleted: " + unexpectedlyNotDeleted;
+                }
+                if (localErrorMsg.length() > 0) {
+                    errorMsg += "\n\tDELETE FROM "+classToDelete+" p" + localErrorMsg ;
+                }
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        if (errorMsg.length() > 0) {
+            fail(errorMsg);
         }
     }
 }
