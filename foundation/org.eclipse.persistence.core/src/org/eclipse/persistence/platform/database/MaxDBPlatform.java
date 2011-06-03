@@ -75,12 +75,15 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * @author afischbach <°)))><
  * @author agoerler
  * @author Sabine Heider (sabine.heider at sap.com)
+ * @author Konstantin Schwed (konstantin.schwed at sap.com)
  */
 @SuppressWarnings("serial")
 public final class MaxDBPlatform extends DatabasePlatform {    
     
-    private static final int MAX_BINARY_LENGTH = 8000; 
-    
+    private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_CLOB = new FieldTypeDefinition("LONG UNICODE", false);
+
+    private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_BLOB = new FieldTypeDefinition("LONG BYTE", false);
+
     /**
      * Maximum length of type VARCHAR UNICODE
      *
@@ -128,10 +131,10 @@ public final class MaxDBPlatform extends DatabasePlatform {
         fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE")); 
          
         fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false)); // can't be mapped to CHAR(1) BYTE as byte in java is signed        
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("CHAR", 255, "BYTE"));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("CHAR", 255, "BYTE"));
-        fieldTypeMapping.put(Blob.class, new FieldTypeDefinition("LONG BYTE", false));
-        fieldTypeMapping.put(Clob.class, new FieldTypeDefinition("LONG UNICODE", false));
+        fieldTypeMapping.put(Byte[].class, FIELD_TYPE_DEFINITION_BLOB);
+        fieldTypeMapping.put(byte[].class, FIELD_TYPE_DEFINITION_BLOB);
+        fieldTypeMapping.put(Blob.class, FIELD_TYPE_DEFINITION_BLOB);
+        fieldTypeMapping.put(Clob.class, FIELD_TYPE_DEFINITION_CLOB);
 
         fieldTypeMapping.put(Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(Time.class, new FieldTypeDefinition("TIME", false));
@@ -147,22 +150,15 @@ public final class MaxDBPlatform extends DatabasePlatform {
     @Override
     /**
      * EclipseLink does not support length dependent type mapping.
-     * Map binary types with length > MAX_BINARY_LENGTH to LONG BYTE (i.e. blob); shorter types to CHAR (n) BYTE
-     * Map varchar types with length > MAX_VARCHAR_UNICODE_LENGTH to LONG UNICODE (i.e clob); shorter types to VARCHAR (n) UNICODE
+     * Map VARCHAR types with length > MAX_VARCHAR_UNICODE_LENGTH to LONG UNICODE (i.e clob); shorter types to VARCHAR (n) UNICODE
      * See also bugs 317597, 317448
      */
     protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {        
         String typeName = fieldType.getName();
-        /* byte[] < 8000 map to CHAR BYTE, longer ones to LONG BYTE */
         Class javaFieldType = field.getType();
-        if( ( javaFieldType == null && "CHAR".equals(typeName) && "BYTE".equals(fieldType.getTypesuffix())) || 
-                (javaFieldType != null && (javaFieldType.equals(Byte[].class) || javaFieldType.equals(byte[].class))) ) {
-            if(field.getSize() > MAX_BINARY_LENGTH || field.getSize() == 0)  {
-               fieldType = new FieldTypeDefinition("LONG BYTE", false);
-            }
-        } else if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.getTypesuffix())) {
+        if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.getTypesuffix())) {
             if (field.getSize() > MAX_VARCHAR_UNICODE_LENGTH) {
-                fieldType = new FieldTypeDefinition("LONG UNICODE", false);
+                fieldType = FIELD_TYPE_DEFINITION_CLOB;
             }
         }
         
