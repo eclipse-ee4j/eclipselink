@@ -34,6 +34,7 @@ import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
+import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRefTestCases;
@@ -191,6 +192,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBContextByPackageWithIndexTestCases.class);
         
         suite.addTestSuite(PropOrderTestCases.class);
+        suite.addTestSuite(LazyInitTestCases.class);
         return suite;
     }
 

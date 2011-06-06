@@ -19,7 +19,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -638,8 +640,12 @@ public class XMLDescriptor extends ClassDescriptor {
         if (hasReturningPolicy()) {
             getReturningPolicy().initialize(session);
         }
-        getEventManager().initialize(session);
-        getCopyPolicy().initialize(session);
+        if(eventManager != null) {
+            eventManager.initialize(session);
+        }
+        if(copyPolicy != null) {
+            copyPolicy.initialize(session);
+        }
         getInstantiationPolicy().initialize(session);
         if (getSchemaReference() != null) {
             getSchemaReference().initialize(session);

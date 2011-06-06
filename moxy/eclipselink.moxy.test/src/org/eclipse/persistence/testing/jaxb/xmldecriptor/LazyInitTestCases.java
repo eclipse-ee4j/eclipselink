@@ -1,0 +1,49 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Blaise Doughan - 2.1.4 - initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.xmldecriptor;
+
+import java.lang.reflect.Field;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBHelper;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+
+import junit.framework.TestCase;
+
+public class LazyInitTestCases extends TestCase {
+
+    public LazyInitTestCases(String name) {
+        super(name);
+    }
+
+    public void testEventManager() throws Exception {
+        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, null);
+        XMLDescriptor xmlDescriptor = JAXBHelper.getJAXBContext(jc).getXMLContext().getDescriptor(new QName("root"));
+        assertFalse(xmlDescriptor.hasEventManager());
+    }
+
+    public void testCopyPolicy() throws Exception {
+        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, null);
+        XMLDescriptor xmlDescriptor = JAXBHelper.getJAXBContext(jc).getXMLContext().getDescriptor(new QName("root"));
+
+        Field copyPolicyField = PrivilegedAccessHelper.getDeclaredField(ClassDescriptor.class, "copyPolicy", true);
+        Object copyPolicy = copyPolicyField.get(xmlDescriptor);
+        assertNull(copyPolicy);
+    }
+
+}
