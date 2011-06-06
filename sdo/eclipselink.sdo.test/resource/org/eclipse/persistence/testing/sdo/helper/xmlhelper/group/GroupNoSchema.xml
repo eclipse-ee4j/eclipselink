@@ -1,0 +1,7 @@
+<ns0:AAA xmlns:ns0="theURI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:BBB>111</ns0:BBB>
+   <ns0:CCC>xxx</ns0:CCC>
+   <ns0:testElement>testElementValue</ns0:testElement>
+   <ns0:XXX>1</ns0:XXX>
+   <ns0:YYY>2</ns0:YYY>
+</ns0:AAA>

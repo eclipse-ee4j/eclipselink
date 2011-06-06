@@ -1,0 +1,16 @@
+<prefix:parking-lot xmlns:prefix="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	  <prefix:vehicles>
+		<prefix:vehicle xsi:type="prefix:car-type">
+		   <prefix:model>Grand Am</prefix:model>
+		   <prefix:manufacturer>Pontiac</prefix:manufacturer>
+		   <prefix:top-speed>220</prefix:top-speed>
+		   <prefix:number-of-doors>2</prefix:number-of-doors>
+		   <prefix:miles-per-gallon>30</prefix:miles-per-gallon>
+		</prefix:vehicle>
+		<prefix:vehicle>
+		   <prefix:model>Blah Blah</prefix:model>
+		   <prefix:manufacturer>Some Place</prefix:manufacturer>
+		   <prefix:top-speed>10000</prefix:top-speed>
+		 </prefix:vehicle>
+    </prefix:vehicles>
+</prefix:parking-lot>

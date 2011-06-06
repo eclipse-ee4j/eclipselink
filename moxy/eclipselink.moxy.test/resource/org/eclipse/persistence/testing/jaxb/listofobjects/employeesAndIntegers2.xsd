@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="listOfObjectsNamespace">
+   <xsd:import namespace="listOfObjectsNamespace" schemaLocation="schema0.xsd"/>
+   <xsd:complexType name="listOfInteger">
+      <xsd:sequence>
+         <xsd:element name="item" nillable="true" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="listOfEmployee">
+      <xsd:sequence>
+         <xsd:element name="item" nillable="true" type="ns0:employee" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

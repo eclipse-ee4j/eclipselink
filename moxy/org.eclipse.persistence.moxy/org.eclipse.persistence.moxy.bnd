@@ -1,0 +1,27 @@
+Export-Package: org.eclipse.persistence.*;version="${version.string}";-noimport:=true,
+Implementation-Version: ${version.string}
+Specification-Vendor: ${specification.vendor}
+Bundle-Name: EclipseLink MOXy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${release.version}";visibility:=reexport,\
+ org.eclipse.persistence.asm;bundle-version="${release.version}";resolution:=optional
+Implementation-Vendor: ${implementation.vendor}
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${moxy.2.base.dir}/about.html,\
+ ${moxy.2.base.dir}/readme.html,\
+ ${moxy.2.base.dir}/license.html,\
+  org/eclipse/persistence/jaxb=resource/org/eclipse/persistence/jaxb
+Import-Package:\
+ javax.activation;resolution:=optional;version="1.1.0",\
+ javax.mail.*;resolution:=optional,\
+ javax.xml.bind.*;resolution:=optional;version="2.0.0",\
+ javax.xml.*;resolution:=optional,\
+ org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional,\
+ org.eclipse.persistence.*;version="${release.version}",\
+ org.w3c.*;resolution:=optional,\
+ org.xml.*;resolution:=optional, *
+Specification-Version: ${release.version}
+

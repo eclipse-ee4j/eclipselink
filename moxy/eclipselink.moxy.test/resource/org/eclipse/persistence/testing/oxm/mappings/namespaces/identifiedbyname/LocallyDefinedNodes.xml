@@ -1,0 +1,4 @@
+<ns:employee id="123" xmlns:ns="http://www.example.com/EMPLOYEE">
+	<name>Jane Doe</name>
+</ns:employee>
+

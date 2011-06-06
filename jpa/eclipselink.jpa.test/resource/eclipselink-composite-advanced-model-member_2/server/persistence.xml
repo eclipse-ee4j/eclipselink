@@ -1,0 +1,14 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="composite-advanced-member_2">
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+        <%%datasource-type%%>%%data-source2-name%%</%%datasource-type%%>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-database" value="%%database2-platform%%"/>
+            <property name="eclipselink.composite-unit.member" value="true"/>
+            <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.MemberEventListener"/>            
+        </properties>
+    </persistence-unit>
+</persistence>

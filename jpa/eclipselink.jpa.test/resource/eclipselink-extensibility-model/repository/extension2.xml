@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          
+    <description>Extension test</description>
+    
+    <package>org.eclipse.persistence.testing.models.jpa.extensibility</package>
+    
+    <entity name="ExtensibilityAddress" class="Address">
+        <attributes>
+            <basic name="appartmentNumber" access="VIRTUAL" attribute-type="java.lang.String">
+                <column name="FLEX1"/>
+                <access-methods get-method="get" set-method="set"/>
+            </basic>
+        </attributes>
+    </entity>
+</entity-mappings>
+

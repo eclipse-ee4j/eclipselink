@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><target xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<jar name="first jar task">
+</jar>
+<javac name="first javac task">
+</javac>
+</target>

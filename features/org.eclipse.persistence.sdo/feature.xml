@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.persistence.sdo"
+      label="%featureName"
+      version="@VERSION@.@QUALIFIER@"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <url>
+      <update label="%updateSiteName" url="%primaryUpdateURL"/>
+      <discovery label="%secondaryUpdateSiteName" url="%secondaryUpdateURL"/>
+   </url>
+
+   <plugin
+         id="commonj.sdo"
+         download-size="0"
+         install-size="0"
+         version="@SDO_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.activation"
+         download-size="0"
+         install-size="0"
+         version="@ACTIVATION_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.mail"
+         download-size="0"
+         install-size="0"
+         version="@MAIL_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.persistence"
+         download-size="0"
+         install-size="0"
+         version="@PERSISTENCE_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.bind"
+         download-size="0"
+         install-size="0"
+         version="@XMLBIND_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.stream"
+         download-size="0"
+         install-size="0"
+         version="@XMLSTREAM_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.asm"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.core"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.moxy"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.sdo"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+</feature>

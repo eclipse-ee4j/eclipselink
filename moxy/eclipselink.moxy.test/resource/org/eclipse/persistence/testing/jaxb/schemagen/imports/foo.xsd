@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:t2="http://test2.org" xmlns:t="http://test.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test.org">
+   <xsd:import schemaLocation="test2.org.xsd" namespace="http://test2.org"/>
+   <xsd:complexType name="foo">
+      <xsd:sequence>
+         <xsd:element name="bar" type="t2:bar" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

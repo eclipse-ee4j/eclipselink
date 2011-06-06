@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:root xsi:type="ns0:Team" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:manager>
+      <ns0:name>Jane Doe</ns0:name>
+      <ns0:address>
+         <ns0:street>theStreet</ns0:street>
+      </ns0:address>
+      <ns0:theYard xsi:type="ns0:Yard">
+         <ns0:squarefootage>theSqFootage</ns0:squarefootage>
+         <ns0:length>thelength</ns0:length>
+         <ns0:width>theWidth</ns0:width>
+      </ns0:theYard>
+      <ns0:theYardDefined>
+         <ns0:squarefootage>theSqFootage</ns0:squarefootage>
+         <ns0:length>thelength</ns0:length>
+         <ns0:width>theWidth</ns0:width>
+      </ns0:theYardDefined>
+      <ns0:theYardUndefined>
+         <ns0:squarefootage>theSqFootageUndefined</ns0:squarefootage>
+         <ns0:length>thelengthUndefined</ns0:length>
+         <ns0:width>theWidthUndefined</ns0:width>
+      </ns0:theYardUndefined>
+   </ns0:manager>
+   <ns0:myChangeSummary create="#/ns0:root/ns0:manager/ns0:address #/ns0:root/ns0:manager/ns0:theYard[1] #/ns0:root/ns0:manager/ns0:theYardDefined[1] #/ns0:root/ns0:manager/ns0:theYardUndefined[1]" xmlns:sdo="commonj.sdo">
+      <ns0:manager sdo:ref="#/ns0:root/ns0:manager" sdo:unset="address theYard"/>
+   </ns0:myChangeSummary>
+</ns0:root>

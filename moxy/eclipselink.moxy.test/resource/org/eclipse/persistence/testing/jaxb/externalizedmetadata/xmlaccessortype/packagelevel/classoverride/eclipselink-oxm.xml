@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xml-accessor-type="PROPERTY">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.classoverride.Employee" xml-accessor-type="PUBLIC_MEMBER"/>
+	</java-types>
+</xml-bindings>

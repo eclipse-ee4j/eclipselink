@@ -1,0 +1,6 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:getPageResponse xmlns:ns0="http://namespace2">
+  <return>
+    <isEmailLinkRequired>true</isEmailLinkRequired>
+  </return>
+</ns0:getPageResponse>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+  <things>
+    <write-only>
+      <stuff>
+        <ns0:other xmlns:ns0="http://www.example.com/other">Some Stuff</ns0:other>
+      </stuff>
+    </write-only>
+  </things> 
+</employee>

@@ -1,0 +1,2 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee first:name="Jane" last:name="Doe" xmlns:last="www.example.com/some-dir/last.xsd" xmlns:first="www.example.com/some-dir/first.xsd"/>

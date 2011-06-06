@@ -1,0 +1,28 @@
+Export-Package: _dbws*;version="${version.string}";-noimport:=true,\
+ org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Bundle-ClassPath: .
+Implementation-Version: ${version.string}
+Specification-Vendor: ${specification.vendor}
+Bundle-Name: ${specification.title}
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${release.version}",\
+ org.eclipse.persistence.dbws;bundle-version="${release.version}"
+Implementation-Vendor: ${implementation.vendor}
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${dbwsbldr.2.base.dir}/about.html,\
+ ${dbwsbldr.2.base.dir}/readme.html,\
+ ${dbwsbldr.2.base.dir}/license.html,\
+ org/eclipse/persistence/tools/dbws=resource/org/eclipse/persistence/tools/dbws,\
+ META-INF/services=src/META-INF/services
+Import-Package:\
+ javax.servlet;version="2.4",\
+ javax.wsdl.*;version="1.6",\
+ javax.*;resolution:=optional,\
+ org.eclipse.persistence.internal.libraries.antlr.*;resolution:=optional,\
+ org.eclipse.persistence.*;version="${release.version}",\
+ org.w3c.*;resolution:=optional, *
+Specification-Version: ${release.version}
+

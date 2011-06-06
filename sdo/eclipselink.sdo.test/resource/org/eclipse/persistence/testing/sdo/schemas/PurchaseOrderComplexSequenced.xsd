@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" elementFormDefault="qualified" sdoJava:package="org.example" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo"/>
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/xml"/>
+   <xsd:complexType name="Items" mixed="true">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="item" type="LineItemType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="usAddressType" mixed="true">
+      <xsd:complexContent>
+         <xsd:extension base="AddressType">
+            <xsd:choice maxOccurs="unbounded">
+               <xsd:element name="state" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+            </xsd:choice>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="CompanyType">
+      <xsd:sequence>
+         <xsd:element name="myCS" type="sdo:ChangeSummaryType" minOccurs="0" sdoXML:readOnly="true"/>
+         <xsd:element name="order" type="PurchaseOrderType" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="AddressType" mixed="true">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="name" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+         <xsd:element name="street" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+      </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="LineItemType">
+      <xsd:sequence>
+         <xsd:element name="productName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="price" type="xsd:float" minOccurs="0"/>
+         <xsd:element name="shipDate" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="comment" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="PurchaseOrderType">
+      <xsd:sequence>
+         <xsd:element name="address" type="AddressType" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="comment" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="items" type="Items" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="cdnAddressMailingType" mixed="true">
+      <xsd:complexContent>
+         <xsd:extension base="cdnAddressType">
+            <xsd:choice maxOccurs="unbounded">
+               <xsd:element name="deliveryInfo" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+            </xsd:choice>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="cdnAddressType" mixed="true">
+      <xsd:complexContent>
+         <xsd:extension base="AddressType">
+            <xsd:choice maxOccurs="unbounded">
+               <xsd:element name="province" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+               <xsd:element name="postalcode" type="xsd:string" minOccurs="0" sdoXML:many="false"/>
+            </xsd:choice>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="purchaseOrderType" type="PurchaseOrderType"/>
+   <xsd:element name="usAddressType" type="usAddressType"/>
+   <xsd:element name="items" type="Items"/>
+   <xsd:element name="addressType" type="AddressType"/>
+   <xsd:element name="lineItemType" type="LineItemType"/>
+   <xsd:element name="cdnAddressMailingType" type="cdnAddressMailingType"/>
+   <xsd:element name="companyType" type="CompanyType"/>
+   <xsd:element name="cdnAddressType" type="cdnAddressType"/>
+</xsd:schema>

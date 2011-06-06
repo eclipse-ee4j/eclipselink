@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.test"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.oracle"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="var" path="ORACLE_JDBC_LIB"/>
+	<classpathentry kind="var" path="SPATIAL_LIB"/>
+	<classpathentry kind="var" path="XDB_LIB"/>
+	<classpathentry kind="var" path="XML_LIB"/>
+	<classpathentry kind="var" path="XMLPARSERV2_LIB"/>
+	<classpathentry kind="var" path="AQAPI_LIB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
+	<classpathentry kind="var" path="UCP_LIB"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

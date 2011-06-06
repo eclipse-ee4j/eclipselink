@@ -1,0 +1,2 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<root><employee attribute-phone-id="123 456"><element-phone-id>123 456</element-phone-id></employee><phone-number><id>123</id></phone-number><phone-number><id>456</id></phone-number></root>

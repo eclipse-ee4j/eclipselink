@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:customer xmlns:ns1="urn:customer-example" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <personal-info>
+      <first-name>Jane</first-name>
+      <last-name>Doe</last-name>
+      <ns1:gender>F</ns1:gender>
+      <date-of-birth>1975-02-21</date-of-birth>
+   </personal-info>
+   <ns1:contact-info>
+      <billing-address>
+         <street>123 Any Street</street>
+         <street>Suite 1</street>
+         <city>Ottawa</city>
+         <state>ON</state>
+         <zip-code>A1B 2C3</zip-code>
+      </billing-address>
+      <shipping-address>
+         <street>456 Another Street</street>
+         <street>Unit 2</street>
+         <city>Raleigh</city>
+         <state>NC</state>
+         <zip-code>12345</zip-code>
+      </shipping-address>
+      <ns1:phone-number ptype="work">(613) 555-1111</ns1:phone-number>
+      <ns1:phone-number ptype="cell">(613) 555-2222</ns1:phone-number>
+   </ns1:contact-info>
+</ns1:customer>

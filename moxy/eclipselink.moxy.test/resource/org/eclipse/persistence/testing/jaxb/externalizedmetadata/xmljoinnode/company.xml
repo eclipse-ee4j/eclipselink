@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<company xmlns:x="http://www.example.com">
+    <employee-data id="e101">
+        <work-address id="a100" />
+        <x:work-address><city>Kanata</city></x:work-address>
+    </employee-data>
+    <employee-data id="e102">
+        <work-address id="a101" />
+        <x:work-address><city>Kanata</city></x:work-address>
+    </employee-data>
+    <business-address id="a101">
+        <street>99 Some St.</street>
+        <suite>1001</suite>
+        <city>Kanata</city>
+        <postal>K0A3m0</postal>
+    </business-address>
+    <business-address id="a100">
+        <street>45 O'Connor St.</street>
+        <suite>400</suite>
+        <city>Kanata</city>
+        <postal>K1P1A4</postal>
+    </business-address>
+    <business-address id="a200">
+        <street>1 Anystreet Rd.</street>
+        <suite>9</suite>
+        <city>Ottawa</city>
+        <postal>K4P1A2</postal>
+    </business-address>
+</company>

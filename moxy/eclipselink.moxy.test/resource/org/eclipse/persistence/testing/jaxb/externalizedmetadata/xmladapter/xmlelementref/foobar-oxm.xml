@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref">
+	<java-types>
+		<java-type name="Foo">
+            <xml-root-element />
+            <java-attributes>
+                <xml-element-refs java-attribute="item">
+                    <xml-element-ref type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref.Bar" />
+                    <xml-element-ref type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref.FooBar" />
+                    <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref.BarAdapter" />
+                </xml-element-refs>
+            </java-attributes>
+        </java-type>
+        <java-type name="Bar">
+            <xml-root-element />
+            <java-attributes>
+                <xml-attribute java-attribute="id" />
+            </java-attributes>
+        </java-type>
+        <java-type name="FooBar">
+            <xml-root-element name="foobar"/>
+            <java-attributes>
+                <xml-attribute java-attribute="id" />
+            </java-attributes>
+        </java-type>
+	</java-types>
+</xml-bindings>

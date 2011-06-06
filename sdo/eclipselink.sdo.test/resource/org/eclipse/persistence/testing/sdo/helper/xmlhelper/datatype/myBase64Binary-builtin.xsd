@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myBase64Binary-NS" targetNamespace="myBase64Binary-NS">
+
+	<element name="myBase64Binary" type="base64Binary"/>
+
+</schema>

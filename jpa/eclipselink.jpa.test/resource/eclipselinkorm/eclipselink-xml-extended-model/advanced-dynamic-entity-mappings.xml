@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          
+    <description>Advanced Dynamic Test Model Instance Document</description>
+    
+    <persistence-unit-metadata>
+        <persistence-unit-defaults>
+            <access>VIRTUAL</access>
+            <access-methods get-method="getMy" set-method="setMy"/>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+    
+    <package>org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic</package>
+    
+    <type-converter name="String2String" data-type="String" object-type="String"/>
+    
+    <entity name="DynamicEmployee" class="Employee" existence-checking="CHECK_DATABASE">
+        <customizer class="EmployeeCustomizer"/>
+        <change-tracking type="AUTO"/>
+        <table name="DYNAMIC_EMPLOYEE"/>
+        <secondary-table name="DYNAMIC_SALARY">
+            <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
+        </secondary-table>
+        <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
+        <cache type="SOFT_WEAK" size="730" shared="true" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+            <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->
+            <expiry>1000</expiry>
+        </cache>
+        <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
+            <conversion-value data-value="F" object-value="Female"/>
+            <conversion-value data-value="M" object-value="Male"/>
+        </object-type-converter>
+        <table-generator name="DYNAMIC_EMPLOYEE_TABLE_GENERATOR" table="DYNAMIC_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DYNAMIC_EMPLOYEE_SEQ"/>
+        <named-query name="findAllDynamicEmployeesByFirstName">
+            <query>SELECT OBJECT(employee) FROM DynamicEmployee employee WHERE employee.firstName = :firstName</query>
+        </named-query>
+        <named-query name="findDynamicEmployeeById">
+            <query>SELECT OBJECT(employee) FROM DynamicEmployee employee WHERE employee.id = :id</query>
+        </named-query>
+        <entity-listeners>
+            <entity-listener class="EmployeeListener">
+                <pre-persist method-name="prePersist"/>
+                <post-persist method-name="postPersist"/>
+                <pre-remove method-name="preRemove"/>
+                <post-remove method-name="postRemove"/>
+                <pre-update method-name="preUpdate"/>
+                <post-update method-name="postUpdate"/>
+                <post-load method-name="postLoad"/>
+            </entity-listener>
+        </entity-listeners>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="EMP_ID"/>
+                <generated-value strategy="TABLE" generator="DYNAMIC_EMPLOYEE_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName" attribute-type="String">
+                <column name="F_NAME"/>
+                <convert>String2String</convert>
+            </basic>
+            <basic name="lastName" attribute-type="String">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="sin" attribute-type="String">
+                <column name="SIN"/>
+            </basic>
+            <!-- Enums not supported -->
+            <!--  basic name="gender">
+                <column name="GENDER"/>
+                <convert>sex</convert>
+            </basic -->
+            <basic name="salary" attribute-type="Integer">
+                <column table="DYNAMIC_SALARY"/>
+            </basic>
+            <!-- Enums not supported -->
+            <!-- basic name="payScale">
+                <column name="PAY_SCALE"/>
+                <enumerated>STRING</enumerated>
+            </basic -->
+            <version name="version" attribute-type="Integer">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="address" target-entity="Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <join-fetch>OUTER</join-fetch>
+            </many-to-one>
+            <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
+                <join-column name="MANAGER_EMP_ID" referenced-column-name="EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <!-- PhoneNumber uses a composite primary key - not supported -->
+            <!--  one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many -->
+            <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager" attribute-type="java.util.Collection">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="Project" attribute-type="java.util.Collection">
+                <order-by>name</order-by>
+                <join-table name="DYNAMIC_PROJ_EMP">
+                    <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+                    <inverse-join-column name="PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+            <element-collection name="responsibilities" attribute-type="java.util.Collection" target-class="String">
+                <column name="DESCRIPTION"/>
+                <convert>String2String</convert>
+                <collection-table name="DYNAMIC_RESPONS">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+            </element-collection>
+            <element-collection name="creditCards" fetch="EAGER" attribute-type="java.util.Map" target-class="Long">
+                <map-key-class class="String"/>
+                <map-key-convert>CreditCard</map-key-convert>
+                <map-key-column name="CARD"/>
+                <column name="NUMB"/>
+                <convert>Long2String</convert>
+                <object-type-converter name="CreditCard">
+                    <conversion-value data-value="VI" object-value="Visa"/>
+                    <conversion-value data-value="AM" object-value="Amex"/>
+                    <conversion-value data-value="MC" object-value="Mastercard"/>
+                    <conversion-value data-value="DI" object-value="DinersClub"/>
+                </object-type-converter>
+                <type-converter name="Long2String" data-type="String" object-type="Long"/>
+                <!-- Let the collection table default in this case (DynamicEmployee_CREDITCARDS) -->
+            </element-collection>
+            <element-collection name="creditLines" fetch="EAGER" attribute-type="java.util.Map" target-class="Long">
+                <map-key-class class="String"/>
+                <map-key-convert>CreditLine</map-key-convert>
+                <map-key-column name="BANK"/>
+                <column name="ACCOUNT"/>
+                <convert>Long2String</convert>
+                <object-type-converter name="CreditLine">
+                    <conversion-value data-value="RBC" object-value="RoyalBank"/>
+                    <conversion-value data-value="CIBC" object-value="CanadianImperial"/>
+                    <conversion-value data-value="SB" object-value="Scotiabank"/>
+                    <conversion-value data-value="TD" object-value="TorontoDominion"/>
+                </object-type-converter>
+                <collection-table name="DYNAMIC_EMP_CREDITLINES">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+            </element-collection>
+            <embedded name="period" attribute-type="EmploymentPeriod">
+                <attribute-override name="startDate">
+                    <column name="START_DATE" nullable="false"/>
+                </attribute-override>
+                <attribute-override name="endDate">
+                    <column name="END_DATE" nullable="true"/>
+                </attribute-override>
+            </embedded>
+        </attributes>
+    </entity>
+    
+    <entity name="DynamicAddress" class="Address">
+        <change-tracking type="DEFERRED"/>
+        <table name="DYNAMIC_ADDRESS"/>
+        <sequence-generator name="DYNAMIC_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
+        <named-query name="findAllDynamicAddressesByPostalCode">
+            <query>SELECT OBJECT(address) FROM DynamicAddress address WHERE address.postalCode = :postalCode</query>
+        </named-query>
+        <named-native-query name="findAllDynamicAddresses" result-class="Address">
+            <query>SELECT * FROM DYNAMIC_ADDRESS</query>
+        </named-native-query>
+        <named-stored-procedure-query name="SProcDynamicAddress" result-class="Address" procedure-name="SProc_Read_DynamicAddress">
+            <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Integer"/>
+            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/>
+            <parameter direction="OUT" name="city_v" query-parameter="CITY" type="String"/>
+            <parameter direction="OUT" name="country_v" query-parameter="COUNTRY" type="String"/>
+            <parameter direction="OUT" name="province_v" query-parameter="PROVINCE" type="String"/>
+            <parameter direction="OUT" name="p_code_v" query-parameter="P_CODE" type="String"/> 
+        </named-stored-procedure-query>       
+        <named-stored-procedure-query name="SProcDynamicInOut" result-class="Address" procedure-name="SProc_Read_DynamicInOut">
+            <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Long"/>
+            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/> 
+        </named-stored-procedure-query>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ADDRESS_ID"/>
+                <generated-value strategy="SEQUENCE" generator="DYNAMIC_ADDRESS_SEQUENCE_GENERATOR"/>
+            </id>
+            <basic name="postalCode" attribute-type="String">
+                <column name="P_CODE"/>
+            </basic>
+            <basic name="street" attribute-type="String" />
+            <basic name="city" attribute-type="String" />
+            <basic name="province" attribute-type="String">
+                <convert>ProvinceConverter</convert>
+                <converter name="ProvinceConverter" class="ProvinceConverter"/>
+            </basic>
+            <basic name="country" attribute-type="String" />
+        </attributes>
+    </entity>
+    
+    <!-- Don't support Composite Primary keys yet using IdClass -->
+    <!-- entity name="DynamicPhoneNumber" class="PhoneNumber">
+        <table name="DYNAMIC_PHONENUMBER"/>
+        <id-class class="PhoneNumberPK"/>
+        <attributes>
+            <id name="id">
+                <column name="OWNER_ID" insertable="false" updatable="false"/>
+            </id>
+            <id name="type">
+                <column name="TYPE"/>
+            </id>
+            <basic name="number">
+                <column name="NUMB"/>
+            </basic>
+            <basic name="areaCode">
+                <column name="AREA_CODE"/>
+            </basic>
+            <many-to-one name="owner" target-entity="Employee">
+                <join-column name="OWNER_ID" referenced-column-name="EMP_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity -->
+    
+    <entity name="DynamicLargeProject" class="LargeProject" existence-checking="ASSUME_NON_EXISTENCE" parent-class="Project">
+        <table name="DYNAMIC_LPROJECT"/>
+        <discriminator-value>L</discriminator-value>
+        <named-query name="findDynamicLargeProjectWithBudgetLargerThan">
+            <query>SELECT OBJECT(project) FROM DynamicLargeProject project WHERE project.budget >= :amount</query>
+        </named-query>
+        <attributes>
+            <basic name="budget" attribute-type="Double"/>
+        </attributes>
+    </entity>
+    
+    <entity name="DynamicSmallProject" class="SmallProject" existence-checking="ASSUME_EXISTENCE" parent-class="Project">
+        <table name="DYNAMIC_PROJECT"/>
+        <discriminator-value>S</discriminator-value>
+    </entity>
+    
+    <entity name="DynamicProject" class="Project" existence-checking="CHECK_CACHE">
+        <change-tracking type="OBJECT"/>
+        <table name="DYNAMIC_PROJECT"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>P</discriminator-value>
+        <discriminator-column name="PROJ_TYPE"/>
+        <optimistic-locking type="SELECTED_COLUMNS">
+            <selected-column name="VERSION"/>
+        </optimistic-locking>
+        <sequence-generator name="DYNAMIC_PROJECT_SEQUENCE_GENERATOR" sequence-name="PROJECT_SEQ" allocation-size="10"/>
+        <named-query name="findDynamicProjectByName">
+            <query>SELECT OBJECT(project) FROM DynamicProject project WHERE project.name = :name</query>
+        </named-query>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="PROJ_ID"/>
+                <generated-value strategy="SEQUENCE" generator="DYNAMIC_PROJECT_SEQUENCE_GENERATOR"/>
+            </id>
+            <basic name="name" attribute-type="String">
+                <column name="PROJ_NAME"/>
+            </basic>
+            <basic name="description" attribute-type="String">
+                <column name="DESCRIP"/>
+            </basic>
+            <version name="version" attribute-type="Integer">
+                <column name="VERSION"/>
+            </version>
+            <one-to-one name="teamLeader" target-entity="Employee">
+                <join-column name="LEADER_ID"/>
+            </one-to-one>
+            <many-to-many name="teamMembers" target-entity="Employee" mapped-by="projects" attribute-type="java.util.Collection"/>
+        </attributes>
+    </entity>
+ 
+    <entity name="DynamicReadOnlyClass" class="ReadOnlyClass" read-only="true">
+        <table name="DYNAMIC_READONLY"/>
+        <attributes>
+            <id name="id" attribute-type="Integer"/>
+        </attributes>
+    </entity>
+    
+    <entity name="DynamicShovel" class="Shovel">
+        <table name="DYNAMIC_SHOVEL"/>
+        <table-generator name="DYNAMIC_SHOVEL_TABLE_GENERATOR" table="DYNAMIC_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DYNAMIC_SHOVEL_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="DYNAMIC_SHOVEL_TABLE_GENERATOR"/>
+            </id>
+            <basic name="cost" attribute-type="Double">
+                <column name="COST"/>
+            </basic>
+            <version name="version" attribute-type="Integer">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="owner" target-entity="ShovelOwner">
+                <join-column name="OWNER_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="operators" target-entity="ShovelDigger" mapped-by="shovel" attribute-type="java.util.List">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="ShovelProject" attribute-type="java.util.List">
+                <join-table name="DYNAMIC_SHOVEL_PROJECTS">
+                    <join-column name="SHOVEL_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="PROJECT_ID" referenced-column-name="ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+            <embedded name="sections" attribute-type="ShovelSections"/>
+        </attributes>
+    </entity>
+    
+    <entity name="DynamicShovelDigger" class="ShovelDigger">
+        <table name="DYNAMIC_SHOVEL_DIGGER"/>
+        <table-generator name="DYNAMIC_SHOVEL_DIGGER_TABLE_GENERATOR" table="DYNAMIC_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DYNAMIC_SHOVEL_DIGGER_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="DYNAMIC_SHOVEL_OWNER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name" attribute-type="String">
+                <column name="DIGGER_NAME"/>
+            </basic>
+            <one-to-one name="shovel" target-entity="Shovel">
+                <join-column name="SHOVEL_ID"/>
+                <access-methods get-method="getX" set-method="setX"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+    
+    <entity name="DynamicShovelOwner" class="ShovelOwner">
+        <table name="DYNAMIC_SHOVEL_OWNER"/>
+        <table-generator name="DYNAMIC_SHOVEL_OWNER_TABLE_GENERATOR" table="DYNAMIC_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DYNAMIC_SHOVEL_OWNER_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="DYNAMIC_SHOVEL_OWNER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name" attribute-type="String">
+                <column name="OWNER_NAME"/>
+            </basic>
+        </attributes>
+    </entity>
+    
+    <entity name="DynamicShovelProject" class="ShovelProject">
+        <access-methods get-method="get" set-method="set"/>
+        <table name="DYNAMIC_SHOVEL_PROJECT"/>
+        <table-generator name="DYNAMIC_SHOVEL_PROJECT_TABLE_GENERATOR" table="DYNAMIC_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DYNAMIC_SHOVEL_PROJECT_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="DYNAMIC_SHOVEL_PROJECT_TABLE_GENERATOR"/>
+            </id>
+            <basic name="description" attribute-type="String">
+                <column name="DESCRIP"/>
+            </basic>
+            <many-to-many name="shovels" target-entity="Shovel" mapped-by="projects" attribute-type="java.util.List"/>
+        </attributes>
+    </entity>
+    
+    <embeddable class="ShovelSections">
+        <access-methods get-method="getMaterial" set-method="setMaterial"/>
+        <attributes>
+            <!-- Can't handle enums right now -->
+            <!-- basic name="handle" attribute-type="ShovelSections$MaterialType"/ -->
+            <!-- basic name="shaft" attribute-type="ShovelSections$MaterialType"/ -->
+            <!-- basic name="scoop" attribute-type="ShovelSections$MaterialType"/ -->
+            <basic name="handle" attribute-type="String"/>
+            <basic name="shaft" attribute-type="String"/>
+            <basic name="scoop" attribute-type="String"/>            
+        </attributes>
+    </embeddable>
+    
+    <embeddable class="EmploymentPeriod">
+        <attributes>
+            <basic name="startDate" attribute-type="java.util.Date">
+                <column name="S_DATE"/>
+                <temporal>DATE</temporal>
+            </basic>
+            <basic name="endDate" attribute-type="java.util.Date">
+                <column name="E_DATE"/>
+                <temporal>DATE</temporal>
+            </basic>
+        </attributes>
+    </embeddable>
+
+</entity-mappings>

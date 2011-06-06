@@ -1,0 +1,7 @@
+<ns0:employee xmlns:ns0="http://www.example.org/emp" xmlns:type="http://www.example.org/types" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:first-name>Bob</ns0:first-name>
+   <ns0:start-date>2002-08-02T00:00:00.0Z</ns0:start-date>
+   <ns0:end-date>2012-08-02T00:00:00.0Z</ns0:end-date>
+   <ns0:last-name>Jones</ns0:last-name>
+   <ns0:id>12</ns0:id>
+</ns0:employee>

@@ -1,0 +1,5 @@
+<root xmlns:ns0="urn:a" attribute="ns0:a">
+   <element xmlns:ns1="urn:b">ns1:b</element>
+   <list xmlns:ns2="urn:c">ns2:c</list>
+   <list xmlns:ns3="urn:d">ns3:d</list>
+</root>

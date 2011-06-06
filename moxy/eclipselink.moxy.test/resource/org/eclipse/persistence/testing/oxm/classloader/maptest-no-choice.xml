@@ -1,0 +1,48 @@
+<root-object>
+   <mapping-test-object last-name="Black" first-name="Joe">
+      <any-object id="1">
+         <name>MyObject</name>
+      </any-object>
+      <any-collection>
+         <any-object id="10">
+            <name>SomeObject</name>
+         </any-object>
+         <any-object id="66">
+            <name>SomeOtherObject</name>
+         </any-object>
+      </any-collection>
+      <photo>
+         <xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+      </photo>
+      <photos>
+         <photo>
+            <xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+         </photo>
+         <photo>
+            <xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+         </photo>
+      </photos>
+	  <billing-address-ref address-id="465"/>
+	  <shipping-address-ref address-id="45"/>
+	  <shipping-address-ref address-id="465"/>
+      <responsibilities>	
+         <list responsibility="review code"/>
+         <list responsibility="complete design doc"/>
+         <list responsibility="submit whitepaper"/>
+      </responsibilities>
+   </mapping-test-object>
+   <addresses>
+      <address aid="465">
+         <street>465 Bayview Drive</street>
+         <city>Woodlawn</city>
+      </address>
+      <address aid="19">
+         <street>19 Springcreek Cres.</street>
+         <city>Kanata</city>
+      </address>
+      <address aid="45">
+         <street>45 O'Connor St.</street>
+         <city>Ottawa</city>
+      </address>
+   </addresses>
+</root-object>

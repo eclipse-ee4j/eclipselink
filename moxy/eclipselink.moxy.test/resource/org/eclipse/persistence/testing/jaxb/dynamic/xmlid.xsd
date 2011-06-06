@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    attributeFormDefault="qualified" elementFormDefault="qualified">
+
+    <xs:element name="data">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="person" type="myns:person"/>
+                <xs:element name="company" type="myns:company"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="company" type="xs:IDREF"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="company">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="address" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID"/>
+    </xs:complexType>
+
+</xs:schema>

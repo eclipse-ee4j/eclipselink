@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.Foos">
+            <xml-root-element name="my-foos" />
+            <java-attributes>
+                <xml-element-refs java-attribute="items" xml-mixed="true">
+                    <xml-access-methods set-method="setItemList" get-method="getItemList"/>
+                    <xml-element-ref name="integer-root" namespace="myns" />
+                    <xml-element-ref name="root" />
+                    <xml-element-wrapper name="items" />
+                </xml-element-refs>
+                <xml-element-refs java-attribute="stuff" read-only="true">
+                    <xml-element-ref name="a" type="javax.xml.bind.JAXBElement">
+                        <xml-access-methods set-method="shoudBeIgnored" get-method="shoudBeIgnored"/>
+                    </xml-element-ref>
+                    <xml-element-ref name="b" type="javax.xml.bind.JAXBElement" read-only="false" />
+                </xml-element-refs>
+            </java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

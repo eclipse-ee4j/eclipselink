@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>XML extended composite advanced member_2 Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2</package>
+    <type-converter name="String2String" data-type="String" object-type="String"/>
+    <entity class="Employee" existence-checking="CHECK_DATABASE">
+        <customizer class="EmployeeCustomizer"/>
+        <!-- test the AUTO default for change tracking. -->
+        <change-tracking/>
+        <!-- This secondary table is identical to the one specified in the
+             advanced-extended-entity-mappings.xml. It is here on purpose
+             and used to test bug 240063. Do not remove it or change its
+             contents. -->
+        <secondary-table name="XML_MBR2_SALARY">
+            <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
+        </secondary-table>
+        <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
+        <cache type="SOFT_WEAK" size="730" shared="true" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+            <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->
+            <expiry>1000</expiry>
+        </cache>
+        <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
+            <conversion-value data-value="F" object-value="Female"/>
+            <conversion-value data-value="M" object-value="Male"/>
+            <default-object-value>Male</default-object-value>
+        </object-type-converter>
+        <property name="entityName" value="XMLEmployee"/>
+        <property name="entityIntegerProperty" value="1" value-type="Integer"/>
+        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID"/>
+                <generated-value strategy="TABLE" generator="XML_MBR2_EMPLOYEE_TABLE_GENERATOR"/>
+                <property name="attributeName" value="id"/>
+            </id>
+            <basic name="firstName" access="FIELD">
+                <column name="F_NAME"/>
+                <convert>String2String</convert>
+                <property name="attributeName" value="firstName"/>
+            </basic>
+            <basic name="lastName" access="FIELD">
+                <column name="L_NAME"/>
+                <property name="attributeName" value="lastName"/>
+                <property name="BooleanProperty" value="true" value-type="java.lang.Boolean"/>
+                <property name="ByteProperty" value="1" value-type="java.lang.Byte"/>
+                <property name="CharacterProperty" value="A"  value-type="java.lang.Character"/>
+                <property name="DoubleProperty" value="1" value-type="java.lang.Double"/>
+                <property name="FloatProperty" value="1" value-type="java.lang.Float"/>
+                <property name="IntegerProperty" value="1" value-type="java.lang.Integer"/>
+                <property name="LongProperty" value="1" value-type="java.lang.Long"/>
+                <property name="ShortProperty" value="1" value-type="java.lang.Short"/>
+                <property name="BigDecimalProperty" value="1" value-type="java.math.BigDecimal"/>
+                <property name="BigIntegerProperty" value="1" value-type="java.math.BigInteger"/>
+                <property name="TimeProperty" value="13:59:59" value-type="java.sql.Time"/>
+                <property name="TimeStampProperty" value="2008-04-10 13:59:59" value-type="java.sql.Timestamp"/>
+                <property name="DateProperty" value="2008-04-10" value-type="java.sql.Date"/>
+            </basic>
+            <basic name="sin">
+                <column name="SIN"/>
+                <property name="attributeName" value="sin"/>
+                <access-methods get-method="returnSIN" set-method="enterSIN"/>
+            </basic>
+            <basic name="gender">
+                <column name="GENDER"/>
+                <convert>sex</convert>
+                <property name="attributeName" value="gender"/>
+            </basic>
+            <basic name="salary">
+                <column table="XML_MBR2_SALARY"/>
+                <property name="attributeName" value="salary"/>
+            </basic>
+            <basic name="payScale">
+                <column name="PAY_SCALE"/>
+                <enumerated>STRING</enumerated>
+                <property name="attributeName" value="payScale"/>
+            </basic>
+            <element-collection name="responsibilities" composite-member="xml-composite-advanced-member_3">
+                <column name="DESCRIPTION"/>
+                <convert>String2String</convert>
+                <collection-table name="XML_MBR3_RESPONS">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+                <property name="attributeName" value="responsibilities"/>
+            </element-collection>
+            <element-collection name="creditLines" fetch="EAGER" composite-member="xml-composite-advanced-member_3">
+                <map-key-convert>CreditLine</map-key-convert>
+                <map-key-column name="BANK"/>
+                <column name="ACCOUNT"/>
+                <convert>Long2String</convert>
+                <object-type-converter name="CreditLine">
+                    <conversion-value data-value="RBC" object-value="RoyalBank"/>
+                    <conversion-value data-value="CIBC" object-value="CanadianImperial"/>
+                    <conversion-value data-value="SB" object-value="Scotiabank"/>
+                    <conversion-value data-value="TD" object-value="TorontoDominion"/>
+                </object-type-converter>
+                <collection-table name="XML_MBR3_EMP_CREDITLINES">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+                <property name="attributeName" value="creditLines"/>
+            </element-collection>
+            <element-collection name="creditCards" fetch="EAGER" composite-member="xml-composite-advanced-member_3">
+                <map-key-convert>CreditCard</map-key-convert>
+                <map-key-column name="CARD"/>
+                <column name="NUMB"/>
+                <convert>Long2String</convert>
+                <object-type-converter name="CreditCard">
+                    <conversion-value data-value="VI" object-value="Visa"/>
+                    <conversion-value data-value="AM" object-value="Amex"/>
+                    <conversion-value data-value="MC" object-value="Mastercard"/>
+                    <conversion-value data-value="DI" object-value="DinersClub"/>
+                </object-type-converter>
+                <type-converter name="Long2String" data-type="String" object-type="Long"/>
+                <collection-table name="XML_MBR3_EMP_CREDITCARDS">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+                <property name="attributeName" value="creditCards"/>
+            </element-collection>
+            <version name="version">
+                <column name="VERSION"/>
+                <property name="attributeName" value="version"/>
+            </version>
+            <many-to-one name="address" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <!--join-fetch>OUTER</join-fetch-->
+                <property name="attributeName" value="address"/>
+            </many-to-one>
+            <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
+                <join-column name="MANAGER_EMP_ID" referenced-column-name="EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <property name="attributeName" value="manager"/>
+            </many-to-one>
+            <one-to-many name="phoneNumbers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.PhoneNumber" mapped-by="owner">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+                <property name="attributeName" value="phoneNumbers"/>
+            </one-to-many>
+            <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+                <property name="attributeName" value="managedEmployees"/>
+            </one-to-many>
+            <one-to-many name="dealers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Dealer">
+                <join-column name="FK_EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+                <property name="attributeName" value="dealers"/>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Project">
+                <order-by>name</order-by>
+                <join-table name="XML_MBR3_PROJ_EMP">
+                    <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+                    <inverse-join-column name="PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <property name="attributeName" value="projects"/>
+            </many-to-many>
+            <element-collection name="creditLines" fetch="EAGER" composite-member="xml-composite-advanced-member_3">
+                <map-key-convert>CreditLine</map-key-convert>
+                <map-key-column name="BANK"/>
+                <column name="ACCOUNT"/>
+                <convert>Long2String</convert>
+                <object-type-converter name="CreditLine">
+                    <conversion-value data-value="RBC" object-value="RoyalBank"/>
+                    <conversion-value data-value="CIBC" object-value="CanadianImperial"/>
+                    <conversion-value data-value="SB" object-value="Scotiabank"/>
+                    <conversion-value data-value="TD" object-value="TorontoDominion"/>
+                </object-type-converter>
+                <collection-table name="XML_MBR3_EMP_CREDITLINES">
+                    <join-column name="EMP_ID"/>
+                </collection-table>
+                <property name="attributeName" value="creditLines"/>
+            </element-collection>
+            <embedded name="period">
+                <attribute-override name="startDate">
+                    <column name="START_DATE" nullable="false"/>
+                </attribute-override>
+                <attribute-override name="endDate">
+                    <column name="END_DATE" nullable="true"/>
+                </attribute-override>
+                <property name="attributeName" value="period"/>
+            </embedded>
+            <transformation name="normalHours" mutable="false">
+                <read-transformer method="buildNormalHours"/>
+                <write-transformer method="getStartTime">
+                    <column name="START_TIME"/>
+                </write-transformer>
+                <write-transformer method="getEndTime">
+                    <column name="END_TIME"/>
+                </write-transformer>
+                <property name="attributeName" value="normalHours"/>
+            </transformation>
+            <transformation name="overtimeHours" mutable="false">
+                <read-transformer transformer-class="AdvancedReadTransformer"/>
+                <write-transformer transformer-class="AdvancedWriteTransformer">
+                    <column name="START_OVERTIME" column-definition="TIME"/>
+                </write-transformer>
+                <write-transformer transformer-class="AdvancedWriteTransformer">
+                    <column name="END_OVERTIME" column-definition="TIME"/>
+                </write-transformer>
+                <property name="attributeName" value="overtimeHours"/>
+            </transformation>
+        </attributes>
+    </entity>
+    <embeddable class="EmploymentPeriod">
+        <property name="embeddableClassName" value="EmploymentPeriod"/>
+        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
+    </embeddable>
+</entity-mappings>

@@ -1,0 +1,4 @@
+<person aPublicField = "a" aPrivateField = "12">
+   <APrivateProperty>d</APrivateProperty>
+   <APublicProperty>c</APublicProperty>
+</person>

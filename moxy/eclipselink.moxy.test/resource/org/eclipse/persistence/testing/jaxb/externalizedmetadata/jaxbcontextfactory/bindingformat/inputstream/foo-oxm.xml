@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream">
+    <xml-schema namespace="input-stream">
+        <xml-ns prefix="ns0" namespace-uri="input-stream" />
+    </xml-schema>
+    <java-types>
+        <java-type name="Foo">
+            <xml-root-element name="my-foo"/>
+            <java-attributes>
+                <xml-attribute java-attribute="id"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

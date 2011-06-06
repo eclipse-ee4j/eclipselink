@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foo xmlns:ns0="otherns"><a>66</a>some text<b>99</b><ns0:bar><id>i69</id></ns0:bar></foo>

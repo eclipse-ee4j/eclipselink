@@ -1,0 +1,4 @@
+<person APublicProperty = "a" APrivateProperty = "b">
+   <aPrivateField>12</aPrivateField>
+   <aPublicField>d</aPublicField>
+</person>

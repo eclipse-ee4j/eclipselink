@@ -1,0 +1,21 @@
+<root>
+    <child>
+        <group class="id" id="1"/>
+        <group class="child">
+            <child class="node">2</child>
+            <child class="node">3</child>
+        </group>
+    </child>
+    <child>
+        <group class="id" id="2"/>
+        <group class="parent">
+            <parent class="node">1</parent>
+        </group>
+    </child>
+    <child>
+        <group class="id" id="3"/>
+        <group class="parent">
+            <parent class="node">1</parent>
+        </group>
+    </child>
+</root>

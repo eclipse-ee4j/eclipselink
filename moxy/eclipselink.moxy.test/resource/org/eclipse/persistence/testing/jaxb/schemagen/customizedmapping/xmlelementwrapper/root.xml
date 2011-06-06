@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nsOne:root xmlns:nsOne="http://www.example.com/One" xmlns:nsTwo="http://www.example.com/Two" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <nsTwo:name-wrapper>
+    <qName>nsOne:root</qName>
+  </nsTwo:name-wrapper>
+  <nsTwo:comment>a comment</nsTwo:comment>
+</nsOne:root>

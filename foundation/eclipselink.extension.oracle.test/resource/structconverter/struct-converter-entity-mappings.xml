@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm xsd/eclipselink_orm_1_0.xsd" version="1.0" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Struct Converter Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.structconverter</package>
+    <struct-converter name="DummyType" converter="org.eclipse.persistence.testing.models.jpa.structconverter.DummyStructConverter"/>
+    <entity class="SimpleXMLSpatial" access="PROPERTY">
+        <table name="JPA_XML_JGEOMETRY"/>
+        <struct-converter name="JGeometry" converter="JGEOMETRY"/>
+        <attributes>
+            <id name="id"/>
+            <basic name="jGeometry">
+                <convert>JGeometry</convert>
+            </basic>
+        </attributes>
+    </entity>
+</entity-mappings>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri2" xmlns="my.uri2" xmlns:ns0="my.uri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import schemaLocation="Cyclic1ElementRef.xsd" namespace="my.uri"/>
+    <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+    <xsd:complexType name="PurchaseOrder">
+      <xsd:sequence>
+         <xsd:element name="ordername" type="xsd:string" minOccurs="0"/>
+         <xsd:element ref="ns0:phoneType"/>
+      </xsd:sequence>
+      <xsd:attribute ref="ns0:phoneTypeAttr"/>
+   </xsd:complexType>
+</xsd:schema>

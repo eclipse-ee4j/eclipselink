@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="theTNS" xmlns="theTNS" elementFormDefault="qualified" sdoJava:package="abc" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name="Items">
+      <xsd:sequence>
+         <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+               <xsd:appinfo source="itemTest">
+                  <someTag>blah blah itemTest</someTag>
+               </xsd:appinfo>
+               <xsd:appinfo source="itemTest2">
+                  <someTag>blah blah itemTest2</someTag>
+               </xsd:appinfo>
+               <xsd:appinfo source="itemTest">
+                  <anotherTag>blah blah itemTest</anotherTag>
+               </xsd:appinfo>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="USAddress">
+      <xsd:annotation>
+         <xsd:appinfo source="test" xmlns="http://www.example.com/">
+            <key>
+               <attribute>blah</attribute>
+            </key>
+            <fetchMode>blah blah</fetchMode>
+         </xsd:appinfo>
+      </xsd:annotation>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="street" type="xsd:string">
+         <xsd:annotation>
+            <xsd:appinfo source="streetTest">
+               <someTag>blah blah streetTest</someTag>
+            </xsd:appinfo>
+            <xsd:appinfo source="streetTest2">
+               <someTag>blah blah streetTest2</someTag>
+            </xsd:appinfo>
+            <xsd:appinfo source="streetTest">
+               <anotherTag>blah blah streetTest</anotherTag>
+            </xsd:appinfo>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="city" type="xsd:string"/>
+      <xsd:attribute name="state" type="xsd:string"/>
+      <xsd:attribute name="zip" type="xsd:decimal">
+         <xsd:annotation>
+            <xsd:appinfo>
+               <someTag>zipTest no source</someTag>
+            </xsd:appinfo>
+            <xsd:appinfo source="zipSource">
+               <someTag>zipTest with source</someTag>
+            </xsd:appinfo>
+            <xsd:appinfo>
+               <someTag>zipTest no source2</someTag>
+            </xsd:appinfo>
+         </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="country" type="xsd:string" default="US"/>
+   </xsd:complexType>
+   <xsd:complexType name="Item">
+      <xsd:attribute name="productName" type="xsd:string"/>
+      <xsd:attribute name="quantity" type="quantityType"/>
+      <xsd:attribute name="partNum" type="SKU"/>
+      <xsd:attribute name="USPrice" type="xsd:decimal"/>
+      <xsd:attribute name="comment" type="xsd:string"/>
+      <xsd:attribute name="shipDate" type="xsd:date"/>
+   </xsd:complexType>
+   <xsd:complexType name="PurchaseOrder">
+      <xsd:sequence>
+         <xsd:element name="shipTo" type="USAddress" minOccurs="0"/>
+         <xsd:element name="billTo" type="USAddress" minOccurs="0"/>
+         <xsd:element name="items" type="Items" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="comment" type="xsd:string"/>
+      <xsd:attribute name="orderDate" type="xsd:date"/>
+   </xsd:complexType>
+   <xsd:element name="item" type="Item"/>
+   <xsd:element name="items" type="Items"/>
+   <xsd:element name="uSAddress" type="USAddress"/>
+   <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+   <xsd:simpleType name="SKU">
+      <xsd:restriction base="xsd:string"/>
+   </xsd:simpleType>
+   <xsd:simpleType name="quantityType">
+      <xsd:annotation>
+         <xsd:appinfo source="quantityTest" xmlns="def" xmlns:abc="abc123">
+            <abc:key>
+               <attribute>quantityblah</attribute>
+            </abc:key>
+            <fetchMode>quantityblah blah</fetchMode>
+         </xsd:appinfo>
+         <xsd:appinfo source="quantityTest2" xmlns="abc">
+            <fetchMode>quantityblah blah</fetchMode>
+         </xsd:appinfo>
+         <xsd:appinfo source="quantityTest2" xmlns="abc">
+            <fetchMode>quantityblah blah take2</fetchMode>
+         </xsd:appinfo>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:int"/>
+   </xsd:simpleType>
+</xsd:schema>

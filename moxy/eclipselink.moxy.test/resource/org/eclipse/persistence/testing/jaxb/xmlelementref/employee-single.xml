@@ -1,0 +1,3 @@
+<employee-single xmlns:ns0="myns">
+  <ns0:integer-root>21</ns0:integer-root>
+</employee-single>

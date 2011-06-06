@@ -1,0 +1,14 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://example.com/supplier/service/"
+     xmlns:tns="http://example.com/supplier/service/" xmlns:ns0="http://example.com/process/"
+     xmlns:ns1="http://example.com/supplier/">
+    <import namespace="http://example.com/supplier/" schemaLocation="SupplierSite.xsd"/>
+    <import namespace="http://example.com/supplier/" schemaLocation="Supplier.xsd"/>
+    <import namespace="http://example.com/process/" schemaLocation="Process.xsd"/>
+    <element name="createSupplierWithDefaultSite">
+        <complexType>
+            <sequence>
+                <element name="supplier" type="ns1:Supplier"/>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

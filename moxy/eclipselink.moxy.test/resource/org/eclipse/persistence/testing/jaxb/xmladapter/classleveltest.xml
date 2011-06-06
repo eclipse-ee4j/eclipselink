@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<testObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <anotherClassBObject>
+      <classCValue>differentValue</classCValue>
+   </anotherClassBObject>
+   <classBCollection>
+      <theValue>listValue1</theValue>
+   </classBCollection>
+   <classBCollection>
+      <theValue>listValue2</theValue>
+   </classBCollection>
+   <classBObject>
+      <theValue>singleValue</theValue>
+   </classBObject>
+   <subClassObject>
+      <someValue>subclassValue</someValue>
+      <extraString>extra</extraString>
+   </subClassObject>
+</testObject>

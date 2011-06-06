@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://namespace2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://namespace2">
+   <xsd:complexType name="getPageResponse">
+      <xsd:sequence>
+         <xsd:element name="return" minOccurs="0">
+            <xsd:complexType>
+               <xsd:all>
+                  <xsd:element name="isEmailLinkRequired" type="xsd:string" minOccurs="0"/>
+               </xsd:all>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="getPageResponse" type="ns0:getPageResponse"/>
+</xsd:schema>

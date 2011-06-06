@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <!-- refers to a type T3 in the 3rd level import in the 2nd include -->
+   <xsd:include schemaLocation="Level2Include1.xsd"/>
+   <!-- imports type T3 the 3rd level import in the 2nd include -->
+   <xsd:include schemaLocation="Level2Include2.xsd"/>
+   <xsd:include schemaLocation="AddressInclude.xsd"/>
+   <xsd:complexType name="PurchaseOrder">
+      <xsd:sequence>
+         <xsd:element name="shipTo" type="ns0:USAddress" minOccurs="0"/>
+         <!--xsd:element name="billTo" type="ns0:USAddress" minOccurs="0"/-->
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+
+</xsd:schema>

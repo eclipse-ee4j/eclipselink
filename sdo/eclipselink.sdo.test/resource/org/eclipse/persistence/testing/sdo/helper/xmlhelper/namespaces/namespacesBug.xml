@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:arg0 xsi:type="ns0:MySDO" xmlns:tns="http://www.example.org/" xmlns:ns0="http://www.example.org/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:intPart>0</ns0:intPart>
+</tns:arg0>

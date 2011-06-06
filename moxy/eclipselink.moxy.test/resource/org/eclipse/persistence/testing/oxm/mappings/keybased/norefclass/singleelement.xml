@@ -1,0 +1,15 @@
+<root>
+    <customer>
+        <address-id>1</address-id>
+        <phone-number-id>A B</phone-number-id>
+    </customer>
+    <customer>
+        <address-id>2</address-id>
+        <phone-number-id>B C</phone-number-id>
+    </customer>
+    <address id="1"/>
+    <address id="2"/>
+    <phone-number id="A"/>
+    <phone-number id="B"/>
+    <phone-number id="C"/>
+</root>

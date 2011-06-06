@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:Test xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:myAnySimpleTypeTest></ns0:myAnySimpleTypeTest>
+   <ns0:myAnyURITest></ns0:myAnyURITest>
+   <ns0:myBooleanTest></ns0:myBooleanTest>
+   <ns0:myByteTest></ns0:myByteTest>
+   <ns0:myDateTest></ns0:myDateTest>
+   <ns0:myDateTimeTest></ns0:myDateTimeTest>
+   <ns0:myDecimalTest></ns0:myDecimalTest>
+   <ns0:myDoubleTest></ns0:myDoubleTest>
+   <ns0:myDurationTest></ns0:myDurationTest>
+   <ns0:myENTITIESTest></ns0:myENTITIESTest>
+   <ns0:myENTITYTest></ns0:myENTITYTest>
+   <ns0:myFloatTest></ns0:myFloatTest>
+   <ns0:myGDayTest></ns0:myGDayTest>
+   <ns0:myGMonthTest></ns0:myGMonthTest>
+   <ns0:myGMonthDayTest></ns0:myGMonthDayTest>
+   <ns0:myGYearTest></ns0:myGYearTest>
+   <ns0:myGYearMonthTest></ns0:myGYearMonthTest>
+   <ns0:myIDTest></ns0:myIDTest>
+   <ns0:myIDREFTest></ns0:myIDREFTest>
+   <ns0:myIDREFSTest></ns0:myIDREFSTest>
+   <ns0:myIntTest></ns0:myIntTest>
+   <ns0:myIntegerTest></ns0:myIntegerTest>
+   <ns0:myLanguageTest></ns0:myLanguageTest>
+   <ns0:myLongTest></ns0:myLongTest>
+   <ns0:myNameTest></ns0:myNameTest>
+   <ns0:myNCNameTest></ns0:myNCNameTest>
+   <ns0:myNegativeIntegerTest></ns0:myNegativeIntegerTest>
+   <ns0:myNonNegativeIntegerTest></ns0:myNonNegativeIntegerTest>
+   <ns0:myNMTOKENTest></ns0:myNMTOKENTest>
+   <ns0:myNMTOKENSTest></ns0:myNMTOKENSTest>
+   <ns0:myNOTATIONTest></ns0:myNOTATIONTest>
+   <ns0:myNormalizedStringTest></ns0:myNormalizedStringTest>
+   <ns0:myPositiveIntegerTest></ns0:myPositiveIntegerTest>
+   <ns0:myNonPositiveIntegerTest></ns0:myNonPositiveIntegerTest>
+   <ns0:myShort></ns0:myShort>
+   <ns0:myStringTest></ns0:myStringTest>
+   <ns0:myTimeTest></ns0:myTimeTest>
+   <ns0:myTokenTest></ns0:myTokenTest>
+   <ns0:myUnsignedByteTest></ns0:myUnsignedByteTest>
+   <ns0:myUnsignedIntTest></ns0:myUnsignedIntTest>
+   <ns0:myUnsignedLongTest></ns0:myUnsignedLongTest>
+   <ns0:myUnsignedShortTest></ns0:myUnsignedShortTest>
+   <ns0:myLongWrapperTest></ns0:myLongWrapperTest>
+   <ns0:myBooleanWrapperTest></ns0:myBooleanWrapperTest>
+</ns0:Test>

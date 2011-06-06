@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.InternationalPriceNoAnnotation">
+		    <xml-root-element name="international-price" />
+            <java-attributes>
+                <xml-value java-attribute="price" />
+                <xml-attribute java-attribute="currency" />
+            </java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

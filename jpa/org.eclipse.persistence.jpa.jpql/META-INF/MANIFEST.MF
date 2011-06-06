@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Hermes Parser
+Bundle-SymbolicName: org.eclipse.persistence.jpa.jpql
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.eclipse.persistence.jpa.internal.jpql;x-friends:="org.eclipse.persistence.core,org.eclipse.persistence.jpa.jpql.test,org.eclipse.jpt.jpa.core.tests",
+ org.eclipse.persistence.jpa.internal.jpql.parser;x-friends:="org.eclipse.persistence.core,org.eclipse.persistence.jpa.jpql.test,org.eclipse.jpt.jpa.core.tests",
+ org.eclipse.persistence.jpa.internal.jpql.util;x-friends:="org.eclipse.persistence.jpa.jpql.test",
+ org.eclipse.persistence.jpa.jpql,
+ org.eclipse.persistence.jpa.jpql.spi

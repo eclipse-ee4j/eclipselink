@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="manager">
+      <xsd:complexContent>
+         <xsd:extension base="employee">
+            <xsd:sequence>
+               <xsd:element name="id" type="xsd:int"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="state" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="zip" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="homeAddress">
+      <xsd:complexContent>
+         <xsd:extension base="address">
+            <xsd:sequence>
+               <xsd:element name="rouralRouteNumber" type="xsd:int"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="myClass">
+      <xsd:sequence>
+         <xsd:element name="garbage" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="manager" type="manager" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="home-address" type="homeAddress"/>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>

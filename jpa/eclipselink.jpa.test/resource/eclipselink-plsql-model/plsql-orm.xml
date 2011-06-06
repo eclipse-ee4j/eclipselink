@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <persistence-unit-metadata>
+       <xml-mapping-metadata-complete/>
+    </persistence-unit-metadata>
+    <package>org.eclipse.persistence.testing.models.jpa.plsql</package>
+    <named-plsql-stored-procedure-query name="PLSQL_SIMPLE_IN_DEFAULTS" procedure-name="PLSQL_SIMPLE_IN_DEFAULTS">
+            <parameter name="P_VARCHAR" database-type="VARCHAR_TYPE" optional="true"/>
+            <parameter name="P_BOOLEAN" database-type="PLSQLBoolean" optional="true"/>
+            <parameter name="P_BINARY_INTEGER" database-type="BinaryInteger" optional="true"/>
+            <parameter name="P_DEC" database-type="Dec" optional="true"/>
+            <parameter name="P_INT" database-type="Int" optional="true"/>
+            <parameter name="P_NATURAL" database-type="Natural" optional="true"/>
+            <parameter name="P_NATURALN" database-type="NaturalN" optional="true"/>
+            <parameter name="P_PLS_INTEGER" database-type="PLSQLInteger" optional="true"/>
+            <parameter name="P_POSITIVE" database-type="Positive" optional="true"/>
+            <parameter name="P_POSITIVEN" database-type="PositiveN" optional="true"/>
+            <parameter name="P_SIGNTYPE" database-type="SignType" optional="true"/>
+            <parameter name="P_NUMBER" database-type="Number" optional="true"/>
+    </named-plsql-stored-procedure-query>
+    <named-plsql-stored-procedure-query name="PLSQL_ADDRESS_OUT" procedure-name="PLSQL_ADDRESS_OUT">
+            <parameter name="P_ADDRESS" direction="OUT" database-type="PLSQL_ADDRESS%ROWTYPE"/>
+    </named-plsql-stored-procedure-query>
+    <named-plsql-stored-procedure-query name="PLSQL_ADDRESS_LIST_OUT" procedure-name="PLSQL_P.PLSQL_ADDRESS_LIST_OUT">
+            <parameter name="P_ADDRESS_LIST" direction="OUT" database-type="PLSQL_P.PLSQL_ADDRESS_LIST"/>
+            <parameter name="P_CITY" direction="OUT" database-type="VARCHAR_TYPE"/>
+    </named-plsql-stored-procedure-query>      
+    <named-plsql-stored-procedure-query name="PLSQL_EMP_INOUT" procedure-name="PLSQL_P.PLSQL_EMP_INOUT">
+            <parameter name="P_EMP" direction="IN_OUT" database-type="PLSQL_P.PLSQL_EMP_REC"/>
+            <parameter name="P_CITY" direction="OUT" database-type="VARCHAR_TYPE"/>
+    </named-plsql-stored-procedure-query>       
+    <named-plsql-stored-function-query name="PLSQL_SIMPLE_IN_FUNC" function-name="PLSQL_SIMPLE_IN_FUNC">
+            <parameter name="P_VARCHAR" database-type="VARCHAR_TYPE"/>
+            <parameter name="P_BOOLEAN" database-type="PLSQLBoolean"/>
+            <parameter name="P_BINARY_INTEGER" database-type="BinaryInteger"/>
+            <parameter name="P_DEC" database-type="Dec"/>
+            <parameter name="P_INT" database-type="Int"/>
+            <parameter name="P_NATURAL" database-type="Natural"/>
+            <parameter name="P_NATURALN" database-type="NaturalN"/>
+            <parameter name="P_PLS_INTEGER" database-type="PLSQLInteger"/>
+            <parameter name="P_POSITIVE" database-type="Positive"/>
+            <parameter name="P_POSITIVEN" database-type="PositiveN"/>
+            <parameter name="P_SIGNTYPE" database-type="SignType"/>
+            <parameter name="P_NUMBER" database-type="Number"/>
+            <return-parameter name="RESULT" database-type="PLSQLBoolean"/>
+    </named-plsql-stored-function-query>
+    <plsql-record name="PLSQL_ADDRESS%ROWTYPE" compatible-type="PLSQL_P_PLSQL_ADDRESS_REC" java-type="Address">
+            <field name="ADDRESS_ID" database-type="NUMERIC_TYPE"/>
+            <field name="STREET_NUM" database-type="NUMERIC_TYPE"/>
+            <field name="STREET"/>
+            <field name="CITY"/>
+            <field name="STATE"/>
+    </plsql-record>
+    <plsql-record name="PLSQL_P.PLSQL_ADDRESS_REC" compatible-type="PLSQL_P_PLSQL_ADDRESS_REC" java-type="Address">
+            <field name="ADDRESS_ID" database-type="NUMERIC_TYPE"/>
+            <field name="STREET_NUM" database-type="NUMERIC_TYPE"/>
+            <field name="STREET"/>
+            <field name="CITY"/>
+            <field name="STATE"/>
+    </plsql-record>
+    <plsql-record name="PLSQL_P.PLSQL_PHONE_REC" compatible-type="PLSQL_P_PLSQL_PHONE_REC" java-type="Phone">
+            <field name="AREA_CODE" database-type="VARCHAR_TYPE"/>
+            <field name="P_NUM"/>
+    </plsql-record>
+    <plsql-record name="PLSQL_P.PLSQL_EMP_REC" compatible-type="PLSQL_P_PLSQL_EMP_REC" java-type="Employee">
+            <field name="EMP_ID" database-type="NUMERIC_TYPE"/>
+            <field name="NAME"/>
+            <field name="ACTIVE" database-type="PLSQLBoolean"/>
+            <field name="ADDRESS" database-type="PLSQL_P.PLSQL_ADDRESS_REC"/>
+            <field name="PHONES" database-type="PLSQL_P.PLSQL_PHONE_LIST"/>
+    </plsql-record>
+    <plsql-table name="PLSQL_P.PLSQL_ADDRESS_LIST" compatible-type="PLSQL_P_PLSQL_ADDRESS_LIST" nested-type="PLSQL_P.PLSQL_ADDRESS_REC"/>
+    <plsql-table name="PLSQL_P.PLSQL_PHONE_LIST" compatible-type="PLSQL_P_PLSQL_PHONE_LIST" nested-type="PLSQL_P.PLSQL_PHONE_REC"/>
+    <entity class="Employee" access="FIELD">
+        <struct name="PLSQL_P_PLSQL_EMP_REC">
+                <field>EMP_ID</field>
+                <field>NAME</field>
+                <field>ACTIVE</field>
+                <field>ADDRESS</field>
+                <field>PHONES</field>
+        </struct>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID"/>
+            </id>
+            <basic name="active">
+                <convert>bool</convert>
+                <type-converter name="bool" data-type="java.lang.Integer"/>
+            </basic>
+            <structure name="address"/>
+            <array name="phones" database-type="PLSQL_P_PLSQL_PHONE_LIST"/>
+        </attributes>
+    </entity>
+    <entity class="Consultant" access="FIELD">
+        <table name="PLSQL_CONSULTANT"/>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID"/>
+            </id>
+            <basic name="active">
+                <convert>bool</convert>
+                <type-converter name="bool" data-type="java.lang.Integer"/>
+            </basic>
+            <structure name="address"/>
+            <array name="phones" database-type="PLSQL_P_PLSQL_PHONE_LIST"/>
+        </attributes>
+    </entity>
+    <embeddable class="Address" access="FIELD">
+        <struct name="PLSQL_P_PLSQL_ADDRESS_REC">
+                <field>ADDRESS_ID</field>
+                <field>STREET_NUM</field>
+                <field>STREET</field>
+                <field>CITY</field>
+                <field>STATE</field>
+        </struct>
+        <attributes>
+            <basic name="id">
+                <column name="ADDRESS_ID"/>
+            </basic>
+            <basic name="number">
+                <column name="STREET_NUM"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    <embeddable class="Phone" access="FIELD">
+        <struct name="PLSQL_P_PLSQL_PHONE_REC">
+                <field>AREA_CODE</field>
+                <field>P_NUM</field>
+        </struct>
+        <attributes>
+            <basic name="areaCode">
+                <column name="AREA_CODE"/>
+            </basic>
+            <basic name="number">
+                <column name="P_NUM"/>
+            </basic>
+        </attributes>
+    </embeddable>
+</entity-mappings>

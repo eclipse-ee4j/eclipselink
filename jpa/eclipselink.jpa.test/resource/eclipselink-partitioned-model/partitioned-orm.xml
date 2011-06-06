@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <persistence-unit-metadata>
+       <xml-mapping-metadata-complete/>
+    </persistence-unit-metadata>
+    <package>org.eclipse.persistence.testing.models.jpa.partitioned</package>
+    <round-robin-partitioning name="default" replicate-writes="true">
+            <connection-pool>default</connection-pool>
+            <connection-pool>node2</connection-pool>
+            <connection-pool>node3</connection-pool>
+    </round-robin-partitioning>
+    <entity name="Employee" class="Employee" access="FIELD">
+        <table name="PART_EMPLOYEE"/>
+        <id-class class="EmployeePK"/>
+        <value-partitioning name="ValuePartitioningByLOCATION" union-unpartitionable-queries="true" default-connection-pool="default">
+            <partition-column name="LOCATION"/>
+            <partition connection-pool="node2" value="Ottawa"/>
+            <partition connection-pool="node3" value="Toronto"/>
+        </value-partitioning>
+        <union-partitioning name="UnionPartitioningAllNodes" replicate-writes="true">
+            <connection-pool>default</connection-pool>
+            <connection-pool>node2</connection-pool>
+            <connection-pool>node3</connection-pool>
+        </union-partitioning>
+        <partitioned>ValuePartitioningByLOCATION</partitioned>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID"/>
+                <generated-value strategy="TABLE"/>
+            </id>
+            <id name="location"/>
+            <basic name="firstName" access="FIELD">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName" access="FIELD">
+                <column name="L_NAME"/>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="address" target-entity="Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-one>
+            <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
+                <join-column name="MANAGER_EMP_ID" referenced-column-name="EMP_ID"/>
+                <join-column name="MANAGER_LOCATION" referenced-column-name="LOCATION"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <many-to-one name="department" target-entity="Department" fetch="EAGER">
+                <join-column name="DEPT_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner" orphan-removal="true">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <partitioned>UnionPartitioningAllNodes</partitioned>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="Project">
+                <join-table name="PART_EMP_PROJ">
+                    <join-column name="EMPLOYEES_EMP_ID" referenced-column-name="EMP_ID"/>
+                    <join-column name="LOCATION" referenced-column-name="LOCATION"/>
+                    <inverse-join-column name="PROJECTS_PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <partitioned>UnionPartitioningAllNodes</partitioned>
+            </many-to-many>
+            <element-collection name="responsibilities">
+                <column name="DESCRIPTION"/>
+                <collection-table name="PART_RESPONS">
+                    <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+                    <join-column name="LOCATION" referenced-column-name="LOCATION"/>
+                </collection-table>
+                <partitioned>ValuePartitioningByLOCATION</partitioned>
+            </element-collection>
+        </attributes>
+    </entity>
+    <entity name="Address" class="Address" access="FIELD">
+        <table name="PART_ADDRESS"/>
+        <attributes>
+            <id name="id">
+                <column name="ADDRESS_ID"/>
+                <generated-value strategy="TABLE"/>
+            </id>
+            <basic name="postalCode">
+                <column name="P_CODE"/>
+            </basic>
+            <basic name="street"/>
+            <basic name="city"/>
+            <basic name="province"/>
+            <basic name="country"/>
+        </attributes>
+    </entity>
+    <entity name="PhoneNumber" class="PhoneNumber" access="FIELD">
+        <table name="PART_PHONENUMBER"/>
+        <id-class class="PhoneNumberPK"/>
+        <partitioned>ValuePartitioningByLOCATION</partitioned>
+        <attributes>
+            <id name="type">
+                <column name="TYPE"/>
+            </id>
+            <basic name="number">
+                <column name="NUMB"/>
+            </basic>
+            <basic name="areaCode">
+                <column name="AREA_CODE"/>
+            </basic>
+            <many-to-one name="owner" target-entity="Employee" id="true">
+                <join-column name="OWNER_ID" referenced-column-name="EMP_ID"/>
+                <join-column name="LOCATION" referenced-column-name="LOCATION"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    <entity name="LargeProject" class="LargeProject" access="FIELD">
+        <table name="PART_LPROJECT"/>
+        <discriminator-value>L</discriminator-value>
+    </entity>
+    <entity name="SmallProject" class="SmallProject" access="FIELD">
+        <table name="PART_PROJECT"/>
+        <discriminator-value>S</discriminator-value>
+    </entity>
+    <entity name="Project" class="Project" access="FIELD">
+        <table name="PART_PROJECT"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>P</discriminator-value>
+        <discriminator-column name="PROJ_TYPE"/>
+        <range-partitioning name="RangePartitioningByPROJ_ID" partition-value-type="java.lang.Integer" union-unpartitionable-queries="true">
+            <partition-column name="PROJ_ID"/>
+            <partition connection-pool="default" start-value="0" end-value="1000"/>
+            <partition connection-pool="node2" start-value="1000" end-value="2000"/>
+            <partition connection-pool="node3" start-value="2000"/>
+        </range-partitioning>
+        <partitioned>RangePartitioningByPROJ_ID</partitioned>
+        <attributes>
+            <id name="id">
+                <column name="PROJ_ID"/>
+                <generated-value strategy="TABLE"/>
+            </id>
+            <basic name="name">
+                <column name="PROJ_NAME"/>
+            </basic>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-one name="teamLeader" target-entity="Employee" access="PROPERTY">
+                <join-column name="LEADER_ID" referenced-column-name="EMP_ID"/>
+                <join-column name="LEADER_LOCATION" referenced-column-name="LOCATION"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="Department" class="Department" access="PROPERTY">
+        <table name="PART_DEPT"/>
+        <hash-partitioning name="HashPartitioningByID" union-unpartitionable-queries="true">
+            <partition-column name="ID"/>
+            <connection-pool>node2</connection-pool>
+            <connection-pool>node3</connection-pool>
+        </hash-partitioning>
+        <partitioned>HashPartitioningByID</partitioned>
+        <attributes>
+            <id name="id" >
+                <generated-value strategy="TABLE" generator="DEPARTMENT_TABLE_GENERATOR"/>
+            </id>
+            <one-to-many name="employees" target-entity="Employee" mapped-by="department">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="managers" target-entity="Employee">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <partitioned>UnionPartitioningAllNodes</partitioned>
+            </one-to-many>
+            <one-to-one name="departmentHead" target-entity="Employee" optional="true">
+                <join-column name="DEPT_HEAD" referenced-column-name="EMP_ID"/>
+                <join-column name="DEPT_HEAD_LOCATION" referenced-column-name="LOCATION"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+</entity-mappings>

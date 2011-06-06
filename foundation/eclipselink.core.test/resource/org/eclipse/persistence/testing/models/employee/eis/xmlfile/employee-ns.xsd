@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!-- Employee schema -->
+<xsd:schema targetNamespace="urn://examples.org/employee" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:myns="urn://examples.org/employee" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:element name="EMPLOYEE" type="myns:EMPLOYEE"/>
+	<xsd:element name="PROJECT" type="myns:PROJECT"/>
+	<xsd:complexType name="EMPLOYEE">
+		<xsd:sequence>
+			<xsd:element name="EMP_ID" type="xsd:integer"/>
+			<xsd:element name="F_NAME" type="xsd:string"/>
+			<xsd:element name="L_NAME" type="xsd:string"/>
+			<xsd:element name="SALARY" type="xsd:decimal"/>
+			<xsd:element name="GENDER" type="xsd:string"/>
+			<xsd:element name="START_TIME" type="xsd:time"/>
+			<xsd:element name="END_TIME" type="xsd:time"/>				
+			<xsd:element name="PERIOD">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="END_DATE" type="xsd:date"/>
+						<xsd:element name="START_DATE" type="xsd:date"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="RESPONS" type="xsd:string" maxOccurs="unbounded"/>
+			<xsd:element name="ADDRESS">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ADDRESS_ID" type="xsd:integer"/>
+						<xsd:element name="STREET" type="xsd:string"/>
+						<xsd:element name="CITY" type="xsd:string"/>
+						<xsd:element name="PROVINCE" type="xsd:string"/>
+						<xsd:element name="COUNTRY" type="xsd:string"/>
+						<xsd:element name="P_CODE" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="MANAGER_ID" type="xsd:integer"/>
+			<xsd:element name="PHONES">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="PHONE" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="AREA_CODE" type="xsd:integer"/>
+									<xsd:element name="P_NUMBER" type="xsd:integer"/>
+								</xsd:sequence>
+								<xsd:attribute name="TYPE" type="xsd:string"/>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="PROJECTS">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="PROJ_ID" type="xsd:integer" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="PROJECT">
+		<xsd:sequence>
+			<xsd:element name="PROJ_ID" type="xsd:integer"/>
+			<xsd:element name="PROJ_NAME" type="xsd:string"/>
+			<xsd:element name="DESCRIP" type="xsd:string"/>
+			<xsd:element name="LEADER_ID" type="xsd:integer"/>
+			<xsd:element name="BUDGET" type="xsd:decimal"/>
+			<xsd:element name="MILESTONE" type="xsd:dateTime"/>
+		</xsd:sequence>
+		<xsd:attribute name="TYPE" type="xsd:string"/>
+	</xsd:complexType>	
+</xsd:schema>

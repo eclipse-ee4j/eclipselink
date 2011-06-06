@@ -1,0 +1,21 @@
+<xsd:schema xmlns:sdoJava="commonj.sdo/java" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoXML="commonj.sdo/xml"
+     targetNamespace="/model/mbcs/common/" xmlns="/model/mbcs/common/" elementFormDefault="qualified"
+     sdoJava:package="model.mbcs.common">
+    <xsd:import schemaLocation="classpath:/xml/sdoJava.xsd" namespace="commonj.sdo/java"/>
+    <xsd:import schemaLocation="classpath:/xml/sdoXML.xsd" namespace="commonj.sdo/xml"/>
+    <xsd:complexType name="DeptViewÉSDO">
+        <xsd:annotation>
+            <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/">
+                <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/">
+                    <attribute>Deptno</attribute>
+                </key>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Deptno" type="xsd:int" minOccurs="0" sdoXML:dataType="sdoJava:IntObject"/>
+            <xsd:element name="Dname" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="Loc" type="xsd:string" minOccurs="0" nillable="true"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="deptViewÉSDO" type="DeptViewÉSDO"/>
+</xsd:schema>

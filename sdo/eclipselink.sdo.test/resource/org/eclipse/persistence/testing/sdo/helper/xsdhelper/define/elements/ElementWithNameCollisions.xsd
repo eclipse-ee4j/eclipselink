@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='US-ASCII'?>
+     <xsd:schema 
+            xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+	    xmlns='http://www.example.org'
+	    xmlns:sdo='commonj.sdo'
+	    targetNamespace='http://www.example.org'
+	    elementFormDefault='qualified'>
+	  <xsd:complexType name='myTestType'>
+		<xsd:sequence>
+			<xsd:element ref='myElement'/>
+			<xsd:element ref='myElement'/>
+		</xsd:sequence>
+	  </xsd:complexType>
+	  <xsd:complexType name='myTestType2'>
+		<xsd:sequence>
+			<xsd:element name ='myElement2' type='xsd:string'/>
+			<xsd:element ref='myElement2'/>
+		</xsd:sequence>
+	  </xsd:complexType>
+          <xsd:complexType name='myTestType3'>
+		<xsd:sequence>
+			<xsd:element ref='myElement3'/>
+			<xsd:element name ='myElement3' type='xsd:string'/>
+		</xsd:sequence>
+	  </xsd:complexType>
+          <xsd:complexType name='myTestType4'>
+		<xsd:sequence>
+			<xsd:element name ='myElement4' type='xsd:string'/>
+			<xsd:element name ='myElement4' type='xsd:string'/>
+		</xsd:sequence>
+	  </xsd:complexType>
+	
+     	  <xsd:element name='myElement' type='xsd:int'/>
+      	  <xsd:element name='myElement2' type='xsd:int'/>
+      	  <xsd:element name='myElement3' type='xsd:int'/>
+       	  <xsd:element name='myElement4' type='xsd:int'/>
+
+     </xsd:schema>

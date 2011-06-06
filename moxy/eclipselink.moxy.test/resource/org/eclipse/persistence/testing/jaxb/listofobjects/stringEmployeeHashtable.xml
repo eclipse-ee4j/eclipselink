@@ -1,0 +1,25 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="rootNamespace" xmlns:x="listOfObjectsNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="stringEmployeeHashtable">
+      <entry>
+         <key>Bob</key>
+         <value id="10">
+            <firstName>Bob</firstName>
+            <lastName>Smith</lastName>
+            <responsibilities>
+               <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+               <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+               <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+           </responsibilities>
+         </value>
+      </entry>
+      <entry>
+         <key>Bob2</key>
+         <value id="100">
+           <firstName>Bob2</firstName>
+           <lastName>Smith2</lastName>
+           <responsibilities>
+               <responsibility xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+           </responsibilities>
+        </value>
+      </entry>
+</ns0:root>

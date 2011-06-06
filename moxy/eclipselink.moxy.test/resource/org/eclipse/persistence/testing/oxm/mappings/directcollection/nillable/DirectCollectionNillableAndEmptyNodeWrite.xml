@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>123</id>
+	<task xsi:nil="true"/>
+	<task>write code</task>
+	<task xsi:nil="true"/>
+	<task xsi:nil="true"/>
+	<last-name>Doe</last-name>
+</employee>

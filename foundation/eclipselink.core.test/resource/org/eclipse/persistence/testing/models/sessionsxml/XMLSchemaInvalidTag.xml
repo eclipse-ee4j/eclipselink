@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="0">
+	<session xsi:type="database-session">
+		<name>EmployeeSession</name>
+		<logging xsi:type="eclipselink-log">
+			<log-level>@loglevel@</log-level>
+			<file-name>Blah</file-name>
+		</logging>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
+		<login xsi:type="database-login">
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
+		</login>
+		<invalid-tag>this-is-invalid-tag</invalid-tag>
+	</session>
+</sessions>

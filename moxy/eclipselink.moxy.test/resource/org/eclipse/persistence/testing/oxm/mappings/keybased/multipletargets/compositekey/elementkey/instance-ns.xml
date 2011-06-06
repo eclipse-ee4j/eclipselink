@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns:root xmlns:ns="urn:example">
+    <ns:employee id="222">
+        <ns:name>Joe Smith</ns:name>
+        <ns:address>
+            <ns:id-city>Anyothertown</ns:id-city>
+            <ns:id-zip>X0X0X0</ns:id-zip>
+        </ns:address>
+        <ns:address>
+            <ns:id-city>Anytown</ns:id-city>
+            <ns:id-zip>X0X0X0</ns:id-zip>
+        </ns:address>
+        <ns:address>
+            <ns:id-city>Anytown</ns:id-city>
+            <ns:id-zip>Y0Y0Y0</ns:id-zip>
+        </ns:address>
+        <ns:address>
+            <ns:id-city>Sometown</ns:id-city>
+            <ns:id-zip>X0X0X0</ns:id-zip>
+        </ns:address>
+    </ns:employee>
+    <ns:address aid="199">
+        <ns:street>Some Other St.</ns:street>
+        <ns:city>Anyothertown</ns:city>
+        <ns:country>Canada</ns:country>
+        <ns:zip>X0X0X0</ns:zip>
+    </ns:address>
+    <ns:address aid="99">
+        <ns:street>Some St.</ns:street>
+        <ns:city>Anytown</ns:city>
+        <ns:country>Canada</ns:country>
+        <ns:zip>X0X0X0</ns:zip>
+    </ns:address>
+    <ns:address aid="11199">
+        <ns:street>Another St.</ns:street>
+        <ns:city>Anytown</ns:city>
+        <ns:country>Canada</ns:country>
+        <ns:zip>Y0Y0Y0</ns:zip>
+    </ns:address>
+    <ns:address aid="1199">
+        <ns:street>Some St.</ns:street>
+        <ns:city>Sometown</ns:city>
+        <ns:country>Canada</ns:country>
+        <ns:zip>X0X0X0</ns:zip>
+    </ns:address>
+</ns:root>

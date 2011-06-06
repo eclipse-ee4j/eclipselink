@@ -1,0 +1,24 @@
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Implementation-Version: ${version.string}
+Specification-Vendor: 
+Bundle-Name: EclipseLink ASM
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
+Implementation-Vendor: ${implementation.vendor}
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${asm.2.base.dir}/about.html,\
+ ${asm.2.base.dir}/readme.html,\
+ ${asm.2.base.dir}/license.html,\
+ org/eclipse/persistence/internal/libraries/asm/package.html=src/org/eclipse/persistence/internal/libraries/asm/package.html,\
+ org/eclipse/persistence/internal/libraries/asm/commons/package.html=src/org/eclipse/persistence/internal/libraries/asm/commons/package.html,\
+ org/eclipse/persistence/internal/libraries/asm/signature/package.html=src/org/eclipse/persistence/internal/libraries/asm/signature/package.html,\
+ org/eclipse/persistence/internal/libraries/asm/tree/package.html=src/org/eclipse/persistence/internal/libraries/asm/tree/package.html,\
+ org/eclipse/persistence/internal/libraries/asm/tree/analysis/package.html=src/org/eclipse/persistence/internal/libraries/asm/tree/analysis/package.html,\
+ org/eclipse/persistence/internal/libraries/asm/util/package.html=src/org/eclipse/persistence/internal/libraries/asm/util/package.html,\
+ org/eclipse/persistence/internal/libraries/asm/xml/package.html=src/org/eclipse/persistence/internal/libraries/asm/xml/package.html,\
+ org/eclipse/persistence/internal/libraries/asm/xml/asm-xml.dtd=src/org/eclipse/persistence/internal/libraries/asm/xml/asm-xml.dtd
+Import-Package: *
+Specification-Version: 
+

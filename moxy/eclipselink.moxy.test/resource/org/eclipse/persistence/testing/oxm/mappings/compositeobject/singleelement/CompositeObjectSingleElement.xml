@@ -1,0 +1,8 @@
+<employee>
+    <id>123</id>
+    <info>
+      <email-address>
+        <user-id>jane.doe</user-id>
+      </email-address>    
+    </info>
+</employee>

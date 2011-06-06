@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.splitpackage.a">
+    <java-types>
+        <java-type name="Foo" xml-transient="true"/>
+    </java-types>
+</xml-bindings>

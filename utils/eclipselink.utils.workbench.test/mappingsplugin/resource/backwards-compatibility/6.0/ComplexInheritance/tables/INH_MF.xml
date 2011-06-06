@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>INH_MF</short-name>
+   <columns>
+      <column>
+         <name>MF_ID</name>
+         <type>NUMBER</type>
+         <size>10</size>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+      <column>
+         <name>PROCS</name>
+         <type>NUMBER</type>
+         <size>10</size>
+         <allows-null>true</allows-null>
+      </column>
+   </columns>
+   <references>
+      <table-association>
+         <name>INH_MF_INH_COMP</name>
+         <target-table-handle>
+            <table-name>INH_COMP</table-name>
+         </target-table-handle>
+         <on-database>true</on-database>
+         <column-pairs>
+            <column-pair>
+               <source-column-handle>
+                  <column-table-name>INH_MF</column-table-name>
+                  <column-name>MF_ID</column-name>
+               </source-column-handle>
+               <target-column-handle>
+                  <column-table-name>INH_COMP</column-table-name>
+                  <column-name>ID</column-name>
+               </target-column-handle>
+            </column-pair>
+         </column-pairs>
+      </table-association>
+   </references>
+</table>

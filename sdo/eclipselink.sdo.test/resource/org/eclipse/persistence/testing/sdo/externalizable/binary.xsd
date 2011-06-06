@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="urn:example" xmlns="urn:example" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="root">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="binary" type="xs:base64Binary"/>
+				<xs:element name="change-summary" type="sdo:ChangeSummaryType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

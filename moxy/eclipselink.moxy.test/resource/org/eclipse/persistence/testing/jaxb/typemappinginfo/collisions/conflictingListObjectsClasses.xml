@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testTagName xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="listOfObject">
+    <item xmlns:ns0="someUri" xsi:type="ns0:employee">
+        <firstName>theFirstName</firstName>
+        <lastName>theLastName</lastName>
+    </item>
+</testTagName>
+

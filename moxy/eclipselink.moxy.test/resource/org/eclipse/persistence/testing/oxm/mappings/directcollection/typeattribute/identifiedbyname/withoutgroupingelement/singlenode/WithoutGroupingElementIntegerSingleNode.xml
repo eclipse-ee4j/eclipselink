@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<employee id="123">
+	<responsibility xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">100 200 300</responsibility>
+</employee>

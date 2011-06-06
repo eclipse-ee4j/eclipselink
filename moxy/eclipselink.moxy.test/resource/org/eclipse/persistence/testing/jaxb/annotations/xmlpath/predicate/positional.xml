@@ -1,0 +1,10 @@
+<root>
+    <field type="name">First</field>
+    <field type="name">Last</field>
+    <field type="address">
+        <street>123 A Street</street>
+    </field>
+    <field type="address">
+        <street>456 B Road</street>
+    </field>
+</root>

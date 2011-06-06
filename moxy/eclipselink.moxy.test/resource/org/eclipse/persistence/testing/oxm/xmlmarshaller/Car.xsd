@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs = "http://www.w3.org/2001/XMLSchema" >
+  <xs:element name="Car">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name = "license-number" type = "licenseNumber" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name = "licenseNumber">
+    <xs:restriction base = "xs:string">
+      <xs:maxLength value="6"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

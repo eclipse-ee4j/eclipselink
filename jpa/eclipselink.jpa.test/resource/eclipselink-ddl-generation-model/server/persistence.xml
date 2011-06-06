@@ -1,0 +1,152 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    <!-- ddlgeneration PU-->
+    <persistence-unit name="MulitPU-1" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/ddl-generation-model.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.EmbeddedSerialNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.EquipmentDAO</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.PortDAO</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MapHolder</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapKey</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValueWithBackPointer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MMEntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Inventor</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Patent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Many</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.One</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyRecord</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zipcode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PostAddress</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PostAddressId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Foo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.FooId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Bar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.BarId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MappedSuperclassType</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityType</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EmbeddableType</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.City</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.CityId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Country</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.State</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.StateId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zip</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipArea</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipAreaId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ZipId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Course</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Material</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Lobtest</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.LobtestPK</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <!--property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlGeneration.jdbc"/-->
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+    <!-- ddlTablePerClass PU-->
+    <persistence-unit name="MulitPU-2" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Benefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Car</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.GoldCustomer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.LuxuryCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SuperLuxuryCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.PlatinumCustomer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.StandardBenefit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.SUV</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Team</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.Player</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.ProgrammingLanguage</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.BaseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.CodeExample</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.DesignPattern</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <!--property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTablePerClass.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTablePerClass.jdbc"/-->
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+    <!-- ddlTableSuffix PU-->
+    <persistence-unit name="MulitPU-3" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/ddl-create-table-suffix-model.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MapHolder</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapKey</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValueWithBackPointer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MMEntityMapValue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Inventor</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Patent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Many</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.One</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyRecord</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zipcode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTableSuffix.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTableSuffix.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.ddl-generation.table-creation-suffix" value="propertyCreationSuffix"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="MulitPU-4" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/ddl-generation-model.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    <persistence-unit name="MulitPU-5" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/ddl-generation-model.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+</persistence>
+
+

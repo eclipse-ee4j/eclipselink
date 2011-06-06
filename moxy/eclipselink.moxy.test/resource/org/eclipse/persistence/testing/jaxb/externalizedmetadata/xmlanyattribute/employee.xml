@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee ns0:stuff="blah" xmlns:ns0="www.example.com">
+  <a>1</a>
+  <b>3</b>
+</employee>

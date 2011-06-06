@@ -1,0 +1,8 @@
+<abc:purchaseOrder xmlns:abc="my.uri" xmlns:def="my.uri2" orderDate="1999-10-20">
+   <abc:shipTo street="123 Maple Street" city="Mill Valley">
+      <thePhone number="1234567"/>
+   </abc:shipTo>
+   <abc:billTo street="8 Oak Avenue" city="Blah Valley">
+	   <thePhone number="7654321"/>
+   </abc:billTo>
+</abc:purchaseOrder>

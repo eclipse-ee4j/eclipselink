@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" elementFormDefault="qualified" sdoJava:package="org.example" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name="CustomerType">
+      <xsd:sequence>
+         <xsd:element name="myNonSpecified" type="xsd:int" minOccurs="0" default="0"/>
+         <xsd:element name="myNonNillable" type="xsd:int" minOccurs="0" default="0"/>
+         <xsd:element name="myNillable" type="xsd:int" minOccurs="0" nillable="true" default="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="myAttr" type="xsd:int" default="0"/>
+   </xsd:complexType>
+   <xsd:element name="customerType" type="CustomerType"/>
+</xsd:schema>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>XML extended composite advanced member_3 Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3</package>
+    <entity class="PhoneNumber">
+        <customizer class="ChangeTrackingCustomizer"/>
+        <change-tracking type="ATTRIBUTE"/>
+    </entity>
+    <entity class="LargeProject" existence-checking="ASSUME_NON_EXISTENCE"/>
+    <entity class="SmallProject" existence-checking="ASSUME_EXISTENCE"/>
+    <entity class="Project" existence-checking="CHECK_CACHE">
+        <customizer class="ChangeTrackingCustomizer"/>
+        <change-tracking type="OBJECT"/>
+        <optimistic-locking type="SELECTED_COLUMNS">
+            <selected-column name="VERSION"/>
+        </optimistic-locking>
+    </entity>
+    <entity name="XMLDealer" class="Dealer" access="PROPERTY">
+        <table name="XML_MBR3_DEALER"/>
+        <table-generator name="XML_MBR3_DEALER_TABLE_GENERATOR" table="CMP3_XML_MBR3_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DEALER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="DEALER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_MBR3_DEALER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="status"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <one-to-many name="customers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.Customer">
+                <join-column name="FK_DEALER_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+                <property name="attributeName" value="customers"/>
+            </one-to-many>
+        </attributes>
+    </entity>
+</entity-mappings>

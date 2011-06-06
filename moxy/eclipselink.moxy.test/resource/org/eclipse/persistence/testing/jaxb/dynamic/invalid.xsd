@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="myNamespace">
+
+    <xs:element name="person" type="myns:person"/>
+
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="salary" type="foons:cdn_currency"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="cdn_currency">
+        <xs:simpleContent>
+            <xs:extension base="xs:decimal"/>
+        </xs:simpleContent>
+    </xs:complexType>
+
+</xs:schema>

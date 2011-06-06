@@ -1,0 +1,330 @@
+<project name="misc" default="assemble-repos" basedir=".">
+    <target name="assemble-repos" depends="validate-ready-to-start, init, clear-p2-loc, populate-p2-site, publish-p2-child, regen-composite-site"/>
+    <target name="regen-existing" depends="validate-ready-to-start, init, publish-p2-child, regen-composite-site"/>
+
+    <target name="validate-ready-to-start">
+        <fail message="Missing '-Dtype='. Should be set to 'n' for 'nightly', 'm' for 'milestone' or 'r' for 'release'." unless="type"/>
+        <fail message="Missing '-Dversion='. Should be set to the build version (1.1.3, 2.0.2, etc)." unless="version"/>
+        <fail message="Missing '-Ddate='. Should be set to the build date (20100429, 20100504, etc)." unless="date"/>
+        <fail message="Missing '-Drev='. Should be set to the src revision (6505, 7234, etc)." unless="rev"/>
+        <!-- make sure milestone tag is set if an 'm' build -->
+        <condition property="milestone.ok">
+            <or>
+                <and>
+                   <equals arg1="${type}" arg2="m"/>
+                   <isset property="mtag"/>
+                </and>
+                <not>
+                   <equals arg1="${type}" arg2="m"/>
+                </not>
+            </or>
+        </condition>
+        <fail message="Missing '-Dmtag='. Should be set to the Milestone tag (M1, M2, ..., RC1, etc), when type is set to 'm'" unless="milestone.ok"/>
+        <!-- setup static properties, and validate build type -->
+        <property name="do.composite"         value="true"/>
+        <property name="build.root.dir"       value="/opt/public/rt/eclipselink/trunk"/>
+        <property name="p2.SDK.install.dir"   value="/shared/rt/eclipselink/bld_deps/trunk/eclipse"/>
+        <property name="download.base.dir"    value="/home/data/httpd/download.eclipse.org/rt/eclipselink"/>
+        <property name="install.base.dir"     value="/home/data/httpd/download.eclipse.org/rt/eclipselink/nightly"/>
+        <property name="archived.download.base.dir" value="??/rt/eclipselink"/>
+        <condition property="type.ok">
+            <or>
+               <equals arg1="${type}" arg2="n"/>
+               <equals arg1="${type}" arg2="m"/>
+               <equals arg1="${type}" arg2="r"/>
+            </or>
+        </condition>
+        <fail message="Invalid '-Dtype='. Should be set to 'n' for 'nightly', 'm' for 'milestone' or 'r' for 'release'." unless="type.ok"/>
+        <!-- setup type dependent properties -->
+        <condition property="build.type"       value="nightly">
+            <equals arg1="${type}" arg2="n"/>
+        </condition>
+        <condition property="build.type"           value="milestone"
+                                                    else="release">
+            <equals arg1="${type}" arg2="m"/>
+        </condition>
+        <condition property="p2.composite.root.dir" value="/home/data/httpd/download.eclipse.org/rt/eclipselink/updates"
+                                                     else="/home/data/httpd/download.eclipse.org/rt/eclipselink/${build.type}-updates">
+            <equals arg1="${type}" arg2="r"/>
+        </condition>
+        <!-- setup version dependent properties -->
+        <property name="release.version"           value="${version}"/>
+        <!-- setup revision dependent properties -->
+        <property name="release.version"           value="${version}"/>
+        <property name="version.qualifier"          value="v${date}-r${rev}"/>
+        <property name="version.string"             value="${release.version}.${version.qualifier}"/>
+        <property name="bundle.install.zip"         value="eclipselink-plugins-${version.string}.zip"/>
+        <property name="p2.archive.presigned.zip"   value="eclipselink-P2-${release.version}.zip"/>
+        <property name="p2.archive.signed.zip"      value="eclipselink-P2signed-${version.string}.zip"/>
+        <condition property="p2.repos.dir"          value="${p2.composite.root.dir}/${version.string}-${mtag}"
+                                                     else="${p2.composite.root.dir}/${version.string}">
+            <equals arg1="${type}" arg2="m"/>
+        </condition>
+        <!-- validate build version -->
+        <condition property="installer.dir"        value="${install.base.dir}/${version}">
+            <available file="${install.base.dir}/${version}" type="dir"/>
+        </condition>
+        <condition property="installer.dir"        value="${download.base.dir}/${build.type}s/${version}">
+            <available file="${download.base.dir}/${build.type}s/${version}" type="dir"/>
+        </condition>
+        <condition property="installer.dir"        value="${archived.download.base.dir}/${build.type}s/${version}">
+            <available file="${archived.download.base.dir}/${build.type}/${version}" type="dir"/>
+        </condition>
+        <fail message="Invalid '-Dversion='. Cannot find '${install.base.dir}/${version}' or '${download.base.dir}/${build.type}s/${version}' or '${archived.download.base.dir}/${build.type}/${version}' dir." unless="installer.dir"/>
+        <!-- validate mtag -->
+        <condition property="mtag.ok">
+            <or>
+                <available file="${installer.dir}/${mtag}" type="dir"/>
+                <not>
+                   <equals arg1="${type}" arg2="m"/>
+                </not>
+            </or>
+        </condition>
+        <fail message="Invalid '-Dmtag='. Cannot find '${installer.dir}/${mtag}' dir." unless="mtag.ok"/>
+        <!-- validate build date and rev (qualifier) -->
+        <condition property="bundle.install.file"   value="${installer.dir}/${bundle.install.zip}">
+            <available file="${installer.dir}/${bundle.install.zip}"/>
+        </condition>
+        <condition property="bundle.install.file"   value="${installer.dir}/${mtag}/${bundle.install.zip}">
+            <available file="${installer.dir}/${mtag}/${bundle.install.zip}"/>
+        </condition>
+        <condition property="bundle.install.file"   value="${installer.dir}/${date}/${bundle.install.zip}">
+            <available file="${installer.dir}/${date}/${bundle.install.zip}"/>
+        </condition>
+        <fail message="Invalid '-Ddate=' or '-Drev'. Cannot find '${bundle.install.zip}'." unless="bundle.install.file"/>
+        <!-- assumes will be doing full p2 setup therefore probably from nightly loc -->
+        <condition property="p2.archive.zip"        value="${installer.dir}/${date}/${p2.archive.presigned.zip}"
+                                                     else="${installer.dir}/${date}/${p2.archive.signed.zip}">
+            <equals arg1="${build.type}" arg2="nightly"/>
+        </condition>
+    </target>
+
+    <target name="init" depends="validate-ready-to-start">
+        <property name="category.qualifier"       value="${version.string}"/>
+        <!-- Tool definitions -->
+        <property name="p2.SDK.plugin.dir"        value="${p2.SDK.install.dir}/plugins"/>
+        <property name="p2.publisher.jar"         value="org.eclipse.equinox.p2.publisher_*.jar"/>
+        <property name="p2.launcher.jar"          value="org.eclipse.equinox.launcher_*.jar"/>
+        <property name="p2.artifact.jar"          value="org.eclipse.equinox.artifact.repository_*.jar"/>
+        <property name="regen.composite.script"   value="${build.root.dir}/buildsystem/buildCompositeP2.sh"/>
+        <!-- Input definitions -->
+        <property name="p2.mirror.dir"            value="${mirror}"/>
+        <property name="p2.feature.dir"           value="${p2.repos.dir}/features"/>
+        <property name="p2.bundle.dir"            value="${p2.repos.dir}/plugins"/>
+        <!-- Output definitions -->
+        <property name="p2.repos.url"             value="file:/${p2.repos.dir}"/> <!-- DO NOT Override this one -->
+        <property name="p2.mirror.url"            value="file:/${p2.mirror.dir}"/> <!-- DO NOT Override this one -->
+        <property name="p2.release.repos.name"    value="EclipseLink Repository"/>
+        <property name="p2.milestone.repos.name"  value="EclipseLink Milestone Repository"/>
+        <property name="p2.nightly.repos.name"    value="EclipseLink Nightly Build Repository"/>
+        <property name="p2.release.repos.url"     value="http://download.eclipse.org/rt/eclipselink/updates"/>
+        <property name="p2.milestone.repos.url"   value="http://download.eclipse.org/rt/eclipselink/incremental-updates/milestone"/>
+        <property name="p2.nightly.repos.url"     value="http://download.eclipse.org/rt/eclipselink/incremental-updates/nightly"/>
+        <condition property="p2.repos.name"       value="&quot;${p2.nightly.repos.name}&quot;">
+            <equals arg1="${type}" arg2="n"/>
+        </condition>
+        <condition property="p2.repos.name"       value="&quot;${p2.milestone.repos.name}&quot;"
+                                                  else="&quot;${p2.release.repos.name}&quot;">
+            <equals arg1="${type}" arg2="m"/>
+        </condition>
+
+        <echo message="ant.project.name       ='${ant.project.name}'"/>
+        <echo message="java.home              ='${java.home}'"/>
+        <echo message=" ---"/>
+        <echo message="release.version        ='${release.version}'"/>
+        <echo message="version.qualifier      ='${version.qualifier}'"/>
+        <echo message="version.string         ='${version.string}'"/>
+        <echo message="category.qualifier     ='${category.qualifier}'"/>
+        <echo message=" ---"/>
+        <echo message="bundle.install.file    ='${bundle.install.file}'"/>
+        <echo message="p2.archive.zip         ='${p2.archive.zip}'"/>
+        <echo message=" ---"/>
+        <echo message="p2.SDK.install.dir     ='${p2.SDK.install.dir}'"/>
+        <echo message="p2.publisher.jar       ='${p2.publisher.jar}'"/>
+        <echo message="p2.launcher.jar        ='${p2.launcher.jar}'"/>
+        <echo message="regen.composite.script ='${regen.composite.script}'"/>
+        <echo message=" ---"/>
+        <echo message="p2.repos.dir           ='${p2.repos.dir}'"/>
+        <echo message="p2.repos.url           ='${p2.repos.url}'"/>
+        <echo message="p2.feature.dir         ='${p2.feature.dir}'"/>
+        <echo message="p2.bundle.dir          ='${p2.bundle.dir}'"/>
+        <echo message="build.root.dir         ='${build.root.dir}'"/>
+        <echo message="p2.composite.root.dir  ='${p2.composite.root.dir}'"/>
+        <echo message="p2.repos.name          ='${p2.repos.name}'"/>
+        <echo message="-----"/>
+        <echo message="source URL (p2.repos.url)       ='${p2.repos.url}'"/>
+        <echo message="destination dir (p2.mirror.dir) ='${p2.mirror.dir}'"/>
+        <echo message="destination URL (p2.mirror.url) ='${p2.mirror.url}'"/>
+        <echo message="destination name(p2.mirror.name)='${p2.mirror.name}'"/>
+        <echo message="-----"/>
+
+        <!-- Make sure necessary resources exist -->
+        <available file="${bundle.install.file}"    property="bundle.installer.exist"/>
+        <available file="${p2.SDK.plugin.dir}"      property="sdk.install.exist"/>
+        <available file="${regen.composite.script}" property="regen.script.exist"/>
+    </target>
+
+    <target name="test-ready-to-go">
+        <!-- This condition meaningless if p2.archive.zip already set -->
+        <condition property="p2.archive.zip" value="${p2.archive.presigned.zip}" else="foobar.error">
+            <available file="${p2.archive.presigned.zip}"/>
+        </condition>
+        <available file="${p2.archive.zip}" property="signing.archive.exist"/>
+        <condition property="ready-to-go">
+            <and>
+                <isset property="signing.archive.exist"/>
+                <isset property="bundle.installer.exist"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="not-ready-to-go" unless="ready-to-go" depends="test-ready-to-go">
+        <fail message="Bundle Installer or p2 archive not found! Skipping P2 repos generation."/>
+    </target>
+
+    <target name="clear-p2-loc" if="ready-to-go" depends="not-ready-to-go">
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <echo message="Test without cleaning repos first."/>
+    </target>
+
+    <target name="populate-p2-site" if="ready-to-go" depends="init">
+        <mkdir dir="${p2.bundle.dir}"/>
+        <mkdir dir="${p2.feature.dir}"/>
+        <!-- populate update site with feature and bundle jars -->
+        <unzip dest="${p2.bundle.dir}" src="${bundle.install.file}">
+            <patternset>
+                <include name="*.jar"/>
+            </patternset>
+        </unzip>
+        <!-- Remove jars we are not including in features at this time (needs to be separate because exclude in unzip does not seem to work) -->
+        <delete>
+            <fileset
+                dir="${p2.bundle.dir}"
+                includes="
+                          *dbws*.jar,
+                          *jms*.jar,
+                          com.sun*.jar,
+                          eclipselink*.jar,
+                          javax.persistence*1.*.jar,
+                          *preview*.jar,
+                          *javax.resource*.jar,
+                          *javax.transaction*.jar,
+                          javax.xml.bind.source*.jar,
+                          *modelgen*.jar,
+                          *servlet*.jar,
+                          *soap*.jar,
+                          *xml.ws*.jar"
+            />
+        </delete>
+        <unzip dest="${p2.feature.dir}" src="${p2.archive.zip}">
+            <patternset>
+                <include name="features/*.jar"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </unzip>
+    </target>
+
+    <target name="publish-p2-child" if="do.composite">
+        <echo message="java.home        ='${java.home}'"/>
+        <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
+        <echo message="p2.launcher.jar  ='${p2.launcher.jar}'"/>
+        <echo message="p2.publisher.jar ='${p2.publisher.jar}'"/>
+        <echo message="-----"/>
+        <echo message="p2.repos.dir     ='${p2.repos.dir}'"/>
+        <echo message="p2.repos.url     ='${p2.repos.url}'"/>
+        <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
+        <mkdir dir="${p2.repos.dir}"/>
+        <delete  failonerror="false">
+            <fileset dir="${p2.repos.dir}" includes="artifact*.*, content*.*"/>
+        </delete>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.publisher.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.publisher.FeaturesAndBundlesPublisher" />
+            <arg line=" -metadataRepository ${p2.repos.url}" />
+            <arg line=" -artifactRepository ${p2.repos.url}" />
+            <arg line=" -source ${p2.repos.dir}" />
+            <arg line=" -compress -publishArtifacts -configs all" />
+        </java>
+    </target>
+
+    <target name="no-script-warning" unless="regen.script.exist" depends="init">
+        <echo message="Warning: Composite won't be generated."/>
+        <echo message="         '${regen.composite.script}' not found!"/>
+    </target>
+
+    <target name="regen-composite-site" if="regen.script.exist" depends="no-script-warning">
+        <chmod file="${regen.composite.script}" perm="ug+x"/>
+        <!-- Regenerate Composite Repos metadata -->
+        <echo message="regen.composite.script='${regen.composite.script}'"/>
+        <echo message="p2.composite.root.dir ='${p2.composite.root.dir}'"/>
+        <echo message="p2.repos.name         ='${p2.repos.name}'"/>
+        <exec executable="/bin/sh" failonerror="false" logError="true" >
+            <arg value="${regen.composite.script}"/>
+            <arg value="${p2.composite.root.dir}"/>
+            <arg value="${p2.repos.name}"/>
+        </exec>
+    </target>
+
+    <target name="test-mirror-ready-to-go">
+        <condition property="mirror-ready-to-go">
+            <and>
+                <isset property="p2.mirror.dir"/>
+                <isset property="p2.mirror.name"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="mirror-p2-repos" if="mirror-ready-to-go" depends="init, test-mirror-ready-to-go">
+        <property name="p2.mirror.name" value="EclipseLink build ${version.string} Repository"/>
+        <echo message="java.home        ='${java.home}'"/>
+        <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
+        <echo message="p2.launcher.jar  ='${p2.launcher.jar}'"/>
+        <echo message="p2.publisher.jar ='${p2.publisher.jar}'"/>
+        <echo message="-----"/>
+        <echo message="source URL (p2.repos.url)       ='${p2.repos.url}'"/>
+        <echo message="destination dir (p2.mirror.dir) ='${p2.mirror.dir}'"/>
+        <echo message="destination URL (p2.mirror.url) ='${p2.mirror.url}'"/>
+        <echo message="destination name(p2.mirror.name)='${p2.mirror.name}'"/>
+        <echo message="-----"/>
+        <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
+        <mkdir dir="${p2.mirror.dir}"/>
+        <delete  failonerror="false">
+            <fileset dir="${p2.mirror.dir}" includes="artifact*.*, content*.*"/>
+        </delete>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2.M.mirror"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.artifact.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication" />
+            <arg line=" -source ${p2.repos.url}" />
+            <arg line=" -destination ${p2.mirror.url}" />
+            <arg line=" -destinationName '${p2.mirror.name}'" />
+        </java>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2.A.mirror"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.artifact.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.artifact.repository.mirrorApplication" />
+            <arg line=" -source ${p2.repos.url}" />
+            <arg line=" -destination ${p2.mirror.url}" />
+            <arg line=" -destinationName '${p2.mirror.name}'" />
+            <arg line=" -verbose -raw" />
+        </java>
+    </target>
+
+</project>

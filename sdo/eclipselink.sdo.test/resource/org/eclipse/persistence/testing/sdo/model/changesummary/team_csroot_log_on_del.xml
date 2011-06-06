@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xsi:type="ns0:Team" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <myChangeSummary logging="true" delete="#manager">
+      <ns0:manager sdo:ref="#manager">
+         <name>Jane Doe</name>
+      </ns0:manager>
+   </myChangeSummary>   
+</root>

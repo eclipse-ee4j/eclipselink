@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cat xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<name>meow</name>
+<owner>JANE DOE</owner>
+<sleephours>10</sleephours>
+</cat>

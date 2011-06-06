@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<employee id="123" xmlns:xop="http://www.w3.org/2004/08/xop/include">
+	<photos>
+		<list>
+            <photo>c_id0</photo>
+            <photo>c_id0</photo>
+		</list>
+	</photos>
+</employee>

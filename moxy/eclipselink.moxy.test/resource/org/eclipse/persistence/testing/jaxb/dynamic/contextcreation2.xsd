@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:myns="mynamespace" xmlns:myns2="secondnamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    jxb:version="1.0" targetNamespace="mynamespace" attributeFormDefault="qualified" elementFormDefault="qualified">
+
+    <xs:element name="person">
+        <xs:annotation>
+            <xs:appinfo>
+                <jxb:class name="PersonE"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="first-name" type="xs:string"/>
+                <xs:element name="last-name" type="xs:string"/>
+                <xs:element name="address">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="street" type="xs:string"/>
+                            <xs:element name="country" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="root" type="myns:person"/>
+
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element name="full_name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

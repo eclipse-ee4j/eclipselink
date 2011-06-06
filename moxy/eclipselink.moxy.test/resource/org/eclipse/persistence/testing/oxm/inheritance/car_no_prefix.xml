@@ -1,0 +1,11 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<vehicle xsi:type="car-type" xmlns="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+   <unmapped-node xmlns="some-other-uri">
+       <nested-unmapped>text</nested-unmapped>
+    </unmapped-node>
+   <model>Grand Am</model>
+   <manufacturer>Pontiac</manufacturer>
+   <top-speed>220</top-speed>
+   <number-of-doors>2</number-of-doors>
+   <miles-per-gallon>30</miles-per-gallon>
+</vehicle>

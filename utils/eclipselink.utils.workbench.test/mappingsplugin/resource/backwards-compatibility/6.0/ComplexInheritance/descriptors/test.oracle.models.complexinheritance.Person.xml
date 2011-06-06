@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexinheritance.Person</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexinheritance.Person</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Person</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>Full</cache-type>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>PERSON2</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="one-to-one">
+         <name>bestFriend</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.Person</attribute-declaring-type-name>
+            <attribute-name>bestFriend</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexinheritance.Engineer</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>PERSON2</reference-table-name>
+            <reference-name>PERSON2_PERSON22</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="one-to-one">
+         <name>car</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.Person</attribute-declaring-type-name>
+            <attribute-name>car</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexinheritance.Car</descriptor-name>
+         </reference-descriptor-handle>
+         <indirection-type>value-holder-indirection</indirection-type>
+         <private-owned>true</private-owned>
+         <reference-handle>
+            <reference-table-name>PERSON2</reference-table-name>
+            <reference-name>PERSON2_CAR</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.Person</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>PERSON2</column-table-name>
+            <column-name>ID</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>name</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.Person</attribute-declaring-type-name>
+            <attribute-name>name</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>PERSON2</column-table-name>
+            <column-name>NAME</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="one-to-one">
+         <name>representitive</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.Person</attribute-declaring-type-name>
+            <attribute-name>representitive</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexinheritance.SalesRep</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>PERSON2</reference-table-name>
+            <reference-name>PERSON2_PERSON23</reference-name>
+         </reference-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <class-indicator-policy type="relational-field">
+         <class-name-is-indicator>true</class-name-is-indicator>
+         <column-handle>
+            <column-table-name>PERSON2</column-table-name>
+            <column-name>C_TYPE</column-name>
+         </column-handle>
+      </class-indicator-policy>
+      <read-subclasses-on-query>false</read-subclasses-on-query>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>PERSON2</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>PERSON2</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>PERSON2</column-table-name>
+      <column-name>ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

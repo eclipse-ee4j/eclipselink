@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee xmlns:ns0="myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:name>Bob Jones</ns0:name>
+</ns0:employee>

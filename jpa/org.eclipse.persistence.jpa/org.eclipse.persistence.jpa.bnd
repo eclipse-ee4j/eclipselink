@@ -1,0 +1,34 @@
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Implementation-Version: ${version.string}
+Specification-Vendor: ${specification.vendor}
+Bundle-Name: EclipseLink JPA
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
+Require-Bundle: org.eclipse.persistence.core;bundle-version="${release.version}";visibility:=reexport,\
+ org.eclipse.persistence.asm;bundle-version="${release.version}";resolution:=optional
+Implementation-Vendor: ${implementation.vendor}
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${jpa.2.base.dir}/about.html,\
+ ${jpa.2.base.dir}/readme.html,\
+ ${jpa.2.base.dir}/license.html,\
+ org/eclipse/persistence/jpa=${jpa.2.javax.persistence.xsds.dir},\
+ org/eclipse/persistence/jpa/eclipselink_orm_2_3.xsd=resource/org/eclipse/persistence/jpa/eclipselink_orm_2_3.xsd,\
+ META-INF/services/javax.persistence.spi.PersistenceProvider=resource/META-INF/services/javax.persistence.spi.PersistenceProvider
+Import-Package:\
+ javax.persistence.*;version="[1.1.0, 2.1)";jpa="2.0",\
+ javax.sql.*;resolution:=optional,\
+ javax.transaction.*;version="1.1.0";resolution:=optional,\
+ javax.xml.*;resolution:=optional,\
+ javax.validation.*;resolution:=optional,\
+ javax.validation.groups.*;resolution:=optional,\
+ org.apache.tools.ant.*;resolution:=optional,\
+ org.eclipse.persistence.internal.libraries.asm.*,\
+ org.eclipse.persistence.internal.libraries.antlr.*,\
+ org.eclipse.persistence.*;version="${release.version}",\
+ org.osgi.*;resolution:=optional,\
+ org.w3c.*;resolution:=optional,\
+ org.xml.sax.*;resolution:=optional, *
+Specification-Version: ${release.version}
+

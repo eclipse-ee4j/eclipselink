@@ -1,0 +1,13 @@
+<root>
+	<company>
+		<name>SomeCompany</name>	
+		<department>
+			<name>TheDepartment</name>
+			<employee>
+				<first-name>Jane</first-name>
+				<project-id>3</project-id>
+				<project-id>1</project-id>
+			</employee>
+		</department>
+	</company>
+</root>

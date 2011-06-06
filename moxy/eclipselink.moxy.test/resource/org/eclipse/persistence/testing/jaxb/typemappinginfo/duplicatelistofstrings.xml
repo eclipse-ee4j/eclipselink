@@ -1,0 +1,5 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns1:root xmlns:ns1="examplenamespace" xmlns:ns0="someUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="listOfObject">
+   <item xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">aaa</item>
+   <item xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">bbb</item>
+</ns1:root>

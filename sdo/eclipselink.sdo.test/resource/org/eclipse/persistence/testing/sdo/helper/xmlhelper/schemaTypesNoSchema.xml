@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:Test xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:myAnySimpleTypeTest>String</ns0:myAnySimpleTypeTest>
+   <ns0:myAnyTypeTest2 xsi:type="ns0:PersonType">
+      <ns0:firstName>Joe</ns0:firstName>
+      <ns0:lastName>Smith</ns0:lastName>
+   </ns0:myAnyTypeTest2>
+   <ns0:myAnyTypeTest4 xsi:type="ns0:PersonType">
+      <ns0:firstName>Jane</ns0:firstName>
+      <ns0:lastName>Smith</ns0:lastName>
+   </ns0:myAnyTypeTest4>
+   <ns0:myAnyTypeTest4 xsi:type="ns0:PersonType">
+      <ns0:firstName>Jill</ns0:firstName>
+      <ns0:lastName>Smith</ns0:lastName>
+   </ns0:myAnyTypeTest4>
+   <ns0:myAnyURITest>http://www.altova.com</ns0:myAnyURITest>
+   <ns0:myBase64BinaryTest>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</ns0:myBase64BinaryTest>
+   <ns0:myBooleanTest>true</ns0:myBooleanTest>
+   <ns0:myByteTest>127</ns0:myByteTest>
+   <ns0:myDateTest>1967-08-13</ns0:myDateTest>
+   <ns0:myDateTimeTest>2001-12-17T09:30:47-05:00</ns0:myDateTimeTest>
+   <ns0:myDecimalTest>3.1415926535897932384626433832795</ns0:myDecimalTest>
+   <ns0:myDoubleTest>3.14159265358979</ns0:myDoubleTest>
+   <ns0:myDurationTest>P1Y2M3DT10H30M</ns0:myDurationTest>
+   <ns0:myENTITIESTest>ENTITIES</ns0:myENTITIESTest>
+   <ns0:myENTITYTest>ENTITY</ns0:myENTITYTest>
+   <ns0:myFloatTest>3.14159</ns0:myFloatTest>
+   <ns0:myGDayTest>---17</ns0:myGDayTest>
+   <ns0:myGMonthTest>--12--</ns0:myGMonthTest>
+   <ns0:myGMonthDayTest>--12-17</ns0:myGMonthDayTest>
+   <ns0:myGYearTest>2001</ns0:myGYearTest>
+   <ns0:myGYearMonthTest>2001-12</ns0:myGYearMonthTest>
+   <ns0:myIDTest>ID000000</ns0:myIDTest>
+   <ns0:myIDREFTest>ID000000</ns0:myIDREFTest>
+   <ns0:myIDREFSTest>ID000000 ID000000</ns0:myIDREFSTest>
+   <ns0:myIntTest>0</ns0:myIntTest>
+   <ns0:myIntegerTest>0</ns0:myIntegerTest>
+   <ns0:myLanguageTest>en-us</ns0:myLanguageTest>
+   <ns0:myLongTest>2147483647</ns0:myLongTest>
+   <ns0:myNameTest>Name</ns0:myNameTest>
+   <ns0:myNCNameTest>NCName</ns0:myNCNameTest>
+   <ns0:myNegativeIntegerTest>-2</ns0:myNegativeIntegerTest>
+   <ns0:myNonNegativeIntegerTest>1</ns0:myNonNegativeIntegerTest>
+   <ns0:myNMTOKENTest>NMTOKEN</ns0:myNMTOKENTest>
+   <ns0:myNMTOKENSTest>NMTOKENS</ns0:myNMTOKENSTest>
+   <ns0:myNOTATIONTest>NOTATION</ns0:myNOTATIONTest>
+   <ns0:myNormalizedStringTest>normalizedString</ns0:myNormalizedStringTest>
+   <ns0:myPositiveIntegerTest>2</ns0:myPositiveIntegerTest>
+   <ns0:myNonPositiveIntegerTest>-1</ns0:myNonPositiveIntegerTest>
+   <ns0:myQNameTest>q:name</ns0:myQNameTest>
+   <ns0:myShort>4096</ns0:myShort>
+   <ns0:myStringTest>String</ns0:myStringTest>
+   <ns0:myTimeTest>14:20:00-05:00</ns0:myTimeTest>
+   <ns0:myTokenTest>token</ns0:myTokenTest>
+   <ns0:myUnsignedByteTest>255</ns0:myUnsignedByteTest>
+   <ns0:myUnsignedIntTest>0</ns0:myUnsignedIntTest>
+   <ns0:myUnsignedLongTest>4294967295</ns0:myUnsignedLongTest>
+   <ns0:myUnsignedShortTest>65535</ns0:myUnsignedShortTest>
+</ns0:Test>

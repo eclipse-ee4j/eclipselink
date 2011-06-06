@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    attributeFormDefault="qualified" elementFormDefault="qualified">
+
+    <xs:element name="person">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="quadrant" type="myns:compass-direction"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- This test contains exactly 6 enum values to test an ASM boundary case (ICONST) -->
+    <xs:simpleType name="compass-direction">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NORTH"/>
+            <xs:enumeration value="SOUTH"/>
+            <xs:enumeration value="EAST"/>
+            <xs:enumeration value="WEST"/>
+            <xs:enumeration value="SOUTHWEST"/>
+            <xs:enumeration value="SOUTHEAST"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

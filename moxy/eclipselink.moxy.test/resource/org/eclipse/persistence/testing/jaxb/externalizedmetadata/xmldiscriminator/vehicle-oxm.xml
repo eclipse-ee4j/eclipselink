@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator.Vehicle" xml-discriminator-node="@vtype"
+            xml-discriminator-value="vehicle">
+            <xml-root-element name="vehicle-data" />
+            <java-attributes>
+                <xml-element java-attribute="topSpeed" xml-path="top-speed/text()" />
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator.Car" xml-discriminator-value="car">
+            <xml-root-element name="car-data" />
+            <java-attributes>
+                <xml-element java-attribute="numberOfDoors" name="number-of-doors" />
+                <xml-element java-attribute="milesPerGallon" name="miles-per-gallon" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

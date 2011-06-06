@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="foo">
+      <xsd:sequence>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="A" minOccurs="0">
+               <xsd:complexType>
+                  <xsd:choice maxOccurs="unbounded"/>
+                  <xsd:attribute name="aval" type="xsd:int"/>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="B" type="xsd:float" minOccurs="0"/>
+         </xsd:choice>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="foo" type="foo"/>
+</xsd:schema>

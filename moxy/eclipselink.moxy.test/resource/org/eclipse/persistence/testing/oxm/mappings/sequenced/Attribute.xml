@@ -1,0 +1,5 @@
+<ns:employee id="123" xmlns:ns="urn:example">
+	<personal-info>
+		<ns:first-name>Jane</ns:first-name>
+	</personal-info>
+</ns:employee>

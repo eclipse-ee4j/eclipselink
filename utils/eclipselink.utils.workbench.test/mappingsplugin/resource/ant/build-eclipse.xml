@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE project [
+    <!ENTITY buildbody SYSTEM "file:./buildbody.xml">
+]>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+<project name="Test.Ant.Extension" default="validate.session" basedir="." xmlns:toplink="toplinklib">
+    <!-- =================================================================== -->
+    <!--  Properties                                                         -->
+    <!-- =================================================================== -->
+    <target name="init">
+        <property name="toplink.mwp.dir"       value="${basedir}/temp/mw"/>
+        <property name="toplink.sessions.dir"  value="${basedir}/sessions10.1.3"/>
+        <property name="user.classes"          value="${basedir}/../../../class"/>
+        <property name="mwplatforms.classpath" value="${basedir}/../../../../mwdev/config"/>
+        <path id="toplink.classpath">
+            <pathelement path="${basedir}/../../../jlib/compile/toplink.jar"/>
+            <pathelement path="${basedir}/../../../jlib/compile/ejb.jar"/>
+            <pathelement path="${basedir}/../../../jlib/compile/xmlparserv2.jar"/>
+            <pathelement path="${basedir}/../../../jlib/run/antlr.jar"/>
+        </path>
+        <path id="mw.classpath">
+            <pathelement path="${basedir}/../../../../mwdev/class"/>
+        </path>
+        <typedef file="toplink-ant-lib.xml" classpathref="mw.classpath" uri="toplinklib" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Define task parameter                                              -->
+    <!-- =================================================================== -->
+    <target name="parameter-definition" depends="init">
+        <toplink:ignoreerrorset id="ignoreErrors">
+            <toplink:ignoreerror code="0233" />
+        </toplink:ignoreerrorset>
+        <toplink:loginspec id="loginSpec"
+            url="jdbc:oracle:thin:@tlsvrdb5.ca.oracle.com:1521:TOPLINK"
+            driverclass="oracle.jdbc.driver.OracleDriver"
+            user="tle" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Include buildbody.xml                                              -->
+    <!-- =================================================================== -->
+    &buildbody;
+
+</project>

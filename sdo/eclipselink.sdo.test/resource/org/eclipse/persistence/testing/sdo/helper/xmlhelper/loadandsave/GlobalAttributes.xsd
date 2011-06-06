@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    targetNamespace="http://www.example.org" 
+    xmlns="http://www.example.org" 
+    elementFormDefault="qualified">
+
+    <xsd:attribute name="global-before" type="xsd:string"/>
+
+    <xsd:element name="root">
+        <xsd:complexType>
+            <xsd:attribute ref="global-before"/>
+            <xsd:attribute ref="global-after"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:attribute name="global-after" type="xsd:string"/>
+
+</xsd:schema>

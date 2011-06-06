@@ -1,0 +1,8 @@
+<employee>
+    <id>123</id>
+    <mailing-address>1 Any Street, Ottawa, Ontario, A1B 2C3</mailing-address>
+    <info>
+      <email-address>jane.doe@example.com</email-address>    
+    </info>
+    <salary xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:integer">5000</salary>
+</employee>

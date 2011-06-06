@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="phone">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="number" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employee-type">
+      <xsd:complexContent>
+         <xsd:extension base="person-type">
+            <xsd:sequence>
+               <xsd:element minOccurs="0" name="employee_name" type="xsd:string"/>
+               <xsd:element name="age" type="xsd:int"/>
+               <xsd:element minOccurs="0" name="address" type="xsd:string"/>
+               <xsd:element minOccurs="0" name="bytes" type="xsd:base64Binary"/>
+               <xsd:element minOccurs="0" name="jobTitle" type="xsd:string"/>
+               <xsd:element maxOccurs="unbounded" minOccurs="0" nillable="true" name="departments" type="department"/>
+               <xsd:element minOccurs="0" name="phone" type="phone"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="person-type">
+      <xsd:all/>
+      <xsd:attribute name="id" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="empRoot2" type="employee-type"/>
+   <xsd:simpleType name="department">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="DEV"/>
+         <xsd:enumeration value="SALES"/>
+         <xsd:enumeration value="SUPPORT"/>
+         <xsd:enumeration value="HR"/>
+         <xsd:enumeration value="QA"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

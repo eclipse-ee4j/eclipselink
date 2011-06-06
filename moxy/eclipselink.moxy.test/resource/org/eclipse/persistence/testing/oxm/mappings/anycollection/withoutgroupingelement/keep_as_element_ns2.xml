@@ -1,0 +1,1 @@
+<root xmlns:foo="uri1"><child>Child1</child><foo:element1 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="foo:someType">text</foo:element1><element2>text</element2></root>

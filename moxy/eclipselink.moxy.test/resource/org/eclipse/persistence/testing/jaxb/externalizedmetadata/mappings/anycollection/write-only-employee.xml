@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+  <things>
+    <write-only>
+      <stuff>Some Stuff</stuff>
+    </write-only>
+  </things> 
+</employee>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:root xmlns:ns0="urn:example" xmlns:x="listOfObjectsNamespace">
+    <char2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+        <item>a</item>
+        <item>b</item>
+        <item>c</item>
+        <item>d</item>
+    </char2dArray>
+    <char2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+        <item>e</item>
+        <item>f</item>
+        <item>g</item>
+        <item>h</item>
+    </char2dArray>
+    <employee2dArray>
+        <item id="1">
+            <firstName>Jane</firstName>
+            <lastName>Doe</lastName>
+        </item>
+        <item id="2">
+            <firstName>John</firstName>
+            <lastName>Smith</lastName>
+        </item>
+    </employee2dArray>
+    <innerClass2dArray>
+        <item>
+            <innerName>A</innerName>
+        </item>
+    </innerClass2dArray>
+    <innerClass2dArray>
+        <item>
+            <innerName>B</innerName>
+        </item>
+    </innerClass2dArray>
+    <int2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+        <item>1</item>
+        <item>2</item>
+    </int2dArray>
+    <int2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+        <item>3</item>
+        <item>4</item>
+    </int2dArray>
+    <int2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+        <item>5</item>
+        <item>6</item>
+    </int2dArray>
+    <int3dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+        <item>
+            <item>1</item>
+            <item>2</item>
+        </item>
+        <item>
+            <item>3</item>
+            <item>4</item>
+        </item>
+        <item>
+            <item>5</item>
+            <item>6</item>
+        </item>
+    </int3dArray>
+    <int3dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+        <item>
+            <item>7</item>
+            <item>8</item>
+        </item>
+        <item>
+            <item>9</item>
+            <item>10</item>
+        </item>
+        <item>
+            <item>11</item>
+            <item>12</item>
+        </item>
+    </int3dArray>
+    <integer3dArray xmlns:ns2="http://jaxb.dev.java.net/array">
+        <item>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+        </item>
+        <item>
+            <item>4</item>
+            <item>5</item>
+            <item>6</item>
+        </item>
+    </integer3dArray>
+    <integer3dArray xmlns:ns2="http://jaxb.dev.java.net/array">
+        <item>
+            <item>7</item>
+            <item>8</item>
+            <item>9</item>
+        </item>
+        <item>
+            <item>10</item>
+            <item>11</item>
+            <item>12</item>
+        </item>
+    </integer3dArray>
+    <integer3dArray xmlns:ns2="http://jaxb.dev.java.net/array">
+        <item>
+            <item>13</item>
+            <item>14</item>
+            <item>15</item>
+        </item>
+        <item>
+            <item>16</item>
+            <item>17</item>
+            <item>18</item>
+        </item>
+    </integer3dArray>
+</ns0:root>

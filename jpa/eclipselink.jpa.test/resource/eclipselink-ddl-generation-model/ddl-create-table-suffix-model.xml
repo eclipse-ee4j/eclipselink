@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <package>org.eclipse.persistence.testing.models.jpa.ddlgeneration</package>
+
+    <entity class="CKeyEntityB">
+        <attributes>
+            <one-to-many name="as" mapped-by="bs">
+                <cascade-on-delete>true</cascade-on-delete>
+            </one-to-many>
+            <one-to-one name="uniqueA" mapped-by="uniqueB">
+                <cascade-on-delete>true</cascade-on-delete>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity class="CKeyEntityA"/>
+    <entity class="CKeyEntityB2"/>
+    <entity class="CKeyEntityC"/>
+    <entity class="Employee">
+        <secondary-table name="DDL_SALARY" creation-suffix="creationSuffixString1" />
+        <attributes>
+            <element-collection name="responsibilities">
+                <column name="DESCRIPTION"/>
+                <collection-table name="DDL_RESPONS" creation-suffix="creationSuffixString2">
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+    <entity class="MachineState"/>
+    <entity class="UniqueConstraintsEntity1"/>
+    
+    <entity class="UniqueConstraintsEntity2">
+        <table name="DDL_UCENTITY2">
+            <unique-constraint>
+                <column-name>column2</column-name>
+            </unique-constraint>
+            <unique-constraint>
+                <column-name>column31</column-name>
+                <column-name>column32</column-name>
+            </unique-constraint>
+        </table>
+        <attributes>
+            <basic name="column1"><column unique="true" nullable="false"/></basic>
+            <basic name="column2"><column nullable="false"/></basic>
+            <basic name="column31"><column nullable="false"/></basic>
+            <basic name="column32"><column nullable="false"/></basic>
+        </attributes>
+    </entity>
+    <entity class="Comment">
+        <table name="DDL_COMMENT" creation-suffix="creationSuffixString3"/>
+    </entity>
+    <entity class="Many">
+        <attributes>
+            <many-to-many name="many" target-entity="Many">
+                <join-table name="DDL_MANY_MANY" creation-suffix="creationSuffixString4" />
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+        </attributes>
+    </entity>
+
+    <entity class="Purchase">
+        <index>
+            <column-name>FEE_AMOUNT</column-name>
+        </index>
+    </entity>
+    <entity class="Currency">
+		<attributes>
+			<id name="id">
+				<generated-value />
+			</id>
+		</attributes>
+	</entity>
+	<embeddable class="Money">
+		<attributes>
+			<many-to-one name="currency"></many-to-one>
+		</attributes>
+	</embeddable>
+    <embeddable class="ThreadInfo"/>
+</entity-mappings>
+<!-- <many-to-one name="address" target-entity="org.eclipse.persistence.testing.models.jpa.advanced.Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one> -->

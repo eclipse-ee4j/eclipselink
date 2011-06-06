@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="someUri" xmlns:ns0="someUri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="listOfEmployee">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" nillable="true" minOccurs="0" name="item" type="ns0:employee"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="listOfString2">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="item">
+            <xsd:simpleType>
+               <xsd:list itemType="xsd:string"/>
+            </xsd:simpleType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="listOfString">
+      <xsd:sequence>
+         <xsd:element name="item" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="testTagName3" type="ns0:listOfEmployee"/>
+   <xsd:element name="testTagName4" type="ns0:listOfString"/>
+   <xsd:element name="testTagName5" type="ns0:listOfString2"/>
+   <xsd:element name="testTagName6" type="ns0:listOfString2"/>
+   <xsd:element name="testTagName2" type="ns0:listOfEmployee"/>
+   <xsd:element name="testTagName1" type="ns0:listOfEmployee"/>
+</xsd:schema>

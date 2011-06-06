@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+    <description>JPA Performance Test ORM</description>
+    <entity name="Employee" class="org.eclipse.persistence.testing.models.jpa.performance.Employee" access="FIELD">
+        <table name="P_EMPLOYEE"/>
+        <sequence-generator name="EMP_SEQ" sequence-name="EMP_SEQ" allocation-size="48"/>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID"/>
+                <generated-value strategy="SEQUENCE" generator="EMP_SEQ"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="gender">
+                <column name="GENDER"/>
+            </basic>
+            <basic name="salary">
+                <column name="SALARY"/>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="manager" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Employee" fetch="LAZY">
+                <join-column name="MANAGER_ID" referenced-column-name="EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="phoneNumbers" target-entity="org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber" mapped-by="owner">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="managedEmployees" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Employee" mapped-by="manager">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+            <one-to-one name="address" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-one>
+            <many-to-many name="projects" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Project">
+                <join-table name="P_PROJ_EMP">
+                    <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+                    <inverse-join-column name="PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+            <embedded name="period"/>
+        </attributes>
+    </entity>
+    <entity name="Address" class="org.eclipse.persistence.testing.models.jpa.performance.Address" access="FIELD">
+        <table name="P_ADDRESS"/>
+        <sequence-generator name="ADDRESS_SEQ" sequence-name="ADDRESS_SEQ" allocation-size="48"/>
+        <named-query name="findAddressByCity">
+            <query>Select a from Address a where a.city = :city</query>
+        </named-query>
+        <named-query name="findAddressByStreet">
+            <query>Select a from Address a where a.street = :street</query>
+        </named-query>
+        <attributes>
+            <id name="id">
+                <column name="ADDRESS_ID"/>
+                <generated-value strategy="SEQUENCE" generator="ADDRESS_SEQ"/>
+            </id>
+            <basic name="postalCode">
+                <column name="P_CODE"/>
+            </basic>
+            <basic name="street">
+                <column name="STREET"/>
+            </basic>
+            <basic name="city">
+                <column name="CITY"/>
+            </basic>
+            <basic name="province">
+                <column name="PROVINCE"/>
+            </basic>
+            <basic name="country">
+                <column name="COUNTRY"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="PhoneNumber" class="org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber" access="FIELD">
+        <table name="P_PHONE"/>
+        <sequence-generator name="PHONE_SEQ" sequence-name="PHONE_SEQ" allocation-size="48"/>
+        <attributes>
+            <id name="id">
+                <column name="PHONE_ID"/>
+                <generated-value strategy="SEQUENCE" generator="PHONE_SEQ"/>
+            </id>
+            <basic name="type">
+                <column name="TYPE"/>
+            </basic>
+            <basic name="number">
+                <column name="P_NUMBER"/>
+            </basic>
+            <basic name="areaCode">
+                <column name="AREA_CODE"/>
+            </basic>
+            <many-to-one name="owner" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Employee" fetch="LAZY">
+                <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    <entity name="LargeProject" class="org.eclipse.persistence.testing.models.jpa.performance.LargeProject" access="FIELD">
+        <table name="P_LPROJECT"/>
+        <discriminator-value>L</discriminator-value>
+        <attributes>
+            <basic name="budget">
+                <column name="BUDGET"/>
+            </basic>
+            <basic name="milestoneVersion">
+                <column name="MILESTONE"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="SmallProject" class="org.eclipse.persistence.testing.models.jpa.performance.SmallProject" access="FIELD">
+        <table name="P_SPROJECT"/>
+        <discriminator-value>S</discriminator-value>
+    </entity>
+    <entity name="Project" class="org.eclipse.persistence.testing.models.jpa.performance.Project" access="FIELD">
+        <table name="P_PROJECT"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>P</discriminator-value>
+        <discriminator-column name="PROJ_TYPE"/>
+        <sequence-generator name="PROJ_SEQ" sequence-name="PROJ_SEQ" allocation-size="48"/>
+        <attributes>
+            <id name="id">
+                <column name="PROJ_ID"/>
+                <generated-value strategy="SEQUENCE" generator="PROJ_SEQ"/>
+            </id>
+            <basic name="name">
+                <column name="PROJ_NAME"/>
+            </basic>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="teamLeader" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Employee" fetch="LAZY">
+                <join-column name="LEADER_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    <embeddable class="org.eclipse.persistence.testing.models.jpa.performance.EmploymentPeriod" access="FIELD">
+        <attributes>
+            <basic name="startDate">
+                <column name="START_DATE"/>
+            </basic>
+            <basic name="endDate">
+                <column name="END_DATE"/>
+            </basic>
+        </attributes>
+    </embeddable>
+</entity-mappings>

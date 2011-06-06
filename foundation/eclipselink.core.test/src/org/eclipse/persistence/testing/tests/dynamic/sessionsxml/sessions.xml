@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sessions version="1.0.2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="database-session">
+      <name>dynamic-comics</name>
+      <event-listener-classes/>
+      <session-customizer-class>org.eclipse.persistence.dynamic.DynamicHelper$SessionCustomizer</session-customizer-class>
+      <primary-project xsi:type="xml">dynamic-comics-map.xml</primary-project>
+	  <login xsi:type="database-login" />
+   </session>
+</sessions>

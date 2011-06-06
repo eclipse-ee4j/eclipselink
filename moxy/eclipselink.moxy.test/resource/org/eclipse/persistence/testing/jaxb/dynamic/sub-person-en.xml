@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:person xmlns:ns0="myNamespace">
+   <ns0:name>Marty Friedman</ns0:name>
+</ns0:person>

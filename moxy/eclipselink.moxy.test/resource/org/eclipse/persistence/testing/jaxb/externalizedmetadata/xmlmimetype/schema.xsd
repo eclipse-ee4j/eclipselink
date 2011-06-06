@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="attTypes">
+      <xsd:sequence>
+         <xsd:element name="b" type="xsd:base64Binary" xmlns:ns0="http://www.w3.org/2005/05/xmlmime" ns0:expectedContentTypes="text/plain"/>
+         <xsd:element name="d" type="xsd:base64Binary" minOccurs="0" xmlns:ns1="http://www.w3.org/2005/05/xmlmime" ns1:expectedContentTypes="application/binary"/>
+         <xsd:element name="s" type="xsd:base64Binary" minOccurs="0" xmlns:ns2="http://www.w3.org/2005/05/xmlmime" ns2:expectedContentTypes="text/xml"/>
+         <xsd:element name="i" type="xsd:base64Binary" minOccurs="0" xmlns:ns3="http://www.w3.org/2005/05/xmlmime" ns3:expectedContentTypes="image/jpeg"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="att-types" type="attTypes"/>
+</xsd:schema>

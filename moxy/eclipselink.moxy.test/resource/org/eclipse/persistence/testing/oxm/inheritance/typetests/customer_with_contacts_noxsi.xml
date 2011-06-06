@@ -1,0 +1,12 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<customer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.example.com/toplink-oxm">
+  <contact-method>
+    <id>123</id>
+  </contact-method>
+  <contact-method>
+    <id>456</id>
+  </contact-method>
+  <contact-method>
+    <id>789</id>
+  </contact-method>
+</customer>

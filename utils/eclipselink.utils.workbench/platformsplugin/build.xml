@@ -1,0 +1,164 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="Build Platforms Plug-in" default="build.all" basedir=".">
+    <!-- =================================================================== -->
+    <target name="init">
+        <tstamp>
+            <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+
+        <property name="stop.on.error" value="false"/>
+        <property name="optimize.code"    value="off"/>
+        <property name="report.deprecation" value="off"/>
+        <property name="javac.debug"       value="on"/>
+        <property name="target.jvm"   value="${javac.version}"/>
+        <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>
+        <echo message="java.version='${java.version}'"/>
+        <echo message="os.name='${os.name}'"/>
+        <echo message="os.arch='${os.arch}'"/>
+        <echo message="os.version='${os.version}'"/>
+        <echo message="stop.on.error='${stop.on.error}'"/>
+        <echo message="optimize.code='${optimize.code}'"/>
+        <echo message="report.deprecation='${report.deprecation}'"/>
+        <echo message="target.jvm='${target.jvm}'"/>
+    </target>
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+    <target name="set-release" unless="debug" depends="init">
+        <property name="debug.postfix" value=""/>
+        <property name="javac.debuglevel"     value="lines,source"/>
+        <property name="debug.set"    value="true"/>
+        <echo message="javac.debuglevel='${javac.debuglevel}'"/>
+        <echo message="debug.set='${debug.set}'"/>
+        <echo message="debug.postfix='${debug.postfix}'"/>
+    </target>
+
+    <target name="set-debug" if="debug" depends="set-release">
+        <property name="debug.postfix" value="debug"/>
+        <property name="javac.debuglevel"     value="lines,vars,source"/>
+        <echo message="javac.debuglevel='${javac.debuglevel}'"/>
+        <echo message="debug.set not defined."/>
+        <echo message="debug.postfix='${debug.postfix}'"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+
+    <target name="build-all" depends="compile-platformsplugin, jar-platformsplugin"/>
+
+    <!-- =================================================================== -->
+    <!--  Properties                                                         -->
+    <!-- =================================================================== -->
+    <target name="properties-init" depends="set-debug">
+        <property file="build.properties"/>
+        <property name="build.type" value="SNAPSHOT"/>
+        <property name="release.designation" value="EclipseLink DeveloperBuild"/>
+        <property name="version.string" value="${release.version}.qualifier"/>
+        <mkdir dir="${_classesDestDir}"/>
+        <mkdir dir="${_jarDestDir}"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Clean                                                              -->
+    <!-- =================================================================== -->
+    <target name="clean" depends="set-debug">
+        <property file="build.properties"/>
+
+        <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
+        <delete file="${_jarDestDir}/${platformsplugin.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${platformsplugin.jarfile.src}" quiet="true"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Compile                                                            -->
+    <!-- =================================================================== -->
+    <target name="compile-platformsplugin" depends="properties-init">
+        <mkdir dir="${compile.platformsplugin.destdir}"/>
+        <javac
+            classpath="${compile.platformsplugin.classpath}"
+            srcdir="${compile.platformsplugin.srcdir}"
+            destdir="${compile.platformsplugin.destdir}"
+            debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            failonerror="${stop.on.error}"
+            optimize="${optimize.code}"
+            deprecation="${report.deprecation}"
+            source="${target.jvm}"
+            target="${target.jvm}"
+            includes="**/*.java"
+            excludes="**/*&#35;*/**, **/.ade_path/**"
+        />
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Jar                                                                -->
+    <!-- =================================================================== -->
+    <target name="jar-platformsplugin" depends="jar-platformsplugin-lib, jar-platformsplugin-src"/>
+
+    <target name="jar-platformsplugin-lib" depends="properties-init">
+        <delete file="${_jarDestDir}/${platformsplugin.jarfile}"/>
+        <jar jarfile="${_jarDestDir}/${platformsplugin.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.platformsplugin" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="${_LibraryName}" />
+            </manifest>
+            <fileset
+                dir="${compile.platformsplugin.destdir}"
+                includes="**/*.class"
+            />
+        </jar>
+    </target>
+    <target name="jar-platformsplugin-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${platformsplugin.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${platformsplugin.jarfile.src}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.platformsplugin" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
+            </manifest>
+            <fileset
+                dir="${compile.platformsplugin.srcdir}"
+                includes="**/*.java"
+                excludes="**/*&#35;*/**, **/.ade_path/**"
+            />
+        </jar>
+    </target>
+
+</project>

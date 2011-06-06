@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<ns0:complex-root xmlns:ns0="myQName-NS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attr="ns0:Foo">
+   <ns0:child>ns0:Foo</ns0:child>
+</ns0:complex-root>

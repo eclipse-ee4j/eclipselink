@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<myns:employee xmlns:myns="test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aaa="test" xmlns:oxm="test" ><name>Joe Smith</name></myns:employee>

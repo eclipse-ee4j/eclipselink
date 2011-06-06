@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.6.1
+Created-By: 1.4.2_05-b04 (Sun Microsystems Inc.)
+Specification-Title: TopLink
+Specification-Vendor: Oracle
+Specification-Version: 10.1.3.0.0
+Implementation-Title: org.eclipse.persistence.workbench
+Implementation-Version: 10.1.3.0.0.050921
+Implementation-Vendor: Oracle
+Release-Designation: 10g release 3
+Library-Designation: Workbench
+Main-Class: org.eclipse.persistence.workbench.Main
+ 

@@ -1,0 +1,15 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.logging.logger" value="DefaultLogger"/>
+        </properties>
+    </persistence-unit>
+</persistence>

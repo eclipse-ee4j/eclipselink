@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xml-schema namespace="http://www.example.com/employees" >
+        <xml-ns namespace-uri="http://www.example.com/contacts" prefix="c"/>
+    </xml-schema>
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.Employee" xml-accessor-type="FIELD">
+            <xml-root-element name="employee" />
+            <java-attributes>
+                <xml-element java-attribute="foo" xml-path="." />
+                <xml-element java-attribute="homeAddress" xml-path="info/c:contact-info/home-address" />
+                <xml-element java-attribute="workAddress" xml-path="info/c:contact-info/work-address" />
+                <xml-element java-attribute="alternateAddress" xml-path="info/c:contact-info/alt-address" read-only="true" />
+                <xml-element java-attribute="phone1" xml-path="info/contact-info/phone[1]" />
+                <xml-element java-attribute="phone2" xml-path="info/contact-info/phone[2]" />
+                <xml-element java-attribute="privatePhone" name="private-phone" write-only="true" />
+                <xml-element java-attribute="department" xml-path=".">
+                    <xml-access-methods get-method="getDepartment" set-method="setDepartment" />
+                </xml-element>
+                <xml-element java-attribute="aDept" name="a-dept">
+                    <xml-access-methods get-method="getADept" set-method="setADept" />
+                    <xml-null-policy xsi-nil-represents-null="false" empty-node-represents-null="false" null-representation-for-xml="EMPTY_NODE" is-set-performed-for-absent-node="true" />
+                </xml-element>
+            </java-attributes>
+		</java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.Foo" xml-accessor-type="FIELD">
+            <java-attributes>
+                <xml-attribute java-attribute="foodata">
+                    <!--  foodata will be write only -->
+                    <xml-access-methods get-method="getFoodata" />
+                </xml-attribute>
+            </java-attributes>        
+        </java-type>
+	</java-types>
+</xml-bindings>

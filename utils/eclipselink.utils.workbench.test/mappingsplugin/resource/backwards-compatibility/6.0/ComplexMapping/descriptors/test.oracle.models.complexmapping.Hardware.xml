@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexmapping.Hardware</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexmapping.Hardware</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Hardware</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>Weak</cache-type>
+         <existence-checking>Assume non-existence</existence-checking>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>MAP_HRW</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>distibuted</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Hardware</attribute-declaring-type-name>
+            <attribute-name>distibuted</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>MAP_HRW</column-table-name>
+            <column-name>DIST</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="one-to-one">
+         <name>employee</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Hardware</attribute-declaring-type-name>
+            <attribute-name>employee</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexmapping.Employee</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>MAP_HRW</reference-table-name>
+            <reference-name>MAP_HRW_MAP_EMP</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexmapping.Hardware</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>MAP_HRW</column-table-name>
+            <column-name>ID</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <class-indicator-policy type="relational-field">
+         <indicator-type>
+            <type-handle>
+               <type-name>java.lang.String</type-name>
+            </type-handle>
+         </indicator-type>
+         <class-indicator-values>
+            <class-indicator-value>
+               <indicator>C</indicator>
+               <descriptor-value-handle>
+                  <descriptor-name>test.oracle.models.complexmapping.Computer</descriptor-name>
+               </descriptor-value-handle>
+            </class-indicator-value>
+            <class-indicator-value>
+               <indicator>M</indicator>
+               <descriptor-value-handle>
+                  <descriptor-name>test.oracle.models.complexmapping.Monitor</descriptor-name>
+               </descriptor-value-handle>
+            </class-indicator-value>
+         </class-indicator-values>
+         <column-handle>
+            <column-table-name>MAP_HRW</column-table-name>
+            <column-name>TYPE</column-name>
+         </column-handle>
+      </class-indicator-policy>
+   </inheritance-policy>
+   <after-loading-policy>
+      <post-load-class-handle>
+         <type-name>test.oracle.models.complexmapping.Hardware</type-name>
+      </post-load-class-handle>
+      <post-load-method-handle>
+         <method-declaring-type-name>test.oracle.models.complexmapping.Hardware</method-declaring-type-name>
+         <method-signature>addToDescriptor(org.eclipse.persistence.publicinterface.Descriptor)</method-signature>
+      </post-load-method-handle>
+   </after-loading-policy>
+   <primary-table-handle>
+      <table-name>MAP_HRW</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>MAP_HRW</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>MAP_HRW</column-table-name>
+      <column-name>ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

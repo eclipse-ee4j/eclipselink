@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<employee xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <identifier xsi:type="xsd:float">123.0</identifier>
+    <first-name>Jane</first-name>
+    <last-name>Doe</last-name>
+</employee>

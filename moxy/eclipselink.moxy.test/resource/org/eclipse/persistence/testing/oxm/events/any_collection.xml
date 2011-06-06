@@ -1,0 +1,11 @@
+<employee>
+  <any-collection>
+    <address>
+      <street>2201 Riverside Drive</street>
+    </address>
+    <phone-number>123-4567</phone-number>
+    <address>
+      <street>225 Alvin Road</street>
+    </address>
+  </any-collection>
+</employee>

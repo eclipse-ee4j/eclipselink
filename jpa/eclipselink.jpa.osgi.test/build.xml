@@ -1,0 +1,248 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     etang - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all OSGi tests, packages bundles
+        - compile : compiles all OSGi tests
+        - package : packages bundles
+        - test-jpa-osgi: runs JPA tests
+        - test-core-osgi: runs core tests
+
+        It requires some configuration of the build.properties and test.properties to run.
+        It also requires the following third-party jars available in ../../../extension.lib.external/
+                org.eclipse.osgi_xxx.jar
+    -->
+
+<project name="Eclipse Persistence Services JPA OSGi Testing" default="all" basedir=".">
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property name="eclipselink.jpa.osgi.test" value="."/>
+    <property file="${eclipselink.jpa.osgi.test}/build.properties"/>
+    <property file="${eclipselink.jpa.osgi.test}/local.build.properties"/>
+    <property file="${eclipselink.jpa.osgi.test}/${test.properties}"/>
+    <property file="${eclipselink.jpa.osgi.test}/test.properties"/>
+
+    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <available file="${eclipselink.jpa.osgi.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+
+    <!-- Configures paths for trunk checkout. -->
+    <target name="config-trunk" if="is.trunk">
+        <property name="eclipselink.core.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.core.trunk}"/>
+        <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.core.test.trunk}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.plugins.trunk}"/>
+        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.extension.oracle.trunk}"/>
+        <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.extension.oracle.test.trunk}"/>
+        <property name="eclipselink.plugins.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.plugins.trunk}"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+    </target>
+
+    <!-- Configures paths for Eclipse project checkout. -->
+    <target name="config-flat" unless="is.trunk">
+        <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
+        <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
+        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.extension.oracle}"/>
+        <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
+        <property name="eclipselink.plugins.dir" value="${eclipselink.plugins}"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+    </target>
+
+    <target name="config-compile-path">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${eclipselink.jar}"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.plugins}/${asm}"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <fileset
+                dir="${equinox.depend.dir}"
+                includes="org.eclipse.osgi_*.jar"/>
+        </path>
+    </target>
+
+    <!-- Default ant target, compiles and packages test jars, does not run tests. -->
+    <target name="all" depends="clean, init, compile, package" description="build EclipseLink JPA testing jars"/>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.osgi.test}/${classes.dir}"/>
+            <fileset dir="${eclipselink.jpa.osgi.test}/${build.dir}"/>
+            <fileset file="${eclipselink.jpa.osgi.test}/${jpa.osgi}.jar"/>
+        </delete>
+    </target>
+
+    <!-- Creates required directories for building. -->
+    <target name="init">
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${classes.dir}"/>
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}"/>
+    </target>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="init, config-trunk, config-flat, repackage" description="compile EclipseLink testing">
+        <javac srcdir="${eclipselink.jpa.osgi.test}/${src.dir}"
+               destdir="${eclipselink.jpa.osgi.test}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/**"/>
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Packages test bundles. -->
+    <target name="package" depends="compile">
+        <copy todir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}/META-INF">
+            <fileset dir="${eclipselink.jpa.osgi.test}/resource/META-INF" includes="**"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}">
+            <fileset dir="${eclipselink.jpa.osgi.test}/${classes.dir}">
+                <include name="org/eclipse/persistence/testing/**"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.test}" includes="eclipselink-advanced-field-access-model.jar,eclipselink-tests.jar"/>
+            <fileset file="${junit.lib}"/>
+            <fileset file="${jdbc.driver.jar}"/>
+        </copy>
+        <copy file="${eclipselink.core.test.dir}/eclipselink-tests.jar" toFile="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}/core-tests.jar"/>
+        <jar jarfile="${eclipselink.jpa.osgi.test}/${jpa.osgi}.jar" manifest="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}/META-INF/MANIFEST.MF">
+            <fileset dir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}"/>
+            <fileset dir="${ant.home}/lib" includes="ant-junit.jar,ant.jar"/>
+        </jar>
+    </target>
+
+    <!-- Copy jars and create osgi run config in run dir -->
+    <target name="clean-run" description="Clean the run" depends="config-trunk, config-flat">
+        <delete dir="${eclipselink.jpa.osgi.test}/${run.dir}"/>
+        <delete dir="${eclipselink.jpa.osgi.test}/${report.dir}"/>
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}/configuration"/>
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins"/>
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${report.dir}"/>
+        <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/configuration">
+            <fileset file="${eclipselink.jpa.osgi.test}/${resource.dir}/config.ini"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins">
+            <fileset file="${equinox.depend.dir}/org.eclipse.*.jar"/>
+            <fileset dir="${eclipselink.plugins.dir}">
+                    <include name="org.eclipse.persistence.jpa_*"/>
+                    <include name="org.eclipse.persistence.core_*"/>
+                    <include name="org.eclipse.persistence.asm_*"/>
+                    <include name="org.eclipse.persistence.antlr_*"/>
+                    <include name="org.eclipse.persistence.jpa.equinox_*"/>
+                    <include name="org.eclipse.persistence.jpa.equinox.weaving_*"/>
+                    <include name="org.eclipse.persistence.jpa.osgi_*"/>
+                    <include name="org.eclipse.persistence.oracle_*"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.osgi.test}/../plugins">
+                    <include name="javax.persistence_*"/>
+            </fileset>
+            <fileset file="${eclipselink.jpa.osgi.test}/${jpa.osgi}.jar"/>
+        </copy>
+
+    <!-- copy DB related files -->
+        <mkdir dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0"/>
+        <copy todir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0">
+            <fileset dir="${eclipselink.targets.dir}">
+            <include name="META-INF/MANIFEST.MF"/>
+            </fileset>
+        <fileset dir="${oracle.extensions.depend.dir}" includes="${oracle.libs.jars}"/>
+        </copy>
+        <replace file="${eclipselink.jpa.osgi.test}/${run.dir}/plugins/oracle.libs_1.0/META-INF/MANIFEST.MF"
+                 token="ojdbc5.jar" value="${jdbc.driver.jar.name}"/>
+
+    </target>
+
+    <!-- Repackages JPA persistent unit test jars. -->
+    <target name="repackage">
+        <ant antfile="${eclipselink.jpa.test}/build.xml" dir="${eclipselink.jpa.test}" target="package-jpa-advanced-field-access">
+            <property name="is.osgi" value="true"/>
+        </ant>
+    </target>
+
+    <target name="run-test">
+        <echo>Running test on ${db.url}</echo>
+
+        <fileset dir="${eclipselink.jpa.osgi.test}/${run.dir}/plugins"
+                id="equinox.launcher.jar.path"
+                includes="org.eclipse.equinox.launcher_*.jar"/>
+        <pathconvert refid="equinox.launcher.jar.path" property="equinox.launcher.jar"/>
+        <dirname property="report.dirname" file="${eclipselink.jpa.osgi.test}/${report.dir}/${test.class}-test-results"/>
+        <java jar="${equinox.launcher.jar}"
+                 fork="true"
+                 maxmemory="512m"
+                 failonerror="false"
+                 dir="${eclipselink.jpa.osgi.test}/${run.dir}">
+                <arg value="-console -clean"/>
+                <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+                <jvmarg value="-Ddb.driver=${db.driver}"/>
+                <jvmarg value="-Ddb.url=${db.url}"/>
+                <jvmarg value="-Ddb.user=${db.user}"/>
+                <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+                <jvmarg value="-Ddb.platform=${db.platform}"/>
+                <jvmarg value="-DTEST_CLASS=${test.class}"/>
+                <jvmarg value="-DREPORT_FILE=${report.dirname}/${test.class}-test-results.xml"/>
+                <jvmarg value="${test.weaving}"/>
+                <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
+        </java>
+    </target>
+
+    <target name="test-osgi-srg" depends="clean-run">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="test.class" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.OSGiTestSuite"/>
+        </antcall>
+        <junitreport todir="${eclipselink.jpa.osgi.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.osgi.test}/${report.dir}">
+                <include name="*test-results.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.jpa.osgi.test}/${report.dir}"/>
+        </junitreport>
+    </target>
+
+</project>

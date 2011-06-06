@@ -1,0 +1,10 @@
+<root>
+    <dataHandler>IGNORE</dataHandler>
+    <image>IGNORE</image>
+    <source>IGNORE</source>
+    <mimeMultipart>IGNORE</mimeMultipart>
+    <dataHandlerList>IGNORE</dataHandlerList>
+    <imageList>IGNORE</imageList>
+    <sourceList>IGNORE</sourceList>
+    <mimeMultipartList>IGNORE</mimeMultipartList>
+</root>
