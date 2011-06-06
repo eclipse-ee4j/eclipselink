@@ -181,7 +181,6 @@ public abstract class JUnitTestCase extends TestCase {
      * container.
      */
     public static boolean isJPA10() {
-    public static boolean isJPA10() {
         String property =System.getProperty("RUN_JPA20_TEST");
         if (property != null && property.toUpperCase().equals("TRUE")) {
             return false;
