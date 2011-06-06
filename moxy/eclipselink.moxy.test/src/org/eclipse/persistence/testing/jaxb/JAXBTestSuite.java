@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCa
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
+import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.XmlIdRefsTestCases;
@@ -131,6 +132,7 @@ public class JAXBTestSuite extends TestCase {
 
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.InterfaceTestCases.class);
 
+        suite.addTestSuite(LazyInitTestCases.class);
         return suite;
     }
 

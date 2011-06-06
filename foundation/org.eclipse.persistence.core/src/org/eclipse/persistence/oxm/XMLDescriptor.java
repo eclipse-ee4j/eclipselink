@@ -635,8 +635,12 @@ public class XMLDescriptor extends ClassDescriptor {
         if (hasReturningPolicy()) {
             getReturningPolicy().initialize(session);
         }
-        getEventManager().initialize(session);
-        getCopyPolicy().initialize(session);
+        if(eventManager != null) {
+            eventManager.initialize(session);
+        }
+        if(copyPolicy != null) {
+            copyPolicy.initialize(session);
+        }
         getInstantiationPolicy().initialize(session);
         if (getSchemaReference() != null) {
             getSchemaReference().initialize(session);
