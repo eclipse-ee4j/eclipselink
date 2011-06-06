@@ -2590,7 +2590,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public boolean hasDerivedId() {
         return ! derivesIdMappings.isEmpty();
     }
-    
+
+    /**
+     * INTERNAL:
+     * returns true if a DescriptorEventManager has been set.
+     */ 
+    public boolean hasEventManager() {
+        return null != eventManager;
+    }
+
     /**
      * INTERNAL:
      * Return if this descriptor is involved in inheritance, (is child or parent).

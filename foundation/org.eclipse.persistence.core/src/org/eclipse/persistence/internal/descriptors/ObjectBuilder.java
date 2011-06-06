@@ -346,23 +346,26 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // PERF: Avoid events if no listeners.
-        if (this.descriptor.getEventManager().hasAnyEventListeners()) {
-            // Need to run post build or refresh selector, currently check with the query for this,
-            // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
-            org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(domainObject);
-            event.setQuery(query);
-            event.setSession(query.getSession());
-            event.setRecord(databaseRow);
-            if (forRefresh) {
-                //this method can be called from different places within TopLink.  We may be
-                //executing refresh query but building the object not refreshing so we must
-                //throw the appropriate event.
-                //bug 3325315
-                event.setEventCode(DescriptorEventManager.PostRefreshEvent);
-            } else {
-                event.setEventCode(DescriptorEventManager.PostBuildEvent);
+        if (this.descriptor.hasEventManager()) {
+            DescriptorEventManager descriptorEventManager = this.descriptor.getDescriptorEventManager();
+            if(descriptorEventManager.hasAnyEventListeners()) {
+                // Need to run post build or refresh selector, currently check with the query for this,
+                // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
+                org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(domainObject);
+                event.setQuery(query);
+                event.setSession(query.getSession());
+                event.setRecord(databaseRow);
+                if (forRefresh) {
+                    //this method can be called from different places within TopLink.  We may be
+                    //executing refresh query but building the object not refreshing so we must
+                    //throw the appropriate event.
+                    //bug 3325315
+                    event.setEventCode(DescriptorEventManager.PostRefreshEvent);
+                } else {
+                    event.setEventCode(DescriptorEventManager.PostBuildEvent);
+                }
+                descriptorEventManager.executeEvent(event);
             }
-            this.descriptor.getEventManager().executeEvent(event);
         }
     }
 

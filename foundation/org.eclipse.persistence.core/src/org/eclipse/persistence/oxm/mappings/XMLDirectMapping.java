@@ -406,7 +406,12 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     public void setIsWriteOnly(boolean b) {
         this.isWriteOnly = b;
     }
-    
+
+    @Override
+    public boolean isCloningRequired() {
+        return false;
+    }
+
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
