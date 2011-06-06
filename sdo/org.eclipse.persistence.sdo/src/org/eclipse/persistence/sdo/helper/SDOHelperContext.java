@@ -102,6 +102,7 @@ public class SDOHelperContext implements HelperContext {
     private static final int COUNTER_LIMIT = 20;
 
     // For WebLogic
+    private static ApplicationAccessWLS applicationAccessWLS = null;
     private static MBeanServer wlsMBeanServer = null;
     private static ObjectName wlsThreadPoolRuntime = null;
     private static final String WLS_ENV_CONTEXT_LOOKUP = "java:comp/env/jmx/runtime";
@@ -621,7 +622,14 @@ public class SDOHelperContext implements HelperContext {
         }
         // Helper contexts in WebLogic server will be keyed on application name if available
         if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
-            Object appName = null;
+            if(null == applicationAccessWLS) {
+                applicationAccessWLS = new ApplicationAccessWLS();
+            }
+            Object appName = applicationAccessWLS.getApplicationName(classLoader);
+            if (appName != null) {
+                return new MapKeyLookupResult(appName.toString(), classLoader);
+            }
+
             Object executeThread = getExecuteThread();
             if (executeThread != null) {
                 try {
@@ -1225,4 +1233,39 @@ public class SDOHelperContext implements HelperContext {
     public Object getProperty(String name) {
         return getProperties().get(name);
     }
+
+    private static class ApplicationAccessWLS {
+
+        private static final String APPLICATION_ACCESS_CLASS_NAME = "weblogic.application.ApplicationAccess";
+        private static final String GET_APPLICATION_ACCESS_METHOD_NAME = "getApplicationAccess";
+        private static final String GET_APPLICATION_NAME_METHOD_NAME = "getApplicationName";
+
+        private Object applicationAccessInstance;
+        private Method getApplicationNameMethod;
+
+        public ApplicationAccessWLS() {
+            try {
+                Class applicationAccessClass = PrivilegedAccessHelper.getClassForName(APPLICATION_ACCESS_CLASS_NAME);
+                Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, GET_APPLICATION_ACCESS_METHOD_NAME, new Class[] {});
+                applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
+                Class [] methodParameterTypes = new Class[] {ClassLoader.class};
+                getApplicationNameMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, GET_APPLICATION_NAME_METHOD_NAME, methodParameterTypes, true);
+            } catch(Exception e) {
+            }
+        }
+
+        public String getApplicationName(ClassLoader classLoader) {
+            if(null == getApplicationNameMethod) {
+                return null;
+            }
+            try {
+                Object[] parameters = new Object[] {classLoader};
+                return (String) PrivilegedAccessHelper.invokeMethod(getApplicationNameMethod, applicationAccessInstance, parameters);
+            } catch(Exception e) {
+                return null;
+            }
+        }
+
+    }
+
 }
