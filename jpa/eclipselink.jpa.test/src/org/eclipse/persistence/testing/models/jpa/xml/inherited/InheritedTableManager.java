@@ -21,6 +21,8 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     02/18/2010-2.0.2 Guy Pelletier 
  *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
+ *     06/03/2011-2.3.1 Guy Pelletier 
+ *       - 347563: transient field/property in embeddable entity 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
@@ -37,6 +39,7 @@ public class InheritedTableManager extends TableCreator {
         setName("EJB3BeerProject");
 
         addTableDefinition(build_BEER_CONSUMER_Table());
+        addTableDefinition(build_BEER_CONSUMER_REDSTRIPES_Table());
         
         addTableDefinition(build_EXPERT_BEER_CONSUMER_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
@@ -251,6 +254,44 @@ public class InheritedTableManager extends TableCreator {
         DTYPE_field.setUnique(false);
         DTYPE_field.setShouldAllowNull(true);
         table.addField(DTYPE_field);
+
+        return table;
+    }
+    
+    public static TableDefinition build_BEER_CONSUMER_REDSTRIPES_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_CONSUMER_REDSTRIPES");
+    
+        FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
+        ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
+        ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
+        ALCOHOL_CONTENT_field.setSize(15);
+        ALCOHOL_CONTENT_field.setIsPrimaryKey(false);
+        ALCOHOL_CONTENT_field.setUnique(false);
+        ALCOHOL_CONTENT_field.setIsIdentity(false);
+        ALCOHOL_CONTENT_field.setShouldAllowNull(true);
+        table.addField(ALCOHOL_CONTENT_field);
+        
+        FieldDefinition RS_KEY_field = new FieldDefinition();
+        RS_KEY_field.setName("RS_KEY");
+        RS_KEY_field.setTypeName("VARCHAR");
+        RS_KEY_field.setSize(10);
+        RS_KEY_field.setShouldAllowNull(false);
+        RS_KEY_field.setIsPrimaryKey(false);
+        RS_KEY_field.setUnique(true);
+        RS_KEY_field.setIsIdentity(false);
+        table.addField(RS_KEY_field);
+        
+        FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
+        BEER_CONSUMER_ID_field.setName("C_ID");
+        BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
+        BEER_CONSUMER_ID_field.setSize(15);
+        BEER_CONSUMER_ID_field.setIsPrimaryKey(false);
+        BEER_CONSUMER_ID_field.setUnique(false);
+        BEER_CONSUMER_ID_field.setIsIdentity(false);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_XML_CONSUMER.ID");
+        table.addField(BEER_CONSUMER_ID_field);
 
         return table;
     }

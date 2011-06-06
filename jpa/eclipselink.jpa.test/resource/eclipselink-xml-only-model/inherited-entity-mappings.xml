@@ -163,6 +163,12 @@
                     <cascade-all/>
                 </cascade>
             </one-to-many>
+            <element-collection name="redStripeBeersToConsume">
+                <map-key-column name="RS_KEY"/>
+                <collection-table name="XML_CONSUMER_REDSTRIPES">
+                    <join-column name="C_ID" referenced-column-name="ID"/>
+                </collection-table>
+            </element-collection>
             <transient name="foo"/>
         </attributes>
     </entity>
@@ -399,6 +405,11 @@
                     <cascade-persist/>
                 </cascade>
             </many-to-one>
+        </attributes>
+    </embeddable>
+    <embeddable class="RedStripe">
+        <attributes>
+            <transient name="transientString"/>
         </attributes>
     </embeddable>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.inherited.CoronaTag" access="PROPERTY">
