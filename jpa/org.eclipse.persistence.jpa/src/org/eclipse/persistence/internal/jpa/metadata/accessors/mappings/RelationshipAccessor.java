@@ -456,7 +456,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // to extract this information and process correctly. When a type is 
         // unknown, the reference class name currently defaults to java.lang.string.
         // @see MetadataAnnotatedElement getRawClass(MetadataDescriptor)
-        if (getDescriptor().isMappedSuperclass() && getReferenceClassName().equals(MetadataAnnotatedElement.DEFAULT_RAW_CLASS)) {
+        if (getDescriptor().isMappedSuperclass() && getReferenceClassName().equals(MetadataAnnotatedElement.DEFAULT_RAW_CLASS) || getReferenceClass().isVoid()) {
             MappingAccessor childMappingAccessor = getDescriptor().getMetamodelMappedSuperclassChildDescriptor().getMappingAccessor(getAttributeName());
             referenceDescriptor = childMappingAccessor.getReferenceDescriptor();
             

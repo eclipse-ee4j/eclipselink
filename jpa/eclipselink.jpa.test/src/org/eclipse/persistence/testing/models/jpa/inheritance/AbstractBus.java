@@ -12,15 +12,33 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AbstractBus extends FueledVehicle {
+public abstract class AbstractBus<I> extends FueledVehicle {
     public static int PRE_PERSIST_COUNT = 0;
 
-	@PrePersist
-	private void prePersist() {
+    protected Collection<I> tires = new ArrayList<I>();
+    
+    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    public Collection<I> getTires() {
+        return tires;
+    }
+
+    @PrePersist
+    private void prePersist() {
         PRE_PERSIST_COUNT++;
-	}
+    }
+
+    public void setTires(Collection<I> tires) {
+        this.tires = tires;
+    }
+
 }

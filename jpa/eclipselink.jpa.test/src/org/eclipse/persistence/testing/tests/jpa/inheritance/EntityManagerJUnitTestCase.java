@@ -15,8 +15,10 @@ package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
+import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SeniorEngineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
@@ -205,5 +207,30 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
+    }
+    
+    // Bug 
+    public void testGenericCollectionOnSuperclass(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Bus bus = new Bus();
+            bus.setDescription("a fast bus");
+            PerformanceTireInfo tire = new PerformanceTireInfo();
+            tire.setPressure(100);
+            bus.getTires().add(tire);
+            em.persist(bus);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+            
+            bus = em.find(Bus.class, bus.getId());
+            assertNotNull("Bus is null.", bus);
+            assertTrue("Bus has no tires.", bus.getTires().size() == 1);
+        } finally {
+            rollbackTransaction(em);
+        }
+        
     }
 }

@@ -33,6 +33,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         addTableDefinition(buildBICYCLETable());
         addTableDefinition(buildBOATTable());
+        addTableDefinition(buildBUS_TIRETable());
         addTableDefinition(buildBUSTable());
         addTableDefinition(buildCOMPANYTable());
         addTableDefinition(buildFUEL_VEHTable());
@@ -219,6 +220,37 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public TableDefinition buildBUS_TIRETable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_BUS_CMP3_TIRE");
+        
+        FieldDefinition fieldBusID = new FieldDefinition();
+        fieldBusID.setName("Bus_ID");
+        fieldBusID.setTypeName("NUMBER");
+        fieldBusID.setSize(15);
+        fieldBusID.setSubSize(0);
+        fieldBusID.setIsPrimaryKey(true);
+        fieldBusID.setIsIdentity(false);
+        fieldBusID.setUnique(false);
+        fieldBusID.setShouldAllowNull(false);
+        fieldBusID.setForeignKeyFieldName("CMP3_BUS.BUS_ID");
+        table.addField(fieldBusID);
+        
+        FieldDefinition fieldTireID = new FieldDefinition();
+        fieldTireID.setName("tires_ID");
+        fieldTireID.setTypeName("NUMBER");
+        fieldTireID.setSize(15);
+        fieldTireID.setSubSize(0);
+        fieldTireID.setIsPrimaryKey(true);
+        fieldTireID.setIsIdentity(false);
+        fieldTireID.setUnique(false);
+        fieldTireID.setShouldAllowNull(false);
+        fieldTireID.setForeignKeyFieldName("CMP3_TIRE.ID");
+        table.addField(fieldTireID);
+        
+        return table;
+    }
+    
     public TableDefinition buildBUSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BUS");
