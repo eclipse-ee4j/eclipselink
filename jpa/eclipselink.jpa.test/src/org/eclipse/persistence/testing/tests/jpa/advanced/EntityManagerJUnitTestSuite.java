@@ -11173,8 +11173,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp = em.find(Employee.class, emp.getId());
             project = em.find(SmallProject.class, project.getId());
             
-            assertTrue(emp.getProjects().size() == 1);
-            assertTrue(project.getTeamMembers().size() == 1);
+            assertTrue("Employee projects were not the correct size", emp.getProjects().size() == 1);
+            assertTrue("Project did not have the correct number of team members", project.getTeamMembers().size() == 1);
+
         } finally {
             rollbackTransaction(em);
         }
