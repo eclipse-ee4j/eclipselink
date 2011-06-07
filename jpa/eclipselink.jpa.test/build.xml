@@ -3189,7 +3189,7 @@
         </antcall>
     </target>
 
-    <target name="server-test-xml-mergeinherited">
+    <target name="server-test-xml-mergeinherited" depends="cleanup-merge-inherited-ddl">
         <copy todir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"  overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model" includes="merge-*.xml"/>
         </copy>
