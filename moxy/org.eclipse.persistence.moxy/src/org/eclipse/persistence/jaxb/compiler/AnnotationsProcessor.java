@@ -213,6 +213,8 @@ public class AnnotationsProcessor {
     private boolean isDefaultNamespaceAllowed;
 
     private boolean hasSwaRef;
+    
+    private List<String> referencedByTransformer;
 
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
@@ -414,6 +416,7 @@ public class AnnotationsProcessor {
      */
     void init(JavaClass[] classes, TypeMappingInfo[] typeMappingInfos) {
         typeInfoClasses = new ArrayList<JavaClass>();
+        referencedByTransformer = new ArrayList<String>();
         typeInfo = new HashMap<String, TypeInfo>();
         typeQNames = new ArrayList<QName>();
         objectFactoryClassNames = new ArrayList<String>();
@@ -722,7 +725,9 @@ public class AnnotationsProcessor {
                         if (tInfo.isSetXmlJavaTypeAdapter()) {
                             tInfo.setTransient(true);
                         } else {
-                            throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
+                        	if(!referencedByTransformer.contains(jClass.getName())){
+                        		throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
+                        	}
                         }
                     }
                 }
@@ -1745,6 +1750,9 @@ public class AnnotationsProcessor {
             }
         }
 
+        if(property.isXmlTransformation()){
+        	referencedByTransformer.add(property.getType().getName());
+        }
         return property;
     }
 
@@ -4185,5 +4193,9 @@ public class AnnotationsProcessor {
 
     public void setHasSwaRef(boolean swaRef) {
         this.hasSwaRef = swaRef;
+    }
+    
+    public List getReferencedByTransformer(){
+    	return referencedByTransformer;
     }
 }

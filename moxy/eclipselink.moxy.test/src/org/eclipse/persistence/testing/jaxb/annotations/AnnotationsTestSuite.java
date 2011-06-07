@@ -21,6 +21,8 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.Predic
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.XmlPathsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.override.XmlPathsOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlproperty.XmlPropertyTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XMLTransformationNoArgCtorTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XMLTransformationNoArgCtorXMLBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationMethodTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationTestCases;
 
@@ -53,6 +55,8 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(XmlClassExtractorTestCases.class);
         suite.addTestSuite(XmlPropertyTestCases.class);
         suite.addTestSuite(XmlTransformationTestCases.class);
+        suite.addTestSuite(XMLTransformationNoArgCtorTestCases.class);
+        suite.addTestSuite(XMLTransformationNoArgCtorXMLBindingsTestCases.class);
         suite.addTestSuite(XmlTransformationMethodTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty.ContainerPropertyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.PropertyTypeTestCases.class);
