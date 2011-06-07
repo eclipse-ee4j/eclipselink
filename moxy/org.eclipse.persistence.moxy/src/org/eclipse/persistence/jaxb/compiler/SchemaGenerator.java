@@ -1590,7 +1590,7 @@ public class SchemaGenerator {
      * @param compositor the sequence/choice/all to modify
      */
     private void addAnyToSchema(Property property, TypeDefParticle compositor) {
-        addAnyToSchema(property, compositor, isCollectionType(property), XMLConstants.ANY_NAMESPACE_OTHER);
+        addAnyToSchema(property, compositor, isCollectionType(property)|| property.getType().isArray(), XMLConstants.ANY_NAMESPACE_OTHER);
     }
 
     /**

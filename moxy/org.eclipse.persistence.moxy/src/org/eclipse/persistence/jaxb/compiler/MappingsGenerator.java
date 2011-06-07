@@ -439,7 +439,7 @@ public class MappingsGenerator {
             return generateInverseReferenceMapping(property, descriptor, namespaceInfo);
         } 
         if (property.isAny()) {
-            if (isCollectionType(property)){
+            if (isCollectionType(property) || property.getType().isArray()){
                 return generateAnyCollectionMapping(property, descriptor, namespaceInfo, property.isMixedContent());
             }
             return generateAnyObjectMapping(property, descriptor, namespaceInfo);
@@ -466,7 +466,13 @@ public class MappingsGenerator {
             if (reference != null && reference.isEnumerationType()) {
                 return generateEnumCollectionMapping(property,  descriptor, namespaceInfo,(EnumTypeInfo) reference);
             }            
-            if (reference != null || componentType.isArray()){
+            if (areEquals(componentType, Object.class)){
+                XMLCompositeCollectionMapping mapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
+                mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                return mapping;
+            }
+            
+            if (reference != null ||  componentType.isArray()){
                 return generateCompositeCollectionMapping(property, descriptor, namespaceInfo, componentType.getQualifiedName());
             }
             return generateDirectCollectionMapping(property, descriptor, namespaceInfo);
@@ -930,7 +936,23 @@ public class MappingsGenerator {
         mapping.setUseXMLRoot(true);
 
         JavaClass collectionType = property.getType();
-        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+        if (collectionType.isArray()){
+            JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
+            JavaClass componentType = collectionType.getComponentType();
+            if(componentType.isArray()) {
+                JavaClass baseComponentType = getBaseComponentType(componentType);
+                if (baseComponentType.isPrimitive()){
+                    Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
+                    accessor.setComponentClass(primitiveClass);
+                } else {
+                    accessor.setComponentClassName(baseComponentType.getName());
+                }
+            } else {
+                accessor.setComponentClassName(componentType.getName());
+            }
+            mapping.setAttributeAccessor(accessor);
+            collectionType = jotArrayList;
+        } else if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;

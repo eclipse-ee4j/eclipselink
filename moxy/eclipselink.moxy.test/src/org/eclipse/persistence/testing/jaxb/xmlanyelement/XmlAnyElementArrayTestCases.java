@@ -24,28 +24,27 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class XmlAnyElementTestCases extends JAXBTestCases {
+public class XmlAnyElementArrayTestCases extends JAXBTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xml";
     private final static String XML_CHILD_ELEMENTS = "org/eclipse/persistence/testing/jaxb/xmlanyelement/child_elements_all.xml";
 
-    public XmlAnyElementTestCases(String name) throws Exception {
+    public XmlAnyElementArrayTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
         Class[] classes = new Class[2];
-        classes[0] = Employee.class;
+        classes[0] = EmployeeArray.class;
         classes[1] = Address.class;
         setClasses(classes);
     }
 
     protected Object getControlObject() {
-        Employee employee = new Employee();
+    	EmployeeArray employee = new EmployeeArray();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
         employee.homeAddress.city = "Ottawa";
         employee.homeAddress.country = "Canada";
 
-        employee.elements = new ArrayList();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setIgnoringElementContentWhitespace(true);
@@ -54,18 +53,22 @@ public class XmlAnyElementTestCases extends JAXBTestCases {
             Document doc = builder.parse(getClass().getClassLoader().getResourceAsStream(XML_CHILD_ELEMENTS));
             Element rootElem = doc.getDocumentElement();
             NodeList children = rootElem.getChildNodes();
+
+            List elements = new ArrayList();
+            int j=0;
             for(int i = 0; i < children.getLength(); i++) {
                 if(children.item(i).getNodeType() == Element.ELEMENT_NODE) {
-                    employee.elements.add(children.item(i));
+                	elements.add(children.item(i));
                 }
             }
+            employee.elements = elements.toArray();
         } catch(Exception ex) {}
 
 
         return employee;
     }
     
-	public void testSchemaGen() throws Exception{
+    public void testSchemaGen() throws Exception{
 		InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xsd");		
     	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
     	controlSchemas.add(controlInputStream);		
