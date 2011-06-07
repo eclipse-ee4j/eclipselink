@@ -1060,7 +1060,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
                     commitTransaction(em);
                 }catch (RuntimeException ex){
-                    rollbackTransaction(em);
+                    if (isTransactionActive(em)) {
+                        rollbackTransaction(em);
+                    }
                     throw ex;
                 }
             }
