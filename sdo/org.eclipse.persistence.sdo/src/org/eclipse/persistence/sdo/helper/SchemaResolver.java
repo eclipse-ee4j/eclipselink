@@ -33,7 +33,8 @@ public interface SchemaResolver extends EntityResolver {
      * @param sourceXSD The Source object of the source schema
      * @param namespace The namespace portion of the import/include
      * @param schemaLocation The schemaLocation portion of the import/include
-     * @return Source for the referenced Schema or null if processing the referenced schema should be skipped
+     * @return Source for the referenced Schema or null if processing the referenced schema should be skipped.  If this method
+     * throws an exception, processing will stop.
      */
     public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation);
 }

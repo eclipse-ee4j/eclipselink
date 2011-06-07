@@ -2183,45 +2183,42 @@ public class SDOTypesGenerator {
      * @return
      */
     public Schema getSchema(Source xsdSource, SchemaResolverWrapper schemaResolverWrapper) {
-        try {
-            xsdSource = schemaResolverWrapper.resolveSchema(xsdSource);
+      
+       xsdSource = schemaResolverWrapper.resolveSchema(xsdSource);
 
-            XMLContext context = new XMLContext(getSchemaProject());
-            XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-            unmarshaller.setEntityResolver(schemaResolverWrapper.getSchemaResolver());
+       XMLContext context = new XMLContext(getSchemaProject());
+       XMLUnmarshaller unmarshaller = context.createUnmarshaller();
+       unmarshaller.setEntityResolver(schemaResolverWrapper.getSchemaResolver());
 
-            Schema schema = (Schema) unmarshaller.unmarshal(xsdSource);
-            //populate Imports
-            java.util.List imports = schema.getImports();
-            Iterator iter = imports.iterator();
-            while (iter.hasNext()) {
-                Import nextImport = (Import) iter.next();
+       Schema schema = (Schema) unmarshaller.unmarshal(xsdSource);
 
-                Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolverWrapper);
-                if (referencedSchema != null) {
-                    Schema importedSchema = getSchema(referencedSchema, schemaResolverWrapper);
-                    nextImport.setSchema(importedSchema);
-                }
+       //populate Imports
+       java.util.List imports = schema.getImports();
+       Iterator iter = imports.iterator();
+       while (iter.hasNext()) {
+           Import nextImport = (Import) iter.next();
+
+           Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolverWrapper);
+           if (referencedSchema != null) {
+               Schema importedSchema = getSchema(referencedSchema, schemaResolverWrapper);
+               nextImport.setSchema(importedSchema);
             }
+       }
 
-            //populate includes
-            java.util.List includes = schema.getIncludes();
-            Iterator includesIter = includes.iterator();
-            while (includesIter.hasNext()) {
-                Include nextInclude = (Include) includesIter.next();
+       //populate includes
+       java.util.List includes = schema.getIncludes();
+       Iterator includesIter = includes.iterator();
+       while (includesIter.hasNext()) {
+            Include nextInclude = (Include) includesIter.next();
 
-                Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolverWrapper);
-                if (referencedSchema != null) {
-                    Schema includedSchema = getSchema(referencedSchema, schemaResolverWrapper);
-                    nextInclude.setSchema(includedSchema);
-                }
+            Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolverWrapper);
+            if (referencedSchema != null) {
+                Schema includedSchema = getSchema(referencedSchema, schemaResolverWrapper);
+                nextInclude.setSchema(includedSchema);
             }
-            return schema;
-        } catch (Exception e) {
-            //Error processing Import/Include
-            e.printStackTrace();
-            return null;
         }
+        return schema;
+
     }
 
     private Source getReferencedSchema(Source xsdSource, String namespace, String schemaLocation, SchemaResolverWrapper schemaResolverWrapper) {

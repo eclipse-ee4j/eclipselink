@@ -108,7 +108,7 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
             String invalidURLFile = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportsWithNamespacesError.xsd";
             InputStream is = getSchemaInputStream(invalidURLFile);
             List types = xsdHelper.define(is, getSchemaLocation());
-        } catch(org.eclipse.persistence.exceptions.SDOException ex) {
+        } catch(Exception ex) {
             //dont do anything ... just for code coverage to hit this warning
         }
     }
