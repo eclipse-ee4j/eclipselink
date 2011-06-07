@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
@@ -75,6 +76,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+    private static SAXParserFactory SHARED_PARSER_FACTORY;
     private int validationMode;
     private Object[] schemas;
     private SAXParser saxParser;
@@ -84,20 +86,15 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private boolean isResultAlwaysXMLRoot;
     private SAXParserFactory saxParserFactory;
 
+    static {
+        SHARED_PARSER_FACTORY = createSAXParserFactory();        
+    }
+    
     public SAXUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) throws XMLMarshalException {
         super();
         try {
-            saxParserFactory = SAXParserFactory.newInstance();
-            saxParserFactory.setNamespaceAware(true);
-            saxParserFactory.setFeature(XMLReader.NAMESPACE_PREFIXES_FEATURE, true);
-            try {
-                saxParserFactory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);
-            } catch(org.xml.sax.SAXNotRecognizedException ex) {
-                //ignore if the parser doesn't recognize or support this feature
-            } catch(org.xml.sax.SAXNotSupportedException ex) {
-            }
-            
             if(null != parserFeatures) {
+                saxParserFactory = createSAXParserFactory();
             	for(Map.Entry<String, Boolean> parserFeature : parserFeatures.entrySet()) {
                     try {
                         saxParserFactory.setFeature(parserFeature.getKey(), parserFeature.getValue());
@@ -108,7 +105,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 }
             }
 
-            saxParser = saxParserFactory.newSAXParser();
+            saxParser = getSAXParserFactory().newSAXParser();
 
             xmlReader = new XMLReader(saxParser.getXMLReader());
             xmlReader.setErrorHandler(new DefaultErrorHandler());
@@ -183,6 +180,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public void setSchema(Schema schema) {
         xmlParser.setXMLSchema(schema);
+        if(saxParserFactory == null) {
+            saxParserFactory = createSAXParserFactory();
+        }
         saxParserFactory.setSchema(schema);
         try {
             saxParser = saxParserFactory.newSAXParser();
@@ -777,7 +777,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private void setValidatorHandler(XMLReader xmlReader) {
         Schema schema = null;
         try {
-            schema = saxParserFactory.getSchema();
+            schema = getSAXParserFactory().getSchema();
         } catch (UnsupportedOperationException e) {
             // Oracle XDK does not support getSchema()
         }
@@ -787,7 +787,27 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             xmlReader.setValidatorHandler(validatorHandler);
             validatorHandler.setErrorHandler(getErrorHandler());
         }
+    }
+    
+    public SAXParserFactory getSAXParserFactory() {
+        if(this.saxParserFactory == null) {
+            return SHARED_PARSER_FACTORY;
+        }
+        return this.saxParserFactory;
+    }
+    
+    private static SAXParserFactory createSAXParserFactory() {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        try {
+            factory.setFeature(XMLReader.NAMESPACE_PREFIXES_FEATURE, true);
+            factory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);
+        } catch(org.xml.sax.SAXNotRecognizedException ex) {
+            //  ignore if the parser doesn't recognize or support this feature
+        } catch(org.xml.sax.SAXNotSupportedException ex) {
+        } catch (ParserConfigurationException e) {
+        }
+        return factory;
         
     }
-
 }
