@@ -613,7 +613,11 @@ public class XMLDescriptor extends ClassDescriptor {
 
         // make sure that parent mappings are initialized?
         if (isChildDescriptor()) {
-            getInheritancePolicy().getParentDescriptor().initialize(session);
+            ClassDescriptor parentDescriptor = getInheritancePolicy().getParentDescriptor();
+            parentDescriptor.initialize(session);
+            if(parentDescriptor.hasEventManager()) {
+                getEventManager();
+            }
         }
 
         for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
