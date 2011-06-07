@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -243,15 +244,14 @@ public abstract class AbstractNullPolicy {
      */
     public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, AbstractSession session) {
         if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
-            Node root = record.getDOM();
-            Element nested = (Element) XPathEngine.getInstance().create(field, root, session);
-            nested.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XSI_NIL_ATTRIBUTE, TRUE);
+            record.put(field, XMLRecord.NIL);
             return true;
         } else {
             // EMPTY_NODE - Write out empty element - Required
             if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
-                Node root = record.getDOM();
-                XPathEngine.getInstance().create(field, root, session);
+                Node element = XPathEngine.getInstance().createUnownedElement(record.getDOM(), field);
+                DOMRecord nestedRow = new DOMRecord(element);
+                record.put(field, nestedRow);
                 return true;
             } else {
                 // ABSENT_NODE - Write out nothing - Optional

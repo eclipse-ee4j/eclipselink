@@ -58,7 +58,7 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
     
     public void addObjectToCache(Object obj, Node node, XMLMapping selfRecordMapping) {
     	// Can't process non-element nodes
-    	if (node.getNodeType() != Node.ELEMENT_NODE) {
+    	if (obj == null || node.getNodeType() != Node.ELEMENT_NODE) {
     		return;
     	}
         AbstractSession session = context.getSession(obj);
@@ -80,6 +80,9 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
     }
     
     public Node getNodeForObject(Object obj) {
+        if(obj == null) {
+            return null;
+        }
         AbstractSession session = context.getSession(obj);
         XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(obj);
         if(xmlDescriptor.shouldPreserveDocument()) {

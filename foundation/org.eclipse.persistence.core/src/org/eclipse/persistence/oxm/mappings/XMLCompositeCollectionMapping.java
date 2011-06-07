@@ -45,6 +45,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -410,7 +411,18 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     element = getConverter().convertObjectValueToDataValue(element, session);
                 }
             }
-            nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
+            if(element == null) {
+                XMLNullRepresentationType nullRepresentation = getNullPolicy().getMarshalNullRepresentation();
+                if(nullRepresentation == XMLNullRepresentationType.XSI_NIL) {
+                    nestedRows.add(XMLRecord.NIL);
+                } else if(nullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
+                    Node emptyNode = XPathEngine.getInstance().createUnownedElement(((XMLRecord)row).getDOM(), (XMLField)field);
+                    DOMRecord nestedRow = new DOMRecord(emptyNode);
+                    nestedRows.add(nestedRow);
+                }
+            } else {
+                nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
+            }
         }
 
         Object fieldValue = null;

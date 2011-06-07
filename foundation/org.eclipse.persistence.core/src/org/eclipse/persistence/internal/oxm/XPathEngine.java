@@ -592,6 +592,8 @@ public class XPathEngine {
             addAttribute(nextFragment, xmlField, element, value, session);
         } else if (value instanceof String && ((String)value).length() > 0) {
             addText(xmlField, element, (String)value);
+        } else if (value == XMLRecord.NIL) {
+            addXsiNilToElement(element, xmlField);
         }
         return element;
     }
@@ -865,19 +867,7 @@ public class XPathEngine {
                     } else {
                         if(value == XMLRecord.NIL && ((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE))) {
                             Element parentElement = (Element)node.getParentNode();
-                            NamespaceResolver nsr = new NamespaceResolver();
-                            nsr.setDOM(parentElement);
-                            String schemaInstancePrefix = resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, nsr);
-                            if(schemaInstancePrefix == null) {
-                                //Not decalred in the doc
-                                nsr = getNamespaceResolverForField(xmlField);
-                                schemaInstancePrefix = nsr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-                                if(schemaInstancePrefix == null) {
-                                    schemaInstancePrefix = nsr.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                                }
-                                parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-                            }
-                            parentElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                            addXsiNilToElement(parentElement, xmlField);
                             parentElement.removeChild(node);
                         } else {
                             String stringValue = (String)((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING);
@@ -1140,5 +1130,22 @@ public class XPathEngine {
             field.setNamespaceResolver(new NamespaceResolver());
         }
         return field.getNamespaceResolver();
+    }
+    
+    private void addXsiNilToElement(Element element, XMLField xmlField) {
+        NamespaceResolver nsr = new NamespaceResolver();
+        nsr.setDOM(element);
+        String schemaInstancePrefix = resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, nsr);
+        if(schemaInstancePrefix == null) {
+            //Not decalred in the doc
+            nsr = getNamespaceResolverForField(xmlField);
+            schemaInstancePrefix = nsr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            if(schemaInstancePrefix == null) {
+                schemaInstancePrefix = nsr.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+            }
+            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        }
+        element.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+        
     }
 }
