@@ -919,7 +919,6 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid = 285691)
     public void testPrimitiveCharArray2Varchar() {
         final char[] UNCHANGED = new char[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {
@@ -951,7 +950,6 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid = 285691)
     public void testPrimitiveCharArray2Clob() {
         final char[] UNCHANGED = new char[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {
@@ -983,7 +981,6 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid = 285691)
     public void testWrapperByteArray2Binary() {
         final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
                 Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
@@ -1019,7 +1016,6 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid = 285691)
     public void testWrapperByteArray2Longvarbinary() {
         final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
                 Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
@@ -1055,7 +1051,6 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid = 285691)
     public void testWrapperByteArray2Blob() {
         final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
                 Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
@@ -1092,7 +1087,6 @@ public class TestBasicPropertyTypes extends JPA1Base {
 
     @SuppressWarnings("boxing")
     @Test
-    @Bugzilla(bugid = 285691)
     public void testWrapperCharArray2Varchar() {
         final Character[] UNCHANGED = new Character[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {
@@ -1125,7 +1119,6 @@ public class TestBasicPropertyTypes extends JPA1Base {
 
     @SuppressWarnings("boxing")
     @Test
-    @Bugzilla(bugid = 285691)
     public void testWrapperCharArray2Clob() {
         final Character[] UNCHANGED = new Character[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {

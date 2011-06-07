@@ -245,6 +245,21 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
                 byte[] arrayCopy = new byte[length];
                 System.arraycopy(attributeValue, 0, arrayCopy, 0, length);
                 newAttributeValue = arrayCopy;
+            } else if (attributeValue instanceof Byte[]) {
+                int length = ((Byte[]) attributeValue).length;
+                Byte[] arrayCopy = new Byte[length];
+                System.arraycopy(attributeValue, 0, arrayCopy, 0, length);
+                newAttributeValue = arrayCopy;
+            } else if (attributeValue instanceof char[]) {
+                int length = ((char[]) attributeValue).length;
+                char[] arrayCopy = new char[length];
+                System.arraycopy(attributeValue, 0, arrayCopy, 0, length);
+                newAttributeValue = arrayCopy;
+            } else if (attributeValue instanceof Character[]) {
+                int length = ((Character[]) attributeValue).length;
+                Character[] arrayCopy = new Character[length];
+                System.arraycopy(attributeValue, 0, arrayCopy, 0, length);
+                newAttributeValue = arrayCopy;
             } else if (attributeValue instanceof Date) {
                 newAttributeValue = ((Date)attributeValue).clone();
             } else if (attributeValue instanceof Calendar) {
