@@ -18,8 +18,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.GeneratedValue;
 
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
-
 @Embeddable
 public class Torso {
     @GeneratedValue

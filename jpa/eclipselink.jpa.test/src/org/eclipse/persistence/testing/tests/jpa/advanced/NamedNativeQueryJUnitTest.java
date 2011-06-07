@@ -148,7 +148,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
 
         boolean shouldCompareResults = true;
         try {
-            query = em.createNativeQuery("select * from CMP3_ADDRESS where city=?1", Address.class);
+            query = em.createNativeQuery("select * from CMP3_ADDRESS where CITY=?1", Address.class);
             query.setParameter(1, "Ottawa");
 
             results_QuestionMark_Number = query.getResultList();
@@ -157,7 +157,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
             shouldCompareResults = false;
         }
         try {
-            query = em.createNativeQuery("select * from CMP3_ADDRESS where city=?", Address.class);
+            query = em.createNativeQuery("select * from CMP3_ADDRESS where CITY=?", Address.class);
             query.setParameter(1, "Ottawa");
 
             results_QuestionMark = query.getResultList();
@@ -173,7 +173,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
 
         shouldCompareResults = true;
         try {
-            query = em.createNativeQuery("select * from CMP3_ADDRESS where city=?1 and country=?2", Address.class);
+            query = em.createNativeQuery("select * from CMP3_ADDRESS where CITY=?1 and COUNTRY=?2", Address.class);
             query.setParameter(1, "Ottawa");
             query.setParameter(2, "Canada");
 
@@ -183,7 +183,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
             shouldCompareResults = false;
         }
         try {
-            query = em.createNativeQuery("select * from CMP3_ADDRESS where city=? and country=?", Address.class);
+            query = em.createNativeQuery("select * from CMP3_ADDRESS where CITY=? and COUNTRY=?", Address.class);
             query.setParameter(1, "Ottawa");
             query.setParameter(2, "Canada");
 

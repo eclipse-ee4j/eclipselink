@@ -309,11 +309,12 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
     }
     
     public TableDefinition buildHockeyCoach_NICKNAMESTable() {
+        // TODO: This table and column name is defaulting incorrectly, it should be all upper-case.
         TableDefinition table = new TableDefinition();
         table.setName("HockeyCoach_NICKNAMES");
 
         FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("HOCKEYCOACH_ID");
+        fieldID.setName("HockeyCoach_ID");
         fieldID.setTypeName("NUMBER");
         fieldID.setSize(18);
         fieldID.setSubSize(0);

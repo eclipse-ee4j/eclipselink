@@ -2651,6 +2651,44 @@ public class ExpressionOperator implements Serializable {
         return result;
     }
 
+    /**
+     * INTERNAL:
+     * Build the Sybase equivalent to Locate with a start index.
+     * Sybase does not define this, so this gets a little complex...
+     */
+    public static ExpressionOperator sybaseLocate2Operator() {        
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.Locate2);
+        result.setType(ExpressionOperator.FunctionOperator);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        v.add("CASE (CHARINDEX(");
+        v.add(", SUBSTRING(");
+        v.add(",");
+        v.add(", CHAR_LENGTH(");
+        v.add(")))) WHEN 0 THEN 0 ELSE (CHARINDEX(");
+        v.add(", SUBSTRING(");
+        v.add(",");
+        v.add(", CHAR_LENGTH(");
+        v.add("))) + ");
+        v.add(" - 1) END");
+        result.printsAs(v);
+        int[] indices = new int[9];
+        indices[0] = 1;
+        indices[1] = 0;
+        indices[2] = 2;
+        indices[3] = 0;
+        indices[4] = 1;
+        indices[5] = 0;
+        indices[6] = 2;
+        indices[7] = 0;
+        indices[8] = 2;
+
+        result.setArgumentIndices(indices);
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        result.bePrefix();
+        return result;
+    }
+
 
     /**
      * INTERNAL:

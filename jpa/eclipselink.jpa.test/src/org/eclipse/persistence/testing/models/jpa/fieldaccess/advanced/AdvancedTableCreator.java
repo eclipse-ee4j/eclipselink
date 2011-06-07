@@ -1067,14 +1067,14 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.setName("CMP3_FA_VEGETABLE");
 
         FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("VEGETABLE_NAME");
+        fieldNAME.setName("vegetable_name");
         fieldNAME.setTypeName("VARCHAR");
         fieldNAME.setSize(30);
         fieldNAME.setIsPrimaryKey(true);
         table.addField(fieldNAME);
         
         FieldDefinition fieldCOLOR = new FieldDefinition();
-        fieldCOLOR.setName("VEGETABLE_COLOR");
+        fieldCOLOR.setName("vegetable_color");
         fieldCOLOR.setTypeName("VARCHAR");
         fieldCOLOR.setSize(30);
         fieldCOLOR.setIsPrimaryKey(true);

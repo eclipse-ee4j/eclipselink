@@ -1529,8 +1529,8 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         FieldDefinition fieldBOMB_TYPE = new FieldDefinition();
         fieldBOMB_TYPE.setName("B_TYPE");
-        fieldBOMB_TYPE.setTypeName("VARCHAR");
-        fieldBOMB_TYPE.setSize(50);
+        fieldBOMB_TYPE.setTypeName("NUMBER");
+        fieldBOMB_TYPE.setSize(10);
         fieldBOMB_TYPE.setIsPrimaryKey(false);
         fieldBOMB_TYPE.setIsIdentity(false);
         fieldBOMB_TYPE.setUnique(false);

@@ -383,7 +383,7 @@ public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
     
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
-        field1.setName("TEAMMEMBERS_EMP_ID");
+        field1.setName("teamMembers_EMP_ID");
         field1.setTypeName("NUMERIC");
         field1.setSize(15);
         field1.setShouldAllowNull(false );

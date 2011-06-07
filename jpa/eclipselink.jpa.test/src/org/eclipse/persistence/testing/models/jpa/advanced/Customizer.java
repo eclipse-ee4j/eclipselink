@@ -137,7 +137,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             projectsQueryKey.setJoinCriteria(
                     (builder.getParameter("CMP3_EMPLOYEE.EMP_ID").equal(
                     builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID")).and(
-                    builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
+                    builder.getTable("CMP3_EMP_PROJ").getField("projects_PROJ_ID").equal(
                     builder.getField("CMP3_PROJECT.PROJ_ID")))));
             descriptor.addQueryKey(projectsQueryKey);
     
@@ -149,7 +149,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             largeProjectsQueryKey.setJoinCriteria(
                     (builder.getParameter("CMP3_EMPLOYEE.EMP_ID").equal(
                     builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID")).and(
-                    builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID").equal(
+                    builder.getTable("CMP3_EMP_PROJ").getField("projects_PROJ_ID").equal(
                     builder.getField("CMP3_PROJECT.PROJ_ID")))));
             descriptor.addQueryKey(largeProjectsQueryKey);
     
@@ -182,7 +182,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             builder = new ExpressionBuilder();
             employesQueryKey.setJoinCriteria(
                     (builder.getParameter("CMP3_PROJECT.PROJ_ID").equal(
-                    builder.getTable("CMP3_EMP_PROJ").getField("PROJECTS_PROJ_ID")).and(
+                    builder.getTable("CMP3_EMP_PROJ").getField("projects_PROJ_ID")).and(
                     builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
                     builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
             descriptor.addQueryKey(employesQueryKey);

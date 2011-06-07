@@ -86,16 +86,16 @@
             <query>SELECT * FROM CMP3_ADDRESS</query>
         </named-native-query>
         <named-native-query name="findAllSQLAddressesByCity_QuestionMark_Number" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
-            <query>select * from CMP3_ADDRESS where city=?1</query>
+            <query>select * from CMP3_ADDRESS where CITY=?1</query>
         </named-native-query>
         <named-native-query name="findAllSQLAddressesByCity_QuestionMark" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
-            <query>select * from CMP3_ADDRESS where city=?</query>
+            <query>select * from CMP3_ADDRESS where CITY=?</query>
         </named-native-query>
         <named-native-query name="findAllSQLAddressesByCityAndCountry_QuestionMark_Number" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
-            <query>select * from CMP3_ADDRESS where city=?1 and country=?2</query>
+            <query>select * from CMP3_ADDRESS where CITY=?1 and COUNTRY=?2</query>
         </named-native-query>
         <named-native-query name="findAllSQLAddressesByCityAndCountry_QuestionMark" result-class="org.eclipse.persistence.testing.models.jpa.advanced.Address">
-            <query>select * from CMP3_ADDRESS where city=? and country=?</query>
+            <query>select * from CMP3_ADDRESS where CITY=? and COUNTRY=?</query>
         </named-native-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>

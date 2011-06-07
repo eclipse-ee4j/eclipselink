@@ -2064,7 +2064,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(fieldSIMPLEID);
         
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
-        fieldDESCRIPTION.setName("description");
+        fieldDESCRIPTION.setName("DESCRIPTION");
         fieldDESCRIPTION.setTypeName("VARCHAR2");
         fieldDESCRIPTION.setSize(100);
         fieldDESCRIPTION.setShouldAllowNull(true);

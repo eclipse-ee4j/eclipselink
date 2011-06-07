@@ -38,22 +38,22 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
     ),
     @NamedNativeQuery(
         name="findAllFieldAccessSQLAddressesByCity_QuestionMark_Number", 
-        query="select * from CMP3_FA_ADDRESS where city=?1",
+        query="select * from CMP3_FA_ADDRESS where CITY=?1",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     ),
     @NamedNativeQuery(
         name="findAllFieldAccessSQLAddressesByCity_QuestionMark", 
-        query="select * from CMP3_FA_ADDRESS where city=?",
+        query="select * from CMP3_FA_ADDRESS where CITY=?",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     ),
     @NamedNativeQuery(
         name="findAllFieldAccessSQLAddressesByCityAndCountry_QuestionMark_Number", 
-        query="select * from CMP3_FA_ADDRESS where city=?1 and country=?2",
+        query="select * from CMP3_FA_ADDRESS where CITY=?1 and COUNTRY=?2",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     ),
     @NamedNativeQuery(
         name="findAllFieldAccessSQLAddressesByCityAndCountry_QuestionMark", 
-        query="select * from CMP3_FA_ADDRESS where city=? and country=?",
+        query="select * from CMP3_FA_ADDRESS where CITY=? and COUNTRY=?",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address.class
     )}
 )

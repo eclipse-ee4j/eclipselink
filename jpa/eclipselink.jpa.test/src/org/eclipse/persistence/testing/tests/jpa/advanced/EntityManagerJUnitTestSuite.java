@@ -467,7 +467,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
         if(!exceptionThrown) {
-            fail("An expected SQLException was not thrown.");
+            // Sybase does not through error when data too big, just truncates.
+            if (!getDatabaseSession().getPlatform().isSybase()) {
+                fail("An expected SQLException was not thrown.");
+            }
         }
     }
     
@@ -788,7 +791,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Delete Address outside of JPA so that the object still stored in the cache.
             em2 = createEntityManager();
             beginTransaction(em2);
-            em2.createNativeQuery("DELETE FROM CMP3_ADDRESS where address_id = ?1").setParameter(1, address.getID()).executeUpdate();
+            em2.createNativeQuery("DELETE FROM CMP3_ADDRESS where ADDRESS_ID = ?1").setParameter(1, address.getID()).executeUpdate();
             commitTransaction(em2);
             
             //Call refresh to invalidate the object
@@ -8783,7 +8786,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         
-        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
+        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
@@ -8994,7 +8997,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
-        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
+        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
         
         ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
         
@@ -9101,7 +9104,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
         
-        Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
+        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
         if (ss.getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testPostAcquirePreReleaseEvents skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");

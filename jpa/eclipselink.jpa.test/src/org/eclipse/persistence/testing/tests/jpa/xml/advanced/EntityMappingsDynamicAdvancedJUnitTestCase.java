@@ -24,8 +24,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
@@ -48,15 +45,11 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 
 import org.eclipse.persistence.queries.DoesExistQuery;
 
-import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -66,7 +59,6 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.DynamicTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.MyDynamicEntity;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.AdvancedDynamicTableCreator;
 
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
@@ -120,7 +112,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
          * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
          */
         String statement = null;
-        if(session.getPlatform().isSQLServer()) {
+        if(session.getPlatform().isSQLServer()  || session.getPlatform().isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM DYNAMIC_ADDRESS WHERE (ADDRESS_ID = @address_id_v)";
         } else {
@@ -145,7 +137,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
          * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
          */
         String statement = null;
-        if(session.getPlatform().isSQLServer()) {
+        if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             statement = "SELECT @address_id_v=ADDRESS_ID, @street_v=STREET from DYNAMIC_ADDRESS where (ADDRESS_ID = @address_id_v)";
         } else {

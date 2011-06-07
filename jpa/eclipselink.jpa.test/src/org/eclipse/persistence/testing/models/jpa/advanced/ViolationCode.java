@@ -28,7 +28,7 @@ public class ViolationCode {
     @Enumerated
     public ViolationCodeId id;    
     
-    @Column(name="descrip")
+    @Column(name="DESCRIP")
     public String description;
 
     public String getDescription() {

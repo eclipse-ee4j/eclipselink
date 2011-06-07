@@ -29,7 +29,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
- *    <p><b>Purpose</b>: Provides Sybase specific behavior.
+ *    <p><b>Purpose</b>: Provides Sybase ASE specific behavior.
  *    <p><b>Responsibilities</b>:<ul>
  *    <li> Native SQL for byte[], Date, Time, & Timestamp.
  *    <li> Native sequencing using @@IDENTITY.
@@ -91,8 +91,23 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    If using native SQL then print a byte[] as '0xFF...'
+     * Sybase and SQL Anywhere do not support BLOB/CLOB but require LONGVARBINARY/LONGVARCHAR.
      */
+    @Override
+    public int getJDBCType(Class javaType) {
+        if (javaType == ClassConstants.BLOB)  {
+            return Types.LONGVARBINARY;
+        } else if (javaType == ClassConstants.CLOB) {
+            return Types.LONGVARCHAR;
+        } else {
+            return super.getJDBCType(javaType);
+        }
+    }
+    
+    /**
+     * If using native SQL then print a byte[] as '0xFF...'
+     */
+    @Override
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL() && (!usesByteArrayBinding())) {
             writer.write("0x");
@@ -103,9 +118,10 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Answer a platform correct string representation of a Date, suitable for SQL generation.
-     *    Native format: 'yyyy-mm-dd
+     * Answer a platform correct string representation of a Date, suitable for SQL generation.
+     * Native format: 'yyyy-mm-dd
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -140,9 +156,10 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Answer a platform correct string representation of a Time, suitable for SQL generation.
-     *    The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
+     * Answer a platform correct string representation of a Time, suitable for SQL generation.
+     * The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
      */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -154,9 +171,10 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
-     *    The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
+     * Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
+     * The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             appendSybaseTimestamp(timestamp, writer);
@@ -169,6 +187,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * Answer a platform correct string representation of a Calendar, suitable for SQL generation.
      * The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             appendSybaseCalendar(calendar, writer);
@@ -194,6 +213,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATN2");
     }
 
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -230,6 +250,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
@@ -244,6 +265,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * is being executed on the platform.  This entire process needs some serious refactoring to eliminate
      * the chance of bugs.
      */
+    @Override
     public Object executeStoredProcedure(DatabaseCall dbCall, PreparedStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
         Object result = null;
         ResultSet resultSet = null;
@@ -293,10 +315,12 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * Please note that above only obtains shared lock. Apparently there is no way to obtain exclusive lock on Sybase
      * using only a select statement
      */
+    @Override
     public boolean shouldPrintLockingClauseAfterWhereClause() {
         return false;
     }
 
+    @Override
     public String getSelectForUpdateString() {
         return " HOLDLOCK";
     }
@@ -304,6 +328,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for batch writing and sp defs.
      */
+    @Override
     public String getBatchDelimiterString() {
         return "";
     }
@@ -311,6 +336,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /* This method is used to print the required output parameter token for the
      * specific platform.  Used when stored procedures are created.
      */
+    @Override
     public String getCreationInOutputProcedureToken() {
         return getInOutputProcedureToken();
     }
@@ -319,6 +345,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * this method was added because SQLServer requires the output paramater token
      * to be set on creation but not on execution.
      */
+    @Override
     public String getCreationOutputProcedureToken() {
         return getOutputProcedureToken();
     }
@@ -326,6 +353,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /* This method is used to print the output parameter token when stored
      * procedures are called
      */
+    @Override
     public String getInOutputProcedureToken() {
         return "OUT";
     }
@@ -334,6 +362,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Returns the type name corresponding to the jdbc type
      */
+    @Override
     public String getJdbcTypeName(int jdbcType) {
         return (String)getTypeStrings().get(new Integer(jdbcType));
     }
@@ -343,6 +372,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * returns the maximum number of characters that can be used in a field
      * name on this platform.
      */
+    @Override
     public int getMaxFieldNameSize() {
         return 22;
     }
@@ -375,6 +405,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /* This method is used to print the output parameter token when stored
      * procedures are called
      */
+    @Override
     public String getOutputProcedureToken() {
         return "OUTPUT";
     }
@@ -382,6 +413,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for sp defs.
      */
+    @Override
     public String getProcedureArgumentString() {
         return "@";
     }
@@ -389,19 +421,22 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for sp calls.
      */
+    @Override
     public String getProcedureCallHeader() {
         return "EXECUTE ";
     }
 
+    @Override
     public String getStoredProcedureParameterPrefix() {
         return "@";
     }
 
     /**
      * INTERNAL:
-     *    This method returns the delimiter between stored procedures in multiple stored procedure
+     * This method returns the delimiter between stored procedures in multiple stored procedure
      * calls.
      */
+    @Override
     public String getStoredProcedureTerminationToken() {
         return " go";
     }
@@ -411,6 +446,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * This method returns the query to select the timestamp
      * from the server for Sybase.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
@@ -422,6 +458,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(operatorOuterJoin());
@@ -434,6 +471,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentTime, "GETDATE"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "CHAR_LENGTH"));
         addOperator(ExpressionOperator.sybaseLocateOperator());
+        addOperator(ExpressionOperator.sybaseLocate2Operator());
         addOperator(ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Substring, "SUBSTRING"));
         addOperator(singleArgumentSubstringOperator());
         addOperator(ExpressionOperator.addDate());
@@ -461,15 +499,17 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(modOperator());
     }
 
+    @Override
     public boolean isSybase() {
         return true;
     }
 
     /**
-     *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale
      */
+    @Override
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -485,10 +525,11 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
      */
+    @Override
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -532,6 +573,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /** Append the receiver's field 'identity' constraint clause to a writer.*/
+    @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
             writer.write(" IDENTITY");
@@ -541,6 +583,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /** Append the receiver's field 'NULL' constraint clause to a writer.*/
+    @Override
     public void printFieldNullClause(Writer writer) throws ValidationException {
         try {
             writer.write(" NULL");
@@ -553,6 +596,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * This method is used to register output parameter on Callable Statements for Stored Procedures
      * as each database seems to have a different method.
      */
+    @Override
     public void registerOutputParameter(CallableStatement statement, int index, int jdbcType) throws SQLException {
         statement.registerOutParameter(index, jdbcType, (String)getTypeStrings().get(new Integer(jdbcType)));
     }
@@ -560,6 +604,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * USed for sp calls.
      */
+    @Override
     public boolean requiresProcedureCallBrackets() {
         return false;
     }
@@ -567,6 +612,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for sp calls.  Sybase must print output after output params.
      */
+    @Override
     public boolean requiresProcedureCallOuputToken() {
         return true;
     }
@@ -576,6 +622,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * Indicates whether the version of CallableStatement.registerOutputParameter method
      * that takes type name should be used.
      */
+    @Override
     public boolean requiresTypeNameToRegisterOutputParameter() {
         return true;
     }
@@ -583,6 +630,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /* This is required in the construction of the stored procedures with
      * output parameters
      */
+    @Override
     public boolean shouldPrintInOutputTokenBeforeType() {
         return false;
     }
@@ -591,6 +639,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /* This is required in the construction of the stored procedures with
      * output parameters
      */
+    @Override
     public boolean shouldPrintOutputTokenBeforeType() {
         return false;
     }
@@ -598,6 +647,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
@@ -627,25 +677,37 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
     
     /**
-     *  INTERNAL:
-     *  Indicates whether the platform supports identity.
-     *  Sybase does through IDENTITY field types.
-     *  This method is to be used *ONLY* by sequencing classes
+     * INTERNAL:
+     * Indicates whether the platform supports identity.
+     * Sybase does through IDENTITY field types.
+     * This method is to be used *ONLY* by sequencing classes
      */
+    @Override
     public boolean supportsIdentity() {
         return true;
     }
 
     /**
+     * Sybase (as of Sybase ASE 15, does not support delete on cascade).
+     * Sybase ASA (SQL Anywhere does, so must use different platform).
+     */
+    @Override
+    public boolean supportsDeleteOnCascade() {
+        return false;
+    }
+    
+    /**
      * INTERNAL:
      */
-    public boolean supportsLocalTempTables() {
+    @Override
+    public boolean supportsGlobalTempTables() {
         return true;
     }
      
     /**
      * INTERNAL:
      */
+    @Override
     protected String getCreateTempTableSqlPrefix() {
         return "CREATE TABLE ";
     }          
@@ -653,6 +715,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * INTERNAL:
      */
+    @Override
     public DatabaseTable getTempTableForTable(DatabaseTable table) {
         return new DatabaseTable("#" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
     }          
@@ -660,6 +723,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * INTERNAL:
      */
+    @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                     Collection pkFields,
                                                     Collection assignedFields) throws IOException 

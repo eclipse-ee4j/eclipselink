@@ -353,7 +353,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
     
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
-        field1.setName("CONTROLLEDCUSTOMERS_CUST_ID");
+        field1.setName("controlledCustomers_CUST_ID");
         field1.setTypeName("NUMERIC");
         field1.setSize(15);
         field1.setShouldAllowNull(false);

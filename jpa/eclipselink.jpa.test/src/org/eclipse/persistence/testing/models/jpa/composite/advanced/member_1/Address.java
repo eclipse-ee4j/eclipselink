@@ -44,22 +44,22 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
     ),
     @NamedNativeQuery(
         name="findAllSQLAddressesByCity_QuestionMark_Number", 
-        query="select * from MBR1_ADDRESS where city=?1",
+        query="select * from MBR1_ADDRESS where CITY=?1",
         resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Address.class
     ),
     @NamedNativeQuery(
         name="findAllSQLAddressesByCity_QuestionMark", 
-        query="select * from MBR1_ADDRESS where city=?",
+        query="select * from MBR1_ADDRESS where CITY=?",
         resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Address.class
     ),
     @NamedNativeQuery(
         name="findAllSQLAddressesByCityAndCountry_QuestionMark_Number", 
-        query="select * from MBR1_ADDRESS where city=?1 and country=?2",
+        query="select * from MBR1_ADDRESS where CITY=?1 and COUNTRY=?2",
         resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Address.class
     ),
     @NamedNativeQuery(
         name="findAllSQLAddressesByCityAndCountry_QuestionMark", 
-        query="select * from MBR1_ADDRESS where city=? and country=?",
+        query="select * from MBR1_ADDRESS where CITY=? and COUNTRY=?",
         resultClass=org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Address.class
     )}
 )

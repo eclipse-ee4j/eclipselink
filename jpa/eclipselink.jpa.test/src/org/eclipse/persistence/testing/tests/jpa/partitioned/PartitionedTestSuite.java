@@ -146,6 +146,11 @@ public class PartitionedTestSuite extends JUnitTestCase {
                 return;
             }
         } else {
+            // Do not run on Sybase as may hang.
+            if (getServerSession().getPlatform().isSybase()) {
+                this.validDatabase = false;
+                return;
+            }
             isRAC = true;
             // Simulate a RAC using multiple connection pools to the same database.
             properties.put(

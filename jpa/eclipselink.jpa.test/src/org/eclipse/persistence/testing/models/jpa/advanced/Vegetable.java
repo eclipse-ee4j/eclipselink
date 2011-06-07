@@ -44,8 +44,8 @@ public class Vegetable implements Serializable {
     
     @EmbeddedId
     @AttributeOverrides({
-        @AttributeOverride(name="name", column=@Column(name="vegetable_name")),
-        @AttributeOverride(name="color", column=@Column(name="vegetable_color"))
+        @AttributeOverride(name="name", column=@Column(name="VEGETABLE_NAME")),
+        @AttributeOverride(name="color", column=@Column(name="VEGETABLE_COLOR"))
     })
     public VegetablePK getId() {
         return id;

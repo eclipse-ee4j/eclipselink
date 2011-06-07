@@ -1542,7 +1542,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void simpleModTest() {
         EntityManager em = createEntityManager();
 
-        Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer() || (JUnitTestCase.getServerSession()).getPlatform().isSybase());
+        //Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer() || (JUnitTestCase.getServerSession()).getPlatform().isSybase());
 
         ReadAllQuery raq = new ReadAllQuery();
 

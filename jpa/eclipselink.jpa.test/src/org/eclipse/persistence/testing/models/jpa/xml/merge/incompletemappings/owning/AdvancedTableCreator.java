@@ -109,7 +109,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.setName("CMP3_XML_MERGE_EMPLOYEE");
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
@@ -120,7 +120,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field1 = new FieldDefinition();
         field1.setName("F_NAME");
         field1.setTypeName("VARCHAR");
         field1.setSize(40);
@@ -131,7 +131,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field1);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field2 = new FieldDefinition();
         field2.setName("L_NAME");
         field2.setTypeName("VARCHAR");
         field2.setSize(40);
@@ -142,7 +142,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field2);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field3 = new FieldDefinition();
         field3.setName("START_DATE");
         field3.setTypeName("DATE");
         field3.setSize(23);
@@ -153,7 +153,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field3);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field4 = new FieldDefinition();
         field4.setName("END_DATE");
         field4.setTypeName("DATE");
         field4.setSize(23);
@@ -164,7 +164,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field4);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field8 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field8 = new FieldDefinition();
         field8.setName("ADDR_ID");
         field8.setTypeName("NUMERIC");
         field8.setSize(15);
@@ -176,7 +176,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field8);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field9 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field9 = new FieldDefinition();
         field9.setName("MANAGER_EMP_ID");
         field9.setTypeName("NUMERIC");
         field9.setSize(15);
@@ -188,7 +188,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field9);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field10 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field10 = new FieldDefinition();
         field10.setName("VERSION");
         field10.setTypeName("NUMERIC");
         field10.setSize(15);
@@ -200,7 +200,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
 
      
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field11 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field11 = new FieldDefinition();
         field11.setName("SECURITYBADGE_BADGE_ID");
         field11.setTypeName("NUMERIC");
         field11.setSize(15);
@@ -247,7 +247,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.setName("CMP3_XML_MERGE_LPROJECT");
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field = new FieldDefinition();
         field.setName("PROJ_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
@@ -259,7 +259,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field1 = new FieldDefinition();
         field1.setName("BUDGET");
         field1.setTypeName("DOUBLE PRECIS");
         field1.setSize(18);
@@ -277,7 +277,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.setName("CMP3_XML_MERGE_PHONENUMBER");
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field = new FieldDefinition();
         field.setName("OWNER_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
@@ -289,7 +289,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field1 = new FieldDefinition();
         field1.setName("TYPE");
         field1.setTypeName("VARCHAR");
         field1.setSize(15);
@@ -300,7 +300,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field1);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field2 = new FieldDefinition();
         field2.setName("AREA_CODE");
         field2.setTypeName("VARCHAR");
         field2.setSize(3);
@@ -311,7 +311,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field2);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field3 = new FieldDefinition();
         field3.setName("NUMB");
         field3.setTypeName("VARCHAR");
         field3.setSize(8);
@@ -330,7 +330,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.setName("CMP3_XML_MERGE_PROJECT");
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field = new FieldDefinition();
         field.setName("PROJ_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
@@ -341,10 +341,10 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field1 = new FieldDefinition();
         field1.setName("PROJ_TYPE");
-        field1.setTypeName("VARCHAR");
-        field1.setSize(1);
+        field1.setTypeName("NUMERIC");
+        field1.setSize(10);
         field1.setShouldAllowNull(true );
         field1.setIsPrimaryKey(false );
         field1.setUnique(false );
@@ -352,7 +352,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field1);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field2 = new FieldDefinition();
         field2.setName("PROJ_NAME");
         field2.setTypeName("VARCHAR");
         field2.setSize(30);
@@ -363,7 +363,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field2);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field3 = new FieldDefinition();
         field3.setName("DESCRIP");
         field3.setTypeName("VARCHAR");
         field3.setSize(200);
@@ -374,7 +374,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field3);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field4 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field4 = new FieldDefinition();
         field4.setName("LEADER_ID");
         field4.setTypeName("NUMERIC");
         field4.setSize(15);
@@ -386,7 +386,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field4);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field5 = new FieldDefinition();
         field5.setName("VERSION");
         field5.setTypeName("NUMERIC");
         field5.setSize(15);
@@ -405,7 +405,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.setName("CMP3_XML_MERGE_EMPLOYEE_CMP3_XML_MERGE_PHONENUMBER");
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEE_EMP_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
@@ -417,7 +417,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field1 = new FieldDefinition();
         field1.setName("PHONE_ID");
         field1.setTypeName("NUMERIC");
         field1.setSize(15);
@@ -429,7 +429,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field1);
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field2 = new FieldDefinition();
         field2.setName("PHONE_TYPE");
         field2.setTypeName("NUMERIC");
         field2.setSize(15);
@@ -449,7 +449,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.setName("CMP3_XML_MERGE_PROJ_EMP");
 
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEES_EMP_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
@@ -461,7 +461,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field);
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field1 = new FieldDefinition();
         field1.setName("PROJECTS_PROJ_ID");
         field1.setTypeName("NUMERIC");
         field1.setSize(15);
@@ -491,7 +491,7 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
 
     
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field10 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field10 = new FieldDefinition();
         field10.setName("VERSION");
         field10.setTypeName("NUMERIC");
         field10.setSize(15);
@@ -502,10 +502,10 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field10);
 		
         // SECTION: FIELD
-        org.eclipse.persistence.tools.schemaframework.FieldDefinition field3 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        FieldDefinition field3 = new FieldDefinition();
         field3.setName("BADGENUMBER");
-        field3.setTypeName("VARCHAR");
-        field3.setSize(8);
+        field3.setTypeName("NUMERIC");
+        field3.setSize(10);
         field3.setShouldAllowNull(true );
         field3.setIsPrimaryKey(false );
         field3.setUnique(false );
@@ -513,5 +513,5 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         table.addField(field3);
 
         return table;
-	}
+    }
 }

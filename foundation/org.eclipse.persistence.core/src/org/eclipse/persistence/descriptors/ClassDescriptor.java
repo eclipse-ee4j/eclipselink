@@ -3550,7 +3550,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
         setInitializationStage(PREINITIALIZED);
                 
         assignDefaultValues(session);
-        
+
+        if (this.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables && !session.getPlatform().supportsDeleteOnCascade()) {
+            this.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables = false;
+        }
         // Set the fetchgroup manager is the class implements the tracking interface.
         if (FetchGroupTracker.class.isAssignableFrom(getJavaClass())) {
             if (getFetchGroupManager() == null) {

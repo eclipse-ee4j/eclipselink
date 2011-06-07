@@ -2028,6 +2028,10 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean supportsStoredFunctions() {
         return false;
     }
+
+    public boolean supportsDeleteOnCascade() {
+        return true;
+    }
     
     /**
      * Internal: This gets called on each batch statement execution

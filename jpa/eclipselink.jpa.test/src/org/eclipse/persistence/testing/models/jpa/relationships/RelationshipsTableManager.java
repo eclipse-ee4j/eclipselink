@@ -557,7 +557,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
 
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
-        field.setName("CUSTOMER_CUST_ID");
+        field.setName("Customer_CUST_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
@@ -569,7 +569,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
     
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
-        field1.setName("CCUSTOMERS_CUST_ID");
+        field1.setName("CCustomers_CUST_ID");
         field1.setTypeName("NUMERIC");
         field1.setSize(15);
         field1.setShouldAllowNull(false);
@@ -964,7 +964,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         table.addField(fieldREP_ID);
         
         FieldDefinition fieldCALL_ID = new FieldDefinition();
-        fieldCALL_ID.setName("cSInteractions_KEY");
+        fieldCALL_ID.setName("CSInteractions_KEY");
         fieldCALL_ID.setTypeName("NUMBER");
         fieldCALL_ID.setSize(15);
         fieldCALL_ID.setSubSize(0);

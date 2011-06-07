@@ -155,7 +155,7 @@ public TableDefinition buildBRANCHB_BRANCHBTable() {
     table.setName("BRANCHB_BRANCHB");
     
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
-    fieldBRANCHB_ID.setName("BRANCHB_ID");
+    fieldBRANCHB_ID.setName("BranchB_ID");
     fieldBRANCHB_ID.setTypeName("NUMBER");
     fieldBRANCHB_ID.setSize(0);
     fieldBRANCHB_ID.setSubSize(0);
@@ -166,7 +166,7 @@ public TableDefinition buildBRANCHB_BRANCHBTable() {
     table.addField(fieldBRANCHB_ID);
     
     FieldDefinition fieldBRANCHBS_ID = new FieldDefinition();
-    fieldBRANCHBS_ID.setName("BranchBs_ID");
+    fieldBRANCHBS_ID.setName("branchBs_ID");
     fieldBRANCHBS_ID.setTypeName("NUMBER");
     fieldBRANCHBS_ID.setSize(0);
     fieldBRANCHBS_ID.setSubSize(0);
@@ -216,7 +216,7 @@ public TableDefinition buildBRANCHB_LEAFBTable() {
     table.setName("BRANCHB_LEAFB");
     
     FieldDefinition fieldLEAFB_ID = new FieldDefinition();
-    fieldLEAFB_ID.setName("LEAFBS_ID");
+    fieldLEAFB_ID.setName("leafBs_ID");
     fieldLEAFB_ID.setTypeName("NUMBER");
     fieldLEAFB_ID.setSize(0);
     fieldLEAFB_ID.setSubSize(0);
@@ -227,7 +227,7 @@ public TableDefinition buildBRANCHB_LEAFBTable() {
     table.addField(fieldLEAFB_ID);
     
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
-    fieldBRANCHB_ID.setName("BRANCHB_ID");
+    fieldBRANCHB_ID.setName("BranchB_ID");
     fieldBRANCHB_ID.setTypeName("NUMBER");
     fieldBRANCHB_ID.setSize(0);
     fieldBRANCHB_ID.setSubSize(0);
@@ -270,7 +270,7 @@ public TableDefinition buildBRANCHA_LEAFATable() {
     table.addField(fieldLEAFB_ID);
     
     FieldDefinition fieldBRANCHB_ID = new FieldDefinition();
-    fieldBRANCHB_ID.setName("BRANCHA_ID");
+    fieldBRANCHB_ID.setName("BranchA_ID");
     fieldBRANCHB_ID.setTypeName("NUMBER");
     fieldBRANCHB_ID.setSize(0);
     fieldBRANCHB_ID.setSubSize(0);

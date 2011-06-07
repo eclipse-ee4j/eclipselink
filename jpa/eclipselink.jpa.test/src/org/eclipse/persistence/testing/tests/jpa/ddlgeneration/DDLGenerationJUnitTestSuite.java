@@ -118,7 +118,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         
         return suite;
     }
-
+    
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -558,7 +558,9 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
     // Test to check if unique constraints are generated correctly
     public void testDDLUniqueConstraintsByAnnotations() {
-        if(!getServerSession(DDL_PU).getPlatform().supportsUniqueKeyConstraints()) {
+        // Some database do not support constraints, Sybase does not raise any errors (until commit perhaps?)
+        if(!getServerSession(DDL_PU).getPlatform().supportsUniqueKeyConstraints()
+                || getServerSession(DDL_PU).getPlatform().isSybase()) {
             return;
         }
         UniqueConstraintsEntity1 ucEntity;
@@ -648,7 +650,9 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
     // Test to check if unique constraints are generated correctly
     public void testDDLUniqueConstraintsByXML() {
-        if(!getServerSession(DDL_PU).getPlatform().supportsUniqueKeyConstraints()) {
+        // Some database do not support constraints, Sybase does not raise any errors (until commit perhaps?)
+        if(!getServerSession(DDL_PU).getPlatform().supportsUniqueKeyConstraints()
+                || getServerSession(DDL_PU).getPlatform().isSybase()) {
             return;
         }
         UniqueConstraintsEntity2 ucEntity;

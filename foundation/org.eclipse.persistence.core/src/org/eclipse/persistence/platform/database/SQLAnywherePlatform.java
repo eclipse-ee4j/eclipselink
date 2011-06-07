@@ -38,7 +38,6 @@ public class SQLAnywherePlatform extends SybasePlatform {
         super();
     }
     
-    @Override
 // TODO: can't use these field types: none of them has sizes.
 // That results is using defaults, that seem to be 9 for VARCHAR
 // and neither FeatureTestModel nor AggregateTestModel would setup because of that.
@@ -68,6 +67,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
         fieldTypeMapping.put(Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
         return fieldTypeMapping;
     }*/
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping = super.buildFieldTypes();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
@@ -78,6 +78,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
@@ -115,6 +116,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
      * Used for stored procedure creation: Prefix for INPUT parameters. 
      * Not required on most platforms. 
      */
+    @Override
     public String getInputProcedureToken() {
         return "IN";
     }
@@ -127,6 +129,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     /* This method is used to print the output parameter token when stored
      * procedures is created
      */
+    @Override
     public String getCreationOutputProcedureToken() {
         return "OUT";
     }
@@ -134,13 +137,9 @@ public class SQLAnywherePlatform extends SybasePlatform {
     /* This method is used to print the output parameter token when stored
      * procedures are called
      */
+    @Override
     public String getOutputProcedureToken() {
         return "";
-    }
-
-    @Override
-    public int getJDBCType(Class javaType) {
-        return javaType == ClassConstants.BLOB ? Types.LONGVARBINARY :  javaType == ClassConstants.CLOB ? Types.LONGVARCHAR : super.getJDBCType(javaType);
     }
 
     @Override
@@ -151,14 +150,17 @@ public class SQLAnywherePlatform extends SybasePlatform {
     /**
      * Used for sp defs.
      */
+    @Override
     public String getProcedureArgumentString() {
         return "";
     }
 
+    @Override
     public String getStoredProcedureParameterPrefix() {
         return "";
     }
 
+    @Override
     public String getStoredProcedureTerminationToken() {
         return ";";
     }
@@ -181,6 +183,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     /**
      * Used for batch writing and sp defs.
      */
+    @Override
     public String getBatchBeginString() {
         return "BEGIN ";
     }
@@ -188,6 +191,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     /**
      * Used for batch writing and sp defs.
      */
+    @Override
     public String getBatchEndString() {
         return "END;";
     }
@@ -195,6 +199,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     /**
      * Used for batch writing and sp defs.
      */
+    @Override
     public String getBatchDelimiterString() {
         return "; ";
     }
@@ -202,6 +207,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     /**
      * Used for sp calls.
      */
+    @Override
     public String getProcedureCallHeader() {
         return "CALL ";
     }
@@ -231,6 +237,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
         return true;
     }
 
+    @Override
     public boolean isSybase() {
         return false;
     }
@@ -240,6 +247,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
         return true;
     }
 
+    @Override
     public boolean requiresProcedureCallBrackets() {
         return true;
     }
@@ -249,6 +257,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
      * Indicates whether the version of CallableStatement.registerOutputParameter method
      * that takes type name should be used.
      */
+    @Override
     public boolean requiresTypeNameToRegisterOutputParameter() {
         return false;
     }
@@ -292,6 +301,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
     }
 
     //**temp
+    @Override
     public boolean shouldPrintStoredProcedureArgumentNameInCall() {
         return false;
     }
@@ -313,6 +323,14 @@ public class SQLAnywherePlatform extends SybasePlatform {
 
     @Override
     public boolean supportsStoredFunctions() {
+        return true;
+    }
+
+    /**
+     * SQL Anywhere does support cascade on delete, unlike Sybase.
+     */
+    @Override
+    public boolean supportsDeleteOnCascade() {
         return true;
     }
 }

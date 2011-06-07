@@ -14,6 +14,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.framework.junit;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Hashtable;
@@ -68,7 +69,7 @@ import org.eclipse.persistence.testing.framework.server.TestRunner5;
  */
 public abstract class JUnitTestCase extends TestCase {
 
-    private static Map emfNamedPersistenceUnits = null;
+    private static Map<String, EntityManagerFactory> emfNamedPersistenceUnits = null;
     
     /** Determine if the test is running on a JEE server, or in JSE. */
     protected static Boolean isOnServer;
@@ -446,9 +447,21 @@ public abstract class JUnitTestCase extends TestCase {
                 }
             }
             
-            EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
+            EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
             
             if (emfNamedPersistenceUnit == null) {
+                // force closing of other persistence units to avoid Sybase running out of connections.
+                if (!persistenceUnitName.equals("default") && getServerSession().getPlatform().isSybase()) {
+                    Iterator<Map.Entry<String, EntityManagerFactory>> factories = emfNamedPersistenceUnits.entrySet().iterator();
+                    while (factories.hasNext()) {
+                        Map.Entry<String, EntityManagerFactory> entry = factories.next();
+                        if (!entry.getKey().equals("default")) {
+                            System.out.println("Closing factory: " + entry.getKey());
+                            entry.getValue().close();
+                            factories.remove();
+                        }
+                    }
+                }
                 if (descriptors == null) {
                     emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 } else {
@@ -477,7 +490,7 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static boolean doesEntityManagerFactoryExist(String persistenceUnitName) {
-        EntityManagerFactory emf = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
+        EntityManagerFactory emf = emfNamedPersistenceUnits.get(persistenceUnitName);
         return emf != null && emf.isOpen();
     }
 
@@ -486,7 +499,7 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static void closeEntityManagerFactory(String persistenceUnitName) {
-        EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
+        EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
         if(emfNamedPersistenceUnit != null) {
             if(emfNamedPersistenceUnit.isOpen()) {
                 emfNamedPersistenceUnit.close();

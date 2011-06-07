@@ -236,7 +236,9 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
     }
 
     public void testPessimisticLocking() throws Exception {
-        if (!isSelectForUpateSupported()) {
+        // Not all database support locking or the for update syntax.
+        if (!getDatabaseSession().getPlatform().isOracle() && !getDatabaseSession().getPlatform().isMySQL()) {
+            warning("FOR UPDATE syntax not supported.");
             return;
         }
         
@@ -282,7 +284,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         entityResult.addFieldResult(new FieldResult("address.id", "EMP_ADDR"));
 
         resultSetMapping.addResult(entityResult);
-        SQLCall call = new SQLCall("SELECT t0.EMP_ID, t1.EMP_ID, t0.F_NAME, t0.L_NAME, t0.VERSION, t1.SALARY, t0.START_DATE AS STARTDATE, t0.END_DATE, t0.ADDR_ID AS EMP_ADDR, t0.manager_EMP_ID FROM CMP3_EMPLOYEE t0, CMP3_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND ( t0.L_NAME = 'Smith' ))");
+        SQLCall call = new SQLCall("SELECT t0.EMP_ID, t1.EMP_ID, t0.F_NAME, t0.L_NAME, t0.VERSION, t1.SALARY, t0.START_DATE AS STARTDATE, t0.END_DATE, t0.ADDR_ID AS EMP_ADDR, t0.MANAGER_EMP_ID FROM CMP3_EMPLOYEE t0, CMP3_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND ( t0.L_NAME = 'Smith' ))");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
         List results = (List)getServerSession().executeQuery(query);

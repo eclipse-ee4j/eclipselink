@@ -1148,6 +1148,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             setPartitioningPolicy(policy);
         }
+        if (this.isCascadeOnDeleteSetOnDatabase && !session.getPlatform().supportsDeleteOnCascade()) {
+            this.isCascadeOnDeleteSetOnDatabase = false;
+        }
     }
     
     /**
@@ -1159,9 +1162,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         super.initialize(session);
         if (this.isPrivateOwned && (this.descriptor != null)) {
             this.descriptor.addMappingsPostCalculateChanges(this);
-        }
-        if (this.isCascadeOnDeleteSetOnDatabase && !session.getPlatform().supportsForeignKeyConstraints()) {
-            this.isCascadeOnDeleteSetOnDatabase = false;
         }
         initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);

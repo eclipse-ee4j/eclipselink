@@ -76,7 +76,7 @@ public class ForeignKeyConstraint implements Serializable {
                 }
             }
             writer.write(")");
-            if (shouldCascadeOnDelete()) {
+            if (shouldCascadeOnDelete() && session.getPlatform().supportsDeleteOnCascade()) {
                 writer.write(" ON DELETE CASCADE");
             }
         } catch (IOException ioException) {
