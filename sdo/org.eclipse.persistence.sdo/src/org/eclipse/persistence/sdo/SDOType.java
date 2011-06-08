@@ -19,6 +19,7 @@ import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class SDOType implements Type, Serializable {
     private String javaClassName;
     private String javaImplClassName;
     protected Class javaImplClass;
-    private List nonFinalizedReferencingProps;
+    private List<SDOProperty> nonFinalizedReferencingProps;
     private List nonFinalizedMappingURIs;
 
     /** hold a wrapper object for primitive numeric defaults */
@@ -355,9 +356,11 @@ public class SDOType implements Type, Serializable {
                     addOpenMappings();
                 }
 
-                for (int i = 0; i < getSubTypes().size(); i++) {
-                    SDOType nextSubType = (SDOType)getSubTypes().get(i);
-                    nextSubType.setOpen(bOpen);
+                if(isBaseType()) {
+                    for (int i = 0; i < getSubTypes().size(); i++) {
+                        SDOType nextSubType = (SDOType)getSubTypes().get(i);
+                        nextSubType.setOpen(bOpen);
+                    }
                 }
             }
         }
@@ -469,9 +472,11 @@ public class SDOType implements Type, Serializable {
 
     private void updateSubtypes(Type baseType) {
         getProperties().addAll(0, baseType.getProperties());
-        for (int i = 0; i < getSubTypes().size(); i++) {
-            SDOType nextSubType = (SDOType)getSubTypes().get(i);
-            nextSubType.updateSubtypes(baseType);
+        if(isBaseType()) {
+            for (int i = 0; i < getSubTypes().size(); i++) {
+                SDOType nextSubType = (SDOType)getSubTypes().get(i);
+                nextSubType.updateSubtypes(baseType);
+            }
         }
     }
 
@@ -560,9 +565,11 @@ public class SDOType implements Type, Serializable {
             int insertPlace = allSize - currentSize + index;
 
             //updateSubTypesProps
-            for (int i = 0; i < getSubTypes().size(); i++) {
-                SDOType nextSubType = (SDOType)getSubTypes().get(i);
-                nextSubType.updateIndices(insertPlace, property);
+            if(isBaseType()) {
+                for (int i = 0; i < getSubTypes().size(); i++) {
+                    SDOType nextSubType = (SDOType)getSubTypes().get(i);
+                    nextSubType.updateIndices(insertPlace, property);
+                }
             }
 
             getDeclaredProperties().add(index, property);
@@ -770,10 +777,12 @@ public class SDOType implements Type, Serializable {
             }
         }
         // now setup inheritance for any subtypes
-        for (int i = 0; i < subTypes.size(); i++) {
-            SDOType nextSubType = (SDOType)subTypes.get(i);
-            if (!nextSubType.isDataType() && nextSubType.isSubType()) {
-                nextSubType.setupInheritance(this);
+        if(isBaseType()) {
+            for (int i = 0; i < subTypes.size(); i++) {
+                SDOType nextSubType = (SDOType)subTypes.get(i);
+                if (!nextSubType.isDataType() && nextSubType.isSubType()) {
+                    nextSubType.setupInheritance(this);
+                }
             }
         }
     }
@@ -843,13 +852,17 @@ public class SDOType implements Type, Serializable {
             }
         }
         setFinalized(true);
-        for (int i = 0; i < getNonFinalizedReferencingProps().size(); i++) {
-            SDOProperty nextProp = (SDOProperty)getNonFinalizedReferencingProps().get(i);
-            String nextURI = (String)getNonFinalizedMappingURIs().get(i);
-            nextProp.buildMapping(nextURI, nextProp.getIndexInType());
+        if(null != nonFinalizedReferencingProps) {
+            for (int i = 0; i < nonFinalizedReferencingProps.size(); i++) {
+                SDOProperty nextProp = nonFinalizedReferencingProps.get(i);
+                String nextURI = (String)getNonFinalizedMappingURIs().get(i);
+                nextProp.buildMapping(nextURI, nextProp.getIndexInType());
+            }
+            nonFinalizedReferencingProps = null;
+            nonFinalizedMappingURIs = null;
         }
         // set @sdoRef attribute mapping for complex types that are not involved in inheritance
-        if (!isDataType() && !isSubType() && getSubTypes().size() == 0) {
+        if (!isDataType() && !isSubType() && !isBaseType()) {
             String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
             XMLDirectMapping sdoRefMapping = new XMLDirectMapping();
             sdoRefMapping.setAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME);
@@ -906,10 +919,16 @@ public class SDOType implements Type, Serializable {
     }
 
     public Object get(Property property) {
-        return getPropertyValues().get(property);
+        if(null == propertyValues) {
+            return null;
+        }
+        return propertyValues.get(property);
     }
 
     public List getInstanceProperties() {
+        if(null == propertyValues) {
+            return Collections.EMPTY_LIST;
+        }
         return new ArrayList(getPropertyValues().keySet());
     }
 
@@ -984,6 +1003,14 @@ public class SDOType implements Type, Serializable {
         return subTypes;
     }
 
+    /**
+     * INTERNAL:
+     * Provide a means to determine if this type has sub types without causing the sub types property to be initialized.
+     */
+    public boolean isBaseType() {
+        return !(null == subTypes || subTypes.isEmpty());
+    }
+
     private void updateIndices(int insertPosition, Property property) {
         int declaredSize = getDeclaredProperties().size();
         SDOProperty nextProp = null;
@@ -992,12 +1019,14 @@ public class SDOType implements Type, Serializable {
             nextProp.setIndexInType(nextProp.getIndexInType() + 1);
         }
         getProperties().add(insertPosition, property);
-        int subTypesSize = getSubTypes().size();
-
-        SDOType nextSubType = null;
-        for (int i = 0; i < subTypesSize; i++) {
-            nextSubType = (SDOType)getSubTypes().get(i);
-            nextSubType.updateIndices(insertPosition, property);
+        if(isBaseType()) {
+            int subTypesSize = getSubTypes().size();
+    
+            SDOType nextSubType = null;
+            for (int i = 0; i < subTypesSize; i++) {
+                nextSubType = (SDOType)getSubTypes().get(i);
+                nextSubType.updateIndices(insertPosition, property);
+            }
         }
     }
 
