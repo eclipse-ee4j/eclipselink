@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
+import java.sql.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -289,9 +290,8 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
 
     public static DatabaseQuery buildPersistenceTestGreaterThanEqualDateQuery() {
         ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
-        GregorianCalendar month = new GregorianCalendar();
-        month.set(2001, 6, 1, 11, 24, 36);
-        Expression expression = builder.get("period").get("startDate").greaterThanEqual(month);
+        Date date = Date.valueOf("2001-07-01");
+        Expression expression = builder.get("period").get("startDate").greaterThanEqual(date);
         ReadObjectQuery query = new ReadObjectQuery(Employee.class);
         query.setSelectionCriteria(expression);
         return query;
