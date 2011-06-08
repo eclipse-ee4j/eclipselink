@@ -52,8 +52,8 @@ public class TestEagerLoading extends JPA1Base {
         employees = new Employee[] { createEmployee(1, "Donald", "Duck", costCenters[0]),
                 createEmployee(2, "Daisy", "Duck", costCenters[0]), createEmployee(3, "Gustav", "Gans", costCenters[0]),
                 createEmployee(4, "Dagobert", "Duck", costCenters[1]), createEmployee(5, "Klaas", "Klever", costCenters[1]) };
-        vehicles = new MotorVehicle[] { createCar((short) 1, "Fiat", employees[0]),
-                createCar((short) 2, "Rolls Royce", employees[3]), createCar((short) 3, "Ferrari", employees[4]) };
+        vehicles = new MotorVehicle[] { createCar("Fiat", employees[0]),
+                createCar("Rolls Royce", employees[3]), createCar("Ferrari", employees[4]) };
         costCenters[0].addEmployee(employees[0]);
         costCenters[0].addEmployee(employees[1]);
         costCenters[0].addEmployee(employees[2]);
@@ -189,9 +189,8 @@ public class TestEagerLoading extends JPA1Base {
         return emp;
     }
 
-    public static Car createCar(short id, String brand, Employee driver) {
+    private static Car createCar(String brand, Employee driver) {
         Car car = new Car();
-        car.setId(id);
         car.setBrand(brand);
         car.setDriver(driver);
         return car;

@@ -191,7 +191,7 @@ public class TestDeleteQuery extends JPA1Base {
         int count = query.executeUpdate();
         verify(count == 1, "wrong update count: " + count);
         getEnvironment().commitTransaction(em);
-        getEnvironment().evict(em, Employee.class);
+		getEnvironment().evict(em, Employee.class);
         verify(null == em.find(Employee.class, Integer.valueOf(1)), "employee found");
     }
 

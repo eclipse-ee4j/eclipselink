@@ -45,7 +45,6 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Truck;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum;
 import org.junit.Test;
 
-@SuppressWarnings("unchecked")
 public class TestArguments extends QueryTest {
 
     private final Set<Department> ALL_DEPARTMENTS = new HashSet<Department>();
@@ -121,8 +120,8 @@ public class TestArguments extends QueryTest {
         try {
             Query query = em.createQuery("select e from Employee e where e.department = :dep");
             query.setParameter("dep", dep10);
-            List result = query.getResultList();
-            Iterator iter = result.iterator();
+            List<?> result = query.getResultList();
+            Iterator<?> iter = result.iterator();
             verify(iter.hasNext(), "no results");
             Object object = iter.next();
             verify(object instanceof Employee, "wrong instance: " + object.getClass().getName());
@@ -143,8 +142,8 @@ public class TestArguments extends QueryTest {
             Cubicle cubicle = em.find(Cubicle.class, new CubiclePrimaryKeyClass(1, 2));
             Query query = em.createQuery("select e from Employee e where e.cubicle = :cub");
             query.setParameter("cub", cubicle);
-            List result = query.getResultList();
-            Iterator iter = result.iterator();
+            List<?> result = query.getResultList();
+            Iterator<?> iter = result.iterator();
             verify(iter.hasNext(), "no results");
             Object object = iter.next();
             verify(object instanceof Employee, "wrong instance: " + object.getClass().getName());
@@ -197,26 +196,25 @@ public class TestArguments extends QueryTest {
         try {
             getEnvironment().beginTransaction(em);
             MotorVehicle motorVehicle = new MotorVehicle();
-            motorVehicle.setId(Short.valueOf((short) 1));
             motorVehicle.setTransmissionType(TransmissionType.AUTOMATIC);
             Truck truck = new Truck();
-            truck.setId(Short.valueOf((short) 2));
             truck.setTransmissionType(TransmissionType.STICK_SHIFT);
             Car car = new Car();
-            car.setId(Short.valueOf((short) 3));
             em.persist(motorVehicle);
             em.persist(truck);
             em.persist(car);
             getEnvironment().commitTransactionAndClear(em);
+            short mvId = motorVehicle.getId();
+            short truckId = truck.getId();
             Query query = em.createQuery("select m from MotorVehicle m where m.transmissionType = :tr");
             query.setParameter("tr", TransmissionType.AUTOMATIC);
-            List result = query.getResultList();
-            Iterator iter = result.iterator();
+            List<?> result = query.getResultList();
+            Iterator<?> iter = result.iterator();
             verify(iter.hasNext(), "no results");
             Object object = iter.next();
             verify(object instanceof MotorVehicle, "wrong instance: " + object.getClass().getName());
             MotorVehicle vehicle = (MotorVehicle) object;
-            verify(vehicle.getId() == 1, "wrong id: " + vehicle.getId());
+            verify(vehicle.getId() == mvId, "wrong id: " + vehicle.getId());
             verify(!iter.hasNext(), "too many rows");
             query.setParameter("tr", TransmissionType.STICK_SHIFT);
             result = query.getResultList();
@@ -225,7 +223,7 @@ public class TestArguments extends QueryTest {
             object = iter.next();
             verify(object instanceof MotorVehicle, "wrong instance: " + object.getClass().getName());
             vehicle = (MotorVehicle) object;
-            verify(vehicle.getId() == 2, "wrong id: " + vehicle.getId());
+            verify(vehicle.getId() == truckId, "wrong id: " + vehicle.getId());
             verify(!iter.hasNext(), "too many rows");
         } finally {
             closeEntityManager(em);

@@ -84,7 +84,6 @@ public class TestExtendedQueries extends JPA1Base {
     private static final MotorVehicle[] MOTORVEHICLES = new MotorVehicle[NUMBER_OF_MOTORVEHICLES];
     // randomizer for distributing relationships between Employees and other entities
     private static final Random nameRandomizer = new Random(RANDOM_SEED);
-    private short vehiclePK = 0;
 
     protected void resetData() {
         NUMBER_OF_GIVEN_NAMES_USED.clear();
@@ -197,7 +196,6 @@ public class TestExtendedQueries extends JPA1Base {
             // creates & persists some motorvehicles
             for (int i = 0; i < NUMBER_OF_MOTORVEHICLES; i++) {
                 MotorVehicle tmpMVehicle = new MotorVehicle();
-                tmpMVehicle.setId(Short.valueOf(++this.vehiclePK));
                 tmpMVehicle.setBrand("foo-car");
                 MOTORVEHICLES[i] = tmpMVehicle;
                 em.persist(tmpMVehicle);
@@ -205,7 +203,6 @@ public class TestExtendedQueries extends JPA1Base {
             // creates & persists some bicycles
             for (int i = 0; i < NUMBER_OF_BICYCLES; i++) {
                 Bicycle tmpBike = new Bicycle();
-                tmpBike.setId(Short.valueOf(++this.vehiclePK));
                 tmpBike.setBrand("foo-brand");
                 tmpBike.setRiders(new ArrayList<Employee>());
                 BICYCLES[i] = tmpBike;

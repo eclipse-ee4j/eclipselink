@@ -160,14 +160,6 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             conn.close();
         }
         if (expected.size() != actual.size()) {
-            for (Iterator iter = expected.iterator(); iter.hasNext();) {
-                @SuppressWarnings("unused")
-                Pair element = (Pair) iter.next();
-            }
-            for (Iterator iter = actual.iterator(); iter.hasNext();) {
-                @SuppressWarnings("unused")
-                Pair element = (Pair) iter.next();
-            }
             flop("actual set has wrong size " + actual.size() + " expected: " + expected.size());
         } else {
             verify(true, "");
@@ -205,17 +197,18 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             env.beginTransaction(em);
             Employee emp = em.find(Employee.class, HANS_ID);
             verify(emp != null, "employee not found");
-            Set projects = emp.getProjects();
+            Set<Project> projects = emp.getProjects();
             verify(projects != null, "projects are null");
             verify(projects.size() == 3, "not exactly 3 projects but " + projects.size());
-            Iterator iter = projects.iterator();
+            Iterator<Project> iter = projects.iterator();
             while (iter.hasNext()) {
-                Project project = (Project) iter.next();
+                Project project = iter.next();
                 if (project.getId().intValue() == removeId) {
-                    Set employeesOfProject = project.getEmployees();
+                    Set<Employee> employeesOfProject = project.getEmployees();
                     employeesOfProject.remove(emp);
                     em.remove(project);
                     iter.remove();
+                    break;
                 }
             }
             verify(projects.size() == 2, "no project removed");
@@ -229,7 +222,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             emp = em.find(Employee.class, HANS_ID);
             projects = emp.getProjects();
             verify(projects.size() == 2, "not exactly 2 projects but " + projects.size());
-            Object object = em.find(Project.class, new Integer(removeId));
+            Object object = em.find(Project.class, removeId);
             verify(object == null, "project found");
             env.rollbackTransactionAndClear(em);
         } finally {
@@ -250,14 +243,14 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             env.beginTransaction(em);
             Employee emp = em.find(Employee.class, HANS_ID);
             verify(emp != null, "employee not found");
-            Set projects = emp.getProjects();
+            Set<Project> projects = emp.getProjects();
             verify(projects != null, "projects are null");
             verify(projects.size() == 3, "not exactly 3 projects but " + projects.size());
-            Iterator iter = projects.iterator();
+            Iterator<Project> iter = projects.iterator();
             while (iter.hasNext()) {
-                Project project = (Project) iter.next();
+                Project project = iter.next();
                 if (project.getId().intValue() == REMOVE_ID) {
-                    Set employeesOfProject = project.getEmployees();
+                    Set<Employee> employeesOfProject = project.getEmployees();
                     employeesOfProject.remove(emp);
                     iter.remove();
                 }
@@ -319,7 +312,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             Employee emp = em.find(Employee.class, HANS_ID);
             verify(emp != null, "employee not found");
             Set<Project> projects = emp.getProjects();
-            Iterator iter = projects.iterator();
+            Iterator<Project> iter = projects.iterator();
             Project project = (Project) iter.next();
             int removedId = project.getId().intValue();
             // there are no managed relationships -> we have to remove the projects on both sides
@@ -349,7 +342,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     private void verifyEmployees(EntityManager em, int id, int size) {
         Project project = em.find(Project.class, new Integer(id));
         verify(project != null, "project not found");
-        Set employees = project.getEmployees();
+        Set<Employee> employees = project.getEmployees();
         verify(employees.size() == size, "wrong number of employees: " + employees.size() + " expected: " + size);
     }
 
