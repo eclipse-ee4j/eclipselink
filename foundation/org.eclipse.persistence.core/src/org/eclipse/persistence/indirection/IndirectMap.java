@@ -635,7 +635,15 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     public int size() {
         return this.getDelegate().size();
     }
-              
+    
+    /**
+     * INTERNAL
+     * Set whether this collection should attempt do deal with adds and removes without retrieving the 
+     * collection from the dB
+     */
+    public void setUseLazyInstantiation(boolean useLazyInstantiation){
+    }
+    
     /**
      * INTERNAL:
      * Return the elements that have been removed before instantiation.
