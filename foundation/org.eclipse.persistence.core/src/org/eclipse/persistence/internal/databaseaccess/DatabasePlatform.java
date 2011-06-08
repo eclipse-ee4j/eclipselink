@@ -2030,7 +2030,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public boolean supportsDeleteOnCascade() {
-        return true;
+        return supportsForeignKeyConstraints();
     }
     
     /**
