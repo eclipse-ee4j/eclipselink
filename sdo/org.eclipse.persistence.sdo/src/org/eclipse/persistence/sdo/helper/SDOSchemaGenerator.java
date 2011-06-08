@@ -186,7 +186,7 @@ public class SDOSchemaGenerator {
 
         for (int i = 0; i < typesWithSameUri.size(); i++) {
             SDOType nextType = (SDOType)typesWithSameUri.get(i);
-            if ((nextType.getBaseTypes() != null) && (nextType.getBaseTypes().size() > 1)) {
+            if (nextType.isSubType()) {
                 //A schema can not be generated because the following type has more than 1 base type + type
             }
 
@@ -267,7 +267,7 @@ public class SDOSchemaGenerator {
         }
 
         SDOType baseType = null;
-        if ((sdoType.getBaseTypes() != null) && (sdoType.getBaseTypes().size() > 0) && ((SDOType) sdoType.getBaseTypes().get(0) != null)) {
+        if (sdoType.isSubType()) {
             baseType = (SDOType) sdoType.getBaseTypes().get(0);
         } 
 
@@ -322,7 +322,7 @@ public class SDOSchemaGenerator {
 
         complexType.setMixed(sdoType.isSequenced());
         Type baseType = null;
-        if ((sdoType.getBaseTypes() != null) && (sdoType.getBaseTypes().size() > 0) && ((Type)sdoType.getBaseTypes().get(0) != null)) {
+        if (sdoType.isSubType()) {
             baseType = (Type)sdoType.getBaseTypes().get(0);
 
             //baseName = base.getName();
