@@ -450,18 +450,22 @@ public abstract class JUnitTestCase extends TestCase {
             EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
             
             if (emfNamedPersistenceUnit == null) {
+                
                 // force closing of other persistence units to avoid Sybase running out of connections.
-                if (!persistenceUnitName.equals("default") && getServerSession().getPlatform().isSybase()) {
-                    Iterator<Map.Entry<String, EntityManagerFactory>> factories = emfNamedPersistenceUnits.entrySet().iterator();
-                    while (factories.hasNext()) {
-                        Map.Entry<String, EntityManagerFactory> entry = factories.next();
-                        if (!entry.getKey().equals("default")) {
-                            System.out.println("Closing factory: " + entry.getKey());
-                            entry.getValue().close();
-                            factories.remove();
+                if (!persistenceUnitName.equals("default")) {
+                    if (emfNamedPersistenceUnits.containsKey("default") && getServerSession().getPlatform().isSybase()) {
+                        Iterator<Map.Entry<String, EntityManagerFactory>> factories = emfNamedPersistenceUnits.entrySet().iterator();
+                        while (factories.hasNext()) {
+                            Map.Entry<String, EntityManagerFactory> entry = factories.next();
+                            if (!entry.getKey().equals("default") && !entry.getKey().equals(persistenceUnitName)) {
+                                System.out.println("Closing factory: " + entry.getKey());
+                                entry.getValue().close();
+                                factories.remove();
+                            }
                         }
                     }
                 }
+                
                 if (descriptors == null) {
                     emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 } else {
