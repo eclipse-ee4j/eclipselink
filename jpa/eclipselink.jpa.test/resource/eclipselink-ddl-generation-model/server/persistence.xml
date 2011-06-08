@@ -50,8 +50,16 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Material</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Lobtest</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.LobtestPK</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Boss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Contract</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.MafiaFamily</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Mafioso</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Soldier</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Underboss</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
             <property name="eclipselink.target-server" value="%%server-platform%%"/>
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->

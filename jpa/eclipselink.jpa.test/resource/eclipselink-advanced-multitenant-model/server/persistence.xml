@@ -17,11 +17,14 @@
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.target-server" value="%%server-platform%%"/>
@@ -42,11 +45,14 @@
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.target-server" value="%%server-platform%%"/>

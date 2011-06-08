@@ -167,7 +167,7 @@ public class AdvancedMultiTenant123JunitTest extends JUnitTestCase {
             }
             
             // Try a select named query
-            List families = em.createNamedQuery("findJPQLMafiaFamilies").getResultList();
+            List families = em.createNamedQuery("findAllMafiaFamilies").getResultList();
             assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

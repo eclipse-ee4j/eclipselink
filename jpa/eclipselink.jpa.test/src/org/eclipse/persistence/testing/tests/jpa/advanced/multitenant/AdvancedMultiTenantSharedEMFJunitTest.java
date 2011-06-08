@@ -18,14 +18,9 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
 import java.util.ArrayList;
-//import java.util.HashMap;
 import java.util.List;
-//import java.util.Map;
 
 import javax.persistence.EntityManager;
-//import javax.persistence.EntityManagerFactory;
-//import javax.persistence.NamedQuery;
-//import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import junit.framework.*;
@@ -33,7 +28,6 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
-//import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo;
@@ -435,7 +429,6 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
         //so family123 won't have value at this moment
         //assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
 
-        // following line will fail, Guy is investigating
         assertFalse("No mafiosos part of 007 family", family.getMafiosos().isEmpty());
         
         // See if we can find any members of the other family.
@@ -461,7 +454,7 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
         }
         
         // Try a select named query
-        List families = em.createNamedQuery("findJPQLMafiaFamilies").getResultList();
+        List families = em.createNamedQuery("findAllMafiaFamilies").getResultList();
         assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
         // Find our boss and make sure his name has not been compromised from the 707 family.
         Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
