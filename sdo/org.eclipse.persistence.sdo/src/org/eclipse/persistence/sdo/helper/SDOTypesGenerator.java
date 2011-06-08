@@ -186,9 +186,9 @@ public class SDOTypesGenerator {
             // add any base types to the list
             for (int i=0; i<descriptorsToAdd.size(); i++) {
                 SDOType nextSDOType = (SDOType) descriptorsToAdd.get(i);
-                if (!nextSDOType.isDataType() && nextSDOType.getBaseTypes().size() == 0 && nextSDOType.getSubTypes().size() > 0) {
+                if (!nextSDOType.isDataType() && !nextSDOType.isSubType() && nextSDOType.isBaseType()) {
                     nextSDOType.setupInheritance(null);
-                } else if (!nextSDOType.isDataType() && nextSDOType.getBaseTypes().size() > 0 && !getGeneratedTypes().values().contains(nextSDOType.getBaseTypes().get(0))) {
+                } else if (!nextSDOType.isDataType() && nextSDOType.isSubType() && !getGeneratedTypes().values().contains(nextSDOType.getBaseTypes().get(0))) {
                     SDOType baseType = (SDOType) nextSDOType.getBaseTypes().get(0);
                     while (baseType != null) {
                         descriptorsToAdd.add(baseType);
@@ -1418,7 +1418,7 @@ public class SDOTypesGenerator {
     private void updateCollisionProperty(SDOType owningType, SDOProperty p) {
         owningType.setSequenced(true);
         SDOType baseType = owningType;
-        while ((baseType.getBaseTypes() != null) && (baseType.getBaseTypes().size() > 0)) {
+        while (baseType.isSubType()) {
             baseType = (SDOType) baseType.getBaseTypes().get(0);
             baseType.setSequenced(true);
         }
