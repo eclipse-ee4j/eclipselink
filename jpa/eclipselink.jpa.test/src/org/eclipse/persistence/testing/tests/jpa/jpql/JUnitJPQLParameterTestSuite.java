@@ -80,8 +80,9 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLParameterTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLParameterTestSuite("multipleParameterTest"));
         suite.addTest(new JUnitJPQLParameterTestSuite("updateEnumParameter"));
-        suite.addTest(new JUnitJPQLParameterTestSuite("emptyParametersForNonParameterizedNamedQueryTest"));
-        
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(new JUnitJPQLParameterTestSuite("emptyParametersForNonParameterizedNamedQueryTest"));
+        }
         return suite;
     }
     
@@ -174,10 +175,6 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
     
     // Bug 344492
     public void emptyParametersForNonParameterizedNamedQueryTest() {
-        if (isJPA10()) {
-            getServerSession().logMessage("Test emptyParametersForNonParameterizedNamedQueryTest skipped for JPA 1.0");
-            return;
-        }
         EntityManager em = createEntityManager();
         assertNotNull(em);
         Query query = em.createNamedQuery("findAllEmployeesOrderById");
