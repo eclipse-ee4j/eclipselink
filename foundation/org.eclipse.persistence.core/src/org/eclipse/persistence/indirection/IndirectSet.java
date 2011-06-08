@@ -100,6 +100,14 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
     protected float loadFactor = 0.75f;
     
     /**
+     * This value is used to determine if we should attempt to do adds and removes from the list without
+     * actually instantiating the list from the database. By default, this is set to false.  When set to
+     * true, adding duplicate elements to the set will result in the element being added when the transaction
+     * is committed.
+     */
+    private boolean useLazyInstantiation = false;
+    
+    /**
      * Construct an empty IndirectSet.
      */
     public IndirectSet() {
@@ -506,12 +514,30 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
     }
 
     /**
+     * INTERNAL
+     * Set whether this collection should attempt do deal with adds and removes without retrieving the 
+     * collection from the dB
+     */
+    public void setUseLazyInstantiation(boolean useLazyInstantiation){
+        this.useLazyInstantiation = useLazyInstantiation;
+    }
+    
+    /**
      * @see java.util.Set#size()
      */
     public int size() {
         return this.getDelegate().size();
     }
 
+    /**
+     * Return whether this collection should attempt do deal with adds and removes without retrieving the 
+     * collection from the dB
+     * @return
+     */
+    protected boolean shouldUseLazyInstantiation(){
+        return useLazyInstantiation;
+    }
+    
     /**
      * @see java.util.Set#toArray()
      */
@@ -661,6 +687,6 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
      * Current instantiation is avoided is using change tracking.
      */
     protected boolean shouldAvoidInstantiation() {
-        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener) && ((WeavedAttributeValueHolderInterface)getValueHolder()).shouldAllowInstantiationDeferral();
+        return (!isInstantiated()) && (shouldUseLazyInstantiation()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener) && ((WeavedAttributeValueHolderInterface)getValueHolder()).shouldAllowInstantiationDeferral();
     }
 }

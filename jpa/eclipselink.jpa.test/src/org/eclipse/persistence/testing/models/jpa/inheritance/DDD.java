@@ -77,4 +77,30 @@ public class DDD {
     public void setCount2(int count2) {
         this.count2 = count2;
     }
+    
+    public boolean equals(Object object){
+
+        if (object == null){
+            return false;
+        }
+        if (!(object instanceof DDD)){
+            return false;
+        }
+        DDD ddd = (DDD)object;
+        if (id == ddd.getId()){
+            if (aaa == ddd.getAaa()){
+                return true;
+            }
+            if (aaa != null){
+                if (ddd.getAaa() != null){
+                    return aaa.getId().equals(ddd.getAaa().getId());
+                }
+            }
+        }
+        return false;
+    }
+    
+    public int hashCode(){
+        return id;
+    }
 }

@@ -323,7 +323,36 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
         this.mapping.setAttributeValueInObject(target, attributeValue);
     }
-
+    
+    /**
+     * ADVANCED:
+     * This method will only change the behavior of TransparentIndirectionPolicy.
+     * 
+     * IndirectList and IndirectSet can be configured not to instantiate the list from the
+     * database when you add and remove from them.  IndirectList defaults to this behavior. When
+     * Set to true, the collection associated with this TransparentIndirection will be setup so as
+     * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
+     * that when the set is not instantiated, if a duplicate element is added, it will not be
+     * detected until commit time.
+     * 
+     */
+    public void setUseLazyInstantiation(Boolean useLazyInstantiation) {
+    }
+    
+    /**
+     * ADVANCED:
+     * Returns false unless this is a transparent indirection policy
+     * 
+     * IndirectList and IndirectSet can be configured not to instantiate the list from the
+     * database when you add and remove from them.  IndirectList defaults to this behavior. When
+     * Set to true, the collection associated with this TransparentIndirection will be setup so as
+     * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
+     * that when the set is not instantiated, if a duplicate element is added, it will not be
+     * detected until commit time.
+     */
+    public Boolean shouldUseLazyInstantiation() {
+        return false;
+    }
     /**
      * Reset the wrapper used to store the value.
      * This is only required if a wrapper is used.
