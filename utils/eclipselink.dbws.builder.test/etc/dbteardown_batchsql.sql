@@ -1,0 +1,2 @@
+DROP TABLE batch1|
+DROP TABLE batch2|

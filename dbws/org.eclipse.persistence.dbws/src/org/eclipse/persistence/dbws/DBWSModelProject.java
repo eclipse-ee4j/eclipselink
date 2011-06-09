@@ -27,6 +27,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.xr.Attachment;
+import org.eclipse.persistence.internal.xr.BatchQueryOperation;
 import org.eclipse.persistence.internal.xr.CollectionResult;
 import org.eclipse.persistence.internal.xr.DeleteOperation;
 import org.eclipse.persistence.internal.xr.InsertOperation;
@@ -52,6 +53,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
@@ -92,6 +94,7 @@ public class DBWSModelProject extends Project {
         addDescriptor(buildInsertDescriptor());
         addDescriptor(buildDeleteDescriptor());
         addDescriptor(buildUpdateDescriptor());
+        addDescriptor(buildBatchQueryDescriptor());
 
         for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
@@ -137,6 +140,7 @@ public class DBWSModelProject extends Project {
         operationsMapping.addChoiceElement("query", QueryOperation.class);
         operationsMapping.addChoiceElement("update", UpdateOperation.class);
         operationsMapping.addChoiceElement("delete", DeleteOperation.class);
+        operationsMapping.addChoiceElement("batch-sql-query", BatchQueryOperation.class);
         descriptor.addMapping(operationsMapping);
         return descriptor;
     }
@@ -178,6 +182,28 @@ public class DBWSModelProject extends Project {
             StoredFunctionQueryHandler.class);
         descriptor.addMapping(queryHandlerMapping);
 
+        return descriptor;
+    }
+
+    /**
+     * Build an XMLDescriptor for BatchQueryOperation.
+     */
+    protected XMLDescriptor buildBatchQueryDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(BatchQueryOperation.class);
+        descriptor.setDefaultRootElement("batch-sql-query");
+
+        XMLDirectMapping name = new XMLDirectMapping();
+        name.setAttributeName("name");
+        name.setXPath("name/text()");
+        descriptor.addMapping(name);
+
+        XMLCompositeDirectCollectionMapping statementsMapping = new XMLCompositeDirectCollectionMapping();
+        statementsMapping.setAttributeName("batchSql");
+        XMLField f1 = new XMLField("batch-statement/text()");
+        f1.setIsCDATA(true);
+        statementsMapping.setField(f1);
+        descriptor.addMapping(statementsMapping);
         return descriptor;
     }
 

@@ -15,7 +15,9 @@ package org.eclipse.persistence.tools.dbws;
 
 // javase imports
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -56,6 +58,7 @@ public class DBWSBuilderModelProject extends Project {
         addDescriptor(buildPLSQLProcedureOperationModelDescriptor());
         addDescriptor(buildSQLOperationModelDescriptor());
         addDescriptor(buildBindingModelDescriptor());
+        addDescriptor(buildBatchSQLOperationModelDescriptor());
 
         for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
@@ -125,6 +128,7 @@ public class DBWSBuilderModelProject extends Project {
         operationsMapping.addChoiceElement("procedure", ProcedureOperationModel.class);
         operationsMapping.addChoiceElement("plsql-procedure", PLSQLProcedureOperationModel.class);
         operationsMapping.addChoiceElement("sql", SQLOperationModel.class);
+        operationsMapping.addChoiceElement("batch-sql", BatchSQLOperationModel.class);
         descriptor.addMapping(operationsMapping);
 
         return descriptor;
@@ -204,6 +208,7 @@ public class DBWSBuilderModelProject extends Project {
         additionalOperationsMapping.addChoiceElement("procedure", ProcedureOperationModel.class);
         additionalOperationsMapping.addChoiceElement("plsql-procedure", PLSQLProcedureOperationModel.class);
         additionalOperationsMapping.addChoiceElement("sql", SQLOperationModel.class);
+        additionalOperationsMapping.addChoiceElement("batch-sql", BatchSQLOperationModel.class);
         descriptor.addMapping(additionalOperationsMapping);
 
         return descriptor;
@@ -382,6 +387,47 @@ public class DBWSBuilderModelProject extends Project {
         bindingsMapping.setXPath("binding");
         descriptor.addMapping(bindingsMapping);
 
+        return descriptor;
+    }
+
+    /**
+     * Build an XMLDescriptor for the BatchSQLOperationModel.
+     */
+    protected ClassDescriptor buildBatchSQLOperationModelDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(BatchSQLOperationModel.class);
+        descriptor.setDefaultRootElement("batch-sql");
+
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setXPath("@name");
+        descriptor.addMapping(nameMapping);
+
+        XMLDirectMapping returnTypeMapping = new XMLDirectMapping();
+        returnTypeMapping.setAttributeName("returnType");
+        returnTypeMapping.setXPath("@returnType");
+        descriptor.addMapping(returnTypeMapping);
+
+        XMLDirectMapping statementsMapping = new XMLDirectMapping();
+        statementsMapping.setAttributeName("batchSql");
+        XMLField f1 = new XMLField("batch-statement/text()");
+        f1.setIsCDATA(true);
+        statementsMapping.setField(f1);
+        // need to setup a custom accessor to convert to/from a List and an '\n' separated string  
+        statementsMapping.setAttributeAccessor(new AttributeAccessor() {
+            public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+                String rawBatchStatements = (String) value;
+                String[] batchStatements = rawBatchStatements.split("\n");
+                List<String> listOfStatements = Arrays.asList(batchStatements);
+                ((BatchSQLOperationModel)object).setBatchSql(listOfStatements);
+            }
+            public Object getAttributeValueFromObject(Object object) throws DescriptorException {
+                return ((BatchSQLOperationModel)object).getBatchSql();
+            }
+        });
+        descriptor.addMapping(statementsMapping);
+        
         return descriptor;
     }
 

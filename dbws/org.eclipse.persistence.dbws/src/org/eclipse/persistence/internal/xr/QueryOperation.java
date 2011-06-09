@@ -112,7 +112,7 @@ public class QueryOperation extends Operation {
 
     @Override
     public boolean isCollection() {
-        return result.isCollection();
+        return result != null && result.isCollection();
     }
 
     public boolean isSimpleXMLFormat() {
@@ -338,16 +338,16 @@ public class QueryOperation extends Operation {
             }
             else {
                 QName resultType = getResultType();
-                // handle binary content
-                if (isAttachment() ||
-                    (!isCollection() && resultType.equals(BASE_64_BINARY_QNAME))) {
-                    String mimeType = DEFAULT_ATTACHMENT_MIMETYPE;
-                    if (isAttachment() && result.getAttachment().getMimeType() != null) {
-                        mimeType = result.getAttachment().getMimeType();
-                    }
-                    return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
-                }
                 if (resultType != null) {
+	                // handle binary content
+	                if (isAttachment() ||
+	                    (!isCollection() && resultType.equals(BASE_64_BINARY_QNAME))) {
+	                    String mimeType = DEFAULT_ATTACHMENT_MIMETYPE;
+	                    if (isAttachment() && result.getAttachment().getMimeType() != null) {
+	                        mimeType = result.getAttachment().getMimeType();
+	                    }
+	                    return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
+	                }
                 	if (resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                         // handle primitive types
                         ValueObject vo = new ValueObject();

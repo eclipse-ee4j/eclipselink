@@ -385,5 +385,6 @@
         <SetupCompileRunTeardown testsuite-name="MTOM"/>
         <SetupCompileRunTeardown testsuite-name="SecondarySQL"/>
         <SetupCompileRunTeardown testsuite-name="SQLAsCollection"/>
+        <SetupCompileRunTeardown testsuite-name="BatchSQL"/>
     </target>
 </project>
