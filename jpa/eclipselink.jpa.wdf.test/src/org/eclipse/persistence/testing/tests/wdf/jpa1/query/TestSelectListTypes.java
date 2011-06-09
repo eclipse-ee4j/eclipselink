@@ -84,7 +84,7 @@ public class TestSelectListTypes extends JPA1Base {
 
     // primitive types
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=348874)
     public void testPrimitiveBoolean() {
         validateField("primitiveBoolean", Boolean.class);
     }
@@ -126,7 +126,7 @@ public class TestSelectListTypes extends JPA1Base {
 
     // wrappers of primitive types
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=348874)
     public void testWrapperBoolean() {
         validateField("wrapperBoolean", Boolean.class);
     }
