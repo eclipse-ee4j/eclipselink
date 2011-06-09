@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.xml.inherited.Consumer;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Official;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Birthday;
@@ -224,6 +225,15 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         assertTrue("The beer consumer read back did not match the original", getServerSession().compareObjects(initialBC, refreshedBC));
     }
     
+    public void verifyCalled(int countBefore, int countAfter, String callback) {
+        assertFalse("The callback method [" + callback + "] was not called", countBefore == countAfter);
+        assertTrue("The callback method [" + callback + "] was called more than once", countAfter == (countBefore + 1));
+    }
+    
+    public void verifyNotCalled(int countBefore, int countAfter, String callback) {
+        assertTrue("The callback method [" + callback + "] was called.", countBefore == countAfter);
+    }
+    
     public void testCreateBeerConsumer() {
         EntityManager em = createEntityManager();
         try {
@@ -232,7 +242,11 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
             BeerConsumer consumer = new BeerConsumer();
             consumer.setName("Joe Black");
 
+            int beerPrePersistCountBefore = consumer.pre_persist_count;
             em.persist(consumer);
+            int beerPrePersistCountAfter = consumer.pre_persist_count;
+            verifyCalled(beerPrePersistCountBefore, beerPrePersistCountAfter, "pre-persist");
+            
             beerConsumerId = consumer.getId();
             
             Alpine alpine1 = new Alpine();

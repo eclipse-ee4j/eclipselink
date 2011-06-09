@@ -23,7 +23,6 @@
     </sql-result-set-mapping>
     <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Consumer" access="PROPERTY">
         <exclude-default-listeners/>
-        <exclude-superclass-listeners/>
         <pre-persist method-name="prePersist"/>
         <post-persist method-name="postPersist"/>
         <pre-remove method-name="preRemove"/>
@@ -110,7 +109,6 @@
         <discriminator-value>BC</discriminator-value>
         <table-generator name="XML_BEER_CONSUMER_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CONSUMER_SEQ"/>
         <exclude-default-listeners/>
-        <exclude-superclass-listeners/>
         <attributes>
             <id name="id">
                 <generated-value strategy="TABLE" generator="XML_BEER_CONSUMER_TABLE_GENERATOR"/>

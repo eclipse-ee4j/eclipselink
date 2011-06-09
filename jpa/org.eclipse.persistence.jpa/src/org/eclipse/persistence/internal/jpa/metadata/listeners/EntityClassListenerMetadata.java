@@ -57,7 +57,12 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
     
         m_accessor = accessor;
         m_descriptor = accessor.getDescriptor();
-        
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void initCallbackMethods(MappedSuperclassAccessor accessor) {
         // Set any XML defined call back method names.
         setPostLoad(accessor.getPostLoad());
         setPostPersist(accessor.getPostPersist());
@@ -78,6 +83,9 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         
         // Process the callback methods as defined in XML or annotations on the 
         // entity class first.
+        // Init callback methods as specified in XML for the entity class 
+        // before processing.
+        initCallbackMethods(m_accessor);
         processCallbackMethods(getDeclaredMethods(accessorClass), m_accessor);
         
         // Process the callback methods as defined in XML or annotations 
@@ -85,6 +93,9 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         if (! m_descriptor.excludeSuperclassListeners()) {
             for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
                 Class superClass = getClass(mappedSuperclass.getJavaClass(), loader);
+                // Init callback methods as specified in XML for each mapped 
+                // superclass before processing.
+                initCallbackMethods(mappedSuperclass);
                 processCallbackMethods(getDeclaredMethods(superClass), mappedSuperclass);
             }
         }
