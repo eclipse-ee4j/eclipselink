@@ -1,6 +1,6 @@
 <project name="misc" default="assemble-repos" basedir=".">
-    <target name="assemble-repos" depends="validate-ready-to-start, init, clear-p2-loc, populate-p2-site, publish-p2-child, regen-composite-site"/>
-    <target name="regen-existing" depends="validate-ready-to-start, init, publish-p2-child, regen-composite-site"/>
+    <target name="assemble-repos" depends="init, clear-p2-loc, populate-p2-site, publish-p2-child, regen-composite-site"/>
+    <target name="regen-existing" depends="init, publish-p2-child, regen-composite-site"/>
 
     <target name="validate-ready-to-start">
         <fail message="Missing '-Dtype='. Should be set to 'n' for 'nightly', 'm' for 'milestone' or 'r' for 'release'." unless="type"/>
@@ -62,13 +62,25 @@
         </condition>
         <!-- validate build version -->
         <condition property="installer.dir"        value="${install.base.dir}/${version}">
-            <available file="${install.base.dir}/${version}" type="dir"/>
+            <and>
+                <available file="${install.base.dir}/${version}" type="dir"/>
+                <equals arg1="${type}" arg2="n"/>
+            </and>
         </condition>
         <condition property="installer.dir"        value="${download.base.dir}/${build.type}s/${version}">
-            <available file="${download.base.dir}/${build.type}s/${version}" type="dir"/>
+            <and>
+                <available file="${download.base.dir}/${build.type}s/${version}" type="dir"/>
+                <or>
+                   <equals arg1="${type}" arg2="m"/>
+                   <equals arg1="${type}" arg2="r"/>
+                </or>
+            </and>
         </condition>
         <condition property="installer.dir"        value="${archived.download.base.dir}/${build.type}s/${version}">
-            <available file="${archived.download.base.dir}/${build.type}/${version}" type="dir"/>
+            <and>
+                <available file="${archived.download.base.dir}/${build.type}/${version}" type="dir"/>
+                <equals arg1="${type}" arg2="r"/>
+            </and>
         </condition>
         <fail message="Invalid '-Dversion='. Cannot find '${install.base.dir}/${version}' or '${download.base.dir}/${build.type}s/${version}' or '${archived.download.base.dir}/${build.type}/${version}' dir." unless="installer.dir"/>
         <!-- validate mtag -->
@@ -93,14 +105,18 @@
         </condition>
         <fail message="Invalid '-Ddate=' or '-Drev'. Cannot find '${bundle.install.zip}'." unless="bundle.install.file"/>
         <!-- assumes will be doing full p2 setup therefore probably from nightly loc -->
-        <condition property="p2.archive.zip"        value="${installer.dir}/${date}/${p2.archive.presigned.zip}"
-                                                     else="${installer.dir}/${date}/${p2.archive.signed.zip}">
+        <condition property="p2.archive.zip"        value="${installer.dir}/${date}/${p2.archive.presigned.zip}">
             <equals arg1="${build.type}" arg2="nightly"/>
+        </condition>
+        <condition property="p2.archive.zip"        value="${installer.dir}/${mtag}/${p2.archive.signed.zip}">
+            <equals arg1="${build.type}" arg2="milestone"/>
+        </condition>
+        <condition property="p2.archive.zip"        value="${installer.dir}/${p2.archive.signed.zip}">
+            <equals arg1="${build.type}" arg2="release"/>
         </condition>
     </target>
 
     <target name="init" depends="validate-ready-to-start">
-        <property name="category.qualifier"       value="${version.string}"/>
         <!-- Tool definitions -->
         <property name="p2.SDK.plugin.dir"        value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.publisher.jar"         value="org.eclipse.equinox.p2.publisher_*.jar"/>
@@ -134,7 +150,6 @@
         <echo message="release.version        ='${release.version}'"/>
         <echo message="version.qualifier      ='${version.qualifier}'"/>
         <echo message="version.string         ='${version.string}'"/>
-        <echo message="category.qualifier     ='${category.qualifier}'"/>
         <echo message=" ---"/>
         <echo message="bundle.install.file    ='${bundle.install.file}'"/>
         <echo message="p2.archive.zip         ='${p2.archive.zip}'"/>
@@ -151,11 +166,6 @@
         <echo message="build.root.dir         ='${build.root.dir}'"/>
         <echo message="p2.composite.root.dir  ='${p2.composite.root.dir}'"/>
         <echo message="p2.repos.name          ='${p2.repos.name}'"/>
-        <echo message="-----"/>
-        <echo message="source URL (p2.repos.url)       ='${p2.repos.url}'"/>
-        <echo message="destination dir (p2.mirror.dir) ='${p2.mirror.dir}'"/>
-        <echo message="destination URL (p2.mirror.url) ='${p2.mirror.url}'"/>
-        <echo message="destination name(p2.mirror.name)='${p2.mirror.name}'"/>
         <echo message="-----"/>
 
         <!-- Make sure necessary resources exist -->
@@ -179,12 +189,11 @@
     </target>
 
     <target name="not-ready-to-go" unless="ready-to-go" depends="test-ready-to-go">
-        <fail message="Bundle Installer or p2 archive not found! Skipping P2 repos generation."/>
+        <fail message="Bundle Installer (${bundle.install.file}) or p2 archive (${p2.archive.zip})not found! Skipping P2 repos generation."/>
     </target>
 
     <target name="clear-p2-loc" if="ready-to-go" depends="not-ready-to-go">
-        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
-        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <delete dir="${p2.repos.dir}" failonerror="true"/>
         <echo message="Test without cleaning repos first."/>
     </target>
 
@@ -194,7 +203,7 @@
         <!-- populate update site with feature and bundle jars -->
         <unzip dest="${p2.bundle.dir}" src="${bundle.install.file}">
             <patternset>
-                <include name="*.jar"/>
+                <include name="**/*.jar"/>
             </patternset>
         </unzip>
         <!-- Remove jars we are not including in features at this time (needs to be separate because exclude in unzip does not seem to work) -->
@@ -202,11 +211,10 @@
             <fileset
                 dir="${p2.bundle.dir}"
                 includes="
-                          *dbws*.jar,
                           *jms*.jar,
                           com.sun*.jar,
                           eclipselink*.jar,
-                          javax.persistence*1.*.jar,
+                          javax.persistence*_1.*.jar,
                           *preview*.jar,
                           *javax.resource*.jar,
                           *javax.transaction*.jar,
