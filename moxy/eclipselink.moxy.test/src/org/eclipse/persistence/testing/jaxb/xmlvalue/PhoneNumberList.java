@@ -18,6 +18,9 @@ import javax.xml.bind.annotation.*;
 @XmlType(name="phone-number")
 public class PhoneNumberList {
 
+    @XmlTransient
+    public String someTransientThing;
+
     @XmlValue
     @XmlList
     public java.util.ArrayList<String> numbers;    

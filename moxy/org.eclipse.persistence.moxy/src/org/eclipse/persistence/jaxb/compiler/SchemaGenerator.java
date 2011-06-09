@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -212,7 +211,17 @@ public class SchemaGenerator {
 
         ArrayList<String> propertyNames = info.getPropertyNames();
         Property xmlValueProperty = info.getXmlValueProperty();
-        if (info.isEnumerationType() || (propertyNames.size() == 1 && xmlValueProperty != null)) {
+       
+        boolean hasMappedAttributes = false;
+        
+        for(Property nextProp: info.getPropertyList()){
+        	if(nextProp.isAttribute() && !nextProp.isTransient()){
+        		hasMappedAttributes = true;
+        	}
+        }
+        
+        if (info.isEnumerationType() || (xmlValueProperty != null && !hasMappedAttributes)) {
+       
             SimpleType type = new SimpleType();
             //simple type case, we just need the name and namespace info
             if (typeName.equals(EMPTY_STRING)) {
@@ -237,7 +246,7 @@ public class SchemaGenerator {
                 restriction.setBaseType(XMLConstants.SCHEMA_PREFIX + COLON + restrictionType.getLocalPart());
                 type.setRestriction(restriction);
             } else {
-                valueField = info.getProperties().get(propertyNames.get(0));
+            	valueField= info.getXmlValueProperty();
                 JavaClass javaType = valueField.getActualType();
                 QName baseType = getSchemaTypeFor(javaType);
                 String prefix = null;
@@ -569,7 +578,7 @@ public class SchemaGenerator {
             if (xmlValueProperty != null && xmlValueProperty == prop) {
                 foundValue = true;
                 valueField = prop;
-            } else if (!prop.isAttribute() && !helper.isAnnotationPresent(prop.getElement(), XmlTransient.class) && !prop.isAnyAttribute()) {
+            } else if (!prop.isAttribute() && !prop.isTransient() && !prop.isAnyAttribute()) {
                 foundNonAttribute = true;
             }
         }
@@ -1575,8 +1584,12 @@ public class SchemaGenerator {
         anyAttribute.setProcessContents(SKIP);
         anyAttribute.setNamespace(XMLConstants.ANY_NAMESPACE_OTHER);
         if (type.getSimpleContent() != null) {
-            SimpleContent content = type.getSimpleContent();
-            content.getRestriction().setAnyAttribute(anyAttribute);
+          SimpleContent content = type.getSimpleContent();
+            if(content.getExtension() != null){
+            	content.getExtension().setAnyAttribute(anyAttribute);
+            }else if(content.getRestriction() != null){
+            	content.getRestriction().setAnyAttribute(anyAttribute);
+            }
         } else {
             type.setAnyAttribute(anyAttribute);
         }

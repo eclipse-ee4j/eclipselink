@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlvalue;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class XmlValueListTestCases extends JAXBTestCases {
@@ -38,5 +41,12 @@ public class XmlValueListTestCases extends JAXBTestCases {
         pn.numbers = numbers;
 
         return pn;
+    }
+    
+    public void testSchemaGen() throws Exception{
+        InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlvalue/phone_number_list.xsd");		
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
+        controlSchemas.add(controlInputStream);		
+        this.testSchemaGen(controlSchemas);
     }
 }

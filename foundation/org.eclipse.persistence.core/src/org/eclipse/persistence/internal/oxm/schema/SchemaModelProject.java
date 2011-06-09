@@ -517,6 +517,12 @@ public class SchemaModelProject extends Project {
         XMLAnyCollectionMapping orderedAttributesMapping = new XMLAnyCollectionMapping();
         orderedAttributesMapping.setAttributeName("orderedAttributes");
         descriptor.addMapping(orderedAttributesMapping);
+        
+        XMLCompositeObjectMapping anyAttributeMapping = new XMLCompositeObjectMapping();
+        anyAttributeMapping.setReferenceClass(AnyAttribute.class);
+        anyAttributeMapping.setAttributeName("anyAttribute");
+        anyAttributeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "anyAttribute");
+        descriptor.addMapping(anyAttributeMapping);
 
         return descriptor;
     }

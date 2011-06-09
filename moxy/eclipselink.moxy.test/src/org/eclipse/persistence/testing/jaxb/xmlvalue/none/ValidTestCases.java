@@ -14,6 +14,11 @@ package org.eclipse.persistence.testing.jaxb.xmlvalue.none;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
@@ -32,7 +37,17 @@ public class ValidTestCases extends JAXBTestCases {
         ValidChild child = new ValidChild();
         child.setParentAttributeProperty("PARENT");
         child.setChildProperty("CHILD");
+        Map anyAttributes = new HashMap();
+        anyAttributes.put(new QName("anyAttr"), "something");
+        child.setAnyAttributes(anyAttributes);
         return child;
     }
+    
+    public void testSchemaGen() throws Exception{
+		InputStream controlInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlvalue/none/validChild.xsd");		
+    	List<InputStream> controlSchemas = new ArrayList<InputStream>();    	
+    	controlSchemas.add(controlInputStream);		
+		this.testSchemaGen(controlSchemas);
+	}
 
 }

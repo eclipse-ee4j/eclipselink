@@ -18,6 +18,10 @@ import javax.xml.bind.annotation.*;
 @XmlType(name="phone-number")
 public class PhoneNumberWithAtts {
 
+    @XmlTransient
+    public String someTransientThing;
+
+	
     @XmlValue
     public String number;
         

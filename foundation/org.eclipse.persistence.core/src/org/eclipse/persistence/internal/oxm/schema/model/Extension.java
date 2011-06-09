@@ -23,6 +23,7 @@ public class Extension {
     private Choice choice;
     private Sequence sequence;
     private All all;
+    private AnyAttribute anyAttribute;
 
     public Extension() {
         orderedAttributes = new ArrayList();
@@ -105,5 +106,13 @@ public class Extension {
 
     public java.util.List getOrderedAttributes() {
         return orderedAttributes;
+    }
+    
+    public AnyAttribute getAnyAttribute() {
+        return anyAttribute;
+    }
+
+    public void setAnyAttribute(AnyAttribute any) {
+        anyAttribute = any;
     }
 }
