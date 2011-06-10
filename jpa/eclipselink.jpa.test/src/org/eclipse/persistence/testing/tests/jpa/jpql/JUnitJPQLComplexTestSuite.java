@@ -37,6 +37,9 @@ import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.config.PessimisticLock;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
@@ -235,7 +238,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexOneToOneJoinOptimization"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testCountOneToManyQueryKey"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testEnumNullNotNull"));
-        
+        suite.addTest(new JUnitJPQLComplexTestSuite("testPessimisticLock"));
         return suite;
     }
     
@@ -3359,6 +3362,39 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             assertTrue(results.size() == 16);
         } finally {
             rollbackTransaction(em);
+        }
+    }
+
+    //Bug 347592    
+    public void testPessimisticLock(){
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("select e from Employee e where e.firstName=:name");
+        query.setParameter("name", "Bob");
+        Employee bob = (Employee)query.getSingleResult();
+        clearCache();
+        em.clear();
+        
+        query = em.createQuery("select e from Employee e where e.id=:id");
+        query.setParameter("id", bob.getId());
+        query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
+        Exception caughtException = null;
+        beginTransaction(em);
+        bob = (Employee)query.getSingleResult();
+       
+        EntityManager em2 = createEntityManager();
+        beginTransaction(em2);
+        Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
+        query2.setParameter("id", bob.getId());
+        query2.setHint(QueryHints.JDBC_TIMEOUT, 1000);
+        bob = (Employee)query2.getSingleResult();
+        bob.setFirstName("Robert");
+        try{
+            commitTransaction(em2);
+        } catch (Exception e){
+            caughtException = e;
+        } finally {
+            rollbackTransaction(em);
+            assertNotNull("A lock was not applied using a locking hint.", caughtException);
         }
     }
 }
