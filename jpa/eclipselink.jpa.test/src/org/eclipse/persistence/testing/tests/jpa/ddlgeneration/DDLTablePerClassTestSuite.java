@@ -71,13 +71,19 @@ public class DDLTablePerClassTestSuite extends JUnitTestCase {
         super(name);
         setPuName(DDL_TPC_PU);
     }
-
+    
     public static Test suite() {
-        TestSuite suite = new TestSuite(DDLTablePerClassTestSuite.class);
-        
+        TestSuite suite = new TestSuite();
+        suite.setName("DDLTablePerClassTestSuite");
+        suite.addTest(new DDLTablePerClassTestSuite("testSetup"));
+        suite.addTest(new DDLTablePerClassTestSuite("testDDLTablePerClassModel"));
+        suite.addTest(new DDLTablePerClassTestSuite("testDDLTablePerClassModelQuery"));
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(new DDLTablePerClassTestSuite("testTPCMappedKeyMapQuery"));
+        }
         return suite;
     }
-
+    
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -173,40 +179,38 @@ public class DDLTablePerClassTestSuite extends JUnitTestCase {
 
     // Test for bug 328774
     public void testTPCMappedKeyMapQuery() {
-        if (! isJPA10()) {
-            EntityManager em = createEntityManager(DDL_TPC_PU);
+        EntityManager em = createEntityManager(DDL_TPC_PU);
+        
+        try {
+            beginTransaction(em);
+            ProgrammingLanguage java = new ProgrammingLanguage();
+            java.setName("Java");
             
-            try {
-                beginTransaction(em);
-                ProgrammingLanguage java = new ProgrammingLanguage();
-                java.setName("Java");
-                
-                DesignPattern designPattern = new DesignPattern();
-                designPattern.setName("Singleton");
-                CodeExample codeExample = new CodeExample();
-                codeExample.setContent("...");
-                designPattern.getCodeExamples().put(java, codeExample);
-                em.persist(java);
-                em.persist(designPattern);
-                commitTransaction(em);
-            } catch (RuntimeException e) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-    
-                fail("Error persisting the PropertyRecord : " + e);
-            } finally {
-                closeEntityManager(em);
+            DesignPattern designPattern = new DesignPattern();
+            designPattern.setName("Singleton");
+            CodeExample codeExample = new CodeExample();
+            codeExample.setContent("...");
+            designPattern.getCodeExamples().put(java, codeExample);
+            em.persist(java);
+            em.persist(designPattern);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            
-            clearCache(DDL_TPC_PU);
-            em = createEntityManager(DDL_TPC_PU);  
-            
-            TypedQuery<DesignPattern> query = em.createQuery("SELECT x FROM DesignPattern x", DesignPattern.class);
-            List<DesignPattern> resultList = query.getResultList();
-            assertEquals("Unexpected number of design patterns returned", 1, resultList.size());
+    
+            fail("Error persisting the PropertyRecord : " + e);
+        } finally {
             closeEntityManager(em);
         }
+        
+        clearCache(DDL_TPC_PU);
+        em = createEntityManager(DDL_TPC_PU);  
+        
+        TypedQuery<DesignPattern> query = em.createQuery("SELECT x FROM DesignPattern x", DesignPattern.class);
+        List<DesignPattern> resultList = query.getResultList();
+        assertEquals("Unexpected number of design patterns returned", 1, resultList.size());
+        closeEntityManager(em);
     }
 
     public static void main(String[] args) {
