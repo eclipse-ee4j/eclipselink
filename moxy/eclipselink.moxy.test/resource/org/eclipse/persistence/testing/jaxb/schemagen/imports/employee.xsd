@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:y="addressNamespace" xmlns:x="employeeNamespace" targetNamespace="employeeNamespace">
-   <xsd:import schemaLocation="address.xsd" namespace="addressNamespace"/>
+   <xsd:import schemaLocation="someExistingSchema.xsd" namespace="addressNamespace"/>
    <xsd:complexType name="employee-type">
       <xsd:sequence>
          <xsd:element name="firstName" type="xsd:string"/>

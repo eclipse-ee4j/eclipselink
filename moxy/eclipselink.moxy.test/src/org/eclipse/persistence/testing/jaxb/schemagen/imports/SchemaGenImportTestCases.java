@@ -69,6 +69,7 @@ public class SchemaGenImportTestCases extends TestCase {
         try {
             employeeSchema = sFact.newSchema(mysor.schemaFiles.get(EMPLOYEE_NS));
         } catch (SAXException e) {
+        	e.printStackTrace();
             fail("SchemaFactory could not create Employee schema");
         }
         
