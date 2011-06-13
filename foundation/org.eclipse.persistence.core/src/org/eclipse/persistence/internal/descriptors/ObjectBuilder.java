@@ -103,6 +103,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
     protected String lockAttribute; 
 
     public ObjectBuilder(ClassDescriptor descriptor) {
+        this.descriptor = descriptor;
+        initialize(descriptor);
+    }
+
+    protected void initialize(ClassDescriptor descriptor) {
         this.mappingsByField = new HashMap(20);
         this.readOnlyMappingsByField = new HashMap(10);
         this.mappingsByAttribute = new HashMap(20);
@@ -112,7 +117,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
         this.cloningMappings = new ArrayList(10);
         this.eagerMappings = new ArrayList(5);
         this.relationshipMappings = new ArrayList(5);
-        this.descriptor = descriptor;
     }
 
     /**
@@ -2168,16 +2172,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Expression subExpression;
         List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
-        for (int index = 0; index < primaryKeyFields.size(); index++) {
-            DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
-            subExp1 = builder.getField(primaryKeyField);
-            subExp2 = builder.getParameter(primaryKeyField);
-            subExpression = subExp1.equal(subExp2);
+        if(null != primaryKeyFields) {
+            for (int index = 0; index < primaryKeyFields.size(); index++) {
+                DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
+                subExp1 = builder.getField(primaryKeyField);
+                subExp2 = builder.getParameter(primaryKeyField);
+                subExpression = subExp1.equal(subExp2);
 
-            if (expression == null) {
-                expression = subExpression;
-            } else {
-                expression = expression.and(subExpression);
+                if (expression == null) {
+                    expression = subExpression;
+                } else {
+                    expression = expression.and(subExpression);
+                }
             }
         }
 
@@ -2329,6 +2335,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public Object extractPrimaryKeyFromRow(AbstractRecord databaseRow, AbstractSession session) {
         List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        if(null == primaryKeyFields) {
+            return null;
+        }
         List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();
         Object[] primaryKeyValues = null;
@@ -2714,15 +2723,22 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public List<Class> getPrimaryKeyClassifications() {
         if (primaryKeyClassifications == null) {
             List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+            if(null == primaryKeyFields) {
+                return Collections.emptyList();
+            }
             List<Class> classifications = new ArrayList(primaryKeyFields.size());
 
             for (int index = 0; index < primaryKeyFields.size(); index++) {
-                DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
-                DatabaseField field = (DatabaseField)primaryKeyFields.get(index);
-                if (mapping != null) {
-                    classifications.add(Helper.getObjectClass(mapping.getFieldClassification(field)));
-                } else {
+                if (getPrimaryKeyMappings().size() < (index + 1)) { // Check for failed initialization to avoid cascaded errors.
                     classifications.add(null);
+                } else {
+                    DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
+                    DatabaseField field = (DatabaseField)primaryKeyFields.get(index);
+                    if (mapping != null) {
+                        classifications.add(Helper.getObjectClass(mapping.getFieldClassification(field)));
+                    } else {
+                        classifications.add(null);
+                    }
                 }
             }
             primaryKeyClassifications = classifications;
@@ -2995,7 +3011,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public void initializePrimaryKey(AbstractSession session) throws DescriptorException {
         List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
-        if (primaryKeyFields.isEmpty() && getDescriptor().isAggregateCollectionDescriptor()) {
+        if ((null == primaryKeyFields || primaryKeyFields.isEmpty()) && getDescriptor().isAggregateCollectionDescriptor()) {
             // populate primaryKeys with all mapped fields found in the main table.
             DatabaseTable defaultTable = getDescriptor().getDefaultTable();
             Iterator<DatabaseField> it = getDescriptor().getFields().iterator();
@@ -3015,53 +3031,59 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
         createPrimaryKeyExpression(session);
 
-        getPrimaryKeyMappings().clear();
-        getNonPrimaryKeyMappings().clear();
+        if(null != primaryKeyMappings) {
+            primaryKeyMappings.clear();
+        }
+        if(null != nonPrimaryKeyMappings) {
+            nonPrimaryKeyMappings.clear();
+        }
 
         // This must be before because the secondary table primary key fields are registered after
         for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
             DatabaseField field = (DatabaseField)fields.next();
-            if (!primaryKeyFields.contains(field)) {
+            if (null ==primaryKeyFields || !primaryKeyFields.contains(field)) {
                 DatabaseMapping mapping = getMappingForField(field);
-                if (!getNonPrimaryKeyMappings().contains(mapping)) {
+                if (nonPrimaryKeyMappings != null && !getNonPrimaryKeyMappings().contains(mapping)) {
                     getNonPrimaryKeyMappings().add(mapping);
                 }
             }
         }
 
-        for (int index = 0; index < primaryKeyFields.size(); index++) {
-            DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
-            DatabaseMapping mapping = getMappingForField(primaryKeyField);
-
-            if (mapping == null) {
-                if(this.descriptor.isDescriptorTypeAggregate()) {
-                    this.mayHaveNullInPrimaryKey = true;
-                } else {
-                    throw DescriptorException.noMappingForPrimaryKey(primaryKeyField, this.descriptor);
+        if(null != primaryKeyFields) {
+            for (int index = 0; index < primaryKeyFields.size(); index++) {
+                DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
+                DatabaseMapping mapping = getMappingForField(primaryKeyField);
+    
+                if (mapping == null) {
+                    if(this.descriptor.isDescriptorTypeAggregate()) {
+                        this.mayHaveNullInPrimaryKey = true;
+                    } else {
+                        throw DescriptorException.noMappingForPrimaryKey(primaryKeyField, this.descriptor);
+                    }
                 }
-            }
-
-            getPrimaryKeyMappings().add(mapping);
-            if (mapping != null) {
-                mapping.setIsPrimaryKeyMapping(true);
-            }
-
-            // Use the same mapping to map the additional table primary key fields.
-            // This is required if someone tries to map to one of these fields.
-            if (this.descriptor.hasMultipleTables() && (mapping != null)) {
-                for (Map keyMapping : this.descriptor.getAdditionalTablePrimaryKeyFields().values()) {
-                    DatabaseField secondaryField = (DatabaseField) keyMapping.get(primaryKeyField);
-
-                    // This can be null in the custom multiple join case
-                    if (secondaryField != null) {
-                        getMappingsByField().put(secondaryField, mapping);
-
-                        if (mapping.isAggregateObjectMapping()) {
-                            // GF#1153,1391
-                            // If AggregateObjectMapping contain primary keys and the descriptor has multiple tables
-                            // AggregateObjectMapping should know the the primary key join columns (secondaryField here)
-                            // to handle some cases properly
-                            ((AggregateObjectMapping) mapping).addPrimaryKeyJoinField(primaryKeyField, secondaryField);
+    
+                getPrimaryKeyMappings().add(mapping);
+                if (mapping != null) {
+                    mapping.setIsPrimaryKeyMapping(true);
+                }
+    
+                // Use the same mapping to map the additional table primary key fields.
+                // This is required if someone tries to map to one of these fields.
+                if (this.descriptor.hasMultipleTables() && (mapping != null)) {
+                    for (Map keyMapping : this.descriptor.getAdditionalTablePrimaryKeyFields().values()) {
+                        DatabaseField secondaryField = (DatabaseField) keyMapping.get(primaryKeyField);
+    
+                        // This can be null in the custom multiple join case
+                        if (secondaryField != null) {
+                            getMappingsByField().put(secondaryField, mapping);
+    
+                            if (mapping.isAggregateObjectMapping()) {
+                                // GF#1153,1391
+                                // If AggregateObjectMapping contain primary keys and the descriptor has multiple tables
+                                // AggregateObjectMapping should know the the primary key join columns (secondaryField here)
+                                // to handle some cases properly
+                                ((AggregateObjectMapping) mapping).addPrimaryKeyJoinField(primaryKeyField, secondaryField);
+                            }
                         }
                     }
                 }
@@ -3071,13 +3093,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // PERF: compute if primary key is mapped through direct mappings,
         // to allow fast extraction.
         boolean hasSimplePrimaryKey = true;
-        for (int index = 0; index < getPrimaryKeyMappings().size(); index++) {
-            DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
-
-            // Primary key mapping may be null for aggregate collection.
-            if ((mapping == null) || (!mapping.isDirectToFieldMapping())) {
-                hasSimplePrimaryKey = false;
-                break;
+        if(null != primaryKeyMappings) {
+            for (int index = 0; index < getPrimaryKeyMappings().size(); index++) {
+                DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
+    
+                // Primary key mapping may be null for aggregate collection.
+                if ((mapping == null) || (!mapping.isDirectToFieldMapping())) {
+                    hasSimplePrimaryKey = false;
+                    break;
+                }
             }
         }
         this.descriptor.setHasSimplePrimaryKey(hasSimplePrimaryKey);
@@ -3086,7 +3110,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         boolean wasIdValidationSet = true;
         if (this.descriptor.getIdValidation() == null) {
             wasIdValidationSet = false;
-            if (this.descriptor.getPrimaryKeyFields().size() > 1) {
+            List<DatabaseField> descriptorPrimaryKeyFields = this.descriptor.getPrimaryKeyFields();
+            if (descriptorPrimaryKeyFields != null && descriptorPrimaryKeyFields.size() > 1) {
                 this.descriptor.setIdValidation(IdValidation.NULL);
             } else {
                 this.descriptor.setIdValidation(IdValidation.ZERO);
@@ -3094,7 +3119,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
         // Initialize id validation per field, default sequence to allowing zero.
         // This defaults to allowing zero for the other fields.
-        if (this.descriptor.getPrimaryKeyIdValidations() == null) {
+        if (this.descriptor.getPrimaryKeyFields() != null && this.descriptor.getPrimaryKeyIdValidations() == null) {
             this.descriptor.setPrimaryKeyIdValidations(new ArrayList(this.descriptor.getPrimaryKeyFields().size()));
             for (DatabaseField field : this.descriptor.getPrimaryKeyFields()) {
                 if (!wasIdValidationSet && this.descriptor.usesSequenceNumbers() && field.equals(this.descriptor.getSequenceNumberField())) {

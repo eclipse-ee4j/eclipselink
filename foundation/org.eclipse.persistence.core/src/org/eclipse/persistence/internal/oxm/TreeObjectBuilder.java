@@ -13,13 +13,12 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.HashMap;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
@@ -35,22 +34,22 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -76,12 +75,30 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
     public TreeObjectBuilder(ClassDescriptor descriptor) {
         super(descriptor);
-        rootXPathNode = new XPathNode();
     }
+
+    @Override
+    protected void initialize(ClassDescriptor descriptor) {
+        rootXPathNode = new XPathNode();
+
+        int descriptorMappingsSize = descriptor.getMappings().size();
+        this.mappingsByField = new HashMap(descriptorMappingsSize);
+        this.fieldsMap = new HashMap(descriptorMappingsSize);
+        this.cloningMappings = new ArrayList(descriptorMappingsSize);
+    }
+
 
     public XPathNode getRootXPathNode() {
         lazyInitialize();
         return this.rootXPathNode;
+    }
+
+    @Override
+    public List<DatabaseMapping> getPrimaryKeyMappings() {
+        if(null == primaryKeyMappings) {
+            primaryKeyMappings = new ArrayList<DatabaseMapping>(1);
+        }
+        return primaryKeyMappings;
     }
 
     public void addTransformationMapping(AbstractTransformationMapping transformationMapping) {
