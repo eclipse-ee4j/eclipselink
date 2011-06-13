@@ -239,7 +239,7 @@ public class ReferenceResolver {
                 Object value = null;
                 XMLDescriptor targetDescriptor = (XMLDescriptor) entry;
                 List pkFields = targetDescriptor.getPrimaryKeyFields();
-                if(1 == pkFields.size()) {
+                if(null != pkFields && 1 == pkFields.size()) {
                     XMLField pkField = (XMLField) pkFields.get(0);
                     pkField = (XMLField) targetDescriptor.getTypedField(pkField);
                     Class targetType = pkField.getType();

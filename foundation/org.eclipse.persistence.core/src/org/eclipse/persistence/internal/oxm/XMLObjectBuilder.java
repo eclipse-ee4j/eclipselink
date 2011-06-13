@@ -424,7 +424,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (getDescriptor().hasInheritance() && (domainObject.getClass() != getDescriptor().getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(getDescriptor().getJavaClass()))) {
             return session.getDescriptor(domainObject.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);
         }
-        if (getDescriptor().getPrimaryKeyFields().size() == 0) {
+        List<DatabaseField> descriptorPrimaryKeyFields = getDescriptor().getPrimaryKeyFields();
+        if (null == descriptorPrimaryKeyFields || descriptorPrimaryKeyFields.size() == 0) {
             return null;
         }
         return super.extractPrimaryKeyFromObject(domainObject, session);
@@ -592,12 +593,20 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     public void initialize(AbstractSession session) throws DescriptorException {
-        getMappingsByField().clear();
-        getReadOnlyMappingsByField().clear();
-        getMappingsByAttribute().clear();
-        getCloningMappings().clear();
-        getEagerMappings().clear();
-        getRelationshipMappings().clear();
+        mappingsByField.clear();
+        if(null != readOnlyMappingsByField) {
+            readOnlyMappingsByField.clear();
+        }
+        if(null != mappingsByAttribute) {
+            mappingsByAttribute.clear();
+        }
+        cloningMappings.clear();
+        if(null != eagerMappings) {
+            eagerMappings.clear();
+        }
+        if(null != relationshipMappings) {
+            relationshipMappings.clear();
+        }
 
         for (Enumeration mappings = this.descriptor.getMappings().elements();
                  mappings.hasMoreElements();) {
@@ -605,7 +614,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
             // Add attribute to mapping association
             if (!mapping.isWriteOnly()) {
-                getMappingsByAttribute().put(mapping.getAttributeName(), mapping);
+                if(mappingsByAttribute != null) {
+                    getMappingsByAttribute().put(mapping.getAttributeName(), mapping);
+                }
             }
             // Cache mappings that require cloning.
             if (mapping.isCloningRequired()) {
@@ -617,21 +628,25 @@ public class XMLObjectBuilder extends ObjectBuilder {
             }
             // Cache relationship mappings.
             if (!mapping.isDirectToFieldMapping()) {
-                getRelationshipMappings().add(mapping);
+                if(null != relationshipMappings) {
+                    relationshipMappings.add(mapping);
+                }
             }
 
             // Add field to mapping association
             for (DatabaseField field : mapping.getFields()) {
 
                 if (mapping.isReadOnly()) {
-                    List readOnlyMappings = getReadOnlyMappingsByField().get(field);
-
-                    if (readOnlyMappings == null) {
-                        readOnlyMappings = new ArrayList();
-                        getReadOnlyMappingsByField().put(field, readOnlyMappings);
+                    if(null != readOnlyMappingsByField) {
+                        List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+    
+                        if (readOnlyMappings == null) {
+                            readOnlyMappings = new ArrayList();
+                            getReadOnlyMappingsByField().put(field, readOnlyMappings);
+                        }
+    
+                        readOnlyMappings.add(mapping);
                     }
-
-                    readOnlyMappings.add(mapping);
                 } else {
                     if (mapping.isAggregateObjectMapping()) {
                         // For Embeddable class, we need to test read-only
@@ -661,7 +676,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 }
             }
         }
-        this.isSimple = getRelationshipMappings().isEmpty();
+        this.isSimple = null == relationshipMappings || relationshipMappings.isEmpty();
 
         initializePrimaryKey(session);
         initializeJoinedAttributes();

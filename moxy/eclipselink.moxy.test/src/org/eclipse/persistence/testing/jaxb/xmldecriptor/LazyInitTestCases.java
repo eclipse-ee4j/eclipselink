@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBHelper;
@@ -41,9 +42,26 @@ public class LazyInitTestCases extends TestCase {
         JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, null);
         XMLDescriptor xmlDescriptor = JAXBHelper.getJAXBContext(jc).getXMLContext().getDescriptor(new QName("root"));
 
-        Field copyPolicyField = PrivilegedAccessHelper.getDeclaredField(ClassDescriptor.class, "copyPolicy", true);
-        Object copyPolicy = copyPolicyField.get(xmlDescriptor);
-        assertNull(copyPolicy);
+        assertNull(getFieldValue(XMLDescriptor.class, "copyPolicy", xmlDescriptor));
+        assertNull(getFieldValue(XMLDescriptor.class, "primaryKeyFields", xmlDescriptor));
+    }
+
+    public void testTreeObjectBuilder() throws Exception {
+        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, null);
+        XMLDescriptor xmlDescriptor = JAXBHelper.getJAXBContext(jc).getXMLContext().getDescriptor(new QName("root"));
+        TreeObjectBuilder treeObjectBuilder = (TreeObjectBuilder) xmlDescriptor.getObjectBuilder();
+
+        assertNull(getFieldValue(TreeObjectBuilder.class, "readOnlyMappingsByField", treeObjectBuilder));
+        assertNull(getFieldValue(TreeObjectBuilder.class, "mappingsByAttribute", treeObjectBuilder));
+        assertNull(getFieldValue(TreeObjectBuilder.class, "primaryKeyMappings", treeObjectBuilder));
+        assertNull(getFieldValue(TreeObjectBuilder.class, "nonPrimaryKeyMappings", treeObjectBuilder));
+        assertNull(getFieldValue(TreeObjectBuilder.class, "eagerMappings", treeObjectBuilder));
+        assertNull(getFieldValue(TreeObjectBuilder.class, "relationshipMappings", treeObjectBuilder));
+    }
+
+    private Object getFieldValue(Class clazz, String fieldName, Object object) throws Exception {
+        Field field = PrivilegedAccessHelper.getField(clazz, fieldName, true);
+        return field.get(object);
     }
 
 }

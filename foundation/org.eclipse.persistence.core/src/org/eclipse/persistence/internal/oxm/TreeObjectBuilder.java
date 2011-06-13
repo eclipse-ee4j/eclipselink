@@ -76,12 +76,29 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
     public TreeObjectBuilder(ClassDescriptor descriptor) {
         super(descriptor);
+    }
+
+    @Override
+    protected void initialize(ClassDescriptor descriptor) {
         rootXPathNode = new XPathNode();
+
+        int descriptorMappingsSize = descriptor.getMappings().size();
+        this.mappingsByField = new HashMap(descriptorMappingsSize);
+        this.fieldsMap = new HashMap(descriptorMappingsSize);
+        this.cloningMappings = new ArrayList(descriptorMappingsSize);
     }
 
     public XPathNode getRootXPathNode() {
         lazyInitialize();
         return this.rootXPathNode;
+    }
+
+    @Override
+    public List<DatabaseMapping> getPrimaryKeyMappings() {
+        if(null == primaryKeyMappings) {
+            primaryKeyMappings = new ArrayList<DatabaseMapping>(1);
+        }
+        return primaryKeyMappings;
     }
 
     public void addTransformationMapping(AbstractTransformationMapping transformationMapping) {
@@ -323,6 +340,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, WriteType writeType) {
         return buildRow(record, object, session, null, writeType);
     }
+
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, WriteType writeType) {
         return buildRow(record, object, session, marshaller, null, writeType);
     }
