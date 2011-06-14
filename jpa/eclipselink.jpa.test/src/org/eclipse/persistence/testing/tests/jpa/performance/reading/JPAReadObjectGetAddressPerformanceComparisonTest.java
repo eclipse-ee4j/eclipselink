@@ -43,6 +43,7 @@ public class JPAReadObjectGetAddressPerformanceComparisonTest extends Performanc
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
         Address address = manager.getReference(Address.class, new Long(this.addressId));
+        address.getId();
         manager.getTransaction().commit();
         manager.close();
     }

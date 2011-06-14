@@ -45,6 +45,7 @@ public class JPAReadObjectAddressExpressionPerformanceComparisonTest extends JPA
         Query query = manager.createQuery("Select a from Address a where a.street = :street");
         query.setParameter("street", street);
         Address address = (Address)uniqueResult(query, manager);
+        address.hashCode();
         manager.close();
     }
 }

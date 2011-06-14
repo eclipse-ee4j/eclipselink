@@ -33,6 +33,7 @@ public class JPAReadAllAddressNamedQueryPerformanceComparisonTest extends JPARea
         Query query = manager.createNamedQuery("findAddressByCity");
         query.setParameter("city", "Ottawa");
         List result = list(query, manager);
+        result.size();
         manager.close();
     }
 }

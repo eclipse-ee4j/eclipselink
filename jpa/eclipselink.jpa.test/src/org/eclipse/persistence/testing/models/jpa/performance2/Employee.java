@@ -61,7 +61,7 @@ public class Employee implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender = Gender.Male;
 
-    @Column(table = "SALARY")
+    @Column(table = "P2_SALARY")
     private double salary;
 
     @Embedded
@@ -74,7 +74,7 @@ public class Employee implements Serializable {
     @JoinColumn(name = "ADDR_ID")
     private Address address;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "P2_EMP_JOB", joinColumns = @JoinColumn(name = "EMP_ID"), inverseJoinColumns = @JoinColumn(name = "TITLE_ID"))
     private JobTitle jobTitle;
 
@@ -240,7 +240,6 @@ public class Employee implements Serializable {
 
     public PhoneNumber removePhoneNumber(PhoneNumber phoneNumber) {
         getPhoneNumbers().remove(phoneNumber);
-        phoneNumber.setOwner(null);
         return phoneNumber;
     }
 

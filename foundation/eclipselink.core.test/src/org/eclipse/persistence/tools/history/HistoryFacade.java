@@ -131,10 +131,7 @@ public class HistoryFacade {
         // First add all table definitions to a hashtable.
         Hashtable tableDefinitions = 
             new Hashtable(creator.getTableDefinitions().size());
-        for (Enumeration enumtr = creator.getTableDefinitions().elements(); 
-             enumtr.hasMoreElements(); ) {
-            DatabaseObjectDefinition def = 
-                (DatabaseObjectDefinition)enumtr.nextElement();
+        for (DatabaseObjectDefinition def : creator.getTableDefinitions()) {
             tableDefinitions.put(def.getFullName(), def);
         }
         for (Iterator iterator = session.getDescriptors().values().iterator(); 

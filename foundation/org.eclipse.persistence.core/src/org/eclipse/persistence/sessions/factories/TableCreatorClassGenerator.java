@@ -13,7 +13,6 @@
 package org.eclipse.persistence.sessions.factories;
 
 import java.io.*;
-import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
@@ -121,9 +120,7 @@ public class TableCreatorClassGenerator {
 
         methodDefinition.addLine("");
 
-        for (Enumeration tablesEnum = getTableCreator().getTableDefinitions().elements();
-                 tablesEnum.hasMoreElements();) {
-            TableDefinition table = (TableDefinition)tablesEnum.nextElement();
+        for (TableDefinition table : getTableCreator().getTableDefinitions()) {
             methodDefinition.addLine("addTableDefinition(build" + table.getName() + "Table());");
         }
 
@@ -264,9 +261,7 @@ public class TableCreatorClassGenerator {
 
         classDefinition.addMethod(buildConstructor());
 
-        for (Enumeration tablesEnum = getTableCreator().getTableDefinitions().elements();
-                 tablesEnum.hasMoreElements();) {
-            TableDefinition table = (TableDefinition)tablesEnum.nextElement();
+        for (TableDefinition table : getTableCreator().getTableDefinitions()) {
             classDefinition.addMethod(buildTableMethod(table));
         }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,21 +8,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Oracle - initial API and implementation
  ******************************************************************************/  
  package org.eclipse.persistence.testing.tests.jpa.performance.reading;
 
 import java.util.*;
 import javax.persistence.*;
+import org.eclipse.persistence.testing.models.jpa.performance2.*;
 
 /**
  * This test compares the performance of read all Employee.
  */
-public class JPAReadAllEmployeePerformanceComparisonTest extends JPAReadPerformanceComparisonTest {
+public class JPA2ReadAllEmployeeCompletelyPerformanceComparisonTest extends JPAReadPerformanceComparisonTest {
 
-    public JPAReadAllEmployeePerformanceComparisonTest(boolean isReadOnly) {
-        super(isReadOnly);
-        setName("JPAReadAllEmployeePerformanceComparisonTest-readonly:" + isReadOnly);
+    public JPA2ReadAllEmployeeCompletelyPerformanceComparisonTest() {
+        super(false);
         setDescription("This test compares the performance of read all Employee.");
     }
 
@@ -31,9 +31,21 @@ public class JPAReadAllEmployeePerformanceComparisonTest extends JPAReadPerforma
      */
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
+        manager.getTransaction().begin();
         Query query = manager.createQuery("Select e from Employee e");
-        List result = list(query, manager);
-        result.size();
+        List result = query.getResultList();
+        for (Iterator iterator = result.iterator(); iterator.hasNext();) {
+            Employee employee = (Employee)iterator.next();
+            employee.getAddress().toString();
+            employee.getManagedEmployees().size();
+            employee.getDegrees().size();
+            employee.getEmailAddresses().size();
+            employee.getPhoneNumbers().size();
+            employee.getProjects().size();
+            employee.getJobTitle().toString();
+            employee.getResponsibilities().size();
+        }
+        manager.getTransaction().commit();
         manager.close();
     }
 }

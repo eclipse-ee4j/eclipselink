@@ -54,6 +54,9 @@ public class SchemaManager {
     /** Allow table creator to occur "fast" by just deleting all the rows. */
     public static boolean FAST_TABLE_CREATOR = false;
     
+    /** Allow replacing of table to force the drop, this may require several passes. */
+    public static boolean FORCE_DROP = true;
+    
     public SchemaManager(DatabaseSessionImpl session) {
         this.session = session;
     }

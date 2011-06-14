@@ -36,6 +36,7 @@ public class JPAReadAllEmployeeComplexExpressionPerformanceComparisonTest extend
         query.setParameter("city", "Toronto");
         query.setParameter("areaCode", "123");
         List result = list(query, manager);
+        result.size();
         manager.close();
     }
 }

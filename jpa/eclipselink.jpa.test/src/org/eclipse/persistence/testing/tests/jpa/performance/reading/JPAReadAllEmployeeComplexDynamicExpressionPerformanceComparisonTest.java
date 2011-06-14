@@ -35,6 +35,7 @@ public class JPAReadAllEmployeeComplexDynamicExpressionPerformanceComparisonTest
         EntityManager manager = createEntityManager();
         Query query = manager.createQuery("Select e from Employee e join e.phoneNumbers p where e.firstName = 'Bob' and e.lastName like 'Smith%' and e.address.city = 'Toronto' and p.areaCode <> '" + index + "'");
         List result = list(query, manager);
+        result.size();
         manager.close();
     }
 }

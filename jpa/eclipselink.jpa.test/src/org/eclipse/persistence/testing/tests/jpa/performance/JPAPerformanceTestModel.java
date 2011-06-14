@@ -22,6 +22,7 @@ public class JPAPerformanceTestModel extends TestModel {
     public JPAPerformanceTestModel() {
         setDescription("Performance tests that compare JPA performance.");
         addTest(new JPAPerformanceRegressionModel());
+        addTest(new JPA2PerformanceRegressionModel());
         addTest(new JPAPerformanceComparisonModel());
         addTest(new JPAIsolatedPerformanceRegressionModel());
         addTest(new JPAEmulatedPerformanceRegressionModel());

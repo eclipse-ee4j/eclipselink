@@ -16,9 +16,13 @@ import java.util.*;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
 
 /**
- * <b>Purpose</b>: This class is reponsible for creating the tables defined in the project.
+ * <b>Purpose</b>: This class is responsible for creating the tables defined in the project.
  * A specific subclass of this class is created for each project.  The specific table information
  * is defined in the subclass.
  *
@@ -26,15 +30,15 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author Peter Krogh
  */
 public class TableCreator {
-    protected Vector tableDefinitions;
+    protected List<TableDefinition> tableDefinitions;
     protected String name;
     protected boolean ignoreDatabaseException; //if true, DDL generation will continue even if exceptions occur
 
     public TableCreator() {
-        this(new Vector());
+        this(new ArrayList<TableDefinition>());
     }
 
-    public TableCreator(Vector tableDefinitions) {
+    public TableCreator(List<TableDefinition> tableDefinitions) {
         super();
         this.tableDefinitions = tableDefinitions;
     }
@@ -43,21 +47,21 @@ public class TableCreator {
      * Add the table.
      */
     public void addTableDefinition(TableDefinition tableDefinition) {
-        tableDefinitions.addElement(tableDefinition);
+        this.tableDefinitions.add(tableDefinition);
     }
     
     /**
      * Add a set of tables.
      */
-    public void addTableDefinitions(Collection tableDefs) {
-        tableDefinitions.addAll(tableDefs);
+    public void addTableDefinitions(Collection<TableDefinition> tableDefs) {
+        this.tableDefinitions.addAll(tableDefs);
     }
 
 
     /**
      * Create constraints.
      */
-    public void createConstraints(org.eclipse.persistence.sessions.DatabaseSession session) {
+    public void createConstraints(DatabaseSession session) {
         //CR2612669
         createConstraints(session, new SchemaManager(session));
     }
@@ -65,16 +69,21 @@ public class TableCreator {
     /**
      * Create constraints.
      */
-    public void createConstraints(org.eclipse.persistence.sessions.DatabaseSession session, SchemaManager schemaManager) {
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            schemaManager.buildFieldTypes((TableDefinition)enumtr.nextElement());
-        }
+    public void createConstraints(DatabaseSession session, SchemaManager schemaManager) {
+        createConstraints(session, schemaManager, true);
+    }
+
+    /**
+     * Create constraints.
+     */
+    public void createConstraints(DatabaseSession session, SchemaManager schemaManager, boolean build) {
+        buildConstraints(schemaManager, build);
 
         // Unique constraints should be generated before foreign key constraints,
         // because foreign key constraints can reference unique constraints
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
+        for (TableDefinition table : getTableDefinitions()) {
             try {
-                schemaManager.createUniqueConstraints((TableDefinition)enumtr.nextElement());
+                schemaManager.createUniqueConstraints(table);
             } catch (DatabaseException ex) {
                 if (!shouldIgnoreDatabaseException()) {
                     throw ex;
@@ -82,9 +91,9 @@ public class TableCreator {
             }
         }
         
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
+        for (TableDefinition table : getTableDefinitions()) {
             try {
-                schemaManager.createForeignConstraints((TableDefinition)enumtr.nextElement());
+                schemaManager.createForeignConstraints(table);
             } catch (DatabaseException ex) {
                 if (!shouldIgnoreDatabaseException()) {
                     throw ex;
@@ -106,15 +115,20 @@ public class TableCreator {
      * This creates the tables on the database.
      * If the table already exists this will fail.
      */
-    public void createTables(org.eclipse.persistence.sessions.DatabaseSession session, SchemaManager schemaManager) {
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            schemaManager.buildFieldTypes((TableDefinition)enumtr.nextElement());
-        }
+    public void createTables(DatabaseSession session, SchemaManager schemaManager) {
+        createTables(session, schemaManager, true);
+    }
+
+    /**
+     * This creates the tables on the database.
+     * If the table already exists this will fail.
+     */
+    public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
+        buildConstraints(schemaManager, build);
 
         String sequenceTableName = getSequenceTableName(session);
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
+        for (TableDefinition table : getTableDefinitions()) {
             // Must not create sequence table as done in createSequences.
-            TableDefinition table = (TableDefinition)enumtr.nextElement();
             if (!table.getName().equals(sequenceTableName)) {
                 try {
                     schemaManager.createObject(table);
@@ -127,28 +141,8 @@ public class TableCreator {
                 }
             }
         }
-
-        // Unique constraints should be generated before foreign key constraints,
-        // because foreign key constraints can reference unique constraints
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            try {
-                schemaManager.createUniqueConstraints((TableDefinition)enumtr.nextElement());
-            } catch (DatabaseException ex) {
-                if (!shouldIgnoreDatabaseException()) {
-                    throw ex;
-                }
-            }
-        }
         
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            try {
-                schemaManager.createForeignConstraints((TableDefinition)enumtr.nextElement());
-            } catch (DatabaseException ex) {
-                if (!shouldIgnoreDatabaseException()) {
-                    throw ex;
-                }
-            }
-        }
+        createConstraints(session, schemaManager, false);
 
         schemaManager.createSequences();
     }
@@ -156,7 +150,7 @@ public class TableCreator {
     /**
      * Drop the table constraints from the database.
      */
-    public void dropConstraints(org.eclipse.persistence.sessions.DatabaseSession session) {
+    public void dropConstraints(DatabaseSession session) {
         //CR2612669
         dropConstraints(session, new SchemaManager(session));
     }
@@ -164,15 +158,20 @@ public class TableCreator {
     /**
      * Drop the table constraints from the database.
      */
-    public void dropConstraints(org.eclipse.persistence.sessions.DatabaseSession session, SchemaManager schemaManager) {
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            schemaManager.buildFieldTypes((TableDefinition)enumtr.nextElement());
-        }
+    public void dropConstraints(DatabaseSession session, SchemaManager schemaManager) {
+        dropConstraints(session, schemaManager, true);
+    }
 
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
+    /**
+     * Drop the table constraints from the database.
+     */
+    public void dropConstraints(DatabaseSession session, SchemaManager schemaManager, boolean build) {
+        buildConstraints(schemaManager, build);
+
+        for (TableDefinition table : getTableDefinitions()) {
             try {
-                schemaManager.dropConstraints((TableDefinition)enumtr.nextElement());
-            } catch (org.eclipse.persistence.exceptions.DatabaseException dbE) {
+                schemaManager.dropConstraints(table);
+            } catch (DatabaseException exception) {
                 //ignore
             }
         }
@@ -181,7 +180,7 @@ public class TableCreator {
     /**
      * Drop the tables from the database.
      */
-    public void dropTables(org.eclipse.persistence.sessions.DatabaseSession session) {
+    public void dropTables(DatabaseSession session) {
         //CR2612669
         dropTables(session, new SchemaManager(session));
     }
@@ -189,31 +188,58 @@ public class TableCreator {
     /**
      * Drop the tables from the database.
      */
-    public void dropTables(org.eclipse.persistence.sessions.DatabaseSession session, SchemaManager schemaManager) {
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            schemaManager.buildFieldTypes((TableDefinition)enumtr.nextElement());
-        }
+    public void dropTables(DatabaseSession session, SchemaManager schemaManager) {
+        dropTables(session, schemaManager, true);
+    }
 
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            try {
-                schemaManager.dropConstraints((TableDefinition)enumtr.nextElement());
-            } catch (org.eclipse.persistence.exceptions.DatabaseException dbE) {
-                //ignore
+    /**
+     * Drop the tables from the database.
+     */
+    public void dropTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
+        buildConstraints(schemaManager, build);
+
+        // CR 3870467, do not log stack, or log at all if not fine
+        boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
+        int level = session.getSessionLog().getLevel();
+        if (shouldLogExceptionStackTrace) {
+            session.getSessionLog().setShouldLogExceptionStackTrace(false);
+        }
+        if (level > SessionLog.FINE) {
+            session.getSessionLog().setLevel(SessionLog.SEVERE);
+        }
+        try {
+            dropConstraints(session, schemaManager, false);
+
+            String sequenceTableName = getSequenceTableName(session);
+            List<TableDefinition> tables = getTableDefinitions();
+            int trys = 1;
+            if (SchemaManager.FORCE_DROP) {
+                trys = 5;
             }
-        }
-
-        String sequenceTableName = getSequenceTableName(session);
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            // Must not create sequence table as done in createSequences.
-            TableDefinition table = (TableDefinition)enumtr.nextElement();
-            if (!table.getName().equals(sequenceTableName)) {
-                try {
-                    schemaManager.dropObject(table);
-                } catch (DatabaseException ex) {
-                    if (!shouldIgnoreDatabaseException()) {
-                        throw ex;
+            while ((trys > 0) && !tables.isEmpty()) {
+                trys--;
+                List<TableDefinition> failed = new ArrayList<TableDefinition>();
+                for (TableDefinition table : tables) {
+                    // Must not create sequence table as done in createSequences.
+                    if (!table.getName().equals(sequenceTableName)) {
+                        try {
+                            schemaManager.dropObject(table);
+                        } catch (DatabaseException exception) {
+                            failed.add(table);
+                            if (!shouldIgnoreDatabaseException()) {
+                                throw exception;
+                            }
+                        }
                     }
                 }
+                tables = failed;
+            }
+        } finally {
+            if (shouldLogExceptionStackTrace) {
+                session.getSessionLog().setShouldLogExceptionStackTrace(true);
+            }
+            if (level > SessionLog.FINE) {
+                session.getSessionLog().setLevel(level);
             }
         }
     }
@@ -228,7 +254,7 @@ public class TableCreator {
     /**
      * Return the tables.
      */
-    public Vector getTableDefinitions() {
+    public List<TableDefinition> getTableDefinitions() {
         return tableDefinitions;
     }
 
@@ -236,7 +262,7 @@ public class TableCreator {
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
      */
-    public void replaceTables(org.eclipse.persistence.sessions.DatabaseSession session) {
+    public void replaceTables(DatabaseSession session) {
         replaceTables(session, new SchemaManager(session));
     }
 
@@ -244,84 +270,39 @@ public class TableCreator {
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
      */
-    public void replaceTables(org.eclipse.persistence.sessions.DatabaseSession session, SchemaManager schemaManager) {
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
         replaceTablesAndConstraints(schemaManager, session);
-
         schemaManager.createSequences();
-
     }
     
     /**
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
      */
-    public void replaceTables(org.eclipse.persistence.sessions.DatabaseSession session, 
-            SchemaManager schemaManager, boolean keepSequenceTable) {
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean keepSequenceTable) {
         replaceTablesAndConstraints(schemaManager, session);
-
         schemaManager.createOrReplaceSequences(keepSequenceTable, false);
-    }    
+    }
     
-
-    private void replaceTablesAndConstraints(final SchemaManager schemaManager, 
-            final org.eclipse.persistence.sessions.DatabaseSession session) {
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            schemaManager.buildFieldTypes((TableDefinition)enumtr.nextElement());
-        }
-        
-        // CR 3870467, do not log stack
-        boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
-        if (shouldLogExceptionStackTrace) {
-            session.getSessionLog().setShouldLogExceptionStackTrace(false);
-        }
+    protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {
+        buildConstraints(schemaManager, true);
+        boolean ignore = shouldIgnoreDatabaseException();
+        setIgnoreDatabaseException(true);
         try {
-            for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-                try {
-                    schemaManager.dropConstraints((TableDefinition)enumtr.nextElement());
-                } catch (org.eclipse.persistence.exceptions.DatabaseException dbE) {
-                    //ignore
-                }
-            }
+            dropTables(session, schemaManager, false);
         } finally {
-            if (shouldLogExceptionStackTrace) {
-                session.getSessionLog().setShouldLogExceptionStackTrace(true);
-            }
+            setIgnoreDatabaseException(ignore);            
         }
-
-        String sequenceTableName = getSequenceTableName(session);
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            // Must not create sequence table as done in createSequences.
-            TableDefinition table = (TableDefinition)enumtr.nextElement();
-            if (!table.getName().equals(sequenceTableName)) {
-                try {
-                    schemaManager.replaceObject(table);
-                } catch (DatabaseException ex) {
-                    if (!shouldIgnoreDatabaseException()) {
-                        throw ex;
-                    }
-                }
-            }
-        }
-
-        // Unique constraints should be generated before foreign key constraints,
-        // because foreign key constraints can reference unique constraints
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            try {
-                schemaManager.createUniqueConstraints((TableDefinition)enumtr.nextElement());
-            } catch (DatabaseException ex) {
-                if (!shouldIgnoreDatabaseException()) {
-                    throw ex;
-                }
-            }
-        }
-        
-        for (Enumeration enumtr = getTableDefinitions().elements(); enumtr.hasMoreElements();) {
-            try {
-                schemaManager.createForeignConstraints((TableDefinition)enumtr.nextElement());
-            } catch (DatabaseException ex) {
-                if (!shouldIgnoreDatabaseException()) {
-                    throw ex;
-                }
+        createTables(session, schemaManager, false);
+    }
+    
+    /**
+     * Convert any field constraint to constraint objects.
+     */
+    protected void buildConstraints(SchemaManager schemaManager, boolean build) {
+        if (build) {
+            for (TableDefinition table : getTableDefinitions()) {
+                schemaManager.buildFieldTypes(table);
             }
         }
     }
@@ -343,23 +324,23 @@ public class TableCreator {
     /**
      * Return true if DatabaseException is to be ignored.
      */
-    boolean shouldIgnoreDatabaseException() {
+    protected boolean shouldIgnoreDatabaseException() {
         return ignoreDatabaseException;
     }
 
     /**
      * Set flag whether DatabaseException should be ignored. 
      */
-    void setIgnoreDatabaseException(boolean ignoreDatabaseException) {
+    protected void setIgnoreDatabaseException(boolean ignoreDatabaseException) {
         this.ignoreDatabaseException = ignoreDatabaseException;
     }
 
-    protected String getSequenceTableName(org.eclipse.persistence.sessions.Session session) {
+    protected String getSequenceTableName(Session session) {
         String sequenceTableName = null;
         if (session.getProject().usesSequencing()) {
-            org.eclipse.persistence.sequencing.Sequence sequence = session.getLogin().getDefaultSequence();
-            if (sequence instanceof org.eclipse.persistence.sequencing.TableSequence) {
-                sequenceTableName = ((org.eclipse.persistence.sequencing.TableSequence)sequence).getTableName();
+            Sequence sequence = session.getLogin().getDefaultSequence();
+            if (sequence instanceof TableSequence) {
+                sequenceTableName = ((TableSequence)sequence).getTableName();
             }
         }
         return sequenceTableName;

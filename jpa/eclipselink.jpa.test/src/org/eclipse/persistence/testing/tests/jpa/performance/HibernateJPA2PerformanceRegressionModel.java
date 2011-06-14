@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     James Sutherland - initial impl
+ *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
@@ -20,12 +20,12 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 
 /**
- * Performance tests that compare JPA concurrency.
+ * Performance tests that compare JPA performance.
  */
-public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyComparisonModel {
+public class HibernateJPA2PerformanceRegressionModel extends JPA2PerformanceRegressionModel {
 
-    public HibernateJPAConcurrencyComparisonModel() {
-        setDescription("Performance tests that compares Hibernate JPA concurrency.");
+    public HibernateJPA2PerformanceRegressionModel() {
+        setDescription("Performance tests that compares Hibernate JPA performance.");
     }
 
     /**
@@ -50,7 +50,7 @@ public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyCompar
         properties.put("hibernate.connection.url", getSession().getLogin().getConnectionString());
         properties.put("hibernate.connection.username", getSession().getLogin().getUserName());
         properties.put("hibernate.connection.password", getSession().getLogin().getPassword());
-        properties.put("hibernate.connection.pool_size", "32");
+        properties.put("hibernate.connection.pool_size", "10");
         
         /*/ For emulated connection testing.
         try {
@@ -60,16 +60,14 @@ public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyCompar
         properties.put("hibernate.connection.url", "emulate:" + getSession().getLogin().getConnectionString());
         properties.put("hibernate.connection.username", getSession().getLogin().getUserName());
         properties.put("hibernate.connection.password", getSession().getLogin().getPassword()); 
-        properties.put("hibernate.connection.pool_size", "32");*/
+        properties.put("hibernate.connection.pool_size", "10");*/
         
         properties.put("hibernate.jdbc.batch_size", "100");
         properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle9Dialect");
         properties.put("hibernate.cache.provider_class", "org.hibernate.cache.EhCacheProvider");
-        //properties.put("hibernate.cache.use_second_level_cache", "true");
-        //properties.put("hibernate.cache.use_structured_entries", "true");
         if (getSession().getSessionLog().getLevel() <= SessionLog.FINE) {
             properties.put("hibernate.show_sql", "true");
         }
-        getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
+        getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance2", properties));
     }
 }

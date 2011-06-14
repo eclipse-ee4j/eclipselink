@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.models.jpa.performance2;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -449,7 +448,7 @@ public class Populate {
 
         largeProject.setName("Sales Reporting");
         largeProject.setDescription("A reporting application to report on the corporations database through TopLink.");
-        largeProject.setBudget((double) 5000);
+        largeProject.setBudget(5000);
         largeProject.getMilestone().set(1991, 10, 11, 12, 0, 0);
 
         return largeProject;

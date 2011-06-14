@@ -45,6 +45,7 @@ public class JPAReadObjectAddressNamedQueryPerformanceComparisonTest extends Per
         Query query = manager.createNamedQuery("findAddressByStreet");
         query.setParameter("street", street);
         Address address = (Address)query.getSingleResult();
+        address.hashCode();
         manager.getTransaction().commit();
         manager.close();
     }

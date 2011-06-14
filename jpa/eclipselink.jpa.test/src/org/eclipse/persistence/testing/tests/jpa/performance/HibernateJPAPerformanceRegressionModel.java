@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.spi.PersistenceProvider;
 
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 
 /**
@@ -64,7 +65,7 @@ public class HibernateJPAPerformanceRegressionModel extends JPAPerformanceRegres
         properties.put("hibernate.jdbc.batch_size", "100");
         properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle9Dialect");
         properties.put("hibernate.cache.provider_class", "org.hibernate.cache.EhCacheProvider");
-        if (getSession().shouldLogMessages()) {
+        if (getSession().getSessionLog().getLevel() <= SessionLog.FINE) {
             properties.put("hibernate.show_sql", "true");
         }
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));

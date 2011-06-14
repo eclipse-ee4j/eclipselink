@@ -17,9 +17,10 @@ import java.util.Map;
 /**
  * Performance tests that compare JPA performance.
  */
-public class JPAIsolatedPerformanceRegressionModel extends JPAPerformanceRegressionModel {
+public class JPA2IsolatedPerformanceRegressionModel extends JPA2PerformanceRegressionModel {
 
-    public JPAIsolatedPerformanceRegressionModel() {
+    public JPA2IsolatedPerformanceRegressionModel() {
+        setDescription("Performance tests that compares JPA performance.");
     }
     
     /**

@@ -32,6 +32,7 @@ public class EmployeeTableCreator extends TableCreator {
         buildLPROJECTTable();
         buildPHONETable();
         buildPROJ_EMPTable();
+        buildDEGREETable();
     }
 
     protected void applyPROJECT() {
@@ -254,6 +255,7 @@ public class EmployeeTableCreator extends TableCreator {
         salary.setTypeName("INT");
         salary.setSize(10);
         tabledefinition.addField(salary);
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildEMP_JOBTable() {
@@ -274,13 +276,14 @@ public class EmployeeTableCreator extends TableCreator {
 
         // SECTION: FIELD
         field = new FieldDefinition();
-        field.setName("JOB_ID");
+        field.setName("TITLE_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
         field.setForeignKeyFieldName("P2_JOBTITLE.JOB_ID");
         tabledefinition.addField(field);
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildEMAILTable() {
@@ -314,6 +317,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setTypeName("VARCHAR");
         field.setSize(100);
         tabledefinition.addField(field);
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildRESPONSTable() {
@@ -345,6 +349,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setTypeName("VARCHAR");
         field.setSize(100);
         tabledefinition.addField(field);
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildJOBTITLETable() {
@@ -369,6 +374,39 @@ public class EmployeeTableCreator extends TableCreator {
         field1.setTypeName("VARCHAR");
         field1.setSize(100);
         tabledefinition.addField(field1);
+        addTableDefinition(tabledefinition);
+    }
+
+    protected void buildDEGREETable() {
+        TableDefinition tabledefinition = new TableDefinition();
+
+        // SECTION: TABLE
+        tabledefinition.setName("P2_DEGREE");
+
+        // SECTION: FIELD
+        FieldDefinition field = new FieldDefinition();
+        field.setName("DEGREE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setIsIdentity(true);
+        tabledefinition.addField(field);
+        
+        // SECTION: FIELD
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("EMP_ID");
+        field2.setTypeName("NUMERIC");
+        field2.setSize(15);
+        tabledefinition.addField(field2);
+
+        // SECTION: FIELD
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("NAME");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(100);
+        tabledefinition.addField(field1);
+        addTableDefinition(tabledefinition);
     }
 
     protected void buildLPROJECTTable() {
@@ -386,7 +424,6 @@ public class EmployeeTableCreator extends TableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("P_PROJECT.PROJ_ID");
         tabledefinition.addField(field);
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
@@ -419,7 +456,7 @@ public class EmployeeTableCreator extends TableCreator {
         field4.setIsPrimaryKey(false);
         field4.setUnique(false);
         field4.setIsIdentity(false);
-        field4.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
+        field4.setForeignKeyFieldName("P2_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field4);
 
         // SECTION: FIELD
@@ -432,7 +469,6 @@ public class EmployeeTableCreator extends TableCreator {
         field5.setUnique(false);
         field5.setIsIdentity(false);
         tabledefinition.addField(field5);
-        addTableDefinition(tabledefinition);
 
         // SECTION: FIELD
         FieldDefinition field6 = new FieldDefinition();
@@ -473,7 +509,6 @@ public class EmployeeTableCreator extends TableCreator {
         field.setIsPrimaryKey(true);
         field.setIsIdentity(true);
         tabledefinition.addField(field);
-        addTableDefinition(tabledefinition);
 
         // SECTION: FIELD
         FieldDefinition field2 = new FieldDefinition();
@@ -506,7 +541,7 @@ public class EmployeeTableCreator extends TableCreator {
         field4.setIsPrimaryKey(false);
         field4.setUnique(false);
         field4.setIsIdentity(false);
-        field4.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
+        field4.setForeignKeyFieldName("P2_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field4);
 
         // SECTION: FIELD
@@ -527,17 +562,6 @@ public class EmployeeTableCreator extends TableCreator {
 
         // SECTION: TABLE
         tabledefinition.setName("P2_PHONE");
-
-        // SECTION: FIELD
-        FieldDefinition field0 = new FieldDefinition();
-        field0.setName("PHONE_ID");
-        field0.setTypeName("NUMERIC");
-        field0.setSize(15);
-        field0.setShouldAllowNull(false);
-        field0.setIsPrimaryKey(true);
-        field0.setUnique(false);
-        field0.setIsIdentity(true);
-        tabledefinition.addField(field0);
         
         // SECTION: FIELD
         FieldDefinition field = new FieldDefinition();
@@ -548,7 +572,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("P2_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field);
 
         // SECTION: FIELD
@@ -599,7 +623,7 @@ public class EmployeeTableCreator extends TableCreator {
         field.setSize(15);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
-        field.setForeignKeyFieldName("P_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("P2_EMPLOYEE.EMP_ID");
         tabledefinition.addField(field);
 
         // SECTION: FIELD

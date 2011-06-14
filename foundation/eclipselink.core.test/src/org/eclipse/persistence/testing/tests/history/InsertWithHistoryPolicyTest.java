@@ -13,7 +13,8 @@
 package org.eclipse.persistence.testing.tests.history;
 
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.mapping.Baby;
@@ -52,7 +53,7 @@ public class InsertWithHistoryPolicyTest extends TestCase {
         // create or delete original tables
         creator.replaceTables(dbSession);
 
-        Vector origTableDefs = (Vector)creator.getTableDefinitions().clone();
+        List origTableDefs = new ArrayList(creator.getTableDefinitions());
         HistoryFacade.generateHistoricalTableDefinitions(creator, dbSession);
         // remove entries of tables already dealt with; only history tables remain
         creator.getTableDefinitions().removeAll(origTableDefs);

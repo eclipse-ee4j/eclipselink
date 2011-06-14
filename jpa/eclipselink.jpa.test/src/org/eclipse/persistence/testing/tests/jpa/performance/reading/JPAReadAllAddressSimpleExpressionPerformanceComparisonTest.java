@@ -33,6 +33,7 @@ public class JPAReadAllAddressSimpleExpressionPerformanceComparisonTest extends 
         Query query = manager.createQuery("Select a from Address a where a.city = :city");
         query.setParameter("city", "Ottawa");
         List result = list(query, manager);
+        result.size();
         manager.close();
     }
 }

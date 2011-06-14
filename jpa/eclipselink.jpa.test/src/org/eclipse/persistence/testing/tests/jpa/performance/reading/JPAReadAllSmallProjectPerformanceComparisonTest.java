@@ -33,6 +33,7 @@ public class JPAReadAllSmallProjectPerformanceComparisonTest extends JPAReadPerf
         EntityManager manager = createEntityManager();
         Query query = manager.createQuery("Select s from SmallProject s");
         List result = list(query, manager);
+        result.size();
         manager.close();
     }
 }

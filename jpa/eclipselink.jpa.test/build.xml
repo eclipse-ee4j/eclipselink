@@ -384,6 +384,7 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.cascade.deletes}"/>
         <!--mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.pu.with.multibyte}"/-->
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance2}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.delimited.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.extensibility.model}"/>
@@ -541,7 +542,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, 
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, 
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, 
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility" description="build EclipseLink jar">
@@ -828,6 +829,20 @@
         </jar>
     </target>
 
+    <target name="package-jpa-performance2" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance2}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${jpa.performance2}/META-INF" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance2}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/performance2/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${jpa.performance2}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${jpa.performance2}">
+            </fileset>
+        </jar>
+    </target>
+
     <target name="package-jpa-metamodel" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.metamodel.model}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.metamodel.model}" includes="*.xml"/>
@@ -1073,6 +1088,7 @@
             <fileset file="${eclipselink.jpa.test}/eclipselink-plsql-model.jar"/>
             <!--fileset file="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <fileset file="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${jpa.performance2}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/woven*.jar"/>
             <fileset file="${eclipselink.jpa.test}/*.ear"/>
@@ -1118,6 +1134,7 @@
             <pathelement path="${eclipselink.jpa.test}/eclipselink-plsql-model.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.performance2}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
@@ -1156,6 +1173,7 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.performance2}.jar"/>
         </path>
          <path id="run.oracle.classpath">
             <path refid="run.classpath"/>
@@ -1315,6 +1333,7 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.cascade.deletes}.jar"/>
             <!--pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.pu.with.multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/woven-${jpa.performance}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${jpa.performance2}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.metamodel.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.delimited.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.extensibility.model}.jar"/>
@@ -1378,6 +1397,26 @@
     <target name="test-performance" depends="clean-test,config-trunk, config-flat">
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.performance.classpath"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs performance tests. -->
+    <target name="test-performance2" depends="clean-test,config-trunk, config-flat">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPA2PerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.performance.classpath"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs performance tests, no cache. -->
+    <target name="test-performance2-nocache" depends="clean-test,config-trunk, config-flat">
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.JPA2IsolatedPerformanceRegressionModel"/>
             <param name="RUN_PATH" value="run.performance.classpath"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
@@ -1492,6 +1531,22 @@
         </path>
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.HibernateJPAPerformanceRegressionModel"/>
+            <param name="RUN_PATH" value="run.classpath.hibernate"/>
+            <param name="TEST_AGENT" value="-Dignore"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
+        </antcall>
+    </target>
+
+    <!-- Runs performance tests comparing with Hibernate. -->
+    <target name="test-performance2-hibernate" depends="clean-test,config-trunk, config-flat">
+        <path id="run.classpath.hibernate">
+            <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <path refid="run.performance.classpath"/>
+        </path>
+        <antcall target="run-test-prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.performance.HibernateJPA2PerformanceRegressionModel"/>
             <param name="RUN_PATH" value="run.classpath.hibernate"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
