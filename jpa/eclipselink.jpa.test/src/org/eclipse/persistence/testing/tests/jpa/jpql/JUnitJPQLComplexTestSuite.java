@@ -3367,6 +3367,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     //Bug 347592    
     public void testPessimisticLock(){
+        // test uses entity managers in a way that is disallowed in our server framework
+        if (isOnServer()){
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("select e from Employee e where e.firstName=:name");
         query.setParameter("name", "Bob");
