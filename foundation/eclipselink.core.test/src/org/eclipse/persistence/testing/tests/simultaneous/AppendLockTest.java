@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
@@ -34,7 +35,6 @@ public class AppendLockTest extends AutoVerifyTestCase {
     Employee emp = null;
     SmallProject project = null;
     Address address = null;
-    
 
     public AppendLockTest() {
         super();
@@ -44,6 +44,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
     @Override
     protected void setup() throws Throwable {
         super.setup();
+        getExecutor().swapServerSession();
         UnitOfWork uow = getSession().acquireUnitOfWork();
         project = new SmallProject();
         uow.registerNewObject(project);
@@ -84,6 +85,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
     @Override
     public void reset() throws Throwable {
         super.reset();
+        getExecutor().resetSession();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         UnitOfWork uow = getSession().acquireUnitOfWork();
         this.project = (SmallProject) uow.refreshObject(project);
@@ -149,10 +151,8 @@ public class AppendLockTest extends AutoVerifyTestCase {
                     e.printStackTrace();
                 }
             }
-            Vector<BigDecimal> pk = new Vector(1);
-            pk.add(this.address.getId());
             try{
-                 cacheKey = ((AbstractSession)this.session).getIdentityMapAccessorInstance().acquireLock(pk, this.address.getClass(), this.session.getClassDescriptor(this.address));
+                 cacheKey = ((AbstractSession)this.session).getIdentityMapAccessorInstance().acquireLock(this.address.getId(), this.address.getClass(), this.session.getClassDescriptor(this.address));
                 synchronized (this.session) {
                     this.session.notifyAll();
                     try {
