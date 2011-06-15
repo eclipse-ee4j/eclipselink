@@ -125,59 +125,52 @@ public class HistoryFacade {
      * conventional schema and a session with HistoryPolicies set on
      * the descriptors.
      */
-    public static void generateHistoricalTableDefinitions(TableCreator creator, 
-                                            org.eclipse.persistence.sessions.Session session) {
+    public static void generateHistoricalTableDefinitions(TableCreator creator, Session session) {
 
         // First add all table definitions to a hashtable.
-        Hashtable tableDefinitions = 
-            new Hashtable(creator.getTableDefinitions().size());
-        for (DatabaseObjectDefinition def : creator.getTableDefinitions()) {
+        Map<String, TableDefinition> tableDefinitions = new HashMap(creator.getTableDefinitions().size());
+        for (TableDefinition def : creator.getTableDefinitions()) {
             tableDefinitions.put(def.getFullName(), def);
         }
-        for (Iterator iterator = session.getDescriptors().values().iterator(); 
-             iterator.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+        Set<String> generatedTables = new HashSet<String>();
+        for (ClassDescriptor descriptor : session.getDescriptors().values()) {
             HistoryPolicy policy = descriptor.getHistoryPolicy();
             if (policy != null) {
-                Vector names = policy.getHistoryTableNames();
+                List<String> names = policy.getHistoryTableNames();
                 for (int i = 0; i < descriptor.getTableNames().size(); i++) {
-                    String name = 
-                        (String)descriptor.getTableNames().elementAt(i);
-                    String histName = (String)names.elementAt(i);
-                    TableDefinition def = 
-                        (TableDefinition)tableDefinitions.get(name);
-                    buildHistoricalTableDefinition(policy, histName, def, 
-                                                   creator);
+                    String name = (String)descriptor.getTableNames().get(i);
+                    String histName = names.get(i);
+                    if (!generatedTables.contains(histName)) {
+                        generatedTables.add(histName);
+                        TableDefinition def = tableDefinitions.get(name);
+                        buildHistoricalTableDefinition(policy, histName, def, creator);
+                    }
                 }
             }
-            for (Enumeration mappings = descriptor.getMappings().elements(); 
-                 mappings.hasMoreElements(); ) {
-                DatabaseMapping mapping = 
-                    (DatabaseMapping)mappings.nextElement();
+            for (DatabaseMapping mapping : descriptor.getMappings()) {
                 if (mapping.isManyToManyMapping()) {
                     ManyToManyMapping m2mMapping = (ManyToManyMapping)mapping;
                     policy = m2mMapping.getHistoryPolicy();
                     if (policy != null) {
                         String name = m2mMapping.getRelationTableName();
-                        String histName = 
-                            (String)policy.getHistoryTableNames().elementAt(0);
-                        TableDefinition def = 
-                            (TableDefinition)tableDefinitions.get(name);
-                        buildHistoricalTableDefinition(policy, histName, def, 
-                                                       creator);
+                        String histName = (String)policy.getHistoryTableNames().get(0);
+                        if (!generatedTables.contains(histName)) {
+                            generatedTables.add(histName);
+                            TableDefinition def = tableDefinitions.get(name);
+                            buildHistoricalTableDefinition(policy, histName, def, creator);
+                        }
                     }
                 } else if (mapping.isDirectCollectionMapping()) {
-                    DirectCollectionMapping dcMapping = 
-                        (DirectCollectionMapping)mapping;
+                    DirectCollectionMapping dcMapping = (DirectCollectionMapping)mapping;
                     policy = dcMapping.getHistoryPolicy();
                     if (policy != null) {
                         String name = dcMapping.getReferenceTableName();
-                        String histName = 
-                            (String)policy.getHistoryTableNames().elementAt(0);
-                        TableDefinition def = 
-                            (TableDefinition)tableDefinitions.get(name);
-                        buildHistoricalTableDefinition(policy, histName, def, 
-                                                       creator);
+                        String histName = (String)policy.getHistoryTableNames().get(0);
+                        if (!generatedTables.contains(histName)) {
+                            generatedTables.add(histName);
+                            TableDefinition def = tableDefinitions.get(name);
+                            buildHistoricalTableDefinition(policy, histName, def, creator);
+                        }
                     }
                 }
             }
