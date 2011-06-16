@@ -23,6 +23,8 @@
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  *     11/01/2010-2.2 Guy Pelletier 
  *       - 322916: getParameter on Query throws NPE
+ *     05/24/2011-2.3 (Backport) Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -42,6 +44,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.MapAttribute;
@@ -79,6 +84,8 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
@@ -210,6 +217,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEM2"));
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEMF"));
             suite.addTest(new AdvancedJPAJunitTest("testComplexAdditionalCriteria"));
+
+            suite.addTest(new AdvancedJPAJunitTest("testQueryByExampleAndAdditionalCriteria"));
+            suite.addTest(new AdvancedJPAJunitTest("testCriteriaBuilderQueryAndAdditionalCriteria"));
             
             // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
             suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
@@ -514,6 +524,76 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             List bolts = em.createQuery("SELECT b from Bolt b").getResultList();
             assertTrue("Incorrect number of bolts were returned [" + bolts.size() + "], expected [2]",  bolts.size() == 2);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Test user query by example on model using additional criteria.
+     */
+    public void testQueryByExampleAndAdditionalCriteria() {
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            
+            em.setProperty("NAME", "Ottawa%");
+            
+            Student example = new Student();
+            example.setName("OttawaSRStud1");
+
+            QueryByExamplePolicy policy = new QueryByExamplePolicy();
+            ReadAllQuery elQuery = new ReadAllQuery();
+            elQuery.setExampleObject( example );
+            elQuery.setQueryByExamplePolicy( policy );
+            Query jpaQuery = JpaHelper.createQuery( elQuery, em );
+
+            List<Student> students = jpaQuery.getResultList();
+            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [1]",  students.size() == 1);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Test user query by example on model using additional criteria.
+     */
+    public void testCriteriaBuilderQueryAndAdditionalCriteria() {
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            
+            em.setProperty("NAME", "Ottawa%");
+
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+            CriteriaQuery<Student> query = builder.createQuery( Student.class );
+            Root<Student> root = query.from( Student.class );
+            query.select( root ).where( builder.greaterThan( root.<String>get( "id" ), "0" ) );
+
+            List<Student> students = em.createQuery( query ).getResultList();
+            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [8]",  students.size() == 8);
+            
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

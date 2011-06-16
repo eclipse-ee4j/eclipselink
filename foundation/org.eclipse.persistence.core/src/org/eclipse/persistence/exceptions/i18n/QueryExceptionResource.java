@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     05/24/2011-2.3 (Backport) Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -175,9 +177,9 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6167", "A cast has been invoked on an expression that does not use inheritance: [{0}]."},
        { "6168", "Query failed to prepare, unexpected error occurred: [{0}]."},
        { "6169", "A mapping was configured to use IN batch fetching, but the original query was not configured to use IN batch fetching and must be: [{0}]."},
-       { "6170", "No value was provided for the additional criteria query parameter [{0}]. Additional criteria parameters must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
        { "6171", "Partitioning not support for the session type [{0}]. Only ServerSession and ClientSession are supported."},
-       { "6172", "Missing connection pool for partitioning [{0}]."}
+       { "6172", "Missing connection pool for partitioning [{0}]."},
+       { "6174", "No value was provided for the session property [{0}]. This exception is possible when using additional criteria or tenant discriminator columns without specifying the associated contextual property. These properties must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
     };
 
     /**

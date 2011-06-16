@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     05/24/2011-2.3 (Backport) Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -28,6 +30,9 @@ import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.expressions.CompoundExpression;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 
@@ -62,8 +67,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
     protected boolean hasCustomMultipleTableJoinExpression;
     protected transient String additionalCriteria;
-    // Contains list of additional criteria and their types.
-    protected transient HashMap<String, Class> additionalCriteriaArguments;
     protected transient Expression additionalJoinExpression;
     protected transient Expression multipleTableJoinExpression;
     protected transient Map queries;
@@ -297,14 +300,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             getReadAllQuery().convertClassNamesToClasses(classLoader);
         }
     };
-
-    /**
-     * ADVANCED:
-     * Returns the additional criteria arguments.
-     */
-    public HashMap<String, Class> getAdditionalCriteriaArguments() {
-        return additionalCriteriaArguments;
-    }
     
     /**
      * ADVANCED:
@@ -726,14 +721,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     }
     
     /**
-     * ADVANCED:
-     * Return true if there are arguments within the additional criteria.
-     */
-    public boolean hasAdditionalCriteriaArguments() {
-        return additionalCriteriaArguments != null && ! additionalCriteriaArguments.isEmpty();
-    }
-    
-    /**
      * INTERNAL:
      * Return if a custom join expression is used.
      */
@@ -944,14 +931,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             parseTree.populateQuery(databaseQuery, (AbstractSession) session);
             parseTree.addParametersToQuery(databaseQuery);
             
-            // Store the arguments and their types.
-            if (databaseQuery.hasArguments()) {
-                additionalCriteriaArguments = new HashMap<String, Class>();
-                
-                for (int i = 0; i < databaseQuery.getArguments().size(); i++) {
-                    additionalCriteriaArguments.put(databaseQuery.getArguments().get(i), databaseQuery.getArgumentTypes().get(i));
-                }
-            }
+            updatePropertyParameterExpression(databaseQuery.getSelectionCriteria());
             
             additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
             // The make sure the additional join expression has the correct 
@@ -959,6 +939,30 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             // expression builder.
             additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will walk the given expression and mark any parameter
+     * expressions as property expressions. This is done when additional
+     * criteria has been specified and parameter values must be resolved 
+     * through session properties.
+     * 
+     * @see postInitialize
+     */
+    protected void updatePropertyParameterExpression(Expression exp) {
+    	if (exp.isCompoundExpression()) {
+    		updatePropertyParameterExpression(((CompoundExpression) exp).getFirstChild());
+    		updatePropertyParameterExpression(((CompoundExpression) exp).getSecondChild());
+    	} else if (exp.isFunctionExpression()) {
+    		for (Expression e : (Vector<Expression>) ((FunctionExpression) exp).getChildren()) {
+    			updatePropertyParameterExpression(e);
+    		}
+    	}
+
+    	if (exp.isParameterExpression()) {
+    		((ParameterExpression) exp).setIsProperty(true);
+    	}
     }
     
     /**

@@ -15,6 +15,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/29/2010-2.2 Michael O'Brien 
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+ *     05/24/2011-2.3 (Backport) Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -1809,25 +1811,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         AbstractRecord row = new DatabaseRecord(argumentsSize);
         for (int index = 0; index < argumentsSize; index++) {
             row.put(argumentFields.get(index), argumentValues.get(index));
-        }
-
-        // If the descriptor uses additional criteria, add its argument fields now.
-        if (getDescriptor() != null && getDescriptor().shouldUseAdditionalJoinExpression() && getDescriptor().getQueryManager().hasAdditionalCriteriaArguments()) {
-            HashMap<String, Class> additionalCriteriaArguments = getDescriptor().getQueryManager().getAdditionalCriteriaArguments();
-                
-            for (String additionalCriteriaParameter : additionalCriteriaArguments.keySet()) {
-                Object propertyValue = session.getProperty(additionalCriteriaParameter);
-                
-                if (propertyValue == null) {
-                    // If we don't have a property value and the argument field 
-                    // is to an additional criteria parameter, throw an exception.
-                    throw QueryException.argumentFromAdditionalCriteriaMissing(this, additionalCriteriaParameter);
-                } else {
-                    DatabaseField argumentField = new DatabaseField(additionalCriteriaParameter);
-                    argumentField.setType(additionalCriteriaArguments.get(additionalCriteriaParameter));
-                    row.put(argumentField, propertyValue);
-                }
-            }
         }
         
         return row;

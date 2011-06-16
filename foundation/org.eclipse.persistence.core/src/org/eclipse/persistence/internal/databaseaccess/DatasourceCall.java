@@ -11,7 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/29/2010-2.2 Michael O'Brien 
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
- *     
+ *     05/24/2011-2.3 (Backport) Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.    
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -711,7 +712,7 @@ public abstract class DatasourceCall implements Call {
 
                         // Parameter expressions are used for nesting and correct mapping conversion of the value.
                         if (parameter instanceof ParameterExpression) {
-                            value = ((ParameterExpression)parameter).getValue(translationRow, session);
+                            value = ((ParameterExpression)parameter).getValue(translationRow, getQuery(), session);
                         } else {
                             DatabaseField field = (DatabaseField)parameter;
                             value = translationRow.get(field);
@@ -759,7 +760,7 @@ public abstract class DatasourceCall implements Call {
 
         // Parameter expressions are used for nesting and correct mapping conversion of the value.
         if (parameter instanceof ParameterExpression) {
-            value = ((ParameterExpression)parameter).getValue(translationRow, session);
+        	value = ((ParameterExpression)parameter).getValue(translationRow, getQuery(), session);
         } else if (parameter instanceof DatabaseField) {
             DatabaseField field = (DatabaseField)parameter;
             value = translationRow.get(field);

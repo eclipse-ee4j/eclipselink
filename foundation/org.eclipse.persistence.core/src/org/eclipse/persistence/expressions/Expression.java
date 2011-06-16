@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/24/2011-2.3 (Backport) Guy Pelletier 
+ *       - 345962: Join fetch query when using tenant discriminator column fails.
  ******************************************************************************/  
 package org.eclipse.persistence.expressions;
 
@@ -1804,7 +1806,17 @@ public abstract class Expression implements Serializable, Cloneable {
     public AbstractSession getSession() {
         return getBuilder().getSession();
     }
-
+  	
+    /**
+     * ADVANCED: 	
+     * Return an expression representing a property with the given name.
+     */
+    public Expression getProperty(DatabaseField field) {
+    	ParameterExpression paramExpression = new ParameterExpression(field, this);
+    	paramExpression.setIsProperty(true);
+    	return paramExpression;
+    }
+    
     /**
      * ADVANCED: Return an expression representing a table in a data-level query.
      * This is used internally in EclipseLink, or to construct queries involving
