@@ -309,6 +309,9 @@ public class JAXBContextFactory {
             } else if (metadata instanceof MetadataSource){
                 xmlBindings = ((MetadataSource)metadata).getXmlBindings(properties, classLoader);
             } else if (metadata instanceof String) {
+                if(((String)metadata).length() == 0) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
+                }
                 URL url = null;
                 try {
                     url = new URL((String)metadata);
