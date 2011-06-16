@@ -3368,7 +3368,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     //Bug 347592    
     public void testPessimisticLock(){
         // test uses entity managers in a way that is disallowed in our server framework
-        if (isOnServer()){
+        if (isOnServer() || !isSelectForUpateSupported()){
             return;
         }
         EntityManager em = createEntityManager();
