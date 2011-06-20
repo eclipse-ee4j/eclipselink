@@ -186,9 +186,9 @@ public class ParameterExpression extends BaseExpression {
      * This may require recursion if it is a nested parameter.
      */
     public Object getValue(AbstractRecord translationRow, AbstractSession session) {
-    	return getValue(translationRow, null, session);
+        return getValue(translationRow, null, session);
     }
-    	
+        
     /**
     * Extract the value from the row.
     * This may require recursion if it is a nested parameter.
@@ -202,7 +202,7 @@ public class ParameterExpression extends BaseExpression {
 
         // Check for nested parameters.
         if (getBaseExpression() != null) {
-        	value = ((ParameterExpression)getBaseExpression()).getValue(translationRow, query, session);
+            value = ((ParameterExpression)getBaseExpression()).getValue(translationRow, query, session);
             if (value == null) {
                 return null;
             }
@@ -255,18 +255,24 @@ public class ParameterExpression extends BaseExpression {
                 value = translationRow.getIndicatingNoEntry(getField());
             }
             
-            // Throw an exception if the field is not mapped. Null may be
+            // Throw an exception if the field is not mapped. Null may be 
             // returned if it is a property so check for null and isProperty
             if (value == AbstractRecord.noEntry || (value == null && isProperty())) {
-            	if (isProperty()) {
-            		value = session.getProperty(getField().getName());
-            		
-            		if (value == null) {
-            			throw QueryException.missingContextPropertyForPropertyParameterExpression(query, getField().getName());
-            		}
-            	}
-            	
-            	return value;
+                if (isProperty()) {
+                    if (query != null) {
+                        value = query.getSession().getProperty(getField().getName());
+                    } else {
+                        value = session.getProperty(getField().getName());
+                    }
+                        
+                    if (value == null) {
+                        throw QueryException.missingContextPropertyForPropertyParameterExpression(query, getField().getName());
+                    }
+                    
+                    return value;
+                }
+                
+                throw QueryException.parameterNameMismatch(getField().getName());
             }
             
             // validate parameter type against mapping
@@ -298,7 +304,7 @@ public class ParameterExpression extends BaseExpression {
      * Return true if this parameter expression maps to a property.
      */
     public boolean isProperty() {
-    	return isProperty;
+        return isProperty;
     }
 
     /**
@@ -375,9 +381,9 @@ public class ParameterExpression extends BaseExpression {
      * INTERNAL:
      * Set to true if this parameter expression maps to a property value.
      */
-	public void setIsProperty(boolean isProperty) {
-		this.isProperty = isProperty;
-	}
+    public void setIsProperty(boolean isProperty) {
+        this.isProperty = isProperty;
+    }
 
     /**
      * INTERNAL:
@@ -387,11 +393,11 @@ public class ParameterExpression extends BaseExpression {
      * (see the comment there for more details).
      */
     public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
-    	if (isProperty()) {
-    		return context.getProperty(getField());
-    	} else {
-    		return context.getField(getField());
-    	}
+        if (isProperty()) {
+            return context.getProperty(getField());
+        } else {
+            return context.getField(getField());
+        }
     }
     
     /**

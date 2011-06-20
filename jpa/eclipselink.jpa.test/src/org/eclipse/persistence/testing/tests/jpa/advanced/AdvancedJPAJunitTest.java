@@ -483,7 +483,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Map<Integer, Equipment> equipments = (Map<Integer, Equipment>) mapping.valueFromPKList(pks, session);
         assertTrue("ValueFromPKList returned list of different size from actual entity.", equipments.size() == dept.getEquipment().size());
         for (Equipment equip : dept.getEquipment().values()){
-        	assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
+            assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
         }
         rollbackTransaction(em);
     }

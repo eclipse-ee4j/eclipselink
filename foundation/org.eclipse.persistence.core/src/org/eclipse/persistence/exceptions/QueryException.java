@@ -244,10 +244,10 @@ public class QueryException extends ValidationException {
     }
     
     public static QueryException missingContextPropertyForPropertyParameterExpression(DatabaseQuery query, String argumentName) {
-    	Object[] args = { argumentName };
-    	QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION, args), query);
-    	queryException.setErrorCode(MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION);
-    	return queryException;
+        Object[] args = { argumentName };
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION, args), query);
+        queryException.setErrorCode(MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION);
+        return queryException;
     }
 
     public static QueryException namedArgumentNotFoundInQueryParameters(String argumentName) {
@@ -1396,7 +1396,7 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = 
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
-		UNNAMED_ARG_NOT_SUPPORTED, args));
+        UNNAMED_ARG_NOT_SUPPORTED, args));
         queryException.setErrorCode(UNNAMED_ARG_NOT_SUPPORTED);
         return queryException;
     }
@@ -1416,7 +1416,7 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = 
             new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
-            		TYPE_NAME_NOT_SET, args));
+                    TYPE_NAME_NOT_SET, args));
         queryException.setErrorCode(TYPE_NAME_NOT_SET);
         return queryException;
     }

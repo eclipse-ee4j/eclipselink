@@ -458,7 +458,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Alias a particular table within this node
      */
     protected void assignAlias(String name, DatabaseTable tableOrExpression) {
-        // By default, do nothing.	
+        // By default, do nothing.    
     }
 
     /**
@@ -1806,15 +1806,15 @@ public abstract class Expression implements Serializable, Cloneable {
     public AbstractSession getSession() {
         return getBuilder().getSession();
     }
-  	
+      
     /**
-     * ADVANCED: 	
+     * ADVANCED:     
      * Return an expression representing a property with the given name.
      */
     public Expression getProperty(DatabaseField field) {
-    	ParameterExpression paramExpression = new ParameterExpression(field, this);
-    	paramExpression.setIsProperty(true);
-    	return paramExpression;
+        ParameterExpression paramExpression = new ParameterExpression(field, this);
+        paramExpression.setIsProperty(true);
+        return paramExpression;
     }
     
     /**
