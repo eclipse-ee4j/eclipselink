@@ -41,7 +41,7 @@ for dbLoginFile in `ls | grep db-` ; do
     DB_URL=`cat $dbLoginFile | cut -d'*' -f3`
     DB_NAME=`cat $dbLoginFile | cut -d'*' -f4`
 
-    result=`echo ${processed} | grep $DB_URL`
+    result=`echo ${processed} | grep ~${DB_URL}~`
     if [ "$result" = "" ]
     then
         echo "-------------------------------------"
@@ -52,7 +52,7 @@ for dbLoginFile in `ls | grep db-` ; do
         else
             cleanSchema
         fi
-        processed="${processed}${DB_URL} "
+        processed="${processed}~${DB_URL}~ "
     fi
 done
 echo "-------------------------------------"
