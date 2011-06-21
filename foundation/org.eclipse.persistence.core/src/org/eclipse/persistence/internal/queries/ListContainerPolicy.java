@@ -23,8 +23,11 @@ import java.util.Map;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -167,6 +170,35 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             collectionChangeRecord.getRemoveObjectList().put(changeSetToRemove, changeSetToRemove);
         }
     }
+
+    /**
+     * INTERNAL:
+     * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
+     * used when an Entity is merged into itself and the Entity reference new or detached entities.
+     */
+    @Override
+    public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, ForeignReferenceMapping mapping, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
+        Map<ObjectChangeSet, ObjectChangeSet> list = ((CollectionChangeRecord)changeRecord).getAddObjectList();
+        
+        ObjectChangeSet sourceSet = parentUOWChangeSet.getCloneToObjectChangeSet().get(source);
+        if (list.containsKey(sourceSet)){
+            ObjectChangeSet targetSet = ((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target));
+            parentUOWChangeSet.addObjectChangeSetForIdentity(targetSet, parentUOWChangeSet);
+            list.remove(sourceSet);
+            list.put(targetSet, targetSet);
+            return;
+        }
+        List<ObjectChangeSet> overFlow = ((CollectionChangeRecord)changeRecord).getAddOverFlow();
+        int index = 0;
+        for (ObjectChangeSet changeSet: overFlow){
+            if (changeSet == sourceSet){
+                overFlow.set(index,((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target)));
+                return;
+            }
+            ++index;
+        }
+    }
+    
 
     /**
      * INTERNAL:

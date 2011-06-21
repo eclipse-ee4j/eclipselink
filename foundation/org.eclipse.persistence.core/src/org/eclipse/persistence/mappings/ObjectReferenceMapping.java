@@ -15,11 +15,13 @@ package org.eclipse.persistence.mappings;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
@@ -459,8 +461,16 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (shouldMergeCascadeParts(mergeManager) && (valueOfSource != null)) {
             if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
                 // If it is a unit of work, we have to check if I have a change Set fot this object
-                mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet()).getObjectChangeSetForClone(valueOfSource), targetSession);
-            } else {
+                Object targetValue = mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet()).getObjectChangeSetForClone(valueOfSource), targetSession);
+                if (target == source && targetValue != valueOfSource && (this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
+                    ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener();
+                    if (listener != null){
+                        //update the ChangeSet recorded within the parents ObjectChangeSet as the parent is referenceing the ChangeSet
+                        //for a detached or new Entity.
+                        this.descriptor.getObjectChangePolicy().updateListenerForSelfMerge(listener, this, valueOfSource, targetValue, (UnitOfWorkImpl) mergeManager.getSession());
+                    }
+                }
+        } else {
                 mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), null, targetSession);
             }
         }
@@ -1405,6 +1415,15 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         } else {
             setNewValueInChangeRecord(unwrappedNewValue, changeRecord, objectChangeSet, uow);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
+     * used when an Entity is merged into itself and the Entity reference new or detached entities.
+     */
+    public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
+        ((ObjectReferenceChangeRecord)changeRecord).setNewValue(((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, referenceDescriptor, unitOfWork.isCloneNewObject(target)));
     }
 
     /**

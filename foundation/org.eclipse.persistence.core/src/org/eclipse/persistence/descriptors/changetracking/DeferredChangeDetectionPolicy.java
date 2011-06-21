@@ -18,6 +18,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.*;
@@ -298,5 +299,14 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      */
     public boolean isAttributeChangeTrackingPolicy(){
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for 
+     * the detached/new entity that need to be updated.
+     */
+    public void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork) {
+        //not applicable for this change detection type.
     }
 }

@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -1497,7 +1498,26 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public int updateJoinedMappingIndexesForMapKey(Map<DatabaseMapping, Object> indexList, int index){
         return 0;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
+     * used when an Entity is merged into itself and the Entity reference new or detached entities.
+     */
+    public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, ForeignReferenceMapping mapping, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
+       Map<ObjectChangeSet, ObjectChangeSet> list = ((CollectionChangeRecord)changeRecord).getAddObjectList();
+        ObjectChangeSet sourceSet = parentUOWChangeSet.getCloneToObjectChangeSet().get(source);
+        if (list.containsKey(sourceSet)){
+            ObjectChangeSet targetSet = ((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target));
+            targetSet.setNewKey(sourceSet.getNewKey());
+            targetSet.setOldKey(sourceSet.getOldKey());
+            parentUOWChangeSet.addObjectChangeSetForIdentity(targetSet, parentUOWChangeSet);
+            list.remove(sourceSet);
+            list.put(targetSet, targetSet);
+            return;
+        }
+    }
+
     /**
      * INTERNAL: 
      * MapContainerPolicy's iterator iterates on the Entries of a Map.

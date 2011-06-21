@@ -123,6 +123,16 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
 
     /**
      * INTERNAL:
+     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for 
+     * the detached/new entity that need to be updated.
+     */
+    public void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork){
+        ChangeRecord record = (ChangeRecord) ((AttributeChangeListener)listener).getObjectChangeSet().getChangesForAttributeNamed(mapping.getAttributeName());
+        mapping.updateChangeRecordForSelfMerge(record, source, target, (UnitOfWorkChangeSet) ((AttributeChangeListener)listener).getObjectChangeSet().getUOWChangeSet(), unitOfWork);
+    }
+
+    /**
+     * INTERNAL:
      * Clear the change set in the change event listener.
      */
     public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping, boolean forRefresh) {

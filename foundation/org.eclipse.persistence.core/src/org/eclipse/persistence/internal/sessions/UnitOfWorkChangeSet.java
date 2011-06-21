@@ -16,6 +16,7 @@ import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.CustomObjectInputStream;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 
 /**
  * <p>
@@ -238,6 +239,24 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             this.addObjectChangeSetForIdentity(localChangeSet, localChangeSet.getUnitOfWorkClone());
         }
         return localChangeSet;
+    }
+    
+    /**
+     * INTERNAL"
+     * This method is used during the merge process to either find the existing ChangeSet or create a new one.
+     */
+    public ObjectChangeSet findOrCreateLocalObjectChangeSet(Object entityClone, ClassDescriptor descriptor, boolean isNew){
+        ObjectChangeSet changes = (ObjectChangeSet)this.getObjectChangeSetForClone(entityClone);
+        if (changes == null) {
+            if (descriptor.isAggregateDescriptor()) {
+                changes = new AggregateObjectChangeSet(new CacheId(new Object[0]), descriptor, entityClone, this, isNew);
+            } else {
+                changes = new ObjectChangeSet(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entityClone, session), descriptor, entityClone, this, isNew);
+            }
+            changes.setIsAggregate(descriptor.isDescriptorTypeAggregate());
+            this.addObjectChangeSetForIdentity(changes, entityClone);
+        }
+        return changes;
     }
 
     /**

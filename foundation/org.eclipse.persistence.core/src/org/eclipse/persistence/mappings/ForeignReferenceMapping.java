@@ -1804,6 +1804,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
     
     /**
+     * INTERNAL:
+     * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
+     * used when an Entity is merged into itself and the Entity reference new or detached entities.
+     */
+    public abstract void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork);
+    
+    /**
      * PUBLIC:
      * Indicates whether the referenced object(s) should always be joined on read queries.
      * Joining will join the two classes tables to read all of the data in a single query.

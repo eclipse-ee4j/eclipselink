@@ -177,6 +177,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.setName("EntityManagerJUnitTestSuite");
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         List<String> tests = new ArrayList<String>();
+        tests.add("testMergeOfEntityWithDetachedReferences");
         tests.add("testClearEntityManagerWithoutPersistenceContext");
         tests.add("testDeadConnectionFailover");
         tests.add("testDeadPoolFailover");
@@ -10407,6 +10408,94 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("The add Target Query was not correctly customized", emp.getFirstName() == null);        
     }
     
+        public void testMergeOfEntityWithDetachedReferences() {
+        EntityManager em = null;
+        Dealer dealer = new Dealer();
+
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            em.persist(dealer);
+            commitTransaction(em);
+            em.close();
+            em = createEntityManager();
+            dealer = em.find(Dealer.class, dealer.getId());
+            beginTransaction(em);
+
+            Customer customer = new Customer();
+            customer.setFirstName("p2");
+            dealer.addCustomer(customer);
+
+            customer = new Customer();
+            customer.setFirstName("p3");
+            dealer.addCustomer(customer);
+
+            dealer = em.merge(dealer);
+            commitTransaction(em);
+            beginTransaction(em);
+            dealer.getCustomers().get(1).setFirstName("SOMENUMBER");
+            commitTransaction(em);
+        } catch (Exception e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            fail("En error occurred adding new customers: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            dealer = em.find(Dealer.class, dealer.getId());
+            boolean changedName = false;
+            for (Customer customer : dealer.getCustomers()) {
+                if (customer == null) {
+                    fail("A null Customer was found in the collection of Customers.");
+                }
+                if (customer.getFirstName() == null || customer.getFirstName().equals("")) {
+                    fail("Attributes not merged into collection");
+                }
+                if (dealer.getCustomers().lastIndexOf(customer) != dealer.getCustomers().indexOf(customer)) {
+                    fail("Customer instance referenced multiple times ");
+                }
+                if (customer.getFirstName().equals("SOMENUMBER")){
+                    changedName = true;
+                }
+            }
+            assertTrue("Merge identiy lost ", changedName);
+
+        } catch (Exception e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            fail("En error occurred fetching the results to verify: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            try {
+                em = createEntityManager();
+                beginTransaction(em);
+                dealer = em.find(Dealer.class, dealer.getId());
+                em.remove(dealer);
+                for (Customer customer : dealer.getCustomers()) {
+                    em.remove(customer);
+                }
+                dealer.getCustomers().clear();
+                commitTransaction(em);
+            } finally {
+                if (em != null) {
+                    em.close();
+                }
+            }
+        }
+    }
+
     // Bug 335322
     public void testRefreshForFlush(){
     	EntityManager em = createEntityManager();

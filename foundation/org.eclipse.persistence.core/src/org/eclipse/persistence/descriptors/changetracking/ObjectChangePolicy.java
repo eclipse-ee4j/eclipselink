@@ -17,9 +17,11 @@ import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import java.util.*;
 
@@ -78,6 +80,13 @@ public interface ObjectChangePolicy extends Serializable {
      * Create ObjectChangeSet through comparison.  Used in cases where we need to force change calculation (ie aggregates)
      */
     ObjectChangeSet createObjectChangeSetThroughComparison(Object clone, Object backUp, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet changeSet, boolean isNew, AbstractSession session, ClassDescriptor descriptor);
+    
+    /**
+     * INTERNAL:
+     * In cases where a relationship with detached or new entities is merged into itself previous changes may have been recorded for 
+     * the detached/new entity that need to be updated.
+     */
+    void updateListenerForSelfMerge(ObjectChangeListener listener, ForeignReferenceMapping mapping, Object source, Object target, UnitOfWorkImpl unitOfWork);
 
     /**
      * INTERNAL:

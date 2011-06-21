@@ -1476,11 +1476,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 continue;// skip the null
             }
             if (shouldMergeCascadeParts(mergeManager)) {
+                Object mergedObject = null;
                 if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
                     // If it is a unit of work, we have to check if I have a change Set for this object
-                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object), targetSession);
+                    mergedObject = mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object), targetSession);
+                    if (listener != null && !fireChangeEvents && mergedObject != object){
+                        // we are merging a collection into itself that contained detached or new Entities.  make sure to remove the
+                        // old change records // bug 302293
+                        this.descriptor.getObjectChangePolicy().updateListenerForSelfMerge(listener, this, object, mergedObject, (UnitOfWorkImpl) mergeManager.getSession());
+                    }
                 } else {
-                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), null, targetSession);
+                    mergedObject = mergeManager.mergeChanges(mergeManager.getObjectToMerge(object, referenceDescriptor, targetSession), null, targetSession);
                 }
             }
             wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager, targetSession);
@@ -1951,6 +1957,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             collectionChangeRecord.recreateOriginalCollection(oldValue, uow);
         }
         collectionChangeRecord.setLatestCollection(newValue);        
+    }
+    
+    /**
+     * INTERNAL:
+     * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
+     * used when an Entity is merged into itself and the Entity reference new or detached entities.
+     */
+    public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
+        getContainerPolicy().updateChangeRecordForSelfMerge(changeRecord, source, target, this, parentUOWChangeSet, unitOfWork);
     }
     
     /**

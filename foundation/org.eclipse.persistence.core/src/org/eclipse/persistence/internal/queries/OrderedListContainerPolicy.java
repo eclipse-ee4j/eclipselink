@@ -33,12 +33,14 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.IndexedObject;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.OrderedChangeObject;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
@@ -46,6 +48,7 @@ import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -681,6 +684,22 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             return 1;            
         }
         return 0;
+    }
+    
+    /**
+     * INTERNAL:
+     * Update a ChangeRecord to replace the ChangeSet for the old entity with the changeSet for the new Entity.  This is
+     * used when an Entity is merged into itself and the Entity reference new or detached entities.
+     */
+    @Override
+    public void updateChangeRecordForSelfMerge(ChangeRecord changeRecord, Object source, Object target, ForeignReferenceMapping mapping, UnitOfWorkChangeSet parentUOWChangeSet, UnitOfWorkImpl unitOfWork){
+        ObjectChangeSet sourceSet = parentUOWChangeSet.getCloneToObjectChangeSet().get(source);
+        for (OrderedChangeObject changeObject : ((CollectionChangeRecord)changeRecord).getOrderedChangeObjectList()){
+            if (changeObject.getChangeSet() == sourceSet){
+                changeObject.setChangeSet(((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target)));
+            }
+            return;
+        }
     }
     
     /**
