@@ -28,6 +28,7 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo;
@@ -63,7 +64,6 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
         suite.setName("AdvancedMultiTenantSharedEMFJunitTest");
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testSetup"));
-            
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily707"));
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily007"));
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testValidateMafiaFamily707"));
@@ -494,13 +494,19 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
             assertNull("Found family 007 contract.", em.find(Contract.class, id));
         }
 
+        Query deleteQuery = em.createNamedQuery("DeleteContractByPrimaryKey");
+        deleteQuery.setParameter("id", family007Contracts.get(0));
+        int result = deleteQuery.executeUpdate();
+        assertTrue("Was able to delete a contract from the 007 family", result == 0);
         // Update all our contract descriptions to be 'voided'
-        getServerSession(MULTI_TENANT_PU).setLogLevel(0);
-        em.createNamedQuery("UpdateAllContractDescriptions").executeUpdate();
+        Query updateAllQuery = em.createNamedQuery("UpdateAllContractDescriptions");
+        updateAllQuery.executeUpdate();
+        // Need to check that tenant id column is present
+        assertTrue("Tenant discriminator column not found in update all query", ((EJBQueryImpl) updateAllQuery).getDatabaseQuery().getCall().getSQLString().contains("TENANT_ID"));
         
         // Read and validate the contracts
         List<Contract> contracts = em.createNamedQuery("FindAllContracts").getResultList();
-        
+        int contractNumber = contracts.size();
         assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", contracts.size() == 3);
 
         for (Contract contract : contracts) {
