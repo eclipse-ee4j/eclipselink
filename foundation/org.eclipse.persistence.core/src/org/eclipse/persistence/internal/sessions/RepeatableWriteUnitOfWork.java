@@ -250,11 +250,11 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * @return ClassDescriptor
      */
     protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
-	    ClassDescriptor descriptor = getDescriptor(theClass.getSuperclass());
-	    if (descriptor != null && descriptor.getInheritancePolicy().getDescribesNonPersistentSubclasses()){
-	    	return descriptor;
-	    }
-	    return null;
+        ClassDescriptor descriptor = getDescriptor(theClass.getSuperclass());
+        if (descriptor != null && descriptor.hasInheritance() && descriptor.getInheritancePolicy().getDescribesNonPersistentSubclasses()){
+            return descriptor;
+        }
+        return null;
     }
 
     /**
