@@ -175,7 +175,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * </ul>
      * @throws javax.xml.bind.JAXBException
      */
-    public void refeshMetadata() throws javax.xml.bind.JAXBException {
+    public void refreshMetadata() throws javax.xml.bind.JAXBException {
         if(null == contextInput) {
             return;
         }

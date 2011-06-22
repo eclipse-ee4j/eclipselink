@@ -63,7 +63,7 @@ public class RefreshTestCases extends TestCase {
 
         Element xmlElementElement = (Element) metadataDocument.getElementsByTagNameNS("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element").item(0);
         xmlElementElement.setAttribute("name", "after-name");
-        JAXBHelper.getJAXBContext(jc).refeshMetadata();
+        JAXBHelper.getJAXBContext(jc).refreshMetadata();
 
         InputStream xmlAfterStream = classLoader.getResourceAsStream(XML_RESOURCE_AFTER);
         Root rootAfter = (Root) unmarshaller.unmarshal(xmlAfterStream);

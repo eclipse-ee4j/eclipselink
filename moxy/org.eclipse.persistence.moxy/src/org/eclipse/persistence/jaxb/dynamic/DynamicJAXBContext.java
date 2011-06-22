@@ -232,7 +232,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     }
 
     @Override
-    public void refeshMetadata() throws JAXBException {
+    public void refreshMetadata() throws JAXBException {
         throw new JAXBException(new UnsupportedOperationException());
     }
 
