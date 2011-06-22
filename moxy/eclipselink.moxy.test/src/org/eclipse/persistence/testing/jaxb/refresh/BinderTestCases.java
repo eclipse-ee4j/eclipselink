@@ -67,7 +67,7 @@ public class BinderTestCases extends TestCase {
 
         Element xmlElementElement = (Element) metadataDocument.getElementsByTagNameNS("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element").item(0);
         xmlElementElement.setAttribute("name", "after-name");
-        JAXBHelper.getJAXBContext(jc).refeshMetadata();
+        JAXBHelper.getJAXBContext(jc).refreshMetadata();
 
         Root rootAfter = (Root) binder.unmarshal(xmlBeforeDocument);
         assertEquals(controlRoot, rootAfter);

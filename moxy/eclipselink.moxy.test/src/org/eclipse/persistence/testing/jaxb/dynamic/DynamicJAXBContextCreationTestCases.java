@@ -262,7 +262,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         // Until refresh is implemented, throw an UnsupportedOperationException
         Exception caughtException = null;
         try {
-            jaxbContext.refeshMetadata();
+            jaxbContext.refreshMetadata();
         } catch (JAXBException e) {
             if (e.getLinkedException() instanceof UnsupportedOperationException) {
                 caughtException = e;

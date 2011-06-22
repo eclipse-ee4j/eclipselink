@@ -46,7 +46,7 @@ public class NonRefreshableMetadataTestCases extends TestCase {
         JAXBContext jc = JAXBContextFactory.createContext(new Class[] {Root.class}, props);
 
         try {
-            JAXBHelper.getJAXBContext(jc).refeshMetadata();
+            JAXBHelper.getJAXBContext(jc).refreshMetadata();
         } catch(JAXBException e) {
             assertEquals(JAXBException.COULD_NOT_UNMARSHAL_METADATA, e.getErrorCode());
             return;
