@@ -688,7 +688,9 @@ public class MergeManager {
         try {
             if (original == null || descriptor.getFullyMergeEntity()) {
                 // If original does not exist then we must merge the entire object.
+                boolean originalWasNull = false;
                 if (original == null){
+                    originalWasNull = true;
                     original = unitOfWork.buildOriginal(clone);
                 }
                 if (objectChangeSet == null) {
@@ -700,6 +702,11 @@ public class MergeManager {
                         cacheKey.setObject(original);
                     }
                     objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
+                        // mark the instance in the cache as invalid as we may have just merged a stub if
+                        // a detached stub was referenced by a managed entity
+                        cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                    }
                 } else{
                     cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getId(), original, descriptor, this, targetSession);
                     if (cacheKey.getObject() != null){
@@ -709,6 +716,11 @@ public class MergeManager {
                     }
                     if (!objectChangeSet.isNew()) {
                         objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                        if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
+                            // mark the instance in the cache as invalid as we may have just merged a stub if
+                            // a detached stub was referenced by a managed entity
+                            cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                        }
                     } else {
                         objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, !descriptor.getCopyPolicy().buildsNewInstance());
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.

@@ -172,7 +172,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         // add the object to the uow list of private owned objects if it is a candidate and the
         // uow should discover new objects
         if (cloningSession.isUnitOfWork() && mapping.isCandidateForPrivateOwnedRemoval() && ((UnitOfWorkImpl) cloningSession).shouldDiscoverNewObjects()) {
-            if (clonedValue != null && ((UnitOfWorkImpl) cloningSession).isObjectNew(clonedValue)) { 
+            if (clonedValue != null && ((UnitOfWorkImpl) cloningSession).isCloneNewObject(clonedValue)) { 
                 ((UnitOfWorkImpl) cloningSession).addPrivateOwnedObject(mapping, clonedValue);
             }
         }

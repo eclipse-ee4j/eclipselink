@@ -408,7 +408,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object attributeValue = getAttributeValueFromObject(object);
         if ((attributeValue == null)
             // Also check if the source is new, then must always cascade.
-            || (!this.indirectionPolicy.objectIsInstantiated(attributeValue) && !uow.isObjectNew(object))) {
+            || (!this.indirectionPolicy.objectIsInstantiated(attributeValue) && !uow.isCloneNewObject(object))) {
             return;
         }
 
@@ -417,7 +417,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
         Object cloneIter = cp.iteratorFor(cloneObjectCollection);
         // add private owned objects to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
-        boolean shouldAddPrivateOwnedObject = isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && uow.isObjectNew(object); 
+        boolean shouldAddPrivateOwnedObject = isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && uow.isCloneNewObject(object); 
         while (cp.hasNext(cloneIter)) {
             Object wrappedObject = cp.nextEntry(cloneIter, uow);
             Object nextObject = cp.unwrapIteratorResult(wrappedObject);

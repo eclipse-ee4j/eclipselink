@@ -2244,7 +2244,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * @param uowChangeSet the owner of this changeSet.
      */
     public ObjectChangeSet createObjectChangeSet(Object clone, UnitOfWorkChangeSet uowChangeSet, AbstractSession session) {
-        boolean isNew = ((UnitOfWorkImpl)session).isObjectNew(clone);
+        boolean isNew = ((UnitOfWorkImpl)session).isCloneNewObject(clone);
         return createObjectChangeSet(clone, uowChangeSet, isNew, session);
     }
 
@@ -2279,14 +2279,21 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
             changes.setIsAggregate(this.descriptor.isDescriptorTypeAggregate());
             uowChangeSet.addObjectChangeSetForIdentity(changes, clone);
-        } else if (assignPrimaryKeyIfExisting) {
-            if (!changes.isAggregate()) {
-                // If creating a new change set for a new object, the original change set (from change tracking) may have not had the primary key.
-                Object primaryKey = extractPrimaryKeyFromObject(clone, session, true);
-                if (primaryKey != null) {
-                    changes.setId(primaryKey);
-                }
+        } else{
+            if (isNew && !changes.isNew()) {
+                //this is an unregistered new object that we found during change calc
+                //or change listener update.  Let's switch it to be new.
+                changes.setIsNew(isNew);
             }
+            if (assignPrimaryKeyIfExisting) {
+                if (!changes.isAggregate()) {
+                    // If creating a new change set for a new object, the original change set (from change tracking) may have not had the primary key.
+                    Object primaryKey = extractPrimaryKeyFromObject(clone, session, true);
+                    if (primaryKey != null) {
+                        changes.setId(primaryKey);
+                    }
+                }
+           }
         }
         return changes;
     }

@@ -825,7 +825,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Set whether this ObjectChanges represents a new Object
      * @param newIsNew boolean true if this ChangeSet represents a new object
      */
-    protected void setIsNew(boolean newIsNew) {
+    public void setIsNew(boolean newIsNew) {
         isNew = newIsNew;
     }
 

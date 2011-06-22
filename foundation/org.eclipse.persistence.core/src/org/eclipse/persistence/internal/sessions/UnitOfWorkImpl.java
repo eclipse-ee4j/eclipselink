@@ -626,7 +626,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             
             // Block of code removed for code coverage, as it would never have been touched. bug # 2903600
             
-            boolean isNew = isObjectNew(object);
+            boolean isNew = isCloneNewObject(object);
             // Use the object change policy to determine if we should run a comparison for this object - TGW.
             if (isNew || descriptor.getObjectChangePolicy().shouldCompareExistingObjectForChange(object, this, descriptor)) {
                 ObjectChangeSet changes = null;
@@ -3057,7 +3057,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         //CR3678 - ported from 4.0
         return (isCloneNewObject(clone) || (!isObjectRegistered(clone) && !isClassReadOnly(clone.getClass()) && !isUnregisteredExistingObject(clone)));
     }
-    
+
     /**
      * INTERNAL:
      * Return if the object is a known unregistered existing object.
@@ -3099,7 +3099,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     || ((this.newAggregates != null) && this.newAggregates.containsKey(original));
     }
 
-    /**
+/**
      * INTERNAL:
      * Return the status of smart merge
      */

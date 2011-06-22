@@ -103,7 +103,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         }
         //Check if the user set the PK to null and throw an exception (bug# 4569755)
         if (changes.getId() == null && !isNew && !changes.isAggregate()) {
-            if(!(unitOfWork.isNestedUnitOfWork()) || (unitOfWork.isNestedUnitOfWork() && !((UnitOfWorkImpl)unitOfWork.getParent()).isObjectNew(backUp))) {
+            if(!(unitOfWork.isNestedUnitOfWork()) || (unitOfWork.isNestedUnitOfWork() && !(unitOfWork.isNewObjectInParent(clone)|| unitOfWork.isUnregisteredNewObjectInParent(unitOfWork.getCloneToOriginals().get(clone))))) {
                 Object id = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork, false);
                 throw ValidationException.nullPrimaryKeyInUnitOfWorkClone(clone, id);
             }

@@ -385,7 +385,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Object attributeValue = getAttributeValueFromObject(object);
         if ((attributeValue == null)
             // Also check if the source is new, then must always cascade.
-            || (!this.indirectionPolicy.objectIsInstantiated(attributeValue) && !uow.isObjectNew(object))) {
+            || (!this.indirectionPolicy.objectIsInstantiated(attributeValue) && !uow.isCloneNewObject(object))) {
             return;
         }
 

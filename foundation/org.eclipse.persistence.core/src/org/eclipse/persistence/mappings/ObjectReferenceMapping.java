@@ -99,7 +99,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             // Not known whether existing or not.
             registeredObject = unitOfWork.registerObject(attributeValue);
             // if the mapping is privately owned, keep track of the privately owned reference in the UnitOfWork
-            if (isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects() && registeredObject != null && unitOfWork.isObjectNew(registeredObject)) {
+            if (isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects() && registeredObject != null && unitOfWork.isCloneNewObject(registeredObject)) {
                 unitOfWork.addPrivateOwnedObject(this, registeredObject);
             }
         }
@@ -943,14 +943,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             attributeValue = object;
         }
         if ((attributeValue != null)
-                // Also check if the source is new, then must always cascade.
-                && (this.indirectionPolicy.objectIsInstantiated(attributeValue) || uow.isObjectNew(object))) {
+                // no need to check for new as persist must be cascaded.
+                && (this.indirectionPolicy.objectIsInstantiated(attributeValue) || uow.isCloneNewObject(object))) {
             if (getAttributeValueFromObject){
                 attributeValue = this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
             }
             uow.registerNewObjectForPersist(attributeValue, visitedObjects);
             // add private owned object to uow list if mapping is a candidate and uow should discover new objects and the source object is new.
-            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && (attributeValue != null) && uow.isObjectNew(object)) {
+            if (isCandidateForPrivateOwnedRemoval() && uow.shouldDiscoverNewObjects() && (attributeValue != null) && uow.isCloneNewObject(object)) {
                 uow.addPrivateOwnedObject(this, attributeValue);
             }
         }

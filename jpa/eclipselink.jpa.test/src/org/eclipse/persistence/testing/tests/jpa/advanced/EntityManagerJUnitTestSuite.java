@@ -177,6 +177,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.setName("EntityManagerJUnitTestSuite");
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         List<String> tests = new ArrayList<String>();
+        tests.add("testSettingDetachedObject");
+        tests.add("testMultipleExistenceChecksForDetachedObjects");
         tests.add("testMergeOfEntityWithDetachedReferences");
         tests.add("testClearEntityManagerWithoutPersistenceContext");
         tests.add("testDeadConnectionFailover");
@@ -496,14 +498,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testEMFClose() {
         // This test tests the bug fix for 260511
-        // The NPE would be thrown if the EnityManager 
-        // was created through the constructor
-        String errorMsg = "";
-        EntityManagerFactory em = new EntityManagerFactoryImpl(JUnitTestCase.getServerSession());
+    	// The NPE would be thrown if the EnityManager 
+    	// was created through the constructor
+    	String errorMsg = "";
+    	EntityManagerFactory em = new EntityManagerFactoryImpl(JUnitTestCase.getServerSession());
         try {
-            em.close();
+        	em.close();
         } catch (RuntimeException ex) {
-            errorMsg ="EMFClose: " + ex.getMessage() +";";
+        	errorMsg ="EMFClose: " + ex.getMessage() +";";
         }
 
         if(errorMsg.length() > 0) {
@@ -5105,6 +5107,48 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } else {
             // Get entity manager just to login back the session, then close em
             getEntityManagerFactory().createEntityManager().close();
+        }
+    }
+    
+    public void testMultipleExistenceChecksForDetachedObjects() {
+        EntityManager em = createEntityManager();
+        Department dept1 = new Department("Dept1");
+        Department dept2 = new Department("Dept2");
+        Department dept3 = new Department("DetachedDept");
+        Employee emp = new Employee("Bob", "Bob");
+
+        try {
+            List<Address> results = (List<Address>) em.createQuery("Select a from Address a").getResultList();
+            beginTransaction(em);
+            em.persist(emp);
+            em.persist(dept1);
+            em.persist(dept2);
+            commitTransaction(em);
+            em.clear();
+
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            emp.setDepartment(dept2);
+            em.flush();
+            em.persist(dept3);
+            emp.setDepartment(dept3);
+            em.flush();
+            emp.setDepartment(dept1);
+            em.flush();
+            commitTransaction(em);
+            closeEntityManager(em);
+            verifyObjectInCacheAndDatabase(emp);
+        } finally {
+            try {
+                em = createEntityManager();
+                beginTransaction(em);
+                em.remove(em.find(Department.class, dept1.getId()));
+                em.remove(em.find(Department.class, dept2.getId()));
+                em.remove(em.find(Department.class, dept3.getId()));
+                em.remove(em.find(Employee.class, emp.getId()));
+                commitTransaction(em);
+            } catch (Exception e) {//ignore
+            }
         }
     }
     
@@ -9835,14 +9879,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("Wrong Exception was caught when setting a numeric temporal Calendar parameter on a query with a closed em.", caughtException instanceof IllegalStateException);
 
         try{
-            namedParameterQuery.setParameter("date", new Date(System.currentTimeMillis()), TemporalType.DATE);
+        	namedParameterQuery.setParameter("date", new Date(System.currentTimeMillis()), TemporalType.DATE);
         } catch (Exception e){
             caughtException = e;
         }
         assertTrue("Wrong Exception was caught when setting a named temporal Date parameter on a query with a closed em.", caughtException instanceof IllegalStateException);
 
         try{
-            namedParameterQuery.setParameter("date", Calendar.getInstance(), TemporalType.DATE);
+        	namedParameterQuery.setParameter("date", Calendar.getInstance(), TemporalType.DATE);
         } catch (Exception e){
             caughtException = e;
         }
@@ -10404,7 +10448,28 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("The add Target Query was not correctly customized", emp.getFirstName() == null);
     }
     
-    public void testMergeOfEntityWithDetachedReferences() {
+        public void testSettingDetachedObject() {
+            EntityManager em = createEntityManager();
+                List<Address> results = (List<Address>) em.createQuery("Select a from Address a").getResultList();
+                Department dept1 = new Department("Dept1");
+                Department dept2 = new Department("Dept2");
+                beginTransaction(em);
+                em.persist(dept1);
+                em.persist(dept2);
+                commitTransaction(em);
+                em.clear();
+        
+                Employee emp = new Employee("Bob", "Bob");
+                beginTransaction(em);
+                em.persist(emp);
+                emp.setDepartment(dept1);
+                em.flush();
+                emp.setDepartment(dept2); //<-- only the UOW is checked for existence
+                commitTransaction(em); //<-- fails here
+            }
+            
+
+        public void testMergeOfEntityWithDetachedReferences() {
         EntityManager em = null;
         Dealer dealer = new Dealer();
 
@@ -10495,89 +10560,89 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     // Bug 335322
     public void testRefreshForFlush(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        Employee emp = new Employee();
-        emp.setFirstName("Al");
-        em.persist(emp);
-        em.flush();
-        em.clear();
-    
-        clearCache();
-        emp = em.find(Employee.class, emp.getId());
-        emp.setFirstName("Joe");
-        em.refresh(emp);
-        emp.setLastName("Joseph");
-        em.flush();
-    
-        em.refresh(emp);
-        try {
-            assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
-        } finally {
-            rollbackTransaction(em);
-        }
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	Employee emp = new Employee();
+    	emp.setFirstName("Al");
+    	em.persist(emp);
+    	em.flush();
+    	em.clear();
+    	
+    	clearCache();
+    	emp = em.find(Employee.class, emp.getId());
+    	emp.setFirstName("Joe");
+    	em.refresh(emp);
+    	emp.setLastName("Joseph");
+    	em.flush();
+    	
+    	em.refresh(emp);
+    	try {
+    		assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+    	} finally {
+    		rollbackTransaction(em);
+    	}
     }
     
     // Bug 335322
     public void testRefreshForCommit(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        Employee emp = new Employee();
-        emp.setFirstName("Al");
-        em.persist(emp);
-        commitTransaction(em);
-        em.clear();
-        
-        clearCache();
-        beginTransaction(em);
-        emp = em.find(Employee.class, emp.getId());
-        emp.setFirstName("Joe");
-        em.refresh(emp);
-        emp.setLastName("Joseph");
-        commitTransaction(em);
-        
-        beginTransaction(em);
-        try{
-            emp = em.find(Employee.class, emp.getId());
-            em.refresh(emp);
-            assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
-        } finally {
-            em.remove(emp);
-            commitTransaction(em);
-        }
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	Employee emp = new Employee();
+    	emp.setFirstName("Al");
+    	em.persist(emp);
+    	commitTransaction(em);
+    	em.clear();
+    	
+    	clearCache();
+    	beginTransaction(em);
+    	emp = em.find(Employee.class, emp.getId());
+    	emp.setFirstName("Joe");
+    	em.refresh(emp);
+    	emp.setLastName("Joseph");
+    	commitTransaction(em);
+    	
+    	beginTransaction(em);
+    	try{
+			emp = em.find(Employee.class, emp.getId());
+	    	em.refresh(emp);
+	    	assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+    	} finally {
+	    	em.remove(emp);
+	    	commitTransaction(em);
+    	}
     }
     
     // Bug 335322
     public void testChangeFlushChangeRefresh(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        Employee emp = new Employee();
-        emp.setFirstName("Al");
-        em.persist(emp);
-        commitTransaction(em);
-        em.clear();     
-        clearCache();
-        
-        beginTransaction(em);
-        emp = em.find(Employee.class, emp.getId());
-        emp.setFirstName("Joe");
-        em.flush();
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	Employee emp = new Employee();
+    	emp.setFirstName("Al");
+    	em.persist(emp);
+    	commitTransaction(em);
+    	em.clear(); 	
+    	clearCache();
+    	
+    	beginTransaction(em);
+    	emp = em.find(Employee.class, emp.getId());
+    	emp.setFirstName("Joe");
+    	em.flush();
 
-        emp.setLastName("Joseph");
-        em.refresh(emp);
-        commitTransaction(em);
+    	emp.setLastName("Joseph");
+    	em.refresh(emp);
+    	commitTransaction(em);
 
-        em.clear();     
-        clearCache();
-        
-        beginTransaction(em);
-        try{
-            emp = em.find(Employee.class, emp.getId());
-            assertTrue("The first name was reverted even though it was written.", emp.getFirstName().equals("Joe"));
-        } finally {
-            em.remove(emp);
-            commitTransaction(em);
-        }
+    	em.clear(); 	
+    	clearCache();
+    	
+    	beginTransaction(em);
+    	try{
+	    	emp = em.find(Employee.class, emp.getId());
+	    	assertTrue("The first name was reverted even though it was written.", emp.getFirstName().equals("Joe"));
+    	} finally {
+	    	em.remove(emp);
+	    	commitTransaction(em);
+    	}
     }
     
     //  Bug 307433 - Regression in Auditing Support when using defaults.
@@ -11172,7 +11237,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    // Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache
+	// Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache
     // Uncomment the test when the bug is fixed
 /*    public void testMergeNewReferencingOldChangedClearCache() {
         internalTestMergeNewReferencingOldChanged(true);
