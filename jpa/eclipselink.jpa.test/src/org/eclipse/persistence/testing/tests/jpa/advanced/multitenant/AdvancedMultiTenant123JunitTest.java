@@ -69,8 +69,9 @@ public class AdvancedMultiTenant123JunitTest extends JUnitTestCase {
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new AdvancedMultiTenant123JunitTest("testCreateMafiaFamily123"));
             suite.addTest(new AdvancedMultiTenant123JunitTest("testValidateMafiaFamily123"));
+            //this test can be run on JPA1.0 servers, but it needs table created from AdvancedMultiTenantSharedEMFJunitTest.testSetup() and records inserted in above testCreateMafiaFamily123, these tests can't run on JPA1.0 servers
+            suite.addTest(new  AdvancedMultiTenant123JunitTest("testComplexMultitenantQueries"));
         }
-        suite.addTest(new  AdvancedMultiTenant123JunitTest("testComplexMultitenantQueries"));
         return suite;
     }
     
