@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" 
+    package-name="org.eclipse.persistence.testing.jaxb.dynamic">
+
+    <java-types>
+        <java-type name="Root">
+            <xml-root-element/>
+            <java-attributes>
+                <xml-element java-attribute="name" name="before-name" type="java.lang.String" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+
+</xml-bindings>

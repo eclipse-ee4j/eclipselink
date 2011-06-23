@@ -12,29 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.dynamic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.dynamic.DynamicHelper;
-import org.eclipse.persistence.dynamic.DynamicType;
-import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
+import org.eclipse.persistence.dynamic.*;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.dynamic.metadata.Metadata;
+import org.eclipse.persistence.jaxb.dynamic.metadata.OXMMetadata;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 
 /**
  * <p>
@@ -66,25 +66,16 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext {
 
-    private ArrayList<DynamicHelper> helpers;
-    private DynamicClassLoader dClassLoader;
-
-    DynamicJAXBContext(ClassLoader classLoader) {
-        this.helpers = new ArrayList<DynamicHelper>();
-
-        if (classLoader == null) {
-            classLoader = Thread.currentThread().getContextClassLoader();
-        }
-        if (classLoader instanceof DynamicClassLoader) {
-           dClassLoader = (DynamicClassLoader) classLoader;
-        } else {
-           ClassLoader jaxbLoader = new JaxbClassLoader(classLoader);
-           dClassLoader = new DynamicClassLoader(jaxbLoader);
-        }
+    DynamicJAXBContext(JAXBContextInput input) throws JAXBException {
+        super(input);
     }
 
     public DynamicClassLoader getDynamicClassLoader() {
-        return dClassLoader;
+        return ((DynamicJAXBContextInput) contextInput).getClassLoader();
+    }
+
+    private ArrayList<DynamicHelper> getHelpers() {
+        return ((DynamicJAXBContextState) contextState).getHelpers();
     }
 
     /**
@@ -98,7 +89,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
      *      The <tt>DynamicType</tt> for this Java class name.
      */
     public DynamicType getDynamicType(String javaName) {
-        for (DynamicHelper helper : this.helpers) {
+        for (DynamicHelper helper : getHelpers()) {
             DynamicType type = helper.getType(javaName);
             if (type != null) {
                 return type;
@@ -120,7 +111,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
      */
     public DynamicEntity newDynamicEntity(String javaName) throws IllegalArgumentException {
         IllegalArgumentException ex = null;
-        for (DynamicHelper helper : this.helpers) {
+        for (DynamicHelper helper : getHelpers()) {
             try {
                 return helper.newDynamicEntity(javaName);
             } catch (IllegalArgumentException e) {
@@ -157,7 +148,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     public Object getEnumConstant(String enumName, String constantName) throws ClassNotFoundException, JAXBException {
         Object valueToReturn = null;
 
-        Class<?> enumClass = dClassLoader.loadClass(enumName);
+        Class<?> enumClass = getDynamicClassLoader().loadClass(enumName);
         Object[] enumConstants = enumClass.getEnumConstants();
         for (Object enumConstant : enumConstants) {
             if (enumConstant.toString().equals(constantName)) {
@@ -172,68 +163,212 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         }
     }
 
-    @SuppressWarnings("unchecked")
-    void initializeFromSessionsXML(String sessionNames, ClassLoader classLoader) {
-        if (classLoader == null) {
-            classLoader = Thread.currentThread().getContextClassLoader();
-        }
-        if (classLoader instanceof DynamicClassLoader) {
-           dClassLoader = (DynamicClassLoader) classLoader;
-        } else {
-           dClassLoader = new DynamicClassLoader(classLoader);
-        }
+    // ========================================================================
 
-        StringTokenizer st = new StringTokenizer(sessionNames, ":");
-        ArrayList<Project> dynamicProjects = new ArrayList<Project>(st.countTokens());
+    static class DynamicJAXBContextState extends JAXBContextState {
+        private ArrayList<DynamicHelper> helpers;
+        private DynamicClassLoader dClassLoader;
 
-        XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
-
-        while (st.hasMoreTokens()) {
-            DatabaseSession dbSession =
-                (DatabaseSession) SessionManager.getManager().getSession(loader, st.nextToken(), classLoader, false, true);
-            Project p = DynamicTypeBuilder.loadDynamicProject(dbSession.getProject(), null, dClassLoader);
-            dynamicProjects.add(p);
+        public DynamicJAXBContextState(DynamicClassLoader loader) {
+            super();
+            helpers = new ArrayList<DynamicHelper>();
         }
 
-        XMLContext xmlContext = new XMLContext(dynamicProjects);
-        setXMLContext(xmlContext);
+        public DynamicJAXBContextState(XMLContext ctx) {
+            super(ctx);
+        }
 
-        List<Session> sessions = (List<Session>) xmlContext.getSessions();
-        for (Object session : sessions) {
-            this.helpers.add(new DynamicHelper((DatabaseSession) session));
+        public ArrayList<DynamicHelper> getHelpers() {
+            return helpers;
+        }
+
+        public void setHelpers(ArrayList<DynamicHelper> helpers) {
+            this.helpers = helpers;
+        }
+
+        public DynamicClassLoader getDynamicClassLoader() {
+            return dClassLoader;
+        }
+
+        public void setDynamicClassLoader(DynamicClassLoader dClassLoader) {
+            this.dClassLoader = dClassLoader;
         }
     }
 
-    @SuppressWarnings("unchecked")
-    void initializeFromMetadata(Metadata metadata, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
-        Generator g = new Generator(metadata.getJavaModelInput(), metadata.getBindings(), dClassLoader, null);
+    // ========================================================================
 
-        Project p = null;
-        Project dp = null;
-        try {
-            p = g.generateProject();
-            // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
-            List<ClassDescriptor> descriptors = p.getOrderedDescriptors();
-            for (ClassDescriptor classDescriptor : descriptors) {
-                classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
+    static abstract class DynamicJAXBContextInput extends org.eclipse.persistence.jaxb.JAXBContext.JAXBContextInput {
+        public DynamicJAXBContextInput(Map properties, ClassLoader classLoader) {
+            super(properties, classLoader);
+
+            DynamicClassLoader dClassLoader = null;
+
+            if (classLoader == null) {
+                classLoader = Thread.currentThread().getContextClassLoader();
             }
-            dp = DynamicTypeBuilder.loadDynamicProject(p, null, dClassLoader);
-        } catch (Exception e) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+            if (classLoader instanceof DynamicClassLoader) {
+               dClassLoader = (DynamicClassLoader) classLoader;
+            } else {
+               ClassLoader jaxbLoader = new JaxbClassLoader(classLoader);
+               dClassLoader = new DynamicClassLoader(jaxbLoader);
+            }
+
+            this.classLoader = dClassLoader;
         }
 
-        XMLContext xmlContext = new XMLContext(dp, dClassLoader);
-        setXMLContext(xmlContext);
-
-        List<Session> sessions = (List<Session>) xmlContext.getSessions();
-        for (Object session : sessions) {
-            this.helpers.add(new DynamicHelper((DatabaseSession) session));
+        public DynamicClassLoader getClassLoader() {
+            return (DynamicClassLoader) this.classLoader;
         }
     }
 
-    @Override
-    public void refreshMetadata() throws JAXBException {
-        throw new JAXBException(new UnsupportedOperationException());
+    static class MetadataContextInput extends DynamicJAXBContextInput {
+        public MetadataContextInput(Map properties, ClassLoader classLoader) {
+            super(properties, classLoader);
+        }
+
+        @Override
+        protected JAXBContextState createContextState() throws JAXBException {
+            DynamicJAXBContextState state = new DynamicJAXBContextState((DynamicClassLoader) classLoader);
+
+            Metadata oxmMetadata = new OXMMetadata((DynamicClassLoader) classLoader, properties);
+
+            Generator g = new Generator(oxmMetadata.getJavaModelInput(), oxmMetadata.getBindings(), classLoader, null);
+
+            Project p = null;
+            Project dp = null;
+            try {
+                p = g.generateProject();
+                // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
+                List<ClassDescriptor> descriptors = p.getOrderedDescriptors();
+                for (ClassDescriptor classDescriptor : descriptors) {
+                    classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
+                }
+                dp = DynamicTypeBuilder.loadDynamicProject(p, null, (DynamicClassLoader) classLoader);
+            } catch (Exception e) {
+                throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+            }
+
+            XMLContext ctx = new XMLContext(dp, classLoader);
+            state.setXMLContext(ctx);
+
+            List<Session> sessions = (List<Session>) ctx.getSessions();
+            for (Object session : sessions) {
+                state.getHelpers().add(new DynamicHelper((DatabaseSession) session));
+            }
+
+            return state;
+        }
+    }
+
+    static class SchemaContextInput extends DynamicJAXBContextInput {
+        private Object schema = null;
+        private EntityResolver entityResolver;
+
+        public static final String SCHEMAMETADATA_CLASS_NAME = "org.eclipse.persistence.jaxb.dynamic.metadata.SchemaMetadata";
+
+        public SchemaContextInput(Object schema, EntityResolver resolver, Map properties, ClassLoader classLoader) {
+            super(properties, classLoader);
+            this.schema = schema;
+            this.entityResolver = resolver;
+        }
+
+        @Override
+        protected JAXBContextState createContextState() throws JAXBException {
+            DynamicJAXBContextState state = new DynamicJAXBContextState((DynamicClassLoader) classLoader);
+
+            Metadata schemaMetadata = null;
+            Object constructorArg;
+            if (schema instanceof Node) {
+                constructorArg = schema;
+            } else if (schema instanceof InputStream) {
+                constructorArg = new StreamSource((InputStream) schema);
+            } else {
+                constructorArg = (Source) schema;
+            }
+
+            try {
+                Class<?> schemaMetadataClass = PrivilegedAccessHelper.getClassForName(SCHEMAMETADATA_CLASS_NAME);
+                Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, constructorArg.getClass(), EntityResolver.class};
+                Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(schemaMetadataClass, constructorClassArgs, true);
+                Object[] contructorObjectArgs = {(DynamicClassLoader) classLoader, properties, constructorArg, entityResolver};
+                schemaMetadata = (Metadata) PrivilegedAccessHelper.invokeConstructor(constructor, contructorObjectArgs);
+            } catch (InvocationTargetException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof JAXBException) {
+                    throw (JAXBException) cause;
+                } else if (cause instanceof org.eclipse.persistence.exceptions.JAXBException) {
+                	throw (org.eclipse.persistence.exceptions.JAXBException) cause;
+                } else {
+                    throw new JAXBException(e);
+                }
+            } catch (org.eclipse.persistence.exceptions.JAXBException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new JAXBException(e);
+            }
+
+            Generator g = new Generator(schemaMetadata.getJavaModelInput(), schemaMetadata.getBindings(), classLoader, null);
+
+            Project p = null;
+            Project dp = null;
+            try {
+                p = g.generateProject();
+                // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
+                List<ClassDescriptor> descriptors = p.getOrderedDescriptors();
+                for (ClassDescriptor classDescriptor : descriptors) {
+                    classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
+                }
+                dp = DynamicTypeBuilder.loadDynamicProject(p, null, (DynamicClassLoader) classLoader);
+            } catch (Exception e) {
+                throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+            }
+
+            XMLContext ctx = new XMLContext(dp, (DynamicClassLoader) classLoader);
+            state.setXMLContext(ctx);
+
+            List<Session> sessions = (List<Session>) ctx.getSessions();
+            for (Object session : sessions) {
+                state.getHelpers().add(new DynamicHelper((DatabaseSession) session));
+            }
+
+            return state;
+        }
+    }
+
+    static class SessionsXmlContextInput extends DynamicJAXBContextInput {
+        private String sessions;
+
+        public SessionsXmlContextInput(String sessionNames, Map properties, ClassLoader classLoader) {
+            super(properties, classLoader);
+            this.sessions = sessionNames;
+        }
+
+        @Override
+        protected JAXBContextState createContextState() throws JAXBException {
+            DynamicJAXBContextState state = new DynamicJAXBContextState((DynamicClassLoader) classLoader);
+
+            StringTokenizer st = new StringTokenizer(sessions, ":");
+            ArrayList<Project> dynamicProjects = new ArrayList<Project>(st.countTokens());
+
+            XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
+
+            while (st.hasMoreTokens()) {
+                DatabaseSession dbSession =
+                    (DatabaseSession) SessionManager.getManager().getSession(loader, st.nextToken(), classLoader, false, true);
+                Project p = DynamicTypeBuilder.loadDynamicProject(dbSession.getProject(), null, (DynamicClassLoader) classLoader);
+                dynamicProjects.add(p);
+            }
+
+            XMLContext xmlContext = new XMLContext(dynamicProjects);
+            state.setXMLContext(xmlContext);
+
+            List<Session> sessions = (List<Session>) xmlContext.getSessions();
+            for (Object session : sessions) {
+                state.getHelpers().add(new DynamicHelper((DatabaseSession) session));
+            }
+
+            return state;
+        }
     }
 
 }

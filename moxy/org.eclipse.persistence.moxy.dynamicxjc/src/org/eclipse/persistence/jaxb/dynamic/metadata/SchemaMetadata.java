@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.dynamic.metadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -33,6 +35,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelInputImpl;
+import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Document;
@@ -110,6 +113,14 @@ public class SchemaMetadata extends Metadata {
             }
 
             schemaCompiler.parseSchema(schemaInputSource);
+        } catch (XMLPlatformException xpe) {
+            // This will occur when trying to refreshMetadata from a closed stream (non-XML Node metadata)
+            if (xpe.getCause() instanceof TransformerException) {
+                TransformerException te = (TransformerException) xpe.getCause();
+                if (te.getCause() instanceof IOException) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.cannotRefreshMetadata();
+                }
+            }
         } catch (Exception e) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }

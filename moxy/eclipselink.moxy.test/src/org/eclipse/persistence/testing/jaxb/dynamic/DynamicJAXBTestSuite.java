@@ -22,9 +22,10 @@ public class DynamicJAXBTestSuite extends TestSuite {
         suite.addTestSuite(DynamicJAXBContextCreationTestCases.class);
         suite.addTestSuite(DynamicJAXBFromSessionsXMLTestCases.class);
         suite.addTestSuite(DynamicJAXBFromXSDTestCases.class);
-        suite.addTestSuite(DynamicJAXBFromOXMTestCases.class);        
+        suite.addTestSuite(DynamicJAXBFromOXMTestCases.class);
         suite.addTestSuite(DynamicJAXBCollectionTestCases.class);
-        suite.addTestSuite(DynamicJAXBUsingXMLNamesTestCases.class);        
+        suite.addTestSuite(DynamicJAXBUsingXMLNamesTestCases.class);
+        suite.addTestSuite(DynamicJAXBRefreshTestCases.class);
         return suite;
     }
 

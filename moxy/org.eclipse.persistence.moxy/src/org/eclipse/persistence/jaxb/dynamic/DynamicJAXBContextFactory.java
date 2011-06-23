@@ -13,19 +13,15 @@
 package org.eclipse.persistence.jaxb.dynamic;
 
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.dynamic.metadata.Metadata;
-import org.eclipse.persistence.jaxb.dynamic.metadata.OXMMetadata;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.MetadataContextInput;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SchemaContextInput;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SessionsXmlContextInput;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
@@ -196,9 +192,7 @@ public class DynamicJAXBContextFactory {
 
         // Lastly, try sessions.xml
         if (contextPath != null) {
-            DynamicJAXBContext dContext = new DynamicJAXBContext(classLoader);
-            dContext.initializeFromSessionsXML(contextPath, classLoader);
-            return dContext;
+            return new DynamicJAXBContext(new SessionsXmlContextInput(contextPath, properties, classLoader));
         } else {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSessionName());
         }
@@ -239,27 +233,7 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullNode());
         }
 
-        try {
-            DynamicJAXBContext dContext = new DynamicJAXBContext(classLoader);
-            Class<?> schemaMetadataClass = PrivilegedAccessHelper.getClassForName(SCHEMAMETADATA_CLASS_NAME);
-            Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, Node.class, EntityResolver.class};
-            Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(schemaMetadataClass, constructorClassArgs, true);
-            Object[] contructorObjectArgs = {dContext.getDynamicClassLoader(), properties, schemaDOM, resolver};
-            Metadata schemaMetadata = (Metadata) PrivilegedAccessHelper.invokeConstructor(constructor, contructorObjectArgs);
-            dContext.initializeFromMetadata(schemaMetadata, dContext.getDynamicClassLoader(), properties);
-            return dContext;
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof JAXBException) {
-                throw (JAXBException) cause;
-            } else {
-                throw new JAXBException(e);
-            }
-        } catch (JAXBException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new JAXBException(e);
-        }
+        return new DynamicJAXBContext(new SchemaContextInput(schemaDOM, resolver, properties, classLoader));
     }
 
     /**
@@ -286,28 +260,8 @@ public class DynamicJAXBContextFactory {
         if (schemaStream == null) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullInputStream());
         }
-        try {
-            Source schemaSource = new StreamSource(schemaStream);
-            DynamicJAXBContext dContext = new DynamicJAXBContext(classLoader);
-            Class<?> schemaMetadataClass = PrivilegedAccessHelper.getClassForName(SCHEMAMETADATA_CLASS_NAME);
-            Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, Source.class, EntityResolver.class};
-            Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(schemaMetadataClass, constructorClassArgs, true);
-            Object[] contructorObjectArgs = {dContext.getDynamicClassLoader(), properties, schemaSource, resolver};
-            Metadata schemaMetadata = (Metadata) PrivilegedAccessHelper.invokeConstructor(constructor, contructorObjectArgs);
-            dContext.initializeFromMetadata(schemaMetadata, dContext.getDynamicClassLoader(), properties);
-            return dContext;
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof JAXBException) {
-                throw (JAXBException) cause;
-            } else {
-                throw new JAXBException(e);
-            }
-        } catch (JAXBException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new JAXBException(e);
-        }
+
+        return new DynamicJAXBContext(new SchemaContextInput(schemaStream, resolver, properties, classLoader));
     }
 
     /**
@@ -335,27 +289,7 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSource());
         }
 
-        try {
-            DynamicJAXBContext dContext = new DynamicJAXBContext(classLoader);
-            Class<?> schemaMetadataClass = PrivilegedAccessHelper.getClassForName(SCHEMAMETADATA_CLASS_NAME);
-            Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, Source.class, EntityResolver.class};
-            Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(schemaMetadataClass, constructorClassArgs, true);
-            Object[] contructorObjectArgs = {dContext.getDynamicClassLoader(), properties, schemaSource, resolver};
-            Metadata schemaMetadata = (Metadata) PrivilegedAccessHelper.invokeConstructor(constructor, contructorObjectArgs);
-            dContext.initializeFromMetadata(schemaMetadata, dContext.getDynamicClassLoader(), properties);
-            return dContext;
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof JAXBException) {
-                throw (JAXBException) cause;
-            } else {
-                throw new JAXBException(e);
-            }
-        } catch (JAXBException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new JAXBException(e);
-        }
+        return new DynamicJAXBContext(new SchemaContextInput(schemaSource, resolver, properties, classLoader));
     }
 
     /**
@@ -391,11 +325,7 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.oxmKeyNotFound());
         }
 
-        DynamicJAXBContext dContext = new DynamicJAXBContext(classLoader);
-        Metadata oxmMetadata = new OXMMetadata(dContext.getDynamicClassLoader(), properties);
-        dContext.initializeFromMetadata(oxmMetadata, dContext.getDynamicClassLoader(), properties);
-
-        return dContext;
+        return new DynamicJAXBContext(new MetadataContextInput(properties, classLoader));
     }
 
 }

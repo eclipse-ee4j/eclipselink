@@ -106,6 +106,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int EXCEPTION_WITH_NAME_TRANSFORMER_CLASS = 50074;
     public static final int EXCEPTION_DURING_NAME_TRANSFORMATION = 50075;
     public static final int UNABLE_TO_LOAD_METADATA_FROM_LOCATION = 50076;
+    public static final int CANNOT_REFRESH_METADATA = 50077;
 
     protected JAXBException(String message) {
         super(message);
@@ -319,12 +320,12 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(NULL_METADATA_FILE);
         return exception;
     }
-    
+
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
-     * eclipselink-oxm.xml).  This exception applies to the case where the handle to the OXM metadata file has 
+     * eclipselink-oxm.xml).  This exception applies to the case where the handle to the OXM metadata file has
      * not been passes in with an associated String (for package name) and the unmarshalled XmlBindings object
-     * does not have a package-name set. 
+     * does not have a package-name set.
      *
      * @return
      */
@@ -654,11 +655,11 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(CLASS_NOT_FOUND_EXCEPTION);
         return exception;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: ReadTransformer for the specified attribute of the specified class
-     * specifies both class and method. 
+     * specifies both class and method.
      */
     public static JAXBException readTransformerHasBothClassAndMethod(String propertyName) {
         Object[] args = { propertyName };
@@ -670,7 +671,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * PUBLIC:
      * Cause: ReadTransformer for the specified attribute of the specified class
-     * specifies neither class nor method. 
+     * specifies neither class nor method.
      */
     public static JAXBException readTransformerHasNeitherClassNorMethod(String propertyName) {
         Object[] args = { propertyName };
@@ -682,7 +683,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * PUBLIC:
      * Cause: WriteTransformer for the specified attribute of the specified class and specified xml-path
-     * specifies both class and method. 
+     * specifies both class and method.
      */
     public static JAXBException writeTransformerHasBothClassAndMethod(String propertyName, String xmlPath) {
         Object[] args = { propertyName, xmlPath };
@@ -694,7 +695,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * PUBLIC:
      * Cause: WriteTransformer for the specified attribute of the specified class and specified xml-path
-     * specifies neither class nor method. 
+     * specifies neither class nor method.
      */
     public static JAXBException writeTransformerHasNeitherClassNorMethod(String propertyName, String xmlPath) {
         Object[] args = { propertyName, xmlPath };
@@ -726,7 +727,7 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(NO_SUCH_WRITE_TRANSFORMATION_METHOD);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: Transformer class could not be loaded.
@@ -737,7 +738,7 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(TRANSFORMER_CLASS_NOT_FOUND);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: Properties passed to createDynamicFromOXM did not contain
@@ -752,7 +753,7 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * PUBLIC:
-     * Cause: The referenced class (i.e. actualType) of the Property containing the 
+     * Cause: The referenced class (i.e. actualType) of the Property containing the
      * XmlJoinNodes declaration does not have an associated TypeInfo.
      */
     public static JAXBException invalidXmlJoinNodeReferencedClass(String propertyName, String referencedClassName) {
@@ -761,12 +762,12 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_REF_CLASS);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause:  The reference class (i.e. actualType) of a given Property is marked
-     * transient.  I.e. List<Address> addresses;  where Address is marked 
-     * transient.  
+     * transient.  I.e. List<Address> addresses;  where Address is marked
+     * transient.
      */
     public static JAXBException invalidReferenceToTransientClass(String className, String propertyName, String referencedClassName) {
         Object[] args = { className, propertyName, referencedClassName };
@@ -788,7 +789,7 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * PUBLIC:
-     * Cause: No ID or Key property exists on the target class with an XPath == referencedXmlPath. 
+     * Cause: No ID or Key property exists on the target class with an XPath == referencedXmlPath.
      */
     public static JAXBException invalidReferencedXmlPathOnJoin(String className, String propertyName, String referencedClassName, String referencedXmlPath) {
         Object[] args = { className, propertyName, referencedClassName, referencedXmlPath };
@@ -799,7 +800,7 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * PUBLIC:
-     * Cause: The referenced class (i.e. actualType) of the Property containing the 
+     * Cause: The referenced class (i.e. actualType) of the Property containing the
      * XmlIDREF declaration does not have an associated TypeInfo.
      */
     public static JAXBException invalidIDREFClass(String className, String propertyName, String referencedClassName) {
@@ -808,12 +809,12 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_IDREF_CLASS);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
-     * Cause: The adapter class set on XMLJavaTypeConverter could not be loaded. This is 
+     * Cause: The adapter class set on XMLJavaTypeConverter could not be loaded. This is
      * most likely due to an incorrect class name or the wrong classloader being set on
-     * XMLConversionManager. 
+     * XMLConversionManager.
      */
     public static JAXBException adapterClassNotLoaded(String adapterClassName, Exception ex) {
         Object[] args = { adapterClassName };
@@ -821,10 +822,10 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(ADAPTER_CLASS_NOT_LOADED);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
-     * Cause: An exception occurred while attempting to get the declared methods from 
+     * Cause: An exception occurred while attempting to get the declared methods from
      * the adapter class.
      */
     public static JAXBException adapterClassMethodsCouldNotBeAccessed(String adapterClassName, Exception ex) {
@@ -833,10 +834,10 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(ADAPTER_CLASS_METHOD_EXCEPTION);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
-     * Cause: An exception occurred while attempting to get a new instance of 
+     * Cause: An exception occurred while attempting to get a new instance of
      * the adapter class.
      */
     public static JAXBException adapterClassCouldNotBeInstantiated(String adapterClassName, Exception ex) {
@@ -845,7 +846,7 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(ADAPTER_CLASS_COULD_NOT_BE_INSTANTIATED);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: The adapter class does not extend javax.xml.bind.annotation.adapters.XmlAdapter.
@@ -856,13 +857,13 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_ADAPTER_CLASS);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
-     * Cause: The package level adapter class set on XMLJavaTypeConverter could not be 
-     * loaded. This is most likely due to an incorrect class name or the wrong 
+     * Cause: The package level adapter class set on XMLJavaTypeConverter could not be
+     * loaded. This is most likely due to an incorrect class name or the wrong
      * classloader being set on XMLConversionManager.
-     * 
+     *
      * @param adapterClassName the name of the XmlAdapterClass
      * @param packageName name of the target package
      */
@@ -872,13 +873,13 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_PACKAGE_ADAPTER_CLASS);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
-     * Cause: The type level adapter class set on XMLJavaTypeConverter could not be 
-     * loaded. This is most likely due to an incorrect class name or the wrong 
+     * Cause: The type level adapter class set on XMLJavaTypeConverter could not be
+     * loaded. This is most likely due to an incorrect class name or the wrong
      * classloader being set on XMLConversionManager.
-     * 
+     *
      * @param adapterClassName the name of the XmlAdapterClass
      * @param typeName name of the target type
      */
@@ -888,13 +889,13 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_TYPE_ADAPTER_CLASS);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: The field/property level adapter class set on XMLJavaTypeConverter could
-     * not be loaded. This is most likely due to an incorrect class name or the wrong 
+     * not be loaded. This is most likely due to an incorrect class name or the wrong
      * classloader being set on XMLConversionManager.
-     * 
+     *
      * @param adapterClassName the name of the XmlAdapterClass
      * @param propName the name of the field/property
      * @param typeName name of the owning type
@@ -910,7 +911,7 @@ public class JAXBException extends EclipseLinkException {
      * PUBLIC:
      * Cause: There is a different number of XmlElements and XmlJoinNodes entries in a given
      * XmlElementsJoinNodes.  There must be an equal number of each.
-     * 
+     *
      * @param propertyName name of the Property containing the XmlElementsJoinNodes
      * @param className name of the owning class
      * @return
@@ -923,9 +924,9 @@ public class JAXBException extends EclipseLinkException {
     }
 
     /**
-     * When the target of an XmlPaths -> XmlPath is an attribute, it must be nested, and 
+     * When the target of an XmlPaths -> XmlPath is an attribute, it must be nested, and
      * not the root of the path.
-     * 
+     *
      * @param propertyName name of the Property containing the XmlPaths
      * @param className name of the owning class
      * @param xpath the offending XmlPath
@@ -937,25 +938,25 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_XML_PATH_ATTRIBUTE);
         return validationException;
     }
-    
+
     public static JAXBException duplicatePropertyName(String propertyName, String className) {
         Object[] args = {propertyName, className};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, DUPLICATE_PROPERTY_NAME, args));
         validationException.setErrorCode(DUPLICATE_PROPERTY_NAME);
         return validationException;
     }
-    
+
     public static JAXBException samePropertyInMultipleFiles(String propertyName, String className) {
         Object[] args = {propertyName, className};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, SAME_PROPERTY_IN_MULTIPLE_BINDINGS_FILES, args));
         validationException.setErrorCode(SAME_PROPERTY_IN_MULTIPLE_BINDINGS_FILES);
         return validationException;
-        
+
     }
-    
+
     /**
      * PUBLIC:
-     * Cause: An exception occurred while attempting to get a new instance of 
+     * Cause: An exception occurred while attempting to get a new instance of
      * the transformer class.
      */
     public static JAXBException exceptionWithNameTransformerClass(String nametransformerClassName, Exception ex) {
@@ -964,7 +965,7 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(EXCEPTION_WITH_NAME_TRANSFORMER_CLASS);
         return validationException;
     }
-    
+
     /**
      * PUBLIC:
      * Cause: An exception occurred during transformation to an xml name
@@ -975,13 +976,19 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(EXCEPTION_DURING_NAME_TRANSFORMATION);
         return validationException;
     }
-    
+
     public static JAXBException unableToLoadMetadataFromLocation(String location) {
         Object[] args = { location };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, UNABLE_TO_LOAD_METADATA_FROM_LOCATION, args));
         validationException.setErrorCode(UNABLE_TO_LOAD_METADATA_FROM_LOCATION);
         return validationException;
     }
-    
-        
+
+    public static JAXBException cannotRefreshMetadata() {
+        Object[] args = { };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, CANNOT_REFRESH_METADATA, args));
+        validationException.setErrorCode(CANNOT_REFRESH_METADATA);
+        return validationException;
+    }
+
 }

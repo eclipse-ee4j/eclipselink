@@ -80,9 +80,9 @@ import org.eclipse.persistence.sessions.Session;
  * Binders and Introspectors. A JAXBContext can also be used to create Schema Files.
  * <p><b>Bootstrapping:</b>
  * When bootstrapping the JAXBContext from a EclipseLink externalized metadata file(s) a number of
- * input options are available.  The externalized metadata file (one per package) is passed in 
- * through a property when creating the JAXBContext.  The key used in the properties map is 
- * "eclipselink-oxm-xml".  The externalized metadata file can be set in the properties map in 
+ * input options are available.  The externalized metadata file (one per package) is passed in
+ * through a property when creating the JAXBContext.  The key used in the properties map is
+ * "eclipselink-oxm-xml".  The externalized metadata file can be set in the properties map in
  * one of three ways:
  * <p>i) For a single externalized metadata file, one of the following can be set in the properties map:<ul>
  * <li>java.io.File</li>
@@ -94,16 +94,16 @@ import org.eclipse.persistence.sessions.Session;
  * <li>javax.xml.transform.Source</li>
  * <li>org.w3c.dom.Node</li>
  * <li>org.xml.sax.InputSource</li></ul>
- * When using one of the above options, the package name must be set via package-name attribute on the 
+ * When using one of the above options, the package name must be set via package-name attribute on the
  * xml-bindings element in the externalized metadata file.
- * <p>ii) For multiple externalized metadata files where the package name is specified within each externalized 
- * metadata file, a List can be used.  The entries in the List are to be one of the types listed in i) above.  
- * <p>iii) For multiple externalized metadata files where the package name is not specified in each externalized 
- * metadata file, a Map can be used.  The key must be a String (package name) and  each value in the Map 
+ * <p>ii) For multiple externalized metadata files where the package name is specified within each externalized
+ * metadata file, a List can be used.  The entries in the List are to be one of the types listed in i) above.
+ * <p>iii) For multiple externalized metadata files where the package name is not specified in each externalized
+ * metadata file, a Map can be used.  The key must be a String (package name) and  each value in the Map
  * (externalized metadata file) is to be one of the types listed in i) above.
- * <p>Note that in each of the above cases the package name can be set via package-name attribute on the 
- * xml-bindings element in the externalized metadata file.  If set, any java-type names in the given metadata 
- * file that do not contain the package name will have that package name prepended to it.  Also note that a 
+ * <p>Note that in each of the above cases the package name can be set via package-name attribute on the
+ * xml-bindings element in the externalized metadata file.  If set, any java-type names in the given metadata
+ * file that do not contain the package name will have that package name prepended to it.  Also note that a
  * List or Map can be used for a single externalized metadata file.
  * <p>
  * @see javax.xml.bind.JAXBContext
@@ -123,8 +123,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
     }
 
-    private JAXBContextInput contextInput;
-    private volatile JAXBContextState contextState;
+    protected JAXBContextInput contextInput;
+    protected volatile JAXBContextState contextState;
 
     protected JAXBContext() {
         super();
@@ -137,7 +137,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
-     * Create a JAXBContext for a given XMLContext.  The XMLContext contains the 
+     * Create a JAXBContext for a given XMLContext.  The XMLContext contains the
      * metadata about the Object to XML mappings.
      */
     public JAXBContext(XMLContext context) {
@@ -145,7 +145,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
-     * Create a JAXBContext. The XMLContext contains the metadata about the 
+     * Create a JAXBContext. The XMLContext contains the metadata about the
      * Object to XML mappings.
      */
     public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
@@ -153,7 +153,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
-     * Create a JAXBContext.  The XMLContext contains the metadata about the 
+     * Create a JAXBContext.  The XMLContext contains the metadata about the
      * Object to XML mappings.
      */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
@@ -162,7 +162,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     /**
      * ADVANCED:
-     * <p>Refresh the underlying metadata based on the inputs that were 
+     * <p>Refresh the underlying metadata based on the inputs that were
      * used to create the JAXBContext.  This is particularly useful when using
      * the virtual property mappings.  The refreshMetadata call could be made
      * in the following way:</p>
@@ -189,7 +189,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
-     * Return the XMLContext associated with this JAXBContext. 
+     * Return the XMLContext associated with this JAXBContext.
      */
     public XMLContext getXMLContext() {
         return contextState.getXMLContext();
@@ -201,7 +201,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     /**
      * Generate a Schema for this JAXBContext
-     *  
+     *
      * @param outputResolver Class that decides where the schema file (of the given namespace URI) will be written
      */
     public void generateSchema(SchemaOutputResolver outputResolver) {
@@ -210,9 +210,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     /**
      * Generate a Schema for this JAXBContext
-     *  
+     *
      * @param outputResolver Class that decides where the schema file (of the given namespace URI) will be written
-     * @param additonalGlobalElements Map of additional global elements to be added to the generated XSD.  
+     * @param additonalGlobalElements Map of additional global elements to be added to the generated XSD.
      * Note that if any QName in this map conflicts with another global element (for example from a TypeMappingInfo object)
      * then the element generated from this map will be the one that is present in the XSD.
      */
@@ -236,10 +236,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     }
 
-    /** 
+    /**
      * Create a JAXBMarshaller.  The JAXBMarshaller is used to convert Java objects
      * to XML.
-     */    
+     */
     public JAXBMarshaller createMarshaller() {
         JAXBContextState currentJAXBContextState = contextState;
         XMLContext xmlContext = currentJAXBContextState.getXMLContext();
@@ -259,10 +259,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return marshaller;
     }
 
-    /** 
+    /**
      * Create a JAXBUnmarshaller.  The JAXBUnmarshaller is used to convert XML into
-     * Java objects.    
-     */    
+     * Java objects.
+     */
     public JAXBUnmarshaller createUnmarshaller() {
         JAXBContextState currentJAXBContextState = contextState;
         XMLContext xmlContext = currentJAXBContextState.getXMLContext();
@@ -280,26 +280,26 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return unmarshaller;
     }
 
-    /** 
+    /**
      * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
-     * an XSD.   
-     */ 
+     * an XSD.
+     */
     public JAXBValidator createValidator() {
         return new JAXBValidator(getXMLContext().createValidator());
     }
 
-    /** 
-     * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.     
-     */ 
+    /**
+     * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.
+     */
     public JAXBBinder createBinder() {
         return new JAXBBinder(getXMLContext());
-    }     
+    }
 
-    /** 
+    /**
      * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.
      *
-     * @param nodeClass The DOM Node class to use     
-     */ 
+     * @param nodeClass The DOM Node class to use
+     */
     public <T> JAXBBinder createBinder(Class<T> nodeClass) {
         if (nodeClass.getName().equals("org.w3c.dom.Node")) {
             return new JAXBBinder(getXMLContext());
@@ -309,7 +309,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
-     * Creates a JAXBIntrospector object.  The JAXBIntrospector allows the user to 
+     * Creates a JAXBIntrospector object.  The JAXBIntrospector allows the user to
      * access certain pieces of metadata about an instance of a JAXB bound class.
      */
     public JAXBIntrospector createJAXBIntrospector() {
@@ -387,12 +387,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public Map<Type, Class>getCollectionClassesToGeneratedClasses(){
         return contextState.getGenerator().getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
     }
-    
+
     /**
      * INTERNAL:
      * Populate the map of which Type corresponds to which QName.
      * The keys should be all the boundTypes used to create the JAXBContext.
-     * If the JAXBContext was not created with the constructor that takes a Type[] then 
+     * If the JAXBContext was not created with the constructor that takes a Type[] then
      * this Map will be empty.
      */
     public void initTypeToSchemaType() {
@@ -403,9 +403,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map of which TypeMappingInfo corresponds to which QName.
      * The keys should be all the boundTypes used to create the JAXBContext.
-     * If the JAXBContext was not created with the constructor that takes a TypeMappingInfo[]  
+     * If the JAXBContext was not created with the constructor that takes a TypeMappingInfo[]
      * this Map will be empty.
-     */    
+     */
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
         return contextState.getTypeMappingInfoToSchemaType();
     }
@@ -414,7 +414,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map of which Type corresponds to which QName.
      * The keys should be all the boundTypes used to create the JAXBContext.
-     * If the JAXBContext was not created with the constructor that takes a Type[] then 
+     * If the JAXBContext was not created with the constructor that takes a Type[] then
      * this Map will be empty.
      */
     public HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
@@ -440,24 +440,24 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     static class RootLevelXmlAdapter {
         private XmlAdapter xmlAdapter;
         private Class boundType;
-        
+
         public RootLevelXmlAdapter(XmlAdapter adapter, Class boundType) {
             this.xmlAdapter = adapter;
             this.boundType = boundType;
         }
-        
+
         public XmlAdapter getXmlAdapter() {
             return xmlAdapter;
         }
-        
+
         public Class getBoundType() {
             return boundType;
         }
-        
+
         public void setXmlAdapter(XmlAdapter xmlAdapter) {
             this.xmlAdapter = xmlAdapter;
         }
-        
+
         public void setBoundType(Class boundType) {
             this.boundType = boundType;
         }
@@ -469,7 +469,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     /**
      * Get a value from an object based on an XPath statement.
-     * 
+     *
      * @param <T>
      *      The return type of this method corresponds to the returnType parameter.
      * @param object
@@ -480,7 +480,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *      A <tt>NamespaceResolver</tt> containing the prefix/URI pairings from the XPath statement.
      * @param returnType
      *      The return type.
-     *      
+     *
      * @return
      *      The object corresponding to the XPath or null if no result was found.
      */
@@ -490,7 +490,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     /**
      * Set a value on an object based on an XPath statement.
-     * 
+     *
      * @param object
      *      The XPath will be executed relative to this object.
      * @param xPath
@@ -512,7 +512,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @param typeName
      *      The XML type name to create a new Java instance of.
      * @param isGlobalType
-     *      True if the object to be created represents a global type, false if it 
+     *      True if the object to be created represents a global type, false if it
      *      represents a global element.
      *
      * @return
@@ -544,7 +544,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
-    
+
     /**
      * Returns true if any Object in this context contains a property annotated with an XmlAttachmentRef
      * annotation.
@@ -554,7 +554,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return contextState.getGenerator().getAnnotationsProcessor().hasSwaRef();
     }
 
-    static abstract class JAXBContextInput {
+    public static abstract class JAXBContextInput {
 
         protected Map properties;
         protected ClassLoader classLoader;
@@ -664,14 +664,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
                 annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
             }
-            
+
             JavaModelImpl jModel;
             if(annotationHelper != null) {
                 jModel = new JavaModelImpl(loader, annotationHelper);
             } else {
                 jModel = new JavaModelImpl(loader);
             }
-            
+
             // create Map of package names to metadata complete indicators
             Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
             for (String packageName : xmlBindings.keySet()) {
@@ -682,7 +682,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if (metadataComplete.size() > 0) {
                 jModel.setMetadataCompletePackageMap(metadataComplete);
             }
-            
+
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
             try {
                 Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace);
@@ -805,7 +805,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             } else {
                 jModel = new JavaModelImpl(loader);
             }
-            
+
             // create Map of package names to metadata complete indicators
             Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
             for (String packageName : xmlBindings.keySet()) {
@@ -816,7 +816,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if (metadataComplete.size() > 0) {
                 jModel.setMetadataCompletePackageMap(metadataComplete);
             }
-            
+
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
             try {
                 Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
@@ -905,7 +905,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     }
 
-    private static class JAXBContextState {
+    protected static class JAXBContextState {
 
         private XMLContext xmlContext;
         private org.eclipse.persistence.jaxb.compiler.Generator generator;
@@ -918,14 +918,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
         private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
 
-        private JAXBContextState() {
+        protected JAXBContextState() {
         }
 
-        private JAXBContextState(XMLContext context) {
+        protected JAXBContextState(XMLContext context) {
             xmlContext = context;
         }
 
-        private JAXBContextState(XMLContext context, Generator generator, Type[] boundTypes) {
+        protected JAXBContextState(XMLContext context, Generator generator, Type[] boundTypes) {
             this(context);
             this.generator = generator;
             this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
@@ -939,7 +939,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
-        private JAXBContextState(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
+        protected JAXBContextState(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
             this(context);
             this.generator = generator;
             this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
@@ -959,7 +959,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                         XmlAdapter adapter = (XmlAdapter)adapterClass.newInstance();
                         Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
                         RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
-                        
+
                         typeMappingInfoToAdapters.put(entry.getKey(), rootLevelXmlAdapter);
                     } catch(Exception ex) {}
                 }
@@ -997,7 +997,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
             if(typeToSchemaType == null){
                 initTypeToSchemaType();
-            }   
+            }
             return typeToSchemaType;
         }
 
@@ -1028,7 +1028,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * INTERNAL:
          * Get the QName which the given Type corresponds to.
          * Valid types should be all the boundTypes used to create the JAXBContext.
-         * If the JAXBContext was not created with the construction that takes a Type[] then 
+         * If the JAXBContext was not created with the construction that takes a Type[] then
          * this will be return null.
          */
         private QName getSchemaTypeForTypeMappingInfo(Type type) {
@@ -1036,7 +1036,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             //Check for annotation overrides
             if (type instanceof Class) {
                 name = generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)type).getName());
-                if (name == null) {         
+                if (name == null) {
                     Class theClass = (Class)type;
                     //Change default for byte[] to Base64 (JAXB 2.0 default)
                     if (type == ClassConstants.ABYTE || type == ClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
@@ -1059,11 +1059,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         private void initTypeToSchemaType() {
             this.typeToSchemaType = new HashMap<Type, QName>();
-            
+
             if(typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0){
                 return;
             }
-            
+
             Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
 
             //Add schema types generated for mapped domain classes
@@ -1075,9 +1075,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                     QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
                     Type type = null;
                     if (generator != null) {
-                        
+
                         type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
-                        
+
                         if (type == null) {
                             JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
                             if (arrayClass != null) {
@@ -1085,9 +1085,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                                 try {
                                     type = PrivilegedAccessHelper.getClassForName(arrayClassName);
                                 } catch (Exception ex) {}
-                            }      
-                            
-                            if(type == null && getTypeMappingInfoToGeneratedType() != null){                                
+                            }
+
+                            if(type == null && getTypeMappingInfoToGeneratedType() != null){
                                 Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
                                 while(iter.hasNext()){
                                     Map.Entry<TypeMappingInfo, Class> entry = iter.next();
@@ -1101,7 +1101,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                         if (type == null) {
                             type = javaClass;
                         }
-                        
+
                     } else {
                         type = javaClass;
                     }
@@ -1144,7 +1144,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.qNameToGeneratedClasses = qNameToClass;
         }
 
-        private void setXMLContext(XMLContext xmlContext) {
+        public void setXMLContext(XMLContext xmlContext) {
             this.xmlContext = xmlContext;
         }
 

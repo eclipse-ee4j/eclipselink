@@ -90,12 +90,13 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50068", "A null value was encountered while processing external metadata via properties Map.  It is required that the handle to the XML metadata file be non-null and one of [java.io.File, java.io.InputStream, java.io.Reader, java.net.URL, javax.xml.stream.XMLEventReader, javax.xml.stream.XMLStreamReader, javax.xml.transform.Source, org.w3c.dom.Node, or org.xml.sax.InputSource]."},
         {"50069", "A package was not specified for the provided XML metadata file.  The package can be specified by passing in Map<String, Object> (where String = package, Object = handle to XML metadata file) or by setting the package-name attribute on the xml-bindings element in the XML metadata file."},
         {"50070", "Property [{0}] on class [{1}] has an XmlElements declaration containing an unequal amount of XmlElement/XmlJoinNodes.  It is required that there be a corresponding XmlJoinNodes for each XmlElement contained within the XmlElements declaration."},
-        {"50071", "Property [{0}] on class [{1}] has an XmlPaths declaration containing an XmlPath with an attribute at the root of the path [{2}].  In the case of XmlPaths, attributes must be nested in the XmlPath, i.e. [foo/{2}]."},        
+        {"50071", "Property [{0}] on class [{1}] has an XmlPaths declaration containing an XmlPath with an attribute at the root of the path [{2}].  In the case of XmlPaths, attributes must be nested in the XmlPath, i.e. [foo/{2}]."},
         {"50072", "Duplicate Property named [{0}] found on class [{1}]"},
         {"50073", "Property [{0}] on class [{1}] is specified in multiple external bindings files. Each property can only be specified in one file"},
         {"50074", "An exception occurred accessing the XMLNameTransformer [{0}]"},
         {"50075", "An exception occurred while attempting to transform name [{0}] with the XMLNameTransformer [{1}]"},
-        {"50076", "Unable to load external metadata from the provided location: [{0}]. This location must be either a valid URL or a classpath reference."}
+        {"50076", "Unable to load external metadata from the provided location: [{0}]. This location must be either a valid URL or a classpath reference."},
+        {"50077", "Cannot refresh metadata.  Metadata must be provided as an XML Node in order to support refreshing."}
     };
 
     /**
