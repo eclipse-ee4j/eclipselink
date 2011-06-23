@@ -28,6 +28,8 @@ import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSess
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
+import org.eclipse.persistence.logging.SessionLog;
+
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
@@ -36,6 +38,7 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
+
 
 /**
  * <p>
@@ -83,7 +86,7 @@ public class XRPackager implements DBWSPackager {
     protected Archiver archiver;
     protected String packagerLabel;
     protected ArchiveUse archiveUse;
-
+    
     public XRPackager() {
         this(null,"xr",noArchive);
     }
@@ -234,7 +237,13 @@ public class XRPackager implements DBWSPackager {
         dlc.setPlatformClass(builder.getPlatformClassname());
         orSessionConfig.setLoginConfig(dlc);
         DefaultSessionLogConfig orLogConfig = new DefaultSessionLogConfig();
-        orLogConfig.setLogLevel(builder.getLogLevel());
+        // validate log level - default to 'info' if invalid
+        String logLevel = builder.getLogLevel();
+    	if (!isValidLogLevel(logLevel)) {
+    		builder.logMessage(java.util.logging.Level.WARNING, "Log level [" + logLevel + "] is invalid.  Valid values are [off, severe, warning, info, config, fine, finer, finest, all].  Using default log level [info].");
+       		logLevel = SessionLog.INFO_LABEL;
+        }
+        orLogConfig.setLogLevel(logLevel);
         orSessionConfig.setLogConfig(orLogConfig);
         ts.addSessionConfig(orSessionConfig);
 
@@ -243,7 +252,7 @@ public class XRPackager implements DBWSPackager {
         ProjectConfig oxProjectConfig = builder.buildOXProjectConfig();
         oxSessionConfig.setPrimaryProject(oxProjectConfig);
         DefaultSessionLogConfig oxLogConfig = new DefaultSessionLogConfig();
-        oxLogConfig.setLogLevel("off");
+        oxLogConfig.setLogLevel(SessionLog.OFF_LABEL);
         oxSessionConfig.setLogConfig(oxLogConfig);
         String oxSessionCustomizerClassName = builder.getOxSessionCustomizerClassName();
         if (oxSessionCustomizerClassName != null && !"".equals(oxSessionCustomizerClassName)) {
@@ -379,5 +388,26 @@ public class XRPackager implements DBWSPackager {
         if (archiver != null) {
             archiver.archive();
         }
+    }
+    
+    /**
+     * Validates user-set log level.  Valid values are: off, severe,
+     * warning, info, config, fine, finer, finest, all.
+     * 
+     * If an invalid log level is set, a warning will be thrown
+     * and the default level "fine" will be set.
+     * 
+     * @param logLevel
+     */
+    private boolean isValidLogLevel(String logLevel) {
+    	return (logLevel.equalsIgnoreCase(SessionLog.OFF_LABEL)
+    		 || logLevel.equalsIgnoreCase(SessionLog.SEVERE_LABEL) 
+    		 || logLevel.equalsIgnoreCase(SessionLog.WARNING_LABEL) 
+    		 || logLevel.equalsIgnoreCase(SessionLog.INFO_LABEL) 
+    		 || logLevel.equalsIgnoreCase(SessionLog.CONFIG_LABEL) 
+    		 || logLevel.equalsIgnoreCase(SessionLog.FINE_LABEL) 
+    		 || logLevel.equalsIgnoreCase(SessionLog.FINER_LABEL) 
+    		 || logLevel.equalsIgnoreCase(SessionLog.FINEST_LABEL) 
+    		 || logLevel.equalsIgnoreCase(SessionLog.ALL_LABEL));
     }
 }

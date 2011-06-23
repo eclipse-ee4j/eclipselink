@@ -261,6 +261,10 @@
           key="db.platform"
           value="${db.platform}"
         />
+        <sysproperty
+          key="release.version"
+          value="${release.version}"
+        />
         <test
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
         />
@@ -386,5 +390,6 @@
         <SetupCompileRunTeardown testsuite-name="SecondarySQL"/>
         <SetupCompileRunTeardown testsuite-name="SQLAsCollection"/>
         <SetupCompileRunTeardown testsuite-name="BatchSQL"/>
+        <SetupCompileRunTeardown testsuite-name="LogLevelValidation"/>
     </target>
 </project>
