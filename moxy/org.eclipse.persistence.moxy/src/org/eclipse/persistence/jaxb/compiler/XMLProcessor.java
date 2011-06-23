@@ -1959,6 +1959,10 @@ public class XMLProcessor {
             existingType.getXmlProperties().getXmlProperty().addAll(next.getXmlProperties().getXmlProperty());
         }
         
+        if(next.getXmlType() != null) {
+            existingType.setXmlType(next.getXmlType());
+        }
+        
         existingType.getXmlSeeAlso().addAll(next.getXmlSeeAlso());
         
         

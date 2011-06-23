@@ -4,5 +4,8 @@
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee">
              <xml-root-element name="empRoot2"/>
         </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Person">
+             <xml-type name="person"/>
+        </java-type>
     </java-types>
 </xml-bindings>
