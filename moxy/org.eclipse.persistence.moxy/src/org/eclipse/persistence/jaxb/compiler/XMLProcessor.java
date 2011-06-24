@@ -1358,6 +1358,7 @@ public class XMLProcessor {
         if (xmlTransformation.getXmlProperties() != null  && xmlTransformation.getXmlProperties().getXmlProperty().size() > 0) {
             oldProperty.setUserProperties(createUserPropertyMap(xmlTransformation.getXmlProperties().getXmlProperty()));
         }
+        aProcessor.getReferencedByTransformer().add(oldProperty.getType().getName());
         return oldProperty;
     }
 

@@ -120,7 +120,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     public void setClasses(Class[] newClasses) throws Exception {
 
         classLoader = Thread.currentThread().getContextClassLoader();
-        jaxbContext = JAXBContextFactory.createContext(newClasses, null, classLoader);
+        jaxbContext = JAXBContextFactory.createContext(newClasses, getProperties(), classLoader);
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
