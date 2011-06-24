@@ -28,7 +28,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSess
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
-import org.eclipse.persistence.logging.SessionLog;
 
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
@@ -38,7 +37,6 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
-
 
 /**
  * <p>
@@ -86,6 +84,16 @@ public class XRPackager implements DBWSPackager {
     protected Archiver archiver;
     protected String packagerLabel;
     protected ArchiveUse archiveUse;
+    
+    protected static String OFF = "off";
+    protected static String SEVERE = "severe";
+    protected static String WARNING = "warning";
+    protected static String INFO = "info";
+    protected static String CONFIG = "config";
+    protected static String FINE = "fine";
+    protected static String FINER = "finer";
+    protected static String FINEST = "finest";
+    protected static String ALL = "all";
     
     public XRPackager() {
         this(null,"xr",noArchive);
@@ -241,7 +249,7 @@ public class XRPackager implements DBWSPackager {
         String logLevel = builder.getLogLevel();
     	if (!isValidLogLevel(logLevel)) {
     		builder.logMessage(java.util.logging.Level.WARNING, "Log level [" + logLevel + "] is invalid.  Valid values are [off, severe, warning, info, config, fine, finer, finest, all].  Using default log level [info].");
-       		logLevel = SessionLog.INFO_LABEL;
+       		logLevel = INFO;
         }
         orLogConfig.setLogLevel(logLevel);
         orSessionConfig.setLogConfig(orLogConfig);
@@ -252,7 +260,7 @@ public class XRPackager implements DBWSPackager {
         ProjectConfig oxProjectConfig = builder.buildOXProjectConfig();
         oxSessionConfig.setPrimaryProject(oxProjectConfig);
         DefaultSessionLogConfig oxLogConfig = new DefaultSessionLogConfig();
-        oxLogConfig.setLogLevel(SessionLog.OFF_LABEL);
+        oxLogConfig.setLogLevel(OFF);
         oxSessionConfig.setLogConfig(oxLogConfig);
         String oxSessionCustomizerClassName = builder.getOxSessionCustomizerClassName();
         if (oxSessionCustomizerClassName != null && !"".equals(oxSessionCustomizerClassName)) {
@@ -400,14 +408,14 @@ public class XRPackager implements DBWSPackager {
      * @param logLevel
      */
     private boolean isValidLogLevel(String logLevel) {
-    	return (logLevel.equalsIgnoreCase(SessionLog.OFF_LABEL)
-    		 || logLevel.equalsIgnoreCase(SessionLog.SEVERE_LABEL) 
-    		 || logLevel.equalsIgnoreCase(SessionLog.WARNING_LABEL) 
-    		 || logLevel.equalsIgnoreCase(SessionLog.INFO_LABEL) 
-    		 || logLevel.equalsIgnoreCase(SessionLog.CONFIG_LABEL) 
-    		 || logLevel.equalsIgnoreCase(SessionLog.FINE_LABEL) 
-    		 || logLevel.equalsIgnoreCase(SessionLog.FINER_LABEL) 
-    		 || logLevel.equalsIgnoreCase(SessionLog.FINEST_LABEL) 
-    		 || logLevel.equalsIgnoreCase(SessionLog.ALL_LABEL));
+    	return (logLevel.equalsIgnoreCase(OFF)
+    		 || logLevel.equalsIgnoreCase(SEVERE) 
+    		 || logLevel.equalsIgnoreCase(WARNING) 
+    		 || logLevel.equalsIgnoreCase(INFO) 
+    		 || logLevel.equalsIgnoreCase(CONFIG) 
+    		 || logLevel.equalsIgnoreCase(FINE) 
+    		 || logLevel.equalsIgnoreCase(FINER) 
+    		 || logLevel.equalsIgnoreCase(FINEST) 
+    		 || logLevel.equalsIgnoreCase(ALL));
     }
 }

@@ -37,8 +37,8 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     final static String driver = System.getProperty(DBWSTestProviderHelper.DATABASE_DRIVER_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER);
     final static String platform = System.getProperty(DBWSTestProviderHelper.DATABASE_PLATFORM_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM);
     final static String version = System.getProperty("release.version", "2.4.0");
-    final static String info_level = SessionLog.INFO_LABEL;
-    final static String off_level = SessionLog.OFF_LABEL;
+    final static String info_level = "info";
+    final static String off_level = "off";
     final static String stageDir = "./";
 
     @BeforeClass
@@ -75,9 +75,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     	"<sessions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\""+version+"\">" +
     		"<session xsi:type=\"database-session\">" +
     			"<name>logLevelValidation-dbws-or-session</name>" +
-    			"<logging xsi:type=\"eclipselink-log\">" +
-    			"<log-level>"+info_level+"</log-level>" +
-    			"</logging>" +
+    			"<logging xsi:type=\"eclipselink-log\" />" +
     			"<primary-project xsi:type=\"xml\">eclipselink-dbws-or.xml</primary-project>" +
     			"<login xsi:type=\"database-login\">" +
     				"<platform-class>org.eclipse.persistence.platform.database.MySQLPlatform</platform-class>" +
