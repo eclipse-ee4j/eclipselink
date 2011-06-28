@@ -1,6 +1,6 @@
 package org.example;
 
-public interface MySubstitute {
+public interface MySubstitute extends java.io.Serializable {
 
    public org.example.MyTestType getOtherTest();
 

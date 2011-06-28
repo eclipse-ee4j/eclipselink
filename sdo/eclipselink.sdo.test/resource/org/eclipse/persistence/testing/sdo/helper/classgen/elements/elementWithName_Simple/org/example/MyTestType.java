@@ -1,6 +1,6 @@
 package org.example;
 
-public interface MyTestType {
+public interface MyTestType extends java.io.Serializable {
 
    public int getMyTest1();
 

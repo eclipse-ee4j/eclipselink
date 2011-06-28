@@ -1,6 +1,6 @@
 package org.example;
 
-public interface CustomerType {
+public interface CustomerType extends java.io.Serializable {
 
    public java.lang.String getFirstName();
 

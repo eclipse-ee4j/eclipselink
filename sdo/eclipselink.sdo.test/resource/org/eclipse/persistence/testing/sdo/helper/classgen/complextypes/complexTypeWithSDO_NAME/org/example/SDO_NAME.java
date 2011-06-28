@@ -1,6 +1,6 @@
 package org.example;
 
-public interface SDO_NAME {
+public interface SDO_NAME extends java.io.Serializable {
 
    public java.lang.String getMyTest1();
 

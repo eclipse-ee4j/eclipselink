@@ -1,6 +1,6 @@
 package org.example;
 
-public interface PhoneType {
+public interface PhoneType extends java.io.Serializable {
 
    public java.lang.String getNumber();
 

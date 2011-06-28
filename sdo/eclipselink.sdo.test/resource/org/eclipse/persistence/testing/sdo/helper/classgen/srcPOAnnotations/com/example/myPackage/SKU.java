@@ -1,6 +1,6 @@
 package com.example.myPackage;
 
-public interface SKU {
+public interface SKU extends java.io.Serializable {
 
 }
 

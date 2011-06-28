@@ -347,9 +347,11 @@ public class SDOClassGenerator {
             currentInterfaceBuffer.append(interfaceName);
 
             if (interfaceExtends != null) {
-                currentInterfaceBuffer.append(" extends " + interfaceExtends);
+                currentInterfaceBuffer.append(" extends " + interfaceExtends );
+            } else{
+            	currentInterfaceBuffer.append(" extends java.io.Serializable");
             }
-
+                        
             currentInterfaceBuffer.append(indent).append(" {").append(lsep2);
             classBuffer.setInterfaceBuffer(currentInterfaceBuffer);
         }

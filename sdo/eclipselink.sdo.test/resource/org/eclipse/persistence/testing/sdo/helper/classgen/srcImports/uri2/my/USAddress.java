@@ -1,6 +1,6 @@
 package uri2.my;
 
-public interface USAddress {
+public interface USAddress extends java.io.Serializable {
 
    public java.lang.String getStreet();
 

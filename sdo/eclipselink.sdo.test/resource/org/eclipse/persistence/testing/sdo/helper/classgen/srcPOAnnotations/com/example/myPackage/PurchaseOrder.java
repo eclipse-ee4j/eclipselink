@@ -1,6 +1,6 @@
 package com.example.myPackage;
 
-public interface PurchaseOrder {
+public interface PurchaseOrder extends java.io.Serializable {
 
    public java.util.List getShipTo();
 

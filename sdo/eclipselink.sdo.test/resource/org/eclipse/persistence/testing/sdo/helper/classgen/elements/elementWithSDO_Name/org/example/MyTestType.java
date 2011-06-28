@@ -1,6 +1,6 @@
 package org.example;
 
-public interface MyTestType {
+public interface MyTestType extends java.io.Serializable {
 
    public org.example.ElementTest getSDO_NAME();
 

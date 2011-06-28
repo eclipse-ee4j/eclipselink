@@ -3,7 +3,7 @@ package org.example;
 
 //this is the preInterfaceImports event
 //this is the preInterfaceClass event
-public interface Items {
+public interface Items extends java.io.Serializable {
 
    public java.util.List getItem();
 

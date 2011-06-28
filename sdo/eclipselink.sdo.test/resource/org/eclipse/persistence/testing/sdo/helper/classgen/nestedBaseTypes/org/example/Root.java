@@ -1,6 +1,6 @@
 package org.example;
 
-public interface Root {
+public interface Root extends java.io.Serializable {
 
    public java.util.List getRootA();
 

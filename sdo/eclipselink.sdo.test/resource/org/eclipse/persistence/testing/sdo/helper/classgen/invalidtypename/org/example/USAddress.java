@@ -1,6 +1,6 @@
 package org.example;
 
-public interface USAddress {
+public interface USAddress extends java.io.Serializable {
 
    public java.lang.String getName();
 

@@ -3,7 +3,7 @@ package org.example;
 
 //this is the preInterfaceImports event
 //this is the preInterfaceClass event
-public interface PurchaseOrderType {
+public interface PurchaseOrderType extends java.io.Serializable {
 
    public java.lang.String getTheID();
 

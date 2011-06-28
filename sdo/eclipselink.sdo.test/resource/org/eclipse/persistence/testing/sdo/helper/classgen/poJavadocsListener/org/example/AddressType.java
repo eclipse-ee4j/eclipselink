@@ -3,7 +3,7 @@ package org.example;
 
 //this is the preInterfaceImports event
 //this is the preInterfaceClass event
-public interface AddressType {
+public interface AddressType extends java.io.Serializable {
 
    public java.lang.String getName();
 

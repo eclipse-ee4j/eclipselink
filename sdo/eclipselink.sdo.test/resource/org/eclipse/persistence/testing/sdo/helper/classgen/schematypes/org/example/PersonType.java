@@ -1,6 +1,6 @@
 package org.example;
 
-public interface PersonType {
+public interface PersonType extends java.io.Serializable {
 
    public java.lang.String getFirstName();
 
