@@ -1272,10 +1272,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
+     * ADVANCED:
      * Return whether the reference objects must be deleted
      * one by one, as opposed to with a single DELETE statement.
      */
-    protected boolean mustDeleteReferenceObjectsOneByOne() {
+    public boolean mustDeleteReferenceObjectsOneByOne() {
         return this.mustDeleteReferenceObjectsOneByOne;
     }
 
@@ -2016,6 +2017,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     public void setListOrderFieldName(String fieldName) {
         setListOrderField(new DatabaseField(fieldName));
+    }
+    
+    /**
+     * ADVANCED::
+     * Return whether the reference objects must be deleted
+     * one by one, as opposed to with a single DELETE statement.
+     * Note: Calling this method disables an optimization of the delete
+     * behavior
+     */
+    public void setMustDeleteReferenceObjectsOneByOne(boolean deleteOneByOne) {
+        this.mustDeleteReferenceObjectsOneByOne = deleteOneByOne;
     }
     
     /**
