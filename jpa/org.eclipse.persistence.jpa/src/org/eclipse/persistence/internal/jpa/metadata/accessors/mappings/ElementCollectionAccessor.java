@@ -41,6 +41,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     06/03/2011-2.3.1 Guy Pelletier 
+ *       - 347563: transient field/property in embeddable entity 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -806,81 +808,84 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     protected void processMappingsFromEmbeddable(MetadataDescriptor embeddableDescriptor, AggregateObjectMapping nestedAggregateObjectMapping, EmbeddableMapping embeddableMapping, Map<String, AttributeOverrideMetadata> attributeOverrides, Map<String, AssociationOverrideMetadata> associationOverrides, String dotNotationName) {        
         for (MappingAccessor mappingAccessor : embeddableDescriptor.getMappingAccessors()) {
-            // Fast track any mapping accessor that hasn't been processed at
-            // this point. The only accessors that can't be processed here are
-            // nested embedded or element collection accessors.
-            if (! mappingAccessor.isProcessed()) {
-                mappingAccessor.process();
-            }
-            
-            // Now you can safely grab the mapping off the accessor.
-            DatabaseMapping mapping = mappingAccessor.getMapping();
-            
-            // Figure out what our override name is to ensure we find and 
-            // apply the correct override metadata.
-            String overrideName = (dotNotationName.equals("")) ? mapping.getAttributeName() : dotNotationName + "." + mapping.getAttributeName();
-            
-            if (mapping.isDirectToFieldMapping()) {
-                // Regardless if we have an attribute override or not we
-                // add field name translations for every mapping to ensure
-                // we have the correct table name set for each field.
-                DirectToFieldMapping directMapping = (DirectToFieldMapping) mapping;
-                
-                DatabaseField overrideField;
-                if (attributeOverrides.containsKey(overrideName)) {
-                    // We have an explicit attribute override we must apply.
-                    overrideField = attributeOverrides.get(overrideName).getOverrideField();
-                } else {
-                    // If the nested aggregate object mapping defined an 
-                    // attribute override use the override field it set (and 
-                    // qualify it with our collection table. Otherwise, default 
-                    // a field name translation using the name of the field on 
-                    // the mapping.
-                    overrideField = directMapping.getField().clone();
-                    
-                    if (nestedAggregateObjectMapping != null && nestedAggregateObjectMapping.getAggregateToSourceFields().containsKey(overrideField.getName())) {
-                        overrideField = nestedAggregateObjectMapping.getAggregateToSourceFields().get(overrideField.getName());
-                    } 
+            // Ignore XML mapped transient attributes.
+            if (! mappingAccessor.isTransient()) {
+                // Fast track any mapping accessor that hasn't been processed at
+                // this point. The only accessors that can't be processed here 
+                // are nested embedded or element collection accessors.
+                if (! mappingAccessor.isProcessed()) {
+                    mappingAccessor.process();
                 }
                 
-                // Add the aggregate collection table field if one hasn't 
-                // already been set.
-                if (! overrideField.hasTableName()) {
-                    overrideField.setTable(getReferenceDatabaseTable());
-                }
+                // Now you can safely grab the mapping off the accessor.
+                DatabaseMapping mapping = mappingAccessor.getMapping();
                 
-                addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mappingAccessor);
-            } else if (mapping.isOneToOneMapping()) {
-                OneToOneMapping oneToOneMapping = (OneToOneMapping) mapping;
+                // Figure out what our override name is to ensure we find and 
+                // apply the correct override metadata.
+                String overrideName = (dotNotationName.equals("")) ? mapping.getAttributeName() : dotNotationName + "." + mapping.getAttributeName();
                 
-                if (oneToOneMapping.isForeignKeyRelationship()) {
-                    AssociationOverrideMetadata associationOverride = associationOverrides.get(overrideName);
+                if (mapping.isDirectToFieldMapping()) {
+                    // Regardless if we have an attribute override or not we
+                    // add field name translations for every mapping to ensure
+                    // we have the correct table name set for each field.
+                    DirectToFieldMapping directMapping = (DirectToFieldMapping) mapping;
                     
-                    if (associationOverride == null) {
-                        for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
-                            DatabaseField collectionTableField = fkField.clone();
-                            collectionTableField.setTable(getReferenceDatabaseTable());
-                            embeddableMapping.addFieldTranslation(collectionTableField, fkField.getName());
+                    DatabaseField overrideField;
+                    if (attributeOverrides.containsKey(overrideName)) {
+                        // We have an explicit attribute override we must apply.
+                        overrideField = attributeOverrides.get(overrideName).getOverrideField();
+                    } else {
+                        // If the nested aggregate object mapping defined an 
+                        // attribute override use the override field it set (and 
+                        // qualify it with our collection table. Otherwise, default 
+                        // a field name translation using the name of the field on 
+                        // the mapping.
+                        overrideField = directMapping.getField().clone();
+                        
+                        if (nestedAggregateObjectMapping != null && nestedAggregateObjectMapping.getAggregateToSourceFields().containsKey(overrideField.getName())) {
+                            overrideField = nestedAggregateObjectMapping.getAggregateToSourceFields().get(overrideField.getName());
+                        } 
+                    }
+                    
+                    // Add the aggregate collection table field if one hasn't 
+                    // already been set.
+                    if (! overrideField.hasTableName()) {
+                        overrideField.setTable(getReferenceDatabaseTable());
+                    }
+                    
+                    addFieldNameTranslation(embeddableMapping, overrideName, overrideField, mappingAccessor);
+                } else if (mapping.isOneToOneMapping()) {
+                    OneToOneMapping oneToOneMapping = (OneToOneMapping) mapping;
+                    
+                    if (oneToOneMapping.isForeignKeyRelationship()) {
+                        AssociationOverrideMetadata associationOverride = associationOverrides.get(overrideName);
+                        
+                        if (associationOverride == null) {
+                            for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
+                                DatabaseField collectionTableField = fkField.clone();
+                                collectionTableField.setTable(getReferenceDatabaseTable());
+                                embeddableMapping.addFieldTranslation(collectionTableField, fkField.getName());
+                            }
+                        } else {
+                            ((ObjectAccessor) mappingAccessor).processAssociationOverride(associationOverride, embeddableMapping, getReferenceDatabaseTable(), getDescriptor());
                         }
                     } else {
-                        ((ObjectAccessor) mappingAccessor).processAssociationOverride(associationOverride, embeddableMapping, getReferenceDatabaseTable(), getDescriptor());
+                        // Section 2.6 of the spec states: "An embeddable class (including an embeddable class within 
+                        // another embeddable class) contained within an element collection must not contain an element 
+                        // collection, nor may it contain a relationship to an entity other than a many-to-one or 
+                        // one-to-one relationship. The embeddable class must be on the owning side of such a 
+                        // relationship and the relationship must be mapped by a foreign key mapping."
+                        throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableDescriptor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
                     }
+                } else if (mapping.isAggregateObjectMapping()) {
+                    MappingAccessor accessor = embeddableDescriptor.getMappingAccessor(mapping.getAttributeName());
+                    processMappingsFromEmbeddable(accessor.getReferenceDescriptor(), (AggregateObjectMapping) mapping, embeddableMapping, attributeOverrides, associationOverrides, overrideName);
                 } else {
-                    // Section 2.6 of the spec states: "An embeddable class (including an embeddable class within 
-                    // another embeddable class) contained within an element collection must not contain an element 
-                    // collection, nor may it contain a relationship to an entity other than a many-to-one or 
-                    // one-to-one relationship. The embeddable class must be on the owning side of such a 
-                    // relationship and the relationship must be mapped by a foreign key mapping."
+                    // TODO: mapping.isAggregateCollectionMapping. We could 
+                    // handle this case however not obligated by the spec.
+                    // See comment above about section 2.6
                     throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableDescriptor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
                 }
-            } else if (mapping.isAggregateObjectMapping()) {
-                MappingAccessor accessor = embeddableDescriptor.getMappingAccessor(mapping.getAttributeName());
-                processMappingsFromEmbeddable(accessor.getReferenceDescriptor(), (AggregateObjectMapping) mapping, embeddableMapping, attributeOverrides, associationOverrides, overrideName);
-            } else {
-                // TODO: mapping.isAggregateCollectionMapping. We could handle 
-                // this case however not obligated by the spec.
-                // See comment above about section 2.6
-                throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableDescriptor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
             }
         }
     }

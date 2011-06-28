@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     06/03/2011-2.3.1 Guy Pelletier 
+ *       - 347563: transient field/property in embeddable entity 
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
@@ -29,6 +31,7 @@ public class BeerConsumer extends Consumer {
     private Map<Integer, Canadian> canadianBeersToConsume;
     private Map<CoronaTag, Corona> coronaBeersToConsume;
     private Map<Date, Heineken> heinekenBeersToConsume;
+    private Map<String, RedStripe> redStripeBeersToConsume;
     private Map<Integer, Certification> certifications;
     private Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers;
     
@@ -39,6 +42,7 @@ public class BeerConsumer extends Consumer {
         canadianBeersToConsume = new Hashtable<Integer, Canadian>();
         coronaBeersToConsume = new Hashtable<CoronaTag, Corona>();
         heinekenBeersToConsume = new Hashtable<Date, Heineken>();
+        redStripeBeersToConsume = new Hashtable<String, RedStripe>();
         certifications = new Hashtable<Integer, Certification>();
         telephoneNumbers = new Hashtable<TelephoneNumberPK, TelephoneNumber>();
     }
@@ -61,6 +65,10 @@ public class BeerConsumer extends Consumer {
     public void addHeinekenBeerToConsume(Heineken heineken, Date date) {
         heineken.setBeerConsumer(this);
         heinekenBeersToConsume.put(date, heineken);
+    }
+    
+    public void addRedStripeBeersToConsume(RedStripe redStripe, String key) {
+        redStripeBeersToConsume.put(key, redStripe);
     }
     
     /**
@@ -115,6 +123,10 @@ public class BeerConsumer extends Consumer {
     
     public String getName() {
         return name;
+    }
+    
+    public Map<String, RedStripe> getRedStripeBeersToConsume() {
+        return redStripeBeersToConsume;
     }
     
 	public Map<TelephoneNumberPK, TelephoneNumber> getTelephoneNumbers() { 
@@ -184,6 +196,10 @@ public class BeerConsumer extends Consumer {
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public void setRedStripeBeersToConsume(Map<String, RedStripe> redStripeBeersToConsume) {
+        this.redStripeBeersToConsume = redStripeBeersToConsume;
     }
     
     public void setTelephoneNumbers(Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers) {
