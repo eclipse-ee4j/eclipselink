@@ -74,22 +74,28 @@ public class SchemaMetadata extends Metadata {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
 
-        if (properties != null) {
-            Object propValue = properties.get(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY);
-            if (propValue != null) {
-                externalBindings = new ArrayList<InputSource>();
-                if (propValue instanceof List<?>) {
-                    List<Source> xjbSources = (List<Source>) propValue;
-                    for (Source source : xjbSources) {
-                        externalBindings.add(createInputSourceFromSource(source));
+        try {
+            if (properties != null) {
+                Object propValue = properties.get(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY);
+                if (propValue != null) {
+                    externalBindings = new ArrayList<InputSource>();
+                    if (propValue instanceof List<?>) {
+                        List<Source> xjbSources = (List<Source>) propValue;
+                        for (Source source : xjbSources) {
+                            externalBindings.add(createInputSourceFromSource(source));
+                        }
+                    } else {
+                        Source xjbSource = (Source) propValue;
+                        InputSource xjbInputSource = createInputSourceFromSource(xjbSource);
+                        externalBindings.add(xjbInputSource);
                     }
-                } else {
-                    Source xjbSource = (Source) propValue;
-                    InputSource xjbInputSource = createInputSourceFromSource(xjbSource);
-                    externalBindings.add(xjbInputSource);
                 }
             }
+        } catch (ClassCastException cce) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xjbNotSource());
         }
+
+
     }
 
     public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties, Source metadataSource, EntityResolver resolver) throws JAXBException {

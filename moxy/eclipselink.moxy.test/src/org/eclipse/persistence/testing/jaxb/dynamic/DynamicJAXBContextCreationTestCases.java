@@ -29,9 +29,11 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.exceptions.i18n.JAXBExceptionResource;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.NoExtensionEntityResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -160,6 +162,78 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
     }
 
+    public void testNewInstanceXSDExternalBindingError() throws Exception {
+        // To use external bindings files, both schema and .xjb must be given as Sources
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        InputStream iStream = classLoader.getResourceAsStream(EXAMPLE_XSD);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + EXAMPLE_XSD + "]");
+        }
+
+        InputStream xjbStream = classLoader.getResourceAsStream(EXTERNAL_BINDINGS);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, iStream);
+
+        ArrayList<InputStream> xjbs = new ArrayList<InputStream>();
+        xjbs.add(xjbStream);
+        xjbs.add(xjbStream);
+
+        properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, xjbs);
+
+        JAXBException caughtEx = null;
+        try {
+            DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
+        } catch (JAXBException e) {
+            if (e.getLinkedException() instanceof org.eclipse.persistence.exceptions.JAXBException) {
+                caughtEx = e;
+            } else {
+                fail("Unexpected exception thrown. " + e);
+            }
+        } catch (Exception e) {
+            fail("Unexpected exception thrown. " + e);
+        }
+
+        org.eclipse.persistence.exceptions.JAXBException jEx = (org.eclipse.persistence.exceptions.JAXBException) caughtEx.getLinkedException();
+        assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.exceptions.JAXBException.XJB_NOT_SOURCE, jEx.getErrorCode());
+    }
+
+    public void testNewInstanceXSDImportError() throws Exception {
+        // To use schema imports, schemas must be given as Sources
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        InputStream inputStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        Document xsdDocument = docBuilder.parse(inputStream);
+        Element xsdElement = xsdDocument.getDocumentElement();
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdElement);
+
+        NoExtensionEntityResolver re = new NoExtensionEntityResolver();
+        properties.put(DynamicJAXBContextFactory.ENTITY_RESOLVER_KEY, re);
+
+        JAXBException caughtEx = null;
+        try {
+            DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
+
+            DynamicEntity person = jaxbContext.newDynamicEntity("mynamespace.Person");
+            assertNotNull("Could not create Dynamic Entity.", person);
+
+            DynamicEntity salary = jaxbContext.newDynamicEntity("banknamespace.CdnCurrency");
+            assertNotNull("Could not create Dynamic Entity.", salary);
+        } catch (JAXBException e) {
+                caughtEx = e;
+        } catch (Exception e) {
+            fail("Unexpected exception thrown. " + e);
+        }
+
+        org.eclipse.persistence.exceptions.JAXBException jEx = (org.eclipse.persistence.exceptions.JAXBException) caughtEx.getLinkedException();
+        assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.exceptions.JAXBException.XSD_IMPORT_NOT_SOURCE, jEx.getErrorCode());
+    }
 
     public void testNewInstanceXSDExternalBindings() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -390,6 +464,8 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         "org/eclipse/persistence/testing/jaxb/dynamic/contextcreation.xsd";
     private static final String INVALID_XSD =
         "org/eclipse/persistence/testing/jaxb/dynamic/invalid.xsd";
+    private static final String IMPORT_XSD =
+            "org/eclipse/persistence/testing/jaxb/dynamic/xmlschema-import.xsd";
     private static final String EXAMPLE_OXM =
         "org/eclipse/persistence/testing/jaxb/dynamic/contextcreation-oxm.xml";
     private static final String EXTERNAL_BINDINGS =

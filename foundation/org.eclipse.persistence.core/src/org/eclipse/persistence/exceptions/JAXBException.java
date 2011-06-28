@@ -107,6 +107,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int EXCEPTION_DURING_NAME_TRANSFORMATION = 50075;
     public static final int UNABLE_TO_LOAD_METADATA_FROM_LOCATION = 50076;
     public static final int CANNOT_REFRESH_METADATA = 50077;
+    public static final int XJB_NOT_SOURCE = 50078;
+    public static final int XSD_IMPORT_NOT_SOURCE = 50079;
 
     protected JAXBException(String message) {
         super(message);
@@ -988,6 +990,20 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, CANNOT_REFRESH_METADATA, args));
         validationException.setErrorCode(CANNOT_REFRESH_METADATA);
+        return validationException;
+    }
+
+    public static JAXBException xjbNotSource() {
+        Object[] args = { };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XJB_NOT_SOURCE, args));
+        validationException.setErrorCode(XJB_NOT_SOURCE);
+        return validationException;
+    }
+
+    public static JAXBException xsdImportNotSource() {
+        Object[] args = { };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XSD_IMPORT_NOT_SOURCE, args));
+        validationException.setErrorCode(XSD_IMPORT_NOT_SOURCE);
         return validationException;
     }
 

@@ -233,6 +233,12 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullNode());
         }
 
+        if (resolver != null) {
+            // If schema and resolver are both specified, this indicates a schema import
+            // This is not supported when boostrapping from a Node.
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xsdImportNotSource());
+        }
+
         return new DynamicJAXBContext(new SchemaContextInput(schemaDOM, resolver, properties, classLoader));
     }
 

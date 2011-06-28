@@ -96,7 +96,9 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50074", "An exception occurred accessing the XMLNameTransformer [{0}]"},
         {"50075", "An exception occurred while attempting to transform name [{0}] with the XMLNameTransformer [{1}]"},
         {"50076", "Unable to load external metadata from the provided location: [{0}]. This location must be either a valid URL or a classpath reference."},
-        {"50077", "Cannot refresh metadata.  Metadata must be provided as an XML Node in order to support refreshing."}
+        {"50077", "Cannot refresh metadata.  Metadata must be provided as an XML Node in order to support refreshing."},
+        {"50078", "Cannot process external bindings files (XJB).  To use external bindings files, both XSD and XJB must be provided as javax.xml.transform.Sources."},
+        {"50079", "Cannot process schemas.  If using schema imports, XSDs must be provided as a javax.xml.transform.Source."},
     };
 
     /**
