@@ -3,6 +3,7 @@
    <xsd:complexType name="myDataPropertyAnnotation">
       <xsd:sequence>
          <xsd:element minOccurs="0" name="bytes" type="xsd:base64Binary"/>
+         <xsd:element minOccurs="0" name="bigBytes" nillable="true" maxOccurs="unbounded" type="xsd:byte"/>
       </xsd:sequence>
       <xsd:attribute name="bytesAttr" type="xsd:base64Binary"/>
    </xsd:complexType>

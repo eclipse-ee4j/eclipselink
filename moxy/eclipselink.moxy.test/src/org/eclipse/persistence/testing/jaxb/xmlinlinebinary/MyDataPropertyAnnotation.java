@@ -20,6 +20,7 @@ public class MyDataPropertyAnnotation {
 
     @javax.xml.bind.annotation.XmlInlineBinaryData    
     public byte[] bytes;
+    public Byte[] bigBytes;
     
     @javax.xml.bind.annotation.XmlInlineBinaryData
     @javax.xml.bind.annotation.XmlAttribute
@@ -32,6 +33,9 @@ public class MyDataPropertyAnnotation {
             return false;
         }
         if(!Arrays.equals(bytes, mdObj.bytes)){
+        	return false;
+        }
+        if(!Arrays.equals(bigBytes, mdObj.bigBytes)){
         	return false;
         }
         if(!Arrays.equals(bytesAttr, mdObj.bytesAttr)){
