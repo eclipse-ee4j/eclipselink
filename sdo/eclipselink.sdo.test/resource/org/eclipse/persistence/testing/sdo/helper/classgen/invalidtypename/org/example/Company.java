@@ -1,6 +1,6 @@
 package org.example;
 
-public interface Company {
+public interface Company extends java.io.Serializable {
 
    public org.example.InvalidClassname getInvalidClassname();
 

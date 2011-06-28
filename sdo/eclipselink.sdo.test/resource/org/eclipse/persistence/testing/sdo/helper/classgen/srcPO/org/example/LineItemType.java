@@ -1,6 +1,6 @@
 package org.example;
 
-public interface LineItemType {
+public interface LineItemType extends java.io.Serializable {
 
    public java.lang.String getProductName();
 

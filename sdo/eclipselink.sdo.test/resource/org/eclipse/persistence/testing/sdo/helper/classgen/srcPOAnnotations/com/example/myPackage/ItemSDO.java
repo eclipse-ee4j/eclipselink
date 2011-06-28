@@ -1,6 +1,6 @@
 package com.example.myPackage;
 
-public interface ItemSDO {
+public interface ItemSDO extends java.io.Serializable {
 
    public java.lang.String getPorder();
 

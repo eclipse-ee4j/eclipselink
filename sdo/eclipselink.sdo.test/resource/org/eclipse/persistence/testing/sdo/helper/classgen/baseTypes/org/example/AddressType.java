@@ -1,6 +1,6 @@
 package org.example;
 
-public interface AddressType {
+public interface AddressType extends java.io.Serializable {
 
    public boolean isPermanent();
 

@@ -1,6 +1,6 @@
 package uri.my;
 
-public interface PurchaseOrder {
+public interface PurchaseOrder extends java.io.Serializable {
 
    public uri2.my.USAddress getShipTo();
 

@@ -1,6 +1,6 @@
 package org.example;
 
-public interface Items {
+public interface Items extends java.io.Serializable {
 
    public java.util.List getItem();
 

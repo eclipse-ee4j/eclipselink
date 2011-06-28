@@ -1,6 +1,6 @@
 package defaultPackage;
 
-public interface MyTestType {
+public interface MyTestType extends java.io.Serializable {
 
    public java.lang.String getMyTest1();
 

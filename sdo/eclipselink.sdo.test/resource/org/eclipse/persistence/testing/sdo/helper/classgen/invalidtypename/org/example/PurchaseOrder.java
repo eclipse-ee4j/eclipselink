@@ -1,6 +1,6 @@
 package org.example;
 
-public interface PurchaseOrder {
+public interface PurchaseOrder extends java.io.Serializable {
 
    public java.lang.String getPoID();
 

@@ -1,6 +1,6 @@
 package org.example;
 
-public interface Item {
+public interface Item extends java.io.Serializable {
 
    public java.lang.String getItemID();
 
