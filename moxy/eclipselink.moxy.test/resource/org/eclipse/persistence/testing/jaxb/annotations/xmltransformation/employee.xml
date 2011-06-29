@@ -1,0 +1,7 @@
+<employee>
+   <address>
+      <street>theStreet</street>
+      <city>theCity</city>
+   </address>
+   <name>John Smith</name>
+</employee>
