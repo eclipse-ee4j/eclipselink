@@ -58,4 +58,11 @@ public interface IndirectCollection extends IndirectContainer {
      * This will force instantiation.
      */
     Object getDelegateObject();
+
+    /**
+     * INTERNAL
+     * Set whether this collection should attempt do deal with adds and removes without retrieving the 
+     * collection from the dB
+     */
+    void setUseLazyInstantiation(boolean useLazyInstantiation);
 }

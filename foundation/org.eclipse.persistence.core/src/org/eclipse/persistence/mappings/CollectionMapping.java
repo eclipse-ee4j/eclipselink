@@ -1203,6 +1203,25 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         this.listOrderField = this.getReferenceDescriptor().buildField(this.listOrderField);
     }
     
+    
+    /**
+     * ADVANCED:
+     * This method should only be called after this mapping's indirection policy has been set
+     * 
+     * IndirectList and IndirectSet can be configured not to instantiate the list from the
+     * database when you add and remove from them.  IndirectList defaults to this behavior. When
+     * Set to true, the collection associated with this TransparentIndirection will be setup so as
+     * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
+     * that when the set is not instantiated, if a duplicate element is added, it will not be
+     * detected until commit time.
+     */
+    public Boolean shouldUseLazyInstantiationForIndirectCollection() {
+        if (getIndirectionPolicy() == null){
+            return null;
+        }
+        return getIndirectionPolicy().shouldUseLazyInstantiation();
+    }
+    
     /**
      * INTERNAL:
      * Indicates whether getListOrderFieldExpression method should create field expression based on table expression.  
@@ -1850,7 +1869,24 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         getDeleteAllQuery().setSessionName(name);
         getSelectionQuery().setSessionName(name);
     }
-
+    /**
+     * ADVANCED:
+     * Calling this method will only affect behavior of mappings using transparent indirection
+     * This method should only be called after this mapping's indirection policy has been set
+     * 
+     * IndirectList and IndirectSet can be configured not to instantiate the list from the
+     * database when you add and remove from them.  IndirectList defaults to this behavior. When
+     * Set to true, the collection associated with this TransparentIndirection will be setup so as
+     * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
+     * that when the set is not instantiated, if a duplicate element is added, it will not be
+     * detected until commit time.
+     */
+    public void setUseLazyInstantiationForIndirectCollection(Boolean useLazyInstantiation) {
+        if (getIndirectionPolicy() != null){
+            getIndirectionPolicy().setUseLazyInstantiation(useLazyInstantiation);
+        }
+    }
+    
     /**
      * ADVANCED:
      * This method is used to have an object add to a collection once the changeSet is applied

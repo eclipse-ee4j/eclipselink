@@ -49,6 +49,16 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     protected ContainerPolicy containerPolicy;
     
     /**
+     * IndirectList and IndirectSet can be configured not to instantiate the list from the
+     * database when you add and remove from them.  IndirectList defaults to this behavior. When
+     * Set to true, the collection associated with this TransparentIndirection will be setup so as
+     * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
+     * that when the set is not instantiated, if a duplicate element is added, it will not be
+     * detected until commit time.
+     */
+    protected Boolean useLazyInstantiation;
+
+    /**
      * INTERNAL:
      * Construct a new indirection policy.
      */
@@ -91,12 +101,19 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * indirect container class.
      */
     protected IndirectContainer buildIndirectContainer() {
+        IndirectContainer container = null;
         //3732
         if (defaultContainerSize != null) {
-            return (IndirectContainer)getContainerPolicy().containerInstance(getDefaultContainerSize());
+            container = (IndirectContainer)getContainerPolicy().containerInstance(getDefaultContainerSize());
         } else {
-            return (IndirectContainer)getContainerPolicy().containerInstance();
+            container = (IndirectContainer)getContainerPolicy().containerInstance();
         }
+        if (container instanceof IndirectCollection){
+            if (useLazyInstantiation != null){
+                ((IndirectCollection)container).setUseLazyInstantiation(useLazyInstantiation.booleanValue());
+            }
+        }
+        return container;
     }
 
     /**
@@ -369,6 +386,11 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         getContainerPolicy().sizeFor(attribute);
     }
 
+
+    public Boolean getUseLazyInstantiation() {
+        return useLazyInstantiation;
+    }
+    
     /**
      * INTERNAL:
      * Extract and return the appropriate value from the
@@ -404,7 +426,35 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         */
         super.setRealAttributeValueInObject(target, attributeValue);
     }
-
+    
+    /**
+     * ADVANCED:
+     * IndirectList and IndirectSet can be configured not to instantiate the list from the
+     * database when you add and remove from them.  IndirectList defaults to this behavior. When
+     * Set to true, the collection associated with this TransparentIndirection will be setup so as
+     * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
+     * that when the set is not instantiated, if a duplicate element is added, it will not be
+     * detected until commit time.
+     */
+    @Override
+    public void setUseLazyInstantiation(Boolean useLazyInstantiation) {
+        this.useLazyInstantiation = useLazyInstantiation;
+    }
+    
+    /**
+     * ADVANCED:
+     * IndirectList and IndirectSet can be configured not to instantiate the list from the
+     * database when you add and remove from them.  IndirectList defaults to this behavior. When
+     * Set to true, the collection associated with this TransparentIndirection will be setup so as
+     * not to instantiate for adds and removes.  The weakness of this setting for an IndirectSet is
+     * that when the set is not instantiated, if a duplicate element is added, it will not be
+     * detected until commit time.
+     */
+    @Override
+    public Boolean shouldUseLazyInstantiation() {
+        return useLazyInstantiation;
+    }
+    
     /**
      * INTERNAL:
      * Iterate over the specified attribute value.

@@ -75,6 +75,12 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     private boolean isListOrderBrokenInDb;
 
     /**
+     * This value is used to determine if we should attempt to do adds and removes from the list without
+     * actually instantiating the list from the database.  By default this is set to true.
+     */
+    private boolean useLazyInstantiation = true;
+    
+    /**
      * PUBLIC:
      * Construct an empty IndirectList so that its internal data array
      * has size <tt>10</tt> and its standard capacity increment is zero.
@@ -719,6 +725,15 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     }
 
     /**
+     * INTERNAL
+     * Set whether this collection should attempt do deal with adds and removes without retrieving the 
+     * collection from the dB
+     */
+    public void setUseLazyInstantiation(boolean useLazyInstantiation){
+        this.useLazyInstantiation = useLazyInstantiation;
+    }
+    
+    /**
      * INTERNAL:
      * Set the value holder.
      */
@@ -737,6 +752,15 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         return getDelegate().size();
     }
 
+    /**
+     * Return whether this collection should attempt do deal with adds and removes without retrieving the 
+     * collection from the dB
+     * @return
+     */
+    protected boolean shouldUseLazyInstantiation(){
+        return useLazyInstantiation;
+    }
+    
     /**
      * @see java.util.Vector#subList(int, int)
      */
@@ -879,7 +903,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * Current instantiation is avoided is using change tracking.
      */
     protected boolean shouldAvoidInstantiation() {
-        return (!isInstantiated()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener) && !usesListOrderField() && ((WeavedAttributeValueHolderInterface)getValueHolder()).shouldAllowInstantiationDeferral();
+        return (!isInstantiated())  && (shouldUseLazyInstantiation()) && (_persistence_getPropertyChangeListener() instanceof AttributeChangeListener) && !usesListOrderField() && ((WeavedAttributeValueHolderInterface)getValueHolder()).shouldAllowInstantiationDeferral();
     }
     
     /**

@@ -13,10 +13,21 @@
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.IndirectSet;
+import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
+import org.eclipse.persistence.testing.models.jpa.inheritance.DDD;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
+import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SeniorEngineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
@@ -204,6 +215,202 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             }
         } finally {
             rollbackTransaction(em);
+        }
+    }
+    
+    // bug 325035
+    public void testAddToUninstantiatedSet(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        AAA a = new AAA();
+        em.persist(a);
+        
+        DDD d = new DDD();
+        em.persist(d);
+        
+        Set<DDD> ds = new HashSet<DDD>();
+        ds.add(d);
+        a.setDdds(ds);
+        d.setAaa(a);
+        commitTransaction(em);
+        
+        clearCache();
+        em.close();
+        try{
+            em = createEntityManager();
+            beginTransaction(em);
+            a = em.getReference(AAA.class, a.getId());
+            a.getDdds().add(d);
+            d.setAaa(a);
+            commitTransaction(em);
+            
+            assertTrue("The collection contains too many elements", a.getDdds().size() == 1);
+           
+        } finally  {
+            em = createEntityManager();
+            beginTransaction(em);
+            a = em.find(AAA.class, a.getId());
+            d = em.find(DDD.class, d.getId());
+            em.remove(a);
+            em.remove(d);
+            commitTransaction(em);
+        }
+    }
+    
+    // bug 325035
+    public void testLazySetInstantiationLazy(){
+        EntityManager em = createEntityManager();
+        CollectionMapping mapping = ((CollectionMapping)getServerSession().getProject().getClassDescriptor(AAA.class).getMappingForAttributeName("ddds"));
+        Boolean lazyIndirection = mapping.shouldUseLazyInstantiationForIndirectCollection();
+        mapping.setUseLazyInstantiationForIndirectCollection(true);
+        beginTransaction(em);
+
+        AAA a = new AAA();
+        em.persist(a);
+        
+        DDD d = new DDD();
+        em.persist(d);
+        
+        Set<DDD> ds = new HashSet<DDD>();
+        ds.add(d);
+        a.setDdds(ds);
+        d.setAaa(a);
+        commitTransaction(em);
+        
+        clearCache();
+        em.close();
+        try{
+            em = createEntityManager();
+            a = em.find(AAA.class, a.getId());
+            a.getDdds().add(new DDD());
+            
+            assertTrue("Lazy instantiation was not enabled for IndirectSet.", ((IndirectSet)a.getDdds()).getAddedElements().size() == 1);
+           
+        } finally  {
+            em = createEntityManager();
+            beginTransaction(em);
+            a = em.find(AAA.class, a.getId());
+            d = em.find(DDD.class, d.getId());
+            em.remove(a);
+            em.remove(d);
+            commitTransaction(em);
+            mapping.setUseLazyInstantiationForIndirectCollection(lazyIndirection);
+        }
+    }
+    
+    // bug 325035
+    public void testLazySetInstantiationEager(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        AAA a = new AAA();
+        em.persist(a);
+        
+        DDD d = new DDD();
+        em.persist(d);
+        
+        Set<DDD> ds = new HashSet<DDD>();
+        ds.add(d);
+        a.setDdds(ds);
+        d.setAaa(a);
+        commitTransaction(em);
+        
+        clearCache();
+        em.close();
+        try{
+            em = createEntityManager();
+            a = em.find(AAA.class, a.getId());
+            a.getDdds().add(new DDD());
+            
+            assertTrue("Lazy instantiation was not disabled for IndirectSet.", ((IndirectSet)a.getDdds()).getAddedElements().size() == 0);
+           
+        } finally  {
+            em = createEntityManager();
+            beginTransaction(em);
+            a = em.find(AAA.class, a.getId());
+            d = em.find(DDD.class, d.getId());
+            em.remove(a);
+            em.remove(d);
+            commitTransaction(em);
+        }
+    }
+    
+    // bug 325035
+    public void testLazyListInstantiationLazy(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        Company company = new Company();
+        company.setName("ListCo");
+        em.persist(company);
+        
+        Car car = new Car();
+        em.persist(car);
+        
+        company.getVehicles().add(car);
+        car.setOwner(company);
+
+        commitTransaction(em);
+        
+        clearCache();
+        em.close();
+        try{
+            em = createEntityManager();
+            company = em.find(Company.class, company.getId());
+            company.getVehicles().add(new Car());
+            
+            assertTrue("Lazy instantiation was not enabled for IndirectList.", ((IndirectList)company.getVehicles()).getAddedElements().size() == 1);
+           
+        } finally  {
+            em = createEntityManager();
+            beginTransaction(em);
+            company = em.find(Company.class, company.getId());
+            car = em.find(Car.class, car.getId());
+            em.remove(company);
+            em.remove(car);
+            commitTransaction(em);
+        }
+    }
+    
+    // bug 325035
+    public void testLazyListInstantiationEager(){
+        EntityManager em = createEntityManager();
+        CollectionMapping mapping = ((CollectionMapping)getServerSession().getProject().getClassDescriptor(Company.class).getMappingForAttributeName("vehicles"));
+        Boolean lazyIndirection = mapping.shouldUseLazyInstantiationForIndirectCollection();
+        mapping.setUseLazyInstantiationForIndirectCollection(false);
+        beginTransaction(em);
+
+        Company company = new Company();
+        company.setName("ListCo");
+        em.persist(company);
+        
+        Car car = new Car();
+        em.persist(car);
+        
+        company.getVehicles().add(car);
+        car.setOwner(company);
+
+        commitTransaction(em);
+        
+        clearCache();
+        em.close();
+        try{
+            em = createEntityManager();
+            company = em.find(Company.class, company.getId());
+            company.getVehicles().add(new Car());
+            
+            assertTrue("Lazy instantiation was not disabled for IndirectList.", ((IndirectList)company.getVehicles()).getAddedElements().size() == 0);
+           
+        } finally  {
+            em = createEntityManager();
+            beginTransaction(em);
+            company = em.find(Company.class, company.getId());
+            car = em.find(Car.class, car.getId());
+            em.remove(company);
+            em.remove(car);
+            commitTransaction(em);
+            mapping.setUseLazyInstantiationForIndirectCollection(lazyIndirection);
         }
     }
 }
