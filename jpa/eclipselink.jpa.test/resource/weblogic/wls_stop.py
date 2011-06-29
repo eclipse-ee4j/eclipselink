@@ -15,4 +15,4 @@ connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
 # Stop server using wlst command
 #===========================================================================
 
-shutdown('myserver')
+shutdown('%%TARGET_SERVER%%')

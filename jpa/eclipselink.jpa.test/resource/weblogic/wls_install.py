@@ -16,7 +16,7 @@ readTemplate("%%WL_HOME%%/common/templates/domains/wls.jar")
 #===========================================================================
 
 cd('Servers/AdminServer')
-set('Name','myserver')
+set('Name','%%TARGET_SERVER%%')
 set('ListenAddress','')
 set('ListenPort', %%WL_PORT%%)
 
