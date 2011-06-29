@@ -359,14 +359,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
     
     /**
-     * INTERNAL:
-     * Return if this query originally used the default lock mode.
-     */
-    protected boolean wasDefaultLockMode() {
-        return wasDefaultLockMode;
-    }
-    
-    /**
      * PUBLIC:
      * Sets that this a pessimistic wait locking query.
      * <ul>
@@ -391,14 +383,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrePrepared(false);
         setIsPrepared(false);
         setWasDefaultLockMode(false);
-    }
-    
-    /**
-     * INTERNAL:
-     * Set if this query originally used the default lock mode.
-     */
-    protected void setWasDefaultLockMode(boolean wasDefaultLockMode) {
-        this.wasDefaultLockMode = wasDefaultLockMode;
     }
     
     /**
@@ -2411,6 +2395,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             setIsPrePrepared(false);
         }
         setIsPrepared(false);
+        setWasDefaultLockMode(false);
     }
 
     /**
