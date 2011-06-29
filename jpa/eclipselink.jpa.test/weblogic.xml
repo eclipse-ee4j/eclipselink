@@ -113,6 +113,7 @@
             <replacefilter token="%%WL_USR%%" value="${server.user}"/>
             <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
             <replacefilter token="%%WL_DOMAIN%%" value="${weblogic.domain}"/>
+            <replacefilter token="%%TARGET_SERVER%%" value="${target.server}"/>
             <replacefilter token="%%DBDRV%%" value="${db.driver}"/>
             <replacefilter token="%%DBURL%%" value="${db.url}"/>
             <replacefilter token="%%DBUSR%%" value="${db.user}"/>

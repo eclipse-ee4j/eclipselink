@@ -47,7 +47,7 @@ cmo.setValue('%%DBUSR%%')
 #cmo.setGlobalTransactionsProtocol('OnePhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS')
-set('Targets',jarray.array([ObjectName('com.bea:Name=myserver,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
 
 # Create EclipseLinkDS2 for server-test-composite-advanced (DB2)
 
@@ -96,7 +96,7 @@ cd('/JDBCSystemResources/EclipseLinkDS2/JDBCResource/EclipseLinkDS2/JDBCDataSour
 cmo.setGlobalTransactionsProtocol('TwoPhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS2')
-set('Targets',jarray.array([ObjectName('com.bea:Name=myserver,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
 
 # Create EclipseLinkDS3 for server-test-composite-advanced (MySQL)
 
@@ -127,7 +127,7 @@ cd('/JDBCSystemResources/EclipseLinkDS3/JDBCResource/EclipseLinkDS3/JDBCDataSour
 cmo.setGlobalTransactionsProtocol('EmulateTwoPhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS3')
-set('Targets',jarray.array([ObjectName('com.bea:Name=myserver,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
 
 save()
 activate()

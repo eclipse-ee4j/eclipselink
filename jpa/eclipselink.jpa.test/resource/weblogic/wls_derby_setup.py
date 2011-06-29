@@ -63,7 +63,7 @@ cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDataSource
 cmo.setGlobalTransactionsProtocol('TwoPhaseCommit')
 
 cd('/SystemResources/EclipseLinkDS')
-set('Targets',jarray.array([ObjectName('com.bea:Name=myserver,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
 
 save()
 activate()
@@ -120,7 +120,7 @@ cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDataSourceParams
 cmo.setGlobalTransactionsProtocol('None')
 
 cd('/SystemResources/ELNonJTADS')
-set('Targets',jarray.array([ObjectName('com.bea:Name=myserver,Type=Server')], ObjectName))
+set('Targets',jarray.array([ObjectName('com.bea:Name=%%TARGET_SERVER%%,Type=Server')], ObjectName))
 
 save()
 activate()
