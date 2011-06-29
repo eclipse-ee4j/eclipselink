@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.unitofwork.changeflag;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TransactionalTestCase;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.FieldOffice;
@@ -26,10 +27,18 @@ import org.eclipse.persistence.testing.models.relationshipmaintenance.SalesPerso
  */
 public class TransparentIndirectionAddRemoveTest extends TransactionalTestCase {
 
+    private Boolean lazyInstantiationForSalesPeople = null;
+    
     public TransparentIndirectionAddRemoveTest() {
         setDescription("Test the add/remove optimization of indirect collections with change tracking.");
     }
 
+    public void setup(){
+        CollectionMapping mapping = (CollectionMapping)getSession().getClassDescriptor(FieldOffice.class).getMappingForAttributeName("salespeople");
+        lazyInstantiationForSalesPeople = mapping.shouldUseLazyInstantiationForIndirectCollection();
+        mapping.setUseLazyInstantiationForIndirectCollection(true);
+    }
+      
     public void test() {
         testAddRemove();
         testSetUnset();
