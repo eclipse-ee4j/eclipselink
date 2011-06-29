@@ -502,7 +502,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return if this is the void class.
      */
     public boolean isVoid() {
-        return getName().equals(void.class.getName());
+        return getName().equals(void.class.getName()) || getName().equals(Void.class.getName());
     }
     
     /**

@@ -26,11 +26,11 @@ import static javax.persistence.FetchType.*;
 @Table(name="CMP3_BUS")
 @DiscriminatorValue("BU")
 @PrimaryKeyJoinColumn(name="BUS_ID", referencedColumnName="ID")
-public class Bus extends AbstractBus {
+public class Bus extends AbstractBus<PerformanceTireInfo> {
     private Person busDriver;
     
-	@OneToOne(cascade=PERSIST, fetch=LAZY)
-	@JoinColumn(name="DRIVER_ID", referencedColumnName="ID")
+    @OneToOne(cascade=PERSIST, fetch=LAZY)
+    @JoinColumn(name="DRIVER_ID", referencedColumnName="ID")
     public Person getBusDriver() {
         return busDriver;
     }

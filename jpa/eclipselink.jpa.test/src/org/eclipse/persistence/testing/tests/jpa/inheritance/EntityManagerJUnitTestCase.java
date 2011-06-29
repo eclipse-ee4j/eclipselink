@@ -217,6 +217,31 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             rollbackTransaction(em);
         }
     }
+
+    // Bug 336133
+    public void testGenericCollectionOnSuperclass(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Bus bus = new Bus();
+            bus.setDescription("a fast bus");
+            PerformanceTireInfo tire = new PerformanceTireInfo();
+            tire.setPressure(100);
+            bus.getTires().add(tire);
+            em.persist(bus);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+            
+            bus = em.find(Bus.class, bus.getId());
+            assertNotNull("Bus is null.", bus);
+            assertTrue("Bus has no tires.", bus.getTires().size() == 1);
+        } finally {
+            rollbackTransaction(em);
+        }
+        
+    }
     
     // bug 325035
     public void testAddToUninstantiatedSet(){
