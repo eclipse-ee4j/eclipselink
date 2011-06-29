@@ -13,5 +13,4 @@ Import-Package: javax.persistence;version="1.99",
     javax.crypto.spec;resolution:=optional
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 JPA-PersistenceUnits: fieldaccess
-Require-Bundle: org.eclipse.persistence.jpa;bundle-version="2.0.0",
- org.apache.ant;bundle-version="1.7.1"
+Require-Bundle: org.eclipse.persistence.jpa;bundle-version="2.0.0"
