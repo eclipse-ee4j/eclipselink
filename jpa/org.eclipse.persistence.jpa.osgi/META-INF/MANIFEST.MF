@@ -1,33 +1,31 @@
 Manifest-Version: 1.0
 Export-Package: org.eclipse.persistence.internal.jpa.deployment.osgi;u
  ses:="org.osgi.framework,org.eclipse.persistence.internal.jpa.deploym
- ent,javax.persistence.spi,org.eclipse.persistence.exceptions,org.ecli
- pse.persistence.internal.localization,org.eclipse.persistence.logging
- ,org.eclipse.persistence.jpa.osgi";version="2.2.0.qualifier",org.ecli
- pse.persistence.jpa.osgi;uses:="org.eclipse.persistence.internal.loca
- lization,org.eclipse.persistence.logging,org.osgi.service.jpa,org.ecl
- ipse.persistence.internal.jpa.deployment.osgi,org.osgi.framework,java
- x.persistence.spi,org.osgi.service.packageadmin,javax.persistence,org
- .eclipse.persistence.exceptions,org.eclipse.persistence.internal.jpa.
- deployment,org.eclipse.persistence.jpa";version="2.2.0.qualifier"
+ ent,javax.persistence.spi";version="2.3.1.qualifier",org.eclipse.pers
+ istence.jpa.osgi;uses:="org.eclipse.persistence.internal.localization
+ ,org.eclipse.persistence.logging,org.osgi.service.jpa,org.osgi.framew
+ ork,javax.persistence.spi,org.osgi.service.packageadmin,javax.persist
+ ence,org.eclipse.persistence.internal.jpa.deployment,org.eclipse.pers
+ istence.jpa,org.eclipse.persistence.exceptions,org.eclipse.persistenc
+ e.internal.jpa.deployment.osgi";version="2.3.1.qualifier"
 Private-Package: .
-Implementation-Version: 2.2.0.qualifier
+Implementation-Version: 2.3.1.qualifier
 Specification-Vendor: Eclipse.org - EclipseLink Project
 Tool: Bnd-0.0.384
-DSTAMP: 20101124
-TODAY: November 24 2010
+DSTAMP: 20110629
+TODAY: June 29 2011
 Bundle-Name: EclipseLink OSGi Integration (deprecatated, non Gemini)
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-TSTAMP: 1400
+TSTAMP: 1411
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.o
  sgi
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.persistence.core;bundle-version="2.2.0.qua
- lifier", org.eclipse.persistence.jpa;bundle-version="2.2.0.qualifier"
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.3.1",or
+ g.eclipse.persistence.jpa;bundle-version="2.3.1"
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.2.0.qualifier
-Bnd-LastModified: 1290625271515
+Bundle-Version: 2.3.1.qualifier
+Bnd-LastModified: 1309371173832
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
 Include-Resource: ../../about.html,../../readme.html,../../license.htm
@@ -37,6 +35,6 @@ Import-Package: javax.persistence;jpa="2.0",javax.persistence.spi;jpa=
  rnal.jpa.deployment,org.eclipse.persistence.internal.localization,org
  .eclipse.persistence.jpa,org.eclipse.persistence.logging,org.osgi.fra
  mework,org.osgi.service.jpa,org.osgi.service.packageadmin
-Specification-Version: 2.2.0
+Specification-Version: 2.3.1
 Bundle-SymbolicName: org.eclipse.persistence.jpa.osgi
 

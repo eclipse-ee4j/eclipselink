@@ -1,62 +1,65 @@
 Manifest-Version: 1.0
 Export-Package: org.eclipse.persistence.platform.database.oracle.conve
  rters;uses:="oracle.spatial.geometry,oracle.sql,org.eclipse.persisten
- ce.platform.database.converters",org.eclipse.persistence.internal.pla
- tform.database.oracle.xdb;uses:="org.eclipse.persistence.platform.xml
- ,org.eclipse.persistence.internal.sessions,org.w3c.dom,org.eclipse.pe
- rsistence.platform.server,org.eclipse.persistence.internal.databaseac
- cess,javax.xml.transform,oracle.xdb,javax.xml.transform.stream,oracle
- .xdb.dom,org.eclipse.persistence.internal.platform.database.oracle,or
- acle.sql",org.eclipse.persistence.eis.adapters.aq;uses:="org.eclipse.
- persistence.exceptions,javax.resource.cci,org.eclipse.persistence.int
- ernal.eis.adapters.aq,org.eclipse.persistence.eis,javax.resource,org.
- eclipse.persistence.eis.interactions,org.eclipse.persistence.internal
- .sessions,org.eclipse.persistence.queries,org.w3c.dom,org.eclipse.per
- sistence.oxm.record,oracle.AQ",org.eclipse.persistence.internal.eis.a
- dapters.aq;uses:="javax.resource.cci,org.eclipse.persistence,org.ecli
- pse.persistence.exceptions,javax.resource,oracle.AQ,javax.naming,java
- x.sql,org.eclipse.persistence.internal.security,org.eclipse.persisten
- ce.eis",org.eclipse.persistence.internal.platform.database.oracle;use
- s:="oracle.sql,org.eclipse.persistence.internal.helper,org.w3c.dom",o
- rg.eclipse.persistence.platform.database.oracle;uses:="org.eclipse.pe
- rsistence.internal.helper,org.eclipse.persistence.internal.platform.d
- atabase,org.eclipse.persistence.internal.databaseaccess,org.eclipse.p
- ersistence.internal.sessions,oracle.jdbc,org.eclipse.persistence.plat
- form.server,org.eclipse.persistence.queries,org.eclipse.persistence.s
- essions,org.eclipse.persistence.platform.database,oracle.sql,org.ecli
- pse.persistence.internal.security,org.eclipse.persistence.expressions
- ,org.eclipse.persistence.internal.platform.database.oracle,org.w3c.do
- m,org.eclipse.persistence.exceptions,oracle.jdbc.internal,org.eclipse
- .persistence.internal.expressions,org.eclipse.persistence.logging,jav
- ax.naming,javax.sql,oracle.jdbc.pool",org.eclipse.persistence.platfor
- m.xml.xdk;uses:="oracle.xml.parser.v2,org.eclipse.persistence.platfor
- m.xml,javax.xml.transform,javax.xml.parsers,javax.xml.validation,java
- x.xml.transform.dom,oracle.xml.jaxp,org.w3c.dom,org.xml.sax,org.eclip
- se.persistence.oxm,oracle.xml.parser.schema,org.eclipse.persistence.o
- xm.schema,org.eclipse.persistence.internal.helper,javax.xml.transform
- .stream,javax.xml.transform.sax",org.eclipse.persistence.platform.dat
- abase.oracle.ucp;uses:="org.eclipse.persistence.exceptions,org.eclips
- e.persistence.platform.database.partitioning,oracle.ucp.jdbc.oracle,j
- avax.sql,org.eclipse.persistence.internal.sessions,org.eclipse.persis
- tence.sessions,oracle.ucp,oracle.ucp.jdbc"
+ ce.platform.database.converters";version="2.3.1.qualifier",org.eclips
+ e.persistence.internal.platform.database.oracle.xdb;uses:="org.eclips
+ e.persistence.platform.xml,org.eclipse.persistence.internal.sessions,
+ org.w3c.dom,org.eclipse.persistence.platform.server,org.eclipse.persi
+ stence.internal.databaseaccess,javax.xml.transform,oracle.xdb,javax.x
+ ml.transform.stream,oracle.xdb.dom,org.eclipse.persistence.internal.p
+ latform.database.oracle,oracle.sql";version="2.3.1.qualifier",org.ecl
+ ipse.persistence.eis.adapters.aq;uses:="org.eclipse.persistence.excep
+ tions,javax.resource.cci,org.eclipse.persistence.internal.eis.adapter
+ s.aq,org.eclipse.persistence.eis,javax.resource,org.eclipse.persisten
+ ce.eis.interactions,org.eclipse.persistence.internal.sessions,org.ecl
+ ipse.persistence.queries,org.w3c.dom,org.eclipse.persistence.oxm.reco
+ rd,oracle.AQ";version="2.3.1.qualifier",org.eclipse.persistence.inter
+ nal.eis.adapters.aq;uses:="javax.resource.cci,org.eclipse.persistence
+ ,org.eclipse.persistence.exceptions,javax.resource,oracle.AQ,javax.na
+ ming,javax.sql,org.eclipse.persistence.internal.security,org.eclipse.
+ persistence.eis";version="2.3.1.qualifier",org.eclipse.persistence.in
+ ternal.platform.database.oracle;uses:="oracle.sql,org.eclipse.persist
+ ence.internal.helper,org.w3c.dom";version="2.3.1.qualifier",org.eclip
+ se.persistence.platform.database.oracle;uses:="org.eclipse.persistenc
+ e.internal.helper,org.eclipse.persistence.internal.platform.database,
+ org.eclipse.persistence.internal.databaseaccess,org.eclipse.persisten
+ ce.internal.sessions,oracle.jdbc,org.eclipse.persistence.platform.ser
+ ver,org.eclipse.persistence.queries,org.eclipse.persistence.sessions,
+ org.eclipse.persistence.platform.database,oracle.sql,org.eclipse.pers
+ istence.internal.security,org.eclipse.persistence.expressions,org.ecl
+ ipse.persistence.internal.platform.database.oracle,org.w3c.dom,org.ec
+ lipse.persistence.exceptions,oracle.jdbc.internal,org.eclipse.persist
+ ence.internal.expressions,org.eclipse.persistence.logging,javax.namin
+ g,javax.sql,oracle.jdbc.pool";version="2.3.1.qualifier",org.eclipse.p
+ ersistence.platform.xml.xdk;uses:="oracle.xml.parser.v2,org.eclipse.p
+ ersistence.platform.xml,javax.xml.transform,javax.xml.parsers,javax.x
+ ml.validation,javax.xml.transform.dom,oracle.xml.jaxp,org.w3c.dom,org
+ .xml.sax,org.eclipse.persistence.oxm,oracle.xml.parser.schema,org.ecl
+ ipse.persistence.oxm.schema,org.eclipse.persistence.internal.helper,j
+ avax.xml.transform.stream,javax.xml.transform.sax";version="2.3.1.qua
+ lifier",org.eclipse.persistence.platform.database.oracle.ucp;uses:="o
+ racle.ucp.jdbc.oracle,org.eclipse.persistence.logging,javax.sql,org.e
+ clipse.persistence.internal.security,org.eclipse.persistence.sessions
+ ,org.eclipse.persistence.exceptions,org.eclipse.persistence.platform.
+ database.partitioning,org.eclipse.persistence.internal.sessions,oracl
+ e.ucp,oracle.ucp.jdbc";version="2.3.1.qualifier"
 Private-Package: .
-Implementation-Version: 2.3.0.qualifier
+Implementation-Version: 2.3.1.qualifier
 Specification-Vendor: Eclipse.org - EclipseLink Project
 Tool: Bnd-0.0.384
-DSTAMP: 20110328
+DSTAMP: 20110629
+TODAY: June 29 2011
 Bundle-Name: EclipseLink Oracle Extensions
-TODAY: March 28 2011
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-TSTAMP: 1549
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+TSTAMP: 0857
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.oracl
  e
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Fragment-Host: org.eclipse.persistence.core;bundle-version="2.3.0.qual
- ifier"
-Bundle-Version: 2.3.0.qualifier
-Bnd-LastModified: 1301341747067
+Fragment-Host: org.eclipse.persistence.core;bundle-version="2.3.1"
+Bundle-Version: 2.3.1.qualifier
+Bnd-LastModified: 1309352433348
 Bundle-ManifestVersion: 2
 Include-Resource: ../../about.html,../../readme.html,../../license.htm
  l
@@ -75,28 +78,25 @@ Import-Package: javax.naming;resolution:=optional,javax.resource;resol
  ;resolution:=optional,oracle.xml.jaxp;resolution:=optional,oracle.xml
  .parser.schema;resolution:=optional,oracle.xml.parser.v2;resolution:=
  optional,oracle.xml.util;resolution:=optional,org.eclipse.persistence
- ;version="2.3.0.qualifier",org.eclipse.persistence.eis;version="2.3.0
- .qualifier",org.eclipse.persistence.eis.interactions;version="2.3.0.q
- ualifier",org.eclipse.persistence.exceptions;version="2.3.0.qualifier
- ",org.eclipse.persistence.expressions;version="2.3.0.qualifier",org.e
- clipse.persistence.internal.databaseaccess;version="2.3.0.qualifier",
- org.eclipse.persistence.internal.expressions;version="2.3.0.qualifier
- ",org.eclipse.persistence.internal.helper;version="2.3.0.qualifier",o
- rg.eclipse.persistence.internal.platform.database;version="2.3.0.qual
- ifier",org.eclipse.persistence.internal.security;version="2.3.0.quali
- fier",org.eclipse.persistence.internal.sessions;version="2.3.0.qualif
- ier",org.eclipse.persistence.logging;version="2.3.0.qualifier",org.ec
- lipse.persistence.oxm;version="2.3.0.qualifier",org.eclipse.persisten
- ce.oxm.record;version="2.3.0.qualifier",org.eclipse.persistence.oxm.s
- chema;version="2.3.0.qualifier",org.eclipse.persistence.platform.data
- base;version="2.3.0.qualifier",org.eclipse.persistence.platform.datab
- ase.converters;version="2.3.0.qualifier",org.eclipse.persistence.plat
- form.database.partitioning;version="2.3.0.qualifier",org.eclipse.pers
- istence.platform.server;version="2.3.0.qualifier",org.eclipse.persist
- ence.platform.xml;version="2.3.0.qualifier",org.eclipse.persistence.q
- ueries;version="2.3.0.qualifier",org.eclipse.persistence.sessions;ver
- sion="2.3.0.qualifier",org.w3c.dom;resolution:=optional,org.xml.sax;r
- esolution:=optional
-Specification-Version: 2.3.0
+ ;version="2.3.1",org.eclipse.persistence.eis;version="2.3.1",org.ecli
+ pse.persistence.eis.interactions;version="2.3.1",org.eclipse.persiste
+ nce.exceptions;version="2.3.1",org.eclipse.persistence.expressions;ve
+ rsion="2.3.1",org.eclipse.persistence.internal.databaseaccess;version
+ ="2.3.1",org.eclipse.persistence.internal.expressions;version="2.3.1"
+ ,org.eclipse.persistence.internal.helper;version="2.3.1",org.eclipse.
+ persistence.internal.platform.database;version="2.3.1",org.eclipse.pe
+ rsistence.internal.security;version="2.3.1",org.eclipse.persistence.i
+ nternal.sessions;version="2.3.1",org.eclipse.persistence.logging;vers
+ ion="2.3.1",org.eclipse.persistence.oxm;version="2.3.1",org.eclipse.p
+ ersistence.oxm.record;version="2.3.1",org.eclipse.persistence.oxm.sch
+ ema;version="2.3.1",org.eclipse.persistence.platform.database;version
+ ="2.3.1",org.eclipse.persistence.platform.database.converters;version
+ ="2.3.1",org.eclipse.persistence.platform.database.partitioning;versi
+ on="2.3.1",org.eclipse.persistence.platform.server;version="2.3.1",or
+ g.eclipse.persistence.platform.xml;version="2.3.1",org.eclipse.persis
+ tence.queries;version="2.3.1",org.eclipse.persistence.sessions;versio
+ n="2.3.1",org.w3c.dom;resolution:=optional,org.xml.sax;resolution:=op
+ tional
+Specification-Version: 2.3.1
 Bundle-SymbolicName: org.eclipse.persistence.oracle
 
