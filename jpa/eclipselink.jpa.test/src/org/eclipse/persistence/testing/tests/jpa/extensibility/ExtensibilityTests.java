@@ -63,18 +63,19 @@ public class ExtensibilityTests extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ExtensibilityTestSuite");
-        
-        suite.addTest(new ExtensibilityTests("testSetup"));
-        suite.addTest(new ExtensibilityTests("testDescriptors"));
-        suite.addTest(new ExtensibilityTests("testBasicMapping"));
-        suite.addTest(new ExtensibilityTests("testOneToManyMapping"));
-        suite.addTest(new ExtensibilityTests("testSimpleRefresh"));
-        suite.addTest(new ExtensibilityTests("testMergeRefreshed"));
-        suite.addTest(new ExtensibilityTests("testMergeRefreshedManyToMany"));
-        suite.addTest(new ExtensibilityTests("testUntriggerVHOnDetached"));
-        suite.addTest(new ExtensibilityTests("testFetchGroupOnRefresh"));
-        suite.addTest(new ExtensibilityTests("testExistingEntityManagerAfterRefresh"));
-        suite.addTest(new ExtensibilityTests("testSetupImplRefresh"));
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(new ExtensibilityTests("testSetup"));
+            suite.addTest(new ExtensibilityTests("testDescriptors"));
+            suite.addTest(new ExtensibilityTests("testBasicMapping"));
+            suite.addTest(new ExtensibilityTests("testOneToManyMapping"));
+            suite.addTest(new ExtensibilityTests("testSimpleRefresh"));
+            suite.addTest(new ExtensibilityTests("testMergeRefreshed"));
+            suite.addTest(new ExtensibilityTests("testMergeRefreshedManyToMany"));
+            suite.addTest(new ExtensibilityTests("testUntriggerVHOnDetached"));
+            suite.addTest(new ExtensibilityTests("testFetchGroupOnRefresh"));
+            suite.addTest(new ExtensibilityTests("testExistingEntityManagerAfterRefresh"));
+            suite.addTest(new ExtensibilityTests("testSetupImplRefresh"));
+        }
         return suite;
     }
     
