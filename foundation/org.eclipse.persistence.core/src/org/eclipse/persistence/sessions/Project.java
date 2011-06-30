@@ -21,6 +21,8 @@
  *     09/23/2009-2.0 Michael O'Brien 
  *       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive 
  *         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API     
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -101,6 +103,9 @@ public class Project implements Serializable, Cloneable {
     
     /** List of queries - once Project is initialized, these are copied to the Session. */
     protected transient List<DatabaseQuery> queries = null;
+    
+    /** Flag that allows native queries or not */
+    protected boolean allowNativeSQLQueries = true;
     
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
@@ -1068,6 +1073,14 @@ public class Project implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
+     * Return true if native sql is allowed on this project.
+     */
+    public boolean allowNativeSQLQueries() {
+        return this.allowNativeSQLQueries;
+    }
+    
+    /**
      * PUBLIC:
      * Return the descriptor for  the alias
      */
@@ -1085,6 +1098,14 @@ public class Project implements Serializable, Cloneable {
      */
     public void setAliasDescriptors(Map aHashtable) {
         aliasDescriptors = aHashtable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set whether native sql is allowed on this project.
+     */
+    public void setAllowNativeSQLQueries(boolean allowNativeSQLQueries) {
+        this.allowNativeSQLQueries = allowNativeSQLQueries;
     }
     
     /**

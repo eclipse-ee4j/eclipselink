@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.sequencing;
 
@@ -300,6 +302,7 @@ public class QuerySequence extends StandardSequence {
             }
         }
         Vector args = createArguments(query, seqName, size);
+        query.setIsUserDefinedSQLCall(false);
         if (args != null) {
             return writeSession.executeQuery(query, args);
         } else {
@@ -332,6 +335,7 @@ public class QuerySequence extends StandardSequence {
             }
         }
         Vector args = createArguments(query, seqName, sizeOrNewValue);
+        query.setIsUserDefinedSQLCall(false);
         if (args != null) {
             writeSession.executeQuery(query, args);
         } else {

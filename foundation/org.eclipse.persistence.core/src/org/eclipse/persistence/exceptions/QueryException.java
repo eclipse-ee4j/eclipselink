@@ -13,6 +13,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     05/24/2011-2.3 Guy Pelletier 
  *       - 345962: Join fetch query when using tenant discriminator column fails.
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -192,6 +194,7 @@ public class QueryException extends ValidationException {
     public final static int MISSING_CONNECTION_POOL = 6172;
     public final static int FAILOVER_FAILED = 6173;
     public final static int MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION = 6174;
+    public static final int NATIVE_SQL_QUERIES_ARE_DISABLED = 6175;
     
     /**
      * INTERNAL:
@@ -257,6 +260,13 @@ public class QueryException extends ValidationException {
         
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NAMED_ARGUMENT_NOT_FOUND_IN_QUERY_PARAMETERS, args));
         queryException.setErrorCode(NAMED_ARGUMENT_NOT_FOUND_IN_QUERY_PARAMETERS);
+        return queryException;
+    }
+    
+    public static QueryException nativeSQLQueriesAreDisabled(DatabaseQuery query) {
+        Object[] args = {};        
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NATIVE_SQL_QUERIES_ARE_DISABLED, args), query);
+        queryException.setErrorCode(NATIVE_SQL_QUERIES_ARE_DISABLED);
         return queryException;
     }
     

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -1471,6 +1473,15 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
         if (query == null) {
             throw QueryException.queryNotDefined();
+        }
+        
+        // Check for disabled native queries.
+        if (query.isUserDefinedSQLCall() && query.isSQLCallQuery() && ! query.isJPQLCallQuery()) {
+            if (! query.shouldAllowNativeSQLQuery(getProject().allowNativeSQLQueries())) {
+                // If the session/project says no to SQL queries and the database 
+                // query doesn't ask to bypass this decision then throw an exception.
+                throw QueryException.nativeSQLQueriesAreDisabled(query);
+            }
         }
 
         //CR#2272

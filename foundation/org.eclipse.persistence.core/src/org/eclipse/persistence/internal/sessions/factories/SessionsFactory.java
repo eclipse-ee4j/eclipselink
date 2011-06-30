@@ -100,7 +100,7 @@ public class SessionsFactory {
         m_logLevels.put("fine", Integer.valueOf(SessionLog.FINE));
         m_logLevels.put("finer", Integer.valueOf(SessionLog.FINER));
         m_logLevels.put("finest", Integer.valueOf(SessionLog.FINEST));
-        m_logLevels.put("all", Integer.valueOf(SessionLog.FINEST));
+        m_logLevels.put("all", Integer.valueOf(SessionLog.ALL));
     }
 
     /**

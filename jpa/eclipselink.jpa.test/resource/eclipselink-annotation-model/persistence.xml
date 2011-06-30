@@ -67,6 +67,11 @@
             <property name="eclipselink.id-validation" value="NEGATIVE"/>
             <property name="javax.persistence.query.timeout" value="20"/>
             <property name="NAME" value="Montreal%"/>
+            <!-- Since we don't exclude unlisted classes here, we will       -->
+            <!-- eventually hit the multitenant entities which turn native   -->
+            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!--  and turn them on                                           -->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     
@@ -75,6 +80,11 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.logging.level" value="OFF"/>
+            <!-- Since we don't exclude unlisted classes here, we will       -->
+            <!-- eventually hit the multitenant entities which turn native   -->
+            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!--  and turn them on                                           -->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     
@@ -203,6 +213,11 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
           <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
+          <!-- Since we don't exclude unlisted classes here, we will       -->
+          <!-- eventually hit the multitenant entities which turn native   -->
+          <!-- sql queries off by default, so we need to be explicit here  --> 
+          <!--  and turn them on                                           -->
+          <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     
@@ -224,6 +239,11 @@
         <properties>
             <property name="eclipselink.logging.level" value="OFF"/>
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.AddTargetCustomizer"/>
+            <!-- Since we don't exclude unlisted classes here, we will       -->
+            <!-- eventually hit the multitenant entities which turn native   -->
+            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!--  and turn them on                                           -->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     
@@ -246,7 +266,11 @@
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createMafia_ddlGeneration.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMafia_ddlGeneration.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <!-- Since we don't exclude unlisted classes here, we will       -->
+            <!-- eventually hit the multitenant entities which turn native   -->
+            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!--  and turn them on                                           -->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     
@@ -267,7 +291,7 @@
             <property name="tenant.id" value="123"/>
             <property name="eclipselink.tenant-id" value="123"/>
             <property name="eclipselink.session-name" value="multi-tenant-123"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
         </properties>
     </persistence-unit>
     

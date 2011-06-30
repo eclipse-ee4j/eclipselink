@@ -18,6 +18,8 @@
  *       - 345962: Join fetch query when using tenant discriminator column fails.
  *     06/1/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 9)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -94,7 +96,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily707and007WithSameEM"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily123"));
         
-        suite.addTest(new  AdvancedMultiTenantJunitTest("testComplexMultitenantQueries"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testComplexMultitenantQueries"));
         
         return suite;
     }
@@ -586,6 +588,29 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 assertNull("Found family 707 mafioso.", em.find(Mafioso.class, id));
             }
             
+            // Try a native sql query. Should get an exception since the
+            // eclipselink.jdbc.allow-native-sql-queries property is set to 
+            // false for this PU.
+            boolean exceptionCaught = false;
+            List mafiaFamilies = null;
+            try {
+                mafiaFamilies = em.createNativeQuery("select * from JPA_MAFIA_FAMILY").getResultList();
+            } catch (Exception e) {
+                exceptionCaught = true;
+            }
+            
+            assertTrue("No exception was caught from issuing a native query.", exceptionCaught);
+            
+            exceptionCaught = false;
+            try {
+                mafiaFamilies = em.createNamedQuery("findSQLMafiaFamilies").getResultList();
+            } catch (Exception e) {
+                exceptionCaught = true;
+            }
+            
+            assertTrue("No exception was caught from issuing a named native query.", exceptionCaught);
+            
+            
             // Query directly for the boss from the other family.
             Boss otherBoss = em.find(Boss.class, family707Mafiosos.get(0));
             assertNull("Found family 707 boss.", otherBoss);
@@ -783,8 +808,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             // Try a delete all on single table (Contracts)
             try {
                 beginTransaction(em);
-                this.getServerSession(MULTI_TENANT_PU_123).setLogLevel(0);
-                int contracts = em.createNamedQuery("FindAllContracts").getResultList().size();                
+                int contracts = em.createNamedQuery("FindAllContracts").getResultList().size();
                 int deletes = em.createNamedQuery("DeleteAllContracts").executeUpdate();
                 assertTrue("Incorrect number of contracts deleted [" + deletes + "], expected [" + contracts + "]", deletes == 2);
                 commitTransaction(em);
@@ -798,7 +822,9 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 List<MafiaFamily> allFamilies = em.createNamedQuery("findAllMafiaFamilies").getResultList();
                 int families = allFamilies.size();
                 assertTrue("More than one family was found ["+ families +"]", families == 1);
-                int deletes = em.createNamedQuery("DeleteAllMafiaFamilies").executeUpdate();
+                Query deleteQuery = em.createNamedQuery("DeleteAllMafiaFamilies");
+                deleteQuery.setHint(QueryHints.ALLOW_NATIVE_SQL_QUERY, true);
+                int deletes = deleteQuery.executeUpdate();
                 assertTrue("Incorrect number of families deleted [" + deletes + "], expected [" + families + "]", deletes == 1);
                 commitTransaction(em);
             } catch (Exception e) {
@@ -810,7 +836,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             
             try {
                 beginTransaction(em);
-                List<MafiaFamily> families = em.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
+                List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
                 assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
                 commitTransaction(em);
                 

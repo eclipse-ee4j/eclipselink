@@ -13,6 +13,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -422,8 +424,10 @@ public class ValidationException extends EclipseLinkException {
     
     // XML Metadata Repository
     public static final int NON_UNIQUE_REPOSITORY_FILE_NAME = 7340;
-    public static final int  MISSING_XML_FILE_FOR_METADATA_SOURCE = 7341;
+    public static final int MISSING_XML_FILE_FOR_METADATA_SOURCE = 7341;
 
+    public static final int INVALID_BOOLEAN_VALUE_FOR_SETTING_ALLOW_NATIVESQL_QUERIES = 7342;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2492,6 +2496,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { specifiedBooleanValue };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_BOOLEAN_VALUE_FOR_SETTING_NATIVESQL, args));
         validationException.setErrorCode(INVALID_BOOLEAN_VALUE_FOR_SETTING_NATIVESQL);
+        return validationException;
+    }
+    
+    public static ValidationException invalidBooleanValueForSettingAllowNativeSQLQueries(String specifiedBooleanValue) {
+        Object[] args = { specifiedBooleanValue };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_BOOLEAN_VALUE_FOR_SETTING_ALLOW_NATIVESQL_QUERIES, args));
+        validationException.setErrorCode(INVALID_BOOLEAN_VALUE_FOR_SETTING_ALLOW_NATIVESQL_QUERIES);
         return validationException;
     }
     

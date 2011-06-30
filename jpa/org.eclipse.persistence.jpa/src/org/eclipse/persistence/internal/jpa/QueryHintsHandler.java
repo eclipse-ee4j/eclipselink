@@ -15,6 +15,8 @@
  *              and org.eclipse.persistence.exceptions.QueryException.queryHintNavigatedNonExistantRelationship
  *     10/29/2010-2.2 Michael O'Brien 
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -286,6 +288,7 @@ public class QueryHintsHandler {
             // 325167: Make reserved # bind parameter char generic to enable native SQL pass through
             addHint(new ParameterDelimiterHint());
             addHint(new CompositeMemberHint());
+            addHint(new AllowNativeSQLQueryHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -451,6 +454,21 @@ public class QueryHintsHandler {
             } else {
                 query.setShouldBindAllParameters(((Boolean)valueToApply).booleanValue());
             }
+            return query;
+        }
+    }
+    
+    protected static class AllowNativeSQLQueryHint extends Hint {
+        AllowNativeSQLQueryHint() {
+            super(QueryHints.ALLOW_NATIVE_SQL_QUERY, HintValues.PERSISTENCE_UNIT_DEFAULT);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            query.setAllowNativeSQLQuery((Boolean) valueToApply);
             return query;
         }
     }
@@ -1698,7 +1716,7 @@ public class QueryHintsHandler {
             return query;
         }
     }
-        
+    
     protected static class AsOfHint extends Hint {
         AsOfHint() {
             super(QueryHints.AS_OF, "");
