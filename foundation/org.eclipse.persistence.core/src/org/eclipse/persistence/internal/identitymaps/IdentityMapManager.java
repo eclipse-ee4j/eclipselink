@@ -137,7 +137,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 releaseReadLock();
             }
             this.session.endOperationProfile(SessionProfiler.Caching);
-            if (!this.session.isUnitOfWork() && cacheKey.getObject() == null) {
+            if (!this.session.isUnitOfWork() && (cacheKey != null) && cacheKey.getObject() == null) {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
@@ -168,7 +168,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 releaseReadLock();
             }
             this.session.endOperationProfile(SessionProfiler.Caching);
-            if (!this.session.isUnitOfWork() && cacheKey.getObject() == null) {
+            if (!this.session.isUnitOfWork() && (cacheKey != null) && (cacheKey.getObject() == null)) {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
@@ -199,7 +199,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 releaseReadLock();
             }
             this.session.endOperationProfile(SessionProfiler.Caching);
-            if (!this.session.isUnitOfWork() && cacheKey.getObject() == null) {
+            if (!this.session.isUnitOfWork() && (cacheKey != null) && cacheKey.getObject() == null) {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
