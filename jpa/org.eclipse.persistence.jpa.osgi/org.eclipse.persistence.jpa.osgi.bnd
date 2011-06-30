@@ -14,5 +14,5 @@ Include-Resource:\
  ${osgi.2.base.dir}/about.html,\
  ${osgi.2.base.dir}/readme.html,\
  ${osgi.2.base.dir}/license.html
-Import-Package: javax.persistence.*;jpa="2.0", org.eclipse.persistence.*, org.osgi.*, *
+Import-Package: javax.persistence.criteria;jpa="2.0", javax.persistence.metamodel;jpa="2.0", javax.persistence.*;jpa="2.0", org.eclipse.persistence.*, org.osgi.*, *
 Specification-Version: ${release.version}

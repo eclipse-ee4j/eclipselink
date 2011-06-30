@@ -30,11 +30,12 @@ Bundle-ManifestVersion: 2
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
 Include-Resource: ../../about.html,../../readme.html,../../license.htm
  l
-Import-Package: javax.persistence;jpa="2.0",javax.persistence.spi;jpa=
- "2.0",org.eclipse.persistence.exceptions,org.eclipse.persistence.inte
- rnal.jpa.deployment,org.eclipse.persistence.internal.localization,org
- .eclipse.persistence.jpa,org.eclipse.persistence.logging,org.osgi.fra
- mework,org.osgi.service.jpa,org.osgi.service.packageadmin
+Import-Package: javax.persistence;jpa="2.0",javax.persistence.criteria
+ ;jpa="2.0",javax.persistence.metamodel;jpa="2.0",javax.persistence.sp
+ i;jpa="2.0",org.eclipse.persistence.exceptions,org.eclipse.persistenc
+ e.internal.jpa.deployment,org.eclipse.persistence.internal.localizati
+ on,org.eclipse.persistence.jpa,org.eclipse.persistence.logging,org.os
+ gi.framework,org.osgi.service.jpa,org.osgi.service.packageadmin
 Specification-Version: 2.3.1
 Bundle-SymbolicName: org.eclipse.persistence.jpa.osgi
 
