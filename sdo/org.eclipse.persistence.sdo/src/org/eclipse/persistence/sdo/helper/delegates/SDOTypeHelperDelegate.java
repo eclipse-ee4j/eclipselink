@@ -513,7 +513,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             return sdoType.getInstanceClass();
         }
         Class javaClass = null;
-        if (sdoType.getBaseTypes() != null) {
+        if (sdoType.isSubType()) {
             for (int i = 0; i < sdoType.getBaseTypes().size(); i++) {
                 Type baseType = (Type)sdoType.getBaseTypes().get(i);
                 javaClass = getJavaWrapperTypeForSDOType(baseType);
@@ -666,9 +666,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
         for (int i = 0; i < types.size(); i++) {
             SDOType nextType = (SDOType)types.get(i);
-            if ((!nextType.isDataType() && nextType.getBaseTypes() == null || nextType.getBaseTypes().size() == 0) && nextType.getSubTypes().size() > 0) {
+            if ((!nextType.isDataType() && !nextType.isSubType()) && nextType.isBaseType()) {
                 nextType.setupInheritance(null);
-            } else if (!nextType.isDataType() && nextType.getBaseTypes().size() > 0 && !types.contains(nextType.getBaseTypes().get(0))) {
+            } else if (!nextType.isDataType() && nextType.isSubType() && !types.contains(nextType.getBaseTypes().get(0))) {
                 SDOType baseType = (SDOType)nextType.getBaseTypes().get(0);
                 while (baseType != null && !baseType.isDataType()) {
                     descriptorsToAdd.add(baseType);
@@ -787,7 +787,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             // conversions (eg. "myBinaryElement" could be a restriction of base64Binary
             // or hexBinary.
             QName currentTypeQName = null;
-            if (!type.getBaseTypes().isEmpty()) {
+            if (type.isSubType()) {
                 SDOType baseType = (SDOType) type.getBaseTypes().get(0);
                 currentTypeQName = new QName(XMLConstants.SCHEMA_URL, baseType.getName());
             }
@@ -810,8 +810,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     private boolean isBaseTypeBytes(Type theType) {
-        List baseTypes = ((SDOType)theType).getBaseTypes();
-        if (baseTypes.size() > 0) {
+        if (((SDOType) theType).isSubType()) {
+            List baseTypes = ((SDOType)theType).getBaseTypes();
             Type nextType = (Type)baseTypes.get(0);
             if (nextType == SDOConstants.SDO_BYTES) {
                 return true;
