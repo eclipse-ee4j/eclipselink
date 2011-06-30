@@ -559,12 +559,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
             // HANDLE POST BUILD EVENTS
             ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
-            if (xmlDescriptor.getEventManager().hasAnyEventListeners()) {
-                DescriptorEvent event = new DescriptorEvent(currentObject);
-                event.setSession(session);
-                event.setRecord(this);
-                event.setEventCode(DescriptorEventManager.PostBuildEvent);
-                xmlDescriptor.getEventManager().executeEvent(event);
+            if(xmlDescriptor.hasEventManager()) {
+                DescriptorEventManager eventManager = xmlDescriptor.getEventManager();
+                if (null != eventManager && eventManager.hasAnyEventListeners()) {
+                    DescriptorEvent event = new DescriptorEvent(currentObject);
+                    event.setSession(session);
+                    event.setRecord(this);
+                    event.setEventCode(DescriptorEventManager.PostBuildEvent);
+                    eventManager.executeEvent(event);
+                }
             }
         } catch (EclipseLinkException e) {
             if (null == xmlReader.getErrorHandler()) {
