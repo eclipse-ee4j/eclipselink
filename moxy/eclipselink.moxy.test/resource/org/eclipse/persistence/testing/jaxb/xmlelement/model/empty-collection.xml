@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<order>
+   <customer>
+      <firstName>Jane</firstName>
+      <lastName>Smith</lastName>
+      <address>
+          <street>Main Street</street>
+          <city>Ottawa</city>
+      </address>
+      <firstTimeCustomer>false</firstTimeCustomer>
+      <id>0</id>
+   </customer>
+   <id>1</id>
+</order>

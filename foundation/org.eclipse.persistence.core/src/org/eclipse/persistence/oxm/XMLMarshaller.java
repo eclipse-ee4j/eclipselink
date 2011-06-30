@@ -38,14 +38,13 @@ import org.eclipse.persistence.internal.oxm.record.DOMReader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.attachment.*;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
+import org.eclipse.persistence.oxm.record.JSONFormattedWriterRecord;
 import org.eclipse.persistence.oxm.record.FormattedOutputStreamRecord;
 import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
+import org.eclipse.persistence.oxm.record.JSONWriterRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.OutputStreamRecord;
@@ -101,7 +100,8 @@ public class XMLMarshaller implements Cloneable {
     private ErrorHandler errorHandler;
     private Properties marshalProperties;
     private Schema schema;
-    
+    private MediaType mediaType = MediaType.APPLICATION_XML;
+
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
     private static final String GET_XML_EVENT_WRITER_METHOD_NAME = "getXMLEventWriter";
@@ -224,6 +224,10 @@ public class XMLMarshaller implements Cloneable {
        */
     public void setEncoding(String newEncoding) {
         transformer.setEncoding(newEncoding);        
+    }
+
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
     }
 
     /**
@@ -446,6 +450,10 @@ public class XMLMarshaller implements Cloneable {
         if ((object == null) || (outputStream == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
+        if(MediaType.APPLICATION_JSON == mediaType) {
+            marshal(object, new OutputStreamWriter(outputStream));
+            return;
+        }
         try {
             boolean isXMLRoot = false;
             String version = DEFAULT_XML_VERSION;
@@ -562,15 +570,26 @@ public class XMLMarshaller implements Cloneable {
         	xmlDescriptor = getDescriptor(object.getClass(), session);
         }
 
-        WriterRecord writerRecord;
+        MarshalRecord writerRecord;
+        writer = new BufferedWriter(writer);
         if (isFormattedOutput()) {
-            writerRecord = new FormattedWriterRecord();
+            if(MediaType.APPLICATION_JSON == mediaType) {
+                writerRecord = new JSONFormattedWriterRecord();
+                ((JSONFormattedWriterRecord) writerRecord).setWriter(writer);
+            } else {
+                writerRecord = new FormattedWriterRecord();
+                ((FormattedWriterRecord) writerRecord).setWriter(writer);
+            }
         } else {
-            writerRecord = new WriterRecord();
+            if(MediaType.APPLICATION_JSON == mediaType) {
+                writerRecord = new JSONWriterRecord();
+                ((JSONWriterRecord) writerRecord).setWriter(writer);
+            } else {
+                writerRecord = new WriterRecord();
+                ((WriterRecord) writerRecord).setWriter(writer);
+            }
         }
         writerRecord.setMarshaller(this);
-        writer = new BufferedWriter(writer);        
-        writerRecord.setWriter(writer);
 
         //if this is a simple xml root, the session and descriptor will be null
         if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {

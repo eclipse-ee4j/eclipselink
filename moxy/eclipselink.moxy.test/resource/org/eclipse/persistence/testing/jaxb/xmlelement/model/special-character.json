@@ -1,0 +1,18 @@
+{
+ "order" : 
+  { 
+   "comments" : [ "com<ment1", "com&ment2", "com\"ment3"] , 
+   "customer" : { 
+      "firstName" : "Ja<ne", 
+      "lastName" : "Smi&th", 
+      "address" : 
+         { 
+         "street" : "Main\"Street", 
+         "city" : "Ottawa"
+         } , 
+       "firstTimeCustomer" : "false", 
+       "id" : "0"
+   } , 
+   "id" : "1"
+   } 
+}

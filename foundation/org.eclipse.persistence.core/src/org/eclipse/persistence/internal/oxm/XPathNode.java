@@ -324,10 +324,19 @@ public class XPathNode {
     }
 
     public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, AbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject) {
+        return startElement(marshalRecord, anXPathFragment, object, session, namespaceResolver, compositeObjectBuilder, compositeObject, true);
+    }
+
+    /**
+     * @since EclipseLink 2.4
+     */
+    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, AbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject, boolean includeRoot) {
         if (null == anXPathFragment) {
             return false;
         }
-        marshalRecord.openStartElement(anXPathFragment, namespaceResolver);
+        if(includeRoot) {
+            marshalRecord.openStartElement(anXPathFragment, namespaceResolver);
+        }
         boolean hasValue = false;
 
         marshalRecord.predicateAttribute(anXPathFragment, namespaceResolver);

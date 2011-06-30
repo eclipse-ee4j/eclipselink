@@ -38,6 +38,7 @@ import java.lang.reflect.Type;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -544,6 +545,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
+            } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
+                if("application/json".equals(value)) {
+                    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+                } else if("application/xml".equals(value)) {
+                    xmlMarshaller.setMediaType(MediaType.APPLICATION_XML);
+                } else {
+                    throw new PropertyException(key, value);
+                }
             } else {
                 throw new PropertyException(key, value);
             }

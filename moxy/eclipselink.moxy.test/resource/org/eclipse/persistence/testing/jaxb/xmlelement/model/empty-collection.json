@@ -1,0 +1,17 @@
+{
+ "order" : 
+  { 
+   "customer" : { 
+      "firstName" : "Jane", 
+      "lastName" : "Smith", 
+      "address" : 
+         { 
+         "street" : "Main Street", 
+         "city" : "Ottawa"
+         } , 
+       "firstTimeCustomer" : "false", 
+       "id" : "0"
+   } , 
+   "id" : "1"
+   } 
+}

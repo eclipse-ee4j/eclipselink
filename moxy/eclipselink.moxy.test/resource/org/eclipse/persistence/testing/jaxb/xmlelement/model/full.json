@@ -1,0 +1,31 @@
+{
+ "order" : 
+  { 
+   "comments" : [ "comment1", "comment2", "comment3"] , 
+   "customer" : { 
+      "firstName" : "Jane", 
+      "lastName" : "Smith", 
+      "address" : 
+         { 
+         "street" : "Main Street", 
+         "city" : "Ottawa"
+         } , 
+       "firstTimeCustomer" : "false", 
+       "id" : "0"
+   } , 
+   "id" : "1", 
+   "items" : [ 
+      { 
+         "cost" : "5.00", 
+         "description" : [ "nice item", "comes in blue or red"] , 
+         "id" : "1", 
+         "price" : "7.99"
+      }, 
+      { 
+         "cost" : "10.00", 
+         "description" : [ "big item", "very heavy"] , 
+         "id" : "2", 
+         "price" : "15.99"} 
+     ] 
+   } 
+}

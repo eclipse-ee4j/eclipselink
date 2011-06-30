@@ -117,6 +117,8 @@ import org.eclipse.persistence.sessions.Session;
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
 
+    static final String MEDIA_TYPE = "eclipselink.media.type"; 
+
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);

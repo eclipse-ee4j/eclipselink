@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<order>
+   <comments>com&lt;ment1</comments>
+   <comments>com&amp;ment2</comments>
+   <comments>com&quot;ment3</comments>
+   <customer>
+      <firstName>Ja&lt;ne</firstName>
+      <lastName>Smi&amp;th</lastName>
+      <address>
+          <street>Main&quot;Street</street>
+          <city>Ottawa</city>
+      </address>
+      <firstTimeCustomer>false</firstTimeCustomer>
+      <id>0</id>
+   </customer>
+   <id>1</id>
+</order>

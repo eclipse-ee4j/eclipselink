@@ -109,10 +109,16 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
             }
         } else {
+            marshalRecord.startCollection();
+            if(cp.hasNext(iterator)) {
+                objectValue = cp.next(iterator, session);
+                marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance(), true);
+            }
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
-                marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
+                marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance(), marshalRecord.includeRootElementForSubsequentItemsInCollection(xPathFragment));
             }
+            marshalRecord.endCollection();
         }
         return true;
     }
@@ -256,6 +262,13 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        return this.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext, true);
+    }
+
+    /**
+     * @since EclipseLink 2.4
+     */
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, boolean includeRoot) {
         if (xmlCompositeDirectCollectionMapping.hasValueConverter()) {
             if (xmlCompositeDirectCollectionMapping.getValueConverter() instanceof XMLConverter) {
                 value = ((XMLConverter) xmlCompositeDirectCollectionMapping.getValueConverter()).convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
@@ -287,7 +300,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
             }
             if(!isElementOpen) {
-                marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+                if(includeRoot) {
+                    marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+                }
             }
             String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             XPathFragment nextFragment = xPathFragment.getNextFragment();

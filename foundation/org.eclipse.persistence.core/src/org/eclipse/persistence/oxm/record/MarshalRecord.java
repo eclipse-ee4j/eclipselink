@@ -377,4 +377,31 @@ public abstract class MarshalRecord extends XMLRecord {
         }
     }
 
+    /**
+     * This method is used to inform the MarshalRecord that the element events
+     * it is about to receive are part of a collection.
+     * @since EclipseLink 2.4
+     * @see endCollection
+     */
+    public void startCollection() {
+    }
+
+    /**
+     * This method is used to inform the MarshalRecord that it is done receiving
+     * element events that are part of a collection.
+     * @since EclipseLink 2.4
+     * @see startCollection
+     */
+    public void endCollection() {
+    }
+
+    /**
+     * Returns true if the local root should marshalled after the first element
+     * in a collection has been marshalled.
+     * @since EclipseLink 2.4
+     */
+    public boolean includeRootElementForSubsequentItemsInCollection(XPathFragment xPathFragment) {
+        return true;
+    }
+
 }
