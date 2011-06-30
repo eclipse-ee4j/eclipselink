@@ -70,7 +70,7 @@ public class XMLDescriptor extends ClassDescriptor {
     public XMLDescriptor() {
         this.tables = NonSynchronizedVector.newInstance(3);
         this.mappings = NonSynchronizedVector.newInstance();
-        this.primaryKeyFields = new ArrayList(1);
+        this.primaryKeyFields = null;
         this.fields = NonSynchronizedVector.newInstance();
         this.allFields = NonSynchronizedVector.newInstance();
         this.constraintDependencies = EMPTY_VECTOR;
@@ -256,6 +256,14 @@ public class XMLDescriptor extends ClassDescriptor {
         this.lazilyInitialized = shouldLazyInitiailize;
     }
 
+    @Override
+    public Vector<String> getPrimaryKeyFieldNames() {
+        if(null == primaryKeyFields) {
+            return new Vector<String>(0);
+        }
+        return super.getPrimaryKeyFieldNames();
+    }
+
     protected void validateMappingType(DatabaseMapping mapping) {
         if (!(mapping.isXMLMapping())) {
             throw DescriptorException.invalidMappingType(mapping);
@@ -353,7 +361,7 @@ public class XMLDescriptor extends ClassDescriptor {
 
     @Override
     public void addPrimaryKeyFieldName(String fieldName) {
-        super.addPrimaryKeyField(new XMLField(fieldName));
+        addPrimaryKeyField(new XMLField(fieldName));
     }
 
     @Override
@@ -362,11 +370,17 @@ public class XMLDescriptor extends ClassDescriptor {
             String fieldName = field.getName();
             field = new XMLField(fieldName);
         }
+        if(null == primaryKeyFields) {
+            primaryKeyFields = new ArrayList<DatabaseField>(1);
+        }
         super.addPrimaryKeyField(field);
     }
 
     @Override
     public void setPrimaryKeyFields(List<DatabaseField> thePrimaryKeyFields) {
+        if(null == thePrimaryKeyFields) {
+            return;
+        }
         List<DatabaseField> xmlFields = new ArrayList(thePrimaryKeyFields.size());
         Iterator<DatabaseField> it = thePrimaryKeyFields.iterator();
 
@@ -545,14 +559,16 @@ public class XMLDescriptor extends ClassDescriptor {
         }
 
         //PERF: Ensure that the identical primary key fields are used to avoid equals.
-        for (int index = (getPrimaryKeyFields().size() - 1); index >= 0; index--) {
-            DatabaseField primaryKeyField = getPrimaryKeyFields().get(index);
-            int fieldIndex = getFields().indexOf(primaryKeyField);
+        if(null != primaryKeyFields) {
+            for (int index = (primaryKeyFields.size() - 1); index >= 0; index--) {
+                DatabaseField primaryKeyField = getPrimaryKeyFields().get(index);
+                int fieldIndex = getFields().indexOf(primaryKeyField);
 
-            // Aggregate/agg-collections may not have a mapping for pk field.
-            if (fieldIndex != -1) {
-                primaryKeyField = getFields().get(fieldIndex);
-                getPrimaryKeyFields().set(index, primaryKeyField);
+                // Aggregate/agg-collections may not have a mapping for pk field.
+                if (fieldIndex != -1) {
+                    primaryKeyField = getFields().get(fieldIndex);
+                    getPrimaryKeyFields().set(index, primaryKeyField);
+                }
             }
         }
 
@@ -592,10 +608,12 @@ public class XMLDescriptor extends ClassDescriptor {
         	setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
         }
 
-        for(int x = 0, primaryKeyFieldsSize = this.primaryKeyFields.size(); x<primaryKeyFieldsSize; x++) {
-            XMLField pkField = (XMLField) this.primaryKeyFields.get(x);
-            pkField.setNamespaceResolver(this.namespaceResolver);
-            pkField.initialize();
+        if(null != primaryKeyFields) {
+            for(int x = 0, primaryKeyFieldsSize = this.primaryKeyFields.size(); x<primaryKeyFieldsSize; x++) {
+                XMLField pkField = (XMLField) this.primaryKeyFields.get(x);
+                pkField.setNamespaceResolver(this.namespaceResolver);
+                pkField.initialize();
+            }
         }
 
         // These cached settings on the project must be set even if descriptor is initialized.

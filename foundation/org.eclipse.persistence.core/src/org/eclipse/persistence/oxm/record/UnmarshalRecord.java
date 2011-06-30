@@ -583,20 +583,22 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
             if(null != xmlDescriptor) {
                 List primaryKeyFields = xmlDescriptor.getPrimaryKeyFields();
-                int primaryKeyFieldsSize = primaryKeyFields.size();
-                if (primaryKeyFieldsSize > 0) {
-                    Object pk = treeObjectBuilder.extractPrimaryKeyFromObject(currentObject, session);
-                    for (int x=0; x<primaryKeyFieldsSize; x++) {
-                        Object value = ((CacheId)pk).getPrimaryKey()[x];
-                        if (null == value) {
-                            XMLField pkField = (XMLField) xmlDescriptor.getPrimaryKeyFields().get(x);
-                            ((CacheId)pk).set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
+                if(null != primaryKeyFields) {
+                    int primaryKeyFieldsSize = primaryKeyFields.size();
+                    if (primaryKeyFieldsSize > 0) {
+                        Object pk = treeObjectBuilder.extractPrimaryKeyFromObject(currentObject, session);
+                        for (int x=0; x<primaryKeyFieldsSize; x++) {
+                            Object value = ((CacheId)pk).getPrimaryKey()[x];
+                            if (null == value) {
+                                XMLField pkField = (XMLField) xmlDescriptor.getPrimaryKeyFields().get(x);
+                                ((CacheId)pk).set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
+                            }
                         }
+                        CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
+                        key.setRecord(this);
+                        key.setObject(currentObject);
+                        key.releaseDeferredLock();
                     }
-                    CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
-                    key.setRecord(this);
-                    key.setObject(currentObject);
-                    key.releaseDeferredLock();
                 }
             }
         }
