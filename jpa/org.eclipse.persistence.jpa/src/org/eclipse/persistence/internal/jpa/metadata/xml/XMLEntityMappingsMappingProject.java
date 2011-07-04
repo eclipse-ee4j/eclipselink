@@ -61,6 +61,8 @@
  *       - 341152: From XML cache interceptor and query redirector metadata don't support package specification
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 8)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -609,6 +611,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         returnUpdateMapping.setAttributeName("m_returnUpdate");
         returnUpdateMapping.setGetMethodName("getReturnUpdate");
         returnUpdateMapping.setSetMethodName("setReturnUpdate");
+        returnUpdateMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy returnUpdatePolicy = new IsSetNullPolicy("isReturnUpdate");
         returnUpdatePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         returnUpdateMapping.setNullPolicy(returnUpdatePolicy);
@@ -787,6 +790,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeAllMapping.setAttributeName("m_cascadeAll");
         cascadeAllMapping.setGetMethodName("getCascadeAll");
         cascadeAllMapping.setSetMethodName("setCascadeAll");
+        cascadeAllMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy cascadeAllPolicy = new IsSetNullPolicy("isCascadeAll");
         cascadeAllPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         cascadeAllMapping.setNullPolicy(cascadeAllPolicy);
@@ -799,6 +803,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeMergeMapping.setAttributeName("m_cascadeMerge");
         cascadeMergeMapping.setGetMethodName("getCascadeMerge");
         cascadeMergeMapping.setSetMethodName("setCascadeMerge");
+        cascadeMergeMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy cascadeMergePolicy = new IsSetNullPolicy("isCascadeMerge");
         cascadeMergePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         cascadeMergeMapping.setNullPolicy(cascadeMergePolicy);
@@ -809,6 +814,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeRemoveMapping.setAttributeName("m_cascadeRemove");
         cascadeRemoveMapping.setGetMethodName("getCascadeRemove");
         cascadeRemoveMapping.setSetMethodName("setCascadeRemove");
+        cascadeRemoveMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy cascadeRemovePolicy = new IsSetNullPolicy("isCascadeRemove");
         cascadeRemovePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         cascadeRemoveMapping.setNullPolicy(cascadeRemovePolicy);
@@ -819,6 +825,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeRefreshMapping.setAttributeName("m_cascadeRefresh");
         cascadeRefreshMapping.setGetMethodName("getCascadeRefresh");
         cascadeRefreshMapping.setSetMethodName("setCascadeRefresh");
+        cascadeRefreshMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy cascadeRefreshPolicy = new IsSetNullPolicy("isCascadeRefresh");
         cascadeRefreshPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         cascadeRefreshMapping.setNullPolicy(cascadeRefreshPolicy);
@@ -2551,10 +2558,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         delimitedIdentifiersMapping.setAttributeName("m_delimitedIdentifiers");
         delimitedIdentifiersMapping.setGetMethodName("getDelimitedIdentifiers");
         delimitedIdentifiersMapping.setSetMethodName("setDelimitedIdentifiers");
+        delimitedIdentifiersMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy delimitedIdentifiersPolicy = new IsSetNullPolicy("isDelimitedIdentifiers");
         delimitedIdentifiersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         delimitedIdentifiersMapping.setNullPolicy(delimitedIdentifiersPolicy);
-        delimitedIdentifiersMapping.setXPath("orm:delimited-identifiers/text()");
+        delimitedIdentifiersMapping.setXPath("orm:delimited-identifiers");
         descriptor.addMapping(delimitedIdentifiersMapping);
         
         descriptor.addMapping(getAccessMapping());
@@ -2578,6 +2586,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         xmlMappingMetadataCompleteMapping.setAttributeName("m_xmlMappingMetadataComplete");
         xmlMappingMetadataCompleteMapping.setGetMethodName("getXMLMappingMetadataComplete");
         xmlMappingMetadataCompleteMapping.setSetMethodName("setXMLMappingMetadataComplete");
+        xmlMappingMetadataCompleteMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy xmlMappingMetadataCompletePolicy = new IsSetNullPolicy("isXMLMappingMetadataComplete");
         xmlMappingMetadataCompletePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         xmlMappingMetadataCompleteMapping.setNullPolicy(xmlMappingMetadataCompletePolicy);
@@ -2588,6 +2597,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         excludeDefaultMappingsMapping.setAttributeName("m_excludeDefaultMappings");
         excludeDefaultMappingsMapping.setGetMethodName("getExcludeDefaultMappings");
         excludeDefaultMappingsMapping.setSetMethodName("setExcludeDefaultMappings");
+        excludeDefaultMappingsMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy excludeDefaultMappingsPolicy = new IsSetNullPolicy("excludeDefaultMappings");
         excludeDefaultMappingsPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         excludeDefaultMappingsMapping.setNullPolicy(excludeDefaultMappingsPolicy);
@@ -3634,12 +3644,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     protected XMLDirectMapping getCascadeOnDeleteMapping() {
         XMLDirectMapping cascadeMapping = new XMLDirectMapping();
         cascadeMapping.setAttributeName("m_cascadeOnDelete");
-        cascadeMapping.setGetMethodName("isCascadeOnDelete");
+        cascadeMapping.setGetMethodName("getCascadeOnDelete");
         cascadeMapping.setSetMethodName("setCascadeOnDelete");
-        IsSetNullPolicy nullPolicy = new IsSetNullPolicy("isCascadeOnDelete");
-        nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-        cascadeMapping.setNullPolicy(nullPolicy);
-        cascadeMapping.setXPath("orm:cascade-on-delete");
+        // Cascade on delete is not mapped as an empty type, rather a boolean.
+        cascadeMapping.setXPath("orm:cascade-on-delete/text()");
         return cascadeMapping;
     }
     
@@ -3651,6 +3659,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadePersistMapping.setAttributeName("m_cascadePersist");
         cascadePersistMapping.setGetMethodName("getCascadePersist");
         cascadePersistMapping.setSetMethodName("setCascadePersist");
+        //cascadePersistMapping.setAttributeClassification(String.class);
+        cascadePersistMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy cascadePersistPolicy = new IsSetNullPolicy("isCascadePersist");
         cascadePersistPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         cascadePersistMapping.setNullPolicy(cascadePersistPolicy);
@@ -4001,10 +4011,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         excludeDefaultListenersMapping.setAttributeName("m_excludeDefaultListeners");
         excludeDefaultListenersMapping.setGetMethodName("getExcludeDefaultListeners");
         excludeDefaultListenersMapping.setSetMethodName("setExcludeDefaultListeners");
+        excludeDefaultListenersMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy excludeDefaultListenersPolicy = new IsSetNullPolicy("excludeDefaultListeners");
         excludeDefaultListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         excludeDefaultListenersMapping.setNullPolicy(excludeDefaultListenersPolicy);
-        excludeDefaultListenersMapping.setNullPolicy(new IsSetNullPolicy("excludeDefaultListeners"));
         excludeDefaultListenersMapping.setXPath("orm:exclude-default-listeners");
         return excludeDefaultListenersMapping;
     }
@@ -4029,10 +4039,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         excludeSuperclassListenersMapping.setAttributeName("m_excludeSuperclassListeners");
         excludeSuperclassListenersMapping.setGetMethodName("getExcludeSuperclassListeners");
         excludeSuperclassListenersMapping.setSetMethodName("setExcludeSuperclassListeners");
+        excludeSuperclassListenersMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy excludeSuperclassListenersPolicy = new IsSetNullPolicy("excludeSuperclassListeners");
         excludeSuperclassListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         excludeSuperclassListenersMapping.setNullPolicy(excludeSuperclassListenersPolicy);
-        excludeSuperclassListenersMapping.setXPath("orm:exclude-superclass-listeners/text()");
+        excludeSuperclassListenersMapping.setXPath("orm:exclude-superclass-listeners");
         return excludeSuperclassListenersMapping;
     }
     
@@ -4600,8 +4611,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     protected XMLDirectMapping getNonCacheableMapping() {
         XMLDirectMapping noncacheable = new XMLDirectMapping();
         noncacheable.setAttributeName("m_nonCacheable");
-        noncacheable.setGetMethodName("isNonCacheable");
-        noncacheable.setSetMethodName("setIsNonCacheable");
+        noncacheable.setGetMethodName("getNonCacheable");
+        noncacheable.setSetMethodName("setNonCacheable");
         noncacheable.setConverter(new EmptyElementConverter());
         IsSetNullPolicy cacheablePolicy = new IsSetNullPolicy("isNonCacheable");
         cacheablePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
@@ -4913,6 +4924,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         privateOwnedMapping.setAttributeName("m_privateOwned");
         privateOwnedMapping.setGetMethodName("getPrivateOwned");
         privateOwnedMapping.setSetMethodName("setPrivateOwned");
+        privateOwnedMapping.setConverter(new EmptyElementConverter());
         IsSetNullPolicy privateOwnedPolicy = new IsSetNullPolicy("isPrivateOwned");
         privateOwnedPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         privateOwnedMapping.setNullPolicy(privateOwnedPolicy);

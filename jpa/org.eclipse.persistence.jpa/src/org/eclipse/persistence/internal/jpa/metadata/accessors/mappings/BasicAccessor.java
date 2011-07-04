@@ -37,6 +37,8 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -98,7 +100,7 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  */
 public class BasicAccessor extends DirectAccessor {
     private Boolean m_mutable;
-    private boolean m_returnUpdate;
+    private Boolean m_returnUpdate;
     private ColumnMetadata m_column;
     private DatabaseField m_field; 
     private GeneratedValueMetadata m_generatedValue;
@@ -184,7 +186,7 @@ public class BasicAccessor extends DirectAccessor {
                 return false;
             }
             
-            if (! valuesMatch(m_returnUpdate, basicAccessor.isReturnUpdate())) {
+            if (! valuesMatch(m_returnUpdate, basicAccessor.getReturnUpdate())) {
                 return false;
             }
 
@@ -269,8 +271,8 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getReturnUpdate() {
-        return null;
+    public Boolean getReturnUpdate() {
+        return m_returnUpdate;
     }
     
     /**
@@ -340,8 +342,8 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * USed for OX mapping
      */
-    public boolean isReturnUpdate() {
-        return m_returnUpdate;
+    public Boolean isReturnUpdate() {
+        return m_returnUpdate != null && m_returnUpdate.booleanValue();
     }
     
     /**
@@ -547,8 +549,8 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setReturnUpdate(String ignore) {
-        m_returnUpdate = true;
+    public void setReturnUpdate(Boolean returnUpdate) {
+        m_returnUpdate = returnUpdate;
     }
     
     /**

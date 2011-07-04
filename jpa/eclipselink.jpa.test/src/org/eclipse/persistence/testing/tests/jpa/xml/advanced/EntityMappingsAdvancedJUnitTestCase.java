@@ -21,14 +21,23 @@
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -48,6 +57,16 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsWriter;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefaults;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -138,6 +157,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalFetchJoin", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_AddRemoveTarget", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_DeleteSource", persistenceUnit));
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testXMLEntityMappingsWriteOut", persistenceUnit));
         
         if (persistenceUnit.equals("extended-advanced")) {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testSexObjectTypeConverterDefaultValue", persistenceUnit));
@@ -168,12 +188,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEnumeratedPrimaryKeys", persistenceUnit));
 
-			suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaModelPopulate", persistenceUnit));
-			suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteria", persistenceUnit));
-			suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEM1", persistenceUnit));
-			suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEM2", persistenceUnit));
-			suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEMF", persistenceUnit));
-			suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testComplexAdditionalCriteria", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaModelPopulate", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteria", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEM1", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEM2", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEMF", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testComplexAdditionalCriteria", persistenceUnit));
         }
         
         return suite;
@@ -224,7 +244,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
     }
     
-	/**
+    /**
      * Test user defined additional criteria with no parameters.
      */
     public void testAdditionalCriteriaModelPopulate() {
@@ -1965,6 +1985,63 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             fail("An error occurred: " + e.getMessage());
         } finally {
             closeEntityManager(em);
+        }
+    }
+    
+    public void testXMLEntityMappingsWriteOut() {
+        try {
+            XMLEntityMappings mappings = new XMLEntityMappings();
+            mappings.setPersistenceUnitMetadata(new XMLPersistenceUnitMetadata());
+            mappings.getPersistenceUnitMetadata().setPersistenceUnitDefaults(new XMLPersistenceUnitDefaults());
+            XMLPersistenceUnitMetadata persistenceUnitMetadata = new XMLPersistenceUnitMetadata();
+            persistenceUnitMetadata.setPersistenceUnitDefaults(new XMLPersistenceUnitDefaults());
+            mappings.setPersistenceUnitMetadata(persistenceUnitMetadata);
+            EntityAccessor entity = new EntityAccessor();
+            mappings.setEntities(new ArrayList<EntityAccessor>());
+            entity.setAttributes(new XMLAttributes());
+            entity.getAttributes().setBasicCollections(new ArrayList<BasicCollectionAccessor>());
+            entity.getAttributes().getBasicCollections().add(new BasicCollectionAccessor());
+            entity.getAttributes().setOneToManys(new ArrayList<OneToManyAccessor>());
+            OneToManyAccessor oneToMany = new OneToManyAccessor();
+            oneToMany.setCascade(new CascadeMetadata());
+            entity.getAttributes().getOneToManys().add(oneToMany);
+            entity.getAttributes().setBasics(new ArrayList<BasicAccessor>());
+            entity.getAttributes().getBasics().add(new BasicAccessor());
+            
+            mappings.getEntities().add(entity);
+            
+            XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
+            FileOutputStream fileOut = new FileOutputStream("XMLWriteOutTest.xml");
+            writer.write(mappings, fileOut);
+            fileOut.close();
+            
+            FileInputStream fileIn = new FileInputStream(fileOut.getFD()); 
+            BufferedReader in = new BufferedReader(new InputStreamReader(fileIn));
+            HashSet<String> readStrings = new HashSet<String>();
+            while (in.ready()) {
+                readStrings.add(in.readLine());
+            }
+            in.close();
+                
+            // Now look for those empty types that we should not see when not explicitly set ...
+            assertFalse("Found cascade on delete element", readStrings.contains("<cascade-on-delete"));
+            assertFalse("Found non cacheable element", readStrings.contains("<noncacheable"));
+            assertFalse("Found private owned element", readStrings.contains("<private-owned"));
+            assertFalse("Found xml mapping metadata complete element", readStrings.contains("<xml-mapping-metadata-complete"));
+            assertFalse("Found exclude default mappings element", readStrings.contains("<exclude-default-mappings"));
+            assertFalse("Found delimeted identifiers element", readStrings.contains("<delimited-identifiers"));
+            assertFalse("Found exclude default listeners element", readStrings.contains("<exclude-default-listeners"));
+            assertFalse("Found exclude superclass listeners element", readStrings.contains("<exclude-superclass-listeners"));
+            assertFalse("Found return update element", readStrings.contains("<return-update"));            
+            assertFalse("Found cascade all element", readStrings.contains("<cascade-all"));
+            assertFalse("Found cascade persist element", readStrings.contains("<cascade-persist"));
+            assertFalse("Found cascade merge element", readStrings.contains("<cascade-merge"));
+            assertFalse("Found cascade remove element", readStrings.contains("<cascade-remove"));
+            assertFalse("Found cascade refresh element", readStrings.contains("<cascade-refresh"));
+            assertFalse("Found cascade detach element", readStrings.contains("<cascade-detach"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An error occurred: " + e.getMessage());
         }
     }
 }

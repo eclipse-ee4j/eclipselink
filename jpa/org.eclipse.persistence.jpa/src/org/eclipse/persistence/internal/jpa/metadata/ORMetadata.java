@@ -28,6 +28,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -542,25 +544,6 @@ public abstract class ORMetadata {
         }
         
         return obj1;
-    }
-    
-    /**
-     * INTERNAL:
-     * Convenience method to merge two primitive boolean values. Merging
-     * primitive booleans is a little trickier. Don't want to overwrite
-     * a true boolean value with a false boolean when it came from an 
-     * EclipseLink ORM file. (false being the default for boolean and meaning
-     * the element was not specified)
-     */
-    protected boolean mergePrimitiveBoolean(boolean value1, boolean value2, ORMetadata otherMetadata, String xmlElement) {    
-        Boolean bool1 = (value1) ? Boolean.TRUE : null;
-        Boolean bool2 = (value2) ? Boolean.TRUE : null;
-        
-        if (bool1 == null && bool2 == null) {
-            return false;
-        } else {
-            return ((Boolean) mergeSimpleObjects(bool1, bool2, otherMetadata, xmlElement)).booleanValue();
-        }
     }
     
     /**

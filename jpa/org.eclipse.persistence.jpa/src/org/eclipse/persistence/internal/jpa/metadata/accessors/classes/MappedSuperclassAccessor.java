@@ -64,6 +64,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 8)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -164,8 +166,8 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MappedSuperclassAccessor extends ClassAccessor {
-    private boolean m_excludeDefaultListeners;
-    private boolean m_excludeSuperclassListeners;
+    private Boolean m_excludeDefaultListeners;
+    private Boolean m_excludeSuperclassListeners;
     
     private AdditionalCriteriaMetadata m_additionalCriteria;
     
@@ -238,7 +240,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Used for OX mapping.
      */
     public boolean excludeDefaultListeners() {
-        return m_excludeDefaultListeners;
+        return m_excludeDefaultListeners != null && m_excludeDefaultListeners.booleanValue();
     }
     
     /**
@@ -246,7 +248,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Used for OX mapping.
      */
     public boolean excludeSuperclassListeners() {
-        return m_excludeSuperclassListeners;
+        return m_excludeSuperclassListeners != null && m_excludeSuperclassListeners.booleanValue();
     }
     
     /**
@@ -293,16 +295,16 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getExcludeDefaultListeners() {
-        return null;
+    public Boolean getExcludeDefaultListeners() {
+        return m_excludeDefaultListeners;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getExcludeSuperclassListeners() {
-        return null;
+    public Boolean getExcludeSuperclassListeners() {
+        return m_excludeSuperclassListeners;
     }
     
     /**
@@ -622,12 +624,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         super.merge(metadata);
         
         MappedSuperclassAccessor accessor = (MappedSuperclassAccessor) metadata;
-        
-        // Primitive boolean merging.
-        m_excludeDefaultListeners = mergePrimitiveBoolean(m_excludeDefaultListeners, accessor.excludeDefaultListeners(), accessor, "<exclude-default-listeners>");
-        m_excludeSuperclassListeners = mergePrimitiveBoolean(m_excludeSuperclassListeners, accessor.excludeSuperclassListeners(), accessor, "<exclude-superclass-listeners>");
-        
+         
         // Simple object merging.
+        m_excludeDefaultListeners = (Boolean) mergeSimpleObjects(m_excludeDefaultListeners, accessor.excludeDefaultListeners(), accessor, "<exclude-default-listeners>");
+        m_excludeSuperclassListeners = (Boolean) mergeSimpleObjects(m_excludeSuperclassListeners, accessor.excludeSuperclassListeners(), accessor, "<exclude-superclass-listeners>");
         m_cacheable = (Boolean) mergeSimpleObjects(m_cacheable, accessor.getCacheable(), accessor, "@cacheable");
         m_readOnly = (Boolean) mergeSimpleObjects(m_readOnly, accessor.getReadOnly(), accessor, "@read-only");
         m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClass(), accessor, "<id-class>"); 
@@ -1484,16 +1484,16 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setExcludeDefaultListeners(String ignore) {
-        m_excludeDefaultListeners = true;
+    public void setExcludeDefaultListeners(Boolean excludeDefaultListeners) {
+        m_excludeDefaultListeners = excludeDefaultListeners;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping
      */
-    public void setExcludeSuperclassListeners(String ignore) {
-        m_excludeSuperclassListeners = true;
+    public void setExcludeSuperclassListeners(Boolean excludeSuperclassListeners) {
+        m_excludeSuperclassListeners = excludeSuperclassListeners;
     }
     
     /**
