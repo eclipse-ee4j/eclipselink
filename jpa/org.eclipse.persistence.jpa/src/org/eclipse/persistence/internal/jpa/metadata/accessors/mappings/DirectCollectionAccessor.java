@@ -30,6 +30,8 @@
  *       - 312253: Descriptor exception with Embeddable on DDL gen
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -72,13 +74,13 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
  * @since EclipseLink 1.2
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
+    private Boolean m_cascadeOnDelete;
+    private Boolean m_nonCacheable;
     private String m_joinFetch;
     private String m_batchFetch;
     private Integer m_batchFetchSize;
-    private boolean m_cascadeOnDelete;
     private CollectionTableMetadata m_collectionTable;
-    private boolean m_nonCacheable;
-   
+    
     /**
      * INTERNAL:
      */
@@ -112,26 +114,15 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             m_batchFetchSize = (Integer) batchFetch.getAttribute("size");
         }
         
+        // Set the cascade on delete if specified.
         m_cascadeOnDelete = isAnnotationPresent(CascadeOnDelete.class);
+        
+        // Set the non cacheable if specified.
+        m_nonCacheable = isAnnotationPresent(Noncacheable.class);
         
         // Since BasicCollection and ElementCollection look for different
         // collection tables, we will not initialize/look for one here. Those
         // accessors will be responsible for loading their collection table.
-        
-        m_nonCacheable = isAnnotationPresent(Noncacheable.class);
-
-    }
-    
-    public boolean isCascadeOnDelete() {
-        return m_cascadeOnDelete;
-    }
-
-    public void setCascadeOnDelete(boolean cascadeOnDelete) {
-        m_cascadeOnDelete = cascadeOnDelete;
-    }
-    
-    public boolean isNonCacheable(){
-        return m_nonCacheable;
     }
     
     /**
@@ -154,6 +145,14 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
                 return false;
             }
             
+            if (! valuesMatch(m_cascadeOnDelete, directCollectionAccessor.getCascadeOnDelete())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_nonCacheable, directCollectionAccessor.getNonCacheable())) {
+                return false;
+            }
+            
             return valuesMatch(m_collectionTable, directCollectionAccessor.getCollectionTable());
         }
         
@@ -166,6 +165,14 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     public String getBatchFetch() {
         return m_batchFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getCascadeOnDelete() {
+        return m_cascadeOnDelete;
     }
     
     /**
@@ -250,6 +257,14 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getNonCacheable(){
+        return m_nonCacheable;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the converter name for a collection value.
      * @see BasicMapAccessor for override details. An EclipseLink 
      * BasicMapAccessor can specify a value converter within the BasicMap
@@ -283,6 +298,13 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     */
+    public Boolean isCascadeOnDelete() {
+        return m_cascadeOnDelete != null && m_cascadeOnDelete.booleanValue();
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a direct collection mapping, 
      * which include basic collection, basic map and element collection 
      * accessors.
@@ -290,6 +312,14 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     @Override
     public boolean isDirectCollection() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public boolean isNonCacheable() {
+        return m_nonCacheable != null && m_nonCacheable.booleanValue();
     }
     
     /**
@@ -339,12 +369,13 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // The spec. requires pessimistic lock to be extend-able to CollectionTable
         mapping.setShouldExtendPessimisticLockScope(true);
         
+        // Set the cascade on delete if specified.
         mapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
         
-        if (m_nonCacheable){
-            mapping.setIsCacheable(false);
-        }
+        // Set the non cacheable if specified.
+        mapping.setIsCacheable(!isNonCacheable());
 
+        // Process any partitioning policies.
         processPartitioning();
     }
     
@@ -459,6 +490,14 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCascadeOnDelete(Boolean cascadeOnDelete) {
+        m_cascadeOnDelete = cascadeOnDelete;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
@@ -467,14 +506,18 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNonCacheable(Boolean nonCacheable){
+        m_nonCacheable = nonCacheable;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
     public void setJoinFetch(String joinFetch) {
         m_joinFetch = joinFetch;
-    }
-    
-    public void setIsNonCacheable(boolean noncacheable){
-        m_nonCacheable = noncacheable;
     }
 }

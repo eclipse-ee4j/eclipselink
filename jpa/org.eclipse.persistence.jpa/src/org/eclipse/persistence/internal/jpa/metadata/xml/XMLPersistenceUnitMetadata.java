@@ -14,7 +14,9 @@
  *     05/23/2008-1.0M8 Guy Pelletier 
  *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
  *     12/01/2010-2.2 Guy Pelletier 
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
+ *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -33,8 +35,8 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
  * @since EclipseLink 1.0
  */
 public class XMLPersistenceUnitMetadata extends ORMetadata {
-    private boolean m_xmlMappingMetadataComplete;
-    private boolean m_excludeDefaultMappings;
+    private Boolean m_xmlMappingMetadataComplete;
+    private Boolean m_excludeDefaultMappings;
     private XMLPersistenceUnitDefaults m_persistenceUnitDefaults;
     
     /**
@@ -52,11 +54,11 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         if (objectToCompare instanceof XMLPersistenceUnitMetadata) {
             XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) objectToCompare;
             
-            if (m_xmlMappingMetadataComplete != persistenceUnitMetadata.isXMLMappingMetadataComplete()) {
+            if (m_xmlMappingMetadataComplete != persistenceUnitMetadata.getXMLMappingMetadataComplete()) {
                 return false;
             } 
             
-            if (m_excludeDefaultMappings != persistenceUnitMetadata.excludeDefaultMappings()) {
+            if (m_excludeDefaultMappings != persistenceUnitMetadata.getExcludeDefaultMappings()) {
                 return false;
             }
 
@@ -82,7 +84,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean excludeDefaultMappings() {
-        return m_excludeDefaultMappings;
+        return m_excludeDefaultMappings != null && m_excludeDefaultMappings.booleanValue();
     }
     
     /**
@@ -103,8 +105,8 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getExcludeDefaultMappings() {
-        return null;
+    public Boolean getExcludeDefaultMappings() {
+        return m_excludeDefaultMappings;
     }
     
     /**
@@ -126,12 +128,14 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getXMLMappingMetadataComplete() {
-        return null;
+    public Boolean getXMLMappingMetadataComplete() {
+        return m_xmlMappingMetadataComplete;
     }
 
-    
-    public boolean isDelimitedIdentifiers(){
+    /**
+     * INTERNAL:
+     */
+    public boolean isDelimitedIdentifiers() {
         return (m_persistenceUnitDefaults == null) ? false : m_persistenceUnitDefaults.isDelimitedIdentifiers(); 
     }
     
@@ -140,7 +144,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isXMLMappingMetadataComplete() {
-        return m_xmlMappingMetadataComplete;
+        return m_xmlMappingMetadataComplete != null && m_xmlMappingMetadataComplete.booleanValue();
     }
     
     /**
@@ -150,9 +154,9 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
     public void merge(ORMetadata metadata) {
         XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) metadata;
         
-        // Primitive boolean merging.
-        m_xmlMappingMetadataComplete = mergePrimitiveBoolean(m_xmlMappingMetadataComplete, persistenceUnitMetadata.isXMLMappingMetadataComplete(), persistenceUnitMetadata, "<xml-mapping-metadata-complete>");
-        m_excludeDefaultMappings = mergePrimitiveBoolean(m_excludeDefaultMappings, persistenceUnitMetadata.excludeDefaultMappings(), persistenceUnitMetadata, "<exclude-default-mappings>");
+        // Simple object merging.
+        m_xmlMappingMetadataComplete = (Boolean) mergeSimpleObjects(m_xmlMappingMetadataComplete, persistenceUnitMetadata.getXMLMappingMetadataComplete(), persistenceUnitMetadata, "<xml-mapping-metadata-complete>");
+        m_excludeDefaultMappings = (Boolean) mergeSimpleObjects(m_excludeDefaultMappings, persistenceUnitMetadata.getExcludeDefaultMappings(), persistenceUnitMetadata, "<exclude-default-mappings>");
         
         // Merge the persistence unit defaults.
         if (m_persistenceUnitDefaults == null) {
@@ -176,8 +180,8 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setExcludeDefaultMappings(String ignore) {
-        m_excludeDefaultMappings = true;
+    public void setExcludeDefaultMappings(Boolean excludeDefaultMappings) {
+        m_excludeDefaultMappings = excludeDefaultMappings;
     }
     
     /**
@@ -192,7 +196,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setXMLMappingMetadataComplete(String ignore) {
-        m_xmlMappingMetadataComplete = true;
+    public void setXMLMappingMetadataComplete(Boolean xmlMappingMetadataComplete) {
+        m_xmlMappingMetadataComplete = xmlMappingMetadataComplete;
     }
 }

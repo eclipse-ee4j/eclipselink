@@ -17,6 +17,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -44,11 +46,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
  * @since EclipseLink 1.0
  */
 public class CascadeMetadata extends ORMetadata {
-    private boolean m_cascadeAll;
-    private boolean m_cascadePersist;
-    private boolean m_cascadeMerge;
-    private boolean m_cascadeRemove;
-    private boolean m_cascadeRefresh;
+    private Boolean m_cascadeAll;
+    private Boolean m_cascadePersist;
+    private Boolean m_cascadeMerge;
+    private Boolean m_cascadeRemove;
+    private Boolean m_cascadeRefresh;
     
     private List<String> m_types;
     
@@ -82,23 +84,23 @@ public class CascadeMetadata extends ORMetadata {
         if (objectToCompare instanceof CascadeMetadata) {
             CascadeMetadata accessMethods = (CascadeMetadata) objectToCompare;
             
-            if (! valuesMatch(m_cascadeAll, accessMethods.isCascadeAll())) {
+            if (! valuesMatch(m_cascadeAll, accessMethods.getCascadeAll())) {
                 return false;
             }
             
-            if (! valuesMatch(m_cascadePersist, accessMethods.isCascadePersist())) {
+            if (! valuesMatch(m_cascadePersist, accessMethods.getCascadePersist())) {
                 return false;
             }
             
-            if (! valuesMatch(m_cascadeMerge, accessMethods.isCascadeMerge())) {
+            if (! valuesMatch(m_cascadeMerge, accessMethods.getCascadeMerge())) {
                 return false;
             }
             
-            if (! valuesMatch(m_cascadeRemove, accessMethods.isCascadeRemove())) {
+            if (! valuesMatch(m_cascadeRemove, accessMethods.getCascadeRemove())) {
                 return false;
             }
             
-            return valuesMatch(m_cascadeRefresh, accessMethods.isCascadeRefresh());
+            return valuesMatch(m_cascadeRefresh, accessMethods.getCascadeRefresh());
         }
         
         return false;
@@ -108,40 +110,40 @@ public class CascadeMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCascadeAll() {
-        return null;
+    public Boolean getCascadeAll() {
+        return m_cascadeAll;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCascadeMerge() {
-        return null;
+    public Boolean getCascadeMerge() {
+        return m_cascadeMerge;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCascadePersist() {
-        return null;
+    public Boolean getCascadePersist() {
+        return m_cascadePersist;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCascadeRefresh() {
-        return null;
+    public Boolean getCascadeRefresh() {
+        return m_cascadeRefresh;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCascadeRemove() {
-        return null;
+    public Boolean getCascadeRemove() {
+        return m_cascadeRemove;
     }
     
     /**
@@ -180,7 +182,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeAll() {
-        return m_cascadeAll;
+        return m_cascadeAll != null && m_cascadeAll.booleanValue();
     }
 
     /**
@@ -188,7 +190,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeMerge() {
-        return m_cascadeMerge;
+        return m_cascadeMerge != null && m_cascadeMerge.booleanValue();
     }
     
     /**
@@ -196,7 +198,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadePersist() {
-        return m_cascadePersist;
+        return m_cascadePersist != null && m_cascadePersist.booleanValue();
     }
 
     /**
@@ -204,7 +206,7 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeRefresh() {
-        return m_cascadeRefresh;
+        return m_cascadeRefresh != null && m_cascadeRefresh.booleanValue();
     }
     
     /**
@@ -212,46 +214,46 @@ public class CascadeMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadeRemove() {
-        return m_cascadeRemove;
+        return m_cascadeRemove != null && m_cascadeRemove.booleanValue();
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadeAll(String ignore) {
-        m_cascadeAll = true;
+    public void setCascadeAll(Boolean cascadeAll) {
+        m_cascadeAll = cascadeAll;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadeMerge(String ignore) {
-        m_cascadeMerge = true;
+    public void setCascadeMerge(Boolean cascadeMerge) {
+        m_cascadeMerge = cascadeMerge;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadePersist(String ignore) {
-        m_cascadePersist = true;
+    public void setCascadePersist(Boolean cascadePersist) {
+        m_cascadePersist = cascadePersist;
     }
 
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadeRefresh(String ignore) {
-        m_cascadeRefresh = true;
+    public void setCascadeRefresh(Boolean cascadeRefresh) {
+        m_cascadeRefresh = cascadeRefresh;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadeRemove(String ignore) {
-        m_cascadeRemove = true;
+    public void setCascadeRemove(Boolean cascadeRemove) {
+        m_cascadeRemove = cascadeRemove;
     }    
 }

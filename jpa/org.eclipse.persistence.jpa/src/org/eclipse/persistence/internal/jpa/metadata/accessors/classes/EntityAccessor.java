@@ -85,6 +85,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 8)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -154,7 +156,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 1.0
  */
 public class EntityAccessor extends MappedSuperclassAccessor {
-    private boolean m_cascadeOnDelete;
+    private Boolean m_cascadeOnDelete;
     
     private InheritanceMetadata m_inheritance;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
@@ -303,6 +305,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         }
     }
     
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getCascadeOnDelete() {
+        return m_cascadeOnDelete;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -449,7 +460,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      */
     public boolean isCascadeOnDelete() {
-        return m_cascadeOnDelete;
+        return (m_cascadeOnDelete == null) ? isAnnotationPresent(CascadeOnDelete.class) : m_cascadeOnDelete.booleanValue();
     }
     
     /** 
@@ -480,6 +491,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         EntityAccessor accessor = (EntityAccessor) metadata;
         
         // Simple object merging.
+        m_cascadeOnDelete = (Boolean) mergeSimpleObjects(m_cascadeOnDelete, accessor.getCascadeOnDelete(), accessor, "<cascade-on-delete>");
         m_entityName = (String) mergeSimpleObjects(m_entityName, accessor.getEntityName(), accessor, "@name");
         m_discriminatorValue = (String) mergeSimpleObjects(m_discriminatorValue, accessor.getDiscriminatorValue(), accessor, "<discriminator-value>");
         m_classExtractorName = (String) mergeSimpleObjects(m_classExtractorName, accessor.getClassExtractorName(), accessor, "<class-extractor>");
@@ -813,14 +825,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Check if CascadeOnDelete was set on the Entity.
      */
     protected void processCascadeOnDelete() {
-        MetadataAnnotation annotation = getAnnotation(CascadeOnDelete.class);
-        
-        if (annotation != null) {
-            m_cascadeOnDelete = true;
-        }
-        if (m_cascadeOnDelete) {
-            getDescriptor().getClassDescriptor().setIsCascadeOnDeleteSetOnDatabaseOnSecondaryTables(true);
-        }
+        getDescriptor().getClassDescriptor().setIsCascadeOnDeleteSetOnDatabaseOnSecondaryTables(isCascadeOnDelete());  
     }
     
     /**
@@ -1211,8 +1216,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setCascadeOnDelete(boolean cascadeOnDelete) {
+    public void setCascadeOnDelete(Boolean cascadeOnDelete) {
         m_cascadeOnDelete = cascadeOnDelete;
     }
     

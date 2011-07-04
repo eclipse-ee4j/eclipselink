@@ -43,6 +43,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -104,8 +106,10 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  */
 public abstract class RelationshipAccessor extends MappingAccessor {
     private Boolean m_orphanRemoval;
-    private boolean m_privateOwned;
-    private boolean m_cascadeOnDelete;
+    private Boolean m_cascadeOnDelete;
+    private Boolean m_nonCacheable;
+    private Boolean m_privateOwned;
+    
     private CascadeMetadata m_cascade;
     protected MetadataClass m_referenceClass;
     private MetadataClass m_targetEntity;
@@ -114,13 +118,12 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private String m_mappedBy;
     private String m_joinFetch;
     private String m_batchFetch;
+    private String m_targetEntityName;
+    
     private Integer m_batchFetchSize;
 
     private JoinTableMetadata m_joinTable;
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
-  
-    private String m_targetEntityName;
-    private boolean m_nonCacheable;
     
     /**
      * INTERNAL:
@@ -173,7 +176,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Set the private owned if one is present.
         m_privateOwned = isAnnotationPresent(PrivateOwned.class);
         
-        // Set the cascahe on delete if one is present.
+        // Set the cascade on delete if one is present.
         m_cascadeOnDelete = isAnnotationPresent(CascadeOnDelete.class);
         
         // Set the non cacheable if one is present.
@@ -239,7 +242,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 return false;
             }
             
-            if (! valuesMatch(m_privateOwned, relationshipAccessor.isPrivateOwned())) {
+            if (! valuesMatch(m_privateOwned, relationshipAccessor.getPrivateOwned())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_nonCacheable, relationshipAccessor.getNonCacheable())) {
                 return false;
             }
 
@@ -287,6 +294,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public String getBatchFetch() {
         return m_batchFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getCascadeOnDelete() {
+        return m_cascadeOnDelete;
     }
     
     /**
@@ -397,6 +412,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public Boolean getNonCacheable() {
+        return m_nonCacheable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public Boolean getOrphanRemoval() {
         return m_orphanRemoval;
     }
@@ -435,8 +458,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getPrivateOwned() {
-        return null;
+    public Boolean getPrivateOwned() {
+        return m_privateOwned;
     }
     
     /**
@@ -541,10 +564,9 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
     public boolean isCascadeOnDelete() {
-        return m_cascadeOnDelete;
+        return m_cascadeOnDelete != null && m_cascadeOnDelete.booleanValue();
     }
     
     /**
@@ -561,8 +583,12 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         return fetchType.equals(FetchType.LAZY.name());
     }
   
-    public boolean isNonCacheable(){
-        return m_nonCacheable;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public boolean isNonCacheable() {
+        return m_nonCacheable != null && m_nonCacheable.booleanValue();
     }
     
     /**
@@ -578,7 +604,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public boolean isPrivateOwned() {
-        return m_privateOwned;
+        return m_privateOwned != null && m_privateOwned.booleanValue();
     }
     
     /**
@@ -741,11 +767,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Process the cascade types.
         processCascadeTypes(mapping);
         
+        // Process any partitioning policies if specified.
         processPartitioning();
         
-        if (m_nonCacheable){
-            mapping.setIsCacheable(false);
-        }
+        // Process a non-cacheable setting.
+        mapping.setIsCacheable(!isNonCacheable());
     }
     
     /**
@@ -813,7 +839,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadeOnDelete(boolean cascadeOnDelete) {
+    public void setCascadeOnDelete(Boolean cascadeOnDelete) {
         m_cascadeOnDelete = cascadeOnDelete;
     }
     
@@ -857,7 +883,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         m_mappedBy = mappedBy;
     }
     
-    public void setIsNonCacheable(boolean noncacheable){
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNonCacheable(Boolean noncacheable) {
         m_nonCacheable = noncacheable;
     }
 
@@ -873,8 +903,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setPrivateOwned(String ignore) {
-        m_privateOwned = true;
+    public void setPrivateOwned(Boolean privateOwned) {
+        m_privateOwned = privateOwned;
     }
     
     /**

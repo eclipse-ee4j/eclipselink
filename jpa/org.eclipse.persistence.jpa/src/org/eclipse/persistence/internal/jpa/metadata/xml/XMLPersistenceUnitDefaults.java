@@ -23,6 +23,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     07/03/2011-2.3.1 Guy Pelletier 
+ *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -52,8 +54,8 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetad
 public class XMLPersistenceUnitDefaults extends ORMetadata {
     private AccessMethodsMetadata m_accessMethods;
     
-    private boolean m_cascadePersist;
-    private boolean m_delimitedIdentifiers;
+    private Boolean m_cascadePersist;
+    private Boolean m_delimitedIdentifiers;
        
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
     private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
@@ -88,11 +90,11 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
                 return false;
             }
                 
-            if (! valuesMatch(persistenceUnitDefaults.isCascadePersist(), isCascadePersist())) {
+            if (! valuesMatch(persistenceUnitDefaults.getCascadePersist(), getCascadePersist())) {
                 return false;
             } 
             
-            if (! valuesMatch(persistenceUnitDefaults.isDelimitedIdentifiers(), isDelimitedIdentifiers())) {
+            if (! valuesMatch(persistenceUnitDefaults.getDelimitedIdentifiers(), getDelimitedIdentifiers())) {
                 return false;
             } 
         
@@ -130,15 +132,15 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCascadePersist() {
-        return null;
+    public Boolean getCascadePersist() {
+        return m_cascadePersist;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getCatalog() {
+    public String getCatalog() { 
         return m_catalog;
     }
     
@@ -146,8 +148,8 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getDelimitedIdentifiers() {
-        return null;
+    public Boolean getDelimitedIdentifiers() {
+        return m_delimitedIdentifiers;
     }
     
     /**
@@ -196,7 +198,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isCascadePersist() {
-        return m_cascadePersist;
+        return m_cascadePersist != null && m_cascadePersist.booleanValue();
     }
 
     /**
@@ -204,7 +206,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * Used for OX mapping.
      */
     public boolean isDelimitedIdentifiers(){
-        return m_delimitedIdentifiers;
+        return m_delimitedIdentifiers != null && m_delimitedIdentifiers.booleanValue();
     }
     
     /**
@@ -214,11 +216,9 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     public void merge(ORMetadata metadata) {
         XMLPersistenceUnitDefaults persistenceUnitDefaults = (XMLPersistenceUnitDefaults) metadata;
         if (persistenceUnitDefaults != null) {
-            // Primitive boolean merging.
-            m_cascadePersist = mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults, "cascade-persist");
-            m_delimitedIdentifiers = mergePrimitiveBoolean(m_delimitedIdentifiers, persistenceUnitDefaults.isDelimitedIdentifiers(), persistenceUnitDefaults, "delimited-identifiers");
-            
             // Simple object merging.
+            m_cascadePersist = (Boolean) mergeSimpleObjects(m_cascadePersist, persistenceUnitDefaults.getCascadePersist(), persistenceUnitDefaults, "cascade-persist");
+            m_delimitedIdentifiers = (Boolean) mergeSimpleObjects(m_delimitedIdentifiers, persistenceUnitDefaults.getDelimitedIdentifiers(), persistenceUnitDefaults, "delimited-identifiers");
             m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults, "<access>");
             m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults, "<catalog>");
             m_schema = (String) mergeSimpleObjects(m_schema, persistenceUnitDefaults.getSchema(),  persistenceUnitDefaults, "<schema>");
@@ -252,6 +252,14 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setCascadePersist(Boolean cascadePersist) {
+        m_cascadePersist = cascadePersist;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setCatalog(String catalog) {
         m_catalog = catalog;
     }
@@ -260,16 +268,8 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCascadePersist(String ignore) {
-        m_cascadePersist = true;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setDelimitedIdentifiers(String ignore){
-        m_delimitedIdentifiers = true;
+    public void setDelimitedIdentifiers(Boolean delimitedIdentifiers){
+        m_delimitedIdentifiers = delimitedIdentifiers;
     }
     
     /**
