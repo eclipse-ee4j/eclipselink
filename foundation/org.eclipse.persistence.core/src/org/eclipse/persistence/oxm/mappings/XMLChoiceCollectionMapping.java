@@ -93,6 +93,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private Map<String, List<XMLField>> classNameToSourceFieldsMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<XMLField, String> fieldToClassNameMappings;
+    private Map<String, XMLField> classNameToFieldMappings;
     private Map<XMLField, Converter> fieldsToConverters;
     private ContainerPolicy containerPolicy;
     
@@ -109,6 +110,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
         classToFieldMappings = new HashMap<Class, XMLField>();
+        classNameToFieldMappings = new HashMap<String, XMLField>();
         choiceElementMappings = new LinkedHashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
@@ -416,6 +418,9 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         XMLField field = new XMLField(srcXpath);
         XMLField tgtField = new XMLField(tgtXpath);
         this.fieldToClassNameMappings.put(field, elementTypeName);
+        if(this.classNameToFieldMappings.get(elementTypeName) == null) {
+            this.classNameToFieldMappings.put(elementTypeName, field);
+        }
         addChoiceElementMapping(field, elementTypeName, tgtField);        
     }
     
@@ -468,6 +473,9 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
+        if (classNameToFieldMappings.get(elementTypeName) == null) {
+            classNameToFieldMappings.put(elementTypeName, field);
+        }        
         addChoiceElementMapping(field, elementTypeName);
     }
     
@@ -567,15 +575,29 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
             XMLMapping mapping = this.choiceElementMappings.get(entry.getKey());
-            if(!((mapping instanceof XMLCollectionReferenceMapping) && ((XMLCollectionReferenceMapping)mapping).getSourceToTargetKeyFieldAssociations().size() > 1)) {
-                if (classToFieldMappings.get(elementType) == null) {
-                    classToFieldMappings.put(elementType, entry.getKey());
-                }
-            }
+
             if(fieldToClassMappings.get(entry.getKey()) == null) {
                 fieldToClassMappings.put(entry.getKey(), elementType);
             }            
         }
+        for(Entry<String, XMLField> next: this.classNameToFieldMappings.entrySet()) {
+            String className = next.getKey();
+            Class elementType = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
+                    }
+                } else {
+                    elementType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
+            }
+            classToFieldMappings.put(elementType, next.getValue());
+        }    	
         if(classNameToSourceFieldsMappings != null) {
             Iterator<Entry<String, List<XMLField>>> sourceFieldEntries = classNameToSourceFieldsMappings.entrySet().iterator();
             while(sourceFieldEntries.hasNext()) {
@@ -794,5 +816,10 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             return true;
         }
         return false;
+    }
+
+    public Map<String, XMLField> getClassNameToFieldMappings() {
+        // TODO Auto-generated method stub
+        return classNameToFieldMappings;
     }    
 }

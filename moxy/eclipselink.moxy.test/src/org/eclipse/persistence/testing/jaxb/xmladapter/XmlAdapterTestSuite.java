@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.jaxb.xmladapter.choice.AdapterWithElementsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.classlevel.ClassLevelAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.composite.XmlAdapterCompositeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositecollection.XmlAdapterCompositeCollectionTestCases;
@@ -58,6 +59,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(XmlAdapterHexBinaryTestCases.class);
         suite.addTestSuite(XmlAdapterListSingleBarTestCases.class);
         suite.addTestSuite(XmlAdapterListMultipleBarTestCases.class);
+        suite.addTestSuite(AdapterWithElementsTestCases.class);
         return suite;
     }
 }

@@ -615,6 +615,19 @@ public class MappingsGenerator {
         while (choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
+            JavaClass originalType = next.getType();
+            Converter converter = null;
+            TypeInfo info = typeInfo.get(type.getName());
+            if(info != null){
+                XmlJavaTypeAdapter adapter = info.getXmlJavaTypeAdapter();
+                if(adapter != null){
+                    String adapterValue = adapter.getValue();
+                    JavaClass adapterClass = helper.getJavaClass(adapterValue);
+                    JavaClass theClass = CompilerHelper.getTypeFromAdapterClass(adapterClass, helper);
+                    type = theClass;
+                    converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
+                }
+            }            
             if (next.getXmlJoinNodes() != null) {
                 // handle XmlJoinNodes
                 List<XMLField> srcFlds = new ArrayList<XMLField>();
@@ -647,7 +660,13 @@ public class MappingsGenerator {
                 } else {
                     xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || next.isMtomAttachment());
                 }
-                mapping.addChoiceElement(xpath.getName(), type.getQualifiedName(), false);
+                mapping.addChoiceElement(xpath, type.getQualifiedName());
+                if(!originalType.getQualifiedName().equals(type.getQualifiedName())) {
+                    if(mapping.getClassNameToFieldMappings().get(originalType.getQualifiedName()) == null) {
+                        mapping.getClassNameToFieldMappings().put(originalType.getQualifiedName(), xpath);
+                    }
+                    mapping.addConverter(xpath, converter);
+                }
             }
         }
         return mapping;
@@ -693,6 +712,20 @@ public class MappingsGenerator {
         while (choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
+            JavaClass originalType = next.getType();
+            Converter converter = null;
+            TypeInfo info = typeInfo.get(type.getName());
+            if(info != null){
+                XmlJavaTypeAdapter adapter = info.getXmlJavaTypeAdapter();
+                if(adapter != null){
+                    String adapterValue = adapter.getValue();
+                    JavaClass adapterClass = helper.getJavaClass(adapterValue);
+                    JavaClass theClass = CompilerHelper.getTypeFromAdapterClass(adapterClass, helper);
+                    type = theClass;
+                    converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
+                }
+            }            
+            
             if (next.getXmlJoinNodes() != null) {
                 // handle XmlJoinNodes
                 List<XMLField> srcFlds = new ArrayList<XMLField>();
@@ -726,6 +759,13 @@ public class MappingsGenerator {
                     xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
                 }
                 mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
+                if(!originalType.getQualifiedName().equals(type.getQualifiedName())) {
+                    if(mapping.getClassNameToFieldMappings().get(originalType.getQualifiedName()) == null) {
+                        mapping.getClassNameToFieldMappings().put(originalType.getQualifiedName(), xpath);
+                    }
+                    mapping.addConverter(xpath, converter);
+                }
+                
             }
         }
         return mapping;

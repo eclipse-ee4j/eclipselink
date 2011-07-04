@@ -38,6 +38,7 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 
 /**
@@ -258,6 +259,33 @@ public class CompilerHelper {
         return null;
 
     }
+    
+    /**
+     * If adapter class is null return null If there is a marshal method that
+     * returns something other than Object on the adapter class return the
+     * return type of that method Otherwise return Object.class
+     */
+    public static JavaClass getTypeFromAdapterClass(JavaClass adapterClass, Helper helper) {
+        if (adapterClass != null) {
+            //JavaClass declJavaType = Object.class;
+            JavaClass declJavaType = helper.getJavaClass(Object.class);
+            // look for marshal method
+            Object[] tacMethods = (Object[]) adapterClass.getMethods().toArray();
+            for (int i = 0; i < tacMethods.length; i++) {
+                JavaMethod method = (JavaMethod)tacMethods[i];
+                if (method.getName().equals("marshal")) {
+                    JavaClass returnType = method.getReturnType();
+                    if (!(returnType.getQualifiedName().equals(declJavaType.getQualifiedName()))) {
+                        declJavaType = returnType;
+                        return declJavaType;
+                    }
+                }
+            }
+            return declJavaType;
+        }
+        return null;
+
+    }       
 
     /**
      * Return true if the type is a Collection, List or Set

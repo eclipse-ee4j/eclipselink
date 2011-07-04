@@ -85,11 +85,15 @@ import javax.xml.namespace.QName;
 public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
+    private Map<String, XMLField> classNameToFieldMappings;
     private Map<Class, List<XMLField>> classToSourceFieldsMappings;
     private Map<String, List<XMLField>> classNameToSourceFieldsMappings;
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<XMLField, Converter> fieldsToConverters;
+    private Map<String, Converter> classNameToConverter;
+    private Map<Class, Converter> classToConverter;
+    
     private Converter converter;
     private boolean isWriteOnly;
     
@@ -103,6 +107,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<XMLField, String>();
         classToFieldMappings = new HashMap<Class, XMLField>();
+        classNameToFieldMappings = new HashMap<String, XMLField>();
         choiceElementMappings = new LinkedHashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
     }
@@ -321,6 +326,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     public void addChoiceElement(String xpath, String elementTypeName, boolean xmlRoot) {
         XMLField field = new XMLField(xpath);
         this.fieldToClassNameMappings.put(field, elementTypeName);
+        if(this.classNameToFieldMappings.get(elementTypeName) != null) {
+            this.classNameToFieldMappings.put(elementTypeName, field);
+        }        
         if(xmlRoot) {
             this.fieldsToConverters.put(field, new XMLRootConverter(field));
         }
@@ -331,6 +339,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         XMLField field = new XMLField(srcXpath);
         XMLField tgtField = new XMLField(tgtXpath);
         this.fieldToClassNameMappings.put(field, elementTypeName);
+        if(classNameToFieldMappings.get(elementTypeName) == null) {
+            classNameToFieldMappings.put(elementTypeName, field);
+        }
         addChoiceElementMapping(field, elementTypeName, tgtField);        
     }
     public void addChoiceElement(String xpath, String elementTypeName) {
@@ -384,6 +395,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
+        if(this.classNameToFieldMappings.get(elementTypeName) == null) {
+            this.classNameToFieldMappings.put(elementTypeName, field);
+        }
         addChoiceElementMapping(field, elementTypeName);
     }
     
@@ -469,14 +483,29 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             }
 
             XMLMapping mapping = this.choiceElementMappings.get(entry.getKey());
-            if (!((mapping instanceof XMLObjectReferenceMapping) && ((XMLObjectReferenceMapping)mapping).getSourceToTargetKeyFieldAssociations().size() > 1)) {
-                if (classToFieldMappings.get(elementType) == null) {
-                    classToFieldMappings.put(elementType, entry.getKey());
-                }
-            }
+
             if (fieldToClassMappings.get(entry.getKey()) == null) {
                 fieldToClassMappings.put(entry.getKey(), elementType);
             }    
+        }
+        for(Entry<String, XMLField> next: this.classNameToFieldMappings.entrySet()) {
+            String className = next.getKey();
+            Class elementType = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
+                    }
+                } else {
+                    elementType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
+            }
+            classToFieldMappings.put(elementType, next.getValue());
+            
         }
         if(classNameToSourceFieldsMappings != null) {
             Iterator<Entry<String, List<XMLField>>> sourceFieldEntries = classNameToSourceFieldsMappings.entrySet().iterator();
@@ -499,6 +528,29 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                     throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
                 }
                 this.getClassToSourceFieldsMappings().put(elementType,fields);
+            }
+        }
+        if(classNameToConverter != null) {
+            if(this.classToConverter == null) {
+                this.classToConverter = new HashMap<Class, Converter>();
+            }
+            for(Entry<String, Converter> next: classNameToConverter.entrySet()) {
+                String className = next.getKey();
+                Class elementType = null;
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
+                        }
+                    } else {
+                        elementType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+                    }
+                } catch (ClassNotFoundException exc) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
+                }
+                this.classToConverter.put(elementType, next.getValue());
             }
         }
     }
@@ -711,4 +763,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         }
         return false;
     }
+    
+    public Map<String, XMLField> getClassNameToFieldMappings() {
+        return this.classNameToFieldMappings;
+    }
+    
 }
