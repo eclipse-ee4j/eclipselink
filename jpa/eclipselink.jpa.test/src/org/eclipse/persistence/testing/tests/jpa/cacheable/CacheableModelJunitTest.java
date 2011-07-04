@@ -20,6 +20,7 @@ package org.eclipse.persistence.testing.tests.jpa.cacheable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
@@ -244,6 +245,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testProtectedRelationshipsMetadata"));
             suite.addTest(new CacheableModelJunitTest("testForceProtectedFromEmbeddable"));
             suite.addTest(new CacheableModelJunitTest("testEmbeddableProtectedCaching"));
+            suite.addTest(new CacheableModelJunitTest("testEmbeddableProtectedReadOnly"));
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedManyToOne"));
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedManyToMany"));
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedElementCollection"));
@@ -1193,6 +1195,20 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         rollbackTransaction(em);
         closeEM(em);
         }
+    }
+    
+    // Bug 347168
+    public void testEmbeddableProtectedReadOnly(){
+        EntityManager em = createDSEntityManager();
+        Map properties = new HashMap();
+        properties.put(QueryHints.READ_ONLY, "true");
+        ForceProtectedEntityWithComposite cte = null;
+        try{
+            cte = em.find(ForceProtectedEntityWithComposite.class, m_forcedProtectedEntityCompositId, properties);
+        } catch (Exception e){
+            fail("Exception while trying to do a read-only find to an protected entity with an embeddable: " + e.getMessage());
+        }
+        assertNotNull("Protected entity did not have aggregate when read back.", cte.getProtectedEmbeddable());
     }
     
     public void testProtectedCaching(){

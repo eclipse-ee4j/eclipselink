@@ -372,13 +372,39 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (buildShallowOriginal) {
             descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);
         } else if (executionSession.isUnitOfWork()) {
-            descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, cacheKey, nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
+            descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
         } else {
-            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, cacheKey, databaseRow, nestedQuery, joinManager, refreshing, executionSession);
+            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey), databaseRow, nestedQuery, joinManager, refreshing, executionSession);
         }
         return aggregate;
     }
 
+    /**
+     * INTERNAL:
+     * Wrap the aggregate represented by this mapping in a cachekey so it can be processed my 
+     * methods down the stack.
+     * @param owningCacheKey - the cache key holding the object to extract the aggregate from
+     * @return
+     */
+    protected CacheKey buildWrapperCacheKeyForAggregate(CacheKey owningCacheKey){
+        if (isMapKeyMapping){
+            return owningCacheKey;
+        }
+        CacheKey aggregateKey = null;
+        if (owningCacheKey != null){
+            Object object = owningCacheKey.getObject();
+            if (owningCacheKey.getObject() != null){
+                Object aggregate = getAttributeValueFromObject(object);
+                aggregateKey = new CacheKey(null, aggregate, null);
+                aggregateKey.setProtectedForeignKeys(owningCacheKey.getProtectedForeignKeys());
+                aggregateKey.setRecord(owningCacheKey.getRecord());
+                aggregateKey.setIsolated(owningCacheKey.isIsolated());
+                aggregateKey.setReadTime(owningCacheKey.getReadTime());
+            }
+        }
+        return aggregateKey;
+    }
+        
     /**
      * INTERNAL:
      * Write null values for all aggregate fields into the parent row.
