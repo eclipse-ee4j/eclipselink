@@ -51,7 +51,7 @@ public class OXMJavaModelImpl implements JavaModel {
 
         // try actually finding the class, might be concrete
         try {
-            Class<?> realClass = PrivilegedAccessHelper.getClassForName(className);
+            Class<?> realClass = PrivilegedAccessHelper.getClassForName(className, true, classLoader);
             if (realClass != null) {
                 JavaModelImpl jm = new JavaModelImpl(this.classLoader);
                 JavaClassImpl jc = new JavaClassImpl(realClass, jm);
@@ -81,7 +81,7 @@ public class OXMJavaModelImpl implements JavaModel {
 
         // try actually finding the class, might be concrete
         try {
-            Class<?> realClass = PrivilegedAccessHelper.getClassForName(className);
+            Class<?> realClass = PrivilegedAccessHelper.getClassForName(className, true, classLoader);
             if (realClass != null) {
                 JavaModelImpl jm = new JavaModelImpl(this.classLoader);
                 JavaClassImpl jc = new JavaClassImpl(realClass, jm);
