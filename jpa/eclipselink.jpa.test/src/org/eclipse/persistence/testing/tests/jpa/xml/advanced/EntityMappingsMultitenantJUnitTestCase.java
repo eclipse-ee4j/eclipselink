@@ -14,6 +14,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -539,6 +541,19 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
             for (Integer id : family707Mafiosos) {
                 assertNull("Found family 707 mafioso.", em.find(Mafioso.class, id));
             }
+            
+            // Try a native sql query. Should get an exception since the
+            // eclipselink.jdbc.allow-native-sql-queries property is set to 
+            // false for this PU.
+            boolean exceptionCaught = false;
+            List mafiaFamilies = null;
+            try {
+                mafiaFamilies = em.createNativeQuery("select * from XML_MAFIA_FAMILY").getResultList();
+            } catch (Exception e) {
+                exceptionCaught = true;
+            }
+            
+            assertTrue("No exception was caught from issuing a native query.", exceptionCaught);
             
             // Query directly for the boss from the other family.
             Boss otherBoss = em.find(Boss.class, family707Mafiosos.get(0));

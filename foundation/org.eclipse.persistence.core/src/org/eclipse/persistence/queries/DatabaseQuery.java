@@ -19,6 +19,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     05/24/2011-2.3 Guy Pelletier 
  *       - 345962: Join fetch query when using tenant discriminator column fails.
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -127,6 +129,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean shouldRetrieveBypassCache = false;
     protected boolean shouldStoreBypassCache = false;
 
+    /**  
+     * Property used to override a persistence unit level that disallows native 
+     * SQL queries.
+     * @see Project#setAllowNativeSQLQueries(boolean)
+     */
+    protected Boolean allowNativeSQLQuery;
+    
     /** Internally used by the mappings as a temporary store. */
     protected Map<Object, Object> properties;
 
@@ -160,6 +169,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * custom sql/query support.
      */
     protected boolean isUserDefined;
+    
+    /**
+     * Internal flag used to bypass user define queries when executing one for
+     * custom sql/query support.
+     */
+    protected boolean isUserDefinedSQLCall;
 
     /** Policy that determines how the query will cascade to its object's parts. */
     protected int cascadePolicy;
@@ -860,7 +875,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public Collection<Accessor> getAccessors() {
         return this.accessors;
     }
-
+    
     /**
      * INTERNAL: Return the arguments for use with the pre-defined query option
      */
@@ -1594,6 +1609,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean isUserDefined() {
         return isUserDefined;
     }
+    
+    /**
+     * INTERNAL: Return true if the query is a custom user defined SQL call query.
+     */
+    public boolean isUserDefinedSQLCall() {
+        return this.isUserDefinedSQLCall;
+    }
 
     /**
      * INTERNAL: Return true if the query uses default properties. This is used
@@ -1880,6 +1902,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setCall(Call call) {
         setDatasourceCall(call);
+        isUserDefinedSQLCall = true;
     }
 
     /**
@@ -2023,6 +2046,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setIsUserDefined(boolean isUserDefined) {
         this.isUserDefined = isUserDefined;
+    }
+    
+    /**
+     * INTERNAL: Set if the query is a custom user defined sql call query.
+     */
+    public void setIsUserDefinedSQLCall(boolean isUserDefinedSQLCall) {
+        this.isUserDefinedSQLCall = isUserDefinedSQLCall;
     }
 
     /**
@@ -2269,6 +2299,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Return true if this individual query should allow native a SQL call
+     * to be issued. 
+     */
+    public boolean shouldAllowNativeSQLQuery(boolean projectAllowsNativeQueries) {        
+        // If allow native SQL query is undefined, use the project setting
+        // otherwise use the allow native SQL setting.
+        return (allowNativeSQLQuery == null) ? projectAllowsNativeQueries : allowNativeSQLQuery.booleanValue();
+    }
+    
+    /**
      * PUBLIC: Cache the prepared statements, this requires full parameter
      * binding as well.
      */
@@ -2506,6 +2547,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         setProperty(BATCH_FETCH_PROPERTY, batchObjects);
     }
 
+    /**
+     * INTERNAL:
+     * Set to true if this individual query should be marked to bypass a
+     * persistence unit level disallow SQL queries flag.
+     */
+    public void setAllowNativeSQLQuery(Boolean allowNativeSQLQuery) {
+        this.allowNativeSQLQuery = allowNativeSQLQuery;
+    }
+    
     /**
      * INTERNAL:
      * Return if the query has any nullable arguments.

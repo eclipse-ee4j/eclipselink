@@ -123,6 +123,11 @@
         <properties>
             <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
             <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
+            <!-- Since we don't exclude unlisted classes here, we will       -->
+            <!-- eventually hit the multitenant entities which turn native   -->
+            <!-- sql queries off by default, so we need to be explicit here  --> 
+            <!--  and turn them on                                           -->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>        
     </persistence-unit>
     
@@ -135,6 +140,7 @@
             <property name="tenant.id" value="123"/>
             <property name="eclipselink.tenant-id" value="123"/>
             <property name="eclipselink.session-name" value="extended-multi-tenant-123"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
         </properties>
     </persistence-unit>
 

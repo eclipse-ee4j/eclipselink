@@ -14,6 +14,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
 
@@ -145,6 +147,11 @@ public class MultitenantMetadata extends ORMetadata {
         if (getProject().usesMultitenantSharedEmf()) {
             descriptor.getClassDescriptor().setCacheIsolation(CacheIsolationType.PROTECTED);
         }
+        
+        // As soon as we find one entity that is multitenant, turn off native
+        // SQL queries. Users can set the property on their persistence unit
+        // if they want it back on. Or per individual query.
+        getProject().getProject().setAllowNativeSQLQueries(false);
     }
     
     /**

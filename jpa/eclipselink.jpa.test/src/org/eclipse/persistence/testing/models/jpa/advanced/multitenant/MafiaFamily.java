@@ -14,6 +14,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     06/1/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 9)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -30,6 +32,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -56,6 +59,9 @@ import static javax.persistence.CascadeType.ALL;
      name="DeleteAllMafiaFamilies",
      query="DELETE FROM MafiaFamily m")
 })
+@NamedNativeQuery(
+     name="findSQLMafiaFamilies",
+     query="SELECT * FROM JPA_MAFIA_FAMILY")
 public class MafiaFamily implements Serializable {
     private int id;
     private String name;

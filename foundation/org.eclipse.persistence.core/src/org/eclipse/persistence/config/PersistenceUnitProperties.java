@@ -13,6 +13,8 @@
  *     cdelahun - Bug 214534: added COORDINATION_JMS_REUSE_PUBLISHER property to enable JMS rcm legacy behavior
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1481,6 +1483,24 @@ public class PersistenceUnitProperties {
      */
     public static final String TEMPORAL_MUTABLE = "eclipselink.temporal.mutable";
 
+    /**
+     * The <code>"eclipselink.jdbc.allow-native-sql-queries"</code> property 
+     * specifies whether any user defined SQL is allowed within a persistence 
+     * unit. This is of particular importance within a multitenant to minimize 
+     * the potential impact of revealing multi tenant information. By default
+     * any persistence unit containing at least one multitenant entity will
+     * cause this flag to be set to 'false'. 
+     * <p>
+     * Allowed Values (String):
+     * <ul>
+     * <li>"true" - (DEFAULT) allow native SQL
+     * <li>"false" - do not allow native SQL.
+     * </ul>
+     *
+     * @see Project#setAllowNativeSQLQueries(boolean)
+     */
+    public static final String ALLOW_NATIVE_SQL_QUERIES = "eclipselink.jdbc.allow-native-sql-queries";
+    
     /**
      * The <code>"eclipselink.allow-zero-id"</code> property configures if zero
      * is considered a valid id on a new entity. If the id is not considered

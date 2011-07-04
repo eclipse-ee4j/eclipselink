@@ -13,10 +13,15 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  * INTERNAL:
@@ -317,7 +322,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7338", "You cannot add sequences to a SessionBroker." },
                                            { "7339", "Alias [{0}] is used by both [{1}] and [{2}] classes. Descriptor alias must be unique." },
                                            { "7340", "There are multiple mapping files called [{0}] in classpath."},
-                                           { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataSource.  Please specify one using either persitence unit property eclipselink.metadata-source.xml.file or eclipselink.metadata-source.xml.url"}
+                                           { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataSource.  Please specify one using either persitence unit property eclipselink.metadata-source.xml.file or eclipselink.metadata-source.xml.url"},
+                                           { "7342", "The specified boolean value [{0}] for setting allow native sql queries is invalid, the value must either be ''true'' or ''false''."},
                                            
  };
     

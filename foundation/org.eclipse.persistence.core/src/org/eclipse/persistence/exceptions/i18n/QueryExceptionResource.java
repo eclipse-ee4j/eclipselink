@@ -13,10 +13,15 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     05/24/2011-2.3 Guy Pelletier 
  *       - 345962: Join fetch query when using tenant discriminator column fails.
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  * INTERNAL: English ResourceBundle for QueryException messages.
@@ -181,6 +186,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6172", "Missing connection pool for partitioning [{0}]."},
        { "6173", "Connection pool [{0}] failed to fail-over, all servers are dead."},
        { "6174", "No value was provided for the session property [{0}]. This exception is possible when using additional criteria or tenant discriminator columns without specifying the associated contextual property. These properties must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
+       { "6175", "Native SQL queries have been disabled. This is done either by setting the persistence unit property '" + PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES + "' to false or having at least one multitenant entity defined in your persistence unit. Check your persistence unit specification. To allow native sql queries, set this property to true. Alternatively, individual queries may bypass this setting by setting the '" + QueryHints.ALLOW_NATIVE_SQL_QUERY + "' query hint to true."}
     };
 
     /**

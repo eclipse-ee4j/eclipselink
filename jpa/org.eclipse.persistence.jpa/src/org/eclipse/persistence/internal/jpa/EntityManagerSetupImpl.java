@@ -28,6 +28,8 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -1914,6 +1916,7 @@ public class EntityManagerSetupImpl {
             updateBatchWritingSetting(m);
     
             updateNativeSQLSetting(m);
+            updateAllowNativeSQLQueriesSetting(m);
             updateSQLCastSetting(m);
             updateUppercaseSetting(m);
             updateCacheStatementSettings(m);
@@ -2252,6 +2255,25 @@ public class EntityManagerSetupImpl {
                  session.getProject().getLogin().dontUseNativeSQL();
            }else{
                  session.handleException(ValidationException.invalidBooleanValueForSettingNativeSQL(nativeSQLString));
+           }
+        }
+    }
+    
+    /**
+     * Enable or disable the capability of Native SQL function.  
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateAllowNativeSQLQueriesSetting(Map m){
+        // Set allow native SQL queries flag if it was specified.
+        String allowNativeSQLQueriesString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES, m, session);
+        
+        if (allowNativeSQLQueriesString != null) {
+           if (allowNativeSQLQueriesString.equalsIgnoreCase("true")) {
+               session.getProject().setAllowNativeSQLQueries(true);
+           } else if (allowNativeSQLQueriesString.equalsIgnoreCase("false")) {
+               session.getProject().setAllowNativeSQLQueries(false);
+           } else {
+               session.handleException(ValidationException.invalidBooleanValueForSettingAllowNativeSQLQueries(allowNativeSQLQueriesString));
            }
         }
     }

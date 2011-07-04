@@ -13,6 +13,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     10/29/2010-2.2 Michael O'Brien 
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+ *     06/30/2011-2.3.1 Guy Pelletier 
+ *       - 341940: Add disable/enable allowing native queries    
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
@@ -720,6 +722,24 @@ public class QueryHints {
      */
     public static final String INHERITANCE_OUTER_JOIN = "eclipselink.inheritance.outer-join";
 
+    /**
+     * The <code>"eclipselink.jdbc.allow-native-sql-query"</code> property 
+     * specifies whether a single native SQL query should override a persistence 
+     * unit level setting (eclipselink.jdbc.allow-native-sql-queries). The PU 
+     * level flag is of particular importance within a multitenant to minimize 
+     * the potential impact of revealing multitenant. However in some cases the
+     * application may need to allow certain native SQL queries through.
+     * <p>
+     * Allowed Values (String):
+     * <ul>
+     * <li>"true" - allow native SQL (and override the persistence unit flag)
+     * <li>"false" - (DEFAULT) do not allow native SQL (and respect the persistence unit flag if set.)
+     * </ul>
+     * 
+     * @see DatabaseQuery#setAllowNativeSQLQuery(boolean) {
+     */
+    public static final String ALLOW_NATIVE_SQL_QUERY = "eclipselink.jdbc.allow-native-sql-query";
+    
     /**
      * "eclipselink.history.as-of"
      * <p>Configures the query to query the state of the object as-of a point in time.
