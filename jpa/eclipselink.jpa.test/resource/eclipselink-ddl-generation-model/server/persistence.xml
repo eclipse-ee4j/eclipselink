@@ -70,6 +70,7 @@
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlGeneration.jdbc"/-->
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <!-- ddlTablePerClass PU-->
@@ -105,6 +106,7 @@
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTablePerClass.jdbc"/-->
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <!-- ddlTableSuffix PU-->
@@ -141,6 +143,7 @@
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.ddl-generation.table-creation-suffix" value="propertyCreationSuffix"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-4" transaction-type="%%transaction-type%%">
