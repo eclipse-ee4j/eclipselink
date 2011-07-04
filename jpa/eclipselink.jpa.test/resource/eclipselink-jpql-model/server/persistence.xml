@@ -9,6 +9,7 @@
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-1" transaction-type="%%transaction-type%%">
@@ -23,6 +24,7 @@
             <property name="eclipselink.validate-existence" value="true"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-2" transaction-type="%%transaction-type%%">

@@ -34,6 +34,7 @@
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createMafia_ddlGeneration.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMafia_ddlGeneration.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <!--multi-tenant-123 PU-->
@@ -57,6 +58,7 @@
             <property name="tenant.id" value="123"/>
             <property name="eclipselink.tenant-id" value="123"/>
             <property name="eclipselink.session-name" value="multi-tenant-123"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-3" transaction-type="%%transaction-type%%">
