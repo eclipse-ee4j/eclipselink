@@ -186,16 +186,32 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         try {
             DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
         } catch (JAXBException e) {
-            if (e.getLinkedException() instanceof org.eclipse.persistence.exceptions.JAXBException) {
-                caughtEx = e;
-            } else {
-                fail("Unexpected exception thrown. " + e);
-            }
+            caughtEx = e;
         } catch (Exception e) {
             fail("Unexpected exception thrown. " + e);
         }
 
-        org.eclipse.persistence.exceptions.JAXBException jEx = (org.eclipse.persistence.exceptions.JAXBException) caughtEx.getLinkedException();
+        org.eclipse.persistence.exceptions.JAXBException jEx = null;
+        Exception currentException = caughtEx;
+        // Walk the exception looking for an EclipseLink JAXBException
+        while (true) {
+            if (currentException instanceof JAXBException) {
+                Exception linkedEx = (Exception) ((JAXBException) currentException).getLinkedException();
+                if (linkedEx instanceof org.eclipse.persistence.exceptions.JAXBException) {
+                    jEx = (org.eclipse.persistence.exceptions.JAXBException) linkedEx;
+                    break;
+                } else {
+                    currentException = linkedEx;
+                }
+            } else {
+                break;
+            }
+        }
+
+        if (jEx == null) {
+            fail("Unexpected exception thrown. " + caughtEx);
+        }
+
         assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.exceptions.JAXBException.XJB_NOT_SOURCE, jEx.getErrorCode());
     }
 
@@ -231,7 +247,27 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
             fail("Unexpected exception thrown. " + e);
         }
 
-        org.eclipse.persistence.exceptions.JAXBException jEx = (org.eclipse.persistence.exceptions.JAXBException) caughtEx.getLinkedException();
+        org.eclipse.persistence.exceptions.JAXBException jEx = null;
+        Exception currentException = caughtEx;
+        // Walk the exception looking for an EclipseLink JAXBException
+        while (true) {
+            if (currentException instanceof JAXBException) {
+                Exception linkedEx = (Exception) ((JAXBException) currentException).getLinkedException();
+                if (linkedEx instanceof org.eclipse.persistence.exceptions.JAXBException) {
+                    jEx = (org.eclipse.persistence.exceptions.JAXBException) linkedEx;
+                    break;
+                } else {
+                    currentException = linkedEx;
+                }
+            } else {
+                break;
+            }
+        }
+
+        if (jEx == null) {
+            fail("Unexpected exception thrown. " + caughtEx);
+        }
+
         assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.exceptions.JAXBException.XSD_IMPORT_NOT_SOURCE, jEx.getErrorCode());
     }
 
