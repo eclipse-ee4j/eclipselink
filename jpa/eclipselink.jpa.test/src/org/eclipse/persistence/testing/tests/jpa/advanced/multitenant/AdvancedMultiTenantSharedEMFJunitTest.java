@@ -18,14 +18,9 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
 import java.util.ArrayList;
-//import java.util.HashMap;
 import java.util.List;
-//import java.util.Map;
 
 import javax.persistence.EntityManager;
-//import javax.persistence.EntityManagerFactory;
-//import javax.persistence.NamedQuery;
-//import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import junit.framework.*;
@@ -33,7 +28,7 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
-//import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo;
@@ -69,7 +64,6 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
         suite.setName("AdvancedMultiTenantSharedEMFJunitTest");
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testSetup"));
-            
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily707"));
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily007"));
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testValidateMafiaFamily707"));
@@ -435,7 +429,6 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
         //so family123 won't have value at this moment
         //assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
 
-        // following line will fail, Guy is investigating
         assertFalse("No mafiosos part of 007 family", family.getMafiosos().isEmpty());
         
         // See if we can find any members of the other family.
@@ -461,7 +454,7 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
         }
         
         // Try a select named query
-        List families = em.createNamedQuery("findJPQLMafiaFamilies").getResultList();
+        List families = em.createNamedQuery("findAllMafiaFamilies").getResultList();
         assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
         // Find our boss and make sure his name has not been compromised from the 707 family.
         Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
@@ -501,13 +494,19 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends JUnitTestCase {
             assertNull("Found family 007 contract.", em.find(Contract.class, id));
         }
 
+        Query deleteQuery = em.createNamedQuery("DeleteContractByPrimaryKey");
+        deleteQuery.setParameter("id", family007Contracts.get(0));
+        int result = deleteQuery.executeUpdate();
+        assertTrue("Was able to delete a contract from the 007 family", result == 0);
         // Update all our contract descriptions to be 'voided'
-        getServerSession(MULTI_TENANT_PU).setLogLevel(0);
-        em.createNamedQuery("UpdateAllContractDescriptions").executeUpdate();
+        Query updateAllQuery = em.createNamedQuery("UpdateAllContractDescriptions");
+        updateAllQuery.executeUpdate();
+        // Need to check that tenant id column is present
+        assertTrue("Tenant discriminator column not found in update all query", ((EJBQueryImpl) updateAllQuery).getDatabaseQuery().getCall().getSQLString().contains("TENANT_ID"));
         
         // Read and validate the contracts
         List<Contract> contracts = em.createNamedQuery("FindAllContracts").getResultList();
-        
+        int contractNumber = contracts.size();
         assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", contracts.size() == 3);
 
         for (Contract contract : contracts) {
