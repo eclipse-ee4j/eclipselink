@@ -819,7 +819,6 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     }
 
     public Map<String, XMLField> getClassNameToFieldMappings() {
-        // TODO Auto-generated method stub
         return classNameToFieldMappings;
     }    
 }
