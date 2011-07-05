@@ -10,25 +10,29 @@
  * Contributors:
  *     Blaise Doughan - 2.4 - initial implementation
  ******************************************************************************/
- 
+
 grammar JSON;
+options
+{
+        language=Java;
+        output=AST;
+}
 
 OBJECT : '{' (PAIR (',' PAIR)*)? '}';
- 
-PAIR : WHITE_SPACE STRING WHITE_SPACE ':' WHITE_SPACE VALUE WHITE_SPACE;
 
-ARRAY : '[' (VALUE (',' VALUE)*)? ']';
+fragment PAIR : WHITESPACE STRING WHITESPACE ':' WHITESPACE VALUE WHITESPACE;
 
-VALUE   :       STRING
-        |       NUMBER
-        |       OBJECT
-        |       ARRAY
-        |       'true'
-        |       'false'
-        |       'null'
-        ;
+fragment ARRAY : '[' WHITESPACE (VALUE ( WHITESPACE ',' WHITESPACE VALUE)*)? WHITESPACE ']';
 
-STRING  : '"' CHAR* '"';
+fragment VALUE : STRING
+        |        NUMBER
+        |        OBJECT
+        |        ARRAY
+        |        'true'
+        |        'false'
+        |        'null';
+
+fragment STRING  : '"' CHAR* '"';
 
 fragment CHAR   : ~('"'| '\\')
                 | '\\"'
@@ -38,12 +42,12 @@ fragment CHAR   : ~('"'| '\\')
                 | '\\f'
                 | '\\n'
                 | '\\r'
-                | '\\t'     
+                | '\\t'
                 | '\\u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
 
 fragment HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F');
 
-NUMBER  : INT FRAC? EXP?;
+fragment NUMBER  : INT FRAC? EXP?;
 
 fragment INT : '-'? DIGITS;
 
@@ -51,8 +55,8 @@ fragment FRAC : '.' DIGITS;
 
 fragment EXP : E DIGITS;
 
-fragment DIGITS : '0'..'9'*;
+fragment DIGITS : '0'..'9'+;
 
 fragment E :('e'|'E') ('+'|'-')?;
 
-fragment WHITE_SPACE    : (' ' | '\r' | '\t' | '\u000C' | '\n')*;
+fragment WHITESPACE : (' ' | '\r' | '\t' | '\u000C' | '\n')*;
