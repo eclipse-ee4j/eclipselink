@@ -285,6 +285,9 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
     
     // bug 325035
     public void testLazySetInstantiationLazy(){
+        if (!isWeavingEnabled()){
+            return;
+        }
         EntityManager em = createEntityManager();
         CollectionMapping mapping = ((CollectionMapping)getServerSession().getProject().getClassDescriptor(AAA.class).getMappingForAttributeName("ddds"));
         Boolean lazyIndirection = mapping.shouldUseLazyInstantiationForIndirectCollection();
@@ -304,7 +307,6 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         commitTransaction(em);
         
         clearCache();
-        em.close();
         try{
             em = createEntityManager();
             a = em.find(AAA.class, a.getId());
@@ -342,7 +344,6 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         commitTransaction(em);
         
         clearCache();
-        em.close();
         try{
             em = createEntityManager();
             a = em.find(AAA.class, a.getId());
@@ -363,6 +364,9 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
     
     // bug 325035
     public void testLazyListInstantiationLazy(){
+        if (!isWeavingEnabled()){
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
 
@@ -379,7 +383,6 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         commitTransaction(em);
         
         clearCache();
-        em.close();
         try{
             em = createEntityManager();
             company = em.find(Company.class, company.getId());
@@ -419,7 +422,6 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         commitTransaction(em);
         
         clearCache();
-        em.close();
         try{
             em = createEntityManager();
             company = em.find(Company.class, company.getId());
