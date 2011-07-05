@@ -11181,6 +11181,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testDeleteAllProjects() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testDeleteAllProjects skipped for this platform, "
+                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+        
         String errorMsg = "";
         SmallProject sp = null;
         LargeProject lp = null;

@@ -22,11 +22,13 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.SessionLog;
 
 import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -347,23 +349,35 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             synchronized(lock) {
                 numberOfCompletedTests++;
                 if (numberOfCompletedTests == numberOfTests) {
-                    // delete all created objects
-                    UnitOfWork uow = getSession().acquireUnitOfWork();
-                    
-                    DeleteAllQuery deleteAddresses = new DeleteAllQuery(Address.class);
-                    deleteAddresses.setSelectionCriteria(deleteAddresses.getExpressionBuilder().get("country").equal("InsertTest"));
-                    uow.executeQuery(deleteAddresses);
+                    Session session = getSession();
+                    if(session.getPlatform().isSymfoware()) {
+                        // Symfoware doesn't support DeleteAllQuery. Therefore call DELETE statements directly instead.
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM ADDRESS WHERE (COUNTRY = 'InsertTest')"));
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM SALARY WHERE EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0 WHERE (t0.L_NAME = 'InsertTest') AND (t0.EMP_ID = SALARY.EMP_ID))"));
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM PROJ_EMP WHERE EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0 WHERE (t0.L_NAME = 'InsertTest') AND (t0.EMP_ID = PROJ_EMP.EMP_ID))"));
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM RESPONS WHERE EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0 WHERE (t0.L_NAME = 'InsertTest') AND (t0.EMP_ID = RESPONS.EMP_ID))"));
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM PHONE WHERE EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0 WHERE (t0.L_NAME = 'InsertTest') AND (t0.EMP_ID = PHONE.EMP_ID))"));
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM CHILD WHERE EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0 WHERE (t0.L_NAME = 'InsertTest') AND (t0.EMP_ID = CHILD.PARENT_EMP_ID))"));
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM EMPLOYEE WHERE (L_NAME = 'InsertTest')"));
+                        session.executeNonSelectingCall(new SQLCall("DELETE FROM PROJECT WHERE (DESCRIP = 'InsertTest')"));
+                    } else {
+                        // delete all created objects
+                        UnitOfWork uow = session.acquireUnitOfWork();
+                        
+                        DeleteAllQuery deleteAddresses = new DeleteAllQuery(Address.class);
+                        deleteAddresses.setSelectionCriteria(deleteAddresses.getExpressionBuilder().get("country").equal("InsertTest"));
+                        uow.executeQuery(deleteAddresses);
 
-                    DeleteAllQuery deleteEmployees = new DeleteAllQuery(Employee.class);
-                    deleteEmployees.setSelectionCriteria(deleteEmployees.getExpressionBuilder().get("lastName").equal("InsertTest"));
-                    uow.executeQuery(deleteEmployees);
+                        DeleteAllQuery deleteEmployees = new DeleteAllQuery(Employee.class);
+                        deleteEmployees.setSelectionCriteria(deleteEmployees.getExpressionBuilder().get("lastName").equal("InsertTest"));
+                        uow.executeQuery(deleteEmployees);
                     
-                    DeleteAllQuery deleteProjects = new DeleteAllQuery(SmallProject.class);
-                    deleteProjects.setSelectionCriteria(deleteProjects.getExpressionBuilder().get("description").equal("InsertTest"));
-                    uow.executeQuery(deleteProjects);
+                        DeleteAllQuery deleteProjects = new DeleteAllQuery(SmallProject.class);
+                        deleteProjects.setSelectionCriteria(deleteProjects.getExpressionBuilder().get("description").equal("InsertTest"));
+                        uow.executeQuery(deleteProjects);
                     
-                    uow.commit();
-                    
+                        uow.commit();
+                    }
                     // get ready for the next run
                     numberOfCompletedTests = 0;
                 }

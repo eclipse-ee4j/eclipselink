@@ -15,9 +15,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.cacheable;
 
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
-public class CacheableTableCreator extends TableCreator {
+public class CacheableTableCreator extends TogglingFastTableCreator {
     public CacheableTableCreator() {
         setName("JPA Cacheable Project");
 
