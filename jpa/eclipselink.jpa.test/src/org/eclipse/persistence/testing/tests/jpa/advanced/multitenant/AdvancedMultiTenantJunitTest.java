@@ -730,6 +730,13 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         List soldiers = em.createQuery("SELECT s from Soldier s").getResultList();
         assertTrue("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
         
+        if(getServerSession(MULTI_TENANT_PU).getPlatform().isSymfoware()) {
+            getServerSession(MULTI_TENANT_PU).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
+                    +"which uses UpdateAll internally to check tenant-id when updating an entity using JOINED inheritance strategy. "
+                    +"Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+
         // We know what the boss's id is for the 007 family to try to update him from the 707 pu.
         // The 007 family is validated after this test.
         beginTransaction(em);
@@ -816,44 +823,48 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 fail("Exception encountered on delete all query with single table (with tenant discriminator columns): " + e);
             }
             
-            // Try a delete all on multiple table (MafiaFamily)
-            try {
-                beginTransaction(em);
-                List<MafiaFamily> allFamilies = em.createNamedQuery("findAllMafiaFamilies").getResultList();
-                int families = allFamilies.size();
-                assertTrue("More than one family was found ["+ families +"]", families == 1);
-                Query deleteQuery = em.createNamedQuery("DeleteAllMafiaFamilies");
-                deleteQuery.setHint(QueryHints.ALLOW_NATIVE_SQL_QUERY, true);
-                int deletes = deleteQuery.executeUpdate();
-                assertTrue("Incorrect number of families deleted [" + deletes + "], expected [" + families + "]", deletes == 1);
-                commitTransaction(em);
-            } catch (Exception e) {
-                fail("Exception encountered on delete all query with multiple table (with tenant discriminator columns): " + e);
-            }
-            
-            // Some verification of what was deleted.
-            EntityManager em007 = createEntityManager(MULTI_TENANT_PU);
-            
-            try {
-                beginTransaction(em);
-                List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
-                assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
-                commitTransaction(em);
-                
-                beginTransaction(em007);
-                em007.setProperty("tenant.id", "007");
-                em007.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
-                MafiaFamily family = em007.find(MafiaFamily.class, family007);
-                assertFalse("Family 007 tags were nuked in delete all query above!", family.getTags().isEmpty());
-                assertFalse("Family 007 revenue was nuked in delete all query above!", family.getRevenue() == null);
-                commitTransaction(em007);
-            } catch (Exception e) {
-                fail("Exception caught: " + e);
-            } finally {
-                if (isTransactionActive(em007)) {
-                    rollbackTransaction(em007);
+            if(getServerSession(MULTI_TENANT_PU).getPlatform().isSymfoware()) {
+                getServerSession(MULTI_TENANT_PU).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
+                        +"Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            } else {
+                // Try a delete all on multiple table (MafiaFamily)
+                try {
+                    beginTransaction(em);
+                    List<MafiaFamily> allFamilies = em.createNamedQuery("findAllMafiaFamilies").getResultList();
+                    int families = allFamilies.size();
+                    assertTrue("More than one family was found ["+ families +"]", families == 1);
+                    Query deleteQuery = em.createNamedQuery("DeleteAllMafiaFamilies");
+                    deleteQuery.setHint(QueryHints.ALLOW_NATIVE_SQL_QUERY, true);
+                    int deletes = deleteQuery.executeUpdate();
+                    assertTrue("Incorrect number of families deleted [" + deletes + "], expected [" + families + "]", deletes == 1);
+                    commitTransaction(em);
+                } catch (Exception e) {
+                    fail("Exception encountered on delete all query with multiple table (with tenant discriminator columns): " + e);
                 }
-                closeEntityManager(em007);
+                // Some verification of what was deleted.
+                EntityManager em007 = createEntityManager(MULTI_TENANT_PU);
+                
+                try {
+                    beginTransaction(em);
+                    List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
+                    assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
+                    commitTransaction(em);
+                    
+                    beginTransaction(em007);
+                    em007.setProperty("tenant.id", "007");
+                    em007.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
+                    MafiaFamily family = em007.find(MafiaFamily.class, family007);
+                    assertFalse("Family 007 tags were nuked in delete all query above!", family.getTags().isEmpty());
+                    assertFalse("Family 007 revenue was nuked in delete all query above!", family.getRevenue() == null);
+                    commitTransaction(em007);
+                } catch (Exception e) {
+                    fail("Exception caught: " + e);
+                } finally {
+                    if (isTransactionActive(em007)) {
+                        rollbackTransaction(em007);
+                    }
+                    closeEntityManager(em007);
+                }
             }
         } finally {
             if (isTransactionActive(em)){

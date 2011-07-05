@@ -5710,7 +5710,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         EntityManager em = createEntityManager();
-        String seqName = "testSequenceObjectDefinition";
+        String seqName = "testCOMPSequenceObjectDefinition";
         try {
             // first param is preallocationSize, second is startValue
             // both should be positive

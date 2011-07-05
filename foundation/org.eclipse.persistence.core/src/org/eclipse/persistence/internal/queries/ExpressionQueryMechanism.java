@@ -1112,8 +1112,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             
             SQLCall selectCallForExist = null;
 
+            // Most databases support delete cascade constraints by specifying a ON DELETE CASCADE option when defining foreign key constraints. 
+            // However some databases which don't support foreign key constraints cannot use delete cascade constraints.
+            // Therefore each delete operation should be executed in such a database platform instead of delegating delete cascade constraints.
+            boolean supportForeignKeyConstraints = getSession().getPlatform().supportsForeignKeyConstraints();
+            boolean supportCascadeOnDelete = supportForeignKeyConstraints && descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables();
             boolean isSelectCallForNotExistRequired = (tablesToIgnore == null)
-                    && (tablesInInsertOrder.size() > 1) && (!descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables());
+                    && (tablesInInsertOrder.size() > 1) && (!supportCascadeOnDelete);
 
             SQLSelectStatement selectStatementForNotExist = null;
             SQLCall selectCallForNotExist = null;
@@ -1293,7 +1298,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         setSQLStatement(deleteStatement);
                     }
                     // Only delete from first table if delete is cascaded on the database.
-                    if (descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables()) {
+                    if (supportCascadeOnDelete) {
                         break;
                     }
                 }
@@ -1365,8 +1370,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 // Define the same query for the child
                 ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
                 
+                // Most databases support delete cascade constraints by specifying a ON DELETE CASCADE option when defining foreign key constraints. 
+                // However some databases which don't support foreign key constraints cannot use delete cascade constraints.
+                // Therefore each delete operation should be executed in such a database platform instead of delegating delete cascade constraints.
+                boolean supportForeignKeyConstraints = getSession().getPlatform().supportsForeignKeyConstraints();
+                boolean supportCascadeOnDelete = supportForeignKeyConstraints && childDescriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables();
                 // Need to process only "multiple tables" child descriptors
-                if (((!childDescriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables()) && childDescriptor.getTables().size() > descriptor.getTables().size()) || 
+                if (((!supportCascadeOnDelete) && childDescriptor.getTables().size() > descriptor.getTables().size()) || 
                     (childDescriptor.getInheritancePolicy().hasMultipleTableChild())) 
                 {
                     DeleteAllQuery childQuery = new DeleteAllQuery();
@@ -1527,8 +1537,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             } else {
                 setSQLStatement(deleteStatement);
             }
-            // Only delete from first table if delete is cascaded on the database.
-            if (descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables()) {
+            // Most databases support delete cascade constraints by specifying a ON DELETE CASCADE option when defining foreign key constraints. 
+            // However some databases which don't support foreign key constraints cannot use delete cascade constraints.
+            // Therefore each delete operation should be executed in such a database platform instead of delegating delete cascade constraints.
+            boolean supportForeignKeyConstraints = getSession().getPlatform().supportsForeignKeyConstraints();
+            boolean supportCascadeOnDelete = supportForeignKeyConstraints && descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables();
+            if (supportCascadeOnDelete) {
                 break;
             }
         }
@@ -2371,8 +2385,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 SQLDeleteAllStatementForTempTable deleteStatement 
                     = buildDeleteAllStatementForTempTable(rootTable, rootTablePrimaryKeyFields, table, getPrimaryKeyFieldsForTable(descriptor, table));
                 statements.add(deleteStatement);
+                // Most databases support delete cascade constraints by specifying a ON DELETE CASCADE option when defining foreign key constraints. 
+                // However some databases which don't support foreign key constraints cannot use delete cascade constraints.
+                // Therefore each delete operation should be executed in such a database platform instead of delegating delete cascade constraints.
+                boolean supportForeignKeyConstraints = getSession().getPlatform().supportsForeignKeyConstraints();
+                boolean supportCascadeOnDelete = supportForeignKeyConstraints && descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables();
                 // Only delete from first table if delete is cascaded on the database.
-                if (descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables()) {
+                if (supportCascadeOnDelete) {
                     break;
                 }
             }
