@@ -12,29 +12,58 @@
  ******************************************************************************/
 
 grammar JSON;
-options
-{
-        language=Java;
+options {
         output=AST;
 }
 
-OBJECT : '{' (PAIR (',' PAIR)*)? '}';
+tokens {
+	OBJECT;
+	PAIR;
+	STRING;
+	NUMBER;
+	ARRAY;
+	TRUE;
+	FALSE;
+	NULL;
+}
 
-fragment PAIR : WHITESPACE STRING WHITESPACE ':' WHITESPACE VALUE WHITESPACE;
+@lexer::header {
+/*******************************************************************************
+ * Copyright (c) 2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Blaise Doughan - 2.4 - initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.internal.oxm.record.json;
+}
 
-fragment ARRAY : '[' WHITESPACE (VALUE ( WHITESPACE ',' WHITESPACE VALUE)*)? WHITESPACE ']';
+@header {
+/*******************************************************************************
+ * Copyright (c) 2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Blaise Doughan - 2.4 - initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.internal.oxm.record.json;
+}
 
-fragment VALUE : STRING
-        |        NUMBER
-        |        OBJECT
-        |        ARRAY
-        |        'true'
-        |        'false'
-        |        'null';
+// LEXER
 
-fragment STRING  : '"' CHAR* '"';
+String  : '"' Char* '"';
 
-fragment CHAR   : ~('"'| '\\')
+fragment Char   : ~('"'| '\\')
                 | '\\"'
                 | '\\\\'
                 | '\\/'
@@ -43,20 +72,39 @@ fragment CHAR   : ~('"'| '\\')
                 | '\\n'
                 | '\\r'
                 | '\\t'
-                | '\\u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
+                | '\\u' Hex_Digit Hex_Digit Hex_Digit Hex_Digit;
 
-fragment HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F');
+fragment Hex_Digit : ('0'..'9'|'a'..'f'|'A'..'F');
 
-fragment NUMBER  : INT FRAC? EXP?;
+Number  : Int Frac? Exp?;
 
-fragment INT : '-'? DIGITS;
+fragment  Int : '-'? Digits;
 
-fragment FRAC : '.' DIGITS;
+fragment Frac : '.' Digits;
 
-fragment EXP : E DIGITS;
+fragment Exp : E Digits;
 
-fragment DIGITS : '0'..'9'+;
+fragment Digits : '0'..'9'+;
 
 fragment E :('e'|'E') ('+'|'-')?;
 
-fragment WHITESPACE : (' ' | '\r' | '\t' | '\u000C' | '\n')*;
+Whitespace : (' ' | '\r' | '\t' | '\u000C' | '\n')*;
+
+// PARSER
+
+object : '{' (pair (',' pair)*)? '}' -> ^(OBJECT pair*);
+
+pair : whitespace String whitespace ':' whitespace value whitespace -> ^(PAIR String value);
+
+array : '[' whitespace (value (whitespace ',' whitespace value)*)? whitespace ']' -> ^(ARRAY value+);
+
+value : String -> ^(STRING String)
+        |        Number -> ^(NUMBER Number)
+        |        object
+        |        array
+        |        'true' -> TRUE
+        |        'false' -> FALSE
+        |        'null' -> NULL
+        ;
+
+whitespace : (' ' | '\r' | '\t' | '\u000C' | '\n')*;
