@@ -171,7 +171,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         }
 
         QName schemaType = getSchemaType(xmlField, fieldValue, session);
-        String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
+        String stringValue = marshalRecord.getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 
         if (xPathFragment.isAttribute()) {

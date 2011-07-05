@@ -17,11 +17,8 @@ import java.util.ArrayList;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
@@ -39,12 +36,6 @@ public abstract class MappingNodeValue extends NodeValue {
     
     public boolean isMappingNodeValue() {
         return true;
-    }
-    protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager, MarshalRecord marshalRecord) {
-        if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
-            return getStringForQName((QName)value, marshalRecord);
-        }
-        return (String) xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
     }
 
     protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
@@ -80,34 +71,6 @@ public abstract class MappingNodeValue extends NodeValue {
             }
         }
         return schemaType;
-    }
-
-    protected String getStringForQName(QName qName, MarshalRecord marshalRecord){
-        if(null == qName) {
-            return null;
-        }
-        String namespaceURI = qName.getNamespaceURI();
-        if(null == namespaceURI || 0 == namespaceURI.length()) {
-            if(marshalRecord.getNamespaceResolver() != null && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
-                //need to add a default namespace declaration.
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
-            }
-            return qName.getLocalPart();
-        } else {
-            NamespaceResolver namespaceResolver = marshalRecord.getNamespaceResolver();
-            if(namespaceResolver == null){
-                throw XMLMarshalException.namespaceResolverNotSpecified(namespaceURI);
-            }
-            if(namespaceURI.equals(namespaceResolver.getDefaultNamespaceURI())) {
-                return qName.getLocalPart();
-            }
-            String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
-            if(null == prefix) {
-                prefix = namespaceResolver.generatePrefix();
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespaceURI);
-            }
-            return prefix + XMLConstants.COLON + qName.getLocalPart();
-        }
     }
 
     protected void updateNamespaces(QName qname, MarshalRecord marshalRecord, XMLField xmlField){

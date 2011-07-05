@@ -88,7 +88,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     }
                 }
                 schemaType = getSchemaType((XMLField) xmlCompositeDirectCollectionMapping.getField(), objectValue, session);
-                newValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
+                newValue = marshalRecord.getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
                 if (null != newValue) {
                     stringValueStringBuilder.append(newValue);
                     if (cp.hasNext(iterator)) {
@@ -304,10 +304,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     marshalRecord.openStartElement(xPathFragment, namespaceResolver);
                 }
             }
-            String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             XPathFragment nextFragment = xPathFragment.getNextFragment();
             if (nextFragment.isAttribute()) {
-                marshalRecord.attribute(nextFragment, namespaceResolver, stringValue);
+            	marshalRecord.attribute(nextFragment, namespaceResolver, value,schemaType);
                 marshalRecord.closeStartElement();
             } else {
                 if (xmlField.isTypedTextField()) {
@@ -315,11 +314,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
                 marshalRecord.closeStartElement();
                 marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
-                if (xmlCompositeDirectCollectionMapping.isCDATA()) {
-                    marshalRecord.cdata(stringValue);
-                } else {
-                    marshalRecord.characters(stringValue);
-                }
+                marshalRecord.characters(schemaType, value, xmlCompositeDirectCollectionMapping.isCDATA());                
+            
             }
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         } else {

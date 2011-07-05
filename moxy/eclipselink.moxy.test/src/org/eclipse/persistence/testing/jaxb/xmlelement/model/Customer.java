@@ -15,15 +15,18 @@ package org.eclipse.persistence.testing.jaxb.xmlelement.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlType(propOrder={"firstName", "lastName", "address", "phoneNumbers"})
 public class Customer {
 
-    private int id;
+	@XmlAttribute
+    private int id;	
     private String firstName;
     private String lastName;
     private boolean firstTimeCustomer;

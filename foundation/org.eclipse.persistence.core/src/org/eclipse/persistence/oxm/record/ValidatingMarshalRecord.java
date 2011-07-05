@@ -334,6 +334,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
 
     @Override
     public void setSession(AbstractSession session) {
+    	this.session = session;
         validatingRecord.setSession(session);
         marshalRecord.setSession(session);
     }

@@ -186,7 +186,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
 
             QName schemaType = getSchemaType((XMLField) xmlCompositeObjectMapping.getField(), objectValue, session);
-            String stringValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
+            String stringValue = marshalRecord.getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
             marshalRecord.characters(stringValue);
 

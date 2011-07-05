@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <order>
-   <customer>
+   <customer id="0">
       <firstName>Jane</firstName>
       <lastName>Smith</lastName>
       <address>
@@ -8,7 +8,6 @@
           <city>Ottawa</city>
       </address>
       <firstTimeCustomer>false</firstTimeCustomer>
-      <id>0</id>
    </customer>
    <id>1</id>
 </order>

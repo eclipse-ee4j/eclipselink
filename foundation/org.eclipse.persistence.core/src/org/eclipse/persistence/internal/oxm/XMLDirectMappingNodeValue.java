@@ -79,17 +79,12 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             if(groupingFragment == null) {
                 groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             }
-            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             if (xPathFragment.isAttribute()) {
-                marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
+            	marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
-                marshalRecord.closeStartGroupingElements(groupingFragment);
-                if (xmlDirectMapping.isCDATA()) {
-                    marshalRecord.cdata(stringValue);
-                } else {
-                    marshalRecord.characters(stringValue);
-                }
+                marshalRecord.closeStartGroupingElements(groupingFragment);          
+                marshalRecord.characters(schemaType, fieldValue, xmlDirectMapping.isCDATA());
             }
             if(isQName) {
                 //check to see if the last grouping fragment was swapped

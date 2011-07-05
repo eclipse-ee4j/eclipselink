@@ -1,0 +1,11 @@
+{"employee-data":{
+   "id":10,
+   "integer":12,
+   "string":"String Value",
+   "address":{
+      "street":"123 Fake Street",
+      "city":"Ottawa"
+   },
+   "integer":5
+   }
+}

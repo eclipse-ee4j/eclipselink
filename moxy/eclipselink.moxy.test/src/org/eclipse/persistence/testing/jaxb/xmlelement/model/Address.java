@@ -12,14 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelement.model;
 
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"street", "city"})
 public class Address {
-
+	@XmlSchemaType(name="integer")
+    private String id;
     private String street;
     private String city;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
     public String getStreet() {
         return street;
     }

@@ -18,7 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
@@ -153,13 +157,17 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
-        openStartElement(xPathFragment, namespaceResolver);
-        closeStartElement();
-        characters(value);
-        endElement(xPathFragment, namespaceResolver);
+    public void attribute(String namespaceURI, String localName, String qName, String value) {
+    	attribute(namespaceURI, localName, qName, value, true);
     }
-
+    
+    /**
+     * INTERNAL:
+     */
+    public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
+    	attribute(xPathFragment, namespaceResolver, value, null);        
+    }
+    
     /**
      * INTERNAL:
      * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
@@ -173,23 +181,39 @@ public class JSONWriterRecord extends MarshalRecord {
      */
     public void endPrefixMappings(NamespaceResolver namespaceResolver) {
     }
+    
+    private void attribute(String namespaceURI, String localName, String qName, String value, boolean wrapInQuotes) {
+        try {        	
+            Level position = null;
+            if(!levels.isEmpty()){
+                position = levels.peek();
+                if(position.isFirst()) {
+                    position.setFirst(false);
+                } else {
+                    writer.write(',');
+                    writer.write(' ');
+                }        		
+            }        	
+        	
+            writer.write('"');                        		
+            writer.write(localName);
+            writer.write('"');				
+            writer.write(':');
+            if(position != null && position.isCollection()) {
+                writer.write('[');
+            }
 
-    /**
-     * INTERNAL:
-     */
-    public void attribute(String namespaceURI, String localName, String qName, String value) {
-        try {
-            writer.write(' ');
-            writer.write(qName);
-            writer.write('=');
-            writer.write('\"');
-            writeValue(value);
-            writer.write('\"');
+            if(wrapInQuotes){
+                writeStringValueCharacters(value);
+            }else{
+                characters(value);		    	
+            }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
     }
-
+    
+   
     /**
      * INTERNAL:
      */
@@ -256,16 +280,73 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    public void characters(String value) {
-        try {
+     public void characters(String value) {
+           writeValue(value);
+     }
+
+     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
+    	 openStartElement(xPathFragment, namespaceResolver);
+         closeStartElement();
+         characters(schemaType, value, false);
+      	 endElement(xPathFragment, namespaceResolver);
+     }     
+     
+     public void characters(QName schemaType, Object value, boolean isCDATA){        
+         if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+             String convertedValue = getStringForQName((QName)value);
+             writeStringValueCharacters((String)value);
+         } else if(value.getClass() == String.class){
+             //if schemaType is set and it's a numeric or boolean type don't treat as a string
+             if(schemaType != null && isNumericOrBooleanType(schemaType)){
+                 String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
+                 characters(convertedValue);
+             }else if(isCDATA){
+                 cdata((String)value);        	    
+             }else{
+ 	             writeStringValueCharacters((String)value);
+ 	         }
+        }else{
+            String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
+            //if schemaType exists and is not boolean or number do write quotes
+            if(schemaType != null && !isNumericOrBooleanType(schemaType)){
+                writeStringValueCharacters(convertedValue);
+            } else if(isCDATA){
+                cdata(convertedValue);        	    
+            }else{
+                characters(convertedValue);
+            }
+        }   
+     }     
+          
+     private boolean isNumericOrBooleanType(QName schemaType){
+    	 if(schemaType == null){
+    		 return false;
+    	 }else if(schemaType.equals(XMLConstants.BOOLEAN_QNAME)
+    			 || schemaType.equals(XMLConstants.INTEGER_QNAME) 
+    			 || schemaType.equals(XMLConstants.INT_QNAME)
+    			 || schemaType.equals(XMLConstants.DECIMAL_QNAME)
+    			 || schemaType.equals(XMLConstants.FLOAT_QNAME)
+    			 || schemaType.equals(XMLConstants.DOUBLE_QNAME)
+    			 || schemaType.equals(XMLConstants.SHORT_QNAME)    			 
+    	 ){
+    		 return true;
+    	 }
+    	 return false;
+     }
+     
+     /**
+      * INTERNAL:
+      */
+     protected void writeStringValueCharacters(String value){
+        try {   
             writer.write('"');
-            writeValue(value);
+            characters(value);
             writer.write('"');
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
-    }
-
+     }
+   
     /**
      * INTERNAL:
      */

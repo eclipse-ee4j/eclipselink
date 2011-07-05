@@ -16,8 +16,11 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.XmlSchemaType;
+
 public class Item {
 
+   @XmlSchemaType(name="String")
    private int id;
    private String[] description;
    private BigDecimal cost;

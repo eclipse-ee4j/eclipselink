@@ -40,9 +40,17 @@ public class FullTestCases extends JAXBWithJSONTestCases{
         customer.setFirstName("Jane");
         customer.setLastName("Smith");
         Address address = new Address();
+        address.setId("1");
         address.setStreet("Main Street");
         address.setCity("Ottawa");
         customer.setAddress(address);
+        
+        ArrayList<Integer> orderNums = new ArrayList<Integer>();
+        orderNums.add(10);
+        orderNums.add(20);
+        orderNums.add(30);
+        
+        customer.setOrderNumbers(orderNums);
         o.setCustomer(customer);
 
         List<Item> items = new ArrayList<Item>();

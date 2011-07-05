@@ -3,29 +3,32 @@
    <comments>comment1</comments>
    <comments>comment2</comments>
    <comments>comment3</comments>
-   <customer>
+   <customer id="0">
       <firstName>Jane</firstName>
       <lastName>Smith</lastName>
       <address>
           <street>Main Street</street>
           <city>Ottawa</city>
+          <id>1</id>
       </address>
       <firstTimeCustomer>false</firstTimeCustomer>
-      <id>0</id>
+	  <orderNumbers>10</orderNumbers>
+	  <orderNumbers>20</orderNumbers>
+	  <orderNumbers>30</orderNumbers>
    </customer>
    <id>1</id>
    <items>
+        <id>1</id>
         <cost>5.00</cost>
         <description>nice item</description>
         <description>comes in blue or red</description>
-        <id>1</id>
         <price>7.99</price>
    </items>
    <items>
+       <id>2</id>
        <cost>10.00</cost>
        <description>big item</description>
        <description>very heavy</description>
-       <id>2</id>
        <price>15.99</price>
    </items>
 </order>

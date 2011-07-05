@@ -3,7 +3,7 @@
    <comments>com&lt;ment1</comments>
    <comments>com&amp;ment2</comments>
    <comments>com&quot;ment3</comments>
-   <customer>
+   <customer id="0">
       <firstName>Ja&lt;ne</firstName>
       <lastName>Smi&amp;th</lastName>
       <address>
@@ -11,7 +11,6 @@
           <city>Ottawa</city>
       </address>
       <firstTimeCustomer>false</firstTimeCustomer>
-      <id>0</id>
    </customer>
    <id>1</id>
 </order>

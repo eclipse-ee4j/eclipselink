@@ -15,15 +15,18 @@ package org.eclipse.persistence.testing.jaxb.xmlelements;
 import java.util.ArrayList;
 import java.util.Calendar;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlElementsCollectionTestCases extends JAXBTestCases {
+public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection.json";
     private final static int CONTROL_ID = 10;
 
     public XmlElementsCollectionTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeCollection.class;
         classes[1] = Address.class;
