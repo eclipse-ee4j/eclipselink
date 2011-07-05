@@ -12,7 +12,8 @@
             <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
-			<property name="NAME" value="Montreal%"/>
+            <property name="NAME" value="Montreal%"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

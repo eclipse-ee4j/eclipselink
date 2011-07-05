@@ -64,6 +64,7 @@
             <property name="eclipselink.weaving.internal" value="false"/-->
             <property name="eclipselink.orm.validate.schema" value="true"/>
 			<property name="NAME" value="Montreal%"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="default1">
@@ -71,6 +72,7 @@
         <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
         <properties>
             <property name="eclipselink.logging.level" value="OFF"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="ignore" transaction-type="JTA">
@@ -147,6 +149,7 @@
         <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
         <properties>
           <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
+          <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>
