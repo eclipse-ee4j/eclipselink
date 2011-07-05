@@ -68,11 +68,11 @@
     <!-- local property overrides -->
     <property file="${user.home}/build.properties"/>
     <!-- properties checked into SVN -->
-    <property file="./build.properties"/>
+    <property file="${dbwsbldrtest.build.location}/antbuild.properties"/>
     <!-- local testing properties overrides -->
     <property file="${user.home}/test.properties"/>
     <!-- testing properties checked into SVN -->
-    <property file="./test.properties"/>
+    <property file="${dbwsbldrtest.build.location}/test.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->

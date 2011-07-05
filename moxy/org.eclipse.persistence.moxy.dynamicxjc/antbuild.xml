@@ -58,7 +58,7 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${dynamic.build.location}/build.properties"/>
+    <property file="${dynamic.build.location}/antbuild.properties"/>
 
     <propertyset id="parser.properties">
         <propertyref prefix="javax.xml"/>

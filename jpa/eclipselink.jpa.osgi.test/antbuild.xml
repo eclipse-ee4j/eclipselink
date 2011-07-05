@@ -48,7 +48,7 @@
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
     <property name="eclipselink.jpa.osgi.test" value="."/>
-    <property file="${eclipselink.jpa.osgi.test}/build.properties"/>
+    <property file="${eclipselink.jpa.osgi.test}/antbuild.properties"/>
     <property file="${eclipselink.jpa.osgi.test}/local.build.properties"/>
     <property file="${eclipselink.jpa.osgi.test}/${test.properties}"/>
     <property file="${eclipselink.jpa.osgi.test}/test.properties"/>
@@ -201,7 +201,7 @@
 
     <!-- Repackages JPA persistent unit test jars. -->
     <target name="repackage">
-        <ant antfile="${eclipselink.jpa.test}/build.xml" dir="${eclipselink.jpa.test}" target="package-jpa-advanced-field-access">
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" dir="${eclipselink.jpa.test}" target="package-jpa-advanced-field-access">
             <property name="is.osgi" value="true"/>
         </ant>
     </target>

@@ -61,7 +61,7 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${core.build.location}/build.properties"/>
+    <property file="${core.build.location}/antbuild.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.prefix" value="bnd"/>
@@ -232,21 +232,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
-            <fileset dir="${core.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/**/*.xsd"/>
-                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-            </fileset>
-        </jar>
+    <target name="package-src" depends="init">
         <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
@@ -280,7 +266,24 @@
         <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
     </target>
 
-    <target name="bnd-package" if="bnd.bld" depends="init">
+    <target name="package" if="nobnd" depends="init, package-src" description="jar OSGI bundle">
+        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${core.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/**/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="bnd-package" if="bnd.bld" depends="init, package-src">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${classes.dir}"
@@ -290,36 +293,5 @@
             exceptions="true"
             files="./org.eclipse.persistence.core.bnd"
             output="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
-        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink Core Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
-            </manifest>
-            <fileset dir="${core.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${classes.dir}">
-                <include name="org/eclipse/persistence/Version.java"/>
-            </fileset>
-            <fileset dir="${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-                <exclude name="org/eclipse/persistence/Version.java"/>
-            </fileset>
-            <fileset dir="${resource.dir}">
-                <include name="org/eclipse/persistence/**/*.xsd"/>
-                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-            </fileset>
-        </jar>
-        <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
     </target>
 </project>

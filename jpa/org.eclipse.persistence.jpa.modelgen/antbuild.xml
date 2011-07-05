@@ -58,7 +58,7 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${modelgen.build.location}/build.properties"/>
+    <property file="${modelgen.build.location}/antbuild.properties"/>
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, package" description="build ${ant.project.name} component"/>

@@ -59,7 +59,7 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${weaving.build.location}/build.properties"/>
+    <property file="${weaving.build.location}/antbuild.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>

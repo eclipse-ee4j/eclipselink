@@ -50,7 +50,7 @@
     <property name="sdotest.plugins.dir" value="../plugins"/>
 
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <property file="${sdotest.build.location}/antbuild.properties"/>
     <propertyset id="parser.properties">
         <propertyref prefix="javax.xml"/>
     </propertyset>

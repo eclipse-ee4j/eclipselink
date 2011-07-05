@@ -192,7 +192,7 @@
         <property name="milestone.tag" value="${release.version}-${build.type}"/>
 
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
-        <property file="${build.root.dir}/build.properties"/>
+        <property file="${build.root.dir}/antbuild.properties"/>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
@@ -228,7 +228,7 @@
     </target>
 
     <target name="clean" depends="init">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="clean"/>
     </target>
 
     <target name="clean-dependencies" depends="init">
@@ -305,19 +305,19 @@
     </target>
 
     <target name="custom" if="custom.target" depends="init, get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="${custom.target}"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="${custom.target}"/>
     </target>
 
     <target name="build-np" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-create-signzip"/>
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="package-all"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}/features" target="build-features-create-signzip"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}"          target="package-all"/>
     </target>
 
     <target name="build" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-create-signzip"/>
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="package-all"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}/features" target="build-features-create-signzip"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}"          target="package-all"/>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
             <param name="procedure" value="build"/>
@@ -325,24 +325,24 @@
     </target>
 
     <target name="build-oracle-extension">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build"/>
     </target>
 
     <target name="build-utils" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-util"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-util"/>
     </target>
 
     <target name="build-test" depends="get-dependencies">
         <!-- Builds all tests including MW tests (needed for nightly compile verification even if they aren't run) -->
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-test"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-test"/>
     </target>
 
     <target name="build-core-test" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-core-test"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-core-test"/>
     </target>
 
     <target name="test-srg">
@@ -355,7 +355,7 @@
         <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
         <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
 
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test-srg">
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="test-srg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
         <!-- delete file="${coretest.prop.file}"/ -->
@@ -371,7 +371,7 @@
         <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
         <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
 
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test-lrg">
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="test-lrg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
         <!-- delete file="${coretest.prop.file}"/ -->
@@ -384,7 +384,7 @@
 
     <target name="test-browser" depends="init">
         <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test-browser">
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="test-browser">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
     </target>
@@ -426,7 +426,7 @@
         <delete dir="${p2.repos.dir}" failonerror="false"/>
         <mkdir dir="${p2.repos.dir}"/>
         <!-- populate update site with feature and bundle jars, then publish repository -->
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="assemble-repos">
+        <ant antfile="antbuild.xml" dir="${build.root.dir}/features" target="assemble-repos">
             <property name="do.composite"        value="true"/>
             <property name="ready-to-go"         value="true"/>
             <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
@@ -501,7 +501,7 @@
 
     <target name="sign-and-wait" unless="signed.archive.exist" depends="promote-init">
         <echo message="Proceeding with signing of unsigned archive..."/>
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="sign-jars">
+        <ant antfile="antbuild.xml" dir="${build.root.dir}/features" target="sign-jars">
             <property name="signing.script"  value="sign"/>
             <property name="signed.archive.src.file"   value="${promote.archive.unsigned.lib}"/>
             <property name="signed.archive.dest.file"  value="${promote.archive.signed.lib}"/>

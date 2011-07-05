@@ -151,11 +151,11 @@
   <!-- user property overrides -->
   <property file="${user.home}/build.properties"/>
   <!-- properties checked into SVN -->
-  <property file="./build.properties"/>
+  <property file="${dbwsbldr_test_oracle.build.location}/antbuild.properties"/>
   <!-- user testing properties overrides -->
   <property file="${user.home}/test.properties"/>
   <!-- testing properties checked into SVN -->
-  <property file="./test.properties"/>
+  <property file="${dbwsbldr_test_oracle.build.location}/test.properties"/>
 
   <property name="version.string" value="${release.version}.qualifier"/>
 

@@ -53,7 +53,7 @@
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
     <property name="eclipselink.jpa.spring.test" value="."/>
-    <property file="${eclipselink.jpa.spring.test}/build.properties"/>
+    <property file="${eclipselink.jpa.spring.test}/antbuild.properties"/>
     <property file="${eclipselink.jpa.spring.test}/local.build.properties"/>
     <property file="${eclipselink.jpa.spring.test}/${test.properties}"/>
     <property file="${eclipselink.jpa.spring.test}/test.properties"/>

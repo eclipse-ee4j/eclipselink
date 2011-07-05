@@ -59,7 +59,7 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
-    <property file="${moxytest.build.location}/build.properties"/>
+    <property file="${moxytest.build.location}/antbuild.properties"/>
     <propertyset id="parser.properties">
         <propertyref prefix="javax.xml"/>
     </propertyset>

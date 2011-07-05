@@ -49,8 +49,8 @@
     <property name="sdotest.plugins.dir" value="../plugins"/>
 
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
-    <property file="./test.properties"/>
+    <property file="${sdotest.build.location}/antbuild.properties"/>
+    <property file="${sdotest.build.location}/test.properties"/>
     <property file="${user.home}/${server.name}.properties"/>
     <property file="${sdotest.2.base.dir}/jpa/eclipselink.jpa.test/${server.name}.properties"/>
 

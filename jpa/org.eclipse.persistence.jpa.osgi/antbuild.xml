@@ -29,27 +29,28 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     bdoughan - initial API and implementation
-*     egwin - update to adopt calling standards
+*     egwin - initial API and implementation
+*     tware - changes for org.eclipse.persistence.jpa.osgi build
 #******************************************************************************/-->
-<project name="org.eclipse.persistence.sdo" default="build" basedir=".">
-    <available file="../${ant.project.name}" type="dir" property="sdo.is.local"/>
+<project name="org.eclipse.persistence.jpa.osgi" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="osgi.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
     <!-- (should be set locally, and be destroyed upon return) -->
-    <fail message="Not running from '${ant.project.name}' directory" unless="sdo.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="osgi.is.local"/>
 
-    <dirname  property="sdo.build.location_temp" file="${ant.file.org.eclipse.persistence.core}"/>
-    <pathconvert targetos="unix" property="sdo.build.location">
+    <dirname property="osgi.build.location_temp" file="${ant.file.org.eclipse.persistence.jpa.osgi}"/>
+    <pathconvert targetos="unix" property="osgi.build.location">
         <path>
-            <pathelement location="${sdo.build.location_temp}"/>
+            <pathelement location="${osgi.build.location_temp}"/>
         </path>
     </pathconvert>
-    <condition property="sdo.2.base.dir" value="../.." else="..">
-        <contains string="${sdo.build.location}" substring="sdo/${ant.project.name}"/>
+    <condition property="osgi.2.base.dir" value="../.." else="..">
+        <contains string="${osgi.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
-    <echo message="sdo.2.base.dir = '${sdo.2.base.dir}'"/>
-    <property name="sdo.2.common.plugins.dir" value="${sdo.2.base.dir}/plugins"/>
-    <property name="sdo.2.buildsys.dir" value="${sdo.2.base.dir}/buildsystem"/>
+    <echo message="osgi.2.base.dir = '${osgi.2.base.dir}'"/>
+    <property name="osgi.2.common.plugins.dir" value="${osgi.2.base.dir}/plugins"/>
+    <property name="osgi.2.buildsys.dir" value="${osgi.2.base.dir}/buildsystem"/>
+    <property name="osgi.2.jpa.plugins.dir" value="../plugins"/>
 
     <!-- local property overrides -->
     <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
@@ -58,7 +59,7 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${sdo.build.location}/build.properties"/>
+    <property file="${osgi.build.location}/antbuild.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
@@ -71,18 +72,19 @@
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${sdo.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+            <fileset dir="${osgi.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
-    <target name="init">
+    <!-- Tests for dependency jars. Will bypass build if not found -->
+    <target name="pre-init">
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
-        <condition property="extensions.depend.dir" value="${sdo.2.base.dir}/../extension.lib.external"
-                                                    else="${sdo.build.location}">
-            <available file="${sdo.2.base.dir}/../extension.lib.external" type="dir"/>
+        <condition property="extensions.depend.dir" value="${osgi.2.base.dir}/../extension.lib.external"
+                                                    else="${osgi.build.location}">
+            <available file="${osgi.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
@@ -101,33 +103,22 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="jaxb-api.lib"       value="${sdo.2.common.plugins.dir}/${jaxb-api.jar}"/>
-        <property name="commonj.sdo.lib"    value="../plugins/${commonj.sdo.jar}"/>
-        <property name="core.lib"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <property name="moxy.lib"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
+        <property name="persistence.lib"      value="${osgi.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="core.lib"             value="${osgi.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jpa.lib"              value="${osgi.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
 
         <!-- dependency tests -->
-        <available file="${core.lib}"        property="core.bundle.exist"/>
-        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
-        <available file="${moxy.lib}"        property="moxy.bundle.exist"/>
-        <fail message="Cannot find: '${moxy.lib}'"        unless="moxy.bundle.exist"/>
-
-        <!-- Set Compile Path-->
-        <path id="sdo.compile.path">
-            <pathelement path="${commonj.sdo.lib}"/>
-            <pathelement path="${sdo.2.common.plugins.dir}/${asm}"/>
-            <pathelement path="${jaxb-api.lib}"/>
-            <pathelement path="${core.lib}"/>
-            <pathelement path="${moxy.lib}"/>
-        </path>
+        <available file="${persistence.lib}"   property="persistence.bundle.exist"/>
+        <available file="${core.lib}"          property="core.bundle.exist"/>
+        <available file="${jpa.lib}"           property="jpa.bundle.exist"/>
 
         <!-- Check for BND library -->
-        <property name="nobndtool.manifest.dir"      value="${sdo.build.location}/META-INF"/>
+        <property name="nobndtool.manifest.dir"      value="${osgi.build.location}/META-INF"/>
         <condition property="bndtool.lib" value="${extensions.depend.dir}/${bndtool.jar}">
             <available file="${extensions.depend.dir}/${bndtool.jar}"/>
         </condition>
-        <condition property="bndtool.lib" value="${sdo.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${sdo.2.buildsys.dir}/${bndtool.jar}"/>
+        <condition property="bndtool.lib" value="${osgi.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${osgi.2.buildsys.dir}/${bndtool.jar}"/>
         </condition>
         <echo message="bndtool.lib                     = '${bndtool.lib}'"/>
         <condition property="bld">
@@ -136,8 +127,39 @@
                 <isset property="nobnd"/>
             </or>
         </condition>
+        <condition property="build.ok">
+            <and>
+                <isset property="persistence.bundle.exist"/>
+                <isset property="core.bundle.exist"/>
+                <isset property="jpa.bundle.exist"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="dep-report" depends="pre-init, verify-required-deps"/>
+    <target name="verify-required-deps">
+        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${jpa.lib}'"         unless="jpa.bundle.exist"/>
+    </target>
+
+	<target name="init" if="build.ok" depends="pre-init, dep-report">
+        <!-- Set Compile Path-->
+        <path id="osgi.compile.path">
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${jpa.lib}"/>
+            <pathelement path="${osgi.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${persistence.lib}"/>
+        </path>
+        <condition property="package.ok">
+            <and>
+                <isset property="build.ok"/>
+                <isset property="nobnd"/>
+            </and>
+        </condition>
         <condition property="bnd.bld">
             <and>
+                <isset property="build.ok"/>
                 <isset property="bndtool.lib"/>
                 <not>  <isset property="nobnd"/> </not>
             </and>
@@ -147,7 +169,7 @@
     <target name="fail-on-no-bnd" unless="bld">
         <echo message="BND tool (${bndtool.jar}) not found in either:"/>
         <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
-        <echo message="    or the buildsystem dir:    '${sdo.2.buildsys.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${osgi.2.buildsys.dir}'"/>
         <echo message=""/>
         <echo message="if you have a different version, you can define a different"/>
         <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
@@ -162,11 +184,11 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
+    <target name="compile" if="build.ok" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
-               includes="**/*.java"
+               includes="org/eclipse/persistence/**/*.java"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
                optimize="${javac.optimize}"
@@ -176,44 +198,42 @@
                failonerror="true"
                memoryMaximumSize="512m"
                fork="true"
-               classpathref="sdo.compile.path"
+               classpathref="osgi.compile.path"
         />
     </target>
 
     <!-- package -->
-    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
-            <fileset dir="${sdo.2.base.dir}">
+    <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${osgi.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
                 <include name="license.*"/>
             </fileset>
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
-                <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
                 <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink SDO Source"/>
+                <attribute name="Bundle-Name"            value="EclipseLink OSGi Deployment Fragment (deprectated, non Gemini) Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
                 <attribute name="Bundle-Version"         value="${version.string}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
-            <fileset dir="${sdo.2.base.dir}">
+            <fileset dir="${osgi.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
                 <include name="license.*"/>
             </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
-                <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
             </fileset>
         </jar>
     </target>
@@ -226,78 +246,29 @@
             sourcepath="${src.dir}"
             failok="false"
             exceptions="true"
-            files="./org.eclipse.persistence.sdo.bnd"
-            output="${sdo.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
-        <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+            files="./org.eclipse.persistence.jpa.osgi.bnd"
+            output="${osgi.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
                 <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink SDO Source"/>
+                <attribute name="Bundle-Name"            value="EclipseLink OSGi Deployment Fragment (deprectated, non Gemini) Source"/>
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
                 <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
                 <attribute name="Bundle-Version"         value="${version.string}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
-            <fileset dir="${sdo.2.base.dir}">
+            <fileset dir="${osgi.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
                 <include name="license.*"/>
             </fileset>
             <fileset dir="${src.dir}">
                 <include name="org/eclipse/persistence/**/*.java"/>
-                <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
             </fileset>
-        </jar>
-    </target>
-
-    <target name="build_sdo_lib_jar" depends="compile-sdo-lib, package-sdo-lib-jar" description="Build SDO API lib"/>
-    <!-- compile -->
-    <target name="compile-sdo-lib" description="Compile SDO API lib">
-        <mkdir dir="../plugins/${commonj.sdo.dir}/${classes.dir}"/>
-        <javac srcdir="../plugins/${commonj.sdo.dir}/commonj"
-               destdir="../plugins/${commonj.sdo.dir}/${classes.dir}"
-               includes="**/*.java"
-               debug="${javac.debug}"
-               debuglevel="${javac.debuglevel}"
-               optimize="${javac.optimize}"
-               source="${javac.version}"
-               target="${javac.version}"
-               deprecation="${javac.deprecation}"
-               failonerror="true"
-               memoryMaximumSize="512m"
-               fork="true"
-        />
-    </target>
-    <!-- Packages the SDO API jar-->
-    <target name="package-sdo-lib-jar" description="Package SDO API lib jar">
-        <delete file="../plugins/${commonj.sdo.jar}"/>
-        <echo message="Implementation-Version: ${version.string}"/>
-        <jar jarfile="../plugins/${commonj.sdo.jar}">
-             <manifest>
-                <attribute name="Manifest-Version"                    value="1.0"/>
-                <attribute name="Bundle-ManifestVersion"              value="2"/>
-                <attribute name="Bundle-Name"                         value="SDO"/>
-                <attribute name="Bundle-Vendor"                       value="commonj.sdo Project"/>
-                <attribute name="Bundle-SymbolicName"                 value="commonj.sdo"/>
-                <attribute name="Bundle-RequiredExecutionEnvironment" value="J2SE-1.5"/>
-                <attribute name="Bundle-Version"                      value="2.1.1"/>
-                <attribute name="Export-Package"                      value="${osgi.export.package}"/>
-            </manifest>
-            <fileset
-                dir="../plugins/${commonj.sdo.dir}/${classes.dir}"
-                includes="**/*.class"
-            />
-            <fileset
-                dir="../plugins/${commonj.sdo.dir}"
-                includes="xsd/*.xsd"
-            />
-            <fileset
-                dir="../plugins/${commonj.sdo.dir}"
-                includes="license.txt"
-            />
         </jar>
     </target>
 </project>

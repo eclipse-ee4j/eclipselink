@@ -31,7 +31,7 @@
     <fail unless="rename.is.local" message="Not running from '${ant.project.name}' directory"/>
 
     <!-- properties checked into SVN -->
-    <property file="./build.properties"/>
+    <property file="./antbuild.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->

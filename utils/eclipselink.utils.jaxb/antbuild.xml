@@ -50,7 +50,7 @@
     <!-- local property overrides -->
     <property file="${user.home}/build.properties"/>
     <!-- properties checked into SVN -->
-    <property file="${jaxbutil.build.location}/build.properties"/>
+    <property file="${jaxbutil.build.location}/antbuild.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->

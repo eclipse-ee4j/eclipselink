@@ -63,13 +63,13 @@
     <property name="wdf_test.2.jpa.dir"            value="${wdf_test.2.trunk.dir}/jpa/org.eclipse.persistence.jpa"/>
     <property name="wdf_test.2.moxy.dir"           value="${wdf_test.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
     <property name="wdf_test.2.core.test.dir"      value="${wdf_test.2.trunk.dir}/foundation/eclipselink.core.test"/>
-    <property name="eclipselink.jpa.test"          value="${wdf_test.build.location}/../eclipselink.jpa.test"/>
+    <property name="wdf_test.2.jpa.test"           value="${wdf_test.build.location}/../eclipselink.jpa.test"/>
     <property name="env" environment="env"         value="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
-    <property file="${wdf_test.build.location}/build.properties"/>
+    <property file="${wdf_test.build.location}/antbuild.properties"/>
     <property file="${wdf_test.build.location}/local.build.properties"/>
     <property file="${wdf_test.build.location}/${test.properties}"/>
     <property file="${wdf_test.build.location}/test.properties"/>
@@ -197,7 +197,7 @@
 
     <target name="get-server-properties">
         <property file="${user.home}/${server.name}.properties"/>
-        <property file="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.properties"/>
+        <property file="${wdf_test.2.jpa.test}/${server.name}.properties"/>
         <echo message="server.lib=${server.lib}"/>
         <echo message="server.depend=${server.depend}"/>
         <echo message="server.name=${server.name}"/>
@@ -214,7 +214,7 @@
         <filter token="server.pwd" value="${server.pwd}"/>
         <filter token="server.factory" value="${server.factory}"/>
 
-        <copy file="${wdf_test.build.location}/../eclipselink.jpa.test/resource/server/jndi.properties" todir="stage" filtering="true"/>
+        <copy file="${wdf_test.2.jpa.test}/resource/server/jndi.properties" todir="stage" filtering="true"/>
 
         <jar jarfile="${wdf_test.build.location}/${eclipselink.tests.jar}">
            <zipfileset dir="${wdf_test.build.location}/resource/ejb" includes="*.xml" prefix="META-INF"/>
@@ -358,7 +358,7 @@
     </target>
 
     <target name="server-deploy">
-        <ant antfile="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+        <ant antfile="${wdf_test.2.jpa.test}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.dir" value="${wdf_test.build.location}"/>
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
@@ -366,7 +366,7 @@
     </target>
 
     <target name="server-undeploy">
-        <ant antfile="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+        <ant antfile="${wdf_test.2.jpa.test}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>

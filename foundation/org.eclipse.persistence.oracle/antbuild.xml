@@ -73,7 +73,7 @@
     <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
         <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
-    <property file="${oracle.build.location}/build.properties"/>
+    <property file="${oracle.build.location}/antbuild.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.prefix" value="bnd"/>
@@ -298,92 +298,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="package.ok" depends="init-package, bnd-package" description="jar OSGI bundle">
-        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
-        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
-        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
-            <fileset dir="${oracle.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${classes.dir}">
-                <include name="org/eclipse/persistence/**/*.class"/>
-            </fileset>
-        </jar>
-        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
-            </manifest>
-            <fileset dir="${oracle.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="${src.dir}">
-                <include name="org/eclipse/persistence/**/*.java"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <target name="repackage" if="nobnd" depends="init-package, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
-        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
-        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
-        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF" duplicate="preserve">
-            <fileset dir="${oracle.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <zipgroupfileset dir="${oracle.2.foundation.plugins.dir}">
-                <include name="${ant.project.name}.jar"/>
-            </zipgroupfileset>
-        </jar>
-        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="EclipseLink Oracle Extensions Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${version.string}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
-            </manifest>
-            <fileset dir="${oracle.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <zipgroupfileset dir="${oracle.2.foundation.plugins.dir}">
-                <include name="${ant.project.name}.source.jar"/>
-            </zipgroupfileset>
-        </jar>
-    </target>
-
-    <target name="bnd-package" if="bnd-package.ok" depends="init-package">
-        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
-        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
-        <bnd
-            classpath="${classes.dir}"
-            eclipse="false"
-            sourcepath="${src.dir}"
-            failok="false"
-            exceptions="true"
-            files="./org.eclipse.persistence.oracle.bnd"
-            output="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"/>
+    <target name="package-src" depends="init-package">
         <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
@@ -407,19 +322,38 @@
             </fileset>
         </jar>
     </target>
+        
+    <target name="package" if="package.ok" depends="init-package, package-src, bnd-package" description="jar OSGI bundle">
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
+        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+        </jar>
+    </target>
 
-    <target name="bnd-repackage" if="bnd.bld" depends="init-package" description="take existing source and classes from checked in bundles, and repackage with new manifest">
-        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
-        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
+    <target name="bnd-package" if="bnd-package.ok" depends="init-package, package-src">
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
-            classpath="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"
+            classpath="${classes.dir}"
             eclipse="false"
             sourcepath="${src.dir}"
             failok="false"
             exceptions="true"
             files="./org.eclipse.persistence.oracle.bnd"
-            output="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+            output="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"/>
+    </target>
+
+    <!-- repackage -->
+    <target name="repackage-src" depends="init-package">
         <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
@@ -442,5 +376,34 @@
                 <include name="${ant.project.name}.source.jar"/>
             </zipgroupfileset>
         </jar>
+    </target>
+
+    <target name="repackage" if="nobnd" depends="init-package, repackage-src, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
+        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF" duplicate="preserve">
+            <fileset dir="${oracle.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <zipgroupfileset dir="${oracle.2.foundation.plugins.dir}">
+                <include name="${ant.project.name}.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="bnd-repackage" if="bnd.bld" depends="init-package, repackage-src" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
+        <bnd
+            classpath="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.oracle.bnd"
+            output="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
     </target>
 </project>
