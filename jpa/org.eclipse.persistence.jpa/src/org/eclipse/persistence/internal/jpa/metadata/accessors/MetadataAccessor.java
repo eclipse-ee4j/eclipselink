@@ -53,6 +53,10 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     07/11/2011-2.4 Guy Pelletier
+ *       - 343632: Can't map a compound constraint because of exception: 
+ *                 The reference column name [y] mapped on the element [field x] 
+ *                 does not correspond to a valid field on the mapping reference
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -447,15 +451,45 @@ public abstract class MetadataAccessor extends ORMetadata {
                 referenceField = referenceDescriptor.getField(lookupField.getNameForComparisons());
             
                 if (referenceField == null) {
-                    if (referenceDescriptor.isMappedSuperclass()) {
-                        // If we are processing a mapping accessor for a mapped
-                        // superclass descriptor it may or may not have a source
-                        // ID field so just return the built field.
-                        referenceField = lookupField;
-                        referenceField.setTable(referenceDescriptor.getPrimaryKeyTable());
-                    } else {
-                        throw ValidationException.invalidReferenceColumnName(referencedColumnName, getAnnotatedElement());
-                    }
+                    // So here's the thing, there are a few reasons why we 
+                    // wouldn't have a reference field at this point:
+                    //
+                    // 1 - if we are processing a mapping accessor (e.g. element 
+                    // collection) for a mapped superclass descriptor 
+                    // (metamodel) where the mapped superclass may or may not 
+                    // define a source ID field. So we just don't know and can't 
+                    // know in this context)
+                    //
+                    // 2 - the user has mapped a reference column to a non id 
+                    // field. See bug 343632 for more information. It's an 
+                    // example of going beyond the spec since the user has 
+                    // mapped a reference column name to another relationship 
+                    // mapping. We can't lookup the field for this mapping since 
+                    // we can't guaranty that its accessor has been processed. 
+                    // Basic (id) accessors are all processed in stage one, 
+                    // relationship accessors are processed only in stage 3 
+                    // after we know all the basics (ids) have been processed.
+                    //
+                    // 3 - the field just doesn't exist. In this case, the user
+                    // will eventually get a DB error on persist.
+                    //
+                    // By returning the lookup field, what do we lose? Well, we 
+                    // could lose some field definitions (precision, length, 
+                    // scale) which would generate different DDL (if turned on).
+                    //
+                    // What do we gain? We continue to do our best to lookup
+                    // reference fields and keep them in sync. We do that
+                    // correctly up to what the spec requires. Anything beyond
+                    // that we just assume the field is valid and return it (as 
+                    // we did in the past, before bug 317286) and users can map 
+                    // to non-id fields.
+                    //
+                    referenceField = lookupField;
+                    referenceField.setTable(referenceDescriptor.getPrimaryKeyTable());
+                    
+                    // Log warning to the user that we will use the referenced
+                    // column name they provided.
+                    getLogger().logWarningMessage(MetadataLogger.REFERENCED_COLUMN_NOT_FOUND, referencedColumnName, getAnnotatedElement());
                 }
             }
         }

@@ -14,7 +14,11 @@
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     07/11/2011-2.4 Guy Pelletier
+ *       - 343632: Can't map a compound constraint because of exception: 
+ *                 The reference column name [y] mapped on the element [field x] 
+ *                 does not correspond to a valid field on the mapping reference
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -411,7 +415,6 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int INVALID_DERIVED_COMPOSITE_PK_ATTRIBUTE = 7332;
     
-    public static final int INVALID_REFERENCE_COLUMN_NAME = 7333;
     public static final int PRIMARY_KEY_COLUMN_NAME_NOT_SPECIFIED = 7334;
     
     public static final int DUPLICATE_PARTITION_VALUE = 7335;
@@ -1816,14 +1819,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCOMPLETE_PRIMARY_KEY_JOIN_COLUMNS_SPECIFIED, args));
         validationException.setErrorCode(INCOMPLETE_PRIMARY_KEY_JOIN_COLUMNS_SPECIFIED);
-        return validationException;
-    }
-    
-    public static ValidationException invalidReferenceColumnName(String referenceColumnName, Object annotatedElement) {
-        Object[] args = { referenceColumnName, annotatedElement };
-        
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_REFERENCE_COLUMN_NAME, args));
-        validationException.setErrorCode(INVALID_REFERENCE_COLUMN_NAME);
         return validationException;
     }
     
