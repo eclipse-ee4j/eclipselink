@@ -847,7 +847,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
               
                 try {
                     beginTransaction(em);
-                    List<MafiaFamily> families = em.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
+                    List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
                     assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
                     commitTransaction(em);
                     
