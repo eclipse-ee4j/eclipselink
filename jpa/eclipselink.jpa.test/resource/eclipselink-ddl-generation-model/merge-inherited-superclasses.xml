@@ -47,4 +47,17 @@
         <!-- Testing the id-class XML element, source has no annotations -->
         <id-class class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.TelephoneNumberPK"/>
     </mapped-superclass>
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.WorkPeriod" access="FIELD">
+        <!-- This superclass is completely defined in XML, source has no annotations -->
+        <attributes>
+            <basic name="startDate">
+                <column name="S_DATE"/>
+                <temporal>DATE</temporal>
+            </basic>
+            <basic name="endDate">
+                <column name="E_DATE"/>
+                <temporal>DATE</temporal>
+            </basic>
+        </attributes>
+    </mapped-superclass>
 </entity-mappings>

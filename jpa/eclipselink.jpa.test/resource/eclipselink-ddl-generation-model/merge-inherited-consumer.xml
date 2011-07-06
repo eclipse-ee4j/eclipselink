@@ -57,5 +57,6 @@
             </many-to-one>
         </attributes>
     </entity>
+    <entity name="MergeBartender" class="org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Bartender" access="FIELD"/>
 </entity-mappings>
 

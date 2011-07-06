@@ -30,6 +30,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     07/03/2011-2.3.1 Guy Pelletier 
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+ *     07/06/2011-2.3.1 Guy Pelletier 
+ *       - 349906: NPE while using eclipselink in the application
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -575,7 +577,7 @@ public abstract class ORMetadata {
      * with the subclasses context (that is, the descriptor we are given).
      */
     protected EntityAccessor reloadEntity(EntityAccessor entity, MetadataDescriptor descriptor) {
-        if (getEntityMappings() == null) {
+        if (entity.loadedFromAnnotation()) {
             // Create a new EntityAccesor.
             EntityAccessor entityAccessor = new EntityAccessor(entity.getAnnotation(), entity.getJavaClass(), entity.getProject());
             // Things we care about ...
@@ -583,25 +585,25 @@ public abstract class ORMetadata {
             entityAccessor.setDescriptor(descriptor);
             return entityAccessor;            
         } else {
-            return getEntityMappings().reloadEntity(entity, descriptor);
+            return entity.getEntityMappings().reloadEntity(entity, descriptor);
         }
     }
     
     /**
      * INTERNAL:
-     * This method should be called to reload an entity (that was either
+     * This method should be called to reload a mapped superclass (that was either
      * loaded from XML or an annotation) as a way of cloning it. This is needed
      * when processing TABLE_PER_CLASS inheritance and when building individual
      * entity accessor's mapped superclass list. 
      */
     protected MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor mappedSuperclass, MetadataDescriptor descriptor) {
-        if (getEntityMappings() == null) {
-            // Changing the descriptor on the mapped superclass should work in 
-            // theory, since we are just going to go through its accessor list.
+        if (mappedSuperclass.loadedFromAnnotation()) {
+            // The descriptor for the mapped superclass is the one passed in 
+            // which should be a valid entity accessor's descriptor.
             MappedSuperclassAccessor mappedSuperclassAccessor = new MappedSuperclassAccessor(mappedSuperclass.getAnnotation(), mappedSuperclass.getJavaClass(), descriptor);
             return mappedSuperclassAccessor;
         } else {
-            return getEntityMappings().reloadMappedSuperclass(mappedSuperclass, descriptor);
+            return mappedSuperclass.getEntityMappings().reloadMappedSuperclass(mappedSuperclass, descriptor);
         }
     }
     
