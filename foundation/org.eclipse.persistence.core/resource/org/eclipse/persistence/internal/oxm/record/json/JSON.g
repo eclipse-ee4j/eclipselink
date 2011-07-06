@@ -88,15 +88,15 @@ fragment Digits : '0'..'9'+;
 
 fragment E :('e'|'E') ('+'|'-')?;
 
-Whitespace : (' ' | '\r' | '\t' | '\u000C' | '\n')*;
+Whitespace : (' ' | '\r' | '\t' | '\u000C' | '\n')+ { $channel = HIDDEN; } ;
 
 // PARSER
 
 object : '{' (pair (',' pair)*)? '}' -> ^(OBJECT pair*);
 
-pair : whitespace String whitespace ':' whitespace value whitespace -> ^(PAIR String value);
+pair :String ':' value -> ^(PAIR String value);
 
-array : '[' whitespace (value (whitespace ',' whitespace value)*)? whitespace ']' -> ^(ARRAY value+);
+array : '[' (value (',' value)*)? ']' -> ^(ARRAY value+);
 
 value : String -> ^(STRING String)
         |        Number -> ^(NUMBER Number)
@@ -106,5 +106,3 @@ value : String -> ^(STRING String)
         |        'false' -> FALSE
         |        'null' -> NULL
         ;
-
-whitespace : (' ' | '\r' | '\t' | '\u000C' | '\n')*;
