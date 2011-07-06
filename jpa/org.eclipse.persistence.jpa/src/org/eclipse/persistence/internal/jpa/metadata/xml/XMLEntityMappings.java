@@ -27,6 +27,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     07/06/2011-2.3.1 Guy Pelletier 
+ *       - 349906: NPE while using eclipselink in the application
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -804,6 +806,7 @@ public class XMLEntityMappings extends ORMetadata {
      * We clone/reload an entity class by writing it out to XML and reload it 
      * through OX.
      */
+    @Override
     public EntityAccessor reloadEntity(EntityAccessor accessor, MetadataDescriptor descriptor) {
         // Create entity mappings object to write out.
         XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
@@ -828,6 +831,7 @@ public class XMLEntityMappings extends ORMetadata {
      * We clone/reload a mapped-superclass by writing it out to XML and 
      * reload it through OX.
      */
+    @Override
     public MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor descriptor) {
         // Create entity mappings object to write out.
         XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
