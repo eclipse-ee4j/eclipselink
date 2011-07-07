@@ -261,7 +261,6 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         commitTransaction(em);
         
         clearCache();
-        em.close();
         try{
             em = createEntityManager();
             beginTransaction(em);
