@@ -964,6 +964,18 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
+     * Used to allow platforms to define their own index prefixes
+     * @param isUniqueField
+     * @return
+     */
+    public String getIndexNamePrefix(boolean isUniqueSetOnField){
+        if (isUniqueSetOnField){
+            return "UIX_";
+        }
+        return super.getIndexNamePrefix(isUniqueSetOnField);
+    }
+    
+    /**
      * This method is used to print the output parameter token when stored
      * procedures are called.
      */
@@ -990,7 +1002,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     public int getMaxFieldNameSize() {
         return 36;
     }
-
+    
     /**
      * Symfoware does not use the AS token.
      */

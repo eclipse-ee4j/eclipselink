@@ -1236,6 +1236,15 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used to allow platforms to define their own index prefixes
+     * @param isUniqueField
+     * @return
+     */
+    public String getIndexNamePrefix(boolean isUniqueSetOnField){
+        return "IX_";
+    }
+    
+    /**
      * This method is used to print the output parameter token when stored
      * procedures are called
      */

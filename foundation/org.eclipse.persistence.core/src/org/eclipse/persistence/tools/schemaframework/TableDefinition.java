@@ -287,8 +287,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the index creation statement.
      */
-    public IndexDefinition buildIndex(AbstractSession session, String key, List<String> columnNames) {
-        String indexName = buildIndexName(getName(), key, session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
+    public IndexDefinition buildIndex(AbstractSession session, String key, List<String> columnNames, boolean isUniqueSetOnField) {
+        String indexName = buildIndexName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField), session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
         IndexDefinition index = new IndexDefinition();
         index.setName(indexName);
         index.setTargetTable(getFullName());
@@ -300,8 +300,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the index drop statement.
      */
-    public Writer buildIndexDeletionWriter(AbstractSession session, String key, Writer writer) {
-            String indexName = buildIndexName(getName(), key,
+    public Writer buildIndexDeletionWriter(AbstractSession session, String key, Writer writer, boolean isUniqueSetOnField) {
+            String indexName = buildIndexName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField),
                     session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
         IndexDefinition index = new IndexDefinition();
         index.setName(indexName);
@@ -310,6 +310,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         return writer;
     }
 
+    
     /**
      * INTERNAL:
      * Return the beginning of the sql create statement - the part before the name.
@@ -584,16 +585,17 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * Return key constraint name built from the table and key name with the
-     * specified maximum length. To make the name short enough we:
+     * specified maximum length and index prefix. If indexPrefix is null, 
+     * "IX_" is used for prefix. To make the name short enough we:
      * 
      * <pre>
-     * 1. Drop the &quot;IX_&quot; prefix.
+     * 1. Drop the prefix.
      * 2. Drop the underscore characters if any.
      * 3. Drop the vowels from the table and key name.
      * 4. Truncate the table name to zero length if necessary.
      * </pre>
      */
-    protected String buildIndexName(String tableName, String key, int maximumNameLength, DatabasePlatform platform) {
+    protected String buildIndexName(String tableName, String key, String indexPrefix, int maximumNameLength, DatabasePlatform platform) {
         String startDelimiter = "";
         String endDelimiter = "";
         boolean useDelimiters = !platform.getStartDelimiter().equals("") && (tableName.startsWith(platform.getStartDelimiter()) || key.startsWith(platform.getStartDelimiter()));
@@ -622,9 +624,12 @@ public class TableDefinition extends DatabaseObjectDefinition {
             }
         }
         String adjustedFieldName = buff.toString();
-        String indexName = startDelimiter + "IX_" + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
+        if (indexPrefix == null) {
+            indexPrefix = "IX_";
+        }
+        String indexName = startDelimiter + indexPrefix + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
         if (indexName.length() > maximumNameLength) {
-            // First Remove the "IX_" prefix.
+            // First Remove the prefix.
             indexName = startDelimiter + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
             if (indexName.length() > maximumNameLength) {
                 // Still too long: remove the underscore characters
@@ -759,7 +764,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         if (session.getPlatform().shouldCreateIndicesForPrimaryKeys()) {
             List<String> primKeyList = getPrimaryKeyFieldNames();
             if (!primKeyList.isEmpty()) {
-                IndexDefinition index = buildIndex(session, primKeyList.get(0), primKeyList);
+                IndexDefinition index = buildIndex(session, primKeyList.get(0), primKeyList, false);
                 if (writer == null) {
                     index.createOnDatabase(session);
                 } else {
@@ -772,7 +777,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         if (session.getPlatform().shouldCreateIndicesOnUniqueKeys()) {
             // indices for columns in unique key constraint declarations
             for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
-                IndexDefinition index = buildIndex(session, uniqueKey.getName(), uniqueKey.getSourceFields());
+                IndexDefinition index = buildIndex(session, uniqueKey.getName(), uniqueKey.getSourceFields(), false);
                 if (writer == null) {
                     index.createOnDatabase(session);
                 } else {
@@ -786,7 +791,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
                 if (field.isUnique()) {
                     List<String> columnAsList = new ArrayList<String>();
                     columnAsList.add(field.getName());
-                    IndexDefinition index = buildIndex(session, field.getName(), columnAsList);
+                    IndexDefinition index = buildIndex(session, field.getName(), columnAsList, true);
                     if (writer == null) {
                         index.createOnDatabase(session);
                     } else {
@@ -902,7 +907,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         if (session.getPlatform().shouldCreateIndicesForPrimaryKeys()) {
             List<String> primKeyList = getPrimaryKeyFieldNames();
             if (!primKeyList.isEmpty()) {
-                IndexDefinition index = buildIndex(session, primKeyList.get(0), primKeyList);
+                IndexDefinition index = buildIndex(session, primKeyList.get(0), primKeyList, false);
                 if (writer == null) {
                     try {
                         index.dropFromDatabase(session);
@@ -919,7 +924,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         if (session.getPlatform().shouldCreateIndicesOnUniqueKeys()) {
             // indices for columns in unique key constraint declarations
             for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
-                IndexDefinition index = buildIndex(session, uniqueKey.getName(), uniqueKey.getSourceFields());
+                IndexDefinition index = buildIndex(session, uniqueKey.getName(), uniqueKey.getSourceFields(), false);
                 if (writer == null) {
                     try {
                         index.dropFromDatabase(session);
@@ -937,7 +942,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
                 if (field.isUnique()) {
                     List<String> columnAsList = new ArrayList<String>();
                     columnAsList.add(field.getName());
-                    IndexDefinition index = buildIndex(session, field.getName(), columnAsList);
+                    IndexDefinition index = buildIndex(session, field.getName(), columnAsList, true);
                     if (writer == null) {
                         try {
                             index.dropFromDatabase(session);
