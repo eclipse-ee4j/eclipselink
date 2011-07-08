@@ -19,9 +19,15 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
+import java.net.URL;
 
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
+import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
@@ -33,6 +39,48 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     public void setControlJSON(String location) {
         this.controlJSONLocation = location;
+    }
+
+    public void testJSONUnmarshalFromInputStream() throws Exception {
+        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
+        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+
+        InputStream inputStream = getJSONStream();
+        Object testObject = jsonUnmarshaller.unmarshal(inputStream);
+        inputStream.close();
+        assertEquals(getControlObject(), testObject);
+    }
+
+    public void testJSONUnmarshalFromInputSource() throws Exception {
+        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
+        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+
+        InputStream inputStream = getJSONStream();
+        InputSource inputSource = new InputSource(inputStream);
+        Object testObject = jsonUnmarshaller.unmarshal(inputSource);
+        inputStream.close();
+        assertEquals(getControlObject(), testObject);
+    }
+
+    public void testJSONUnmarshalFromReader() throws Exception {
+        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
+        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+
+        InputStream inputStream = getJSONStream();
+        Reader reader = new InputStreamReader(inputStream);
+        Object testObject = jsonUnmarshaller.unmarshal(reader);
+        reader.close();
+        inputStream.close();
+        assertEquals(getControlObject(), testObject);
+    }
+
+    public void testJSONUnmarshalFromURL() throws Exception {
+        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
+        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+
+        URL url = getJSONURL();
+        Object testObject = jsonUnmarshaller.unmarshal(url);
+        assertEquals(getControlObject(), testObject);
     }
 
     public void testJSONMarshalToOutputStream() throws Exception{
@@ -89,7 +137,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     protected String getJSONControlString(String fileName){
         StringBuffer sb = new StringBuffer();
         try {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream(controlJSONLocation);
+            InputStream inputStream = getJSONStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
            String str;
@@ -104,6 +152,14 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             fail();
         }
         return sb.toString();
+    }
+
+    private InputStream getJSONStream() {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+    }
+
+    private URL getJSONURL() {
+        return Thread.currentThread().getContextClassLoader().getResource(controlJSONLocation);
     }
 
 }

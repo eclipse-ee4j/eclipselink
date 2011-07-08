@@ -36,7 +36,7 @@ public class ObjectRoot {
         }
         ObjectRoot test = (ObjectRoot) obj;
         if(null == attribute) {
-            return attribute.equals(test.getAttribute());
+            return null == test.getAttribute();
         } else {
             return attribute.equals(test.getAttribute());
         }

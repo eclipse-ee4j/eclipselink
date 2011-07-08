@@ -1,18 +1,21 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.ParameterizedType;
@@ -42,12 +45,14 @@ import javax.xml.validation.Schema;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
@@ -82,6 +87,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private XMLUnmarshaller xmlUnmarshaller;
     private JAXBContext jaxbContext;
     private XMLInputFactory xmlInputFactory;
+    private MediaType mediaType = MediaType.APPLICATION_XML;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
 
@@ -103,6 +109,20 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(File file) throws JAXBException {
         try {
+            if(mediaType == MediaType.APPLICATION_JSON) {
+                try {
+                    FileInputStream inputStream = new FileInputStream(file);
+                    try {
+                        return unmarshal(inputStream);
+                    } finally {
+                        inputStream.close();
+                    }
+                } catch (FileNotFoundException e) {
+                    throw XMLMarshalException.unmarshalException(e);
+                } catch (IOException e) {
+                    throw XMLMarshalException.unmarshalException(e);
+                }
+            }
             Object value = xmlUnmarshaller.unmarshal(file);
             return createJAXBElementIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
@@ -112,7 +132,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(InputStream inputStream) throws JAXBException {
         try {
-            if(null == xmlInputFactory || 
+            if(mediaType == MediaType.APPLICATION_JSON) {
+                InputSource source = new InputSource(inputStream);
+                return unmarshal(source);
+            }
+            if(null == xmlInputFactory ||
                 XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
                 return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(inputStream));
             } else {
@@ -136,6 +160,22 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(URL url) throws JAXBException {
         try {
+            if(this.mediaType == MediaType.APPLICATION_JSON) {
+                try {
+                    Object object = null;
+                    InputStream inputStream = url.openStream();
+                    try {
+                        object = unmarshal(inputStream);
+                    } catch(XMLMarshalException e) {
+                        throw handleXMLMarshalException(e);
+                    } finally {
+                        inputStream.close();
+                    }
+                    return object;
+                } catch(IOException e) {
+                    throw new UnmarshalException(e);
+                }
+            }
             Object value = xmlUnmarshaller.unmarshal(url);
             return createJAXBElementIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
@@ -145,7 +185,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(InputSource inputSource) throws JAXBException {
         try {
-            Object value = xmlUnmarshaller.unmarshal(inputSource);
+            Object value = null;
+            if(this.mediaType == MediaType.APPLICATION_JSON) {
+                value = xmlUnmarshaller.unmarshal(new JSONReader(), inputSource);
+            } else {
+                value = xmlUnmarshaller.unmarshal(inputSource);
+            }
             return createJAXBElementIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
@@ -153,8 +198,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public Object unmarshal(Reader reader) throws JAXBException {
+        if(mediaType == MediaType.APPLICATION_JSON) {
+            if(null == reader) {
+                throw XMLMarshalException.nullArgumentException();
+            }
+            return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(new JSONReader(), new InputSource(reader)));
+        }
         try {
-            if(null == xmlInputFactory || 
+            if(null == xmlInputFactory ||
                 XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
                 return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(reader));
             } else {
@@ -308,7 +359,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     return unmarshal(source, tmi);
                 }
             }
-    
+
             Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled =  unmarshal(source, unmarshalClass, Object.class);
@@ -386,7 +437,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
             JAXBElement unmarshalled = buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
-    
+
             if(classToUnmarshalTo != javaClass){
                 JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), javaClass, unmarshalled.getScope(), unmarshalled.getValue());
                 return returnVal;
@@ -408,7 +459,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     return unmarshal(streamReader, tmi);
                 }
             }
-    
+
             Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled = unmarshal(streamReader, unmarshalClass);
@@ -420,7 +471,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
                 JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), declaredClass, unmarshalled.getScope(), unmarshalled.getValue());
                 return returnVal;
-    
+
             }else if(type instanceof Class){
                 return  unmarshal(streamReader, (Class)type);
             }
@@ -442,7 +493,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
             Class unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
             if(unmarshalClass != null){
-    
+
                 JAXBElement unmarshalled = unmarshal(streamReader, unmarshalClass);
                 Class declaredClass = null;
                 if(type.getType() instanceof Class){
@@ -505,7 +556,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             XMLEventReaderReader staxReader = new XMLEventReaderReader(xmlUnmarshaller);
             XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
             JAXBElement unmarshalled =  buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
-    
+
             if(classToUnmarshalTo != javaClass){
                 JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), javaClass, unmarshalled.getScope(), unmarshalled.getValue());
                 return returnVal;
@@ -556,7 +607,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
                 return unmarshal(eventReader, type.getType());
             }
-    
+
             Class unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
             RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
             if(unmarshalClass != null){
@@ -645,12 +696,29 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        throw new PropertyException(key, value);
+        if(key.equals(JAXBContext.MEDIA_TYPE)) {
+            if("application/json".equals(value)) {
+                mediaType = MediaType.APPLICATION_JSON;
+            } else if("application/xml".equals(value)) {
+                mediaType = MediaType.APPLICATION_XML;
+            } else {
+                throw new PropertyException(key, value);
+            }
+        } else {
+            throw new PropertyException(key, value);
+        }
     }
 
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
+        }
+        if(key.equals(JAXBContext.MEDIA_TYPE)) {
+            if(mediaType == MediaType.APPLICATION_JSON) {
+                return "application/json";
+            } else {
+                return "application/xml";
+            }
         }
         throw new PropertyException("Unsupported Property");
     }
@@ -714,7 +782,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private Object createJAXBElementIfRequired(Object value){
         if(value instanceof XMLRoot){
             JAXBElement jaxbElement = createJAXBElementFromXMLRoot((XMLRoot)value, Object.class);
-            jaxbElement.setNil(((XMLRoot) value).isNil()); 
+            jaxbElement.setNil(((XMLRoot) value).isNil());
             return jaxbElement;
         }
         return value;
