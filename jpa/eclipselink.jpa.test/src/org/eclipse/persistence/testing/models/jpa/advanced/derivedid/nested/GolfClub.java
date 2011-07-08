@@ -22,7 +22,7 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 @Entity 
-@Table(name="JPA_GOLF_CLUB")
+@Table(name="JPA_GOLFCLUB")
 public class GolfClub {
     @EmbeddedId
     protected GolfClubPK clubPK;

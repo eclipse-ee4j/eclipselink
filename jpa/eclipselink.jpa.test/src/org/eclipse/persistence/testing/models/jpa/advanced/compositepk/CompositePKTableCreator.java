@@ -570,7 +570,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
     
     public static TableDefinition buildGOLFCLUBTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA_GOLF_CLUB");
+        table.setName("JPA_GOLFCLUB");
         
         FieldDefinition fieldHEAD_ID = new FieldDefinition();
         fieldHEAD_ID.setName("HEAD_ID");
