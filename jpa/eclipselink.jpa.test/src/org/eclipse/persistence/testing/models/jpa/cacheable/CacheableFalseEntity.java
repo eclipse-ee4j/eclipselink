@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -35,6 +35,7 @@ public class CacheableFalseEntity {
     protected int id;
     protected CacheableProtectedEntity protectedEntity;
     List<CacheableFalseDetail> details = new ArrayList<CacheableFalseDetail>();
+    List<CacheableFalseDetailWithBackPointer> detailsBackPointer = new ArrayList<CacheableFalseDetailWithBackPointer>();
     
     public CacheableFalseEntity() {}
     
@@ -76,5 +77,15 @@ public class CacheableFalseEntity {
      */
     public void setProtectedEntity(CacheableProtectedEntity protectedEntity) {
         this.protectedEntity = protectedEntity;
+    }
+
+    @OneToMany(cascade = {CascadeType.ALL},  mappedBy="entity")
+    public List<CacheableFalseDetailWithBackPointer> getDetailsBackPointer() {
+        return detailsBackPointer;
+    }
+
+    public void setDetailsBackPointer(
+            List<CacheableFalseDetailWithBackPointer> detailsBackPointer) {
+        this.detailsBackPointer = detailsBackPointer;
     }
 }

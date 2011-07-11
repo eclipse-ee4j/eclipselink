@@ -798,6 +798,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // It read time must be set to avoid it being invalidated.
             CacheKey cacheKey = new CacheKey(primaryKey);
             cacheKey.setReadTime(System.currentTimeMillis());
+            cacheKey.setIsolated(true); // if the cache does not have a version then this must be built from the supplied version
             return cloneAndRegisterObject(object, cacheKey, descriptor);
         } else {
             return null;
