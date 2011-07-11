@@ -37,6 +37,7 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         addDescriptor(buildPolicyHolderDescriptor());
         addDescriptor(buildVehicleClaimDescriptor());
         addDescriptor(buildVehiclePolicyDescriptor());
+        addDescriptor(buildBicyclePolicyDescriptor());
     }
 
     /**
@@ -297,10 +298,12 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         descriptor.addFieldOrdering("COVERAGERATE");
         descriptor.addFieldOrdering("DATEOFCONSTRUCTION");
         descriptor.addFieldOrdering("MODEL");
+        descriptor.addFieldOrdering("COLOR");
 
         descriptor.getDescriptorInheritancePolicy().addClassIndicator(HousePolicy.class, "H");
         descriptor.getDescriptorInheritancePolicy().addClassIndicator(HealthPolicy.class, "E");
         descriptor.getDescriptorInheritancePolicy().addClassIndicator(VehiclePolicy.class, "V");
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(BicyclePolicy.class, "B");
 
         descriptor.getDescriptorInheritancePolicy().setClassIndicatorFieldName("TYPE");
 
@@ -478,6 +481,7 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         definition.addField("coverageRate", Float.class, 4, 2);
         definition.addField("dateOfConstruction", java.sql.Date.class);
         definition.addField("model", String.class, 20);
+        definition.addField("color", String.class, 20);
         definition.addField("claims", "Claims_type");
 
         return definition;
@@ -512,6 +516,20 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
     }
 
     /**
+     * Return the bicycle policy descriptor.
+     * This descriptor inherits from the vehicle policy descriptor.
+     */
+    public static ClassDescriptor buildBicyclePolicyDescriptor() {
+        ObjectRelationalDataTypeDescriptor descriptor = new ObjectRelationalDataTypeDescriptor();
+        descriptor.setJavaClass(BicyclePolicy.class);
+        descriptor.getDescriptorInheritancePolicy().setParentClass(VehiclePolicy.class);
+
+        descriptor.addDirectMapping("color", "getColor", "setColor", "COLOR");
+
+        return descriptor;
+    }
+
+    /**
      * Return all of the descriptors required.
      */
     public static Vector getAllDescriptors() {
@@ -526,6 +544,7 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         descriptors.addElement(buildHealthPolicyDescriptor());
         descriptors.addElement(buildHousePolicyDescriptor());
         descriptors.addElement(buildVehiclePolicyDescriptor());
+        descriptors.addElement(buildBicyclePolicyDescriptor());
 
         descriptors.addElement(buildPolicyHolderDescriptor());
         descriptors.addElement(buildAddressDescriptor());

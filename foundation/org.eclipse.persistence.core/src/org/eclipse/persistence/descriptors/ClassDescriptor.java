@@ -2890,7 +2890,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (hasInheritance()) {
             getInheritancePolicy().initialize(session);
             if (getInheritancePolicy().isChildDescriptor()) {
-                for (DatabaseMapping mapping : getInheritancePolicy().getParentDescriptor().getMappings()) {
+                ClassDescriptor parentDescriptor = getInheritancePolicy().getParentDescriptor();
+                for (DatabaseMapping mapping : parentDescriptor.getMappings()) {
                     if (mapping.isAggregateObjectMapping() || ((mapping.isForeignReferenceMapping() && (!mapping.isDirectCollectionMapping())) && (!((ForeignReferenceMapping)mapping).usesIndirection()))) {
                         getLockableMappings().add(mapping);// add those mappings from the parent.
                     }
@@ -2898,6 +2899,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     if (mapping.derivesId()) {
                         this.derivesIdMappings.put(mapping.getAttributeName(), mapping);
                     }
+                }
+                if (parentDescriptor.hasPreDeleteMappings()) {
+                    getPreDeleteMappings().addAll(parentDescriptor.getPreDeleteMappings());
+                }
+                if (parentDescriptor.hasMappingsPostCalculateChanges()) {
+                    getMappingsPostCalculateChanges().addAll(parentDescriptor.getMappingsPostCalculateChanges());
+                }
+                if (parentDescriptor.hasMappingsPostCalculateChangesOnDeleted()) {
+                    getMappingsPostCalculateChangesOnDeleted().addAll(parentDescriptor.getMappingsPostCalculateChangesOnDeleted());
                 }
             }
         }

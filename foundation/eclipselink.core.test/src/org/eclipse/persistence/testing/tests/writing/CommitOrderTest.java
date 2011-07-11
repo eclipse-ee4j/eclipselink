@@ -254,6 +254,7 @@ public class CommitOrderTest extends TestCase {
         sb.append("org.eclipse.persistence.testing.models.inheritance.Worker" + cr);
         sb.append("org.eclipse.persistence.testing.models.insurance.PolicyHolder" + cr);
         sb.append("org.eclipse.persistence.testing.models.insurance.Address" + cr);
+        sb.append("org.eclipse.persistence.testing.models.insurance.BicyclePolicy" + cr);
         sb.append("org.eclipse.persistence.testing.models.insurance.Policy" + cr);
         sb.append("org.eclipse.persistence.testing.models.insurance.HealthPolicy" + cr);
         sb.append("org.eclipse.persistence.testing.models.insurance.HousePolicy" + cr);
