@@ -38,6 +38,7 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         addDescriptor(buildPolicyHolderDescriptor());
         addDescriptor(buildVehicleClaimDescriptor());
         addDescriptor(buildVehiclePolicyDescriptor());
+        addDescriptor(buildBicyclePolicyDescriptor());
     }
 
     public void applyLogin() {
@@ -281,6 +282,7 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HousePolicy.class, new Long(3));
         descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.HealthPolicy.class, new Long(2));
         descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.VehiclePolicy.class, new Long(1));
+        descriptor.getDescriptorInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.insurance.BicyclePolicy.class, new Long(0));
 
         // Mappings.
         DirectToFieldMapping policyNumberMapping = new DirectToFieldMapping();
@@ -466,6 +468,30 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
         modelMapping.setSetMethodName("setModel");
         modelMapping.setFieldName("VHCL_POL.MODEL");
         descriptor.addMapping(modelMapping);
+
+        return descriptor;
+    }
+
+    public RelationalDescriptor buildBicyclePolicyDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(org.eclipse.persistence.testing.models.insurance.BicyclePolicy.class);
+        descriptor.addTableName("BCCL_POL");
+
+        // Inheritance properties.
+        descriptor.getDescriptorInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.insurance.VehiclePolicy.class);
+
+        // RelationalDescriptor properties.
+        // Query manager.
+        descriptor.getDescriptorQueryManager().checkDatabaseForDoesExist();
+
+        // Event manager.
+        // Mappings.
+        DirectToFieldMapping colorMapping = new DirectToFieldMapping();
+        colorMapping.setAttributeName("model");
+        colorMapping.setGetMethodName("getColor");
+        colorMapping.setSetMethodName("setColor");
+        colorMapping.setFieldName("BCCL_POL.COLOR");
+        descriptor.addMapping(colorMapping);
 
         return descriptor;
     }

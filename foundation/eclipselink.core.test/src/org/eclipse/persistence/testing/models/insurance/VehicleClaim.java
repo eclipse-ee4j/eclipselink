@@ -58,6 +58,30 @@ public class VehicleClaim extends Claim {
         return vehicleClaim;
     }
 
+    /**
+     * Return an example claim instance.
+     */
+    public static VehicleClaim example4() {
+        VehicleClaim vehicleClaim = new VehicleClaim();
+        vehicleClaim.setId(304);
+        vehicleClaim.setPart("front wheel");
+        vehicleClaim.setPartDescription("bike front wheel");
+        vehicleClaim.setAmount(100);
+        return vehicleClaim;
+    }
+
+    /**
+     * Return an example claim instance.
+     */
+    public static VehicleClaim example5() {
+        VehicleClaim vehicleClaim = new VehicleClaim();
+        vehicleClaim.setId(305);
+        vehicleClaim.setPart("rear wheel");
+        vehicleClaim.setPartDescription("bike rear wheel");
+        vehicleClaim.setAmount(200);
+        return vehicleClaim;
+    }
+
     public String getPart() {
         return part;
     }

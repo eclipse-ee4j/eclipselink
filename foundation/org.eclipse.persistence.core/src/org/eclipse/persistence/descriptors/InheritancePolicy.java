@@ -1119,15 +1119,6 @@ public class InheritancePolicy implements Serializable, Cloneable {
     public void postInitialize(AbstractSession session) {
         if (isChildDescriptor()) {
             ClassDescriptor parent = getParentDescriptor();
-            if (parent.hasPreDeleteMappings()) {
-                getDescriptor().getPreDeleteMappings().addAll(parent.getPreDeleteMappings());
-            }
-            if (parent.hasMappingsPostCalculateChanges()) {
-                getDescriptor().getMappingsPostCalculateChanges().addAll(parent.getMappingsPostCalculateChanges());
-            }
-            if (parent.hasMappingsPostCalculateChangesOnDeleted()) {
-                getDescriptor().getMappingsPostCalculateChangesOnDeleted().addAll(parent.getMappingsPostCalculateChangesOnDeleted());
-            }
             if (getDescriptor().shouldAcquireCascadedLocks()){
                 parent.setShouldAcquireCascadedLocks(true);
             }

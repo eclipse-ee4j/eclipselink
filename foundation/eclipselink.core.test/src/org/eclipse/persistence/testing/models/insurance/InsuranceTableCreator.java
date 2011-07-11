@@ -31,6 +31,7 @@ public class InsuranceTableCreator extends TableCreator {
         addTableDefinition(buildPOLICYTable());
         addTableDefinition(buildVHCL_CLMTable());
         addTableDefinition(buildVHCL_POLTable());
+        addTableDefinition(buildBCCL_POLTable());
     }
 
     public TableDefinition buildCHILDNAMTable() {
@@ -532,6 +533,42 @@ public class InsuranceTableCreator extends TableCreator {
         foreignKeyFK_VHCL_POL_POL_ID.addSourceField("POL_ID");
         foreignKeyFK_VHCL_POL_POL_ID.addTargetField("POL_ID");
         table.addForeignKeyConstraint(foreignKeyFK_VHCL_POL_POL_ID);
+
+        return table;
+    }
+
+    public TableDefinition buildBCCL_POLTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("BCCL_POL");
+
+        FieldDefinition fieldPOL_ID = new FieldDefinition();
+        fieldPOL_ID.setName("POL_ID");
+        fieldPOL_ID.setTypeName("NUMBER");
+        fieldPOL_ID.setSize(18);
+        fieldPOL_ID.setSubSize(0);
+        fieldPOL_ID.setIsPrimaryKey(true);
+        fieldPOL_ID.setIsIdentity(false);
+        fieldPOL_ID.setUnique(false);
+        fieldPOL_ID.setShouldAllowNull(false);
+        table.addField(fieldPOL_ID);
+
+        FieldDefinition fieldMODEL = new FieldDefinition();
+        fieldMODEL.setName("COLOR");
+        fieldMODEL.setTypeName("VARCHAR2");
+        fieldMODEL.setSize(30);
+        fieldMODEL.setSubSize(0);
+        fieldMODEL.setIsPrimaryKey(false);
+        fieldMODEL.setIsIdentity(false);
+        fieldMODEL.setUnique(false);
+        fieldMODEL.setShouldAllowNull(true);
+        table.addField(fieldMODEL);
+
+        ForeignKeyConstraint foreignKeyFK_BCCL_POL_POL_ID = new ForeignKeyConstraint();
+        foreignKeyFK_BCCL_POL_POL_ID.setName("BCCL_POL_POLICY");
+        foreignKeyFK_BCCL_POL_POL_ID.setTargetTable("POLICY");
+        foreignKeyFK_BCCL_POL_POL_ID.addSourceField("POL_ID");
+        foreignKeyFK_BCCL_POL_POL_ID.addTargetField("POL_ID");
+        table.addForeignKeyConstraint(foreignKeyFK_BCCL_POL_POL_ID);
 
         return table;
     }
