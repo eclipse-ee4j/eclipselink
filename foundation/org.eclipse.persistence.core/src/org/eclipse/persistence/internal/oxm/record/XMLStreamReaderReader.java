@@ -15,14 +15,12 @@ package org.eclipse.persistence.internal.oxm.record;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -34,18 +32,18 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
 
     private int depth = 0;
     private UnmarshalNamespaceContext unmarshalNamespaceContext;
-    private IndexedAttributeList indexedAttributeList;
+    private XMLStreamReaderAttributes indexedAttributeList;
     private boolean qNameAware;
 
     public XMLStreamReaderReader() {
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
-        indexedAttributeList = new IndexedAttributeList();
+        indexedAttributeList = new XMLStreamReaderAttributes();
     }
 
     public XMLStreamReaderReader(XMLUnmarshaller xmlUnmarshaller) {
         super(xmlUnmarshaller);
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
-        indexedAttributeList = new IndexedAttributeList();
+        indexedAttributeList = new XMLStreamReaderAttributes();
     }
 
     @Override
@@ -191,16 +189,16 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         contentHandler.characters(xmlStreamReader.getTextCharacters(), xmlStreamReader.getTextStart(), xmlStreamReader.getTextLength());
     }
 
-    private static class IndexedAttributeList implements Attributes {
+    private static class XMLStreamReaderAttributes  extends IndexedAttributeList {
 
         private XMLStreamReader xmlStreamReader;
-        private List<Attribute> attributes;
 
         public void setXmlStreamReader(XMLStreamReader xmlStreamReader) {
             this.xmlStreamReader = xmlStreamReader;
         }
 
-        private List<Attribute> attributes() {
+        @Override
+        protected List<Attribute> attributes() {
             if(null == attributes) {
                 int namespaceCount = xmlStreamReader.getNamespaceCount();
                 int attributeCount = xmlStreamReader.getAttributeCount();
@@ -236,113 +234,6 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 }
             }
             return attributes;
-        }
-
-        public int getIndex(String qName) {
-            if(null == qName) {
-                return -1;
-            }
-            int index = 0;
-            for(Attribute attribute : attributes()) {
-                if(qName.equals(attribute.getName())) {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
-
-        public int getIndex(String uri, String localName) {
-            if(null == localName) {
-                return -1;
-            }
-            int index = 0;
-            for(Attribute attribute : attributes()) {
-                QName testQName = new QName(uri, localName);
-                if(attribute.getQName().equals(testQName)) {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
-
-        public int getLength() {
-            return attributes().size();
-        }
-
-        public String getLocalName(int index) {
-            return attributes().get(index).getQName().getLocalPart();
-        }
-
-        public String getQName(int index) {
-            return attributes().get(index).getName();
-        }
-
-        public String getType(int index) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getType(String name) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getType(String uri, String localName) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getURI(int index) {
-            return attributes().get(index).getQName().getNamespaceURI();
-        }
-
-        public String getValue(int index) {
-            return attributes().get(index).getValue();
-        }
-
-        public String getValue(String qName) {
-            int index = getIndex(qName);
-            if(-1 == index) {
-                return null;
-            }
-            return attributes().get(index).getValue();
-        }
-
-        public String getValue(String uri, String localName) {
-            int index = getIndex(uri, localName);
-            if(-1 == index) {
-                return null;
-            }
-            return attributes().get(index).getValue();
-        }
-
-        public IndexedAttributeList reset() {
-            attributes = null;
-            return this;
-        }
-    }
-
-    private static class Attribute {
-
-        private QName qName;
-        private String name;
-        private String value;
-
-        public Attribute(String uri, String localName, String name, String value) {
-            this.qName = new QName(uri, localName);
-            this.name = name;
-            this.value = value;
-        }
-
-        public QName getQName() {
-            return qName;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
         }
 
     }

@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.Comment;
 import javax.xml.stream.events.EndElement;
@@ -31,7 +31,6 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -44,14 +43,18 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     //Required because the EndElement fails to properly won't give the list of namespaces going out of
     //scope in some STAX implementations
     private Map<Integer, List<Namespace>> namespaces;
+    private XMLEventReaderAttributes indexedAttributeList;
+
 
     public XMLEventReaderReader() {
         this.namespaces = new HashMap<Integer, List<Namespace>>();
+        this.indexedAttributeList = new XMLEventReaderAttributes();
     }
 
     public XMLEventReaderReader(XMLUnmarshaller xmlUnmarshaller) {
         super(xmlUnmarshaller);
         this.namespaces = new HashMap<Integer, List<Namespace>>();
+        this.indexedAttributeList = new XMLEventReaderAttributes();
     }
 
     @Override
@@ -176,155 +179,64 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 }
                 QName qName = startElement.getName();
                 String prefix = qName.getPrefix();
+                indexedAttributeList.setIterators(startElement.getAttributes(), startElement.getNamespaces());
                 if(null == prefix || prefix.length() == 0) {
-                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), qName.getLocalPart(), new IndexedAttributeList(startElement.getAttributes(), startElement.getNamespaces()));
+                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), qName.getLocalPart(), indexedAttributeList);
                 } else {
-                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + XMLConstants.COLON + qName.getLocalPart(), new IndexedAttributeList(startElement.getAttributes(), startElement.getNamespaces()));
+                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + XMLConstants.COLON + qName.getLocalPart(), indexedAttributeList);
                 }
                 break;
             }
         }
     }
 
-    private static class IndexedAttributeList implements Attributes {
+    private static class XMLEventReaderAttributes extends IndexedAttributeList {
 
-        private List<Attribute> attributes;
+        private Iterator namespaces;
+        private Iterator attrs;
 
-        public IndexedAttributeList(Iterator attrs, Iterator namespaces) {
-            this.attributes = new ArrayList<Attribute>(); 
- 
-            while(namespaces.hasNext()) {
-                Namespace next = (Namespace)namespaces.next();
-                String uri = XMLConstants.XMLNS_URL; 
-                String localName = next.getPrefix(); 
-                String qName; 
-                if(null == localName || localName.length() == 0) { 
-                    localName = XMLConstants.XMLNS; 
-                    qName = XMLConstants.XMLNS; 
-                } else { 
-                    qName = XMLConstants.XMLNS + XMLConstants.COLON + localName; 
+        public void setIterators(Iterator attrs, Iterator namespaces) {
+            reset();
+            this.namespaces = namespaces;
+            this.attrs = attrs;
+        }
+
+        @Override
+        protected List<Attribute> attributes() {
+            if(null == attributes) {
+                this.attributes = new ArrayList<Attribute>(); 
+                
+                while(namespaces.hasNext()) {
+                    Namespace next = (Namespace)namespaces.next();
+                    String uri = XMLConstants.XMLNS_URL; 
+                    String localName = next.getPrefix(); 
+                    String qName; 
+                    if(null == localName || localName.length() == 0) { 
+                        localName = XMLConstants.XMLNS; 
+                        qName = XMLConstants.XMLNS; 
+                    } else { 
+                        qName = XMLConstants.XMLNS + XMLConstants.COLON + localName; 
+                    } 
+                    String value = next.getNamespaceURI(); 
+                    attributes.add(new Attribute(uri, localName, qName, value)); 
                 } 
-                String value = next.getNamespaceURI(); 
-                attributes.add(new Attribute(uri, localName, qName, value)); 
-            } 
 
-            while(attrs.hasNext()) {
-                javax.xml.stream.events.Attribute next = (javax.xml.stream.events.Attribute)attrs.next();
-                String uri = next.getName().getNamespaceURI();
-                String localName = next.getName().getLocalPart();
-                String prefix = next.getName().getPrefix();
-                String qName;
-                if(null == prefix || prefix.length() == 0) {
-                    qName = localName;
-                } else {
-                    qName = prefix + XMLConstants.COLON + localName;
+                while(attrs.hasNext()) {
+                    javax.xml.stream.events.Attribute next = (javax.xml.stream.events.Attribute)attrs.next();
+                    String uri = next.getName().getNamespaceURI();
+                    String localName = next.getName().getLocalPart();
+                    String prefix = next.getName().getPrefix();
+                    String qName;
+                    if(null == prefix || prefix.length() == 0) {
+                        qName = localName;
+                    } else {
+                        qName = prefix + XMLConstants.COLON + localName;
+                    }
+                    String value = next.getValue();
+                    attributes.add(new Attribute(uri, localName, qName, value));
                 }
-                String value = next.getValue();
-                attributes.add(new Attribute(uri, localName, qName, value));
             }
-        }
-
-        public int getIndex(String qName) {
-            if(null == qName) {
-                return -1;
-            }
-            int index = 0;
-            for(Attribute attribute : attributes) {
-                if(qName.equals(attribute.getName())) {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
-
-        public int getIndex(String uri, String localName) {
-            if(null == localName) {
-                return -1;
-            }
-            int index = 0;
-            for(Attribute attribute : attributes) {
-                QName testQName = new QName(uri, localName);
-                if(attribute.getQName().equals(testQName)) {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
-
-        public int getLength() {
-            return attributes.size();
-        }
-
-        public String getLocalName(int index) {
-            return attributes.get(index).getQName().getLocalPart();
-        }
-
-        public String getQName(int index) {
-            return attributes.get(index).getName();
-        }
-
-        public String getType(int index) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getType(String name) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getType(String uri, String localName) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getURI(int index) {
-            return attributes.get(index).getQName().getNamespaceURI();
-        }
-
-        public String getValue(int index) {
-            return attributes.get(index).getValue();
-        }
-
-        public String getValue(String qName) {
-            int index = getIndex(qName);
-            if(-1 == index) {
-                return null;
-            } 
-            return attributes.get(index).getValue();
-        }
-
-        public String getValue(String uri, String localName) {
-            int index = getIndex(uri, localName);
-            if(-1 == index) {
-                return null;
-            }
-            return attributes.get(index).getValue();
-        }
-
-    }
-
-    private static class Attribute {
-
-        private QName qName;
-        private String name;
-        private String value;
-
-        public Attribute(String uri, String localName, String name, String value) {
-            this.qName = new QName(uri, localName);
-            this.name = name;
-            this.value = value;
-        }
-
-        public QName getQName() {
-            return qName;
-        }
-
-        public String getName() {
-            return name;
-        }
-        
-        public String getValue() {
-            return value;
+            return attributes;
         }
 
     }

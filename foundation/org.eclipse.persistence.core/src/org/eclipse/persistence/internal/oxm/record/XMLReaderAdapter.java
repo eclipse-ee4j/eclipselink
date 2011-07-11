@@ -12,8 +12,12 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -200,6 +204,121 @@ public abstract class XMLReaderAdapter extends XMLReader {
                 return;
             }
             contentHandler.characters(characters.toString().toCharArray(), 0, characters.length());
+        }
+
+    }
+
+    protected static abstract class IndexedAttributeList implements Attributes {
+
+        protected List<Attribute> attributes;
+
+        protected abstract List<Attribute> attributes();
+
+        public int getIndex(String qName) {
+            if(null == qName) {
+                return -1;
+            }
+            int index = 0;
+            for(Attribute attribute : attributes()) {
+                if(qName.equals(attribute.getName())) {
+                    return index;
+                }
+                index++;
+            }
+            return -1;
+        }
+
+        public int getIndex(String uri, String localName) {
+            if(null == localName) {
+                return -1;
+            }
+            int index = 0;
+            for(Attribute attribute : attributes()) {
+                QName testQName = new QName(uri, localName);
+                if(attribute.getQName().equals(testQName)) {
+                    return index;
+                }
+                index++;
+            }
+            return -1;
+        }
+
+        public int getLength() {
+            return attributes().size();
+        }
+
+        public String getLocalName(int index) {
+            return attributes().get(index).getQName().getLocalPart();
+        }
+
+        public String getQName(int index) {
+            return attributes().get(index).getName();
+        }
+
+        public String getType(int index) {
+            return XMLConstants.CDATA;
+        }
+
+        public String getType(String name) {
+            return XMLConstants.CDATA;
+        }
+
+        public String getType(String uri, String localName) {
+            return XMLConstants.CDATA;
+        }
+
+        public String getURI(int index) {
+            return attributes().get(index).getQName().getNamespaceURI();
+        }
+
+        public String getValue(int index) {
+            return attributes().get(index).getValue();
+        }
+
+        public String getValue(String qName) {
+            int index = getIndex(qName);
+            if(-1 == index) {
+                return null;
+            }
+            return attributes().get(index).getValue();
+        }
+
+        public String getValue(String uri, String localName) {
+            int index = getIndex(uri, localName);
+            if(-1 == index) {
+                return null;
+            }
+            return attributes().get(index).getValue();
+        }
+
+        public IndexedAttributeList reset() {
+            attributes = null;
+            return this;
+        }
+    }
+
+    protected static class Attribute {
+
+        private QName qName;
+        private String name;
+        private String value;
+
+        public Attribute(String uri, String localName, String name, String value) {
+            this.qName = new QName(uri, localName);
+            this.name = name;
+            this.value = value;
+        }
+
+        public QName getQName() {
+            return qName;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
         }
 
     }

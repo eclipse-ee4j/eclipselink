@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRInputStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRReaderStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.CharStream;
@@ -27,8 +25,6 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStre
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -38,7 +34,7 @@ public class JSONReader extends XMLReaderAdapter {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
 
-    private IndexedAttributeList attributes = new IndexedAttributeList(); 
+    private JSONAttributes attributes = new JSONAttributes(); 
 
     @Override
     public void parse(InputSource input) throws IOException, SAXException {
@@ -120,18 +116,18 @@ public class JSONReader extends XMLReaderAdapter {
         return string;
     }
 
-    private static class IndexedAttributeList implements Attributes {
+    private static class JSONAttributes extends IndexedAttributeList {
 
         private Tree tree;
-        private List<Attribute> attributes;
 
-        public IndexedAttributeList setTree(Tree tree) {
-            attributes = null;
+        public JSONAttributes setTree(Tree tree) {
+            reset();
             this.tree = tree;
             return this;
         }
 
-        private List<Attribute> attributes() {
+        @Override
+        protected List<Attribute> attributes() {
             if(null == attributes) {
                 Tree valueTree = tree.getChild(1);
                 if(valueTree.getType() == JSONLexer.OBJECT) {
@@ -170,113 +166,6 @@ public class JSONReader extends XMLReaderAdapter {
                 }
             }
             return attributes;
-        }
-
-        public int getIndex(String qName) {
-            if(null == qName) {
-                return -1;
-            }
-            int index = 0;
-            for(Attribute attribute : attributes()) {
-                if(qName.equals(attribute.getName())) {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
-
-        public int getIndex(String uri, String localName) {
-            if(null == localName) {
-                return -1;
-            }
-            int index = 0;
-            for(Attribute attribute : attributes()) {
-                QName testQName = new QName(uri, localName);
-                if(attribute.getQName().equals(testQName)) {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
-
-        public int getLength() {
-            return attributes().size();
-        }
-
-        public String getLocalName(int index) {
-            return attributes().get(index).getQName().getLocalPart();
-        }
-
-        public String getQName(int index) {
-            return attributes().get(index).getName();
-        }
-
-        public String getType(int index) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getType(String name) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getType(String uri, String localName) {
-            return XMLConstants.CDATA;
-        }
-
-        public String getURI(int index) {
-            return attributes().get(index).getQName().getNamespaceURI();
-        }
-
-        public String getValue(int index) {
-            return attributes().get(index).getValue();
-        }
-
-        public String getValue(String qName) {
-            int index = getIndex(qName);
-            if(-1 == index) {
-                return null;
-            }
-            return attributes().get(index).getValue();
-        }
-
-        public String getValue(String uri, String localName) {
-            int index = getIndex(uri, localName);
-            if(-1 == index) {
-                return null;
-            }
-            return attributes().get(index).getValue();
-        }
-
-        public IndexedAttributeList reset() {
-            attributes = null;
-            return this;
-        }
-    }
-
-    private static class Attribute {
-
-        private QName qName;
-        private String name;
-        private String value;
-
-        public Attribute(String uri, String localName, String name, String value) {
-            this.qName = new QName(uri, localName);
-            this.name = name;
-            this.value = value;
-        }
-
-        public QName getQName() {
-            return qName;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
         }
 
     }
