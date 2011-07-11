@@ -43,6 +43,10 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 8)
+ *     07/11/2011-2.3.1 Guy Pelletier
+ *       - 343632: Can't map a compound constraint because of exception: 
+ *                 The reference column name [y] mapped on the element [field x] 
+ *                 does not correspond to a valid field on the mapping reference
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -127,9 +131,6 @@ public class MetadataLogger {
     public static final String IGNORE_FETCH_GROUP = "metadata_warning_ignore_fetch_group";
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
     
-    public static final String MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS = "metadata_warning_multiple_id_fields_without_id_class";
-    public static final String INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE = "metadata_warning_inverse_access_type_mapping_override";
-    
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
     /*************************************************************************/
@@ -202,7 +203,10 @@ public class MetadataLogger {
     public static final String WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION = "non_jpa_allowed_type_used_for_collection_using_lazy_access";
     public static final String WARNING_INCORRECT_DISCRIMINATOR_FORMAT = "metadata_warning_integer_discriminator_could_not_be_built";
     public static final String WARNING_PARTIONED_NOT_SET = "metadata_warning_partitioned_not_set";
-
+    public static final String REFERENCED_COLUMN_NOT_FOUND = "metadata_warning_reference_column_not_found";
+    public static final String MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS = "metadata_warning_multiple_id_fields_without_id_class";
+    public static final String INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE = "metadata_warning_inverse_access_type_mapping_override";
+    
     /*************************************************************************/
     
     protected AbstractSession m_session; 
@@ -273,9 +277,6 @@ public class MetadataLogger {
         addContextString(IGNORE_FETCH_GROUP);
         addContextString(IGNORE_MAPPING_METADATA);
         
-        addContextString(MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS);
-        addContextString(INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE);
-        
         // Generic default messages that could apply to XML and annotation
         // configurations.
         addContextString(ACCESS_TYPE);
@@ -343,6 +344,10 @@ public class MetadataLogger {
         
         addContextString(WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION);
         addContextString(WARNING_INCORRECT_DISCRIMINATOR_FORMAT);
+        addContextString(WARNING_PARTIONED_NOT_SET);
+        addContextString(REFERENCED_COLUMN_NOT_FOUND);
+        addContextString(MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS);
+        addContextString(INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE);
     }
     
     /**
