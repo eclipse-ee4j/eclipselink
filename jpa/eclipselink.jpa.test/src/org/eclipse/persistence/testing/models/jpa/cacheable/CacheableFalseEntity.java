@@ -35,6 +35,7 @@ public class CacheableFalseEntity {
     protected int id;
     protected CacheableProtectedEntity protectedEntity;
     List<CacheableFalseDetail> details = new ArrayList<CacheableFalseDetail>();
+    List<CacheableFalseDetailWithBackPointer> detailsBackPointer = new ArrayList<CacheableFalseDetailWithBackPointer>();
     
     public CacheableFalseEntity() {}
     
@@ -76,5 +77,15 @@ public class CacheableFalseEntity {
      */
     public void setProtectedEntity(CacheableProtectedEntity protectedEntity) {
         this.protectedEntity = protectedEntity;
+    }
+
+    @OneToMany(cascade = {CascadeType.ALL},  mappedBy="entity")
+    public List<CacheableFalseDetailWithBackPointer> getDetailsBackPointer() {
+        return detailsBackPointer;
+    }
+
+    public void setDetailsBackPointer(
+            List<CacheableFalseDetailWithBackPointer> detailsBackPointer) {
+        this.detailsBackPointer = detailsBackPointer;
     }
 }

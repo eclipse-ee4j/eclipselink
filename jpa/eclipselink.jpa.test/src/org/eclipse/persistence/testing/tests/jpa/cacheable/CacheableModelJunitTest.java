@@ -39,6 +39,7 @@ import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity;
@@ -254,6 +255,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             // Bug 340074
             suite.addTest(new CacheableModelJunitTest("testFindWithLegacyFindProperties"));
             suite.addTest(new CacheableModelJunitTest("testFindWithEMLegacyProperties"));
+            suite.addTest(new CacheableModelJunitTest("testMergeNonCachedWithRelationship"));
         }
         return suite;
     }
@@ -1622,6 +1624,40 @@ public class CacheableModelJunitTest extends JUnitTestCase {
                 closeEM(emToUse);
             }
         }
+    }
+    
+    // Bug 345478 - Incorrect foreign key parameter set when retrieving an eager @OneToMany
+    public void testMergeNonCachedWithRelationship(){
+        // create entity and details, persist them
+        EntityManager em = createDSEntityManager();
+        beginTransaction(em);
+        CacheableFalseEntity entity = new CacheableFalseEntity();
+        em.persist(entity);
+        commitTransaction(em);
+        em.clear();
+        CacheableFalseDetailWithBackPointer detail = null;
+        try{
+            detail = new CacheableFalseDetailWithBackPointer();
+            detail.setEntity(entity);
+            entity.getDetailsBackPointer().add(detail);
+            detail.setDescription("test");
+            em.getTransaction().begin();
+            detail = em.merge(detail);
+            commitTransaction(em);
+            
+            em.refresh(detail);
+            
+            assertTrue("detail does not have it's entity.", detail.getEntity() != null);
+            assertTrue("detail's entity does not have the backpointer.", detail.getEntity().getDetailsBackPointer().size() == 1);
+        } finally {
+            beginTransaction(em);
+            em.merge(detail);
+            em.remove(detail.getEntity());
+            em.remove(detail);
+            commitTransaction(em);
+            closeEM(em);
+        }
+
     }
     
     /**

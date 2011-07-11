@@ -24,6 +24,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
 
         addTableDefinition(buildCACHEABLE_FALSE_ENTITYTable());
         addTableDefinition(buildCACHEABLE_FALSE_DETAILTable());
+        addTableDefinition(buildCACHEABLE_FALSE_DETAIL_BPTable());
         addTableDefinition(buildCACHEABLE_FALSE_TO_DETAILTable());
         addTableDefinition(buildCACHEABLE_TRUE_ENTITYTable());
         addTableDefinition(buildSUB_CACHEABLE_FALSE_ENTITYTable());
@@ -95,6 +96,43 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldDescription.setUnique(false);
         fieldDescription.setIsIdentity(false);
         table.addField(fieldDescription);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCACHEABLE_FALSE_DETAIL_BPTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEABLE_FALSE_DETAIL_BP");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldDescription = new FieldDefinition();
+        fieldDescription.setName("DESCRIPTION");
+        fieldDescription.setTypeName("VARCHAR2");
+        fieldDescription.setSize(15);
+        fieldDescription.setShouldAllowNull(true);
+        fieldDescription.setIsPrimaryKey(false);
+        fieldDescription.setUnique(false);
+        fieldDescription.setIsIdentity(false);
+        table.addField(fieldDescription);
+        
+        FieldDefinition fieldEntity = new FieldDefinition();
+        fieldEntity.setName("ENTITY_ID");
+        fieldEntity.setTypeName("NUMERIC");
+        fieldEntity.setSize(15);
+        fieldEntity.setShouldAllowNull(true);
+        fieldEntity.setIsPrimaryKey(false);
+        fieldEntity.setUnique(false);
+        fieldEntity.setIsIdentity(false);
+        table.addField(fieldEntity);
 
         return table;
     }
