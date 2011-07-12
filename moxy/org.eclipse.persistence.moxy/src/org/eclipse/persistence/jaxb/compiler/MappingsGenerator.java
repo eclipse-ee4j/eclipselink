@@ -414,6 +414,12 @@ public class MappingsGenerator {
                     mapping = generateBinaryMapping(property, descriptor, namespaceInfo);
                     ((XMLBinaryDataMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 } else {
+                    if (areEquals(valueType, Object.class)){
+                        mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, null);
+                        ((XMLCompositeObjectMapping)mapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                        ((XMLCompositeObjectMapping)mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                        return mapping;
+                    }
                     mapping = generateDirectMapping(property, descriptor, namespaceInfo);
                     ((XMLDirectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 }
@@ -466,6 +472,11 @@ public class MappingsGenerator {
             if (reference != null && reference.isEnumerationType()) {
                 return generateEnumCollectionMapping(property,  descriptor, namespaceInfo,(EnumTypeInfo) reference);
             }            
+            if (areEquals(componentType, Object.class)){
+                XMLCompositeCollectionMapping mapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
+                mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                return mapping;
+            }
             if (reference != null || componentType.isArray()){
                 return generateCompositeCollectionMapping(property, descriptor, namespaceInfo, componentType.getQualifiedName());
             }
