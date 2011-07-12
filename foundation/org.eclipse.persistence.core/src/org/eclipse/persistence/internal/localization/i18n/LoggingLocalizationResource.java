@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,10 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/28/2010-2.2 Guy Pelletier 
  *       - 3223850: Primary key metadata issues
+ *     07/11/2011-2.2.1 Guy Pelletier
+ *       - 343632: Can't map a compound constraint because of exception: 
+ *                 The reference column name [y] mapped on the element [field x] 
+ *                 does not correspond to a valid field on the mapping reference
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -248,10 +252,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_variable_one_to_one_reference_class", "The target interface (reference) class for the variable one to one mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_element_collection_reference_class", "The target class (reference) class for the element collection mapping element [{0}] is being defaulted to: {1}." },
 
-        { "non_jpa_allowed_type_used_for_collection_using_lazy_access", "Element [{1}] within entity class [{0}] uses a collection type [{2}] when the JPA specification only supports java.util.Collection, " +
-                "java.util.Set, java.util.List, or java.util.Map.  This type is supported with eager loading; using lazy loading with this collection type requires additional configuration and an IndirectContainer implementation " +
-                "that extends [{2}] or setting the mapping to use basic indirection and the type to be ValueholderInterface." },
-        { "metadata_warning_integer_discriminator_could_not_be_built", "Class [{0}] specifies discriminatorType=INTEGER and uses [{1}] as the discriminatorValue.  That value cannot be converted to an integer.  We will attempt to use this value in String format." },
         { "metadata_warning_override_annotation_with_xml", "Ignoring the annotation [{0}] from [{1}] since an XML element was defined in the mapping file [{2}]." },
         { "metadata_warning_override_named_annotation_with_xml", "Ignoring the annotation [{0}] from [{2}] since an XML element with the same name [{1}] was defined in the mapping file [{3}]" },        
         { "metadata_warning_override_xml_with_eclipselink_xml", "Ignoring the element [{0}] from [{1}] defined in the mapping file [{2}] since this element was defined in the eclipselink-orm mapping file [{3}]" },
@@ -298,6 +298,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_multiple_id_fields_without_id_class", "You have specified multiple ids for the entity class [{0}] without specifying an @IdClass. By doing this you may lose the ability to find by identity, distributed cache support etc. Note: You may however use entity manager find operations by passing a list of primary key fields. Else, you will have to use JPQL queries to read your entities. For other id options see @PrimaryKey." },
         { "metadata_warning_inverse_access_type_mapping_override", "Overriding the {2} mapping attribute [{1}] with the {4} mapping attribute [{3}] from class [{0}]. To avoid this warning you should mark the attribute [{1}] as transient."},
         { "metadata_warning_partitioned_not_set", "@Partitioning found on the element {1} of class {0}, but no @Partitioned.  The @Partitioned annotation must be used to set the partitioning policy, @Partitioning just defines the policy, but does not set it."},
+        { "metadata_warning_reference_column_not_found", "The reference column name [{0}] mapped on the element [{1}] does not correspond to a valid id or basic field/column on the mapping reference. Will use referenced column name as provided."},
+        { "non_jpa_allowed_type_used_for_collection_using_lazy_access", "Element [{1}] within entity class [{0}] uses a collection type [{2}] when the JPA specification only supports java.util.Collection, " +
+            "java.util.Set, java.util.List, or java.util.Map.  This type is supported with eager loading; using lazy loading with this collection type requires additional configuration and an IndirectContainer implementation " +
+            "that extends [{2}] or setting the mapping to use basic indirection and the type to be ValueholderInterface." },
+        { "metadata_warning_integer_discriminator_could_not_be_built", "Class [{0}] specifies discriminatorType=INTEGER and uses [{1}] as the discriminatorValue.  That value cannot be converted to an integer.  We will attempt to use this value in String format." },
                 
         { "annotation_warning_ignore_annotation", "Ignoring the annotation [{0}] on the element [{1}] because of an XML metadata-complete setting of true for this class." },        
         { "annotation_warning_ignore_private_owned", "Ignoring @PrivateOwned on element [{1}] within entity class [{0}]. A @PrivateOwned can only be used with a @OneToOne, @OneToMany and @VariableOneToOne. Also note, private ownership is implied with a @BasicCollection and @BasicMap." },

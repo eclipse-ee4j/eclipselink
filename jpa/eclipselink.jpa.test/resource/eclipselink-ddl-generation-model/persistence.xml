@@ -33,6 +33,9 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Lobtest</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.LobtestPK</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Clientes</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Operaciones</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.RoutingOrders</class>
         <properties>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
