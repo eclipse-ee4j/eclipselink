@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns1="b" xmlns:ns0="a" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="a">
+   <xsd:import schemaLocation="http://someuri.com/myschema.xsd" namespace="b"/>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="address" type="ns1:address" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>
