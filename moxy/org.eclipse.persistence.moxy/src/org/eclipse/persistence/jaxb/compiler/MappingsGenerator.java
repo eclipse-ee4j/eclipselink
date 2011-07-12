@@ -414,6 +414,12 @@ public class MappingsGenerator {
                     mapping = generateBinaryMapping(property, descriptor, namespaceInfo);
                     ((XMLBinaryDataMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 } else {
+                    if (areEquals(valueType, Object.class)){
+                        mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, null);
+                        ((XMLCompositeObjectMapping)mapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                        ((XMLCompositeObjectMapping)mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                        return mapping;
+                    }
                     mapping = generateDirectMapping(property, descriptor, namespaceInfo);
                     ((XMLDirectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 }

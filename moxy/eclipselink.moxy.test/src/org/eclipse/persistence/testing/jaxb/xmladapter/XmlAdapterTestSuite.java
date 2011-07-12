@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTe
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.objectlist.ObjectListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.generics.AdapterWithGenericsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.hexbinary.XmlAdapterHexBinaryTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.list.XmlAdapterListMultipleBarTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.list.XmlAdapterListSingleBarTestCases;
@@ -60,6 +61,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(XmlAdapterListSingleBarTestCases.class);
         suite.addTestSuite(XmlAdapterListMultipleBarTestCases.class);
         suite.addTestSuite(AdapterWithElementsTestCases.class);
+        suite.addTestSuite(AdapterWithGenericsTestCases.class);
         return suite;
     }
 }
