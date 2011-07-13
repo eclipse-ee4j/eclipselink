@@ -169,6 +169,7 @@ import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 import org.eclipse.persistence.testing.framework.ConnectionWrapper;
 import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.SessionEventTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.framework.TestProblemException;
@@ -458,7 +459,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testSetup() {
+        // SessionEventTracker used here to verify that preLogin and ppostLogin event are risen correctly
+        // Clear all previously logged events' handlings
+        SessionEventTracker.clearLog();
+        // should handle only preLogin and postLogin events
+        SessionEventTracker.noneEvents();
+        SessionEventTracker.addEvent(SessionEvent.PreLogin);
+        SessionEventTracker.addEvent(SessionEvent.PostLogin);
+        // start tracking events
+        SessionEventTracker.startTracking();
+        
         SessionBroker broker = getSessionBroker();
+        
+        // stop tracking events
+        SessionEventTracker.stopTracking();
+        
         // member sessions
         ServerSession[] sessions = {
                 (ServerSession)broker.getSessionForName(getCompositeMemberPuName(1)), 
@@ -491,6 +506,92 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 ss.getLogin().setShouldForceFieldNamesToUpperCase(true);
             }
         }
+        
+        if (SessionEventTracker.getHandlings().size() > 0) {
+            // otherwise broker is already connected when testSetup is run - no preLogin/postLogin
+            verifyPrePostLoginEvents(broker, sessions);
+        }
+    }
+    
+    /*
+     * This method relies upon SessionEventTracker having logged all preLogin and postLogin events' handlings
+     * for CompositeListener and MemberListeners - and haven't logged any other event handlings. 
+     */
+    protected void verifyPrePostLoginEvents(SessionBroker broker, ServerSession[] sessions) {
+        String errorMsg = "SETUP HAS SUCCEDDED, but some preLogin or/and postLogin events were wrong: ";
+        if (!SessionEventTracker.getErrors().isEmpty()) {
+            for (SessionEventTracker.Handling handling : SessionEventTracker.getErrors()) {
+                errorMsg += "\n" + handling.toString();
+            }
+            fail(errorMsg);
+        }
+        // now verify the order in which the events were handled
+        Set<ServerSession> setSessions = new HashSet(sessions.length);
+        HashMap<ServerSession, SessionEventTracker> sessionListeners = new HashMap(sessions.length);
+        CompositeEventListener compositeListener =  (CompositeEventListener)getCompositeAndMemberListeners(broker).get(0);
+        for (int i=0; i<sessions.length; i++) {
+            setSessions.add(sessions[i]);
+            sessionListeners.put(sessions[i], (SessionEventTracker)sessions[i].getEventManager().getListeners().get(0));
+        }
+        
+        assertTrue(errorMsg+"unexpected number of events' handlings = " + SessionEventTracker.getHandlings().size() +"; " +(sessions.length * 4 + 2)+" was expected",  SessionEventTracker.getHandlings().size() == sessions.length * 4 + 2);
+        
+        int nHandling = 0;
+        for (SessionEventTracker.Handling handling : SessionEventTracker.getHandlings()) {
+            if (nHandling == 0) {
+                // compositeEventListener.preLogin(broker) 
+                assertTrue(errorMsg+"compositeListener(PreLogin(composite))", 
+                        handling.getEvent().getEventCode() == SessionEvent.PreLogin &&
+                        handling.getEvent().getSession() == broker &&
+                        handling.getListener() == compositeListener
+                        ); 
+            } else if (0 < nHandling && nHandling <= sessions.length * 2) {
+                if (nHandling % 2 == 1) {
+                    // first member[i]EventListener.preLogin(session[i]) 
+                    assertTrue(errorMsg+"memberListener(PreLogin(member))", 
+                            handling.getEvent().getEventCode() == SessionEvent.PreLogin &&
+                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            handling.getListener() == sessionListeners.get(handling.getEvent().getSession())
+                            ); 
+                } else {
+                    // then compositeEventListener.preLogin(session[i]) 
+                    assertTrue(errorMsg+"compositeListener(PreLogin(member))", 
+                            handling.getEvent().getEventCode() == SessionEvent.PreLogin &&
+                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            handling.getListener() == compositeListener
+                            ); 
+                }
+            } else if (sessions.length * 2 < nHandling && nHandling <= sessions.length * 4) {
+                if (nHandling % 2 == 1) {
+                    // first member[i]EventListener.postLogin(session[i]) 
+                    assertTrue(errorMsg+"memberListener(PostLogin(member))", 
+                            handling.getEvent().getEventCode() == SessionEvent.PostLogin &&
+                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            handling.getListener() == sessionListeners.get(handling.getEvent().getSession())
+                            ); 
+                } else {
+                    // then compositeEventListener.postLogin(session[i]) 
+                    assertTrue("compositeListener(PostLogin(member))", 
+                            handling.getEvent().getEventCode() == SessionEvent.PostLogin &&
+                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            handling.getListener() == compositeListener
+                            ); 
+                }
+            } else {
+                // nHandling == sessions.length * 4 + 1
+                // compositeEventListener.preLogin(broker) 
+                assertTrue(errorMsg+"compositeListener(PostLogin(composite))", 
+                        handling.getEvent().getEventCode() == SessionEvent.PostLogin &&
+                        handling.getEvent().getSession() == broker &&
+                        handling.getListener() == compositeListener
+                        ); 
+            }
+            nHandling++;
+        }
+
+        SessionEventTracker.clearLog();
+        // return back to the default setting - handling all events
+        SessionEventTracker.allEvents();
     }
     
     /**

@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.composite.advanced;
 
-import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.testing.framework.SessionEventTracker;
 
-public class CompositeEventListener extends SessionEventAdapter {
+public class CompositeEventListener extends SessionEventTracker {
 }

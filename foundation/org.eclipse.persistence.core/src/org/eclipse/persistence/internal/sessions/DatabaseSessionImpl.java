@@ -678,8 +678,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
         }
         log(SessionLog.INFO, null, "login_successful", this.getName());
-        if (this.eventManager != null) {
-            this.eventManager.postLogin(this);
+        // postLogin event should not be risen before descriptors have been initialized 
+        if (!hasBroker()) {
+            postLogin();
         }
 
         initializeConnectedTime();
@@ -698,6 +699,16 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         }
     }
 
+    /**
+     * INTERNAL:
+     * Rise postLogin event.
+     */
+    public void postLogin() {
+        if (this.eventManager != null) {
+            this.eventManager.postLogin(this);
+        }
+    }
+    
     /**
      * PUBLIC:
      * Connect to the database using the given user name and password.
