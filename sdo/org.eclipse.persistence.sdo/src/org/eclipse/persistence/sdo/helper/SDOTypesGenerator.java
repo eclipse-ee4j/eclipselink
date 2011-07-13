@@ -1150,6 +1150,9 @@ public class SDOTypesGenerator {
 
     private void processGlobalElement(String targetNamespace, String defaultNamespace, Element element) {
         if (element.getName() != null) {
+            if(!returnAllTypes && null != aHelperContext.getXSDHelper().getGlobalProperty(targetNamespace, element.getName(), true)) {
+                return;
+            }
             QName qname = new QName(targetNamespace, element.getName());
             Object processed = processedElements.get(qname);
 
