@@ -2848,6 +2848,13 @@ public class EntityManagerSetupImpl {
         } else {
             memberProperties.remove(PersistenceUnitProperties.TARGET_SERVER);
         }
+
+        Boolean isValidationOnly =  (Boolean)compositeProperties.get(PersistenceUnitProperties.VALIDATION_ONLY_PROPERTY);
+        if (isValidationOnly != null) {
+            memberProperties.put(PersistenceUnitProperties.VALIDATION_ONLY_PROPERTY, isValidationOnly);
+        } else {
+            memberProperties.remove(PersistenceUnitProperties.VALIDATION_ONLY_PROPERTY);
+        }
     }
     
     /*
