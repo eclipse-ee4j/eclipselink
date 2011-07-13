@@ -38,6 +38,7 @@ public class XSDHelperDefineTestSuite {
         suite.addTest(new ComplexDefineTestSuite().suite());
         suite.addTestSuite(ImportTypeWithSameNameAsElementTestSuite.class);
         suite.addTestSuite(ExtendTypeWithSimpleContentTest.class);
+        suite.addTestSuite(RedefineTestCases.class);
         return suite;
     }
 }
