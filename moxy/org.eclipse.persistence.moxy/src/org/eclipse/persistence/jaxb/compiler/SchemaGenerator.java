@@ -857,7 +857,7 @@ public class SchemaGenerator {
             }
 
             // may need to relativize the schema name
-            if (schemaName != null) {
+            if (schemaName != null && importSchema != null) {
                 URI relativizedURI = null;
                 try {
                     // need to strip off the last slash and the file name that follows
