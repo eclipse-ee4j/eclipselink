@@ -31,24 +31,12 @@
             
         </attributes>
     </entity>
-    <entity name="XML_CACHEABLE_TRUE" class="CacheableTrueEntity" access="FIELD" cacheable="true">
+    <entity name="XML_ROTECTED_RELATIONSHIPS" class="ProtectedRelationshipsEntity"
+        access="FIELD" cacheable="true">
         <attributes>
             <id name="id">
-                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
-            </id>
-        </attributes>
-    </entity>
-    <entity name="XML_CACHEABLE_PROTECTED" class="CacheableProtectedEntity" access="FIELD" cacheable="true">
-        <attributes>
-            <id name="id">
-                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
-            </id>
-        </attributes>
-    </entity>
-    <entity name="XML_ROTECTED_RELATIONSHIPS" class="ProtectedRelationshipsEntity" access="FIELD" cacheable="true">
-        <attributes>
-            <id name="id">
-                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+                <generated-value strategy="TABLE"
+                    generator="XML_CACHEABLE_TABLE_GENERATOR" />
             </id>
             <one-to-one name="cacheableFalse" fetch="EAGER">
                 <join-column name="FALSE_FK" referenced-column-name="ID" />
@@ -79,6 +67,20 @@
                 </collection-table>
                 <noncacheable/>
             </basic-collection>
+        </attributes>
+    </entity>
+    <entity name="XML_CACHEABLE_TRUE" class="CacheableTrueEntity" access="FIELD" cacheable="true">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </entity>
+    <entity name="XML_CACHEABLE_PROTECTED" class="CacheableProtectedEntity" access="FIELD" cacheable="true">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_CACHEABLE_TABLE_GENERATOR"/>
+            </id>
         </attributes>
     </entity>
     <entity name="XML_SUB_CACHEABLE_FALSE" class="SubCacheableFalseEntity" access="FIELD" cacheable="false"/>
