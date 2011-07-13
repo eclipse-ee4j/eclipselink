@@ -705,9 +705,6 @@ public class SessionBroker extends DatabaseSessionImpl {
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
             DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
-            if (session.hasEventManager()) {
-                session.getEventManager().preLogin(session);
-            }
             if (!session.isConnected()) {
                 session.login();
             }
@@ -731,9 +728,6 @@ public class SessionBroker extends DatabaseSessionImpl {
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
             DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
-            if (session.hasEventManager()) {
-                session.getEventManager().preLogin(session);
-            }
             if (!session.isConnected()) {
                 if(session.getDatasourcePlatform().getClass().getName().equals("org.eclipse.persistence.platform.database.DatabasePlatform")) {
                     session.loginAndDetectDatasource();
@@ -758,9 +752,6 @@ public class SessionBroker extends DatabaseSessionImpl {
             DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
             session.getDatasourceLogin().setUserName(userName);
             session.getDatasourceLogin().setPassword(password);
-            if (session.hasEventManager()) {
-                session.getEventManager().preLogin(session);
-            }
             if (!session.isConnected()) {
                 session.login();
             }
@@ -791,6 +782,19 @@ public class SessionBroker extends DatabaseSessionImpl {
         isLoggedIn = false;
     }
 
+    /**
+     * INTERNAL:
+     * Rise postLogin events for member sessions and the SessionBroker.
+     */
+    public void postLogin() {
+        for (Iterator sessionEnum = getSessionsByName().values().iterator();
+            sessionEnum.hasNext();) {
+           DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
+           session.postLogin();
+        }
+        super.postLogin();
+    }
+    
     /**
      * PUBLIC:
      * Register the session under its name.
