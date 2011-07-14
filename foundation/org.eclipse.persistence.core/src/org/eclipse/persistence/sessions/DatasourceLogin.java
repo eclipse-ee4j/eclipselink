@@ -333,7 +333,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Some drivers don't like the "user" and "password" properties.
-     * They can be removed with this method.
+     * They can be removed with this method, or by using setUserName(null) / setPassword(null)
      */
     public void removeProperty(String propertyName) {
         properties.remove(propertyName);
@@ -610,6 +610,8 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public void setUserName(String name) {
         if (name != null) {
             setProperty("user", name);
+        } else {
+            removeProperty("user");
         }
     }
 
