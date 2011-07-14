@@ -1,0 +1,441 @@
+org/eclipse/persistence/queries/CursorPolicy
+	Could not find method: createChangeEvent :: (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;ILjava/lang/Integer;)Lorg/eclipse/persistence/descriptors/changetracking/CollectionChangeEvent;
+org/eclipse/persistence/mappings/structures/ObjectArrayMapping
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/eis/mappings/EISOneToOneMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/sessions/interceptors/CacheInterceptor
+	Could not find method: getCacheKey :: (Ljava/lang/Object;)Lorg/eclipse/persistence/internal/identitymaps/CacheKey;
+	Could not find method: lazyRelationshipLoaded :: (Ljava/lang/Object;Lorg/eclipse/persistence/indirection/ValueHolderInterface;Lorg/eclipse/persistence/mappings/ForeignReferenceMapping;)V
+org/eclipse/persistence/sessions/remote/RemoteSession
+	Could not find method: acquireUnitOfWork :: (Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;
+	Could not find method: acquireUnitOfWork :: (Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/sessions/UnitOfWork;
+org/eclipse/persistence/sessions/JNDIConnector
+	Could not find method: connect :: (Ljava/util/Properties;)Ljava/sql/Connection;
+org/eclipse/persistence/platform/database/jdbc/JDBCTypes
+	Could not find method: translate :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/util/Vector;Ljava/util/Vector;Ljava/util/Vector;Lorg/eclipse/persistence/queries/StoredProcedureCall;)V
+	Could not find method: buildOutputRow :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/sessions/DatabaseRecord;Ljava/util/Vector;Ljava/util/Vector;)V
+org/eclipse/persistence/jpa/ArchiveFactory
+	Could not find method: createArchive :: (Ljava/net/URL;)Lorg/eclipse/persistence/jpa/Archive;
+	Could not find method: createArchive :: (Ljava/net/URL;Ljava/lang/String;)Lorg/eclipse/persistence/jpa/Archive;
+org/eclipse/persistence/mappings/VariableOneToOneMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/foundation/AbstractTransformationMapping
+	Could not find method: getFieldTransformations :: ()Ljava/util/Vector;
+	Could not find method: getFieldToTransformers :: ()Ljava/util/Vector;
+	Could not find method: buildCloneForPartObject :: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: readFromReturnRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ReadObjectQuery;Ljava/util/Collection;)Ljava/lang/Object;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: shouldMergeCascadeParts :: (Lorg/eclipse/persistence/internal/sessions/MergeManager;)Z
+	Could not find method: readFromRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: createUnitOfWorkValueHolder :: (Lorg/eclipse/persistence/indirection/ValueHolderInterface;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Lorg/eclipse/persistence/internal/indirection/UnitOfWorkValueHolder;
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: setFieldTransformations :: (Ljava/util/Vector;)V
+org/eclipse/persistence/oxm/mappings/XMLCompositeObjectMapping
+	Could not find method: readFromRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: valueFromRow :: (Ljava/lang/Object;Lorg/eclipse/persistence/oxm/record/XMLRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLAnyObjectMapping
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/jaxb/compiler/JAXBMetadataLogger
+	Could not find field: INVALID_TYPE_LEVEL_XML_JAVA_TYPE_ADAPTER :: Ljava/lang/String;
+	Could not find field: INVALID_PROPERTY_LEVEL_XML_JAVA_TYPE_ADAPTER :: Ljava/lang/String;
+	Could not find field: INVALID_PACKAGE_LEVEL_XML_JAVA_TYPE_ADAPTER :: Ljava/lang/String;
+Could not find org/eclipse/persistence/jpa/osgi/eclipselink/Activatororg/eclipse/persistence/oxm/mappings/XMLCollectionReferenceMapping
+	Could not find method: readFromRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/platform/database/oracle/plsql/PLSQLCollection
+	Could not find method: compare :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;)I
+	Could not find method: compare :: (Ljava/lang/Object;Ljava/lang/Object;)I
+	Could not find method: compare :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;)I
+	Could not find method: compare :: (Ljava/lang/Object;Ljava/lang/Object;)I
+	Could not find method: compare :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;)I
+	Could not find method: compare :: (Ljava/lang/Object;Ljava/lang/Object;)I
+org/eclipse/persistence/descriptors/changetracking/AttributeChangeTrackingPolicy
+	Could not find method: revertChanges :: (Ljava/lang/Object;Lorg/eclipse/persistence/descriptors/ClassDescriptor;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Ljava/util/Map;)V
+org/eclipse/persistence/mappings/ForeignReferenceMapping
+	Could not find method: extractResultFromBatchQuery :: (Lorg/eclipse/persistence/queries/ReadQuery;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/AbstractSession;Lorg/eclipse/persistence/queries/ObjectLevelReadQuery;)Ljava/lang/Object;
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: createUnitOfWorkValueHolder :: (Lorg/eclipse/persistence/indirection/ValueHolderInterface;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Lorg/eclipse/persistence/internal/indirection/UnitOfWorkValueHolder;
+	Could not find method: buildCloneForPartObject :: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+org/eclipse/persistence/platform/database/oracle/OracleOCIProxyConnector
+	Could not find method: connect :: (Ljava/util/Properties;)Ljava/sql/Connection;
+org/eclipse/persistence/sessions/Login
+	Could not find method: clone :: ()Ljava/lang/Object;
+org/eclipse/persistence/queries/ReportQuery
+	Could not find method: initializeFetchGroup :: ()V
+org/eclipse/persistence/oxm/record/UnmarshalRecord
+	Could not find method: getStringBuffer :: ()Lorg/eclipse/persistence/internal/oxm/StrBuffer;
+org/eclipse/persistence/mappings/DirectMapMapping
+	Could not find method: buildCloneForPartObject :: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/descriptors/ClassDescriptor
+	Could not find method: isDescriptorForCMP :: ()Z
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping
+	Could not find method: buildRemovedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: buildElementFromElement :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildAddedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/structures/ArrayCollectionMappingHelper
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/oxm/mappings/XMLObjectReferenceMapping
+	Could not find method: readFromRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/queries/StoredProcedureCall
+	Could not find method: setProcedureArgumentNames :: (Ljava/util/Vector;)V
+	Could not find method: getProcedureArgumentNames :: ()Ljava/util/Vector;
+org/eclipse/persistence/mappings/EmbeddableMapping
+	Could not find method: addFieldNameTranslation :: (Ljava/lang/String;Ljava/lang/String;)V
+	Could not find method: addNestedFieldNameTranslation :: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+org/eclipse/persistence/queries/DatabaseQuery
+	Could not find method: getSensorName :: (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	Could not find method: getQueryNounName :: (Ljava/lang/String;)Ljava/lang/String;
+	Could not find method: rowFromArguments :: (Ljava/util/List;)Lorg/eclipse/persistence/internal/sessions/AbstractRecord;
+	Could not find method: getDomainClassNounName :: (Ljava/lang/String;)Ljava/lang/String;
+org/eclipse/persistence/mappings/AggregateCollectionMapping
+	Could not find method: buildElementClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: buildCloneForPartObject :: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: addFieldNameTranslations :: (Ljava/util/Map;)V
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/AggregateObjectMapping
+	Could not find method: buildElementClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: getAggregateToSourceFieldNameAssociations :: ()Ljava/util/Vector;
+	Could not find method: createMapComponentFromJoinedRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: readFromReturnRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ReadObjectQuery;Ljava/util/Collection;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: createMapComponentFromSerializableKeyInfo :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: readFromRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: getTargetVersionOfSourceObject :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: getAggregateToSourceFieldNames :: ()Ljava/util/Map;
+	Could not find method: buildAggregateFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;ZLorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)V
+	Could not find method: setAggregateToSourceFieldNameAssociations :: (Ljava/util/Vector;)V
+	Could not find method: addNestedFieldNameTranslation :: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+org/eclipse/persistence/jaxb/javamodel/Helper
+	Could not find method: getNextMappedSuperClass :: (Lorg/eclipse/persistence/jaxb/javamodel/JavaClass;)Lorg/eclipse/persistence/jaxb/javamodel/JavaClass;
+org/eclipse/persistence/queries/DeleteAllQuery
+	Could not find method: getObjects :: ()Ljava/util/Vector;
+	Could not find method: setObjects :: (Ljava/util/Vector;)V
+org/eclipse/persistence/sessions/broker/SessionBroker
+	Could not find method: getAccessor :: (Ljava/lang/Class;)Lorg/eclipse/persistence/internal/databaseaccess/Accessor;
+	Could not find method: getAccessor :: (Ljava/lang/String;)Lorg/eclipse/persistence/internal/databaseaccess/Accessor;
+	Could not find method: internalRegisterSession :: (Ljava/lang/String;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+org/eclipse/persistence/platform/database/oracle/plsql/PLSQLrecord
+	Could not find method: translate :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/util/Vector;Ljava/util/Vector;Ljava/util/Vector;Lorg/eclipse/persistence/queries/StoredProcedureCall;)V
+	Could not find method: buildOutputRow :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/sessions/DatabaseRecord;Ljava/util/Vector;Ljava/util/Vector;)V
+org/eclipse/persistence/mappings/foundation/AbstractCompositeDirectCollectionMapping
+	Could not find method: buildElementFromElement :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: buildRemovedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: buildAddedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/tools/schemaframework/PopulationManager
+	Could not find method: addAllObjectsForClass :: (Ljava/lang/Class;Ljava/util/Vector;)V
+org/eclipse/persistence/oxm/mappings/XMLFragmentMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/CollectionMapping
+	Could not find method: buildElementClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: buildCloneForPartObject :: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: extractResultFromBatchQuery :: (Lorg/eclipse/persistence/queries/ReadQuery;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/AbstractSession;Lorg/eclipse/persistence/queries/ObjectLevelReadQuery;)Ljava/lang/Object;
+	Could not find method: cascadeMerge :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/tools/profiler/PerformanceProfiler
+	Could not find method: getProfiles :: ()Ljava/util/Vector;
+org/eclipse/persistence/oxm/mappings/XMLFragmentCollectionMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLInverseReferenceMapping
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/descriptors/ReturningPolicy
+	Could not find method: getFieldInfos :: ()Ljava/util/Vector;
+	Could not find method: hasEqualFieldInfos :: (Ljava/util/Vector;)Z
+	Could not find method: setFieldInfos :: (Ljava/util/Vector;)V
+Could not find org/eclipse/persistence/sessions/factories/ReferenceModeorg/eclipse/persistence/oxm/mappings/XMLCompositeDirectCollectionMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/OneToManyMapping
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLChoiceObjectMapping
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/foundation/AbstractCompositeObjectMapping
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/descriptors/changetracking/DeferredChangeDetectionPolicy
+	Could not find method: revertChanges :: (Ljava/lang/Object;Lorg/eclipse/persistence/descriptors/ClassDescriptor;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Ljava/util/Map;)V
+	Could not find method: clearChanges :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/descriptors/ClassDescriptor;)V
+org/eclipse/persistence/mappings/structures/ArrayMapping
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/oxm/mappings/XMLDirectMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/exceptions/DynamicException
+	Could not find method: entityHasNullType :: (Lorg/eclipse/persistence/internal/dynamic/DynamicEntityImpl;)Lorg/eclipse/persistence/exceptions/DynamicException;
+org/eclipse/persistence/mappings/OneToOneMapping
+	Could not find method: buildElementClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: createMapComponentFromJoinedRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: createMapComponentFromSerializableKeyInfo :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: getTargetVersionOfSourceObject :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+org/eclipse/persistence/platform/database/oracle/Oracle9Platform
+	Could not find method: isLtzTimestampInGmt :: (Ljava/sql/Connection;)Z
+	Could not find method: getDriverVersion :: (Ljava/sql/Connection;)Ljava/lang/String;
+	Could not find method: prepareBatchStatement :: (Ljava/sql/Statement;)Ljava/sql/Statement;
+	Could not find method: shouldPrintCalendar :: (Ljava/sql/Connection;)Z
+	Could not find method: isTimestampInGmt :: (Ljava/sql/Connection;)Z
+org/eclipse/persistence/oxm/mappings/XMLBinaryDataMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/sessions/Session
+	Could not find method: getDefaultReferenceMode :: ()Lorg/eclipse/persistence/sessions/factories/ReferenceMode;
+	Could not find method: setDefaultReferenceMode :: (Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)V
+	Could not find method: acquireUnitOfWork :: (Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/sessions/UnitOfWork;
+org/eclipse/persistence/mappings/structures/ArrayCollectionMapping
+	Could not find method: buildRemovedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: buildElementFromElement :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: buildAddedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLAnyAttributeMapping
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/ManyToManyMapping
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/tools/schemaframework/TableDefinition
+	Could not find method: getUniqueKeys :: ()Ljava/util/Vector;
+	Could not find method: getPrimaryKeyFieldNames :: ()Ljava/util/Vector;
+	Could not find method: dropIndexOnPrimaryKey :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;Ljava/io/Writer;)V
+	Could not find method: setFields :: (Ljava/util/Vector;)V
+	Could not find method: getFields :: ()Ljava/util/Vector;
+	Could not find method: setForeignKeys :: (Ljava/util/Vector;)V
+	Could not find method: createIndexOnPrimaryKey :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;Ljava/io/Writer;)V
+	Could not find method: dropIndicesOnUniqueKeys :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;Ljava/io/Writer;)V
+	Could not find method: setUniqueKeys :: (Ljava/util/Vector;)V
+	Could not find method: createIndicesOnUniqueKeysOnDatabase :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: createIndexOnPrimaryKeyOnDatabase :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: buildIndexCreationWriter :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;Ljava/lang/String;Ljava/util/List;Ljava/io/Writer;)Ljava/io/Writer;
+	Could not find method: getForeignKeys :: ()Ljava/util/Vector;
+	Could not find method: dropIndicesOnUniqueKeysOnDatabase :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: dropIndexOnPrimaryKeyOnDatabase :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: createIndicesOnUniqueKeys :: (Lorg/eclipse/persistence/internal/sessions/AbstractSession;Ljava/io/Writer;)V
+org/eclipse/persistence/mappings/DirectCollectionMapping
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: buildBatchCriteria :: (Lorg/eclipse/persistence/expressions/ExpressionBuilder;Lorg/eclipse/persistence/queries/ObjectLevelReadQuery;)Lorg/eclipse/persistence/expressions/Expression;
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: buildElementClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/foundation/MapKeyMapping
+	Could not find method: buildElementClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: createMapComponentFromJoinedRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: getTargetVersionOfSourceObject :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)V
+	Could not find method: createMapComponentFromSerializableKeyInfo :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/exceptions/ValidationException
+	Could not find method: subSessionsNotDefinedForBroker :: (Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/ValidationException;
+	Could not find method: multipleProjectsSpecifiedInProperties :: (Ljava/lang/String;Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/ValidationException;
+	Could not find method: noProjectSpecifiedInProperties :: (Ljava/lang/String;Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/ValidationException;
+	Could not find method: errorParsingMappingFile :: (Ljava/lang/String;Ljava/lang/Exception;Ljava/lang/Exception;Ljava/lang/Exception;)Lorg/eclipse/persistence/exceptions/ValidationException;
+	Could not find method: ejbPersistenceUnitPropertiesNotFound :: (Ljava/lang/Exception;)Lorg/eclipse/persistence/exceptions/ValidationException;
+	Could not find method: ejbNoSuchSessionSpecifiedInProperties :: (Ljava/lang/String;Ljava/lang/Object;)Lorg/eclipse/persistence/exceptions/ValidationException;
+	Could not find method: projectAmendmentExceptionOccured :: (Ljava/lang/Exception;Ljava/lang/String;Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/ValidationException;
+	Could not find method: invalidValueForProperty :: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Exception;)Lorg/eclipse/persistence/exceptions/ValidationException;
+org/eclipse/persistence/sessions/factories/SessionManager
+	Could not find method: getSessions :: ()Ljava/util/Map;
+	Could not find method: setSessions :: (Ljava/util/Hashtable;)V
+org/eclipse/persistence/mappings/ObjectReferenceMapping
+	Could not find method: buildCloneForPartObject :: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: createUnitOfWorkValueHolder :: (Lorg/eclipse/persistence/indirection/ValueHolderInterface;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Lorg/eclipse/persistence/internal/indirection/UnitOfWorkValueHolder;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/platform/database/MySQLPlatform
+	Could not find method: buildProcedureCallString :: (Lorg/eclipse/persistence/queries/StoredProcedureCall;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/String;
+	Could not find method: canBatchWriteWithOptimisticLocking :: ()Z
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint
+	Could not find method: setTargetFields :: (Ljava/util/Vector;)V
+	Could not find method: setSourceFields :: (Ljava/util/Vector;)V
+	Could not find method: getTargetFields :: ()Ljava/util/Vector;
+	Could not find method: getSourceFields :: ()Ljava/util/Vector;
+org/eclipse/persistence/descriptors/changetracking/ObjectChangePolicy
+	Could not find method: revertChanges :: (Ljava/lang/Object;Lorg/eclipse/persistence/descriptors/ClassDescriptor;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Ljava/util/Map;)V
+	Could not find method: clearChanges :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/descriptors/ClassDescriptor;)V
+org/eclipse/persistence/jaxb/javamodel/xjc/XJCJavaConstructorImpl
+	Could not find method: <init> :: (Lcom/sun/codemodel/JMethod;Lcom/sun/codemodel/JCodeModel;Lorg/eclipse/persistence/dynamic/DynamicClassLoader;)V
+org/eclipse/persistence/oxm/mappings/XMLBinaryDataCollectionMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLAnyCollectionMapping
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/DatabaseMapping
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: createUnitOfWorkValueHolder :: (Lorg/eclipse/persistence/indirection/ValueHolderInterface;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Lorg/eclipse/persistence/internal/indirection/UnitOfWorkValueHolder;
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: buildCloneForPartObject :: (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;)Ljava/lang/Object;
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: readFromRowIntoObject :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: cascadeMerge :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/platform/database/oracle/plsql/OraclePLSQLTypes
+	Could not find method: translate :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/util/Vector;Ljava/util/Vector;Ljava/util/Vector;Lorg/eclipse/persistence/queries/StoredProcedureCall;)V
+	Could not find method: buildOutputRow :: (Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/sessions/DatabaseRecord;Ljava/util/Vector;Ljava/util/Vector;)V
+org/eclipse/persistence/mappings/foundation/AbstractDirectMapping
+	Could not find method: buildElementClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+	Could not find method: createMapComponentFromJoinedRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: createMapComponentFromSerializableKeyInfo :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: getTargetVersionOfSourceObject :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: cascadeDiscoverAndPersistUnregisteredNewObjects :: (Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)V
+	Could not find method: internalBuildChangeRecord :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ObjectChangeSet;)Lorg/eclipse/persistence/internal/sessions/ChangeRecord;
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/structures/ReferenceMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/AggregateMapping
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/jpa/JpaHelper
+	Could not find method: createEntityManagerFactory :: (Ljava/lang/String;)Lorg/eclipse/persistence/internal/jpa/EntityManagerFactoryImpl;
+org/eclipse/persistence/jaxb/javamodel/xjc/XJCJavaModelImpl
+	Could not find method: <init> :: (Ljava/lang/ClassLoader;Lcom/sun/codemodel/JCodeModel;Lorg/eclipse/persistence/dynamic/DynamicClassLoader;)V
+org/eclipse/persistence/mappings/RelationTableMechanism
+	Could not find method: buildBatchCriteria :: (Lorg/eclipse/persistence/expressions/ExpressionBuilder;Lorg/eclipse/persistence/queries/ObjectLevelReadQuery;)Lorg/eclipse/persistence/expressions/Expression;
+org/eclipse/persistence/mappings/foundation/MapComponentMapping
+	Could not find method: createMapComponentFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/eis/mappings/EISOneToManyMapping
+	Could not find method: buildElementFromElement :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: buildRemovedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildAddedElementFromChangeSet :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+org/eclipse/persistence/jaxb/compiler/NamespaceInfo
+	Could not find method: getAccessType :: ()Lorg/eclipse/persistence/jaxb/xmlmodel/XmlAccessType;
+	Could not find method: setAccessOrder :: (Lorg/eclipse/persistence/jaxb/xmlmodel/XmlAccessOrder;)V
+	Could not find method: setAccessType :: (Lorg/eclipse/persistence/jaxb/xmlmodel/XmlAccessType;)V
+	Could not find method: getAccessOrder :: ()Lorg/eclipse/persistence/jaxb/xmlmodel/XmlAccessOrder;
+org/eclipse/persistence/eis/mappings/EISOneToManyMappingHelper
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/jaxb/javamodel/xjc/XJCJavaFieldImpl
+	Could not find method: <init> :: (Lcom/sun/codemodel/JFieldVar;Lcom/sun/codemodel/JCodeModel;Lorg/eclipse/persistence/dynamic/DynamicClassLoader;)V
+org/eclipse/persistence/jaxb/compiler/MappingsGenerator
+	Could not find method: generateCollectionMapping :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;)V
+	Could not find method: generateMappingForReferenceProperty :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;)Lorg/eclipse/persistence/oxm/mappings/XMLMapping;
+	Could not find method: generateAnyAttributeMapping :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;)V
+	Could not find method: generateDirectEnumerationMapping :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;Lorg/eclipse/persistence/jaxb/compiler/EnumTypeInfo;)V
+	Could not find method: generateEnumCollectionMapping :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;Lorg/eclipse/persistence/jaxb/compiler/EnumTypeInfo;)V
+	Could not find method: generateXMLCollectionReferenceMapping :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;Lorg/eclipse/persistence/jaxb/javamodel/JavaClass;)V
+	Could not find method: generateMapping :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;)V
+	Could not find method: generateXMLObjectReferenceMapping :: (Lorg/eclipse/persistence/jaxb/compiler/Property;Lorg/eclipse/persistence/oxm/XMLDescriptor;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;Lorg/eclipse/persistence/jaxb/javamodel/JavaClass;)V
+org/eclipse/persistence/sessions/Project
+	Could not find method: getMappedSuperclass :: (Ljava/lang/Object;)Lorg/eclipse/persistence/descriptors/RelationalDescriptor;
+	Could not find method: getOrderedDescriptors :: ()Ljava/util/Vector;
+	Could not find method: addMappedSuperclass :: (Ljava/lang/Object;Lorg/eclipse/persistence/descriptors/RelationalDescriptor;)V
+	Could not find method: setOrderedDescriptors :: (Ljava/util/Vector;)V
+org/eclipse/persistence/jaxb/javamodel/xjc/XJCJavaMethodImpl
+	Could not find method: <init> :: (Lcom/sun/codemodel/JMethod;Lcom/sun/codemodel/JCodeModel;Lorg/eclipse/persistence/dynamic/DynamicClassLoader;)V
+org/eclipse/persistence/sessions/server/ServerSession
+	Could not find method: setCheckConnections :: ()V
+	Could not find method: postConnectExternalConnection :: (Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
+	Could not find method: preDisconnectExternalConnection :: (Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
+org/eclipse/persistence/jaxb/compiler/AnnotationsProcessor
+	Could not find method: getNamespaceInfoForPackage :: (Lorg/eclipse/persistence/jaxb/javamodel/JavaClass;)Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;
+	Could not find method: getNamespaceInfoForPackage :: (Lorg/eclipse/persistence/jaxb/javamodel/JavaPackage;)Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;
+	Could not find method: getSchemaTypeNameForClassName :: (Ljava/lang/String;)Ljava/lang/String;
+	Could not find method: getSchemaTypeNameFor :: (Lorg/eclipse/persistence/jaxb/javamodel/JavaClass;Ljavax/xml/bind/annotation/XmlType;)Ljava/lang/String;
+	Could not find method: getPackageToNamespaceMappings :: ()Ljava/util/HashMap;
+	Could not find method: getQNameForProperty :: (Ljava/lang/String;Lorg/eclipse/persistence/jaxb/javamodel/JavaHasAnnotations;Lorg/eclipse/persistence/jaxb/compiler/NamespaceInfo;Ljava/lang/String;)Ljavax/xml/namespace/QName;
+org/eclipse/persistence/jaxb/compiler/SchemaGenerator
+	Could not find method: createGlobalElement :: (Lorg/eclipse/persistence/internal/oxm/XPathFragment;Lorg/eclipse/persistence/internal/oxm/schema/model/Schema;Lorg/eclipse/persistence/internal/oxm/schema/model/Schema;ZZ)Lorg/eclipse/persistence/internal/oxm/schema/model/Element;
+org/eclipse/persistence/platform/database/oracle/plsql/PLSQLStoredProcedureCall
+	Could not find method: buildOutputRow :: (Ljava/sql/CallableStatement;)Lorg/eclipse/persistence/internal/sessions/AbstractRecord;
+org/eclipse/persistence/sessions/server/ClientSession
+	Could not find method: connect :: ()V
+	Could not find method: postConnectExternalConnection :: (Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
+	Could not find method: preDisconnectExternalConnection :: (Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
+	Could not find method: basicBeginTransaction :: ()V
+	Could not find method: disconnect :: ()V
+org/eclipse/persistence/oxm/mappings/XMLCompositeCollectionMapping
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildObjectFromNestedRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/jaxb/JAXBMarshaller
+	Could not find method: setQNameToGeneratedClasses :: (Ljava/util/HashMap;)V
+org/eclipse/persistence/descriptors/changetracking/ObjectChangeTrackingPolicy
+	Could not find method: clearChanges :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/descriptors/ClassDescriptor;)V
+org/eclipse/persistence/sessions/SessionProfiler
+	Could not find field: SQL_PREPARE :: Ljava/lang/String;
+	Could not find field: RcmNounType :: Ljava/lang/String;
+	Could not find field: ConnectionInUse :: Ljava/lang/String;
+	Could not find field: ROW_FETCH :: Ljava/lang/String;
+	Could not find field: TlDisconnects :: Ljava/lang/String;
+	Could not find field: TlConnects :: Ljava/lang/String;
+	Could not find field: TopLinkRootNoun :: Ljava/lang/String;
+	Could not find field: CACHE :: Ljava/lang/String;
+	Could not find field: QUERY_PREPARE :: Ljava/lang/String;
+	Could not find field: MiscellaneousNounType :: Ljava/lang/String;
+	Could not find field: CONNECT :: Ljava/lang/String;
+	Could not find field: Wrapping :: Ljava/lang/String;
+	Could not find field: LoggingDMSDisPlayName :: Ljava/lang/String;
+	Could not find field: SQL_GENERATION :: Ljava/lang/String;
+	Could not find field: SessionNounType :: Ljava/lang/String;
+	Could not find field: Sequencing :: Ljava/lang/String;
+	Could not find field: MergeTime :: Ljava/lang/String;
+	Could not find field: TransactionNounType :: Ljava/lang/String;
+	Could not find field: TRANSACTION :: Ljava/lang/String;
+	Could not find field: OBJECT_BUILDING :: Ljava/lang/String;
+	Could not find field: DistributedMergeDmsDisplayName :: Ljava/lang/String;
+	Could not find field: CacheNounType :: Ljava/lang/String;
+	Could not find field: STATEMENT_EXECUTE :: Ljava/lang/String;
+	Could not find field: DeletedObject :: Ljava/lang/String;
+	Could not find field: DatabaseExecute :: Ljava/lang/String;
+	Could not find field: UnitOfWorkRegister :: Ljava/lang/String;
+	Could not find field: QueryNounType :: Ljava/lang/String;
+	Could not find field: ConnectionNounType :: Ljava/lang/String;
+org/eclipse/persistence/jaxb/javamodel/xjc/XJCJavaClassImpl
+	Could not find method: <init> :: (Lcom/sun/codemodel/JClass;Lcom/sun/codemodel/JCodeModel;Lorg/eclipse/persistence/dynamic/DynamicClassLoader;)V
+org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping
+	Could not find method: buildClone :: (Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+	Could not find method: mergeIntoObject :: (Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+	Could not find method: valueFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+	Could not find method: mergeChangesIntoObject :: (Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
