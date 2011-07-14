@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.oxm.documentpreservation;
 
 import java.util.IdentityHashMap;
-import java.util.WeakHashMap;
 
 import org.w3c.dom.Node;
 
@@ -34,19 +33,20 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
  *
  */
 public class XMLBinderPolicy extends DocumentPreservationPolicy {
+
     private IdentityHashMap nodesToObjects;
     private IdentityHashMap objectsToNodes;
-    
+
     public XMLBinderPolicy() {
         nodesToObjects = new IdentityHashMap();
         objectsToNodes = new IdentityHashMap();
         setNodeOrderingPolicy(new RelativePositionOrderingPolicy());
     }
-    
+
     public void addObjectToCache(Object obj, Node node) {
         addObjectToCache(obj, node, null);
     }
-    
+
     public void addObjectToCache(Object obj, Node node, XMLMapping selfRecordMapping) {
         objectsToNodes.put(obj, node);
         if(selfRecordMapping != null) {
@@ -59,15 +59,15 @@ public class XMLBinderPolicy extends DocumentPreservationPolicy {
             nodesToObjects.put(node, entry);
         }
     }
-    
+
     public Node getNodeForObject(Object obj) {
         return (Node)objectsToNodes.get(obj);
     }
     
     public Object getObjectForNode(Node node) {
         return getObjectForNode(node, null);
-    }    
-    
+    }
+
     public Object getObjectForNode(Node node, XMLMapping selfRecordMapping) {
         XMLBinderCacheEntry entry = (XMLBinderCacheEntry)nodesToObjects.get(node);
         if(entry != null) {
@@ -79,7 +79,9 @@ public class XMLBinderPolicy extends DocumentPreservationPolicy {
         }
         return null;
     }
+
     public boolean shouldPreserveDocument() {
         return true;
     }
+
 }
