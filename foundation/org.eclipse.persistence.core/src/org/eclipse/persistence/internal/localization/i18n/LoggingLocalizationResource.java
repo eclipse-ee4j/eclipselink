@@ -75,6 +75,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "includes", "(includes: " },
         { "key_object_null", "{0}Key: {1}{2}Object: null" },
         { "key_identity_hash_code_object", "{0}Key: {1}{2}Identity Hash Code: {3}{2}Object: {4}" },
+        { "key_version_identity_hash_code_object", "{0}Key: {1}{2}Version: {5}{2}Identity Hash Code: {3}{2}Object: {4}" },
         { "elements", "{0}{1} elements" },
         { "unitofwork_identity_hashcode", "{0}UnitOfWork identity hashcode: {1}" },
         { "deleted_objects", "Deleted Objects:" },
