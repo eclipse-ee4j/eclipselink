@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2010-2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *  dclarke - initial sig compare utility (Bug 352151)
+ ******************************************************************************/
 package eclipselink.utils.sigcompare;
 
 import java.io.IOException;
@@ -78,11 +90,11 @@ public class ClassSignature {
         return false;
     }
 
-    public void compare(ClassSignature targetSig, Writer writer) throws IOException {
+    public void compare(ClassSignature targetSig, Writer writer, ExcludePatterns excludes) throws IOException {
         boolean printClass = false;
 
         for (Map.Entry<String, String> fieldEntry : this.fields.entrySet()) {
-            if (!targetSig.containsField(fieldEntry.getKey(), fieldEntry.getValue())) {
+            if (!excludes.exclude(getName(), fieldEntry.getKey(), fieldEntry.getValue()) &&!targetSig.containsField(fieldEntry.getKey(), fieldEntry.getValue())) {
                 if (!printClass) {
                     writer.write(getName() + "\n");
                     printClass = true;
@@ -93,7 +105,7 @@ public class ClassSignature {
 
         for (Map.Entry<String, List<String>> methodEntry : this.methods.entrySet()) {
             for (String desc : methodEntry.getValue()) {
-                if (!targetSig.containsMethod(methodEntry.getKey(), desc)) {
+                if (!excludes.exclude(getName(), methodEntry.getKey(),desc) && !targetSig.containsMethod(methodEntry.getKey(), desc)) {
                     if (!printClass) {
                         writer.write(getName() + "\n");
                         printClass = true;

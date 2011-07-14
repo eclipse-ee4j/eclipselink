@@ -1,0 +1,5 @@
+#
+# This file contains a class+method name per line in ASM name format to be excluded from comparison
+#
+org/eclipse/persistence/internal
+org/eclipse/persistence/sessions/Login::clone

@@ -46,14 +46,16 @@ public class Main {
         String reportFileName = properties.getProperty("report-file");
         FileWriter out = new FileWriter(reportFileName);
 
-        for (ClassSignature sig212 : sourceSigs.values()) {
-            if (!sig212.getName().startsWith("org/eclipse/persistence/internal")) {
-                ClassSignature sig230 = targetSigs.get(sig212.getName());
+        ExcludePatterns excludes = new ExcludePatterns();
+        
+        for (ClassSignature sourceSig : sourceSigs.values()) {
+            if (!excludes.exclude(sourceSig.getName())) {
+                ClassSignature sig230 = targetSigs.get(sourceSig.getName());
 
                 if (sig230 == null) {
-                    out.write("Could not find " + sig212.getName());
+                    out.write("Could not find " + sourceSig.getName());
                 } else {
-                    sig212.compare(sig230, out);
+                    sourceSig.compare(sig230, out, excludes);
                 }
             }
         }

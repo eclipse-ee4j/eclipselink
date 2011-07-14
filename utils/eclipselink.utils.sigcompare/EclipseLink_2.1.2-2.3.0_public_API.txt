@@ -68,8 +68,6 @@ org/eclipse/persistence/mappings/ForeignReferenceMapping
 	Could not find method: buildCloneFromRow :: (Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
 org/eclipse/persistence/platform/database/oracle/OracleOCIProxyConnector
 	Could not find method: connect :: (Ljava/util/Properties;)Ljava/sql/Connection;
-org/eclipse/persistence/sessions/Login
-	Could not find method: clone :: ()Ljava/lang/Object;
 org/eclipse/persistence/queries/ReportQuery
 	Could not find method: initializeFetchGroup :: ()V
 org/eclipse/persistence/oxm/record/UnmarshalRecord
