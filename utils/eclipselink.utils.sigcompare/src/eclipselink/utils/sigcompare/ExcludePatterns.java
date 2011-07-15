@@ -19,8 +19,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import static eclipselink.utils.sigcompare.ClassSignature.SEPARATOR;
 
-
+/**
+ * 
+ * @author dclarke
+ * @since EclipseLink 2.4.0
+ */
 public class ExcludePatterns {
 
     private static final String EXCLUDE_FILE = "exclude-patterns.txt";
@@ -47,7 +52,7 @@ public class ExcludePatterns {
         StringWriter writer = new StringWriter();
         for (int i = 0; i < names.length; i++) {
             writer.write(names[i]);
-            writer.write("::");
+            writer.write(SEPARATOR);
         }
         
         String name = writer.toString();
@@ -61,6 +66,10 @@ public class ExcludePatterns {
         return false;
     }
 
+    /**
+     * Load the exclude patterns
+     * @throws IOException
+     */
     void initialize() throws IOException {
         this.patterns = new ArrayList<String>();
         
@@ -72,7 +81,7 @@ public class ExcludePatterns {
             String strLine;
             while ((strLine = br.readLine()) != null)   {
                 strLine = strLine.trim();
-                if (!strLine.startsWith("#")) {
+                if (!strLine.isEmpty() && !strLine.startsWith("#")) {
                     this.patterns.add(strLine);
                 }
             }

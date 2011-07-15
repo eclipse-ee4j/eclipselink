@@ -1,12 +1,83 @@
 #
 # This file contains a class+method name per line in ASM name format to be excluded from comparison
 #
+
+# Ignore internal packages
 org/eclipse/persistence/internal
+
+#
+# JPA/CORE/EIS
+#
+
+# INTERNAL types
+org/eclipse/persistence/eis/mappings/EISOneToManyMappingHelper
+
+# INTERNAL Methods Removed
+org/eclipse/persistence/descriptors/ClassDescriptor::isDescriptorForCMP::()Z
+org/eclipse/persistence/queries/ReportQuery::initializeFetchGroup::()V
+org/eclipse/persistence/sessions/server/ClientSession::postConnectExternalConnection::(Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
+org/eclipse/persistence/sessions/server/ClientSession::preDisconnectExternalConnection::(Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
+
+# INTERNAL Methods Vector->List
+org/eclipse/persistence/mappings/foundation/AbstractTransformationMapping::getFieldTransformations::()Ljava/util/Vector;
+org/eclipse/persistence/mappings/foundation/AbstractTransformationMapping::getFieldToTransformers::()Ljava/util/Vector;
+
+# INTERNAL Method with additional args
+org/eclipse/persistence/mappings/foundation/AbstractTransformationMapping::buildCloneForPartObject::(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Z)Ljava/lang/Object;
+org/eclipse/persistence/mappings/foundation/AbstractTransformationMapping::readFromReturnRowIntoObject::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ReadObjectQuery;Ljava/util/Collection;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping::buildRemovedElementFromChangeSet::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping::buildElementFromElement::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping::mergeIntoObject::(Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping::cascadeDiscoverAndPersistUnregisteredNewObjects::(Ljava/lang/Object;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping::valueFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping::buildAddedElementFromChangeSet::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)Ljava/lang/Object;
+org/eclipse/persistence/mappings/foundation/AbstractCompositeCollectionMapping::mergeChangesIntoObject::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/sessions/server/ClientSession::connect::()V
+org/eclipse/persistence/sessions/server/ClientSession::disconnect::()V
+org/eclipse/persistence/eis/mappings/EISOneToOneMapping::valueFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+
+# INTERNAL Method made protected
+org/eclipse/persistence/sessions/server/ClientSession::basicBeginTransaction::()V
+
+# PUBLIC methods still compatible (more generic arg types)
+org/eclipse/persistence/exceptions/DynamicException::entityHasNullType::(Lorg/eclipse/persistence/internal/dynamic/DynamicEntityImpl;)Lorg/eclipse/persistence/exceptions/DynamicException;
+
+# Exclude OSGi Activator as not used in WLS
+org/eclipse/persistence/jpa/osgi/eclipselink/Activator
+
+#
+# MOXy/SDO/DBWS
+#
+
+# INTERNAL types
+org/eclipse/persistence/jaxb/compiler/AnnotationsProcessor
+org/eclipse/persistence/jaxb/compiler/SchemaGenerator
+org/eclipse/persistence/jaxb/JAXBMarshaller
+org/eclipse/persistence/jaxb/compiler/MappingsGenerator
+org/eclipse/persistence/jaxb/compiler/NamespaceInfo
+org/eclipse/persistence/jaxb/javamodel/Helper
+
+# INTERNAL Methods with additional args
+org/eclipse/persistence/oxm/mappings/XMLCollectionReferenceMapping::readFromRowIntoObject::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLObjectReferenceMapping::readFromRowIntoObject::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::buildClone::(Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
+org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::mergeIntoObject::(Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::valueFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
+org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::buildCloneFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
+org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::mergeChangesIntoObject::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
+
+# XJC Bridge - Not marked internal (No JavaDoc) but should have been
+org/eclipse/persistence/jaxb/javamodel/xjc/
+
+# Removed public statics
+org/eclipse/persistence/jaxb/compiler/JAXBMetadataLogger::INVALID_
+
+#
+# TO BE CATEGORIZED
 org/eclipse/persistence/sessions/Login::clone
 org/eclipse/persistence/queries/CursorPolicy::createChangeEvent::(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;ILjava/lang/Integer;)Lorg/eclipse/persistence/descriptors/changetracking/CollectionChangeEvent;
 org/eclipse/persistence/mappings/structures/ObjectArrayMapping::mergeChangesIntoObject::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
 org/eclipse/persistence/mappings/structures/ObjectArrayMapping::mergeIntoObject::(Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
-org/eclipse/persistence/eis/mappings/EISOneToOneMapping::valueFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
 org/eclipse/persistence/sessions/JNDIConnector::connect::(Ljava/util/Properties;)Ljava/sql/Connection;
 org/eclipse/persistence/mappings/VariableOneToOneMapping::valueFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
 org/eclipse/persistence/mappings/foundation/AbstractTransformationMapping::getFieldTransformations::()Ljava/util/Vector;
@@ -238,17 +309,7 @@ org/eclipse/persistence/sessions/server/ServerSession::setCheckConnections::()V
 org/eclipse/persistence/sessions/server/ServerSession::postConnectExternalConnection::(Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
 org/eclipse/persistence/sessions/server/ServerSession::preDisconnectExternalConnection::(Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
 org/eclipse/persistence/platform/database/oracle/plsql/PLSQLStoredProcedureCall::buildOutputRow::(Ljava/sql/CallableStatement;)Lorg/eclipse/persistence/internal/sessions/AbstractRecord;
-org/eclipse/persistence/sessions/server/ClientSession::connect::()V
-org/eclipse/persistence/sessions/server/ClientSession::postConnectExternalConnection::(Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
-org/eclipse/persistence/sessions/server/ClientSession::preDisconnectExternalConnection::(Lorg/eclipse/persistence/internal/databaseaccess/Accessor;)V
-org/eclipse/persistence/sessions/server/ClientSession::basicBeginTransaction::()V
-org/eclipse/persistence/sessions/server/ClientSession::disconnect::()V
 org/eclipse/persistence/oxm/mappings/XMLCompositeCollectionMapping::valueFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
 org/eclipse/persistence/oxm/mappings/XMLCompositeCollectionMapping::buildObjectFromNestedRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
 org/eclipse/persistence/descriptors/changetracking/ObjectChangeTrackingPolicy::clearChanges::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/descriptors/ClassDescriptor;)V
-org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::buildClone::(Ljava/lang/Object;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;)V
-org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::mergeIntoObject::(Ljava/lang/Object;ZLjava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
-org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::valueFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)Ljava/lang/Object;
-org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::buildCloneFromRow::(Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/queries/JoinedAttributeManager;Ljava/lang/Object;Lorg/eclipse/persistence/queries/ObjectBuildingQuery;Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;Lorg/eclipse/persistence/internal/sessions/AbstractSession;)V
-org/eclipse/persistence/oxm/mappings/XMLChoiceCollectionMapping::mergeChangesIntoObject::(Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/ChangeRecord;Ljava/lang/Object;Lorg/eclipse/persistence/internal/sessions/MergeManager;)V
 

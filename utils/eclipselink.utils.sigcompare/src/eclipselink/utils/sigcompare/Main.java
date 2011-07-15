@@ -50,12 +50,12 @@ public class Main {
         
         for (ClassSignature sourceSig : sourceSigs.values()) {
             if (!excludes.exclude(sourceSig.getName())) {
-                ClassSignature sig230 = targetSigs.get(sourceSig.getName());
+                ClassSignature targetSig = targetSigs.get(sourceSig.getName());
 
-                if (sig230 == null) {
-                    out.write("Could not find " + sourceSig.getName());
+                if (targetSig == null) {
+                    out.write(sourceSig.getName() + ClassSignature.newline);
                 } else {
-                    sourceSig.compare(sig230, out, excludes);
+                    sourceSig.compare(targetSig, out, excludes);
                 }
             }
         }

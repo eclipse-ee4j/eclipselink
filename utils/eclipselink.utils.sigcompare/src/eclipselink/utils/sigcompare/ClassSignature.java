@@ -33,6 +33,11 @@ public class ClassSignature {
 
     private Map<String, String> fields;
 
+    /**
+     * 
+     */
+    public static final String SEPARATOR = "::";
+
     public ClassSignature(String name, String parentName, String[] interfaces) {
         this.name = name;
         this.interfaces = interfaces;
@@ -90,27 +95,20 @@ public class ClassSignature {
         return false;
     }
 
-    public void compare(ClassSignature targetSig, Writer writer, ExcludePatterns excludes) throws IOException {
-        boolean printClass = false;
+    public static String newline = System.getProperty("line.separator");
 
+    public void compare(ClassSignature targetSig, Writer writer, ExcludePatterns excludes) throws IOException {
+        
         for (Map.Entry<String, String> fieldEntry : this.fields.entrySet()) {
-            if (!excludes.exclude(getName(), fieldEntry.getKey(), fieldEntry.getValue()) &&!targetSig.containsField(fieldEntry.getKey(), fieldEntry.getValue())) {
-                if (!printClass) {
-                    writer.write(getName() + "\n");
-                    printClass = true;
-                }
-                writer.write("\tCould not find field: " + fieldEntry.getKey() + " :: " + fieldEntry.getValue() + "\n");
+            if (!excludes.exclude(getName(), fieldEntry.getKey(), fieldEntry.getValue()) && !targetSig.containsField(fieldEntry.getKey(), fieldEntry.getValue())) {
+                writer.write(getName() + SEPARATOR + fieldEntry.getKey() + SEPARATOR + fieldEntry.getValue() + newline);
             }
         }
 
         for (Map.Entry<String, List<String>> methodEntry : this.methods.entrySet()) {
             for (String desc : methodEntry.getValue()) {
-                if (!excludes.exclude(getName(), methodEntry.getKey(),desc) && !targetSig.containsMethod(methodEntry.getKey(), desc)) {
-                    if (!printClass) {
-                        writer.write(getName() + "\n");
-                        printClass = true;
-                    }
-                    writer.write("\tCould not find method: " + methodEntry.getKey() + " :: " + desc + "\n");
+                if (!excludes.exclude(getName(), methodEntry.getKey(), desc) && !targetSig.containsMethod(methodEntry.getKey(), desc)) {
+                    writer.write(getName() + SEPARATOR + methodEntry.getKey() + SEPARATOR + desc + newline);
                 }
             }
         }
