@@ -19,6 +19,12 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Generate report for specific versions
+ * 
+ * @author dclarke
+ * @since EclipseLink 2.4.0
+ */
 public class Main {
 
     private static final String PROPS_FILE = "sig-compare.properties";
@@ -30,41 +36,18 @@ public class Main {
         if (!propsFile.exists()) {
             throw new RuntimeException("Could not find file: " + PROPS_FILE);
         }
-
         InputStream in = new FileInputStream(propsFile);
         properties.load(in);
         in.close();
-
-        String sourceFileName = properties.getProperty("source-jar");
-        File sourceJarFile = new File(sourceFileName);
-        Map<String, ClassSignature> sourceSigs = new SignatureImporter().importSignatures(sourceJarFile);
-
-        String targetFileName = properties.getProperty("target-jar");
-        File targetJarFile = new File(targetFileName);
-        Map<String, ClassSignature> targetSigs = new SignatureImporter().importSignatures(targetJarFile);
-
-        String reportFileName = properties.getProperty("report-file");
-        FileWriter out = new FileWriter(reportFileName);
-
+        
         String printAlternativesValue = properties.getProperty("print-alternatives");
         boolean printAlternatives = printAlternativesValue == null ? false : Boolean.valueOf(printAlternativesValue);
 
-        ExcludePatterns excludes = new ExcludePatterns();
+        SignatureReportGenerator gen = new SignatureReportGenerator();
+        gen.generateReport(properties, "2.1.2", "2.2.0", printAlternatives);
+        gen.generateReport(properties, "2.1.2", "2.3.0", printAlternatives);
+        gen.generateReport(properties, "2.2.0", "2.3.0", printAlternatives);
         
-        for (ClassSignature sourceSig : sourceSigs.values()) {
-            if (!excludes.exclude(sourceSig.getName())) {
-                ClassSignature targetSig = targetSigs.get(sourceSig.getName());
-
-                if (targetSig == null) {
-                    out.write(sourceSig.getName() + ClassSignature.newline);
-                } else {
-                    sourceSig.compare(targetSig, out, excludes, printAlternatives);
-                }
-            }
-        }
-
-        out.close();
-
         System.out.println("Done.");
     }
 

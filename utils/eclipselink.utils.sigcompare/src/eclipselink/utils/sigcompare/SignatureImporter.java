@@ -33,7 +33,6 @@ public class SignatureImporter {
     public Map<String, ClassSignature> importSignatures(File jarFile) throws Exception {
         ZipFile zipFile = new ZipFile(jarFile);
         SignatureClassVisitor visitor = new SignatureClassVisitor();
-        Map<String, ClassSignature> classes = new HashMap<String, ClassSignature>();
 
         for (Enumeration<? extends ZipEntry> zipEnum = zipFile.entries(); zipEnum.hasMoreElements();) {
             ZipEntry entry = zipEnum.nextElement();
@@ -44,20 +43,18 @@ public class SignatureImporter {
                 reader.accept(visitor, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG);
                 in.close();
             }
-
-            if (visitor.sig != null) {
-                classes.put(visitor.sig.getName(), visitor.sig);
-            }
         }
 
-        for (ClassSignature classSig : classes.values()) {
-            classSig.initialzeParent(classes);
+        for (ClassSignature classSig : visitor.classes.values()) {
+            classSig.initialzeParent(visitor.classes);
         }
 
-        return classes;
+        return visitor.classes;
     }
 
     class SignatureClassVisitor implements ClassVisitor {
+
+        protected Map<String, ClassSignature> classes = new HashMap<String, ClassSignature>();
 
         protected ClassSignature sig = null;
 
@@ -66,7 +63,6 @@ public class SignatureImporter {
                 this.sig = new ClassSignature(name, superName, interfaces);
             } // TODO: Handle inheritance
         }
-
 
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
             if (this.sig != null && (access & Opcodes.ACC_PUBLIC) > 0) {
@@ -99,6 +95,10 @@ public class SignatureImporter {
         }
 
         public void visitEnd() {
+            if (this.sig != null) {
+                this.classes.put(this.sig.getName(), this.sig);
+            }
+            this.sig = null;
         }
 
     }

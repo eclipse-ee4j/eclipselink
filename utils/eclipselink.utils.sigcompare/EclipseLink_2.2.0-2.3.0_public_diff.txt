@@ -1,0 +1,14 @@
+org/eclipse/persistence/descriptors/DescriptorQueryManager::hasAdditionalCriteriaArguments::()Z
+org/eclipse/persistence/descriptors/DescriptorQueryManager::getAdditionalCriteriaArguments::()Ljava/util/HashMap;
+org/eclipse/persistence/sessions/interceptors/CacheInterceptor::getCacheKey::(Ljava/lang/Object;)Lorg/eclipse/persistence/internal/identitymaps/CacheKey;
+org/eclipse/persistence/sessions/remote/RemoteSession::acquireUnitOfWork::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;
+org/eclipse/persistence/sessions/remote/RemoteSession::acquireUnitOfWork::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/sessions/UnitOfWork;
+org/eclipse/persistence/platform/database/jdbc/JDBCTypes::translate::(Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/util/Vector;Ljava/util/Vector;Ljava/util/Vector;Lorg/eclipse/persistence/queries/StoredProcedureCall;)V
+org/eclipse/persistence/platform/database/jdbc/JDBCTypes::buildOutputRow::(Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/sessions/DatabaseRecord;Ljava/util/Vector;Ljava/util/Vector;)V
+org/eclipse/persistence/sessions/factories/ReferenceMode
+org/eclipse/persistence/sessions/Session::getDefaultReferenceMode::()Lorg/eclipse/persistence/sessions/factories/ReferenceMode;
+org/eclipse/persistence/sessions/Session::setDefaultReferenceMode::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)V
+org/eclipse/persistence/sessions/Session::acquireUnitOfWork::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/sessions/UnitOfWork;
+org/eclipse/persistence/jpa/JpaHelper::createEntityManagerFactory::(Ljava/lang/String;)Lorg/eclipse/persistence/internal/jpa/EntityManagerFactoryImpl;
+org/eclipse/persistence/exceptions/QueryException::ADDITIONAL_CRITERIA_VALUE_MISSING::I
+org/eclipse/persistence/exceptions/QueryException::argumentFromAdditionalCriteriaMissing::(Lorg/eclipse/persistence/queries/DatabaseQuery;Ljava/lang/String;)Lorg/eclipse/persistence/exceptions/QueryException;
