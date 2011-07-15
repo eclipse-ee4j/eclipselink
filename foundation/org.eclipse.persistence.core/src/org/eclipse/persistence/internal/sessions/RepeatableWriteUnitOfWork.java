@@ -12,6 +12,8 @@
         Gordon Yorke - VM managed entity detachment
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     07/15/2011-2.2.1 Guy Pelletier 
+ *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -411,7 +413,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
         UnitOfWorkChangeSet changeSet = this.unitOfWorkChangeSet;
         // This also discovers unregistered new objects, (which persists them and assign sequence, so no need to assign sequence twice).
-        calculateChanges(cloneMap(getCloneMapping()), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
+        calculateChanges(getCloneMapping(), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist, true);
         
         boolean changeSetHasChanges = (changeSet.hasChanges() || changeSet.hasForcedChanges() || this.hasDeletedObjects() || this.hasModifyAllQueries());
         try {

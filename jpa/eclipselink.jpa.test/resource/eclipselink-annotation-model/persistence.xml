@@ -68,6 +68,7 @@
             <property name="eclipselink.id-validation" value="NEGATIVE"/>
             <property name="javax.persistence.query.timeout" value="20"/>
             <property name="NAME" value="Montreal%"/>
+            <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.inheritance.listeners.SessionListener"/>
         </properties>
     </persistence-unit>
     

@@ -24,6 +24,8 @@
  *            on the mutex do not match for read locks (not yet transitioned to deferred locks) - switch them
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     07/15/2011-2.2.1 Guy Pelletier 
+ *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -580,25 +582,30 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         return original;
     }
-
+    
     /**
      * INTERNAL:
      * <p> This calculates changes in two passes, first on registered objects,
      * second it discovers unregistered new objects on only those objects that changed, and calculates their changes.
      * This also assigns sequence numbers to new objects.
      */
-    public UnitOfWorkChangeSet calculateChanges(Map registeredObjects, UnitOfWorkChangeSet changeSet, boolean assignSequences) {
+    public UnitOfWorkChangeSet calculateChanges(Map registeredObjects, UnitOfWorkChangeSet changeSet, boolean assignSequences, boolean shouldCloneMap) {
+        // Fire the event first which may add to the registered objects. If we
+        // need to clone the registered objects, it should be done after this 
+        // call.
         if (this.eventManager != null) {
             this.eventManager.preCalculateUnitOfWorkChangeSet();
         }
-
+        
+        Map allObjects = (shouldCloneMap) ? cloneMap(registeredObjects) : registeredObjects;
+        
         if (assignSequences && hasNewObjects()) {
             // First assign sequence numbers to new objects.
             assignSequenceNumbers(this.newObjectsCloneToOriginal);
         }
         
         // Second calculate changes for all registered objects.
-        Iterator objects = registeredObjects.keySet().iterator();
+        Iterator objects = allObjects.keySet().iterator();
         Map changedObjects = new IdentityHashMap();
         Map visitedNodes = new IdentityHashMap();
         while (objects.hasNext()) {
@@ -1273,7 +1280,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (getUnitOfWorkChangeSet() == null) {
                 setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             }
-            unitOfWorkChangeSet = calculateChanges(collectAndPrepareObjectsForNestedMerge(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
+            unitOfWorkChangeSet = calculateChanges(collectAndPrepareObjectsForNestedMerge(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false, false);
             this.allClones = null;
             mergeChangesIntoParent();
 
@@ -1494,7 +1501,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
                     }
                     // PERF: clone is faster than new.
-                    calculateChanges(cloneMap(getCloneMapping()), this.unitOfWorkChangeSet, true);
+                    calculateChanges(getCloneMapping(), this.unitOfWorkChangeSet, true, true);
                     // Also must first set the commit manager active.
                     getCommitManager().setIsActive(true);
         
@@ -2023,7 +2030,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getCurrentChanges() {
         Map allObjects = collectAndPrepareObjectsForNestedMerge();
-        return calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false);
+        return calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false, false);
     }
 
     /**
@@ -2804,7 +2811,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return true;
         }
         Map allObjects = new IdentityHashMap(getCloneMapping());
-        UnitOfWorkChangeSet changeSet = calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false);
+        UnitOfWorkChangeSet changeSet = calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false, false);
         return changeSet.hasChanges();
     }
 
