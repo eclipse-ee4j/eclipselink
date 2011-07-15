@@ -1,0 +1,70 @@
+org/eclipse/persistence/sessions/interceptors/CacheInterceptor::lazyRelationshipLoaded::(Ljava/lang/Object;Lorg/eclipse/persistence/indirection/ValueHolderInterface;Lorg/eclipse/persistence/mappings/ForeignReferenceMapping;)V
+	(Ljava/lang/Object;Lorg/eclipse/persistence/mappings/ForeignReferenceMapping;)V
+org/eclipse/persistence/jpa/ArchiveFactory::createArchive::(Ljava/net/URL;)Lorg/eclipse/persistence/jpa/Archive;
+	(Ljava/net/URL;Ljava/util/Map;)Lorg/eclipse/persistence/jpa/Archive;
+	(Ljava/net/URL;Ljava/lang/String;Ljava/util/Map;)Lorg/eclipse/persistence/jpa/Archive;
+org/eclipse/persistence/jpa/ArchiveFactory::createArchive::(Ljava/net/URL;Ljava/lang/String;)Lorg/eclipse/persistence/jpa/Archive;
+	(Ljava/net/URL;Ljava/util/Map;)Lorg/eclipse/persistence/jpa/Archive;
+	(Ljava/net/URL;Ljava/lang/String;Ljava/util/Map;)Lorg/eclipse/persistence/jpa/Archive;
+org/eclipse/persistence/queries/DeleteAllQuery::getObjects::()Ljava/util/Vector;
+	()Ljava/util/List;
+org/eclipse/persistence/queries/DeleteAllQuery::setObjects::(Ljava/util/Vector;)V
+	(Ljava/util/List;)V
+javax/persistence/spi/ProviderUtil::error::(Lorg/xml/sax/SAXParseException;)V
+javax/persistence/spi/ProviderUtil::warning::(Lorg/xml/sax/SAXParseException;)V
+javax/persistence/spi/ProviderUtil::fatalError::(Lorg/xml/sax/SAXParseException;)V
+javax/persistence/spi/ProviderUtil::info::(Lorg/xml/sax/SAXParseException;)V
+org/eclipse/persistence/tools/schemaframework/PopulationManager::addAllObjectsForClass::(Ljava/lang/Class;Ljava/util/Vector;)V
+	(Ljava/lang/Class;Ljava/util/List;)V
+org/eclipse/persistence/tools/profiler/PerformanceProfiler::getProfiles::()Ljava/util/Vector;
+	()Ljava/util/List;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getUniqueKeys::()Ljava/util/Vector;
+	()Ljava/util/List;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getPrimaryKeyFieldNames::()Ljava/util/Vector;
+	()Ljava/util/List;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::setFields::(Ljava/util/Vector;)V
+	(Ljava/util/List;)V
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getFields::()Ljava/util/Vector;
+	()Ljava/util/List;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::setForeignKeys::(Ljava/util/Vector;)V
+	(Ljava/util/List;)V
+org/eclipse/persistence/tools/schemaframework/TableDefinition::setUniqueKeys::(Ljava/util/Vector;)V
+	(Ljava/util/List;)V
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getForeignKeys::()Ljava/util/Vector;
+	()Ljava/util/Collection;
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::setTargetFields::(Ljava/util/Vector;)V
+	(Ljava/util/List;)V
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::setSourceFields::(Ljava/util/Vector;)V
+	(Ljava/util/List;)V
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::getTargetFields::()Ljava/util/Vector;
+	()Ljava/util/List;
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::getSourceFields::()Ljava/util/Vector;
+	()Ljava/util/List;
+org/eclipse/persistence/sessions/SessionProfiler::SQL_PREPARE::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::RcmNounType::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::ConnectionInUse::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::ROW_FETCH::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::TlDisconnects::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::TlConnects::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::TopLinkRootNoun::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::CACHE::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::QUERY_PREPARE::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::MiscellaneousNounType::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::CONNECT::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::Wrapping::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::LoggingDMSDisPlayName::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::SQL_GENERATION::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::SessionNounType::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::Sequencing::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::MergeTime::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::TransactionNounType::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::TRANSACTION::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::OBJECT_BUILDING::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::DistributedMergeDmsDisplayName::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::CacheNounType::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::STATEMENT_EXECUTE::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::DeletedObject::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::DatabaseExecute::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::UnitOfWorkRegister::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::QueryNounType::Ljava/lang/String;
+org/eclipse/persistence/sessions/SessionProfiler::ConnectionNounType::Ljava/lang/String;
