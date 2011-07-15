@@ -12,6 +12,8 @@
         Gordon Yorke - VM managed entity detachment
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     07/15/2011-2.2.1 Guy Pelletier 
+ *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -428,7 +430,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
                 changeSet = this.unitOfWorkChangeSet;
             }
-            calculateChanges(cloneMap(getCloneMapping()), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist);
+            calculateChanges(getCloneMapping(), changeSet, this.discoverUnregisteredNewObjectsWithoutPersist, true);
             hasChanges = hasChanges || (changeSet.hasChanges() || changeSet.hasForcedChanges());
         }
         

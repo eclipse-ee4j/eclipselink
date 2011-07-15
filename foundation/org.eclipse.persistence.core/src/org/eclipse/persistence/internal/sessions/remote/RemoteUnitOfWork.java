@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/15/2011-2.2.1 Guy Pelletier 
+ *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.remote;
 
@@ -199,7 +201,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
             //may be using the old commit process usesOldCommit()
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(this));
             uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-            calculateChanges(cloneMap(getCloneMapping()), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
+            calculateChanges(getCloneMapping(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false, true);
             this.allClones = null;
         }
         for (Map newList : uowChangeSet.getNewObjectChangeSets().values()) {
