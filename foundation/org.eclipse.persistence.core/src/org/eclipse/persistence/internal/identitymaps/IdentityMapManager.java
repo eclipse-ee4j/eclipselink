@@ -1132,10 +1132,19 @@ public class IdentityMapManager implements Serializable, Cloneable {
             Object object = cacheKey.getObject();
             if (businessClass.isInstance(object)) {
                 cacheCounter++;
+                Object key = cacheKey.getKey();
                 if (object == null) {
-                    writer.write(LoggingLocalization.buildMessage("key_object_null", new Object[] { cr, cacheKey.getKey(), "\t" }));
+                    writer.write(LoggingLocalization.buildMessage("key_object_null", new Object[] { cr, key, "\t" }));
                 } else {
-                    writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, cacheKey.getKey(), "\t", String.valueOf(System.identityHashCode(object)), object }));
+                    String hashCode = String.valueOf(System.identityHashCode(object));
+                    if (descriptor.usesOptimisticLocking() && descriptor.usesVersionLocking()) {
+                        // Obtain writeLockValue and convert the value to String
+                        Object writeLockValue = descriptor.getOptimisticLockingPolicy().getWriteLockValue(object, key, session);
+                        String version = (String) session.getPlatform().convertObject(writeLockValue, String.class);
+                        writer.write(LoggingLocalization.buildMessage("key_version_identity_hash_code_object", new Object[] { cr, key, "\t", hashCode, object, version }));
+                    } else {
+                        writer.write(LoggingLocalization.buildMessage("key_identity_hash_code_object", new Object[] { cr, key, "\t", hashCode, object }));
+                    }
                 }
             }
         }
