@@ -12,7 +12,9 @@
  *     01/05/2010-2.1 Guy Pelletier 
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  *     01/26/2011-2.3 Guy Pelletier 
- *       - 307664:  Lifecycle callbacks not called for object from IndirectSet
+ *       - 307664: Lifecycle callbacks not called for object from IndirectSet
+ *     07/15/2011-2.2.1 Guy Pelletier 
+ *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
@@ -60,6 +62,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         suite.addTest(new LifecycleCallbackJunitTest("testQueryInNativePreUpdateEvent"));
         suite.addTest(new LifecycleCallbackJunitTest("testDefaultListenerOnMacBook"));
         suite.addTest(new LifecycleCallbackJunitTest("testPostLoadFromMembersOfSet"));
+        suite.addTest(new LifecycleCallbackJunitTest("testSessionEventListenerOnBus"));
 
         return suite;
     }
@@ -384,5 +387,32 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         int defaultListenerPrePersistCountAfter = DefaultListener.PRE_PERSIST_COUNT;
         
         assertFalse("The PrePersist callback method on DefaultListener was not called.", defaultListenerPrePersistCountBefore == defaultListenerPrePersistCountAfter);
+    }
+
+    public void testSessionEventListenerOnBus() {
+        EntityManager em = createEntityManager();        
+        
+        try {
+            getServerSession().setLogLevel(0);
+            beginTransaction(em);
+            Bus bus = new Bus();
+            // This string must not change ... session event listener will look 
+            // for it and will create a new bus with description 'Listener test Bus2'  
+            bus.setDescription("Listener test Bus1");
+            em.persist(bus);
+            commitTransaction(em);
+
+            // Should be able to find the bus created through the listener.
+            List results = em.createQuery("select object(bus) from Bus bus where bus.description = 'Listener test Bus2'").getResultList();
+            assertTrue("Did not find the bus created by the session listener.", results.size() == 1);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+        
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
     }
 }
