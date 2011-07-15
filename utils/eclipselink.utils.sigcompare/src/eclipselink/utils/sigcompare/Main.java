@@ -46,6 +46,9 @@ public class Main {
         String reportFileName = properties.getProperty("report-file");
         FileWriter out = new FileWriter(reportFileName);
 
+        String printAlternativesValue = properties.getProperty("print-alternatives");
+        boolean printAlternatives = printAlternativesValue == null ? false : Boolean.valueOf(printAlternativesValue);
+
         ExcludePatterns excludes = new ExcludePatterns();
         
         for (ClassSignature sourceSig : sourceSigs.values()) {
@@ -55,7 +58,7 @@ public class Main {
                 if (targetSig == null) {
                     out.write(sourceSig.getName() + ClassSignature.newline);
                 } else {
-                    sourceSig.compare(targetSig, out, excludes);
+                    sourceSig.compare(targetSig, out, excludes, printAlternatives);
                 }
             }
         }
