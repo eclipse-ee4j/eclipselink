@@ -43,6 +43,7 @@ public class ValidationModel extends TestModel {
         addTest(getDescriptorExceptionTestSuiteSupportPhaseOne4());
         addTest(getDescriptorExceptionTestSuiteSupportPhaseOne5());
         addTest(getConnectionCloseAfterTxnTestSuite());
+        addTest(getLoginTestSuite());
     }
 
     public static TestSuite getConnectionCloseAfterTxnTestSuite(){
@@ -65,6 +66,15 @@ public class ValidationModel extends TestModel {
         suite.addTest(new ClientServerTest(25, 4, 8));
         suite.addTest(new ClientServerTest(25, 2, 4));
 
+        return suite;
+    }
+    
+    public static TestSuite getLoginTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("LoginTestSuite");
+        suite.setDescription("This suite tests Login options.");
+        
+        suite.addTest(new NullUsernameLoginTest());
         return suite;
     }
 
