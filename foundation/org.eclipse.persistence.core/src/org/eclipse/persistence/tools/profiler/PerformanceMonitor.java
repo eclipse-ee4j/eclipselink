@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class PerformanceMonitor implements Serializable, Cloneable, SessionProfiler {
     protected static final String COUNTER = "Counter:";
     protected static final String TIMER = "Timer:";
-    protected static final String NO_MONITOR_NAME = "(none)";
     
     transient protected AbstractSession session;
     protected Map<String, Object> operationTimings;
@@ -151,8 +150,9 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
             return;
         }
         endOperationProfile(operationName);
-        String monitorName = (query != null) ? query.getMonitorName() : NO_MONITOR_NAME;
-        endOperationProfile(TIMER + monitorName + ":" + operationName.substring(TIMER.length(), operationName.length()));
+        if (query != null) {
+            endOperationProfile(TIMER + query.getMonitorName() + ":" + operationName.substring(TIMER.length(), operationName.length()));
+        }
     }
 
     protected Map<String, Long> getOperationStartTimes() {
@@ -223,8 +223,9 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
             return;
         }
         startOperationProfile(operationName);
-        String monitorName = (query != null) ? query.getMonitorName() : NO_MONITOR_NAME;
-        startOperationProfile(TIMER + monitorName + ":" + operationName.substring(TIMER.length(), operationName.length()));
+        if (query != null) {
+            startOperationProfile(TIMER + query.getMonitorName() + ":" + operationName.substring(TIMER.length(), operationName.length()));
+        }
     }
 
     public void update(String operationName, Object value) {
