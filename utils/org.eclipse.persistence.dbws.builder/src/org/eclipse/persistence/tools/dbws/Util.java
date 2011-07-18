@@ -43,6 +43,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
@@ -69,7 +70,10 @@ public class Util {
     public static final String DEFAULT_WSDL_LOCATION_URI =
         "REPLACE_WITH_ENDPOINT_ADDRESS";
     public static final String SWAREF_FILENAME =
-        "swaref.xsd";
+    	XMLConstants.SWA_REF.toLowerCase() + ".xsd";
+    // leave this duplicate as someone may be referencing it...
+    public static final String WSI_SWAREF_XSD_FILE =
+       	SWAREF_FILENAME;
     public static final String WEB_XML_FILENAME =
         "web.xml";
     public static final String DEFAULT_PLATFORM_CLASSNAME =
@@ -77,13 +81,11 @@ public class Util {
     public static final String UNDER_DBWS =
         "_dbws";
     public static final String WSI_SWAREF =
-        "swaref";
+        XMLConstants.SWA_REF;
     public static final String WSI_SWAREF_PREFIX =
-        "ref";
+        XMLConstants.REF_PREFIX;
     public static final String WSI_SWAREF_URI =
-        "http://ws-i.org/profiles/basic/1.1/xsd";
-    public static final String WSI_SWAREF_XSD_FILE =
-        WSI_SWAREF + ".xsd";
+        XMLConstants.REF_URL;
     public static final String PK_QUERYNAME =
         "findByPrimaryKey";
     public static final String THE_INSTANCE_NAME =

@@ -515,6 +515,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         buildSchema(topTransformer);
         buildSessionsXML(dbwsSessionsStream);
         buildDBWSModel(topTransformer, dbwsServiceStream);
+        packager.setHasAttachments(hasAttachments());
         writeAttachmentSchema(swarefStream);
         buildWSDL(wsdlStream, topTransformer);
         writeWebXML(webXmlStream);
@@ -1137,7 +1138,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             xmlLogin.setPlatform(domPlatform);
             oxProjectClone.setLogin(xmlLogin);
             oxProjectClone.createDatabaseSession(); // initialize reference descriptors
-            SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
+            SchemaModelGenerator schemaGenerator = new SchemaModelGenerator(true);
             SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
             // set element form default to qualified for target namespace
             sgProperties.addProperty(getTargetNamespace(), ELEMENT_FORM_QUALIFIED_KEY, true);
@@ -1149,9 +1150,17 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 for (Map.Entry<String, ComplexType> me : topLevelComplexTypes.entrySet()) {
                     s.addTopLevelComplexTypes(me.getValue());
                 }
+                // add any additional namespaces
+                NamespaceResolver snr = s.getNamespaceResolver();
                 NamespaceResolver nr = schema.getNamespaceResolver();
+                // we only want to add prefix/uri pairs for prefixes that don't already exist
+                for (String prefix : nr.getPrefixesToNamespaces().keySet()) {
+                	if (snr.resolveNamespacePrefix(prefix) == null) {
+                		snr.put(prefix, nr.resolveNamespacePrefix(prefix));
+                	}
+                }
                 schema = s; // switch
-                schema.setNamespaceResolver(nr);
+                schema.setNamespaceResolver(snr);
             }
         }
         else {

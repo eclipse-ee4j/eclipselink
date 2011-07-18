@@ -20,6 +20,7 @@ import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.StringReader;
 
 import javax.wsdl.WSDLException;
@@ -47,6 +48,8 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.XRPackager;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 // domain-specific (testing) imports
 
@@ -114,10 +117,28 @@ public class DBWSTestSuite {
     public static XRServiceAdapter xrService = null;
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_SESSION_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
 
+    /**
+     * This method is to be used when sessions xml should not be generated.
+     * 
+     * @throws WSDLException
+     */
     public static void setUp() throws WSDLException {
+    	setUp(null);
+    }
+
+    /**
+     * This method should be used when sessions xml is to be generated and written out
+     * to DBWS_SESSION_STREAM.
+     * 
+     * @param stageDir sessions xml will be generated and written out if non-null
+     * @throws WSDLException
+     */
+    public static void setUp(String stageDir) throws WSDLException {
         final String username = System.getProperty(DBWSTestProviderHelper.DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         final String password = System.getProperty(DBWSTestProviderHelper.DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         final String url = System.getProperty(DBWSTestProviderHelper.DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
@@ -133,7 +154,6 @@ public class DBWSTestSuite {
         builder.quiet = true;
         builder.setPlatformClassname(platform);
         builder.properties = builderModel.properties;
-        builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
         builder.operations = builderModel.operations;
         XRPackager xrPackager = new XRPackager() {
             @Override
@@ -143,9 +163,17 @@ public class DBWSTestSuite {
         xrPackager.setSessionsFileName(builder.getSessionsFileName());
         xrPackager.setDBWSBuilder(builder);
         builder.setPackager(xrPackager);
-        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
-            DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream, __nullStream,
-            __nullStream, __nullStream, null);
+        if (stageDir == null) {
+        	builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
+            builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+                    DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream, __nullStream,
+                    __nullStream, __nullStream, null);
+        } else {
+            xrPackager.setStageDir(new File(stageDir));
+            builder.build(DBWS_SCHEMA_STREAM, DBWS_SESSION_STREAM, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+                    DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, __nullStream,
+                    __nullStream, __nullStream, null);
+        }
         XRServiceFactory factory = new XRServiceFactory() {
             @Override
             public XRServiceAdapter buildService(XRServiceModel xrServiceModel) {
@@ -209,5 +237,26 @@ public class DBWSTestSuite {
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(
             new StringReader(DBWS_SERVICE_STREAM.toString()));
         xrService = factory.buildService(model);
+    }
+
+    /**
+     * Helper method that removes empty text nodes from a Document.
+     * This is typically called prior to comparing two documents
+     * for equality.
+     * 
+     */
+    public static void removeEmptyTextNodes(Node node) {
+        NodeList nodeList = node.getChildNodes();
+        Node childNode;
+        for (int x = nodeList.getLength() - 1; x >= 0; x--) {
+            childNode = nodeList.item(x);
+            if (childNode.getNodeType() == Node.TEXT_NODE) {
+                if (childNode.getNodeValue().trim().equals("")) {
+                    node.removeChild(childNode);
+                }
+            } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+                removeEmptyTextNodes(childNode);
+            }
+        }
     }
 }

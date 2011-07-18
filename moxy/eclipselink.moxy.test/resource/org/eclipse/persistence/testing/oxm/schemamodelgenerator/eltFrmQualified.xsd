@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="myns:examplenamespace" xmlns="myns:examplenamespace" elementFormDefault="qualified" xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:complexType name="phone-number-type">
+    <xsd:import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="http://ws-i.org/profiles/basic/1.1/swaref.xsd" />
+    <xsd:complexType name="phone-number-type">
       <xsd:sequence>
          <xsd:element name="number" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
