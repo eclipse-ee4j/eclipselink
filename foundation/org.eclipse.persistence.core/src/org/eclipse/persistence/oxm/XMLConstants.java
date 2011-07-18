@@ -48,6 +48,7 @@ public class XMLConstants {
     public static final String SCHEMA_NIL_ATTRIBUTE = "nil";
     public static final String REF_URL = "http://ws-i.org/profiles/basic/1.1/xsd";
     public static final String REF_PREFIX = "ref";
+    public static final String SWAREF_XSD = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
     public static final String XOP_URL = "http://www.w3.org/2004/08/xop/include";
     public static final String XOP_PREFIX = "xop";
     public static final Class QNAME_CLASS = QName.class;

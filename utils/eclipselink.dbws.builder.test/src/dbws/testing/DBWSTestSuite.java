@@ -120,6 +120,7 @@ public class DBWSTestSuite {
     public static ByteArrayOutputStream DBWS_SESSION_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
 
     /**
      * This method is to be used when sessions xml should not be generated.
@@ -170,7 +171,7 @@ public class DBWSTestSuite {
         } else {
             xrPackager.setStageDir(new File(stageDir));
             builder.build(DBWS_SCHEMA_STREAM, DBWS_SESSION_STREAM, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
-                    DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream, __nullStream,
+                    DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, __nullStream,
                     __nullStream, __nullStream, null);
         }
         XRServiceFactory factory = new XRServiceFactory() {

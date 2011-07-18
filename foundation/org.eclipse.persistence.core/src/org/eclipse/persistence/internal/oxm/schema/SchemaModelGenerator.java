@@ -95,11 +95,28 @@ public class SchemaModelGenerator {
     protected static final String TEXT = "text()";
     protected static final String ID = "ID";
     protected static final String IDREF = "IDREF";
+    protected static String SWAREF_LOCATION;
 
     /**
      * The default constructor.
      */
     public SchemaModelGenerator() {
+    	this(false);
+    }
+    
+    /**
+     * This constructor should be used with a value of 'true' when the schemaLocation
+     * attribute of the import for swaRef should be swaref.xsd.  This is useful when
+     * the user has a local copy of the swaRef schema and wants to use it when access
+     * to external URLs is not available.  The default value is:
+     * "http://ws-i.org/profiles/basic/1.1/swaref.xsd".
+     */
+    public SchemaModelGenerator(boolean customSwaRefSchema) {
+    	if (customSwaRefSchema) {
+    		SWAREF_LOCATION = XMLConstants.SWA_REF.toLowerCase() + SCHEMA_FILE_EXT;
+    	} else {
+    		SWAREF_LOCATION = XMLConstants.SWAREF_XSD;
+    	}
     }
     
     /**
@@ -600,6 +617,10 @@ public class SchemaModelGenerator {
         String schemaTypeString;
         if (mapping.isSwaRef()) {
             schemaTypeString = getSchemaTypeString(XMLConstants.SWA_REF_QNAME, workingSchema);
+            Import newImport = new Import();
+            newImport.setNamespace(XMLConstants.REF_URL);
+            newImport.setSchemaLocation(SWAREF_LOCATION);
+            workingSchema.getImports().add(newImport);
         } else {
             schemaTypeString = getSchemaTypeString(XMLConstants.BASE_64_BINARY_QNAME, workingSchema);
         }
