@@ -98,7 +98,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             generatedSchema = generatedSchemas.get(MYNS);
             
             // debugging
-            writeSchema(generatedSchema);
+            //writeSchema(generatedSchema);
             
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
 
