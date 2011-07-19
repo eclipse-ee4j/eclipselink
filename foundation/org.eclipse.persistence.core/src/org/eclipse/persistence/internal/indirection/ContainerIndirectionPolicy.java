@@ -252,6 +252,21 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
 
     /**
      * INTERNAL:
+     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
+     * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
+     * This method is used to help determine if indirection has been triggered
+     * @param attributeValue
+     * @return
+     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     */
+    @Override
+    public boolean isAttributeValueFullyBuilt(Object attributeValue){
+        return true;
+    }
+    
+    
+    /**
+     * INTERNAL:
      *    Iterate over the specified attribute value,
      */
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
