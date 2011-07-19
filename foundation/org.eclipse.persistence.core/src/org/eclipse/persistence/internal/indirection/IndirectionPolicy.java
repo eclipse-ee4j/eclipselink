@@ -245,6 +245,19 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public boolean isWeavedObjectBasicIndirectionPolicy() {
         return false;
     }
+
+    /**
+     * INTERNAL:
+     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
+     * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
+     * This method is used to help determine if indirection has been triggered
+     * @param attributeValue
+     * @return
+     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     */
+    public boolean isAttributeValueFullyBuilt(Object attributeValue){
+        return true;
+    }
     
     /**
      * INTERNAL:
@@ -360,7 +373,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     public Object validateAttributeOfInstantiatedObject(Object attributeValue) throws DescriptorException {
         return attributeValue;
     }
-
+    
     /**
      * INTERNAL:
      * Verify that the container policy is compatible with the

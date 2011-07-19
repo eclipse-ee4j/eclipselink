@@ -275,9 +275,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true, wasCacheUsed);
         Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,clone, unitOfWork, !wasCacheUsed[0]);// building clone directly from row.
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
+            // check whether the attribute is fully build before calling getAttributeValueFromObject because that
+            // call may fully build the attribute
+            boolean wasAttributeValueFullyBuilt = isAttributeValueFullyBuilt(clone);
             Object oldAttribute = this.getAttributeValueFromObject(clone);
             setAttributeValueInObject(clone, clonedAttributeValue); // set this first to prevent infinite recursion
-            if (this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
+             if (wasAttributeValueFullyBuilt && this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
                 this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
             }
         }else{
@@ -288,7 +291,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
         }
     }
-
+    
     /**
      * INTERNAL:
      * Require for cloning, the part must be cloned.
@@ -1206,6 +1209,20 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
+     * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
+     * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
+     * This method is used to help determine if indirection has been triggered
+     * @param attributeValue
+     * @return
+     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     */
+    public boolean isAttributeValueFullyBuilt(Object object){
+        Object attributeValue = super.getAttributeValueFromObject(object);
+        return this.indirectionPolicy.isAttributeValueFullyBuilt(attributeValue);
+    }
+    
+    /**
+     * INTERNAL:
      * The referenced object is checked if it is instantiated or not
      */
     public boolean isAttributeValueInstantiated(Object object) {
@@ -1339,9 +1356,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, executionSession, false);
         }
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
+            // check whether the attribute is fully build before calling getAttributeValueFromObject because that
+            // call may fully build the attribute
+            boolean wasAttributeValueFullyBuilt = isAttributeValueFullyBuilt(targetObject);
             Object oldAttribute = this.getAttributeValueFromObject(targetObject);
             setAttributeValueInObject(targetObject, attributeValue); // set this first to prevent infinite recursion
-            if (this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
+            if (wasAttributeValueFullyBuilt && this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
                 this.indirectionPolicy.instantiateObject(targetObject, attributeValue);
             }
         }else{

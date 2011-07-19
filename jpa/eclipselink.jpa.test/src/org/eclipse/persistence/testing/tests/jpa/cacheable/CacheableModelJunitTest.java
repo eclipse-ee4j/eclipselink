@@ -31,12 +31,15 @@ import junit.framework.*;
 
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer;
@@ -201,7 +204,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
 
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new CacheableModelJunitTest("testSetup"));
-            suite.addTest(new CacheableModelJunitTest("testMergeNonCachedWithRelationship"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnALL"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnNONE"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnENABLE_SELECTIVE"));
@@ -253,6 +255,8 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedElementCollection"));
             suite.addTest(new CacheableModelJunitTest("testIsolationBeforeEarlyTxBegin"));
             suite.addTest(new CacheableModelJunitTest("testMergeNonCachedWithRelationship"));
+            suite.addTest(new CacheableModelJunitTest("testIndirectCollectionRefreshBehavior"));
+            
         }
         return suite;
     }
@@ -1563,7 +1567,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         try{
             detail = new CacheableFalseDetailWithBackPointer();
             detail.setEntity(entity);
-            entity.getDetailsBackPointer().add(detail);
+            List<CacheableFalseDetailWithBackPointer> details = new ArrayList<CacheableFalseDetailWithBackPointer>();
+            details.add(detail);
+            entity.setDetailsBackPointer(details);
             detail.setDescription("test");
             em.getTransaction().begin();
             detail = em.merge(detail);
@@ -1583,6 +1589,39 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         }
 
     }
+    
+     // Bug 347190
+    public void testIndirectCollectionRefreshBehavior(){
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        EntityManager em = createEntityManager();
+        try{
+            beginTransaction(em);
+    
+            CacheableFalseEntity entity = new CacheableFalseEntity();
+            CacheableFalseDetailWithBackPointer detail = new CacheableFalseDetailWithBackPointer();
+            
+            List<CacheableFalseDetailWithBackPointer> details = new ArrayList<CacheableFalseDetailWithBackPointer>();
+            details.add(detail);
+            entity.setDetailsBackPointer(details);
+            detail.setEntity(entity);
+            
+            em.persist(entity);
+    
+            em.flush();
+            em.clear();
+            counter.getSqlStatements().clear();
+            Query query = em.createQuery("SELECT e from JPA_CACHEABLE_FALSE e where e.id = :id").setParameter("id", entity.getId());
+            query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+            entity = (CacheableFalseEntity)query.getResultList().get(0);
+            IndirectList list = (IndirectList)entity.getDetailsBackPointer();
+            assertFalse(list.isInstantiated());
+            assertTrue(counter.getSqlStatements().size() == 2);
+        } finally{
+            rollbackTransaction(em);
+            counter.remove();
+            closeEntityManager(em);
+        }
+      }
     
     /**
      * Convenience method.
