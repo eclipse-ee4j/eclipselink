@@ -1013,13 +1013,10 @@ public class DDLGenerationTestSuite extends JUnitTestCase {
 
         try {
             beginTransaction(em);
-
             Employee employee = new Employee();
             PhoneNumber phoneNumber = new PhoneNumber();
             employee.addPhoneNumber(phoneNumber);
             em.persist(employee);
-            
-            getServerSession(DDL_PU).setLogLevel(0);
             commitTransaction(em);
 
             // Force the read to hit the database and make sure the phone number is read back.
@@ -1176,8 +1173,7 @@ public class DDLGenerationTestSuite extends JUnitTestCase {
             pk.setDocid("blah");
             pk.setVersionid(new BigInteger(new Long(System.currentTimeMillis()).toString()));
             lobtest.setLobtestPK(pk);
-                
-            getServerSession(DDL_PU).setLogLevel(0);
+
             em.persist(lobtest);
             commitTransaction(em);
         } catch (RuntimeException e) {
