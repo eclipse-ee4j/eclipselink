@@ -16,7 +16,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
-public class ClassForInheritanceNode extends Node {
+public class ClassForInheritanceNode extends Node implements AliasableNode {
 
     public ClassForInheritanceNode(){
         super();
@@ -47,5 +47,9 @@ public class ClassForInheritanceNode extends Node {
     public void validate(ParseTreeContext context) {
         left.validate(context);
         setType(Class.class);
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

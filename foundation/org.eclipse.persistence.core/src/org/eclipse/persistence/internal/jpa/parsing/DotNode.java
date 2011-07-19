@@ -32,7 +32,6 @@ import org.eclipse.persistence.queries.ReportQuery;
 public class DotNode extends LogicalOperatorNode implements AliasableNode {
 
     private Object enumConstant;
-    private String alias;
 
     /**
      * INTERNAL
@@ -313,15 +312,6 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
             }
         }
         return type;
-    }
-    
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
     }
     
     public boolean isAliasableNode(){

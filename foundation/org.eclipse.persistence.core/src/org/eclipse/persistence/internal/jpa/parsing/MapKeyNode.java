@@ -26,7 +26,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author tware
  *    @since EclipseLink 1.2
  */
-public class MapKeyNode extends Node {
+public class MapKeyNode extends Node implements AliasableNode {
 
     public MapKeyNode(){
         super();
@@ -80,5 +80,9 @@ public class MapKeyNode extends Node {
         } else if (left.isDotNode()){
             setType(((DotNode)left).getTypeForMapKey(context));
         }
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

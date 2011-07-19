@@ -27,7 +27,6 @@ import org.eclipse.persistence.expressions.Expression;
 public abstract class AggregateNode extends Node implements AliasableNode {
 
     private boolean distinct = false;
-    private String alias = null;
 
     /**
      * INTERNAL
@@ -88,13 +87,6 @@ public abstract class AggregateNode extends Node implements AliasableNode {
     protected abstract Expression addAggregateExression(Expression expr);
     
 
-    public String getAlias(){
-        return this.alias;
-    }
-    
-    public void setAlias(String alias){
-        this.alias = alias;
-    }
     
     public boolean isAliasableNode(){
         return true;

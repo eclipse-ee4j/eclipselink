@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
  */
-public class FunctionalExpressionNode extends Node {
+public class FunctionalExpressionNode extends Node implements AliasableNode {
 
     /**
      * FunctionalExpressionNode constructor comment.
@@ -43,5 +43,9 @@ public class FunctionalExpressionNode extends Node {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             reportQuery.addAttribute(resolveAttribute(), generateExpression(context), (Class)getType());
         }
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

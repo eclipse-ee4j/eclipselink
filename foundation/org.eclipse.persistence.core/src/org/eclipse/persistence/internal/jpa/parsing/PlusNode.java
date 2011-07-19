@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since July 2003
  */
-public class PlusNode extends BinaryOperatorNode {
+public class PlusNode extends BinaryOperatorNode implements AliasableNode {
     public PlusNode() {
         super();
     }
@@ -69,6 +69,10 @@ public class PlusNode extends BinaryOperatorNode {
     }
 
     public boolean isPlusNode() {
+        return true;
+    }
+    
+    public boolean isAliasableNode(){
         return true;
     }
 }

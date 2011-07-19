@@ -33,7 +33,8 @@ public class Node {
     protected Node right = null;
     private Object type;
     public boolean shouldGenerateExpression;
-
+    protected String alias = null;
+    
     /**
      * Return a new Node.
      */
@@ -149,14 +150,6 @@ public class Node {
      */
     public boolean isAggregateNode() {
         return false;
-    }
-
-    /**
-     * INTERNAL
-     * can this node accept an alias
-     */
-    public boolean isAliasableNode(){
-        return true;
     }
     
     /**
@@ -422,5 +415,17 @@ public class Node {
             buffer.append("  ");
         }
         ;
+    }
+    
+    public String getAlias(){
+        return this.alias;
+    }
+    
+    public void setAlias(String alias){
+        this.alias = alias;
+    }
+    
+    public boolean isAliasableNode(){
+        return false;
     }
 }

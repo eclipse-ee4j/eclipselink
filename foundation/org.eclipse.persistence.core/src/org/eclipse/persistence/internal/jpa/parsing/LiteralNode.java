@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.expressions.*;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
  */
-public class LiteralNode extends Node {
+public class LiteralNode extends Node implements AliasableNode {
     public java.lang.Object literal;
 
     /**
@@ -99,5 +99,9 @@ public class LiteralNode extends Node {
         toStringIndent(indent, buffer);
         buffer.append(toStringDisplayName() + "[" + getLiteral() + "]");
         return buffer.toString();
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }
