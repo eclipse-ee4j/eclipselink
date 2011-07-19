@@ -393,7 +393,6 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();        
         
         try {
-            getServerSession().setLogLevel(0);
             beginTransaction(em);
             Bus bus = new Bus();
             // This string must not change ... session event listener will look 

@@ -218,6 +218,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         }
     }
     
+    // Bug 336133
     public void testGenericCollectionOnSuperclass(){
         EntityManager em = createEntityManager();
         beginTransaction(em);

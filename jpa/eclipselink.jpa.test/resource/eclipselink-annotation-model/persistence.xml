@@ -277,7 +277,6 @@
             <!-- sql queries off by default, so we need to be explicit here  --> 
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
         </properties>
     </persistence-unit>
     
