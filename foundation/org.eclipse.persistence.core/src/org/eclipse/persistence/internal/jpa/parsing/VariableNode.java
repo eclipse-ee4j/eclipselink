@@ -28,7 +28,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
  */
-public class VariableNode extends Node {
+public class VariableNode extends Node implements AliasableNode {
 
     /** */
     private String variableName;
@@ -299,4 +299,8 @@ public class VariableNode extends Node {
         }
     }
 
+    
+    public boolean isAliasableNode(){
+        return true;
+    }
 }

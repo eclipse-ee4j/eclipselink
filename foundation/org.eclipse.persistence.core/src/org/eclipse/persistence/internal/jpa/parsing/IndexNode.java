@@ -26,7 +26,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author tware
  *    @since EclipseLink 1.2
  */
-public class IndexNode extends Node {
+public class IndexNode extends Node implements AliasableNode {
 
     public IndexNode(){
         super();
@@ -61,5 +61,9 @@ public class IndexNode extends Node {
             throw JPQLException.indexOnlyAllowedOnVariable(context.getQueryInfo(), getLine(), getColumn(), left.getAsString());
         }
         setType(typeHelper.getIntType());
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

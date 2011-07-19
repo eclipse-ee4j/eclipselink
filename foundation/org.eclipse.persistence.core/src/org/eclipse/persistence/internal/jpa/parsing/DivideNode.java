@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since July 2003
  */
-public class DivideNode extends BinaryOperatorNode {
+public class DivideNode extends BinaryOperatorNode implements AliasableNode {
     public DivideNode() {
         super();
     }
@@ -69,6 +69,10 @@ public class DivideNode extends BinaryOperatorNode {
     }
 
     public boolean isDivideNode() {
+        return true;
+    }
+    
+    public boolean isAliasableNode(){
         return true;
     }
 }

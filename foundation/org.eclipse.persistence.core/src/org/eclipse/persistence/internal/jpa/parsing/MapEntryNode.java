@@ -26,7 +26,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author tware
  *    @since EclipseLink 1.2
  */
-public class MapEntryNode extends Node {
+public class MapEntryNode extends Node implements AliasableNode {
     
     public MapEntryNode(){
         super();
@@ -61,5 +61,9 @@ public class MapEntryNode extends Node {
         setType(typeHelper.getMapEntryType());
     }
 
+    
+    public boolean isAliasableNode(){
+        return true;
+    }
 }
 

@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author tware
  *    @since EclipseLink 1.2
  */
-public class NullIfNode extends Node {
+public class NullIfNode extends Node implements AliasableNode {
 
     public NullIfNode(){
         super();
@@ -56,5 +56,9 @@ public class NullIfNode extends Node {
         left.validate(context);
         right.validate(context);
         setType(left.getType());
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

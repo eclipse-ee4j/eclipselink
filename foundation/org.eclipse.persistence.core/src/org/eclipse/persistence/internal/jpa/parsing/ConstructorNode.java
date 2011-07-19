@@ -26,7 +26,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * <li> Generate the correct expression for a constructor 
  * </ul>
  */
-public class ConstructorNode extends Node {
+public class ConstructorNode extends Node implements AliasableNode {
 
     /** The name of the constructor class. */
     private String className = null;
@@ -166,5 +166,9 @@ public class ConstructorNode extends Node {
         }
         repr.append(")");
         return repr.toString();
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

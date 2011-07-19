@@ -29,7 +29,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author tware
  *    @since EclipseLink 1.2
  */
-public class CoalesceNode extends Node {
+public class CoalesceNode extends Node implements AliasableNode {
 
     private List clauses = null;
 
@@ -86,5 +86,9 @@ public class CoalesceNode extends Node {
 
     public void setClauses(List clauses) {
         this.clauses = clauses;
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

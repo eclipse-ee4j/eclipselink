@@ -19,7 +19,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * INTERNAL
  * <p><b>Purpose</b>: Represent an ALL subquery.
  */
-public class AllNode extends Node {
+public class AllNode extends Node{
 
     /**
      * Return a new AllNode.
@@ -50,6 +50,5 @@ public class AllNode extends Node {
         Expression expr = context.getBaseExpression();
         return expr.all(reportQuery);
     }
-
 }
 

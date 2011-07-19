@@ -239,6 +239,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testCountOneToManyQueryKey"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testEnumNullNotNull"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testPessimisticLock"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testAliasedFunction"));
         return suite;
     }
     
@@ -3400,5 +3401,22 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             rollbackTransaction(em);
             assertNotNull("A lock was not applied using a locking hint.", caughtException);
         }
+    }
+    
+    // Bug 331575
+    public void testAliasedFunction(){
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("select MOD(e.salary, 10) as m from Employee e where m = 0");
+        List result = query.getResultList();
+        
+        query = em.createQuery("select e.salary / 10D s from Employee e where s > 1000");
+        result = query.getResultList();
+        assertTrue("not enough results returned for /", result.size() == 12);
+        
+        query = em.createQuery("select Type(p) t from Project p where t = LargeProject");
+        result = query.getResultList();
+        assertTrue("not enough results returned for Type", result.size() == 5);
+        
+        closeEntityManager(em);
     }
 }

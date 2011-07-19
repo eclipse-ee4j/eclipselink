@@ -29,7 +29,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author tware
  *    @since EclipseLink 1.2
  */
-public class CaseNode extends Node {
+public class CaseNode extends Node implements AliasableNode {
 
     private List whenClauses = null;
 
@@ -101,5 +101,9 @@ public class CaseNode extends Node {
 
     public void setWhenClauses(List whenClauses) {
         this.whenClauses = whenClauses;
+    }
+    
+    public boolean isAliasableNode(){
+        return true;
     }
 }

@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *    @author Jon Driscoll and Joel Lucuik
  *    @since July 2003
  */
-public class MinusNode extends BinaryOperatorNode {
+public class MinusNode extends BinaryOperatorNode implements AliasableNode {
     public MinusNode() {
         super();
     }
@@ -70,6 +70,10 @@ public class MinusNode extends BinaryOperatorNode {
     }
 
     public boolean isMinusNode() {
+        return true;
+    }
+    
+    public boolean isAliasableNode(){
         return true;
     }
 }
