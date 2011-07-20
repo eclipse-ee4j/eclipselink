@@ -258,6 +258,9 @@ public class Helper {
      */
     public boolean isBuiltInJavaType(JavaClass jClass) {
         String rawName = jClass.getRawName();
+        if(null == rawName) {
+            return true;
+        }
     	return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !rawName.startsWith(JAVAX_WS_PKG))) ;
     }
 
