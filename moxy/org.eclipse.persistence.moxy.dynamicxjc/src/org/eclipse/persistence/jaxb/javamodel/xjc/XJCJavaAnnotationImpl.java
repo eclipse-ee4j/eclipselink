@@ -33,6 +33,24 @@ import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JStringLiteral;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaAnnotation</code> implementation wrapping XJC's <code>JAnnotationUse</code>.  Used when
+ * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide <code>Annotation</code> information from the underlying <code>JAnnotationUse</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.1
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaAnnotation
+ */
 public class XJCJavaAnnotationImpl implements JavaAnnotation {
 
     private JAnnotationUse xjcAnnotation;
@@ -51,11 +69,22 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
         }
     }
 
+    /**
+     * Construct a new instance of <code>XJCJavaAnnotationImpl</code>.
+     * 
+     * @param annotation - the XJC <code>JAnnotationUse</code> to be wrapped.
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     */
     public XJCJavaAnnotationImpl(JAnnotationUse annotation, DynamicClassLoader loader) {
         this.xjcAnnotation = annotation;
         this.dynamicClassLoader = loader;
     }
 
+    /**
+     * Return a Java <code>Annotation</code> representation of this <code>JavaAnnotation</code>.
+     * 
+     * @return a Java <code>Annotation</code> representation of this <code>JavaAnnotation</code>.
+     */
     @SuppressWarnings("unchecked")
     public Annotation getJavaAnnotation() {
         try {
@@ -154,6 +183,11 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
         }
     }
 
+    /**
+     * Return the Java <code>Class</code> of the <code>Annotation</code> represented by this <code>JavaAnnotation</code>. 
+     * 
+     * @return the Java <code>Class</code> of this <code>JavaAnnotation's</code> <code>Annotation</code>. 
+     */
     public Class<?> getJavaAnnotationClass() {
         try {
             Object xjcRefClass = PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_CLAZZ, xjcAnnotation);
@@ -166,6 +200,9 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
         }
     }
 
+    /**
+     * Not supported. 
+     */
     public Map<Object, Object> getComponents() {
         throw new UnsupportedOperationException("getComponents");
     }

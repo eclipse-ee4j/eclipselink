@@ -25,17 +25,49 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaModel</code> implementation wrapping XJC's <code>JCodeModel</code>.  Used when
+ * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema. 
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Return a <code>JavaClass</code> based on a <code>Class</code> or <code>Class</code> name.</li>
+ *    <li>Return a Java <code>Annotation</code> for a given <code>JavaAnnotation</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.1
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaModel
+ */
 public class XJCJavaModelImpl implements JavaModel {
 
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
     private Map<String, JavaClass> javaModelClasses = new HashMap<String, JavaClass>();
 
-    public XJCJavaModelImpl(JCodeModel codeModel, DynamicClassLoader dynLoader) {
+    /**
+     * Construct a new instance of <code>XJCJavaModelImpl</code>.
+     * 
+     * @param codeModel - the XJC <code>JCodeModel</code> to be wrapped.
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     */
+    public XJCJavaModelImpl(JCodeModel codeModel, DynamicClassLoader loader) {
         this.jCodeModel = codeModel;
-        this.dynamicClassLoader = dynLoader;
+        this.dynamicClassLoader = loader;
     }
 
+    /**
+     * Obtain the <code>JavaClass</code> given the corresponding Java <code>Class</code>.
+     * 
+     * @param jClass - the Java <code>Class</code> to search for.
+     * 
+     * @return the <code>JavaClass</code> corresponding to <code>jClass</code>.
+     */
     public JavaClass getClass(Class<?> jClass) {
         if (jClass == null) {
             return null;
@@ -59,6 +91,13 @@ public class XJCJavaModelImpl implements JavaModel {
         }
     }
 
+    /**
+     * Obtain the <code>JavaClass</code> given the corresponding Java <code>Class'</code> name.
+     * 
+     * @param className - the name of the Java <code>Class</code> to search for.
+     * 
+     * @return the <code>JavaClass</code> corresponding to <code>className</code>.
+     */
     public JavaClass getClass(String className) {
         JavaClass cachedClass = this.javaModelClasses.get(className);
         if (cachedClass != null) {
@@ -89,18 +128,41 @@ public class XJCJavaModelImpl implements JavaModel {
         }
     }
 
+    /**
+     * Return a Java <code>Annotation</code> representation of the given <code>JavaAnnotation</code>.
+     * 
+     * @param annotation - the <code>JavaAnnotation</code> to be converted.
+     * @param jClass - the Java <code>Class</code> this annotation belogs to.
+     * 
+     * @return a Java <code>Annotation</code> representation of the given <code>JavaAnnotation</code>.
+     */
     public Annotation getAnnotation(JavaAnnotation annotation, Class<?> jClass) {
         return ((XJCJavaAnnotationImpl) annotation).getJavaAnnotation();
     }
 
+    /**
+     * Returns a <code>Map</code> of this <code>JavaModel's</code> <code>JavaClasses</code>, keyed on class name.
+     *  
+     * @return this <code>JavaModel's</code> <code>Map</code> of <code>JavaClasses</code>.
+     */
     public Map<String, JavaClass> getJavaModelClasses() {
         return javaModelClasses;
     }
 
+    /**
+     * Sets the <code>Map</code> of <code>JavaClasses</code> for this <code>JavaModel's</code>, keyed on class name.
+     *  
+     * @param javaModelClasses - a <code>Map</code> of <code>JavaClasses</code>, keyed on class name.
+     */
     public void setJavaModelClasses(Map<String, JavaClass> javaModelClasses) {
         this.javaModelClasses = javaModelClasses;
     }
 
+    /**
+     * Returns this <code>JavaModel's</code> <code>ClassLoader</code>.
+     *  
+     * @return the <code>ClassLoader</code> used by this <code>JavaModel</code>.
+     */
     public ClassLoader getClassLoader() {
         return this.dynamicClassLoader;
     }

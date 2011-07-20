@@ -19,16 +19,48 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaModelInput</code> implementation for XJC.  Used when
+ * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Create an array of <code>JavaClass</code> instances from an array of <code>Classes/JavaClasses/Types/TypeMappingInfos</code>.</li>
+ *    <li>Return an array of <code>JavaClass</code> objects to be used by the generator.</li>
+ *    <li>Return the <code>JavaModel</code> to be used during generation.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.1
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaModelInput
+ */
 public class XJCJavaModelInputImpl implements JavaModelInput {
 
     private JavaClass[] jClasses;
     private JavaModel jModel;
 
+    /**
+     * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
+     * 
+     * @param types - an array of <code>JavaClasses</code> for which to generate mappings.
+     * @param javaModel - the <code>JavaModel</code> to be used.
+     */
     public XJCJavaModelInputImpl(JavaClass[] types, JavaModel javaModel) {
         this.jModel = javaModel;
         this.jClasses = types;
     }
 
+    /**
+     * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
+     * 
+     * @param types - an array of <code>Types</code> for which to generate mappings.
+     * @param javaModel - the <code>JavaModel</code> to be used.
+     */
     public XJCJavaModelInputImpl(Type[] types, JavaModel javaModel) {
         this.jModel = javaModel;
         this.jClasses = new JavaClass[types.length];
@@ -40,6 +72,12 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
         }
     }
 
+    /**
+     * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
+     * 
+     * @param types - an array of <code>TypeMappingInfos</code> for which to generate mappings.
+     * @param javaModel - the <code>JavaModel</code> to be used.
+     */
     public XJCJavaModelInputImpl(TypeMappingInfo[] types, JavaModel javaModel) {
         this.jModel = javaModel;
         this.jClasses = new JavaClass[types.length];
@@ -50,18 +88,34 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
         }
     }
 
+    /**
+     * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
+     * 
+     * @param types - an array of Java <code>Classes</code> for which to generate mappings.
+     * @param javaModel - the <code>JavaModel</code> to be used.
+     */
     public XJCJavaModelInputImpl(Class<?>[] classes, JavaModel javaModel) {
         this.jModel = javaModel;
         this.jClasses = new JavaClass[classes.length];
-        for (int i=0; i<classes.length; i++) {
+        for (int i = 0; i < classes.length; i++) {
             jClasses[i] = jModel.getClass(classes[i]);
         }
     }
 
+    /**
+     * Returns this <code>JavaModelInput's</code> array of <code>JavaClasses</code>.
+     *
+     * @return this <code>JavaModelInput's</code> array of <code>JavaClasses</code>.
+     */
     public JavaClass[] getJavaClasses() {
         return jClasses;
     }
 
+    /**
+     * Returns this <code>JavaModelInput's</code> <code>JavaModel</code>.
+     *
+     * @return this <code>JavaModelInput's</code> <code>JavaModel</code>.
+     */
     public JavaModel getJavaModel() {
         return jModel;
     }

@@ -23,6 +23,24 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaConstructor</code> implementation wrapping XJC's <code>JMethod</code>.  Used when
+ * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide <code>Constructor</code> information from the underlying <code>JMethod</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.1
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaConstructor
+ */
 public class XJCJavaConstructorImpl implements JavaConstructor {
 
     private JMethod xjcConstructor;
@@ -30,6 +48,14 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
     private DynamicClassLoader dynamicClassLoader;
     private JavaClass owningClass;
 
+    /**
+     * Construct a new instance of <code>XJCJavaConstructorImpl</code>.
+     * 
+     * @param constructor - the XJC <code>JMethod</code> to be wrapped.
+     * @param codeModel - the XJC <code>JCodeModel</code> this constructor belongs to.
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     * @param owner - the <code>JavaClass</code> this constructor belongs to.
+     */
     public XJCJavaConstructorImpl(JMethod constructor, JCodeModel codeModel, DynamicClassLoader loader, JavaClass owner) {
         this.xjcConstructor = constructor;
         this.jCodeModel = codeModel;
@@ -37,14 +63,31 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
         this.owningClass = owner;
     }
 
+    /**
+     * Returns the Java language modifiers for this <code>JavaConstructor</code>, encoded in an integer.
+     *  
+     * @return the <code>int</code> representing the modifiers for this constructor.
+     * 
+     * @see java.lang.reflect.Modifier
+     */
     public int getModifiers() {
         return xjcConstructor.mods().getValue();
     }
 
+    /**
+     * Returns the name of this <code>JavaConstructor</code>.
+     *  
+     * @return the <code>String</code> name of this <code>JavaConstructor</code>.
+     */
     public String getName() {
         return xjcConstructor.name();
     }
 
+    /**
+     * Returns the array of parameters for this <code>JavaConstructor</code>.
+     *  
+     * @return a <code>JavaClass[]</code> representing the argument types for this constructor.
+     */
     public JavaClass[] getParameterTypes() {
         JType[] params = xjcConstructor.listParamTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
@@ -62,38 +105,81 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
         return paramArray;
     }
 
+    /**
+     * Indicates if this <code>JavaConstructor</code> is <code>abstract</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaConstructor</code> is <code>abstract</code>, otherwise <code>false</code>.
+     */
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaConstructor</code> is <code>private</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaConstructor</code> is <code>private</code>, otherwise <code>false</code>.
+     */
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaConstructor</code> is <code>protected</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaConstructor</code> is <code>protected</code>, otherwise <code>false</code>.
+     */
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaConstructor</code> is <code>public</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaConstructor</code> is <code>public</code>, otherwise <code>false</code>.
+     */
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaConstructor</code> is <code>static</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaConstructor</code> is <code>static</code>, otherwise <code>false</code>.
+     */
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaConstructor</code> is <code>final</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaConstructor</code> is <code>final</code>, otherwise <code>false</code>.
+     */
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
 
+    /**
+     * Not supported. 
+     */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
 
+    /**
+     * Returns the <code>JavaClass</code> which contains this constructor.
+     *  
+     * @return <code>JavaClass</code> representing the owner of this <code>JavaConstructor</code>.
+     */
     public JavaClass getOwningClass() {
         return owningClass;
     }
 
+    /**
+     * Set the <code>JavaClass</code> which contains this constructor.
+     *  
+     * @param owningClass the <code>JavaClass</code> representing the owner of this <code>JavaConstructor</code>.
+     */
     public void setOwningClass(JavaClass owningClass) {
         this.owningClass = owningClass;
     }

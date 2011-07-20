@@ -26,6 +26,24 @@ import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JPackage;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaPackage</code> implementation wrapping XJC's <code>JPackage</code>.  Used when
+ * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide <code>Package</code> information from the underlying <code>JPackage</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.1
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaPackage
+ */
 public class XJCJavaPackageImpl implements JavaPackage {
 
     protected JPackage xjcPackage;
@@ -39,12 +57,26 @@ public class XJCJavaPackageImpl implements JavaPackage {
             throw JAXBException.errorCreatingDynamicJAXBContext(e);
         }
     }
-    
+
+    /**
+     * Construct a new instance of <code>XJCJavaPackageImpl</code>.
+     * 
+     * @param jPackage - the XJC <code>JPackage</code> to be wrapped.
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     */
     public XJCJavaPackageImpl(JPackage jPackage, DynamicClassLoader loader) {
         this.xjcPackage = jPackage;
         this.dynamicClassLoader = loader;
     }
 
+    /**
+     * If this <code>JavaPackage</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
+     * return its <code>JavaAnnotation</code> representation.
+     * 
+     * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
+     * 
+     * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
+     */
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
@@ -73,6 +105,11 @@ public class XJCJavaPackageImpl implements JavaPackage {
         return null;
     }
 
+    /**
+     * Return all of the <code>Annotations</code> for this <code>JavaPackage</code>.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaPackage's</code> <code>JavaAnnotations</code>.
+     */
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
@@ -95,6 +132,11 @@ public class XJCJavaPackageImpl implements JavaPackage {
         return annotationsList;
     }
 
+    /**
+     * Returns the name of this <code>JavaPackage</code>.
+     *  
+     * @return the <code>String</code> name of this <code>JavaPackage</code>.
+     */
     public String getName() {
         if (xjcPackage != null){
             return xjcPackage.name();
@@ -102,14 +144,25 @@ public class XJCJavaPackageImpl implements JavaPackage {
         return null;
     }
 
+    /**
+     * Returns the fully-qualified name of this <code>JavaPackage</code>.
+     *  
+     * @return the <code>String</code> name of this <code>JavaPackage</code>.
+     */
     public String getQualifiedName() {
         return getName();
     }
 
+    /**
+     * Not supported. 
+     */
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
+    /**
+     * Not supported. 
+     */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }

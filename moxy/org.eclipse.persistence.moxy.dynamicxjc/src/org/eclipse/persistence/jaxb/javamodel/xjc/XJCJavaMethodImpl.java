@@ -34,6 +34,24 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JType;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaMethod</code> implementation wrapping XJC's <code>JMethod</code>.  Used when
+ * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide <code>Method</code> information from the underlying <code>JMethod</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.1
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaMethod
+ */
 public class XJCJavaMethodImpl implements JavaMethod {
 
     private JMethod xjcMethod;
@@ -50,6 +68,14 @@ public class XJCJavaMethodImpl implements JavaMethod {
         }
     }
 
+    /**
+     * Construct a new instance of <code>XJCJavaMethodImpl</code>.
+     * 
+     * @param javaMethod - the XJC <code>JMethod</code> to be wrapped.
+     * @param codeModel - the XJC <code>JCodeModel</code> this field belongs to.
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     * @param owner - the <code>JavaClass</code> this field belongs to.
+     */
     public XJCJavaMethodImpl(JMethod javaMethod, JCodeModel codeModel, DynamicClassLoader loader, JavaClass owner) {
         this.xjcMethod = javaMethod;
         this.jCodeModel = codeModel;
@@ -57,6 +83,14 @@ public class XJCJavaMethodImpl implements JavaMethod {
         this.owningClass = owner;
     }
 
+    /**
+     * If this <code>JavaMethod</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
+     * return its <code>JavaAnnotation</code> representation.
+     * 
+     * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
+     * 
+     * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
+     */
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
@@ -84,6 +118,11 @@ public class XJCJavaMethodImpl implements JavaMethod {
         return null;
     }
 
+    /**
+     * Return all of the <code>Annotations</code> for this <code>JavaMethod</code>.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaMethod's</code> <code>JavaAnnotations</code>.
+     */
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
@@ -106,10 +145,20 @@ public class XJCJavaMethodImpl implements JavaMethod {
         return annotationsList;
     }
 
+    /**
+     * Returns the name of this <code>JavaMethod</code>.
+     *  
+     * @return the <code>String</code> name of this <code>JavaMethod</code>.
+     */
     public String getName() {
         return xjcMethod.name();
     }
 
+    /**
+     * Returns the array of parameters for this <code>JavaMethod</code>.
+     *  
+     * @return a <code>JavaClass[]</code> representing the argument types for this method.
+     */
     public JavaClass[] getParameterTypes() {
         JType[] params = xjcMethod.listParamTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
@@ -124,6 +173,11 @@ public class XJCJavaMethodImpl implements JavaMethod {
         return paramArray;
     }
 
+    /**
+     * Returns this <code>JavaMethod's</code> return type.
+     *  
+     * @return a <code>JavaClass</code> representing the return type of this method.
+     */
     public JavaClass getResolvedType() {
         if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
             return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(xjcMethod.type().fullName());
@@ -136,6 +190,11 @@ public class XJCJavaMethodImpl implements JavaMethod {
         }
     }
 
+    /**
+     * Returns this <code>JavaMethod's</code> return type.
+     *  
+     * @return a <code>JavaClass</code> representing the return type of this method.
+     */
     @SuppressWarnings("unchecked")
     public JavaClass getReturnType() {
         JType type = xjcMethod.type();
@@ -158,6 +217,12 @@ public class XJCJavaMethodImpl implements JavaMethod {
         }
     }
 
+    /**
+     * Indicates if this <code>JavaMethod</code> has actual type arguments, i.e. is a
+     * parameterized type (for example, <code>List&lt;Employee</code>).
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is parameterized, otherwise <code>false</code>.
+     */
     public boolean hasActualTypeArguments() {
         try {
             JavaClass[] allParams = getParameterTypes();
@@ -174,54 +239,113 @@ public class XJCJavaMethodImpl implements JavaMethod {
         }
     }
 
+    /**
+     * Not supported. 
+     */
     public Collection<Object> getActualTypeArguments() {
         throw new UnsupportedOperationException("getActualTypeArguments");
     }
 
+    /**
+     * Returns the Java language modifiers for this <code>JavaMethod</code>, encoded in an integer.
+     *  
+     * @return the <code>int</code> representing the modifiers for this method.
+     * 
+     * @see java.lang.reflect.Modifier
+     */
     public int getModifiers() {
         return xjcMethod.mods().getValue();
     }
 
+    /**
+     * Indicates if this <code>JavaMethod</code> is <code>abstract</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaMethod</code> is <code>abstract</code>, otherwise <code>false</code>.
+     */
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaMethod</code> is <code>private</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaMethod</code> is <code>private</code>, otherwise <code>false</code>.
+     */
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaMethod</code> is <code>protected</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaMethod</code> is <code>protected</code>, otherwise <code>false</code>.
+     */
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaMethod</code> is <code>public</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaMethod</code> is <code>public</code>, otherwise <code>false</code>.
+     */
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaMethod</code> is <code>static</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaMethod</code> is <code>static</code>, otherwise <code>false</code>.
+     */
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaMethod</code> is <code>final</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaMethod</code> is <code>final</code>, otherwise <code>false</code>.
+     */
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
 
+    /**
+     * Not supported. 
+     */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
 
+    /**
+     * Not supported. 
+     */
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
+    /**
+     * Not supported. 
+     */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }
 
+    /**
+     * Returns the <code>JavaClass</code> which contains this method.
+     *  
+     * @return <code>JavaClass</code> representing the owner of this <code>JavaMethod</code>.
+     */
     public JavaClass getOwningClass() {
         return owningClass;
     }
 
+    /**
+     * Set the <code>JavaClass</code> which contains this method.
+     *  
+     * @param owningClass the <code>JavaClass</code> representing the owner of this <code>JavaMethod</code>.
+     */
     public void setOwningClass(JavaClass owningClass) {
         this.owningClass = owningClass;
     }

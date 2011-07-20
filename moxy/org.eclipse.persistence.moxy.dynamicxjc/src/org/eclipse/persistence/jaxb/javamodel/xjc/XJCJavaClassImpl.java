@@ -45,6 +45,24 @@ import com.sun.codemodel.JPrimitiveType;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JTypeVar;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaClass</code> implementation wrapping XJC's <code>JDefinedClass</code>.
+ * Used when bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide Class information from the underlying <code>JDefinedClass</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.1
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaClass
+ */
 public class XJCJavaClassImpl implements JavaClass {
 
     private JDefinedClass xjcClass;
@@ -81,10 +99,26 @@ public class XJCJavaClassImpl implements JavaClass {
         }
     }
 
+    /**
+     * Construct a new instance of <code>XJCJavaClassImpl</code>.
+     * 
+     * @param jDefinedClass - the XJC <code>JDefinedClass</code> to be wrapped.
+     * @param codeModel - the XJC <code>JCodeModel</code> this class belongs to.
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     */
     public XJCJavaClassImpl(JDefinedClass jDefinedClass, JCodeModel codeModel, DynamicClassLoader loader) {
         this(jDefinedClass, codeModel, loader, false, false);
     }
 
+    /**
+     * Construct a new instance of <code>XJCJavaClassImpl</code>.
+     *      
+     * @param jDefinedClass - the XJC <code>JDefinedClass</code> to be wrapped.
+     * @param codeModel - the XJC <code>JCodeModel</code> this class belongs to.
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     * @param isArray - indicates that this class is an array type.
+     * @param isPrimitive - indicates that this class is a primitive type.
+     */
     public XJCJavaClassImpl(JDefinedClass jDefinedClass, JCodeModel codeModel, DynamicClassLoader loader, boolean isArray, boolean isPrimitive) {
         this.xjcClass = jDefinedClass;
         this.jCodeModel = codeModel;
@@ -95,6 +129,13 @@ public class XJCJavaClassImpl implements JavaClass {
 
     // ========================================================================
 
+    /**
+     * Return the "actual" type from a parameterized type.  For example, if this
+     * <code>JavaClass</code> represents <code>List&lt;Employee</code>, this method will return the
+     * <code>Employee</code> <code>JavaClass</code>.
+     * 
+     * @return a <code>Collection</code> containing the actual type's <code>JavaClass</code>.
+     */
     public Collection<JavaClass> getActualTypeArguments() {
         JTypeVar[] typeParams = xjcClass.typeParams();
 
@@ -135,6 +176,13 @@ public class XJCJavaClassImpl implements JavaClass {
         }
     }
 
+    /**
+     * If this <code>JavaClass</code> is an array type, return the type of the
+     * array components.
+     * 
+     * @return <code>JavaClass</code> of this array's component type, or <code>null</code> if
+     *         this is not an array type.
+     */
     public JavaClass getComponentType() {
         if (!isArray()) {
             return null;
@@ -143,6 +191,14 @@ public class XJCJavaClassImpl implements JavaClass {
         return javaModel.getClass(this.xjcClass.fullName());
     }
 
+    /**
+     * Return the <code>JavaConstructor</code> for this <code>JavaClass</code> that has the
+     * provided parameter types.
+     * 
+     * @param parameterTypes the parameter list used to identify the constructor.
+     *  
+     * @return the <code>JavaConstructor</code> with the signature matching parameterTypes.
+     */
     public JavaConstructor getConstructor(JavaClass[] parameterTypes) {
         JType[] xjcParameterTypes = new JType[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -163,6 +219,11 @@ public class XJCJavaClassImpl implements JavaClass {
         return new XJCJavaConstructorImpl(constructor, jCodeModel, dynamicClassLoader, this);
     }
 
+    /**
+     * Return all of the <code>JavaConstructors</code> for this JavaClass.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
+     */
     @SuppressWarnings("unchecked")
     public Collection<JavaConstructor> getConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>();
@@ -175,6 +236,11 @@ public class XJCJavaClassImpl implements JavaClass {
         return constructors;
     }
 
+    /**
+     * Return this <code>JavaClass'</code> inner classes.
+     *  
+     * @return A <code>Collection&lt;JavaClass&gt;</code> containing this <code>JavaClass'</code> inner classes.
+     */
     public Collection<JavaClass> getDeclaredClasses() {
         ArrayList<JavaClass> declaredClasses = new ArrayList<JavaClass>();
 
@@ -193,20 +259,46 @@ public class XJCJavaClassImpl implements JavaClass {
         return declaredClasses;
     }
 
+    /**
+     * Return the declared <code>JavaConstructor</code> for this <code>JavaClass</code> that has the
+     * provided parameter types.
+     * 
+     * @param parameterTypes the parameter list used to identify the constructor.
+     *  
+     * @return the <code>JavaConstructor</code> with the signature matching <code>parameterTypes</code>.
+     */
     public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) {
         return getConstructor(parameterTypes);
     }
 
+    /**
+     * Return all of the declared <code>JavaConstructors</code> for this <code>JavaClass</code>.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
+     */
     public Collection<JavaConstructor> getDeclaredConstructors() {
         return getConstructors();
     }
 
+    /**
+     * Return the declared <code>JavaField</code> for this <code>JavaClass</code>, identified
+     * by <code>fieldName</code>. 
+     * 
+     * @param fieldName the name of the <code>JavaField</code> to return.
+     *  
+     * @return the <code>JavaField</code> named <code>fieldName</code> from this <code>JavaClass</code>.
+     */
     public JavaField getDeclaredField(String fieldName) {
         JFieldVar xjcField = xjcClass.fields().get(fieldName);
 
         return new XJCJavaFieldImpl(xjcField, jCodeModel, dynamicClassLoader, this);
     }
 
+    /**
+     * Return all of the declared <code>JavaFields</code> for this <code>JavaClass</code>.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaFields</code>.
+     */
     public Collection<JavaField> getDeclaredFields() {
         Collection<JFieldVar> xjcFields = xjcClass.fields().values();
         ArrayList<JavaField> fields = new ArrayList<JavaField>(xjcFields.size());
@@ -218,14 +310,37 @@ public class XJCJavaClassImpl implements JavaClass {
         return fields;
     }
 
+    /**
+     * Return the declared <code>JavaMethod</code> for this <code>JavaClass</code>,
+     * identified by <code>name</code>, with the signature matching <code>args</code>. 
+     * 
+     * @param name the name of the <code>JavaMethod</code> to return.
+     * @param args the parameter list used to identify the method.
+     *  
+     * @return the matching <code>JavaMethod</code> from this <code>JavaClass</code>.
+     */
     public JavaMethod getDeclaredMethod(String name, JavaClass[] args) {
         return getMethod(name, args);
     }
 
+    /**
+     * Return all of the declared <code>JavaMethods</code> for this <code>JavaClass</code>.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaMethods</code>.
+     */
     public Collection<JavaMethod> getDeclaredMethods() {
         return getMethods();
     }
 
+    /**
+     * Return the <code>JavaMethod</code> for this <code>JavaClass</code>, identified
+     * by <code>name</code>, with the signature matching <code>args</code>. 
+     * 
+     * @param name the name of the <code>JavaMethod</code> to return.
+     * @param args the parameter list used to identify the method.
+     *  
+     * @return the matching <code>JavaMethod</code> from this <code>JavaClass</code>.
+     */
     public JavaMethod getMethod(String name, JavaClass[] args) {
         Collection<JMethod> xjcMethods = xjcClass.methods();
 
@@ -263,6 +378,11 @@ public class XJCJavaClassImpl implements JavaClass {
         return true;
     }
 
+    /**
+     * Return all of the <code>JavaMethods</code> for this <code>JavaClass</code>.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaMethods</code>.
+     */
     public Collection<JavaMethod> getMethods() {
         Collection<JMethod> xjcMethods = xjcClass.methods();
         ArrayList<JavaMethod> elinkMethods = new ArrayList<JavaMethod>(xjcMethods.size());
@@ -274,6 +394,13 @@ public class XJCJavaClassImpl implements JavaClass {
         return elinkMethods;
     }
 
+    /**
+     * Returns the Java language modifiers for this <code>JavaClass</code>, encoded in an integer.
+     *  
+     * @return the <code>int</code> representing the modifiers for this class.
+     * 
+     * @see java.lang.reflect.Modifier
+     */
     public int getModifiers() {
         JMods xjcMods = null;
 
@@ -286,18 +413,38 @@ public class XJCJavaClassImpl implements JavaClass {
         return xjcMods.getValue();
     }
 
+    /**
+     * Returns the name of this <code>JavaClass</code>.
+     *  
+     * @return the <code>String</code> name of this <code>JavaClass</code>.
+     */
     public String getName() {
         return getQualifiedName();
     }
 
+    /**
+     * Returns the <code>JavaPackage</code> that this <code>JavaClass</code> belongs to.
+     *  
+     * @return the <code>JavaPackage</code> of this <code>JavaClass</code>.
+     */
     public JavaPackage getPackage() {
         return new XJCJavaPackageImpl(xjcClass.getPackage(), dynamicClassLoader);
     }
 
+    /**
+     * Returns the package name of this <code>JavaClass</code>.
+     *  
+     * @return the <code>String</code> name of this <code>JavaClass'</code> <code>JavaPackage</code>.
+     */
     public String getPackageName() {
         return xjcClass._package().name();
     }
 
+    /**
+     * Returns the fully-qualified name of this <code>JavaClass</code>.
+     *  
+     * @return the <code>String</code> name of this <code>JavaClass</code>.
+     */
     public String getQualifiedName() {
         if(isArray) {
             if(this.isPrimitive) {
@@ -340,6 +487,12 @@ public class XJCJavaClassImpl implements JavaClass {
         return fullName;
     }
 
+    /**
+     * Returns the raw name of this <code>JavaClass</code>.  Array types will
+     * have "[]" appended to the name.
+     *  
+     * @return the <code>String</code> raw name of this <code>JavaClass</code>.
+     */
     public String getRawName() {
         if(isArray) {
             return xjcClass.fullName() + "[]";
@@ -347,6 +500,11 @@ public class XJCJavaClassImpl implements JavaClass {
         return xjcClass.fullName();
     }
 
+    /**
+     * Returns the super class of this <code>JavaClass</code>.
+     *  
+     * @return <code>JavaClass</code> representing the super class of this <code>JavaClass</code>.
+     */
     public JavaClass getSuperclass() {
         try {
             JClass superClass = (JClass) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_SUPERCLASS, xjcClass);
@@ -368,18 +526,39 @@ public class XJCJavaClassImpl implements JavaClass {
         }
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> has actual type arguments, i.e. is a
+     * parameterized type (for example, <code>List&lt;Employee</code>).
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is parameterized, otherwise <code>false</code>.
+     */
     public boolean hasActualTypeArguments() {
         return xjcClass.typeParams().length > 0;
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is <code>abstract</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is <code>abstract</code>, otherwise <code>false</code>.
+     */
     public boolean isAbstract() {
         return xjcClass.isAbstract();
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is an <code>Annotation</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is an <code>Annotation</code>, otherwise <code>false</code>.
+     */
     public boolean isAnnotation() {
         return xjcClass.isAnnotationTypeDeclaration();
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is an Array type.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is an Array type, otherwise <code>false</code>.
+     */
     public boolean isArray() {
         if (this.isArray) {
             return true;
@@ -387,6 +566,17 @@ public class XJCJavaClassImpl implements JavaClass {
         return this.xjcClass.isArray();
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is either the same as, or is a superclass of,
+     * the <code>javaClass</code> argument.
+     *  
+     * @param javaClass the <code>Class</code> to test.
+     *  
+     * @return <code>true</code> if this <code>JavaClass</code> is assignable from
+     *         <code>javaClass</code>, otherwise <code>false</code>.
+     *         
+     * @see java.lang.Class#isAssignableFrom(Class)
+     */
     public boolean isAssignableFrom(JavaClass javaClass) {
         if (javaClass == null) {
             return false;
@@ -398,46 +588,102 @@ public class XJCJavaClassImpl implements JavaClass {
         return xjcClass.isAssignableFrom(someClass);
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is an <code>enum</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is an <code>enum</code>, otherwise <code>false</code>.
+     */
     public boolean isEnum() {
         return xjcClass.getClassType().equals(ClassType.ENUM);
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is <code>final</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is <code>final</code>, otherwise <code>false</code>.
+     */
     public boolean isFinal() {
         return Modifier.isFinal(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is an <code>interface</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is an <code>interface</code>, otherwise <code>false</code>.
+     */
     public boolean isInterface() {
         return xjcClass.isInterface();
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is an inner <code>Class</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is an inner </code>Class</code>, otherwise <code>false</code>.
+     */
     public boolean isMemberClass() {
         return this.xjcClass.outer() != null;
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> represents a primitive type.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> represents a primitive type, otherwise <code>false</code>.
+     */
     public boolean isPrimitive() {
         return false;
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is <code>private</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is <code>private</code>, otherwise <code>false</code>.
+     */
     public boolean isPrivate() {
         return Modifier.isPrivate(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is <code>protected</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is <code>protected</code>, otherwise <code>false</code>.
+     */
     public boolean isProtected() {
         return Modifier.isProtected(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is <code>public</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is <code>public</code>, otherwise <code>false</code>.
+     */
     public boolean isPublic() {
         return Modifier.isPublic(getModifiers());
     }
 
+    /**
+     * Indicates if this <code>JavaClass</code> is <code>static</code>.
+     * 
+     * @return <code>true</code> if this <code>JavaClass</code> is <code>static</code>, otherwise <code>false</code>.
+     */
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
 
+    /**
+     * Not supported. 
+     */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
 
+    /**
+     * If this <code>JavaClass</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
+     * return its <code>JavaAnnotation</code> representation.
+     * 
+     * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
+     * 
+     * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
+     */
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
@@ -468,6 +714,11 @@ public class XJCJavaClassImpl implements JavaClass {
         return null;
     }
 
+    /**
+     * Return all of the <code>Annotations</code> for this <code>JavaClass</code>.
+     *  
+     * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaAnnotations</code>.
+     */
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
@@ -489,18 +740,34 @@ public class XJCJavaClassImpl implements JavaClass {
         return annotationsList;
     }
 
+    /**
+     * Not supported. 
+     */
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
+    /**
+     * Not supported. 
+     */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }
 
+    /**
+     * Get this <code>JavaClass'</code> <code>JavaModel</code>.
+     *  
+     * @return The <code>JavaModel</code> associated with this <code>JavaClass<code>.
+     */
     public JavaModel getJavaModel() {
         return javaModel;
     }
 
+    /**
+     * Set this <code>JavaClass'</code> <code>JavaModel</code>.
+     *  
+     * @param javaModel The <code>JavaModel</code> to set.
+     */
     public void setJavaModel(JavaModel javaModel) {
         this.javaModel = javaModel;
     }
