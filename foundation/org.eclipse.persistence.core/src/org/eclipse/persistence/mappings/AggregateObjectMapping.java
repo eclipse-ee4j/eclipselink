@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -1188,6 +1190,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
 
         setFields(collectFields());
+        
+        // Add the nested pre delete mappings to the source entity.
+        if (clonedDescriptor.hasPreDeleteMappings()) {
+            getDescriptor().getPreDeleteMappings().addAll(clonedDescriptor.getPreDeleteMappings());
+        }
     }
 
     /**

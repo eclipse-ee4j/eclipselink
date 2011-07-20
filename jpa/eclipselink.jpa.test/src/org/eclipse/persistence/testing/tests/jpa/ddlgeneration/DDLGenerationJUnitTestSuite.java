@@ -1192,6 +1192,31 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+    
+    // Bug 338812
+    public void testDeleteObjectWithEmbeddedManyToMany(){
+        EntityManager em = createEntityManager(DDL_PU);
+
+        try {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.addPhoneNumber(new PhoneNumber());
+            employee.addComment(new Comment());
+            employee.addUpdate("Update record 1");
+            em.persist(employee);
+            commitTransaction(em);
+            
+            beginTransaction(em);
+            Employee emp = em.find(Employee.class, employee.getId());
+            em.remove(emp);
+            commitTransaction(em);
+            
+        } catch (Exception e) {
+            fail("An error occurred: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
 
     protected void cleanupEquipmentAndPorts(EntityManagerFactory factory) {
         EntityManager em = null;

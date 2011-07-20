@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -1318,7 +1320,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
 
         AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
         
@@ -1361,7 +1363,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         ContainerPolicy cp = getContainerPolicy();
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
 
         // Extract target field and its value. Construct insert statement and execute it
@@ -1393,7 +1395,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
         AbstractSession session = query.getSession();
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), session);
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), session);
         AbstractRecord translationRow = new DatabaseRecord();
 
         // Extract primary key and value from the source (use translation row).
