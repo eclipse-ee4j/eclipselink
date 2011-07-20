@@ -15,6 +15,8 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -1557,7 +1559,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     protected void objectOrderChangedDuringUpdate(WriteObjectQuery query, Object orderChangedObject, int orderIndex) {
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = new DatabaseRecord();
 
         // Extract target field and its value. Construct insert statement and execute it
@@ -1665,7 +1667,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * copies the non primary key information into the row currently used only in ManyToMany
      */
-    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
+    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, ClassDescriptor descriptor, AbstractSession session) {
         //Do nothing for the generic Collection Mapping
     }
 
@@ -1775,7 +1777,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return getRealCollectionAttributeValueFromObject(modifyQuery.getBackupClone(), modifyQuery.getSession());
         } else {
             // cr 3819
-            prepareTranslationRow(modifyQuery.getTranslationRow(), modifyQuery.getObject(), modifyQuery.getSession());
+            prepareTranslationRow(modifyQuery.getTranslationRow(), modifyQuery.getObject(), modifyQuery.getDescriptor(), modifyQuery.getSession());
             return modifyQuery.getSession().executeQuery(getSelectionQuery(), modifyQuery.getTranslationRow());
         }
     }
@@ -2320,7 +2322,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         //cr 3819 added the line below to fix the translationtable to ensure that it
         // contains the required values
-        prepareTranslationRow(row, object, session);
+        prepareTranslationRow(row, object, getDescriptor(), session);
         Object value = session.executeQuery(getSelectionQuery(), row);
 
         return this.containerPolicy.isEmpty(value);

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -648,7 +650,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             return;
         }
 
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         // Extract primary key and value from the source.
         for (int index = 0; index < getReferenceKeyFields().size(); index++) {
             DatabaseField referenceKey = getReferenceKeyFields().get(index);

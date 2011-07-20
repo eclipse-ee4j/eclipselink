@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle, Frank Schwarz. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle, Frank Schwarz. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -33,6 +33,8 @@
  *       - 277079: EmbeddedId's fields are null when using LOB with fetchtype LAZY
  *     04/28/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 6)
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -1179,6 +1181,31 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             clearCache(DDL_PU);
             em.clear();
             assertNotNull("Unable to read back the phone number", em.find(PhoneNumber.class, phoneNumber.getNumber()));
+        } catch (Exception e) {
+            fail("An error occurred: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    // Bug 338812
+    public void testDeleteObjectWithEmbeddedManyToMany(){
+        EntityManager em = createEntityManager(DDL_PU);
+
+        try {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.addPhoneNumber(new PhoneNumber());
+            employee.addComment(new Comment());
+            employee.addUpdate("Update record 1");
+            em.persist(employee);
+            commitTransaction(em);
+            
+            beginTransaction(em);
+            Employee emp = em.find(Employee.class, employee.getId());
+            em.remove(emp);
+            commitTransaction(em);
+            
         } catch (Exception e) {
             fail("An error occurred: " + e.getMessage());
         } finally {
