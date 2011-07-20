@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -1304,7 +1306,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
 
         AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
         
@@ -1347,7 +1349,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         ContainerPolicy cp = getContainerPolicy();
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
 
         // Extract target field and its value. Construct insert statement and execute it
@@ -1379,7 +1381,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
         AbstractSession session = query.getSession();
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), session);
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), session);
         AbstractRecord translationRow = new DatabaseRecord();
 
         // Extract primary key and value from the source (use translation row).

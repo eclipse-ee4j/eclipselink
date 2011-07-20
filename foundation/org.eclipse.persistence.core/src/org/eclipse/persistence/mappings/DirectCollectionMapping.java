@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -2113,7 +2115,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             return;
         }
 
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         // Extract primary key and value from the source.
         for (int index = 0; index < getReferenceKeyFields().size(); index++) {
             DatabaseField referenceKey = getReferenceKeyFields().get(index);
@@ -2464,12 +2466,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         if (!this.isCascadeOnDeleteSetOnDatabase) {
-            prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+            prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
             query.getSession().executeQuery(this.deleteAllQuery, query.getTranslationRow());
         }
         if ((this.historyPolicy != null) && this.historyPolicy.shouldHandleWrites()) {
             if (this.isCascadeOnDeleteSetOnDatabase) {
-                prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+                prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
             }
             this.historyPolicy.mappingLogicalDelete(this.deleteAllQuery, query.getTranslationRow(), query.getSession());
         }
@@ -2480,13 +2482,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * The translation row may require additional fields than the primary key if the mapping in not on the primary key.
      */
     @Override
-    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
+    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, ClassDescriptor descriptor, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
         for (Enumeration sourceFieldsEnum = getSourceKeyFields().elements();
                  sourceFieldsEnum.hasMoreElements();) {
             DatabaseField sourceKey = (DatabaseField)sourceFieldsEnum.nextElement();
             if (!translationRow.containsKey(sourceKey)) {
-                Object value = getDescriptor().getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
+                Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);
             }
         }

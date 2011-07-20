@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -876,7 +878,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public void dontAllowNull() {
         setIsNullAllowed(false);
     }
-
+    
     /**
      * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query.
@@ -1172,6 +1174,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
 
         setFields(collectFields());
+        
+        // Add the nested pre delete mappings to the source entity.
+        if (clonedDescriptor.hasPreDeleteMappings()) {
+            getDescriptor().getPreDeleteMappings().addAll(clonedDescriptor.getPreDeleteMappings());
+        }
     }
 
     /**

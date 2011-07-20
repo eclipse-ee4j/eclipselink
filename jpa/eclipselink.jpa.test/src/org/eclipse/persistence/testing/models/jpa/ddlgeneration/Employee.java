@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 Oracle. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     06/14/2010-2.2 Karen Moore 
- *       - 264417:  Table generation is incorrect for JoinTables in AssociationOverrides
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
@@ -56,9 +58,17 @@ public class Employee {
     @Column(table="DDL_SALARY")
     private Integer salary;
 
+    public void addComment(Comment comment) {
+        getContactInfo().addComment(comment);
+    }
+    
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         phoneNumber.addEmployee(this);
         getContactInfo().addPhoneNumber(phoneNumber);
+    }
+    
+    public void addUpdate(String update) {
+        getContactInfo().addUpdate(update);
     }
     
     public ContactInfo getContactInfo() {

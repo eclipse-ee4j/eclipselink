@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,11 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
@@ -147,13 +150,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     public void earlyPreDelete(DeleteObjectQuery query) {
         AbstractSession querySession = query.getSession();
         if (!this.isCascadeOnDeleteSetOnDatabase) {
-            prepareTranslationRow(query.getTranslationRow(), query.getObject(), querySession);
+            prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), querySession);
             querySession.executeQuery(this.deleteAllQuery, query.getTranslationRow());
         }
 
         if ((this.historyPolicy != null) && this.historyPolicy.shouldHandleWrites()) {
             if (this.isCascadeOnDeleteSetOnDatabase) {
-                prepareTranslationRow(query.getTranslationRow(), query.getObject(), querySession);
+                prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), querySession);
             }
             this.historyPolicy.mappingLogicalDelete(this.deleteAllQuery, query.getTranslationRow(), querySession);
         }
@@ -615,7 +618,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     protected void insertAddedObjectEntry(ObjectLevelModifyQuery query, Object objectAdded, Map extraData) throws DatabaseException, OptimisticLockException {
         //cr 3819 added the line below to fix the translationtable to ensure that it
         // contains the required values
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), containerPolicy.unwrapIteratorResult(objectAdded), query.getSession(), this);
         ContainerPolicy.copyMapDataToRow(getContainerPolicy().getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
         
@@ -649,7 +652,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             return;
         }
 
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceRow(query.getTranslationRow());
 
         int orderIndex = 0;
@@ -808,7 +811,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     @Override
     protected void objectOrderChangedDuringUpdate(WriteObjectQuery query, Object orderChangedObject, int orderIndex) {
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
         AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), orderChangedObject, query.getSession(), this);
         databaseRow.put(listOrderField, orderIndex);
   
@@ -944,13 +947,13 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * The translation row may require additional fields than the primary key if the mapping in not on the primary key.
      */
     @Override
-    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
+    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, ClassDescriptor descriptor, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
         for (Enumeration sourceFieldsEnum = getSourceKeyFields().elements();
                  sourceFieldsEnum.hasMoreElements();) {
             DatabaseField sourceKey = (DatabaseField)sourceFieldsEnum.nextElement();
             if (!translationRow.containsKey(sourceKey)) {
-                Object value = getDescriptor().getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
+                Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);
             }
         }

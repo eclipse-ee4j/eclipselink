@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle, Frank Schwarz. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle, Frank Schwarz. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -27,6 +27,8 @@
  *       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
  *     01/11/2011-2.1.3 Guy Pelletier  
  *       - 277079: EmbeddedId's fields are null when using LOB with fetchtype LAZY
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -1065,19 +1067,41 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
         try {
             beginTransaction(em);
-
             Employee employee = new Employee();
             PhoneNumber phoneNumber = new PhoneNumber();
             employee.addPhoneNumber(phoneNumber);
             em.persist(employee);
-            
-            getServerSession(DDL_PU).setLogLevel(0);
             commitTransaction(em);
 
             // Force the read to hit the database and make sure the phone number is read back.
             clearCache(DDL_PU);
             em.clear();
             assertNotNull("Unable to read back the phone number", em.find(PhoneNumber.class, phoneNumber.getNumber()));
+        } catch (Exception e) {
+            fail("An error occurred: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    // Bug 338812
+    public void testDeleteObjectWithEmbeddedManyToMany(){
+        EntityManager em = createEntityManager(DDL_PU);
+
+        try {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.addPhoneNumber(new PhoneNumber());
+            employee.addComment(new Comment());
+            employee.addUpdate("Update record 1");
+            em.persist(employee);
+            commitTransaction(em);
+            
+            beginTransaction(em);
+            Employee emp = em.find(Employee.class, employee.getId());
+            em.remove(emp);
+            commitTransaction(em);
+            
         } catch (Exception e) {
             fail("An error occurred: " + e.getMessage());
         } finally {
@@ -1322,7 +1346,6 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             pk.setVersionid(new BigInteger(new Long(System.currentTimeMillis()).toString()));
             lobtest.setLobtestPK(pk);
                 
-            getServerSession(DDL_PU).setLogLevel(0);
             em.persist(lobtest);
             commitTransaction(em);
         } catch (RuntimeException e) {

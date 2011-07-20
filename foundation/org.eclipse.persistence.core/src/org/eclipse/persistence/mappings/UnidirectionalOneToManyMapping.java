@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     ailitchev - Uni-directional OneToMany
+ *     07/19/2011-2.2.1 Guy Pelletier 
+ *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -306,13 +308,13 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * The translation row may require additional fields than the primary key if the mapping in not on the primary key.
      */
     @Override
-    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
+    protected void prepareTranslationRow(AbstractRecord translationRow, Object object, ClassDescriptor descriptor, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
         int size = sourceKeyFields.size();
         for(int i=0; i < size; i++) {
             DatabaseField sourceKey = sourceKeyFields.get(i);
             if (!translationRow.containsKey(sourceKey)) {
-                Object value = getDescriptor().getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
+                Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);
             }
         }
