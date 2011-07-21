@@ -1380,7 +1380,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             deleteQuery.setTranslationRow(new DatabaseRecord());
                             deleteQuery.setObject(objectToDelete);
                             deleteQuery.setSession(this);
-                            mapping.earlyPreDelete(deleteQuery);
+                            mapping.earlyPreDelete(deleteQuery, objectToDelete);
                         }
                     }
                     deletedObjects.addElement(objectToDelete);
