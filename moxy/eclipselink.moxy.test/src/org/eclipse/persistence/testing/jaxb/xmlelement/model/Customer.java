@@ -21,6 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 @XmlRootElement
 @XmlType(propOrder={"firstName", "lastName", "address", "phoneNumbers"})
 public class Customer {
@@ -31,6 +33,7 @@ public class Customer {
     private String lastName;
     private boolean firstTimeCustomer;
     private List<Integer> orderNumbers;
+    @XmlPath(value="contact/address")
     private Address address;
     private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
 

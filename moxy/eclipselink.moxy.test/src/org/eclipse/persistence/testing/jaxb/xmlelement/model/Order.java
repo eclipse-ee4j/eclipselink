@@ -18,12 +18,16 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 @XmlRootElement
 public class Order {
 
     private int id;
+    @XmlPath(value="items/item")
     private List<Item> items;
     private Customer customer;
+    @XmlPath(value="customerInput/comments/text()")
     private String[] comments;
 
     public Order(){

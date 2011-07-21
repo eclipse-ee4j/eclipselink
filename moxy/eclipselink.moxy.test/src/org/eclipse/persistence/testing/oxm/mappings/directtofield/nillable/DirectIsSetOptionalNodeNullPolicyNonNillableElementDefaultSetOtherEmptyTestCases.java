@@ -18,9 +18,9 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetOtherEmptyTestCases extends XMLMappingTestCases {
+public class DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetOtherEmptyTestCases extends XMLWithJSONMappingTestCases {
 	// UC 3-4
 	/*
 	<xsd:element name='employee'>
@@ -36,11 +36,14 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetOtherE
 
     private final static String XML_RESOURCE = //
     "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetOtherEmpty.xml";
+    private final static String JSON_RESOURCE = //
+    "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetOtherEmpty.json";
+
 
     public DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetOtherEmptyTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-
+        setControlJSON(JSON_RESOURCE);
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
     	// alter unmarshal policy state
     	aNullPolicy.setNullRepresentedByEmptyNode(true);

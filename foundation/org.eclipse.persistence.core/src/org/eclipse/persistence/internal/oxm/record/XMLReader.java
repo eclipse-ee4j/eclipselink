@@ -26,6 +26,7 @@ import org.xml.sax.ext.LexicalHandler;
 import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 /**
@@ -43,8 +44,7 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
  */
 
 public class XMLReader implements org.xml.sax.XMLReader {
-
-    protected static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
+    
     public static final String NAMESPACE_PREFIXES_FEATURE = "http://xml.org/sax/features/namespace-prefixes";
     public static final String REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE = "http://java.sun.com/xml/schema/features/report-ignored-element-content-whitespace";
 
@@ -105,7 +105,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     public LexicalHandler getLexicalHandler() {
         if(supportsLexicalHandler) {
             try {
-                return (LexicalHandler) reader.getProperty(LEXICAL_HANDLER_PROPERTY);
+                return (LexicalHandler) reader.getProperty(XMLConstants.LEXICAL_HANDLER_PROPERTY);
             } catch (SAXException e) {
                 supportsLexicalHandler = false;
             }
@@ -118,7 +118,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
                 if(null == lexicalHandlerWrapper) {
                     try {
                         lexicalHandlerWrapper = new LexicalHandlerWrapper(lexicalHandler);
-                        reader.setProperty(LEXICAL_HANDLER_PROPERTY, lexicalHandlerWrapper);
+                        reader.setProperty(XMLConstants.LEXICAL_HANDLER_PROPERTY, lexicalHandlerWrapper);
                     } catch (SAXException e) {
                         supportsLexicalHandler = false;
                     }
@@ -137,7 +137,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public Object getProperty (String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(LEXICAL_HANDLER_PROPERTY.equals(name)) {
+        if(XMLConstants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             return getLexicalHandler();
         } else {
             return reader.getProperty(name);
@@ -145,7 +145,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public void setProperty (String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(LEXICAL_HANDLER_PROPERTY.equals(name)) {
+        if(XMLConstants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             setLexicalHandler((LexicalHandler) value);
         } else {
             reader.setProperty(name, value);

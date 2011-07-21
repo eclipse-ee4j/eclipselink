@@ -133,7 +133,6 @@ public abstract class AbstractNullPolicy {
     public void setMarshalNullRepresentation(XMLNullRepresentationType anEnumInstance) {
         marshalNullRepresentation = anEnumInstance;
     }
-
     /**
      * INTERNAL: 
      * When using the SAX or DOM Platform, this method is responsible for
@@ -147,15 +146,12 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean directMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-            Object object, Session session, NamespaceResolver namespaceResolver) {
+    	            Object object, Session session, NamespaceResolver namespaceResolver) {
         // Handle attributes - XSI_NIL, ABSENT_NODE have the same behavior
         if (xPathFragment.isAttribute()) {
             // Write out an empty attribute
             if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                // We mutate the null into an empty string 
-                marshalRecord.attribute(xPathFragment, namespaceResolver, XMLConstants.EMPTY_STRING);
-                marshalRecord.closeStartGroupingElements(groupingFragment);
+            	marshalRecord.emptyAttribute(xPathFragment, namespaceResolver);               
                 return true;
             } else {
                 // XSI_NIL attributes are invalid - and are ignored
@@ -165,20 +161,12 @@ public abstract class AbstractNullPolicy {
         } else {
             // Nillable: write out xsi:nil="true" attribute in empty element    	
             if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver, marshalRecord);
-                StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
-                qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
-                XPathFragment nilFragment = new XPathFragment(qName.toString());
-                nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-                marshalRecord.attribute(nilFragment, namespaceResolver, TRUE);
-                marshalRecord.closeStartGroupingElements(groupingFragment);
+            	marshalRecord.nilSimple(namespaceResolver);
                 return true;
             } else {
                 // EMPTY_NODE - Write out empty element
-                if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
-                    XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                    marshalRecord.closeStartGroupingElements(groupingFragment);
+                if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {                
+                	marshalRecord.emptySimple(namespaceResolver);
                     return true;
                 } else {
                     // ABSENT_NODE - Write out nothing
@@ -200,18 +188,10 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-            Object object, Session session, NamespaceResolver namespaceResolver) {
+    	      Object object, Session session, NamespaceResolver namespaceResolver) {    
         // Nillable
         if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
-            XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-            marshalRecord.closeStartGroupingElements(groupingFragment);
-            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-            String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver, marshalRecord);
-            XPathFragment nilFragment = new XPathFragment(XMLConstants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
-            nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-            marshalRecord.attribute(nilFragment, namespaceResolver, TRUE);
-            marshalRecord.closeStartElement();
-            marshalRecord.endElement(xPathFragment, namespaceResolver);
+        	marshalRecord.nilComplex(xPathFragment, namespaceResolver);
             return true;
         } else {
             // Optional and Required
@@ -220,11 +200,7 @@ public abstract class AbstractNullPolicy {
             // object=null and object=new Object() with null fields and 0-numeric primitive values
             // EMPTY_NODE - Write out empty element - Required
             if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                marshalRecord.closeStartGroupingElements(groupingFragment);
-                marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-                marshalRecord.closeStartElement();
-                marshalRecord.endElement(xPathFragment, namespaceResolver);
+            	marshalRecord.emptyComplex(xPathFragment, namespaceResolver);
                 return true;
             } else {
                 // ABSENT_NODE - Write out nothing - Optional

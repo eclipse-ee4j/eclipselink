@@ -1,33 +1,48 @@
 {
  "order" : 
   { 
-   "comments" : [ "comment1", "comment2", "comment3"] , 
+
+ "items" : {
+      "item":
+
+
+   [ 
+      { 
+         "id" : "1", 
+         "money":{ 
+            "cost" : 5.00, 
+            "price" : 7.99
+	    },
+         "description" : [ "nice item", "comes in blue or red"]
+      }, 
+      { 
+         "id" :"2", 
+         "money":{ 
+             "cost" : 10.00, 
+             "price" : 15.99} ,
+         "description" : [ "big item", "very heavy"]
+         }
+     ] 
+     },
+
+   "customerInput":{
+       "comments" : [ "comment1", "comment2", "comment3",""]} , 
    "customer" : { 
       "id":0,
       "firstName" : "Jane", 
       "lastName" : "Smith", 
+      "contact":{
       "address" : 
          { 
          "street" : "Main Street", 
          "city" : "Ottawa",
          "id" : 1
-         } , 
+         } 
+        }
+	 , 
        "firstTimeCustomer" : false, 
        "orderNumbers":[10,20,30]
    } , 
-   "id" : 1, 
-   "items" : [ 
-      { 
-         "id" : "1", 
-         "cost" : 5.00, 
-         "description" : [ "nice item", "comes in blue or red"] , 
-         "price" : 7.99
-      }, 
-      { 
-         "id" :"2", 
-         "cost" : 10.00, 
-         "description" : [ "big item", "very heavy"] , 
-         "price" : 15.99} 
-     ] 
+   "id" : 1  
    } 
 }

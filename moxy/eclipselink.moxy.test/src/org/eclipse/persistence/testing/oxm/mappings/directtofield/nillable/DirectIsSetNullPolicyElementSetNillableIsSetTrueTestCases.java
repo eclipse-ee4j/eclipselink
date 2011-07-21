@@ -21,17 +21,21 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class DirectIsSetNullPolicyElementSetNillableIsSetTrueTestCases extends XMLMappingTestCases {
+public class DirectIsSetNullPolicyElementSetNillableIsSetTrueTestCases extends XMLWithJSONMappingTestCases {
 	// TC UC 0-10 to 0-13, 3-0
     private final static String XML_RESOURCE = //
         "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetNullPolicyElementSetNillableIsSetTrue.xml";
-
+    private final static String JSON_RESOURCE = //
+        "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetNullPolicyElementSetNillableIsSetTrue.json";
+    private final static String JSON_WRITE_RESOURCE = //
+        "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetNullPolicyElementSetNillableIsSetTrueWrite.json";
     public DirectIsSetNullPolicyElementSetNillableIsSetTrueTestCases(String name) throws Exception {
          super(name);
         setControlDocument(XML_RESOURCE);
-
+        setControlJSON(JSON_RESOURCE);
+        setControlJSONWrite(JSON_WRITE_RESOURCE);
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
     	// Alter unmarshal policy state
     	aNullPolicy.setNullRepresentedByEmptyNode(true);

@@ -19,14 +19,16 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class CompositeCollectionOptionalNodeNullPolicyElementTestCases extends XMLMappingTestCases {
+public class CompositeCollectionOptionalNodeNullPolicyElementTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/CompositeCollectionOptionalNodeNullPolicyElement.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/CompositeCollectionOptionalNodeNullPolicyElement.json";
 
     public CompositeCollectionOptionalNodeNullPolicyElementTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new NullPolicy();
     	// alter unmarshal policy state

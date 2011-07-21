@@ -21,14 +21,18 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
+//public class DirectCollectionOptionalNodeNullPolicyAttributeTestCases extends XMLWithJSONMappingTestCases {
 public class DirectCollectionOptionalNodeNullPolicyAttributeTestCases extends XMLMappingTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionOptionalNodeNullPolicyAttribute.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionOptionalNodeNullPolicyAttribute.json";
 
     public DirectCollectionOptionalNodeNullPolicyAttributeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+      // setControlJSON(JSON_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new NullPolicy();
         // alter unmarshal policy state

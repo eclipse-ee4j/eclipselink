@@ -12,14 +12,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyname.withgroupingelement;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.EmailAddress;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.MailingAddress;
 
-public class CompositeCollectionSingleElementTestCases extends XMLMappingTestCases {
+public class CompositeCollectionSingleElementTestCases extends XMLWithJSONMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbyname/withgroupingelement/CompositeCollectionSingleElement.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbyname/withgroupingelement/CompositeCollectionSingleElement.json";
   private final static int CONTROL_EMPLOYEE_ID = 123;
   private final static String CONTROL_EMAIL_ADDRESS_1_USER_ID = "jane.doe";
   private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "example.com";
@@ -33,6 +34,7 @@ public class CompositeCollectionSingleElementTestCases extends XMLMappingTestCas
   public CompositeCollectionSingleElementTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
     //setSession(SESSION_NAME);
 		setProject(new CompositeCollectionWithGroupingElementIdentifiedByNameProject());
   }

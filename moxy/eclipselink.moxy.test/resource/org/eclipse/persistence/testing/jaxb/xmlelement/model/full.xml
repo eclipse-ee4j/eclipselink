@@ -1,34 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <order>
-   <comments>comment1</comments>
-   <comments>comment2</comments>
-   <comments>comment3</comments>
+   <items>
+        <item>
+           <id>1</id>
+	    	<money>
+               <cost>5.00</cost>
+    	       <price>7.99</price>
+    	    </money>
+	    	<description>nice item</description>
+            <description>comes in blue or red</description>    
+       </item>
+       <item>
+          <id>2</id>
+          <money>
+              <cost>10.00</cost>
+              <price>15.99</price>
+	      </money>
+          <description>big item</description>
+          <description>very heavy</description>
+        </item>
+   </items>
+   <customerInput>
+      <comments>comment1</comments>
+      <comments>comment2</comments>
+      <comments>comment3</comments>
+      <comments></comments>
+   </customerInput>
    <customer id="0">
       <firstName>Jane</firstName>
       <lastName>Smith</lastName>
+	  <contact>
       <address>
           <street>Main Street</street>
           <city>Ottawa</city>
           <id>1</id>
       </address>
+      </contact>
       <firstTimeCustomer>false</firstTimeCustomer>
 	  <orderNumbers>10</orderNumbers>
 	  <orderNumbers>20</orderNumbers>
 	  <orderNumbers>30</orderNumbers>
    </customer>
    <id>1</id>
-   <items>
-        <id>1</id>
-        <cost>5.00</cost>
-        <description>nice item</description>
-        <description>comes in blue or red</description>
-        <price>7.99</price>
-   </items>
-   <items>
-       <id>2</id>
-       <cost>10.00</cost>
-       <description>big item</description>
-       <description>very heavy</description>
-       <price>15.99</price>
-   </items>
 </order>

@@ -323,20 +323,12 @@ public class XPathNode {
         }
     }
 
-    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, AbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject) {
-        return startElement(marshalRecord, anXPathFragment, object, session, namespaceResolver, compositeObjectBuilder, compositeObject, true);
-    }
-
-    /**
-     * @since EclipseLink 2.4
-     */
-    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, AbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject, boolean includeRoot) {
+    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, AbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject) {    
         if (null == anXPathFragment) {
             return false;
         }
-        if(includeRoot) {
-            marshalRecord.openStartElement(anXPathFragment, namespaceResolver);
-        }
+
+        marshalRecord.openStartElement(anXPathFragment, namespaceResolver);
         boolean hasValue = false;
 
         marshalRecord.predicateAttribute(anXPathFragment, namespaceResolver);

@@ -13,12 +13,14 @@
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.nulltests;
 
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.EmailAddress;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.Employee;
 
-public class CompositeObjectNullObjectTests extends XMLMappingTestCases 
+public class CompositeObjectNullObjectTests extends XMLWithJSONMappingTestCases 
 {
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/nulltests/CompositeObjectNullObjectTests.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/nulltests/CompositeObjectNullObjectTests.json";
   private final static int CONTROL_EMPLOYEE_ID = 123;
 	private final static String CONTROL_DOMAIN = "example.com";
   private final static String CONTROL_USER_ID = "jane.doe";
@@ -26,6 +28,7 @@ public class CompositeObjectNullObjectTests extends XMLMappingTestCases
 	public CompositeObjectNullObjectTests(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
 		setProject(new CompositeObjectNullTestsProject());
   }
 	

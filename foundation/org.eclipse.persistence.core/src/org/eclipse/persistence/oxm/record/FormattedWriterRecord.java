@@ -202,7 +202,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
-                xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
+                xfragReader.setProperty(XMLConstants.LEXICAL_HANDLER_PROPERTY, wrcHandler);
                 xfragReader.parse(node);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);

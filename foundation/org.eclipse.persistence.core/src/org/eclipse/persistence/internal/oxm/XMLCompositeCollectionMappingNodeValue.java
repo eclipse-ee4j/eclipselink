@@ -68,20 +68,20 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         Object collection = xmlCompositeCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             return false;
-        }
+        }      
+  
         Object iterator = cp.iteratorFor(collection);
-        if (cp.hasNext(iterator)) {
-            marshalRecord.startCollection();
+
+        if (cp.hasNext(iterator)) {          
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
-            Object objectValue = cp.next(iterator, session);
-            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
-        } else {
-            return false;
+        }else{
+        	return false;
         }
+        marshalRecord.startCollection(); 
         while (cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, session);
-            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance(), marshalRecord.includeRootElementForSubsequentItemsInCollection(xPathFragment));
+            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
         marshalRecord.endCollection();
         return true;
@@ -237,14 +237,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         return true;
     }
     
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        return this.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext, true);
-    }
-
-    /**
-     * @since EclipseLink 2.4
-     */
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext , boolean includeRoot) {
+	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xPathFragment.hasLeafElementType()) {
             marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
         }
@@ -259,7 +252,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             }
         }
         if (null == value) {
-            return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+        	   return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
 
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
@@ -277,7 +270,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             marshalRecord.beforeContainmentMarshal(value);
 
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
-            getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value, includeRoot);
+            getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);

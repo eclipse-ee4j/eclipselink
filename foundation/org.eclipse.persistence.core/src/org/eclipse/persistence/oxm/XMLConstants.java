@@ -55,7 +55,8 @@ public class XMLConstants {
     public final static String DEFAULT_XML_ENCODING = "UTF-8";
     public final static String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
     public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
-    
+    public static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
+    													   
     // Built-in Schema Types    
     public static final String ANY = "any";
     public static final String BASE_64_BINARY = "base64Binary";

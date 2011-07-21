@@ -3,10 +3,12 @@
    <customer id="0">
       <firstName>Jane</firstName>
       <lastName>Smith</lastName>
+	   <contact>
       <address>
           <street>Main Street</street>
           <city>Ottawa</city>
       </address>
+	   </contact>
       <firstTimeCustomer>false</firstTimeCustomer>
    </customer>
    <id>1</id>

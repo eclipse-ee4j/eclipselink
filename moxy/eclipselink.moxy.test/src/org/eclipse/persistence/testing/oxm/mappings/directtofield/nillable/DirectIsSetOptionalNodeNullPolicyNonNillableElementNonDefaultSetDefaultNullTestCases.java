@@ -20,9 +20,9 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetDefaultNullTestCases extends XMLMappingTestCases {
+public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetDefaultNullTestCases extends XMLWithJSONMappingTestCases {
 	// UC 1-3
 	/*
 	<xsd:element name='employee'>
@@ -38,11 +38,13 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetDef
 
     private final static String XML_RESOURCE = //
     "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetDefaultNull.xml";
+    private final static String JSON_RESOURCE = //
+    "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetDefaultNull.json";
 
     public DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetDefaultNullTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-
+        setControlJSON(JSON_RESOURCE);
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
     	// alter unmarshal policy state
     	aNullPolicy.setNullRepresentedByEmptyNode(true);

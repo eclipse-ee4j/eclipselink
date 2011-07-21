@@ -127,7 +127,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     @Override
     public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(LEXICAL_HANDLER_PROPERTY.equals(name)) {
+        if(XMLConstants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             return getLexicalHandler();
         }
         return null;
@@ -135,7 +135,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     @Override
     public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(LEXICAL_HANDLER_PROPERTY.equals(name)) {
+        if(XMLConstants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             setLexicalHandler((LexicalHandler) value);
         }
     }

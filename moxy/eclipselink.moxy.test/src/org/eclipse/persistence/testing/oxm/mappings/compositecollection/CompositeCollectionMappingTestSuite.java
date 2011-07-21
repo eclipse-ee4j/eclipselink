@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositecollection.map.Comp
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.map.CompositeCollectionMapTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.mappingxpathcollision.MappingXpathCollisionTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nested.CompositeCollectionNestedTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable.CompositeCollectionAbsentNodeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable.CompositeCollectionEmptyNodeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.norefclass.DefaultNSTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.reuse.CompositeCollectionReuseTestCases;
@@ -45,6 +46,7 @@ public class CompositeCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(CompositeCollectionReuseTestCases.class);
         suite.addTestSuite(DefaultNSTestCases.class);
         suite.addTestSuite(CompositeCollectionEmptyNodeTestCases.class);
+        suite.addTestSuite(CompositeCollectionAbsentNodeTestCases.class);
 
         return suite;
     }

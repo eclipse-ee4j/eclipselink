@@ -98,16 +98,23 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     writer.write(TAB);
                 }
             }
-            isStartElementOpen = true;
-            writer.write('"');
-            writer.write(xPathFragment.getShortName());
-            writer.write("\" : ");
-            if(position != null && position.isCollection()) {
-                writer.write('[');
+            if(position == null || !position.isCollection() || position.isEmptyCollection()){               
+                isStartElementOpen = true;
+                writer.write('"');
+                writer.write(xPathFragment.getShortName());
+                writer.write("\" : ");
+            
+                if(position != null && position.isCollection()) {
+                    writer.write('[');
+                }
+                if(position !=null && position.isEmptyCollection()){
+            	    position.setEmptyCollection(false);
+                }
             }
             if(!(xPathFragment.getHasText() || xPathFragment.isAttribute())) {
                 writer.write('{');
             }
+            
             numberOfTabs++;
             isLastEventText = false;
         } catch (IOException e) {
@@ -298,15 +305,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 throw XMLMarshalException.marshalException(e);
             }
         }
-    }
-
-    @Override
-    public boolean includeRootElementForSubsequentItemsInCollection(XPathFragment xPathFragment) {
-        boolean includeRoot = super.includeRootElementForSubsequentItemsInCollection(xPathFragment);
-        if(!includeRoot) {
-            numberOfTabs++;
-        }
-        return includeRoot;
     }
 
 }

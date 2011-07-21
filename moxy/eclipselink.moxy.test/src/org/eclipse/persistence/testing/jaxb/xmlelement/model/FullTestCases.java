@@ -32,7 +32,7 @@ public class FullTestCases extends JAXBWithJSONTestCases{
 
     protected Object getControlObject(){
         Order o = new Order();
-        String[] comments = new String[]{"comment1","comment2","comment3"};
+        String[] comments = new String[]{"comment1","comment2","comment3", ""};
         o.setComments(comments);
         o.setId(1);
 

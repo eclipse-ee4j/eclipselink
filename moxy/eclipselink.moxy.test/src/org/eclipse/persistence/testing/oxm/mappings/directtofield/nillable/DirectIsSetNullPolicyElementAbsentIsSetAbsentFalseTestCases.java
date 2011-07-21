@@ -18,16 +18,19 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseTestCases extends XMLMappingTestCases {
+public class DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseTestCases extends XMLWithJSONMappingTestCases{
 	// TC  UC 
     private final static String XML_RESOURCE = //
     "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetNullPolicyElementAbsentIsSetAbsentFalse.xml";
-
+    private final static String JSON_RESOURCE = //
+        "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetNullPolicyElementAbsentIsSetAbsentFalse.json";
+    
     public DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
     	// Alter unmarshal policy state

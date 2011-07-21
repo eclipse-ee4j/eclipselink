@@ -20,17 +20,20 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class DirectCollectionNillableAndEmptyNodeTestCases extends XMLMappingTestCases {
+public class DirectCollectionNillableAndEmptyNodeTestCases extends XMLWithJSONMappingTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionNillableNodeNullPolicy.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionNillableAndEmptyNodeWrite.json";
     private final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionNillableAndEmptyNodeWrite.xml";
  
     public DirectCollectionNillableAndEmptyNodeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
+
         AbstractNullPolicy aNullPolicy = new NullPolicy();
         // alter unmarshal policy state
         aNullPolicy.setNullRepresentedByEmptyNode(true);

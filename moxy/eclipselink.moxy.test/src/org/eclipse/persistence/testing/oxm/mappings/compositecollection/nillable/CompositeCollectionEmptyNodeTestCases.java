@@ -9,11 +9,12 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase.Metadata;
 import org.eclipse.persistence.testing.oxm.OXTestCase.Platform;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class CompositeCollectionEmptyNodeTestCases extends XMLMappingTestCases {
+public class CompositeCollectionEmptyNodeTestCases extends XMLWithJSONMappingTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/EmptyNode.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/EmptyNode.json";
 
     @Override
     public Platform getPlatform() {
@@ -27,6 +28,7 @@ public class CompositeCollectionEmptyNodeTestCases extends XMLMappingTestCases {
     public CompositeCollectionEmptyNodeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new NullPolicy();
         // alter unmarshal policy state

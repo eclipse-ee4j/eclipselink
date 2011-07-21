@@ -16,9 +16,9 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNonNullTestCases extends XMLMappingTestCases {
+public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNonNullTestCases extends XMLWithJSONMappingTestCases {
 	// UC 0-0 and UC 3
 	/*
 	<xsd:element name='employee'>
@@ -33,11 +33,13 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNon
 	 */
     private final static String XML_RESOURCE = //
     "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNonNull.xml";
-
+    private final static String JSON_RESOURCE = //
+    "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNonNull.json";
+    																	 
     public DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNonNullTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-
+        setControlJSON(JSON_RESOURCE);
         // use default policy with default flags and marshal enum
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();        
         ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");

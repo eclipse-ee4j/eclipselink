@@ -5,11 +5,14 @@
       "id" : 0,
       "firstName" : "Jane", 
       "lastName" : "Smith", 
+      "contact":{
       "address" : 
          { 
          "street" : "Main Street", 
          "city" : "Ottawa"
-         } , 
+         } 
+	 }
+	 , 
        "firstTimeCustomer" : false
    } , 
    "id" : 1

@@ -23,7 +23,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 /**
  * UC 9-3 to 9-4 and 11.2
@@ -32,15 +32,18 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
  * The unmarshal (9-3 to 9-4) case will not round trip because isset for manager will always be true
  * for both the isset=false and isset=true versions of this test.
  */
-public class CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases extends XMLMappingTestCases {
+public class CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = //
     	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.xml";
+    private final static String JSON_RESOURCE = //
+    	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.json";
     private final static String XML_WRITE_RESOURCE = //
-    	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.xml";
+    	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalse.xml";    																		   
 
     public CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);
+        setControlDocument(XML_RESOURCE);       
+		setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();

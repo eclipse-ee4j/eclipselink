@@ -12,14 +12,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.EmailAddress;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.MailingAddress;
 
-public class CompositeObjectIdentifiedByNameTestCases extends XMLMappingTestCases {
+public class CompositeObjectIdentifiedByNameTestCases extends XMLWithJSONMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/identifiedbyname/CompositeObjectIdentifiedByName.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/identifiedbyname/CompositeObjectIdentifiedByName.json";
   private final static int CONTROL_EMPLOYEE_ID = 123;
   private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
   private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
@@ -31,6 +32,7 @@ public class CompositeObjectIdentifiedByNameTestCases extends XMLMappingTestCase
   public CompositeObjectIdentifiedByNameTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
 		setProject(new CompositeObjectIdentifiedByNameProject());
   }
 

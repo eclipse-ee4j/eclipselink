@@ -20,15 +20,18 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class DirectCollectionOptionalNodeNullPolicyElementTestCases extends XMLMappingTestCases {
+public class DirectCollectionOptionalNodeNullPolicyElementTestCases extends XMLWithJSONMappingTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionOptionalNodeNullPolicyElement.xml";
+
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionOptionalNodeNullPolicyElement.json";
 
     public DirectCollectionOptionalNodeNullPolicyElementTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new NullPolicy();
         // alter unmarshal policy state
@@ -50,8 +53,10 @@ public class DirectCollectionOptionalNodeNullPolicyElementTestCases extends XMLM
         anEmployee.setFirstName(null);
         Vector aVector = new Vector();
         aVector.add(null);
+        aVector.add(null);
         aVector.add("write code");
         aVector.add("");
+        aVector.add(null);
         anEmployee.setTasks(aVector);
         anEmployee.setLastName("Doe");
         return anEmployee;

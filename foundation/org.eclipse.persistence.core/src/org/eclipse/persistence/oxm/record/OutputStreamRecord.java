@@ -340,7 +340,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 OutputStreamRecordContentHandler handler = new OutputStreamRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(handler);
-                xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
+                xfragReader.setProperty(XMLConstants.LEXICAL_HANDLER_PROPERTY, handler);
                 xfragReader.parse(node);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);

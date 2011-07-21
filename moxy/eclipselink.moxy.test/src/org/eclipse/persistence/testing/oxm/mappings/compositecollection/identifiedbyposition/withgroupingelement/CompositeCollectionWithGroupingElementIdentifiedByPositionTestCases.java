@@ -13,13 +13,15 @@
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyposition.withgroupingelement;
 
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.EmailAddress;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.MailingAddress;
 
-public class CompositeCollectionWithGroupingElementIdentifiedByPositionTestCases extends XMLMappingTestCases {
+public class CompositeCollectionWithGroupingElementIdentifiedByPositionTestCases extends XMLWithJSONMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbyposition/withgroupingelement/CompositeCollectionWithGroupingElementIdentifiedByPosition.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbyposition/withgroupingelement/CompositeCollectionWithGroupingElementIdentifiedByPosition.json";
   private final static int CONTROL_EMPLOYEE_ID = 123;
   private final static String CONTROL_EMAIL_ADDRESS_1_USER_ID = "jane.doe";
   private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "example.com";
@@ -37,6 +39,7 @@ public class CompositeCollectionWithGroupingElementIdentifiedByPositionTestCases
   public CompositeCollectionWithGroupingElementIdentifiedByPositionTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
 		setProject(new CompositeCollectionWithGroupingElementIdentifiedByPositionProject());
   }
 

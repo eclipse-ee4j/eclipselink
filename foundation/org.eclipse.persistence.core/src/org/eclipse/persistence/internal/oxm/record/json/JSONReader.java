@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStre
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -66,9 +67,9 @@ public class JSONReader extends XMLReaderAdapter {
             } else {
                 Tree stringTree = tree.getChild(0);
                 String localName = stringTree.getText().substring(1, stringTree.getText().length() - 1);
-                contentHandler.startElement("", localName, localName, attributes.setTree(tree));
+                contentHandler.startElement("", localName, localName, attributes.setTree(valueTree));
                 parse(valueTree);
-                contentHandler.endElement("", localName, localName);
+                contentHandler.endElement("", localName, localName);                
             }
             break;
         }
@@ -96,10 +97,12 @@ public class JSONReader extends XMLReaderAdapter {
             Tree parentStringTree = tree.getParent().getChild(0);
             String parentLocalName = parentStringTree.getText().substring(1, parentStringTree.getText().length() - 1);
             for(int x=0, size=tree.getChildCount(); x<size; x++) {
-                contentHandler.startElement("", parentLocalName, parentLocalName, attributes.setTree(tree));
-                parse((CommonTree) tree.getChild(x));
+            	CommonTree nextChildTree = (CommonTree) tree.getChild(x);                
+            	contentHandler.startElement("", parentLocalName, parentLocalName, attributes.setTree(nextChildTree));
+                parse(nextChildTree);
                 contentHandler.endElement("", parentLocalName, parentLocalName);
             }
+           
             break;
         }
         default: {
@@ -122,18 +125,24 @@ public class JSONReader extends XMLReaderAdapter {
 
         public JSONAttributes setTree(Tree tree) {
             reset();
-            this.tree = tree;
+            this.tree = tree;              
             return this;
         }
-
+               
         @Override
         protected List<Attribute> attributes() {
-            if(null == attributes) {
-                Tree valueTree = tree.getChild(1);
-                if(valueTree.getType() == JSONLexer.OBJECT) {
-                    attributes = new ArrayList<Attribute>(valueTree.getChildCount());
-                    for(int x=0; x<valueTree.getChildCount(); x++) {
-                        Tree childTree = valueTree.getChild(x);
+            if(null == attributes) {            	
+                
+                if(tree.getType() == JSONLexer.NULL){
+                	attributes = new ArrayList<Attribute>(1);
+                    attributes.add(new Attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true"));
+                	return attributes;
+
+                }                
+                if(tree.getType() == JSONLexer.OBJECT) {
+                    attributes = new ArrayList<Attribute>(tree.getChildCount());
+                    for(int x=0; x<tree.getChildCount(); x++) {
+                        Tree childTree = tree.getChild(x);
                         String attributeLocalName = childTree.getChild(0).getText().substring(1, childTree.getChild(0).getText().length() - 1);
                         Tree childValueTree = childTree.getChild(1);
                         switch(childValueTree.getType()) {

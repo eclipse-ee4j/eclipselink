@@ -18,12 +18,16 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlSchemaType;
 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 public class Item {
 
    @XmlSchemaType(name="String")
    private int id;
    private String[] description;
+   @XmlPath(value="money/cost/text()")
    private BigDecimal cost;
+   @XmlPath(value="money/price/text()")
    private BigDecimal price;
 
    public int getId() {

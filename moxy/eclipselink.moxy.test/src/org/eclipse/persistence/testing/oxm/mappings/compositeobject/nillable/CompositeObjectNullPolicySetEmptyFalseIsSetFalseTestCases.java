@@ -35,18 +35,21 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 /**
  * UC 8-1 to 8-2 and 11.2
  */
-public class CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases extends XMLMappingTestCases {
+public class CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = //
     	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectNullPolicySetEmptyFalseIsSetFalse.xml";
+    private final static String JSON_RESOURCE = //
+    	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectNullPolicySetEmptyFalseIsSetFalse.json";
 
     public CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);
+        setControlDocument(XML_RESOURCE);        
+		setControlJSON(JSON_RESOURCE);
 
         AbstractNullPolicy aNullPolicy = new NullPolicy();
     	// alter unmarshal policy state
