@@ -790,8 +790,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * This is used during deletion to resolve deletion cycles.
      */
     @Override
-    public void earlyPreDelete(DeleteObjectQuery query) {
-        Object object = query.getObject();
+    public void earlyPreDelete(DeleteObjectQuery query, Object object) {
         AbstractSession session = query.getSession();
         // Avoid instantiating objects.
         Object attributeValue = getAttributeValueFromObject(object);

@@ -147,7 +147,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Delete join tables before the start of the deletion process to avoid constraint errors.
      */
     @Override
-    public void earlyPreDelete(DeleteObjectQuery query) {
+    public void earlyPreDelete(DeleteObjectQuery query, Object object) {
         AbstractSession querySession = query.getSession();
         if (!this.isCascadeOnDeleteSetOnDatabase) {
             prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), querySession);
@@ -924,7 +924,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // This has already been done in a unit of work.
         if (!session.isUnitOfWork()) {
-            earlyPreDelete(query);
+            earlyPreDelete(query, query.getObject());
         }
 
         // If privately owned delete the objects, this does not handle removed objects (i.e. verify delete, not req in uow).

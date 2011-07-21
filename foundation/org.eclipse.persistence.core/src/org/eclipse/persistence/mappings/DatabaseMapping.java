@@ -379,7 +379,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * This method is called to update collection tables prior to commit.
      */
-    public void earlyPreDelete(DeleteObjectQuery query){
+    public void earlyPreDelete(DeleteObjectQuery query, Object object) {
     }
 
     /**
