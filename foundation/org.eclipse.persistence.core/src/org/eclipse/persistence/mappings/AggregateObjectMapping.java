@@ -890,6 +890,23 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * This method is called to update collection tables prior to commit.
+     */
+    @Override
+    public void earlyPreDelete(DeleteObjectQuery query, Object object) {
+        // need to go through our reference's pre-delete mappings
+        for (DatabaseMapping mapping : getReferenceDescriptor().getPreDeleteMappings()) {
+            Object nestedObject = getRealAttributeValueFromObject(object, query.getSession());
+            
+            // If we have an aggregate object, go through the pre-delete.
+            if (nestedObject != null) {
+                mapping.earlyPreDelete(query, nestedObject);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query.
      */
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
@@ -1193,7 +1210,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         
         // Add the nested pre delete mappings to the source entity.
         if (clonedDescriptor.hasPreDeleteMappings()) {
-            getDescriptor().getPreDeleteMappings().addAll(clonedDescriptor.getPreDeleteMappings());
+            getDescriptor().addPreDeleteMapping(this);
         }
     }
 
