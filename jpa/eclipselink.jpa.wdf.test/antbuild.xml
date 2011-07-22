@@ -64,6 +64,7 @@
     <property name="wdf_test.2.moxy.dir"           value="${wdf_test.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
     <property name="wdf_test.2.core.test.dir"      value="${wdf_test.2.trunk.dir}/foundation/eclipselink.core.test"/>
     <property name="wdf_test.2.jpa.test"           value="${wdf_test.build.location}/../eclipselink.jpa.test"/>
+    <property name="eclipselink.jpa.test" value="${wdf_test.2.jpa.test}"/>
     <property name="env" environment="env"         value="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
