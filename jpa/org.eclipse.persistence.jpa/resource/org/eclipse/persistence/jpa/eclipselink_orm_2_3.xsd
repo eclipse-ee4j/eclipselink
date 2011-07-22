@@ -652,7 +652,7 @@
                      minOccurs="0"/>
         <xsd:element name="access-methods" type="orm:access-methods" 
                      minOccurs="0"/>
-        <xsd:element name="tenant-discriminator" type="orm:tenant-discriminator" 
+        <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" 
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
@@ -818,7 +818,7 @@
                      minOccurs="0"/>
         <xsd:element name="cascade-persist" type="orm:emptyType" 
                      minOccurs="0"/>
-        <xsd:element name="tenant-discriminator" type="orm:tenant-discriminator" 
+        <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" 
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="entity-listeners" type="orm:entity-listeners"
                      minOccurs="0"/>
@@ -2217,8 +2217,6 @@
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
-
-
       <xsd:element name="noncacheable" type="orm:emptyType" minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
@@ -3312,7 +3310,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="tenant-discriminator" type="orm:tenant-discriminator" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="type" type="orm:multitenant-type"/>
   </xsd:complexType>
@@ -5003,23 +5001,22 @@
   
   <!-- **************************************************** -->
 
-  <xsd:complexType name="tenant-discriminator">
+  <xsd:complexType name="tenant-discriminator-column">
     <xsd:annotation>
       <xsd:documentation>
-
         @Target({}) 
         @Retention(RUNTIME)
-        public @interface TenantDiscriminator {
+        public @interface TenantDiscriminatorColumn {
             /**
-             * (Optional) The name of column to be used for the discriminator.
+             * (Optional) The name of column to be used for the tenant discriminator.
              */
-            String name() default "eclipselink.tenant-id";
+            String name() default "TENANT_ID";
 
             /**
              * (Optional) The name of the context property to apply to the 
              * tenant discriminator column.
              */
-            String contextProperty() default "TENANT_ID";
+            String contextProperty() default "eclipselink.tenant-id";
 
             /**
              * (Optional) The type of object/column to use as a class discriminator.
@@ -5053,15 +5050,14 @@
              */
             boolean primaryKey() default false; 
         }
-
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string"/>
-    <xsd:attribute name="column-name" type="xsd:string"/>
+    <xsd:attribute name="context-property" type="xsd:string"/>
     <xsd:attribute name="discriminator-type" type="orm:discriminator-type"/>
     <xsd:attribute name="column-definition" type="xsd:string"/>
-    <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="length" type="xsd:int"/>
+    <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="primary-key" type="xsd:boolean"/>
   </xsd:complexType>
   

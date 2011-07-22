@@ -21,17 +21,17 @@
             <basic name="revenue">
                 <column name="REVENUE" table="XML_FAMILY_REVENUE"/>
             </basic>
-            <element-collection name="tags">
-                <collection-table name="XML_FAMILY_TAGS">
-                    <join-column name="FAMILY_ID"/>
-                </collection-table>
-                <column name="TAG"/>
-            </element-collection>
             <one-to-many name="mafiosos" mapped-by="family">
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </one-to-many>
+            <element-collection name="tags">
+                <column name="TAG"/>
+                <collection-table name="XML_FAMILY_TAGS">
+                    <join-column name="FAMILY_ID"/>
+                </collection-table>
+            </element-collection>
         </attributes>
     </entity>
     
@@ -63,7 +63,7 @@
     
     <entity name="XMLBoss" class="Boss">
         <table name="XML_BOSS"/>
-        <discriminator-value name="DON"/>
+        <discriminator-value>DON</discriminator-value>
         <named-query name="UpdateXMLBossName">
             <query>UPDATE XMLBoss b set b.firstName = :name where b.id = :id</query>
         </named-query>
@@ -79,29 +79,29 @@
     
     <entity name="XMLUnderboss" class="Underboss">
         <table name="XML_UNDERBOSS"/>
-        <discriminator-value name="LITTLE_DON"/>
+        <discriminator-value>LITTLE_DON</discriminator-value>
         <attributes>
+            <one-to-many name="capos" mapped-by="underboss"/>
             <one-to-one name="boss" mapped-by="underboss">
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </one-to-one>
-            <one-to-many name="capos" mapped-by="underboss"/>
         </attributes>
     </entity>
     
     <entity name="XMLCapo" class="Capo">
         <table name="XML_CAPO"/>
-        <discriminator-value name="CAPO"/>
+        <discriminator-value>CAPO</discriminator-value>
         <attributes>
-            <one-to-many name="soldiers" mapped-by="capo"/>
             <many-to-one name="underboss"/>
+            <one-to-many name="soldiers" mapped-by="capo"/>
         </attributes>
     </entity>
     
     <entity name="XMLSoldier" class="Soldier">
         <table name="XML_SOLDIER"/>
-        <discriminator-value name="SOLDIER"/>
+        <discriminator-value>SOLDIER</discriminator-value>
         <attributes>
             <many-to-one name="capo"/>
             <many-to-many name="contracts" mapped-by="soldiers">
@@ -114,13 +114,13 @@
     
     <entity name="XMLContract" class="Contract">
         <multitenant type="SINGLE_TABLE"/>
+        <table name="XML_CONTRACT"/>
         <named-query name="FindAllXmlContracts">
             <query>SELECT c FROM XMLContract c</query>
         </named-query>
         <named-query name="UpdateAllXmlContractDescriptions">
             <query>UPDATE XMLContract c SET c.description = 'voided'</query>
         </named-query>
-        <table name="XML_CONTRACT"/>
         <attributes>
             <id name="id">
                 <column name="ID"/>
@@ -132,16 +132,17 @@
             <basic name="tenantId">
                 <column name="TENANT_ID" insertable="false" updatable="false"/>
             </basic>
+            <version name="version"/>
             <many-to-many name="soldiers">
-                <cascade>
-                    <cascade-all/>
-                </cascade>
                 <join-table name="XML_CONTRACT_SOLDIER">
                     <join-column name="CONTRACT_ID"/>
                     <inverse-join-column name="SOLDIER_ID"/>
                 </join-table>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
             </many-to-many>
-            <version name="version"/>
+            
         </attributes>
     </entity>
     
