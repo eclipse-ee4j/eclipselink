@@ -19,12 +19,37 @@ import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaField</code> implementation used when bootstrapping
+ * a <code>DynamicJAXBContext</code> from XML Bindings.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide Field information to the <code>JavaModel</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.2
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaField
+ */
 public class OXMJavaFieldImpl implements JavaField {
 
     private String fieldName;
     private String fieldTypeName;
     private JavaClass owningClass;
 
+    /**
+     * Construct a new instance of <code>OXMJavaFieldImpl</code>.
+     *
+     * @param aFieldName - this fields's name
+     * @param aFieldTypeName - this field's type as a <code>String</code>.
+     * @param owner - the <code>JavaClass</code> this field belongs to.
+     */
     public OXMJavaFieldImpl(String aFieldName, String aFieldTypeName, JavaClass owner) {
         this.fieldName = aFieldName;
         this.fieldTypeName = aFieldTypeName;
@@ -79,6 +104,9 @@ public class OXMJavaFieldImpl implements JavaField {
         return Modifier.isStatic(getModifiers());
     }
 
+    /**
+     * Not supported.
+     */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }

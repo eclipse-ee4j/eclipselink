@@ -18,12 +18,37 @@ import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaMethod</code> implementation used when bootstrapping
+ * a <code>DynamicJAXBContext</code> from XML Bindings.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide Method information to the <code>JavaModel</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.2
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaMethod
+ */
 public class OXMJavaMethodImpl implements JavaMethod {
 
     private String name;
     private JavaClass owningClass;
     private JavaClass returnType;
 
+    /**
+     * Construct a new instance of <code>OXMJavaMethodImpl</code>.
+     *
+     * @param methodName - this method's name
+     * @param returnType - this method's return type as a <code>JavaClass</code>.
+     * @param owner - the <code>JavaClass</code> this method belongs to.
+     */
     public OXMJavaMethodImpl(String methodName, JavaClass returnType, JavaClass owner) {
         this.name = methodName;
         this.owningClass = owner;

@@ -71,7 +71,7 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
 
     /**
      * Construct a new instance of <code>XJCJavaAnnotationImpl</code>.
-     * 
+     *
      * @param annotation - the XJC <code>JAnnotationUse</code> to be wrapped.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
      */
@@ -82,7 +82,7 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
 
     /**
      * Return a Java <code>Annotation</code> representation of this <code>JavaAnnotation</code>.
-     * 
+     *
      * @return a Java <code>Annotation</code> representation of this <code>JavaAnnotation</code>.
      */
     @SuppressWarnings("unchecked")
@@ -184,9 +184,9 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
     }
 
     /**
-     * Return the Java <code>Class</code> of the <code>Annotation</code> represented by this <code>JavaAnnotation</code>. 
-     * 
-     * @return the Java <code>Class</code> of this <code>JavaAnnotation's</code> <code>Annotation</code>. 
+     * Return the Java <code>Class</code> of the <code>Annotation</code> represented by this <code>JavaAnnotation</code>.
+     *
+     * @return the Java <code>Class</code> of this <code>JavaAnnotation's</code> <code>Annotation</code>.
      */
     public Class<?> getJavaAnnotationClass() {
         try {
@@ -201,7 +201,7 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public Map<Object, Object> getComponents() {
         throw new UnsupportedOperationException("getComponents");

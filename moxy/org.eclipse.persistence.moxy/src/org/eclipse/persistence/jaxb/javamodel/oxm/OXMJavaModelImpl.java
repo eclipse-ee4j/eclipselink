@@ -24,11 +24,37 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> <code>JavaModel</code> implementation backed by a collection of MOXY's
+ * <code>xmlmodel.JavaClasses</code>.  Used when bootstrapping a <code>DynamicJAXBContext</code>
+ * from XML Bindings.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Return a <code>JavaClass</code> based on a <code>Class</code> or <code>Class</code> name.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.2
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaModel
+ */
 public class OXMJavaModelImpl implements JavaModel {
 
     private ClassLoader classLoader;
     private Map<String, JavaClass> javaModelClasses = new HashMap<String, JavaClass>();
 
+    /**
+     * Construct a new instance of <code>OXMJavaModelImpl</code>.
+     *
+     * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
+     * @param javaClasses - an array of <code>JavaClasses</code> for which to generate mappings.
+     *
+     */
     public OXMJavaModelImpl(ClassLoader loader, JavaClass[] javaClasses) {
         this.classLoader = loader;
 
@@ -37,6 +63,13 @@ public class OXMJavaModelImpl implements JavaModel {
         }
     }
 
+    /**
+     * Obtain the <code>JavaClass</code> given the corresponding Java <code>Class</code>.
+     *
+     * @param jClass - the Java <code>Class</code> to search for.
+     *
+     * @return the <code>JavaClass</code> corresponding to <code>jClass</code>.
+     */
     public JavaClass getClass(Class<?> jClass) {
         if (jClass == null) {
             return null;
@@ -63,6 +96,13 @@ public class OXMJavaModelImpl implements JavaModel {
         return new OXMJavaClassImpl(jClass.getCanonicalName());
     }
 
+    /**
+     * Obtain the <code>JavaClass</code> given the corresponding Java <code>Class'</code> name.
+     *
+     * @param className - the name of the Java <code>Class</code> to search for.
+     *
+     * @return the <code>JavaClass</code> corresponding to <code>className</code>.
+     */
     public JavaClass getClass(String className) {
         if (className == null) {
             return null;
@@ -70,7 +110,7 @@ public class OXMJavaModelImpl implements JavaModel {
 
         // javax.xml.bind.annotation.XmlElement.DEFAULT
         if (className.contains(DEFAULT)) {
-        	return getClass(JAVA_LANG_OBJECT);
+            return getClass(JAVA_LANG_OBJECT);
         }
 
         JavaClass cachedClass = this.javaModelClasses.get(className);
@@ -93,10 +133,21 @@ public class OXMJavaModelImpl implements JavaModel {
         return new OXMJavaClassImpl(className);
     }
 
+    /**
+     * Returns this <code>JavaModel's</code> <code>ClassLoader</code>.
+     *
+     * @return the <code>ClassLoader</code> used by this <code>JavaModel</code>.
+     */
     public ClassLoader getClassLoader() {
         return this.classLoader;
     }
 
+    /**
+     * Returns this <code>JavaModel's</code> <code>JaxbClassLoader</code>, which
+     * should be the parent <code>ClassLoader</code>.
+     *
+     * @return the <code>JaxbClassLoader</code> used by this <code>JavaModel</code>.
+     */
     public JaxbClassLoader getJaxbClassLoader() {
         ClassLoader parent = getClassLoader().getParent();
         if (parent instanceof JaxbClassLoader) {
@@ -106,14 +157,22 @@ public class OXMJavaModelImpl implements JavaModel {
         return null;
     }
 
+    /**
+     * Return a Java <code>Annotation</code> representation of the given <code>JavaAnnotation</code>.
+     *
+     * @param annotation - the <code>JavaAnnotation</code> to be converted.
+     * @param jClass - the Java <code>Class</code> this annotation belogs to.
+     *
+     * @return always returns <code>null</code> as <code>JavaTypes</code> do not have <code>Annotations</code>.
+     */
     public Annotation getAnnotation(JavaAnnotation annotation, Class<?> jClass) {
         return null;
     }
 
     // ========================================================================
-    
+
     private static String DEFAULT = "DEFAULT";
     private static String JAVA_LANG_OBJECT = "java.lang.Object";
-    
-    
+
+
 }

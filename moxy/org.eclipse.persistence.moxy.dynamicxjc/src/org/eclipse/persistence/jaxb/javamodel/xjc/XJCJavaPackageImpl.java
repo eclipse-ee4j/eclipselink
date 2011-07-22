@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - Initial implementation
+ *     Rick Barkhouse - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
@@ -52,7 +52,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
     private static Field JPACKAGE_ANNOTATIONS = null;
     static {
         try {
-            JPACKAGE_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JPackage.class, "annotations", true);            
+            JPACKAGE_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JPackage.class, "annotations", true);
         } catch (Exception e) {
             throw JAXBException.errorCreatingDynamicJAXBContext(e);
         }
@@ -60,7 +60,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
 
     /**
      * Construct a new instance of <code>XJCJavaPackageImpl</code>.
-     * 
+     *
      * @param jPackage - the XJC <code>JPackage</code> to be wrapped.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
      */
@@ -72,9 +72,9 @@ public class XJCJavaPackageImpl implements JavaPackage {
     /**
      * If this <code>JavaPackage</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
      * return its <code>JavaAnnotation</code> representation.
-     * 
+     *
      * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
-     * 
+     *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
     @SuppressWarnings("unchecked")
@@ -107,7 +107,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
 
     /**
      * Return all of the <code>Annotations</code> for this <code>JavaPackage</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaPackage's</code> <code>JavaAnnotations</code>.
      */
     @SuppressWarnings("unchecked")
@@ -134,7 +134,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
 
     /**
      * Returns the name of this <code>JavaPackage</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaPackage</code>.
      */
     public String getName() {
@@ -146,7 +146,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
 
     /**
      * Returns the fully-qualified name of this <code>JavaPackage</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaPackage</code>.
      */
     public String getQualifiedName() {
@@ -154,14 +154,14 @@ public class XJCJavaPackageImpl implements JavaPackage {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");

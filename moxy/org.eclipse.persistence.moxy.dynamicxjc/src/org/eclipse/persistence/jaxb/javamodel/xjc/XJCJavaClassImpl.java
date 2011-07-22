@@ -101,7 +101,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Construct a new instance of <code>XJCJavaClassImpl</code>.
-     * 
+     *
      * @param jDefinedClass - the XJC <code>JDefinedClass</code> to be wrapped.
      * @param codeModel - the XJC <code>JCodeModel</code> this class belongs to.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
@@ -112,7 +112,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Construct a new instance of <code>XJCJavaClassImpl</code>.
-     *      
+     *
      * @param jDefinedClass - the XJC <code>JDefinedClass</code> to be wrapped.
      * @param codeModel - the XJC <code>JCodeModel</code> this class belongs to.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
@@ -133,7 +133,7 @@ public class XJCJavaClassImpl implements JavaClass {
      * Return the "actual" type from a parameterized type.  For example, if this
      * <code>JavaClass</code> represents <code>List&lt;Employee</code>, this method will return the
      * <code>Employee</code> <code>JavaClass</code>.
-     * 
+     *
      * @return a <code>Collection</code> containing the actual type's <code>JavaClass</code>.
      */
     public Collection<JavaClass> getActualTypeArguments() {
@@ -179,7 +179,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * If this <code>JavaClass</code> is an array type, return the type of the
      * array components.
-     * 
+     *
      * @return <code>JavaClass</code> of this array's component type, or <code>null</code> if
      *         this is not an array type.
      */
@@ -194,9 +194,9 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Return the <code>JavaConstructor</code> for this <code>JavaClass</code> that has the
      * provided parameter types.
-     * 
+     *
      * @param parameterTypes the parameter list used to identify the constructor.
-     *  
+     *
      * @return the <code>JavaConstructor</code> with the signature matching parameterTypes.
      */
     public JavaConstructor getConstructor(JavaClass[] parameterTypes) {
@@ -220,8 +220,8 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     /**
-     * Return all of the <code>JavaConstructors</code> for this JavaClass.
-     *  
+     * Return all of the <code>JavaConstructors</code> for this <code>JavaClass</code>.
+     *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
      */
     @SuppressWarnings("unchecked")
@@ -238,7 +238,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return this <code>JavaClass'</code> inner classes.
-     *  
+     *
      * @return A <code>Collection&lt;JavaClass&gt;</code> containing this <code>JavaClass'</code> inner classes.
      */
     public Collection<JavaClass> getDeclaredClasses() {
@@ -262,9 +262,9 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Return the declared <code>JavaConstructor</code> for this <code>JavaClass</code> that has the
      * provided parameter types.
-     * 
+     *
      * @param parameterTypes the parameter list used to identify the constructor.
-     *  
+     *
      * @return the <code>JavaConstructor</code> with the signature matching <code>parameterTypes</code>.
      */
     public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) {
@@ -273,7 +273,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return all of the declared <code>JavaConstructors</code> for this <code>JavaClass</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaConstructors</code>.
      */
     public Collection<JavaConstructor> getDeclaredConstructors() {
@@ -282,10 +282,10 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return the declared <code>JavaField</code> for this <code>JavaClass</code>, identified
-     * by <code>fieldName</code>. 
-     * 
+     * by <code>fieldName</code>.
+     *
      * @param fieldName the name of the <code>JavaField</code> to return.
-     *  
+     *
      * @return the <code>JavaField</code> named <code>fieldName</code> from this <code>JavaClass</code>.
      */
     public JavaField getDeclaredField(String fieldName) {
@@ -296,7 +296,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return all of the declared <code>JavaFields</code> for this <code>JavaClass</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaFields</code>.
      */
     public Collection<JavaField> getDeclaredFields() {
@@ -312,11 +312,11 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return the declared <code>JavaMethod</code> for this <code>JavaClass</code>,
-     * identified by <code>name</code>, with the signature matching <code>args</code>. 
-     * 
+     * identified by <code>name</code>, with the signature matching <code>args</code>.
+     *
      * @param name the name of the <code>JavaMethod</code> to return.
      * @param args the parameter list used to identify the method.
-     *  
+     *
      * @return the matching <code>JavaMethod</code> from this <code>JavaClass</code>.
      */
     public JavaMethod getDeclaredMethod(String name, JavaClass[] args) {
@@ -325,7 +325,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return all of the declared <code>JavaMethods</code> for this <code>JavaClass</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaMethods</code>.
      */
     public Collection<JavaMethod> getDeclaredMethods() {
@@ -334,11 +334,11 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return the <code>JavaMethod</code> for this <code>JavaClass</code>, identified
-     * by <code>name</code>, with the signature matching <code>args</code>. 
-     * 
+     * by <code>name</code>, with the signature matching <code>args</code>.
+     *
      * @param name the name of the <code>JavaMethod</code> to return.
      * @param args the parameter list used to identify the method.
-     *  
+     *
      * @return the matching <code>JavaMethod</code> from this <code>JavaClass</code>.
      */
     public JavaMethod getMethod(String name, JavaClass[] args) {
@@ -380,7 +380,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return all of the <code>JavaMethods</code> for this <code>JavaClass</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaMethods</code>.
      */
     public Collection<JavaMethod> getMethods() {
@@ -396,9 +396,9 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Returns the Java language modifiers for this <code>JavaClass</code>, encoded in an integer.
-     *  
+     *
      * @return the <code>int</code> representing the modifiers for this class.
-     * 
+     *
      * @see java.lang.reflect.Modifier
      */
     public int getModifiers() {
@@ -415,7 +415,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Returns the name of this <code>JavaClass</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaClass</code>.
      */
     public String getName() {
@@ -424,7 +424,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Returns the <code>JavaPackage</code> that this <code>JavaClass</code> belongs to.
-     *  
+     *
      * @return the <code>JavaPackage</code> of this <code>JavaClass</code>.
      */
     public JavaPackage getPackage() {
@@ -433,7 +433,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Returns the package name of this <code>JavaClass</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaClass'</code> <code>JavaPackage</code>.
      */
     public String getPackageName() {
@@ -442,7 +442,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Returns the fully-qualified name of this <code>JavaClass</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaClass</code>.
      */
     public String getQualifiedName() {
@@ -490,7 +490,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Returns the raw name of this <code>JavaClass</code>.  Array types will
      * have "[]" appended to the name.
-     *  
+     *
      * @return the <code>String</code> raw name of this <code>JavaClass</code>.
      */
     public String getRawName() {
@@ -502,7 +502,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Returns the super class of this <code>JavaClass</code>.
-     *  
+     *
      * @return <code>JavaClass</code> representing the super class of this <code>JavaClass</code>.
      */
     public JavaClass getSuperclass() {
@@ -529,7 +529,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Indicates if this <code>JavaClass</code> has actual type arguments, i.e. is a
      * parameterized type (for example, <code>List&lt;Employee</code>).
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is parameterized, otherwise <code>false</code>.
      */
     public boolean hasActualTypeArguments() {
@@ -538,7 +538,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is <code>abstract</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>abstract</code>, otherwise <code>false</code>.
      */
     public boolean isAbstract() {
@@ -547,7 +547,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is an <code>Annotation</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>Annotation</code>, otherwise <code>false</code>.
      */
     public boolean isAnnotation() {
@@ -556,7 +556,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is an Array type.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is an Array type, otherwise <code>false</code>.
      */
     public boolean isArray() {
@@ -569,12 +569,12 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Indicates if this <code>JavaClass</code> is either the same as, or is a superclass of,
      * the <code>javaClass</code> argument.
-     *  
+     *
      * @param javaClass the <code>Class</code> to test.
-     *  
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is assignable from
      *         <code>javaClass</code>, otherwise <code>false</code>.
-     *         
+     *
      * @see java.lang.Class#isAssignableFrom(Class)
      */
     public boolean isAssignableFrom(JavaClass javaClass) {
@@ -590,7 +590,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is an <code>enum</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>enum</code>, otherwise <code>false</code>.
      */
     public boolean isEnum() {
@@ -599,7 +599,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is <code>final</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>final</code>, otherwise <code>false</code>.
      */
     public boolean isFinal() {
@@ -608,7 +608,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is an <code>interface</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is an <code>interface</code>, otherwise <code>false</code>.
      */
     public boolean isInterface() {
@@ -617,7 +617,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is an inner <code>Class</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is an inner </code>Class</code>, otherwise <code>false</code>.
      */
     public boolean isMemberClass() {
@@ -626,7 +626,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> represents a primitive type.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> represents a primitive type, otherwise <code>false</code>.
      */
     public boolean isPrimitive() {
@@ -635,7 +635,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is <code>private</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>private</code>, otherwise <code>false</code>.
      */
     public boolean isPrivate() {
@@ -644,7 +644,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is <code>protected</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>protected</code>, otherwise <code>false</code>.
      */
     public boolean isProtected() {
@@ -653,7 +653,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is <code>public</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>public</code>, otherwise <code>false</code>.
      */
     public boolean isPublic() {
@@ -662,7 +662,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Indicates if this <code>JavaClass</code> is <code>static</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is <code>static</code>, otherwise <code>false</code>.
      */
     public boolean isStatic() {
@@ -670,7 +670,7 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
@@ -679,9 +679,9 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * If this <code>JavaClass</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
      * return its <code>JavaAnnotation</code> representation.
-     * 
+     *
      * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
-     * 
+     *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
     @SuppressWarnings("unchecked")
@@ -716,7 +716,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Return all of the <code>Annotations</code> for this <code>JavaClass</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaClass'</code> <code>JavaAnnotations</code>.
      */
     @SuppressWarnings("unchecked")
@@ -741,14 +741,14 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
@@ -756,7 +756,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Get this <code>JavaClass'</code> <code>JavaModel</code>.
-     *  
+     *
      * @return The <code>JavaModel</code> associated with this <code>JavaClass<code>.
      */
     public JavaModel getJavaModel() {
@@ -765,7 +765,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     /**
      * Set this <code>JavaClass'</code> <code>JavaModel</code>.
-     *  
+     *
      * @param javaModel The <code>JavaModel</code> to set.
      */
     public void setJavaModel(JavaModel javaModel) {

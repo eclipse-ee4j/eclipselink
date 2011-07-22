@@ -29,7 +29,7 @@ import com.sun.codemodel.JCodeModel;
  * INTERNAL:
  * <p>
  * <b>Purpose:</b> <code>JavaModel</code> implementation wrapping XJC's <code>JCodeModel</code>.  Used when
- * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema. 
+ * bootstrapping a <code>DynamicJAXBContext</code> from an XML Schema.
  * </p>
  *
  * <p>
@@ -52,7 +52,7 @@ public class XJCJavaModelImpl implements JavaModel {
 
     /**
      * Construct a new instance of <code>XJCJavaModelImpl</code>.
-     * 
+     *
      * @param codeModel - the XJC <code>JCodeModel</code> to be wrapped.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
      */
@@ -63,9 +63,9 @@ public class XJCJavaModelImpl implements JavaModel {
 
     /**
      * Obtain the <code>JavaClass</code> given the corresponding Java <code>Class</code>.
-     * 
+     *
      * @param jClass - the Java <code>Class</code> to search for.
-     * 
+     *
      * @return the <code>JavaClass</code> corresponding to <code>jClass</code>.
      */
     public JavaClass getClass(Class<?> jClass) {
@@ -93,9 +93,9 @@ public class XJCJavaModelImpl implements JavaModel {
 
     /**
      * Obtain the <code>JavaClass</code> given the corresponding Java <code>Class'</code> name.
-     * 
+     *
      * @param className - the name of the Java <code>Class</code> to search for.
-     * 
+     *
      * @return the <code>JavaClass</code> corresponding to <code>className</code>.
      */
     public JavaClass getClass(String className) {
@@ -130,10 +130,10 @@ public class XJCJavaModelImpl implements JavaModel {
 
     /**
      * Return a Java <code>Annotation</code> representation of the given <code>JavaAnnotation</code>.
-     * 
+     *
      * @param annotation - the <code>JavaAnnotation</code> to be converted.
      * @param jClass - the Java <code>Class</code> this annotation belogs to.
-     * 
+     *
      * @return a Java <code>Annotation</code> representation of the given <code>JavaAnnotation</code>.
      */
     public Annotation getAnnotation(JavaAnnotation annotation, Class<?> jClass) {
@@ -142,7 +142,7 @@ public class XJCJavaModelImpl implements JavaModel {
 
     /**
      * Returns a <code>Map</code> of this <code>JavaModel's</code> <code>JavaClasses</code>, keyed on class name.
-     *  
+     *
      * @return this <code>JavaModel's</code> <code>Map</code> of <code>JavaClasses</code>.
      */
     public Map<String, JavaClass> getJavaModelClasses() {
@@ -151,7 +151,7 @@ public class XJCJavaModelImpl implements JavaModel {
 
     /**
      * Sets the <code>Map</code> of <code>JavaClasses</code> for this <code>JavaModel's</code>, keyed on class name.
-     *  
+     *
      * @param javaModelClasses - a <code>Map</code> of <code>JavaClasses</code>, keyed on class name.
      */
     public void setJavaModelClasses(Map<String, JavaClass> javaModelClasses) {
@@ -160,7 +160,7 @@ public class XJCJavaModelImpl implements JavaModel {
 
     /**
      * Returns this <code>JavaModel's</code> <code>ClassLoader</code>.
-     *  
+     *
      * @return the <code>ClassLoader</code> used by this <code>JavaModel</code>.
      */
     public ClassLoader getClassLoader() {

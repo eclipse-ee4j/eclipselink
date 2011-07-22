@@ -74,7 +74,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Construct a new instance of <code>XJCJavaFieldImpl</code>.
-     * 
+     *
      * @param javaField - the XJC <code>JFieldVar</code> to be wrapped.
      * @param codeModel - the XJC <code>JCodeModel</code> this field belongs to.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
@@ -90,9 +90,9 @@ public class XJCJavaFieldImpl implements JavaField {
     /**
      * If this <code>JavaField</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
      * return its <code>JavaAnnotation</code> representation.
-     * 
+     *
      * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
-     * 
+     *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
     @SuppressWarnings("unchecked")
@@ -124,7 +124,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Return all of the <code>Annotations</code> for this <code>JavaField</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaField's</code> <code>JavaAnnotations</code>.
      */
     @SuppressWarnings("unchecked")
@@ -147,9 +147,9 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Returns the Java language modifiers for this <code>JavaField</code>, encoded in an integer.
-     *  
+     *
      * @return the <code>int</code> representing the modifiers for this field.
-     * 
+     *
      * @see java.lang.reflect.Modifier
      */
     public int getModifiers() {
@@ -158,7 +158,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Returns the name of this <code>JavaField</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaField</code>.
      */
     public String getName() {
@@ -167,7 +167,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Returns the <code>JavaClass</code> representing the type of this <code>JavaField</code>.
-     *  
+     *
      * @return the type of this <code>JavaField</code> as a <code>JavaClass</code>.
      */
     @SuppressWarnings("unchecked")
@@ -237,7 +237,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Indicates if this <code>JavaField</code> is <code>final</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaField</code> is <code>final</code>, otherwise <code>false</code>.
      */
     public boolean isFinal() {
@@ -246,7 +246,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Indicates if this <code>JavaField</code> is <code>abstract</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaField</code> is <code>abstract</code>, otherwise <code>false</code>.
      */
     public boolean isAbstract() {
@@ -255,7 +255,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Indicates if this <code>JavaField</code> is <code>private</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaField</code> is <code>private</code>, otherwise <code>false</code>.
      */
     public boolean isPrivate() {
@@ -264,7 +264,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Indicates if this <code>JavaField</code> is <code>protected</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaField</code> is <code>protected</code>, otherwise <code>false</code>.
      */
     public boolean isProtected() {
@@ -273,7 +273,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Indicates if this <code>JavaField</code> is <code>public</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaField</code> is <code>public</code>, otherwise <code>false</code>.
      */
     public boolean isPublic() {
@@ -282,7 +282,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Indicates if this <code>JavaField</code> is <code>static</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaField</code> is <code>static</code>, otherwise <code>false</code>.
      */
     public boolean isStatic() {
@@ -290,7 +290,7 @@ public class XJCJavaFieldImpl implements JavaField {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
@@ -298,7 +298,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Indicates if this <code>JavaField</code> is an <code>enum</code> constant - i.e. its owner is an <code>enum</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaField</code> is an <code>enum</code> constant.
      */
     public boolean isEnumConstant() {
@@ -308,9 +308,9 @@ public class XJCJavaFieldImpl implements JavaField {
     /**
      * If this <code>JavaField</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
      * return its <code>JavaAnnotation</code> representation.
-     * 
+     *
      * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
-     * 
+     *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
     public JavaAnnotation getDeclaredAnnotation(JavaClass aClass) {
@@ -319,7 +319,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Return all of the <code>Annotations</code> for this <code>JavaField</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaField's</code> <code>JavaAnnotations</code>.
      */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
@@ -328,7 +328,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Set the <code>JavaClass</code> which contains this field.
-     *  
+     *
      * @param owningClass the <code>JavaClass</code> representing the owner of this <code>JavaField</code>.
      */
     public void setOwningClass(JavaClass owningClass) {
@@ -337,7 +337,7 @@ public class XJCJavaFieldImpl implements JavaField {
 
     /**
      * Returns the <code>JavaClass</code> which contains this field.
-     *  
+     *
      * @return <code>JavaClass</code> representing the owner of this <code>JavaField</code>.
      */
     public JavaClass getOwningClass() {

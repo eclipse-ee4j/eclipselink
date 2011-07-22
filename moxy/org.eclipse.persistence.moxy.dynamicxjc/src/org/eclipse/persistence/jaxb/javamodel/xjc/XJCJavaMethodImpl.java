@@ -70,11 +70,11 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Construct a new instance of <code>XJCJavaMethodImpl</code>.
-     * 
+     *
      * @param javaMethod - the XJC <code>JMethod</code> to be wrapped.
-     * @param codeModel - the XJC <code>JCodeModel</code> this field belongs to.
+     * @param codeModel - the XJC <code>JCodeModel</code> this method belongs to.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
-     * @param owner - the <code>JavaClass</code> this field belongs to.
+     * @param owner - the <code>JavaClass</code> this method belongs to.
      */
     public XJCJavaMethodImpl(JMethod javaMethod, JCodeModel codeModel, DynamicClassLoader loader, JavaClass owner) {
         this.xjcMethod = javaMethod;
@@ -86,9 +86,9 @@ public class XJCJavaMethodImpl implements JavaMethod {
     /**
      * If this <code>JavaMethod</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
      * return its <code>JavaAnnotation</code> representation.
-     * 
+     *
      * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
-     * 
+     *
      * @return the <code>JavaAnnotation</code> represented by <code>aClass</code>, if one exists, otherwise return <code>null</code>.
      */
     @SuppressWarnings("unchecked")
@@ -120,7 +120,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Return all of the <code>Annotations</code> for this <code>JavaMethod</code>.
-     *  
+     *
      * @return A <code>Collection</code> containing this <code>JavaMethod's</code> <code>JavaAnnotations</code>.
      */
     @SuppressWarnings("unchecked")
@@ -147,7 +147,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Returns the name of this <code>JavaMethod</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaMethod</code>.
      */
     public String getName() {
@@ -156,7 +156,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Returns the array of parameters for this <code>JavaMethod</code>.
-     *  
+     *
      * @return a <code>JavaClass[]</code> representing the argument types for this method.
      */
     public JavaClass[] getParameterTypes() {
@@ -175,7 +175,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Returns this <code>JavaMethod's</code> return type.
-     *  
+     *
      * @return a <code>JavaClass</code> representing the return type of this method.
      */
     public JavaClass getResolvedType() {
@@ -192,7 +192,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Returns this <code>JavaMethod's</code> return type.
-     *  
+     *
      * @return a <code>JavaClass</code> representing the return type of this method.
      */
     @SuppressWarnings("unchecked")
@@ -220,7 +220,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
     /**
      * Indicates if this <code>JavaMethod</code> has actual type arguments, i.e. is a
      * parameterized type (for example, <code>List&lt;Employee</code>).
-     * 
+     *
      * @return <code>true</code> if this <code>JavaClass</code> is parameterized, otherwise <code>false</code>.
      */
     public boolean hasActualTypeArguments() {
@@ -240,7 +240,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public Collection<Object> getActualTypeArguments() {
         throw new UnsupportedOperationException("getActualTypeArguments");
@@ -248,9 +248,9 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Returns the Java language modifiers for this <code>JavaMethod</code>, encoded in an integer.
-     *  
+     *
      * @return the <code>int</code> representing the modifiers for this method.
-     * 
+     *
      * @see java.lang.reflect.Modifier
      */
     public int getModifiers() {
@@ -259,7 +259,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Indicates if this <code>JavaMethod</code> is <code>abstract</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaMethod</code> is <code>abstract</code>, otherwise <code>false</code>.
      */
     public boolean isAbstract() {
@@ -268,7 +268,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Indicates if this <code>JavaMethod</code> is <code>private</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaMethod</code> is <code>private</code>, otherwise <code>false</code>.
      */
     public boolean isPrivate() {
@@ -277,7 +277,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Indicates if this <code>JavaMethod</code> is <code>protected</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaMethod</code> is <code>protected</code>, otherwise <code>false</code>.
      */
     public boolean isProtected() {
@@ -286,7 +286,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Indicates if this <code>JavaMethod</code> is <code>public</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaMethod</code> is <code>public</code>, otherwise <code>false</code>.
      */
     public boolean isPublic() {
@@ -295,7 +295,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Indicates if this <code>JavaMethod</code> is <code>static</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaMethod</code> is <code>static</code>, otherwise <code>false</code>.
      */
     public boolean isStatic() {
@@ -304,7 +304,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Indicates if this <code>JavaMethod</code> is <code>final</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaMethod</code> is <code>final</code>, otherwise <code>false</code>.
      */
     public boolean isFinal() {
@@ -312,21 +312,21 @@ public class XJCJavaMethodImpl implements JavaMethod {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
@@ -334,7 +334,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Returns the <code>JavaClass</code> which contains this method.
-     *  
+     *
      * @return <code>JavaClass</code> representing the owner of this <code>JavaMethod</code>.
      */
     public JavaClass getOwningClass() {
@@ -343,7 +343,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
 
     /**
      * Set the <code>JavaClass</code> which contains this method.
-     *  
+     *
      * @param owningClass the <code>JavaClass</code> representing the owner of this <code>JavaMethod</code>.
      */
     public void setOwningClass(JavaClass owningClass) {

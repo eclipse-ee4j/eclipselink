@@ -32,6 +32,27 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaAnnotationImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl;
 
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose:</b> Specialized <code>JavaClass</code> implementation wrapping
+ * MOXy's <code>xmlmodel.XmlRegistry</code>, used to represent a JAXB
+ * <code>ObjectFactory</code>.  Used when bootstrapping a <code>DynamicJAXBContext</code>
+ * from XML Bindings.
+ * </p>
+ *
+ * <p>
+ * <b>Responsibilities:</b>
+ * <ul>
+ *    <li>Provide Class information to the <code>JavaModel</code>.</li>
+ * </ul>
+ * </p>
+ *
+ * @since EclipseLink 2.2
+ *
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaClass
+ * @see org.eclipse.persistence.jaxb.javamodel.oxm.OXMJAXBElementImpl
+ */
 public class OXMObjectFactoryImpl implements JavaClass {
 
     private XmlRegistry registry;

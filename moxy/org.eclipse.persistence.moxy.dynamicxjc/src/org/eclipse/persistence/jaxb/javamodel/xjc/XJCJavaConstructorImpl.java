@@ -50,7 +50,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Construct a new instance of <code>XJCJavaConstructorImpl</code>.
-     * 
+     *
      * @param constructor - the XJC <code>JMethod</code> to be wrapped.
      * @param codeModel - the XJC <code>JCodeModel</code> this constructor belongs to.
      * @param loader - the <code>ClassLoader</code> used to bootstrap the <code>DynamicJAXBContext</code>.
@@ -65,9 +65,9 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Returns the Java language modifiers for this <code>JavaConstructor</code>, encoded in an integer.
-     *  
+     *
      * @return the <code>int</code> representing the modifiers for this constructor.
-     * 
+     *
      * @see java.lang.reflect.Modifier
      */
     public int getModifiers() {
@@ -76,7 +76,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Returns the name of this <code>JavaConstructor</code>.
-     *  
+     *
      * @return the <code>String</code> name of this <code>JavaConstructor</code>.
      */
     public String getName() {
@@ -85,7 +85,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Returns the array of parameters for this <code>JavaConstructor</code>.
-     *  
+     *
      * @return a <code>JavaClass[]</code> representing the argument types for this constructor.
      */
     public JavaClass[] getParameterTypes() {
@@ -107,7 +107,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Indicates if this <code>JavaConstructor</code> is <code>abstract</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>abstract</code>, otherwise <code>false</code>.
      */
     public boolean isAbstract() {
@@ -116,7 +116,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Indicates if this <code>JavaConstructor</code> is <code>private</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>private</code>, otherwise <code>false</code>.
      */
     public boolean isPrivate() {
@@ -125,7 +125,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Indicates if this <code>JavaConstructor</code> is <code>protected</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>protected</code>, otherwise <code>false</code>.
      */
     public boolean isProtected() {
@@ -134,7 +134,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Indicates if this <code>JavaConstructor</code> is <code>public</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>public</code>, otherwise <code>false</code>.
      */
     public boolean isPublic() {
@@ -143,7 +143,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Indicates if this <code>JavaConstructor</code> is <code>static</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>static</code>, otherwise <code>false</code>.
      */
     public boolean isStatic() {
@@ -152,7 +152,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Indicates if this <code>JavaConstructor</code> is <code>final</code>.
-     * 
+     *
      * @return <code>true</code> if this <code>JavaConstructor</code> is <code>final</code>, otherwise <code>false</code>.
      */
     public boolean isFinal() {
@@ -160,7 +160,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
     }
 
     /**
-     * Not supported. 
+     * Not supported.
      */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
@@ -168,7 +168,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Returns the <code>JavaClass</code> which contains this constructor.
-     *  
+     *
      * @return <code>JavaClass</code> representing the owner of this <code>JavaConstructor</code>.
      */
     public JavaClass getOwningClass() {
@@ -177,7 +177,7 @@ public class XJCJavaConstructorImpl implements JavaConstructor {
 
     /**
      * Set the <code>JavaClass</code> which contains this constructor.
-     *  
+     *
      * @param owningClass the <code>JavaClass</code> representing the owner of this <code>JavaConstructor</code>.
      */
     public void setOwningClass(JavaClass owningClass) {

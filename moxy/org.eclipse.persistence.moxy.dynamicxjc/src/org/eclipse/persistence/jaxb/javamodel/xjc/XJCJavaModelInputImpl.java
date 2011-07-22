@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - Initial implementation
+ *     Rick Barkhouse - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
@@ -46,7 +46,7 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
 
     /**
      * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
-     * 
+     *
      * @param types - an array of <code>JavaClasses</code> for which to generate mappings.
      * @param javaModel - the <code>JavaModel</code> to be used.
      */
@@ -57,7 +57,7 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
 
     /**
      * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
-     * 
+     *
      * @param types - an array of <code>Types</code> for which to generate mappings.
      * @param javaModel - the <code>JavaModel</code> to be used.
      */
@@ -74,7 +74,7 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
 
     /**
      * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
-     * 
+     *
      * @param types - an array of <code>TypeMappingInfos</code> for which to generate mappings.
      * @param javaModel - the <code>JavaModel</code> to be used.
      */
@@ -90,7 +90,7 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
 
     /**
      * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
-     * 
+     *
      * @param types - an array of Java <code>Classes</code> for which to generate mappings.
      * @param javaModel - the <code>JavaModel</code> to be used.
      */
