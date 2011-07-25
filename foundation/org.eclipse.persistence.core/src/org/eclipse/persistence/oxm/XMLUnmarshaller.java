@@ -102,6 +102,7 @@ public class XMLUnmarshaller implements Cloneable {
 
     private Class unmappedContentHandlerClass;
     private StrBuffer stringBuffer;
+    private MediaType mediaType = MediaType.APPLICATION_XML;
 
     static {
         try {
@@ -175,6 +176,25 @@ public class XMLUnmarshaller implements Cloneable {
         }
     }
 
+    /**
+     * Set the MediaType for this xmlUnmarshaller.
+     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
+     * @param mediaType
+     */
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    /**
+     * Get the MediaType for this xmlUnmarshaller.
+     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
+     * If not set the default is MediaType.APPLICATION_XML
+     * @return MediaType
+     */
+    public MediaType getMediaType(){
+    	return mediaType;
+    }
+    
     /**
      * Return the instance of XMLContext that was used to create this instance
      * of XMLUnmarshaller.

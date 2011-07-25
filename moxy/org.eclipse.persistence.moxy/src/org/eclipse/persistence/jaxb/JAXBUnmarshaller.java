@@ -87,7 +87,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private XMLUnmarshaller xmlUnmarshaller;
     private JAXBContext jaxbContext;
     private XMLInputFactory xmlInputFactory;
-    private MediaType mediaType = MediaType.APPLICATION_XML;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
 
@@ -109,7 +108,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(File file) throws JAXBException {
         try {
-            if(mediaType == MediaType.APPLICATION_JSON) {
+            if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
                 try {
                     FileInputStream inputStream = new FileInputStream(file);
                     try {
@@ -132,7 +131,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(InputStream inputStream) throws JAXBException {
         try {
-            if(mediaType == MediaType.APPLICATION_JSON) {
+            if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
                 InputSource source = new InputSource(inputStream);
                 return unmarshal(source);
             }
@@ -160,7 +159,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(URL url) throws JAXBException {
         try {
-            if(this.mediaType == MediaType.APPLICATION_JSON) {
+            if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
                 try {
                     Object object = null;
                     InputStream inputStream = url.openStream();
@@ -186,7 +185,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(InputSource inputSource) throws JAXBException {
         try {
             Object value = null;
-            if(this.mediaType == MediaType.APPLICATION_JSON) {
+            if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
                 value = xmlUnmarshaller.unmarshal(new JSONReader(), inputSource);
             } else {
                 value = xmlUnmarshaller.unmarshal(inputSource);
@@ -198,7 +197,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public Object unmarshal(Reader reader) throws JAXBException {
-        if(mediaType == MediaType.APPLICATION_JSON) {
+        if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
             if(null == reader) {
                 throw XMLMarshalException.nullArgumentException();
             }
@@ -698,9 +697,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
         if(key.equals(JAXBContext.MEDIA_TYPE)) {
             if("application/json".equals(value)) {
-                mediaType = MediaType.APPLICATION_JSON;
-            } else if("application/xml".equals(value)) {
-                mediaType = MediaType.APPLICATION_XML;
+            	xmlUnmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            } else if("application/xml".equals(value)) {                
+                xmlUnmarshaller.setMediaType(MediaType.APPLICATION_XML);
             } else {
                 throw new PropertyException(key, value);
             }
@@ -714,7 +713,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         if(key.equals(JAXBContext.MEDIA_TYPE)) {
-            if(mediaType == MediaType.APPLICATION_JSON) {
+            if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
                 return "application/json";
             } else {
                 return "application/xml";
@@ -883,6 +882,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else {
             return new UnmarshalException(xmlMarshalException);
         }
-    }
+    }   
 
 }
