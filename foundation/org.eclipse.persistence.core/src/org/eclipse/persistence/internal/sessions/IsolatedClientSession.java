@@ -69,7 +69,8 @@ public class IsolatedClientSession extends ClientSession {
     protected boolean isIsolatedQuery(DatabaseQuery query) {
         query.checkDescriptor(this);
         ClassDescriptor descriptor = query.getDescriptor();
-        if (query.isDataModifyQuery() || query.isDataReadQuery() || (descriptor != null && descriptor.isIsolated()) || (query.isObjectBuildingQuery() && ((ObjectBuildingQuery)query).shouldUseExclusiveConnection())) {
+        if (query.isDataModifyQuery() || query.isDataReadQuery() || (descriptor != null && descriptor.getCachePolicy().isIsolated())
+                || (query.isObjectBuildingQuery() && ((ObjectBuildingQuery)query).shouldUseExclusiveConnection())) {
             // For CR#4334 if in transaction stay on client session.
             // That way client's write accessor will be used for all queries.
             // This is to preserve transaction isolation levels.
@@ -96,7 +97,9 @@ public class IsolatedClientSession extends ClientSession {
      */
     @Override
     public AbstractSession getParentIdentityMapSession(ClassDescriptor descriptor, boolean canReturnSelf, boolean terminalOnly) {
-        if (canReturnSelf && (descriptor == null || descriptor.isIsolated() || (descriptor.isProtectedIsolation() && !descriptor.shouldIsolateProtectedObjectsInUnitOfWork() && !terminalOnly))){
+        if (canReturnSelf && (descriptor == null || descriptor.getCachePolicy().isIsolated()
+                || (descriptor.getCachePolicy().isProtectedIsolation() && !descriptor.shouldIsolateProtectedObjectsInUnitOfWork()
+                        && !terminalOnly))){
             return this;
         }
         return getParent().getParentIdentityMapSession(descriptor, canReturnSelf, terminalOnly);

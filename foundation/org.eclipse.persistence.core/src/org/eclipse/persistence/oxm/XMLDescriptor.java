@@ -78,29 +78,18 @@ public class XMLDescriptor extends ClassDescriptor {
         this.queryKeys = Collections.EMPTY_MAP;
         this.initializationStage = UNINITIALIZED;
         this.interfaceInitializationStage = UNINITIALIZED;
-        this.shouldAlwaysRefreshCache = false;
-        this.shouldOnlyRefreshCacheIfNewerVersion = false;
-        this.shouldDisableCacheHits = false;
-        this.identityMapSize = 100;
-        this.remoteIdentityMapSize = -1;
-        this.identityMapClass = AbstractIdentityMap.getDefaultIdentityMapClass();
-        this.remoteIdentityMapClass = null;
         this.descriptorType = NORMAL;
-        this.shouldAlwaysRefreshCacheOnRemote = false;
-        this.shouldDisableCacheHitsOnRemote = false;
         this.shouldOrderMappings = true;
         this.shouldBeReadOnly = false;
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
-        this.cacheIsolation = null;
         this.idValidation = null;
         this.derivesIdMappings = Collections.EMPTY_MAP;
         this.additionalWritableMapKeyFields = Collections.EMPTY_LIST;
 
         // Policies        
         this.objectBuilder = new TreeObjectBuilder(this);
-        this.cascadeLockingPolicies = null;
 
         this.shouldOrderMappings = false;
         this.descriptorIsAggregate();

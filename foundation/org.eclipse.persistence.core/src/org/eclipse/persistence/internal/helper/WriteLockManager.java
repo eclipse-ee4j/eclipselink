@@ -253,9 +253,10 @@ public class WriteLockManager {
                 ClassDescriptor descriptor = null;
                 for (ObjectChangeSet objectChangeSet : changeSet.getAllChangeSets().values()) {
                     // No Need to acquire locks for invalidated objects.
-                    if (objectChangeSet.getSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS || objectChangeSet.getId() == null) {
+                    if ((mergeManager.shouldMergeChangesIntoDistributedCache() && (objectChangeSet.getSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS))
+                            || objectChangeSet.getId() == null) {
                         //skip this process as we will be unable to acquire the correct cachekey anyway
-                        //this is a new object with identity after write sequencing
+                        //this is a new object with identity after write sequencing, ? huh, all objects must have an id by merge?
                         continue;
                     }
                     descriptor = objectChangeSet.getDescriptor();
@@ -265,7 +266,7 @@ public class WriteLockManager {
                         objectChangeSet.setDescriptor(descriptor);
                     }
                     // PERF: Do not merge nor lock into the session cache if descriptor set to unit of work isolated.
-                    if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                    if (descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()) {
                         continue;
                     }
                     AbstractSession targetSession = session.getParentIdentityMapSession(descriptor, true, true);

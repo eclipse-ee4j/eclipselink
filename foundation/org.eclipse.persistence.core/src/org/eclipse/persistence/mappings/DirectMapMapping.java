@@ -447,7 +447,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
             setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
@@ -514,7 +514,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
             setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }

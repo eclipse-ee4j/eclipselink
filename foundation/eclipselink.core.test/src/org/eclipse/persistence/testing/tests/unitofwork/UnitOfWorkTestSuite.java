@@ -25,6 +25,8 @@ import org.eclipse.persistence.testing.tests.writing.UpdateChangeValueTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateDeepOwnershipTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateToNullTest;
 import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
@@ -73,6 +75,8 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(buildRefReadOnlyTest());
         
         addTest(new BuildCloneFromRowOneToOneTest());
+        
+        addTest(buildCacheIndexTest());
         
     }
 
@@ -275,5 +279,74 @@ public class UnitOfWorkTestSuite extends TestSuite {
         test.setName("RefReadOnlyTest");
         test.setDescription("Tests saving a new object with a reference to a read-only object.");
         return test;
+    }
+    
+    /**
+     * Tests saving a new object with a reference to a read-only object.
+     */
+    public TransactionalTestCase buildCacheIndexTest() {
+        TransactionalTestCase test = new TransactionalTestCase() {
+            public void setup() {
+                super.setup();
+                if (getSession().isRemoteSession()) {
+                    throwWarning("Test not supported on remote session.");
+                }
+            }
+            public void test() {
+                QuerySQLTracker counter = new QuerySQLTracker(getSession());
+                try {
+                    ReadObjectQuery query = new ReadObjectQuery(Employee.class);
+                    ExpressionBuilder emp = new ExpressionBuilder();
+                    query.setSelectionCriteria(emp.get("firstName").equal("cache").and(emp.get("lastName").equal("index")));
+                    UnitOfWork uow = getSession().acquireUnitOfWork();
+                    Employee employee = new Employee();
+                    employee.setFirstName("cache");
+                    employee.setLastName("index");
+                    employee = (Employee)uow.registerObject(employee);
+                    if (uow.executeQuery(query) != null) {
+                        throwError("New employee should not have been found.");
+                    }
+                    if (counter.getSqlStatements().size() == 0) {
+                        throwError("Query should have hit database.");
+                    }
+                    uow.commit();
+                    counter.getSqlStatements().clear();
+                    if (uow.executeQuery(query) != employee) {
+                        throwError("New employee should have been found.");
+                    }
+                    if (counter.getSqlStatements().size() > 0) {
+                        throwError("Query should have hit cache.");
+                    }
+                    uow = getSession().acquireUnitOfWork();
+                    employee = (Employee)uow.registerObject(employee);
+                    employee.setLastName("fail");
+                    uow.commit();
+                    counter.getSqlStatements().clear();
+                    if (uow.executeQuery(query) != null) {
+                        throwError("Employee should not have been found.");
+                    }
+                    if (counter.getSqlStatements().size() == 0) {
+                        throwError("Query should have hit database.");
+                    }
+                    query = new ReadObjectQuery(Employee.class);
+                    emp = new ExpressionBuilder();
+                    query.setSelectionCriteria(emp.get("firstName").equal("cache").and(emp.get("lastName").equal("fail")));
+                    counter.getSqlStatements().clear();
+                    if (uow.executeQuery(query) != employee) {
+                        throwError("Employee should have been found.");
+                    }
+                    if (counter.getSqlStatements().size() > 0) {
+                        throwError("Query should have hit cache.");
+                    }
+                    
+                } finally {
+                    counter.remove();
+                }
+            }
+        };
+        test.setName("CacheIndexTest");
+        test.setDescription("Tests cache indexes with new and changed objects.");
+        return test;
     }    
+    
 }

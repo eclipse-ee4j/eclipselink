@@ -75,6 +75,8 @@ public class SessionEvent extends EventObject {
     // Login events
     public static final int PreLogin = 24;
     public static final int PostLogin = 25;
+    public static final int PreLogout = 40;
+    public static final int PostLogout = 41;
     public static final int PreMergeUnitOfWorkChangeSet = 26;
     public static final int PreDistributedMergeUnitOfWorkChangeSet = 27;
     public static final int PostMergeUnitOfWorkChangeSet = 28;
@@ -86,7 +88,7 @@ public class SessionEvent extends EventObject {
     public static final int MissingDescriptor = 32;
     public static final int NoRowsModified = 35;
 
-    // last event value for this class as of Jan 26th, 2004 is 35
+    // last event value for this class as of Jan 26th, 2004 is 41
 
     /**
      * INTERNAL:

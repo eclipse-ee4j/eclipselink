@@ -790,7 +790,7 @@ public class Project implements Serializable, Cloneable {
         Iterator<ClassDescriptor> i = orderedDescriptors.iterator();
         while (i.hasNext()){
             ClassDescriptor descriptor = i.next();
-            if (descriptor.isIsolated() && !descriptor.shouldIsolateObjectsInUnitOfWork()){
+            if (descriptor.getCachePolicy().isIsolated() && !descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()) {
                 return true;
             }
         }

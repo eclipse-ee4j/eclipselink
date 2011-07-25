@@ -641,6 +641,42 @@ public class SessionEventManager implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Pre logout to the session.
+     */
+    public void preLogout(Session session) {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PreLogout, session);
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
+        for (int index = 0; index < size; index++) {
+            listeners.get(index).preLogout(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
+     * post logout to the session.
+     */
+    public void postLogout(Session session) {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PostLogout, session);
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
+        for (int index = 0; index < size; index++) {
+            listeners.get(index).postLogout(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
      * Prepare unit of work.
      */
     public void prepareUnitOfWork() {

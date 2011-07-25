@@ -302,7 +302,7 @@ public class DefaultTableGenerator {
             //find the table the field belongs to, and add it to the table, only if not already added.
             tableDefintion = this.tableMap.get(dbField.getTableName());
 
-            if (!tableDefintion.getFields().contains(fieldDef)) {
+            if ((tableDefintion != null) && !tableDefintion.getFields().contains(fieldDef)) {
                 tableDefintion.addField(fieldDef);
             }
         }

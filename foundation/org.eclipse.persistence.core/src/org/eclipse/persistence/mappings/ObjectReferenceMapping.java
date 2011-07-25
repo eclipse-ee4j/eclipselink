@@ -71,7 +71,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             return buildUnitofWorkCloneForPartObject(attributeValue, original, clone, (UnitOfWorkImpl)cloningSession, isExisting);
         }
         // Not a unit Of Work clone so must have been a PROTECTED object
-        if (this.referenceDescriptor.isProtectedIsolation()) {
+        if (this.referenceDescriptor.getCachePolicy().isProtectedIsolation()) {
             ClassDescriptor descriptor = this.referenceDescriptor;
             if (descriptor.hasInterfacePolicy()){
                 descriptor = cloningSession.getClassDescriptor(attributeValue.getClass());
@@ -345,7 +345,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
             setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
@@ -415,7 +415,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
             setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }

@@ -52,6 +52,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.TableGenerator;
 
+import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReturnInsert;
@@ -67,6 +68,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheIndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
@@ -108,6 +110,7 @@ public class BasicAccessor extends DirectAccessor {
     private SequenceGeneratorMetadata m_sequenceGenerator;
     private TableGeneratorMetadata m_tableGenerator;
     private IndexMetadata m_index;
+    private CacheIndexMetadata m_cacheIndex;
     
     /**
      * INTERNAL:
@@ -171,6 +174,16 @@ public class BasicAccessor extends DirectAccessor {
         // Set the index annotation if one is present.
         if (isAnnotationPresent(Index.class)) {
             m_index = new IndexMetadata(getAnnotation(Index.class), this);
+        }
+        
+        // Set the cache index annotation if one is present.
+        if (isAnnotationPresent(CacheIndex.class)) {
+            m_cacheIndex = new CacheIndexMetadata(getAnnotation(CacheIndex.class), this);
+        }
+        
+        // Set the cache index annotation if one is present.
+        if (isAnnotationPresent(CacheIndex.class)) {
+            m_index = new IndexMetadata(getAnnotation(CacheIndex.class), this);
         }
     }
     
@@ -407,6 +420,7 @@ public class BasicAccessor extends DirectAccessor {
         
         // Process the index metadata.
         processIndex();
+        processCacheIndex();
     }
 
     /**
@@ -455,6 +469,16 @@ public class BasicAccessor extends DirectAccessor {
     protected void processIndex() {
         if (m_index != null) {
             m_index.process(getDescriptor(), m_field.getName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process cache index.
+     */
+    protected void processCacheIndex() {
+        if (m_cacheIndex != null) {
+            m_cacheIndex.process(getDescriptor(), m_field.getName());
         }
     }
     
@@ -511,6 +535,22 @@ public class BasicAccessor extends DirectAccessor {
      */
     public void setIndex(IndexMetadata index) {
         m_index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public CacheIndexMetadata getCacheIndex() {
+        return m_cacheIndex;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCacheIndex(CacheIndexMetadata index) {
+        m_cacheIndex = index;
     }
 
     /**

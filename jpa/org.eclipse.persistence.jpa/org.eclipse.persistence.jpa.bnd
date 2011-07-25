@@ -17,7 +17,7 @@ Include-Resource:\
  org/eclipse/persistence/jpa/orm_2_0.xsd=${jpa.2.javax.persistence.xsds.dir}/orm_2_0.xsd,\
  org/eclipse/persistence/jpa/persistence_1_0.xsd=${jpa.2.javax.persistence.xsds.dir}/persistence_1_0.xsd,\
  org/eclipse/persistence/jpa/persistence_2_0.xsd=${jpa.2.javax.persistence.xsds.dir}/persistence_2_0.xsd,\
- org/eclipse/persistence/jpa/eclipselink_orm_2_3.xsd=resource/org/eclipse/persistence/jpa/eclipselink_orm_2_3.xsd,\
+ org/eclipse/persistence/jpa/eclipselink_orm_2_4.xsd=resource/org/eclipse/persistence/jpa/eclipselink_orm_2_4.xsd,\
  META-INF/services/javax.persistence.spi.PersistenceProvider=resource/META-INF/services/javax.persistence.spi.PersistenceProvider
 Import-Package:\
  javax.persistence.*;version="[1.1.0, 2.1)";jpa="2.0",\

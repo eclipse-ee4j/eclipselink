@@ -19,6 +19,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.logging.SessionLog;
@@ -55,7 +56,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey acquireDeferredLock(Object primaryKey, Class javaClass, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireDeferredLock(primaryKey, javaClass, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, javaClass, descriptor);
@@ -69,7 +70,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, domainClass, forMerge, descriptor);
@@ -83,7 +84,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey acquireLockNoWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireLockNoWait(primaryKey, domainClass, forMerge, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, domainClass, forMerge, descriptor);
@@ -97,7 +98,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey acquireLockWithWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
@@ -112,7 +113,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireReadLockOnCacheKey(primaryKey, domainClass, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireReadLockOnCacheKey(primaryKey, domainClass, descriptor);
@@ -128,7 +129,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().acquireReadLockOnCacheKeyNoWait(primaryKey, domainClass, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireReadLockOnCacheKeyNoWait(primaryKey, domainClass, descriptor);
@@ -154,7 +155,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return false;
             }
@@ -183,7 +184,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
-        if (!session.getDescriptor(theClass).isSharedIsolation()) {
+        if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, shouldReturnInvalidatedObjects);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, shouldReturnInvalidatedObjects);
@@ -198,7 +199,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor, boolean forMerge) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return null;
             }
@@ -216,7 +217,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class myClass, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return null;
             }
@@ -232,12 +233,12 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()){
+        if (!descriptor.getCachePolicy().isSharedIsolation()){
             Object object = null;
             if (this.identityMapManager != null){
                 object = getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
             }
-            if (descriptor.isIsolated()){
+            if (descriptor.getCachePolicy().isIsolated()) {
                 return object;
             }else{
                 return getAndCloneCacheKeyFromParent(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
@@ -370,7 +371,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, descriptor);
@@ -384,7 +385,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             if (this.identityMapManager == null) {
                 return null;
             }
@@ -415,7 +416,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public IdentityMap getIdentityMap(ClassDescriptor descriptor, boolean returnNullIfMissing) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getIdentityMap(descriptor, returnNullIfMissing);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getIdentityMap(descriptor, returnNullIfMissing);
@@ -453,7 +454,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Object getWrapper(Object primaryKey, Class theClass) {
-        if (!session.getDescriptor(theClass).isSharedIsolation()) {
+        if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getWrapper(primaryKey, theClass);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getWrapper(primaryKey, theClass);
@@ -476,7 +477,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Object getWriteLockValue(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().getWriteLockValue(primaryKey, theClass, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, theClass, descriptor);
@@ -508,7 +509,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
     @Override
     public void initializeIdentityMap(Class theClass) {
         getSession().log(SessionLog.FINER, SessionLog.CACHE, "initialize_identitymap", theClass);
-        if (!session.getDescriptor(theClass).isSharedIsolation()) {
+        if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().initializeIdentityMap(theClass);
         } else {
             ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().initializeIdentityMap(theClass);
@@ -546,6 +547,30 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
     }
 
     /**
+     * Index the cache key by the index values.
+     */
+    @Override
+    public void putCacheKeyByIndex(CacheIndex index, CacheId indexValues, CacheKey cacheKey, ClassDescriptor descriptor) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
+            getIdentityMapManager().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);
+        } else {
+            ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);
+        }
+    }
+
+    /**
+     * Return the cache key for the cache index or null if not found.
+     */
+    @Override
+    public CacheKey getCacheKeyByIndex(CacheIndex index, CacheId indexValues, boolean shouldCheckExpiry, ClassDescriptor descriptor) {        
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
+            return getIdentityMapManager().getCacheKeyByIndex(index, indexValues, shouldCheckExpiry, descriptor);
+        } else {
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getCacheKeyByIndex(index, indexValues, shouldCheckExpiry, descriptor);
+        }
+    }
+    
+    /**
      * PUBLIC:
      * Used to print all the objects in the identity map of the passed in class.
      * The output of this method will be logged to this session's SessionLog at SEVERE level.
@@ -553,7 +578,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
     @Override
     public void printIdentityMap(Class businessClass) {
         if (getSession().shouldLog(SessionLog.SEVERE, SessionLog.CACHE)) {
-            if (!session.getDescriptor(businessClass).isSharedIsolation()) {
+            if (!session.getDescriptor(businessClass).getCachePolicy().isSharedIsolation()) {
                 getIdentityMapManager().printIdentityMap(businessClass);
             } else {
                 ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().printIdentityMap(businessClass);
@@ -595,7 +620,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     public CacheKey internalPutInIdentityMap(Object domainObject, Object key, Object writeLockValue, long readTime, ClassDescriptor descriptor) {
         //no need to unwrap as the put will unwrap later anyway
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().putInIdentityMap(domainObject, key, writeLockValue, readTime, descriptor);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().internalPutInIdentityMap(domainObject, key, writeLockValue, readTime, descriptor);
@@ -613,7 +638,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
-        if (!session.getDescriptor(theClass).isSharedIsolation()) {
+        if (!session.getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().invalidateObjects(selectionCriteria, theClass, translationRow, shouldInvalidateOnException);
         } else {
             ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().invalidateObjects(selectionCriteria, theClass, translationRow, shouldInvalidateOnException);
@@ -639,7 +664,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Object removeFromIdentityMap(Object key, Class theClass, ClassDescriptor descriptor, Object object) {
-        if (!descriptor.isSharedIsolation()) {
+        if (!descriptor.getCachePolicy().isSharedIsolation()) {
             return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
         } else {
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(key, theClass, descriptor, object);
@@ -662,7 +687,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public void setWrapper(Object primaryKey, Class theClass, Object wrapper) {
-        if (!getSession().getDescriptor(theClass).isSharedIsolation()) {
+        if (!getSession().getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().setWrapper(primaryKey, theClass, wrapper);
         } else {
             ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().setWrapper(primaryKey, theClass, wrapper);
@@ -675,7 +700,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public void updateWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue) {
-        if (!getSession().getDescriptor(theClass).isSharedIsolation()) {
+        if (!getSession().getDescriptor(theClass).getCachePolicy().isSharedIsolation()) {
             getIdentityMapManager().setWriteLockValue(primaryKey, theClass, writeLockValue);
         } else {
             ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().updateWriteLockValue(primaryKey, theClass, writeLockValue);

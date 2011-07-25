@@ -91,6 +91,8 @@ import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.AdditionalCriteria;
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheIndex;
+import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.CacheInterceptor;
 import org.eclipse.persistence.annotations.FetchGroup;
 import org.eclipse.persistence.annotations.FetchGroups;
@@ -111,6 +113,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheIndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 
@@ -176,6 +179,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
+    private List<CacheIndexMetadata> m_cacheIndexes = new ArrayList<CacheIndexMetadata>();
     
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
     private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<FetchGroupMetadata>();
@@ -265,6 +269,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public CacheMetadata getCache() {
         return m_cache;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<CacheIndexMetadata> getCacheIndexes() {
+        return m_cacheIndexes;
     }
     
     /**
@@ -910,7 +922,32 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     protected void processCachingMetadata() {    
         processCache();
-        processCacheInterceptor(); 
+        processCacheInterceptor();
+        processCacheIndexes();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process cache index information for the given metadata descriptor.
+     */
+    protected void processCacheIndexes() {
+        MetadataAnnotation index = getAnnotation(CacheIndex.class);
+        
+        if (index != null) {
+            m_cacheIndexes.add(new CacheIndexMetadata(index, this));
+        }
+        
+        MetadataAnnotation indexes = getAnnotation(CacheIndexes.class);
+        if (indexes != null) {
+            Object[] indexArray = (Object[])indexes.getAttributeArray("value");
+            for (Object eachIndex : indexArray) {
+                m_cacheIndexes.add(new CacheIndexMetadata((MetadataAnnotation) eachIndex, this));            
+            }
+        }
+        
+        for (CacheIndexMetadata indexMetadata : m_cacheIndexes) {
+            indexMetadata.process(getDescriptor(), null);
+        }
     }
     
     /**
@@ -1454,6 +1491,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setCache(CacheMetadata cache) {
         m_cache = cache;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCacheIndexes(List<CacheIndexMetadata> indexes) {
+        m_cacheIndexes = indexes;
     }
     
     /**

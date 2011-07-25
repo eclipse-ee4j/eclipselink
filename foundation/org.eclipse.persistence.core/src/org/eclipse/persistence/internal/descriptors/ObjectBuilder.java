@@ -671,7 +671,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (!concreteDescriptor.shouldUseSessionCacheInUnitOfWorkEarlyTransaction()) {
             if (((unitOfWork.hasCommitManager() && unitOfWork.getCommitManager().isActive())
                     || unitOfWork.wasTransactionBegunPrematurely()
-                    || concreteDescriptor.shouldIsolateObjectsInUnitOfWork()
+                    || concreteDescriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()
                     || concreteDescriptor.shouldIsolateProtectedObjectsInUnitOfWork()
                     || query.shouldStoreBypassCache())
                         && (!unitOfWork.isClassReadOnly(concreteDescriptor.getJavaClass(), concreteDescriptor))) {
@@ -771,7 +771,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * from the values stored in the database row.
      */
     protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
-        boolean isProtected = concreteDescriptor.isProtectedIsolation();
+        boolean isProtected = concreteDescriptor.getCachePolicy().isProtectedIsolation();
         if (isProtected && session.isIsolatedClientSession()){
             return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
         }
@@ -867,7 +867,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
 
                 // PERF: Only use deferred locking if required.
-                if (query.requiresDeferredLocks()){
+                if (query.requiresDeferredLocks()) {
                     cacheKey.releaseDeferredLock();
                 } else {
                     cacheKey.release();
@@ -876,6 +876,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
         if (!cacheHit) {
             concreteDescriptor.getObjectBuilder().instantiateEagerMappings(domainObject, session);
+            if (query.shouldMaintainCache() && (cacheKey != null)) {
+                concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, databaseRow, domainObject, concreteDescriptor, session);
+            }
         }
         
         if (returnCacheKey) {
@@ -1136,7 +1139,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Expression builder = new ExpressionBuilder();
         List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
-        if (this.descriptor.getCacheKeyType() == CacheKeyType.ID_VALUE) {
+        if (this.descriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) {
             return builder.getField(primaryKeyFields.get(0)).equal(primaryKey);
         }
         Expression expression = null;
@@ -1375,7 +1378,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public AbstractRecord writeIntoRowFromPrimaryKeyValues(AbstractRecord row, Object primaryKey, AbstractSession session, boolean convert) {
         List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
-        if (this.descriptor.getCacheKeyType() == CacheKeyType.ID_VALUE) {
+        if (this.descriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) {
             DatabaseField field = primaryKeyFields.get(0);
             Object value = primaryKey;
             value = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().convertObject(value, field.getType());
@@ -1616,7 +1619,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
     
             boolean wasAnOriginal = false;
-            boolean isIsolated = descriptor.shouldIsolateObjectsInUnitOfWork() || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
+            boolean isIsolated = descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()
+                    || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
 
             Object original = null;    
             CacheKey originalCacheKey = null;
@@ -1632,7 +1636,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     isARefresh = wasAnOriginal && (descriptor.shouldAlwaysRefreshCache() || descriptor.getCacheInvalidationPolicy().isInvalidated(originalCacheKey, query.getExecutionTime()));
                     // Otherwise can just register the cached original object and return it.
                     if (wasAnOriginal && (!isARefresh)){
-                        if (descriptor.isSharedIsolation() || !descriptor.shouldIsolateProtectedObjectsInUnitOfWork()) {
+                        if (descriptor.getCachePolicy().isSharedIsolation() || !descriptor.shouldIsolateProtectedObjectsInUnitOfWork()) {
                             // using shared isolation and the original is from the shared cache
                             // or using protected isolation and isolated client sessions
                             return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
@@ -1683,7 +1687,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (isARefresh && fetchGroupManager != null) {
                 fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
             }
-            if (descriptor.isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
+            if (descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
                 // we are at this point because we have isolated protected entities to the UnitOfWork
                 // we should ensure that we populate the cache as well.
                 originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, descriptor, joinManager);
@@ -1736,7 +1740,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         UnitOfWorkImpl unitOfWork = null;
         AbstractSession session = executionSession;
-        boolean isolated = !descriptor.isSharedIsolation();
+        boolean isolated = !descriptor.getCachePolicy().isSharedIsolation();
         if (session.isUnitOfWork()) {
             unitOfWork = (UnitOfWorkImpl)executionSession;
         }
@@ -2395,7 +2399,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session, shouldReturnNullIfNull);
         }
         
-        CacheKeyType cacheKeyType = descriptor.getCacheKeyType();
+        CacheKeyType cacheKeyType = descriptor.getCachePolicy().getCacheKeyType();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();        
         Object[] primaryKeyValues = null;
         if (cacheKeyType != CacheKeyType.ID_VALUE) {
@@ -2478,7 +2482,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();
         Object[] primaryKeyValues = null;
-        CacheKeyType cacheKeyType = this.descriptor.getCacheKeyType();
+        CacheKeyType cacheKeyType = this.descriptor.getCachePolicy().getCacheKeyType();
         if (cacheKeyType != CacheKeyType.ID_VALUE) {
             primaryKeyValues = new Object[size];
         }
@@ -2536,6 +2540,22 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         return primaryKeyRow;
+    }
+
+    /**
+     * Return the row from the given expression.
+     */
+    public AbstractRecord extractRowFromExpression(Expression expression, AbstractRecord translationRow, AbstractSession session) {
+        AbstractRecord record = createRecord(session);
+
+        expression.getBuilder().setSession(session.getRootSession(null));
+        // Get all the field & values from expression   
+        boolean isValid = expression.extractValues(false, false, this.descriptor, record, translationRow);
+        if (!isValid) {
+            return null;
+        }
+
+        return record;
     }
 
     /**
@@ -3420,17 +3440,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 DatabaseMapping mapping = getMappingForAttributeName(record.getAttribute());
                 mapping.mergeChangesIntoObject(target, record, source, mergeManager, targetSession);                
             }
+            // PERF: Avoid events if no listeners.
+            // Event is already raised in mergeIntoObject, avoid calling twice.
+            if (this.descriptor.getEventManager().hasAnyEventListeners()) {
+                DescriptorEvent event = new DescriptorEvent(target);
+                event.setSession(mergeManager.getSession());
+                event.setOriginalObject(source);
+                event.setChangeSet(changeSet);
+                event.setEventCode(DescriptorEventManager.PostMergeEvent);
+                this.descriptor.getEventManager().executeEvent(event);
+            }
         }
-
-        // PERF: Avoid events if no listeners.
-        if (this.descriptor.getEventManager().hasAnyEventListeners()) {
-            org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(target);
-            event.setSession(mergeManager.getSession());
-            event.setOriginalObject(source);
-            event.setChangeSet(changeSet);
-            event.setEventCode(DescriptorEventManager.PostMergeEvent);
-            this.descriptor.getEventManager().executeEvent(event);
-        }
+        this.descriptor.getCachePolicy().indexObjectInCache(changeSet, target, this.descriptor, targetSession);
     }
 
     /**
@@ -3465,9 +3486,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
         }
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = this.descriptor.getMappings();
-        for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+        List<DatabaseMapping> mappings = this.descriptor.getMappings();
+        int size = mappings.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseMapping mapping = mappings.get(index);
             if (((!cascadeOnly && !isTargetCloneOfOriginal) 
                     || (cascadeOnly && mapping.isForeignReferenceMapping())
                     || (isTargetCloneOfOriginal && mapping.isCloningRequired()))
@@ -3478,7 +3500,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         // PERF: Avoid events if no listeners.
         if (this.descriptor.getEventManager().hasAnyEventListeners()) {
-            org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(target);
+            DescriptorEvent event = new DescriptorEvent(target);
             event.setSession(mergeManager.getSession());
             event.setOriginalObject(source);
             event.setEventCode(DescriptorEventManager.PostMergeEvent);
@@ -3580,7 +3602,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (concreteDescriptor.usesOptimisticLocking()) {
                 OptimisticLockingPolicy policy = concreteDescriptor.getOptimisticLockingPolicy();
                 Object cacheValue = policy.getValueToPutInCache(databaseRow, session);
-                if (concreteDescriptor.shouldOnlyRefreshCacheIfNewerVersion()) {
+                if (concreteDescriptor.getCachePolicy().shouldOnlyRefreshCacheIfNewerVersion()) {
                     refreshRequired = policy.isNewerVersion(databaseRow, domainObject, cacheKey.getKey(), session);
                     if (!refreshRequired) {
                         cacheKey.setReadTime(query.getExecutionTime());

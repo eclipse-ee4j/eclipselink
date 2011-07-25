@@ -742,6 +742,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * or a general error occurs.
      */
     public void logout() throws DatabaseException {
+        if (this.eventManager != null) {
+            this.eventManager.preLogout(this);
+        }
+        
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
 
@@ -754,7 +758,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         }
         
         // We're logging out so turn off change propagation.
-        this.setShouldPropagateChanges(false);
+        setShouldPropagateChanges(false);
         
         if (!hasBroker()) {
             if (getCommandManager() != null) {
@@ -767,7 +771,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         
         disconnect();
         getIdentityMapAccessor().initializeIdentityMaps();
-        isLoggedIn = false;
+        this.isLoggedIn = false;
+        if (this.eventManager != null) {
+            this.eventManager.postLogout(this);
+        }
         log(SessionLog.INFO, null, "logout_successful", this.getName());
 	   
     }

@@ -616,8 +616,9 @@ public class DatabaseField implements Cloneable, Serializable {
         if (this.nameForComparisons == null) {
             if ((!this.useUpperCaseForComparisons) || (this.name == null)) {
                 this.nameForComparisons = this.name;
+            } else {
+                this.nameForComparisons = this.name.toUpperCase();
             }
-            this.nameForComparisons = this.name.toUpperCase();
         }
         return this.nameForComparisons;
     }

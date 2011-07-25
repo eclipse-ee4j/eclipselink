@@ -125,6 +125,26 @@ public class CacheImpl implements JpaCache {
      *    A null id means invalidate the class - possibly the entire tree or subtree
      */
     public void evict(Class classToEvict, Object id) {
+        evict(classToEvict, id, false);
+    }
+    
+    /**
+     * Sets an Object with the id and Class type to be invalid in the cache.
+     * Remove the data for entities of the specified class (and its
+     * subclasses) from the cache.<p>
+     * If the class is a MappedSuperclass then the first entity above in the inheritance hierarchy will be evicted
+     *   along with all implementing subclasses
+     * If the class is not an Entity or MappedSuperclass but is the root of an entity inheritance tree then
+     *   evict the subtree 
+     * If the class is not an Entity or MappedSuperclass but inherits from one then
+     *   evict up to root descriptor
+     * @see Cache#evict(Class, Object)
+     * @param classToEvict - class to evict - usually representing an Entity or MappedSuperclass
+     * @param id - Primary key of the Entity or MappedSuperclass Class
+     *    A null id means invalidate the class - possibly the entire tree or subtree
+     * @param invalidateInCluster - Invalidate the object id in the cluster, this only applies to a non-null id.
+     */
+    public void evict(Class classToEvict, Object id, boolean invalidateInCluster) {
         getEntityManagerFactory().verifyOpen();
         /**
          * The following descriptor lookup will return the Entity representing the classToEvict parameter,
@@ -140,7 +160,7 @@ public class CacheImpl implements JpaCache {
             if(null != id) {
                 Object cacheKey = createPrimaryKeyFromId(classToEvict, id);
                 if(null != cacheKey) {
-                    getAccessor().invalidateObject(cacheKey, classToEvict);
+                    getAccessor().invalidateObject(cacheKey, classToEvict, invalidateInCluster);
                 }
             } else {
                 // 312503: always evict all implementing entity subclasses of an entity or mappedSuperclass
@@ -374,6 +394,17 @@ public class CacheImpl implements JpaCache {
         getAccessor().invalidateObject(object);
     }
 
+    
+    /**
+     * Sets an Object to be invalid in the cache.
+     * If true is passed, the object is also invalidated across cache coordination.
+     * Cache coordination must be enabled for this to have an affect.
+     */
+    public void evict(Object object, boolean invalidateInCluster) {
+        getEntityManagerFactory().verifyOpen();
+        getAccessor().invalidateObject(object, invalidateInCluster);        
+    }
+    
     /**
      * INTERNAL:
      * Return the EntityManagerFactory associated with this CacheImpl.

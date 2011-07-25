@@ -608,7 +608,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         query.checkDescriptor(this);
         ClassDescriptor descriptor = query.getDescriptor();
         AbstractRecord row = query.rowFromArguments(argumentValues, this);
-        if (query.isObjectBuildingQuery() && descriptor != null && !descriptor.isSharedIsolation()){
+        if (query.isObjectBuildingQuery() && descriptor != null && !descriptor.getCachePolicy().isSharedIsolation()){
             return acquireClientSession().executeQuery(query, row);
         }
         return super.executeQuery( query,  row);
@@ -993,7 +993,8 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * @see #useExclusiveReadConnectionPool(int, int, int)
      */
     public void useReadConnectionPool(int initialNumerOfConnections, int minNumerOfConnections, int maxNumerOfConnections) {
-        setReadConnectionPool(new ReadConnectionPool("read", getDatasourceLogin(), initialNumerOfConnections, minNumerOfConnections, maxNumerOfConnections, this));
+        setReadConnectionPool(new ReadConnectionPool("read", getDatasourceLogin(), initialNumerOfConnections,
+                minNumerOfConnections, maxNumerOfConnections, this));
     }
 
     /**
@@ -1003,7 +1004,8 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     @Override
     public void validateQuery(DatabaseQuery query) {
-        if (query.isObjectLevelReadQuery() && ((query.getDescriptor().isIsolated()) || ((ObjectLevelReadQuery)query).shouldUseExclusiveConnection())) {
+        if (query.isObjectLevelReadQuery() && ((query.getDescriptor().getCachePolicy().isIsolated())
+                || ((ObjectLevelReadQuery)query).shouldUseExclusiveConnection())) {
             throw QueryException.isolatedQueryExecutedOnServerSession();
         }
     }

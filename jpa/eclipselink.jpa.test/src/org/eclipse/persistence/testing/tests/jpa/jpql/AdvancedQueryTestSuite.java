@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.persistence.PessimisticLockException;
@@ -151,6 +152,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyBatchFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
+        suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));        
         if (!isJPA10()) {
             suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
             suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
@@ -2396,6 +2398,87 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+
+    /**
+     * Test cache indexes.
+     */
+    public void testCacheIndexes() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        Buyer buyer = null;
+        Employee employee = null;
+        String lastName = null;
+        try {
+            // Load an employee into the cache.  
+            Query query = em.createQuery("Select employee from Employee employee");
+            List result = query.getResultList();
+            employee = (Employee)result.get(0);
+            lastName = employee.getLastName();
+
+            // Count SQL.
+            counter = new QuerySQLTracker(getServerSession());
+            // Query by primary key.
+            query = em.createQuery("Select employee from Employee employee where employee.firstName = :firstName and employee.lastName = :lastName");
+            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+            query.setParameter("firstName", employee.getFirstName());
+            query.setParameter("lastName", employee.getLastName());
+            counter.getSqlStatements().clear();
+            Employee queryResult = (Employee)query.getSingleResult();
+            if (queryResult != employee) {
+                fail("Employees are not equal: " + employee + ", " + queryResult);
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Cache hit do not occur: " + counter.getSqlStatements());
+            }
+            employee.setLastName("fail");
+            commitTransaction(em);
+            counter.getSqlStatements().clear();
+            try {
+                queryResult = null;
+                queryResult = (Employee)query.getSingleResult();
+            } catch (NoResultException ignore) {}
+            if (queryResult != null) {
+            //    fail("Employees should not be found, " + queryResult);
+            }
+            if (counter.getSqlStatements().size() == 0) {
+            //    fail("Cache hit should not occur: " + counter.getSqlStatements());
+            }
+            closeEntityManager(em);
+            em = createEntityManager();
+            beginTransaction(em);
+            buyer = new Buyer();
+            buyer.setName("index");
+            buyer.setDescription("description");
+            em.persist(buyer);
+            commitTransaction(em);
+            query = em.createQuery("Select b from Buyer b where b.name = :name");
+            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+            query.setParameter("name", buyer.getName());
+            counter.getSqlStatements().clear();
+            Buyer queryResult2 = (Buyer)query.getSingleResult();
+            if (queryResult2 != buyer) {
+                fail("Buyers are not equal: " + buyer + ", " + queryResult2);
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Cache hit do not occur: " + counter.getSqlStatements());
+            }            
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+            closeEntityManagerAndTransaction(em);
+            em = createEntityManager();
+            beginTransaction(em);
+            try {
+                em.remove(buyer);
+                Employee reset = em.find(Employee.class, employee.getId());
+                reset.setLastName(lastName);
+                commitTransaction(em);
+            } catch (Exception ignore) {}
+            closeEntityManagerAndTransaction(em);            
         }
     }
 }

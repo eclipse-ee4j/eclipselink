@@ -197,13 +197,14 @@ public class RelationExpression extends CompoundExpression {
 
     /**
      * INTERNAL:
-     * Extract the primary key from the expression into the row.
+     * Extract the values from the expression into the row.
      * Ensure that the query is querying the exact primary key.
      * @param requireExactMatch refers to the primary key extracted gaurenteeing the result,
-     * if not exact it is a hueristic and the cache hit will be conformed to the expression after the lookup
+     * if not exact it is a heuristic and the cache hit will be conformed to the expression after the lookup
      * Return false if not on the primary key.
      */
-    public boolean extractPrimaryKeyValues(boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
+    @Override
+    public boolean extractValues(boolean primaryKeyOnly, boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
         // If an exact match is required then the operator must be equality.
         if (requireExactMatch && (!(this.operator.getSelector() == ExpressionOperator.Equal))) {
             return false;
@@ -246,7 +247,7 @@ public class RelationExpression extends CompoundExpression {
             }
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(child.getName());
             if (mapping != null) {
-                if (!mapping.isPrimaryKeyMapping()) {
+                if (primaryKeyOnly && !mapping.isPrimaryKeyMapping()) {
                     return false;
                 }
                 // Only support referencing limited number of relationship types.            
@@ -279,7 +280,7 @@ public class RelationExpression extends CompoundExpression {
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(child.getName());
             // Only support referencing limited number of relationship types.
             if (mapping != null) {
-                if (!mapping.isPrimaryKeyMapping()) {
+                if (primaryKeyOnly && !mapping.isPrimaryKeyMapping()) {
                     return false;
                 }
                 if (mapping.isObjectReferenceMapping() || mapping.isAggregateObjectMapping()) {
@@ -296,7 +297,7 @@ public class RelationExpression extends CompoundExpression {
         } else {
             return false;
         }
-        if ((field == null) || (!descriptor.getPrimaryKeyFields().contains(field))) {
+        if ((field == null) || (primaryKeyOnly && !descriptor.getPrimaryKeyFields().contains(field))) {
             return false;
         }
         primaryKeyRow.put(field, value);

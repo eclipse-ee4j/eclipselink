@@ -1462,6 +1462,16 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return false if not on the primary key.
      */
     public boolean extractPrimaryKeyValues(boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
+        return extractValues(true, requireExactMatch, descriptor, primaryKeyRow, translationRow);
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the primary key from the expression into the row.
+     * Ensure that the query is querying the exact primary key.
+     * Return false if not on the primary key.
+     */
+    public boolean extractValues(boolean primaryKeyOnly, boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
         return false;
     }
 

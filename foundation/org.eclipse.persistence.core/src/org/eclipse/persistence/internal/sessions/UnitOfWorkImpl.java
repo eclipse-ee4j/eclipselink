@@ -647,8 +647,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     changedObjects.put(object, object);
                     if (changes.hasChanges() && !changes.hasForcedChangesFromCascadeLocking()) {
                         if (descriptor.hasCascadeLockingPolicies()) {
-                            for (Enumeration policies = descriptor.getCascadeLockingPolicies().elements(); policies.hasMoreElements();) {
-                                ((CascadeLockingPolicy)policies.nextElement()).lockNotifyParent(object, changeSet, this);
+                            for (CascadeLockingPolicy policy : descriptor.getCascadeLockingPolicies()) {
+                                policy.lockNotifyParent(object, changeSet, this);
                             }
                         } else if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isCascaded()) {
                             changes.setHasForcedChangesFromCascadeLocking(true);
@@ -3234,28 +3234,30 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 this.parent.getEventManager().preMergeUnitOfWorkChangeSet(uowChangeSet);
             }
             if (!isNestedUnitOfWork && getDatasourceLogin().shouldSynchronizeObjectLevelReadWrite()) {
+                // Note shouldSynchronizeObjectLevelReadWrite is not the default, shouldSynchronizeObjectLevelReadWriteDatabase
+                // is the default, and locks are normally acquire before the commit transaction.
                 setMergeManager(manager);
                 //If we are merging into the shared cache acquire all required locks before merging.
                 this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
             }
-                if (! shouldStoreBypassCache()) {
-                    for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
-                        // May be no changes for that class type.
-                        for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
-                            if (changeSetToWrite.hasChanges()) {
-                                Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                                // It would be so much nicer if the change set was keyed by the class instead of class name,
-                                // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
-                                ClassDescriptor descriptor = getDescriptor(objectToWrite);
-                                // PERF: Do not merge into the session cache if set to unit of work isolated.
-                                if ((!isNestedUnitOfWork) && descriptor.shouldIsolateObjectsInUnitOfWork() ) {
-                                    break;
-                                }
-                                manager.mergeChanges(objectToWrite, changeSetToWrite, this.getParentIdentityMapSession(descriptor, false, false));
+            if (! shouldStoreBypassCache()) {
+                for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
+                    // May be no changes for that class type.
+                    for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
+                        if (changeSetToWrite.hasChanges()) {
+                            Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
+                            // It would be so much nicer if the change set was keyed by the class instead of class name,
+                            // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
+                            ClassDescriptor descriptor = getDescriptor(objectToWrite);
+                            // PERF: Do not merge into the session cache if set to unit of work isolated.
+                            if ((!isNestedUnitOfWork) && descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork() ) {
+                                break;
                             }
+                            manager.mergeChanges(objectToWrite, changeSetToWrite, this.getParentIdentityMapSession(descriptor, false, false));
                         }
                     }
                 }
+            }
 
             // Notify the queries to merge into the shared cache
             if (this.modifyAllQueries != null) {
@@ -3669,7 +3671,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 Object primaryKey = removedObjectChangeSet.getId();
                 ClassDescriptor descriptor = removedObjectChangeSet.getDescriptor();
                 // PERF: Do not remove if uow is isolated.
-                if (!descriptor.shouldIsolateObjectsInUnitOfWork()) {
+                if (!descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()) {
                     this.parent.getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKey, descriptor.getJavaClass(), descriptor, removedObjectChangeSet.getUnitOfWorkClone());
                 }
             }
@@ -5789,7 +5791,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         Object primaryKey;
         if (id instanceof List) {
-            if (descriptor.getCacheKeyType() == CacheKeyType.ID_VALUE) {
+            if (descriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) {
                 if (((List)id).isEmpty()) {
                     primaryKey = null;
                 } else {

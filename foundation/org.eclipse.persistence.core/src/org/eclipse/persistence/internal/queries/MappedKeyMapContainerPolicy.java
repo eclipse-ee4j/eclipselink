@@ -889,7 +889,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
         DatabaseRecord translationRow = new DatabaseRecord();
         List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
         
-        CacheKeyType cacheKeyType = elementDescriptor.getCacheKeyType();
+        CacheKeyType cacheKeyType = this.elementDescriptor.getCachePolicy().getCacheKeyType();
         for (int index = 0; index < pks.length; ++index){
             Object pk = pks[index];
             if (!fromCache.containsKey(pk)){

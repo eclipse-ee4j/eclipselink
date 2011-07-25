@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -102,29 +101,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected Map<String, QueryKey> queryKeys;
 
     // Additional properties.
-    protected Class identityMapClass;
-    protected Class remoteIdentityMapClass;
-    protected int identityMapSize;
-    protected int remoteIdentityMapSize;
     protected String sequenceNumberName;
     protected DatabaseField sequenceNumberField;
     protected transient String sessionName;
-    protected boolean shouldAlwaysRefreshCache;
-    protected boolean shouldOnlyRefreshCacheIfNewerVersion;
-    protected boolean shouldDisableCacheHits;
     protected transient Vector constraintDependencies;
     protected transient String amendmentMethodName;
     protected transient Class amendmentClass;
     protected transient String amendmentClassName;
-    protected boolean shouldAlwaysRefreshCacheOnRemote;
-    protected boolean shouldDisableCacheHitsOnRemote;
     protected String alias;
     protected boolean shouldBeReadOnly;
     protected boolean shouldAlwaysConformResultsInUnitOfWork;
-
-    // this attribute is used to determine what classes should be isolated from the shared cache
-    // and the severity of their isolation.
-    protected CacheIsolationType cacheIsolation;
 
     // for bug 2612601 allow ability not to register results in UOW.
     protected boolean shouldRegisterResultsInUnitOfWork = true;
@@ -139,7 +125,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected InheritancePolicy inheritancePolicy;
     protected InterfacePolicy interfacePolicy;
     protected OptimisticLockingPolicy optimisticLockingPolicy;
-    protected Vector cascadeLockingPolicies;
+    protected List<CascadeLockingPolicy> cascadeLockingPolicies;
     protected WrapperPolicy wrapperPolicy;
     protected ObjectChangePolicy changePolicy;
     protected ReturningPolicy returningPolicy;
@@ -147,6 +133,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected String partitioningPolicyName;
     protected PartitioningPolicy partitioningPolicy;
     protected CMPPolicy cmpPolicy;
+    protected CachePolicy cachePolicy;
 
     //manage fetch group behaviors and operations
     protected FetchGroupManager fetchGroupManager;
@@ -187,22 +174,18 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected boolean hasMultipleTableConstraintDependecy = false;
 
-    /** Configures how objects will be sent via cache synchronization, if synchronization is enabled. */
-    protected int cacheSynchronizationType = SEND_OBJECT_CHANGES;
-    public static final int UNDEFINED_OBJECT_CHANGE_BEHAVIOR = 0;
-    public static final int SEND_OBJECT_CHANGES = 1;
-    public static final int INVALIDATE_CHANGED_OBJECTS = 2;
-    public static final int SEND_NEW_OBJECTS_WITH_CHANGES = 3;
-    public static final int DO_NOT_SEND_CHANGES = 4;
+    public static final int UNDEFINED_OBJECT_CHANGE_BEHAVIOR = CachePolicy.UNDEFINED_OBJECT_CHANGE_BEHAVIOR;
+    public static final int SEND_OBJECT_CHANGES = CachePolicy.SEND_OBJECT_CHANGES;
+    public static final int INVALIDATE_CHANGED_OBJECTS = CachePolicy.INVALIDATE_CHANGED_OBJECTS;
+    public static final int SEND_NEW_OBJECTS_WITH_CHANGES = CachePolicy.SEND_NEW_OBJECTS_WITH_CHANGES;
+    public static final int DO_NOT_SEND_CHANGES = CachePolicy.DO_NOT_SEND_CHANGES;
 
-    /** Configures how the unit of work uses the session cache. */
-    protected int unitOfWorkCacheIsolationLevel = UNDEFINED_ISOLATATION;
-    public static final int UNDEFINED_ISOLATATION = -1;
-    public static final int USE_SESSION_CACHE_AFTER_TRANSACTION = 0;
-    public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1; // this is the default behaviour even when undefined.
-    public static final int ISOLATE_CACHE_AFTER_TRANSACTION = 2;
-    public static final int ISOLATE_FROM_CLIENT_SESSION = 3;  // Entity Instances only exist in UOW and shared cache.
-    public static final int ISOLATE_CACHE_ALWAYS = 4;
+    public static final int UNDEFINED_ISOLATATION = CachePolicy.UNDEFINED_ISOLATATION;
+    public static final int USE_SESSION_CACHE_AFTER_TRANSACTION = CachePolicy.USE_SESSION_CACHE_AFTER_TRANSACTION;
+    public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = CachePolicy.ISOLATE_NEW_DATA_AFTER_TRANSACTION; // this is the default behaviour even when undefined.
+    public static final int ISOLATE_CACHE_AFTER_TRANSACTION = CachePolicy.ISOLATE_CACHE_AFTER_TRANSACTION;
+    public static final int ISOLATE_FROM_CLIENT_SESSION = CachePolicy.ISOLATE_FROM_CLIENT_SESSION;  // Entity Instances only exist in UOW and shared cache.
+    public static final int ISOLATE_CACHE_ALWAYS = CachePolicy.ISOLATE_CACHE_ALWAYS;
 
     /** INTERNAL: Backdoor for using changes sets for new objects. */
     public static boolean shouldUseFullChangeSetsForNewObjects = false;
@@ -215,18 +198,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
     
     /** Allow zero primary key validation to be configured per field. */
     protected List<IdValidation> primaryKeyIdValidations;
-
-    /** Allow cache key type to be configured. */
-    protected CacheKeyType cacheKeyType;
     
     // JPA 2.0 Derived identities - map of mappings that act as derived ids
     protected Map<String, DatabaseMapping> derivesIdMappings;
-    
-    //Added for interceptor support.
-    protected Class cacheInterceptorClass;
-    //Added for interceptor support.
-    protected String cacheInterceptorClassName;
-    
+        
     //Added for default Redirectors
     protected QueryRedirector defaultQueryRedirector;
     protected QueryRedirector defaultReadAllQueryRedirector;
@@ -273,8 +248,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** caches if this descriptor has any non cacheable mappings */
     protected boolean hasNoncacheableMappings = false;
     
-    /** This flag controls how the MergeManager should merge an Entity when merging into the shared cache.*/
-    protected boolean fullyMergeEntity = false;
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -292,15 +265,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.queryKeys = new HashMap(5);
         this.initializationStage = UNINITIALIZED;
         this.interfaceInitializationStage = UNINITIALIZED;
-        this.shouldAlwaysRefreshCache = false;
-        this.shouldOnlyRefreshCacheIfNewerVersion = false;
-        this.shouldDisableCacheHits = false;
-        this.identityMapSize = -1;
-        this.remoteIdentityMapSize = -1;
-        this.remoteIdentityMapClass = null;
         this.descriptorType = NORMAL;
-        this.shouldAlwaysRefreshCacheOnRemote = false;
-        this.shouldDisableCacheHitsOnRemote = false;
         this.shouldOrderMappings = true;
         this.shouldBeReadOnly = false;
         this.shouldAlwaysConformResultsInUnitOfWork = false;
@@ -312,7 +277,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
-        this.cascadeLockingPolicies = NonSynchronizedVector.newInstance();
         
         this.additionalWritableMapKeyFields = new ArrayList(2);
         this.foreignKeyValuesForCaching = new HashSet<DatabaseField>();
@@ -338,27 +302,26 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @param policy - the CascadeLockingPolicy
      */
     public void addCascadeLockingPolicy(CascadeLockingPolicy policy) {
-        cascadeLockingPolicies.add(policy);
+        getCascadeLockingPolicies().add(policy);
         // 232608: propagate later version changes up to the locking policy on a parent branch by setting the policy on all children here            
-        if(this.hasInheritance()) {
+        if (hasInheritance()) {
             // InOrder traverse the entire [deep] tree, not just the next level
-            Iterator<ClassDescriptor> anIterator = getInheritancePolicy().getAllChildDescriptors().iterator();
-            while(anIterator.hasNext()) {
+            for (ClassDescriptor parent : getInheritancePolicy().getAllChildDescriptors()) {
                 // Set the same cascade locking policy on all descriptors that inherit from this descriptor.
-                anIterator.next().addCascadeLockingPolicy(policy);
+                parent.addCascadeLockingPolicy(policy);
             }
         }
 
         // do not propagate an extra locking policy to other mappings, if this descriptor already
         // has a cascaded optimistic locking policy that will be cascaded
-        if (!cascadedLockingInitialized) {
+        if (!this.cascadedLockingInitialized) {
             // never cascade locking until descriptor is initialized 
             if (isInitialized(INITIALIZED)) {
                 // Set cascade locking policies on privately owned children mappings.
-                for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-                    prepareCascadeLockingPolicy((DatabaseMapping)mappings.nextElement());
+                for (DatabaseMapping mapping : getMappings()) {
+                    prepareCascadeLockingPolicy(mapping);
                 }
-                cascadedLockingInitialized = true;
+                this.cascadedLockingInitialized = true;
             }
         }
     }
@@ -714,18 +677,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * If such the value for the attribute hasn't been set then the default value is assigned.
      */
     protected void assignDefaultValues(AbstractSession session) {
-        if(this.identityMapSize == -1) {
-            this.identityMapSize = session.getProject().getDefaultIdentityMapSize();
-        }
-        if(this.identityMapClass == null) {
-            this.identityMapClass = session.getProject().getDefaultIdentityMapClass();
-        }
-        if(this.cacheIsolation == null) {
-            this.cacheIsolation = session.getProject().getDefaultCacheIsolation();
-        }
-        if(this.idValidation == null) {
+        if (this.idValidation == null) {
             this.idValidation = session.getProject().getDefaultIdValidation();
         }
+        getCachePolicy().assignDefaultValues(session);
     }
     
     /**
@@ -1214,15 +1169,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         clonedDescriptor.setMappings(mappingsVector);
         
-        Map queryKeyVector = new HashMap(getQueryKeys().size() + 2);
+        Map queryKeys = new HashMap(getQueryKeys().size() + 2);
 
         // All the query keys
-        for (Iterator queryKeysEnum = getQueryKeys().values().iterator(); queryKeysEnum.hasNext();) {
-            QueryKey queryKey = (QueryKey)((QueryKey)queryKeysEnum.next()).clone();
+        for (QueryKey queryKey : getQueryKeys().values()) {
+            queryKey = (QueryKey)queryKey.clone();
             queryKey.setDescriptor(clonedDescriptor);
-            queryKeyVector.put(queryKey.getName(), queryKey);
+            queryKeys.put(queryKey.getName(), queryKey);
         }
-        clonedDescriptor.setQueryKeys(queryKeyVector);
+        clonedDescriptor.setQueryKeys(queryKeys);
 
         // PrimaryKeyFields
         List primaryKeyVector = new ArrayList(getPrimaryKeyFields().size());
@@ -1264,7 +1219,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
             clonedDescriptor.setFetchGroupManager((FetchGroupManager)getFetchGroupManager().clone());
         }
 
-        clonedDescriptor.cacheIsolation = this.cacheIsolation;
+        if (this.cachePolicy != null) {
+            clonedDescriptor.setCachePolicy(this.cachePolicy.clone());
+        }
 
         // Bug 3037701 - clone several more elements
         if (this.instantiationPolicy != null) {
@@ -1359,21 +1316,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         if (newCopyPolicy != null){
             setCopyPolicy(newCopyPolicy);
-        }
-        try{
-            if (cacheInterceptorClass == null && cacheInterceptorClassName != null){
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        cacheInterceptorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(cacheInterceptorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(cacheInterceptorClassName, exception.getException());
-                   }
-                } else {
-                    cacheInterceptorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(cacheInterceptorClassName, true, classLoader);
-                }
-            }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(cacheInterceptorClassName, exc);
         }
         if (this.defaultQueryRedirectorClassName != null){
             try{
@@ -1562,6 +1504,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         if(this.queryManager != null) {
             this.queryManager.convertClassNamesToClasses(classLoader);
+        }
+        if(this.cachePolicy != null) {
+            this.cachePolicy.convertClassNamesToClasses(classLoader);
         }
     }
 
@@ -1918,11 +1863,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
      * 
-     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public Class getCacheInterceptorClass(){
-        return this.cacheInterceptorClass;
+    public Class getCacheInterceptorClass() {
+        return getCachePolicy().getCacheInterceptorClass();
     }
     
     /**
@@ -1932,11 +1877,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
      * 
-     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public String getCacheInterceptorClassName(){
-        return this.cacheInterceptorClassName;
+    public String getCacheInterceptorClassName() {
+        return getCachePolicy().getCacheInterceptorClassName();
     }
     
     /**
@@ -1961,17 +1906,18 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INVALIDATE_CHANGED_OBJECTS
      * SEND_NEW_OBJECTS+WITH_CHANGES
      * DO_NOT_SEND_CHANGES
-     * @return int
-     *
      */
     public int getCacheSynchronizationType() {
-        return cacheSynchronizationType;
+        return getCachePolicy().getCacheSynchronizationType();
     }
 
     /**
      * INTERNAL:
      */
-    public Vector getCascadeLockingPolicies() {
+    public List<CascadeLockingPolicy> getCascadeLockingPolicies() {
+        if (this.cascadeLockingPolicies == null) {
+            this.cascadeLockingPolicies = new ArrayList();
+        }
         return cascadeLockingPolicies;
     }
 
@@ -2092,7 +2038,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public Class getIdentityMapClass() {
-        return identityMapClass;
+        return getCachePolicy().getIdentityMapClass();
     }
 
     /**
@@ -2100,7 +2046,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return the size of the identity map.
      */
     public int getIdentityMapSize() {
-        return identityMapSize;
+        return getCachePolicy().getIdentityMapSize();
     }
 
     /**
@@ -2436,11 +2382,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public Class getRemoteIdentityMapClass() {
-        if (remoteIdentityMapClass == null) {
-            remoteIdentityMapClass = getIdentityMapClass();
-        }
-
-        return remoteIdentityMapClass;
+        return getCachePolicy().getRemoteIdentityMapClass();
     }
     
     /**
@@ -2460,10 +2402,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return the size of the remote identity map.
      */
     public int getRemoteIdentityMapSize() {
-        if (remoteIdentityMapSize == -1) {
-            remoteIdentityMapSize = getIdentityMapSize();
-        }
-        return remoteIdentityMapSize;
+        return getCachePolicy().getRemoteIdentityMapSize();
     }
 
     /**
@@ -2776,13 +2715,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // make sure that parent mappings are initialized?
         if (isChildDescriptor()) {
             getInheritancePolicy().getParentDescriptor().initialize(session);
-            if (!getInheritancePolicy().getParentDescriptor().isSharedIsolation()){
-                if (!this.isIsolated() && this.getCacheIsolation() != getInheritancePolicy().getParentDescriptor().getCacheIsolation()){
-                    session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "overriding_cache_isolation", new Object[]{getInheritancePolicy().getParentDescriptor().getAlias(), getInheritancePolicy().getParentDescriptor().getCacheIsolation(), this.alias,  this.cacheIsolation});
-                    this.setCacheIsolation(getInheritancePolicy().getParentDescriptor().getCacheIsolation());
-                    
-                }
-            }
+            getCachePolicy().initializeFromParent(getInheritancePolicy().getParentDescriptor().getCachePolicy(), this,
+                    getInheritancePolicy().getParentDescriptor(), session);
             // Setup this early before useOptimisticLocking is called so that subclass
             // versioned by superclass are also covered
             getInheritancePolicy().initializeOptimisticLocking();
@@ -2811,9 +2745,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
             mapping.initialize(session);
             if (!mapping.isCacheable()){
                 this.hasNoncacheableMappings = true;
-                if (this.isSharedIsolation()){
-                    this.cacheIsolation = CacheIsolationType.PROTECTED;
-                }
             }
 
             if (mapping.isForeignReferenceMapping()){
@@ -2823,19 +2754,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 ClassDescriptor referencedDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
                 if (referencedDescriptor!= null){
                     referencedDescriptor.referencingClasses.add(this);
-                    if (this.isSharedIsolation() && !referencedDescriptor.isSharedIsolation()){
-                        this.cacheIsolation = CacheIsolationType.PROTECTED;
-                    }
                 }
             }
 
-            if (mapping.isAggregateObjectMapping()){
+            if (mapping.isAggregateObjectMapping()) {
                 ClassDescriptor referencedDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
                 if (referencedDescriptor!= null){
                     referencedDescriptor.referencingClasses.add(this);
-                    if (this.isSharedIsolation() && !referencedDescriptor.isSharedIsolation()){
-                        this.cacheIsolation = CacheIsolationType.PROTECTED;
-                    }
                 }
             }
             // If this descriptor uses a cascaded version optimistic locking 
@@ -2854,7 +2779,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
         }
         if (initializeCascadeLocking) {
-            cascadedLockingInitialized = true;
+            this.cascadedLockingInitialized = true;
         }
         
         if (hasMappingsPostCalculateChangesOnDeleted()) {
@@ -2980,6 +2905,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         getEventManager().initialize(session);
         getCopyPolicy().initialize(session);
         getInstantiationPolicy().initialize(session);
+        getCachePolicy().initialize(this, session);
 
         if (getHistoryPolicy() != null) {
             getHistoryPolicy().initialize(session);
@@ -2992,8 +2918,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
         }
 
-        if (this.getCMPPolicy() != null) {
-            this.getCMPPolicy().initialize(this, session);
+        if (getCMPPolicy() != null) {
+            getCMPPolicy().initialize(this, session);
         }
 
         // Validate the fetch group setting during descriptor initialization.
@@ -3015,16 +2941,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // 3934266 move validation to the policy allowing for this to be done in the sub policies.
         getObjectChangePolicy().initialize(session, this);
         
-        // PERF: If using isolated cache, then default uow isolation to always (avoids merge/double build).
-        if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
-            if (isIsolated()) {
-                setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
-            }else if (isProtectedIsolation()) {
-                setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
-            }else{
-                setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
-            }
-        }
         // Setup default redirectors.  Any redirector that is not set will get assigned the
         // default redirector.
         if (this.defaultReadAllQueryRedirector == null){
@@ -3326,7 +3242,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Returns true if the descriptor represents an isolated class
      */
     public boolean isIsolated() {
-        return CacheIsolationType.ISOLATED == this.cacheIsolation;
+        return getCachePolicy().isIsolated();
     }
 
     /**
@@ -3334,7 +3250,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Returns true if the descriptor represents an isolated class
      */
     public boolean isProtectedIsolation() {
-        return CacheIsolationType.PROTECTED ==this.cacheIsolation;
+        return getCachePolicy().isProtectedIsolation();
     }
 
     /**
@@ -3342,7 +3258,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Returns true if the descriptor represents an isolated class
      */
     public boolean isSharedIsolation() {
-        return this.cacheIsolation == null || CacheIsolationType.SHARED == this.cacheIsolation;
+        return getCachePolicy().isSharedIsolation();
     }
 
     /**
@@ -3375,7 +3291,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return if change sets are required for new objects.
      */
     public boolean shouldUseFullChangeSetsForNewObjects() {
-        return this.cacheSynchronizationType == SEND_NEW_OBJECTS_WITH_CHANGES || shouldUseFullChangeSetsForNewObjects;
+        return getCachePolicy().getCacheSynchronizationType() == CachePolicy.SEND_NEW_OBJECTS_WITH_CHANGES || shouldUseFullChangeSetsForNewObjects;
     }
     
     /**
@@ -3415,10 +3331,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
 
         // Record that there is an isolated class in the project.
-        if (!isSharedIsolation()) {
+        if (!getCachePolicy().isSharedIsolation()) {
             session.getProject().setHasIsolatedClasses(true);
         }
-        if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
+        if (!getCachePolicy().shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
             session.getProject().setHasNonIsolatedUOWClasses(true);
         }
         
@@ -3438,7 +3354,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         //Must do this before postInitialize on mappings as the mappings will be
         //updated based on the cache isolation.
-        if (this.cacheIsolation != null && this.cacheIsolation != CacheIsolationType.SHARED){
+        if (getCachePolicy().getCacheIsolation() != null && getCachePolicy().getCacheIsolation() != CacheIsolationType.SHARED) {
             notifyReferencingDescriptorsOfIsolation();
         }
 
@@ -3463,10 +3379,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     }
                 }
             }
-            if (isProtectedIsolation() &&
+            if (getCachePolicy().isProtectedIsolation() &&
                     ((mapping.isForeignReferenceMapping() && !mapping.isCacheable())
                     || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings()))) {
-                ((ForeignReferenceMapping) mapping).collectQueryParameters(this.foreignKeyValuesForCaching);
+                ((ForeignReferenceMapping)mapping).collectQueryParameters(this.foreignKeyValuesForCaching);
             }
             if (mapping.isLockableMapping()){
                 getLockableMappings().add(mapping);
@@ -3510,20 +3426,20 @@ public class ClassDescriptor implements Cloneable, Serializable {
             field.setIndex(index);
         }        
         // Set cache key type.
-        if (getCacheKeyType() == null || (getCacheKeyType() == CacheKeyType.AUTO)) {
+        if (getCachePolicy().getCacheKeyType() == null || (getCachePolicy().getCacheKeyType() == CacheKeyType.AUTO)) {
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
                 setCacheKeyType(CacheKeyType.CACHE_ID);
             } else if ((getPrimaryKeyFields().size() == 1) && (getObjectBuilder().getPrimaryKeyClassifications().size() == 1)) {
                 Class type = getObjectBuilder().getPrimaryKeyClassifications().get(0);
                 if ((type == null) || type.isArray()) {
-                    setCacheKeyType(CacheKeyType.CACHE_ID);
+                    getCachePolicy().setCacheKeyType(CacheKeyType.CACHE_ID);
                 } else {
-                    setCacheKeyType(CacheKeyType.ID_VALUE);
+                    getCachePolicy().setCacheKeyType(CacheKeyType.ID_VALUE);
                 }
             } else {
-                setCacheKeyType(CacheKeyType.CACHE_ID);                
+                getCachePolicy().setCacheKeyType(CacheKeyType.CACHE_ID);                
             }
-        } else if ((getCacheKeyType() == CacheKeyType.ID_VALUE) && (getPrimaryKeyFields().size() > 1)) {
+        } else if ((getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) && (getPrimaryKeyFields().size() > 1)) {
             session.getIntegrityChecker().handleError(DescriptorException.cannotUseIdValueForCompositeId(this));
         }
         if (hasFetchGroupManager()) {
@@ -3531,6 +3447,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         getObjectBuilder().postInitialize(session);
         getQueryManager().postInitialize(session);
+        getCachePolicy().postInitialize(this, session);
 
         validateAfterInitialization(session);
 
@@ -3539,10 +3456,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     protected void notifyReferencingDescriptorsOfIsolation() {
         for (ClassDescriptor descriptor : this.referencingClasses){
-            if (descriptor.cacheIsolation == null || descriptor.cacheIsolation == CacheIsolationType.SHARED){
-                descriptor.cacheIsolation = CacheIsolationType.PROTECTED;
-                if (descriptor.unitOfWorkCacheIsolationLevel == UNDEFINED_ISOLATATION){
-                    descriptor.unitOfWorkCacheIsolationLevel = ISOLATE_FROM_CLIENT_SESSION;
+            if (descriptor.getCachePolicy().getCacheIsolation() == null || descriptor.getCachePolicy().getCacheIsolation() == CacheIsolationType.SHARED) {
+                descriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.PROTECTED);
+                if (descriptor.getCachePolicy().getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION){
+                    descriptor.getCachePolicy().setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
                 }
             }
         }
@@ -3778,10 +3695,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
 
         // Record that there is an isolated class in the project.
-        if (!this.isSharedIsolation()) {
+        if (!getCachePolicy().isSharedIsolation()) {
             session.getProject().setHasIsolatedClasses(true);
         }
-        if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
+        if (!getCachePolicy().shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
             session.getProject().setHasNonIsolatedUOWClasses(true);
         }
         
@@ -4010,10 +3927,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      *
      */
     public void setCacheSynchronizationType(int type) {
-        // bug 3587273
-        if (!isIsolated()) {
-            cacheSynchronizationType = type;
-        }
+        getCachePolicy().setCacheSynchronizationType(type);
     }
 
     /**
@@ -4043,11 +3957,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
 
-     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public void setCacheInterceptorClass(Class cacheInterceptorClass){
-        this.cacheInterceptorClass = cacheInterceptorClass;
+    public void setCacheInterceptorClass(Class cacheInterceptorClass) {
+        getCachePolicy().setCacheInterceptorClass(cacheInterceptorClass);
     }
 
     /**
@@ -4058,11 +3972,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * could also be used to redirect or augment the TopLink cache with an alternate cache mechanism.
      * EclipseLink's configurated IdentityMaps will be passed to the Interceptor constructor.
 
-     * As with IdentityMaps an entire class inheritance heirachy will share the same interceptor.
+     * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public void setCacheInterceptorClassName(String cacheInterceptorClassName){
-        this.cacheInterceptorClassName = cacheInterceptorClassName;
+    public void setCacheInterceptorClassName(String cacheInterceptorClassName) {
+        getCachePolicy().setCacheInterceptorClassName(cacheInterceptorClassName);
     }
     
     /**
@@ -4194,7 +4108,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @param fullyMergeEntity the fullyMergeEntity to set
      */
     public void setFullyMergeEntity(boolean fullyMergeEntity) {
-        this.fullyMergeEntity = fullyMergeEntity;
+        getCachePolicy().setFullyMergeEntity(fullyMergeEntity);
     }
 
     /**
@@ -4203,7 +4117,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "FullIdentityMap".
      */
     public void setIdentityMapClass(Class theIdentityMapClass) {
-        identityMapClass = theIdentityMapClass;
+        getCachePolicy().setIdentityMapClass(theIdentityMapClass);
     }
 
     /**
@@ -4212,7 +4126,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the 100.
      */
     public void setIdentityMapSize(int identityMapSize) {
-        this.identityMapSize = identityMapSize;
+        getCachePolicy().setIdentityMapSize(identityMapSize);
     }
 
     /**
@@ -4308,7 +4222,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     @Deprecated
     public void setIsIsolated(boolean isIsolated) {
-        this.setCacheIsolation( isIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED);
+        getCachePolicy().setCacheIsolation( isIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED);
     }
 
     /**
@@ -4317,7 +4231,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @return the isolationType
      */
     public CacheIsolationType getCacheIsolation() {
-        return cacheIsolation;
+        return getCachePolicy().getCacheIsolation();
     }
 
     /**
@@ -4328,13 +4242,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * ISOLATED = DO_NOT_SEND_CHANGES, PROTECTED and SHARED = SEND_OBJECT_CHANGES
      */
     public void setCacheIsolation(CacheIsolationType isolationType) {
-        this.cacheIsolation = isolationType;
-        if (CacheIsolationType.ISOLATED == isolationType) {
-            // bug 3587273 - set the cache synchronization type so isolated objects are not sent
-            // do not call the setter method because it does not allow changing the cache synchronization
-            // type of isolated objects
-            cacheSynchronizationType = DO_NOT_SEND_CHANGES;
-        }
+        getCachePolicy().setCacheIsolation(isolationType);
     }
 
     /**
@@ -4343,7 +4251,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Objects will be built in the unit of work, and never merged into the session cache.
      */
     public boolean shouldIsolateObjectsInUnitOfWork() {
-        return this.unitOfWorkCacheIsolationLevel == ISOLATE_CACHE_ALWAYS;
+        return getCachePolicy().shouldIsolateObjectsInUnitOfWork();
     }
           
     /**
@@ -4353,7 +4261,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * but not built/merge into the IsolatedClientSession cache.
      */
     public boolean shouldIsolateProtectedObjectsInUnitOfWork() {
-        return this.unitOfWorkCacheIsolationLevel == ISOLATE_FROM_CLIENT_SESSION;
+        return getCachePolicy().shouldIsolateProtectedObjectsInUnitOfWork();
     }
           
     /**
@@ -4361,7 +4269,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return if the unit of work should by-pass the session cache after an early transaction.
      */
     public boolean shouldIsolateObjectsInUnitOfWorkEarlyTransaction() {
-        return this.unitOfWorkCacheIsolationLevel == ISOLATE_CACHE_AFTER_TRANSACTION;
+        return getCachePolicy().shouldIsolateObjectsInUnitOfWorkEarlyTransaction();
     }
               
     /**
@@ -4369,7 +4277,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return if the unit of work should use the session cache after an early transaction.
      */
     public boolean shouldUseSessionCacheInUnitOfWorkEarlyTransaction() {
-        return this.unitOfWorkCacheIsolationLevel == USE_SESSION_CACHE_AFTER_TRANSACTION;
+        return getCachePolicy().shouldUseSessionCacheInUnitOfWorkEarlyTransaction();
     }
     
     /**
@@ -4379,7 +4287,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #setUnitOfWorkCacheIsolationLevel(int)
      */
     public int getUnitOfWorkCacheIsolationLevel() {
-        return unitOfWorkCacheIsolationLevel;
+        return getCachePolicy().getUnitOfWorkCacheIsolationLevel();
     }
     
     /**
@@ -4404,7 +4312,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * however if this class is isolated or pessimistic locked and always accessed in a transaction, this can avoid having to build two copies of the object.
      */
     public void setUnitOfWorkCacheIsolationLevel(int unitOfWorkCacheIsolationLevel) {
-        this.unitOfWorkCacheIsolationLevel = unitOfWorkCacheIsolationLevel;
+        getCachePolicy().setUnitOfWorkCacheIsolationLevel(unitOfWorkCacheIsolationLevel);
     }
 
     /**
@@ -4622,7 +4530,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "FullIdentityMap".
      */
     public void setRemoteIdentityMapClass(Class theIdentityMapClass) {
-        remoteIdentityMapClass = theIdentityMapClass;
+        getCachePolicy().setRemoteIdentityMapClass(theIdentityMapClass);
     }
 
     /**
@@ -4631,7 +4539,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the 100.
      */
     public void setRemoteIdentityMapSize(int identityMapSize) {
-        remoteIdentityMapSize = identityMapSize;
+        getCachePolicy().setRemoteIdentityMapSize(identityMapSize);
     }
 
     /**
@@ -4711,7 +4619,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #dontAlwaysRefreshCache
      */
     public void setShouldAlwaysRefreshCache(boolean shouldAlwaysRefreshCache) {
-        this.shouldAlwaysRefreshCache = shouldAlwaysRefreshCache;
+        getCachePolicy().setShouldAlwaysRefreshCache(shouldAlwaysRefreshCache);
     }
 
     /**
@@ -4739,7 +4647,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #dontAlwaysRefreshCacheOnRemote
      */
     public void setShouldAlwaysRefreshCacheOnRemote(boolean shouldAlwaysRefreshCacheOnRemote) {
-        this.shouldAlwaysRefreshCacheOnRemote = shouldAlwaysRefreshCacheOnRemote;
+        getCachePolicy().setShouldAlwaysRefreshCacheOnRemote(shouldAlwaysRefreshCacheOnRemote);
     }
 
     /**
@@ -4768,7 +4676,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #alwaysRefreshCache()
      */
     public void setShouldDisableCacheHits(boolean shouldDisableCacheHits) {
-        this.shouldDisableCacheHits = shouldDisableCacheHits;
+        getCachePolicy().setShouldDisableCacheHits(shouldDisableCacheHits);
     }
 
     /**
@@ -4778,7 +4686,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #disableCacheHitsOnRemote()
      */
     public void setShouldDisableCacheHitsOnRemote(boolean shouldDisableCacheHitsOnRemote) {
-        this.shouldDisableCacheHitsOnRemote = shouldDisableCacheHitsOnRemote;
+        getCachePolicy().setShouldDisableCacheHitsOnRemote(shouldDisableCacheHitsOnRemote);
     }
 
     /**
@@ -4809,7 +4717,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #dontOnlyRefreshCacheIfNewerVersion
      */
     public void setShouldOnlyRefreshCacheIfNewerVersion(boolean shouldOnlyRefreshCacheIfNewerVersion) {
-        this.shouldOnlyRefreshCacheIfNewerVersion = shouldOnlyRefreshCacheIfNewerVersion;
+        getCachePolicy().setShouldOnlyRefreshCacheIfNewerVersion(shouldOnlyRefreshCacheIfNewerVersion);
     }
 
     /**
@@ -4924,7 +4832,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #setShouldAlwaysRefreshCache
      */
     public boolean shouldAlwaysRefreshCache() {
-        return shouldAlwaysRefreshCache;
+        return getCachePolicy().shouldAlwaysRefreshCache();
     }
 
     /**
@@ -4936,7 +4844,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #setShouldAlwaysRefreshCacheOnRemote
      */
     public boolean shouldAlwaysRefreshCacheOnRemote() {
-        return shouldAlwaysRefreshCacheOnRemote;
+        return getCachePolicy().shouldAlwaysRefreshCacheOnRemote();
     }
 
     /**
@@ -4955,7 +4863,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #disableCacheHits()
      */
     public boolean shouldDisableCacheHits() {
-        return shouldDisableCacheHits;
+        return getCachePolicy().shouldDisableCacheHits();
     }
 
     /**
@@ -4965,7 +4873,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #disableCacheHitsOnRemote()
      */
     public boolean shouldDisableCacheHitsOnRemote() {
-        return shouldDisableCacheHitsOnRemote;
+        return getCachePolicy().shouldDisableCacheHitsOnRemote();
     }
 
     /**
@@ -4977,7 +4885,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #setShouldOnlyRefreshCacheIfNewerVersion
      */
     public boolean shouldOnlyRefreshCacheIfNewerVersion() {
-        return shouldOnlyRefreshCacheIfNewerVersion;
+        return getCachePolicy().shouldOnlyRefreshCacheIfNewerVersion();
     }
 
     /**
@@ -5389,7 +5297,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useFullIdentityMap() {
-        setIdentityMapClass(ClassConstants.FullIdentityMap_Class);
+        getCachePolicy().useFullIdentityMap();
     }
 
     /**
@@ -5401,7 +5309,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useHardCacheWeakIdentityMap() {
-        setIdentityMapClass(ClassConstants.HardCacheWeakIdentityMap_Class);
+        getCachePolicy().useHardCacheWeakIdentityMap();
     }
     
     /**
@@ -5412,7 +5320,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useSoftIdentityMap() {
-        setIdentityMapClass(ClassConstants.SoftIdentityMap_Class);
+        getCachePolicy().useSoftIdentityMap();
     }
     
     /**
@@ -5423,7 +5331,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useRemoteSoftIdentityMap() {
-        setRemoteIdentityMapClass(ClassConstants.SoftIdentityMap_Class);
+        getCachePolicy().setRemoteIdentityMapClass(ClassConstants.SoftIdentityMap_Class);
     }
 
     /**
@@ -5451,7 +5359,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @see #setIsIsolated(boolean)
      */
     public void useNoIdentityMap() {
-        setIdentityMapClass(ClassConstants.NoIdentityMap_Class);
+        getCachePolicy().useNoIdentityMap();
     }
 
     /**
@@ -5461,7 +5369,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useRemoteCacheIdentityMap() {
-        setRemoteIdentityMapClass(ClassConstants.CacheIdentityMap_Class);
+        getCachePolicy().setRemoteIdentityMapClass(ClassConstants.CacheIdentityMap_Class);
     }
 
     /**
@@ -5471,7 +5379,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useRemoteFullIdentityMap() {
-        setRemoteIdentityMapClass(ClassConstants.FullIdentityMap_Class);
+        getCachePolicy().setRemoteIdentityMapClass(ClassConstants.FullIdentityMap_Class);
     }
 
     /**
@@ -5483,7 +5391,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useRemoteHardCacheWeakIdentityMap() {
-        setRemoteIdentityMapClass(ClassConstants.HardCacheWeakIdentityMap_Class);
+        getCachePolicy().setRemoteIdentityMapClass(ClassConstants.HardCacheWeakIdentityMap_Class);
     }
 
     /**
@@ -5493,7 +5401,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useRemoteNoIdentityMap() {
-        setRemoteIdentityMapClass(ClassConstants.NoIdentityMap_Class);
+        getCachePolicy().setRemoteIdentityMapClass(ClassConstants.NoIdentityMap_Class);
     }
 
     /**
@@ -5504,7 +5412,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useRemoteSoftCacheWeakIdentityMap() {
-        setRemoteIdentityMapClass(ClassConstants.SoftCacheWeakIdentityMap_Class);
+        getCachePolicy().setRemoteIdentityMapClass(ClassConstants.SoftCacheWeakIdentityMap_Class);
     }
 
     /**
@@ -5513,7 +5421,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useRemoteWeakIdentityMap() {
-        setRemoteIdentityMapClass(ClassConstants.WeakIdentityMap_Class);
+        getCachePolicy().setRemoteIdentityMapClass(ClassConstants.WeakIdentityMap_Class);
     }
 
     /**
@@ -5637,7 +5545,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * The default is the "SoftCacheWeakIdentityMap".
      */
     public void useWeakIdentityMap() {
-        setIdentityMapClass(ClassConstants.WeakIdentityMap_Class);
+        getCachePolicy().useWeakIdentityMap();
     }
 
     /**
@@ -5702,6 +5610,25 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * Return the cache policy.
+     * The cache policy allows for the configuration of caching options.
+     */
+    public CachePolicy getCachePolicy() {
+        if (this.cachePolicy == null) {
+            this.cachePolicy = new CachePolicy();
+        }
+        return cachePolicy;
+    }
+
+    /**
+     * ADVANCED:
+     * Set cache policy for the descriptor.
+     */
+    public void setCachePolicy(CachePolicy cachePolicy) {
+        this.cachePolicy = cachePolicy;
+    }
+
+    /**
      * INTERNAL:
      */
     public boolean hasPessimisticLockingPolicy() {
@@ -5725,7 +5652,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @return the fullyMergeEntity
      */
     public boolean getFullyMergeEntity() {
-        return fullyMergeEntity;
+        return getCachePolicy().getFullyMergeEntity();
     }
 
     /**
@@ -5753,7 +5680,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      */
     public boolean hasCascadeLockingPolicies() {
-        return !cascadeLockingPolicies.isEmpty();
+        return (this.cascadeLockingPolicies != null) && !this.cascadeLockingPolicies.isEmpty();
     }
 
     /**
@@ -5849,7 +5776,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Set what cache key type to use to store the object in the cache.
      */
     public void setCacheKeyType(CacheKeyType cacheKeyType) {
-        this.cacheKeyType = cacheKeyType;
+        getCachePolicy().setCacheKeyType(cacheKeyType);
     }
 
     /**
@@ -5857,7 +5784,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return what cache key type to use to store the object in the cache.
      */
     public CacheKeyType getCacheKeyType() {
-        return cacheKeyType;
+        return getCachePolicy().getCacheKeyType();
     }
 
     /**

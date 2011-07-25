@@ -25,6 +25,7 @@ import static javax.persistence.InheritanceType.*;
 import static javax.persistence.FetchType.*;
 
 import org.eclipse.persistence.annotations.BasicMap;
+import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.MapKeyConvert;
@@ -212,6 +213,7 @@ public class Buyer implements Serializable {
     }
     
     @Column(name="BUYER_NAME")
+    @CacheIndex
     public String getName() { 
         return name; 
     }

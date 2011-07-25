@@ -268,4 +268,16 @@ public interface SessionEventListener extends EventListener {
      * This Event is raised after the session logs in.
      */
     public void postLogin(SessionEvent event);
+    
+    /**
+     * PUBLIC:
+     * This Event is raised before the session logs out.
+     */
+    public void preLogout(SessionEvent event);
+
+    /**
+     * PUBLIC:
+     * This Event is raised after the session logs out.
+     */
+    public void postLogout(SessionEvent event);
 }

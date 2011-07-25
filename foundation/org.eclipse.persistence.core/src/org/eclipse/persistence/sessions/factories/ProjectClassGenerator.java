@@ -245,24 +245,24 @@ public class ProjectClassGenerator {
         }
 
         // Isolated Session support
-        if (descriptor.isIsolated()) {
+        if (descriptor.getCachePolicy().isIsolated()) {
             method.addLine("descriptor.setIsIsolated(true);");
         }
 
         // Refreshing
-        if (descriptor.shouldAlwaysRefreshCache()) {
+        if (descriptor.getCachePolicy().shouldAlwaysRefreshCache()) {
             method.addLine("descriptor.alwaysRefreshCache();");
         }
-        if (descriptor.shouldAlwaysRefreshCacheOnRemote()) {
+        if (descriptor.getCachePolicy().shouldAlwaysRefreshCacheOnRemote()) {
             method.addLine("descriptor.alwaysRefreshCacheOnRemote();");
         }
-        if (descriptor.shouldDisableCacheHits()) {
+        if (descriptor.getCachePolicy().shouldDisableCacheHits()) {
             method.addLine("descriptor.disableCacheHits();");
         }
-        if (descriptor.shouldDisableCacheHitsOnRemote()) {
+        if (descriptor.getCachePolicy().shouldDisableCacheHitsOnRemote()) {
             method.addLine("descriptor.disableCacheHitsOnRemote();");
         }
-        if (descriptor.shouldOnlyRefreshCacheIfNewerVersion()) {
+        if (descriptor.getCachePolicy().shouldOnlyRefreshCacheIfNewerVersion()) {
             method.addLine("descriptor.onlyRefreshCacheIfNewerVersion();");
         }
 
@@ -297,13 +297,13 @@ public class ProjectClassGenerator {
             method.addLine("descriptor.setAmendmentMethodName(\"" + descriptor.getAmendmentMethodName() + "\");");
         }
 
-        if (descriptor.getCacheSynchronizationType() != ClassDescriptor.SEND_OBJECT_CHANGES) {
+        if (descriptor.getCachePolicy().getCacheSynchronizationType() != CachePolicy.SEND_OBJECT_CHANGES) {
             StringBuffer lineToAdd = new StringBuffer("descriptor.setCacheSynchronizationType(");
-            if (descriptor.getCacheSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS) {
+            if (descriptor.getCachePolicy().getCacheSynchronizationType() == CachePolicy.INVALIDATE_CHANGED_OBJECTS) {
                 lineToAdd.append("ClassDescriptor.INVALIDATE_CHANGED_OBJECTS");
-            } else if (descriptor.getCacheSynchronizationType() == ClassDescriptor.DO_NOT_SEND_CHANGES) {
+            } else if (descriptor.getCachePolicy().getCacheSynchronizationType() == CachePolicy.DO_NOT_SEND_CHANGES) {
                 lineToAdd.append("ClassDescriptor.DO_NOT_SEND_CHANGES");
-            } else if (descriptor.getCacheSynchronizationType() == ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES) {
+            } else if (descriptor.getCachePolicy().getCacheSynchronizationType() == CachePolicy.SEND_NEW_OBJECTS_WITH_CHANGES) {
                 lineToAdd.append("ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES");
             }
             lineToAdd.append(");");

@@ -321,8 +321,7 @@ public class CascadeLockingPolicy {
         
             // Keep sending the notification up the chain ...
             if (realParentDescriptor.hasCascadeLockingPolicies()) {
-                for (Enumeration policies = realParentDescriptor.getCascadeLockingPolicies().elements(); policies.hasMoreElements();) {
-                    CascadeLockingPolicy policy = (CascadeLockingPolicy) policies.nextElement();
+                for (CascadeLockingPolicy policy : realParentDescriptor.getCascadeLockingPolicies()) {
                     policy.lockNotifyParent(parentObj, changeSet, uow);
                 }
             }

@@ -335,7 +335,7 @@ public class CMPPolicy implements java.io.Serializable {
      * Create an instance of the composite primary key class for the key object.
      */
     public Object createPrimaryKeyInstanceFromId(Object key, AbstractSession session) {
-        if (descriptor.getCacheKeyType() == CacheKeyType.CACHE_ID) {
+        if (this.descriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.CACHE_ID) {
             return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, ((CacheId)key).getPrimaryKey());
         } else {
             return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, key);    

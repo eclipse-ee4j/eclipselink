@@ -851,7 +851,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             //it is a map so the keys are in the list but we do not need them in this case
             Object pk = values[index];
             if (!fromCache.containsKey(pk)){
-                if (elementDescriptor.getCacheKeyType() == CacheKeyType.CACHE_ID){
+                if (this.elementDescriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.CACHE_ID){
                     foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
                 }else{
                     foreignKeyValues.add(pk);

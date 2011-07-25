@@ -278,7 +278,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (cloningSession.isUnitOfWork()){
             return buildElementUnitOfWorkClone(element, parent, (UnitOfWorkImpl)cloningSession, isExisting);
         }
-        if (referenceDescriptor.isProtectedIsolation()){
+        if (referenceDescriptor.getCachePolicy().isProtectedIsolation()){
             return cloningSession.createProtectedInstanceFromCachedData(element, referenceDescriptor);
         }
         return element;
@@ -1309,7 +1309,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
             setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }
@@ -1369,7 +1369,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()){
             setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             return;
         }

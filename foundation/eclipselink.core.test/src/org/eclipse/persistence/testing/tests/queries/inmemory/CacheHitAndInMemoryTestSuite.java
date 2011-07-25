@@ -153,6 +153,13 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         addTest(test);
 
         builder = new ExpressionBuilder();
+        query = new ReadObjectQuery(Employee.class, builder.get("firstName").equal(example.getFirstName()).
+                and(builder.get("lastName").equal(example.getLastName())));
+        test = new InMemoryCacheHitTest(query);
+        test.setName("InMemoryCacheHitTest - name index");
+        addTest(test);
+
+        builder = new ExpressionBuilder();
         query = new ReadObjectQuery(Employee.class, builder.get("salary").between(0, -1000000));
         test = new InMemoryCacheHitTest(query);
         query.checkCacheOnly();
@@ -210,6 +217,21 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         test = new InMemoryCacheMissTest(query);
         query.checkCacheThenDatabase();
         test.setName("InMemoryCacheMissTest - by non exact - exception");
+        addTest(test);
+
+        builder = new ExpressionBuilder();
+        query = new ReadObjectQuery(Employee.class, builder.get("firstName").equal(example.getLastName()).
+                and(builder.get("lastName").equal(example.getFirstName())));
+        test = new InMemoryCacheMissTest(query);
+        test.setName("InMemoryCacheMissTest - name index");
+        addTest(test);
+
+        builder = new ExpressionBuilder();
+        query = new ReadObjectQuery(Employee.class, builder.get("firstName").equal(example.getFirstName()).
+                and(builder.get("lastName").equal(example.getLastName())).
+                and(builder.get("salary").notEqual(example.getSalary())));
+        test = new InMemoryCacheMissTest(query);
+        test.setName("InMemoryCacheMissTest - name index");
         addTest(test);
     }
 

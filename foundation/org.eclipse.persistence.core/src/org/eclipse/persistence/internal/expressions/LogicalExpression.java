@@ -58,12 +58,12 @@ public class LogicalExpression extends CompoundExpression {
 
     /**
      * INTERNAL:
-     * Extract the primary key from the expression into the row.
+     * Extract the values from the expression into the row.
      * Ensure that the query is querying the exact primary key.
      * Return false if not on the primary key.
      */
     @Override
-    public boolean extractPrimaryKeyValues(boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
+    public boolean extractValues(boolean primaryKeyOnly, boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
         // If this is a primary key expression then it can only have and/or relationships.
         if (this.operator.getSelector() != ExpressionOperator.And) {
             // If this is an exact primary key expression it can not have ors.
@@ -72,11 +72,11 @@ public class LogicalExpression extends CompoundExpression {
                 return false;
             }
         }
-        boolean validExpression = this.firstChild.extractPrimaryKeyValues(requireExactMatch, descriptor, primaryKeyRow, translationRow);
+        boolean validExpression = this.firstChild.extractValues(primaryKeyOnly, requireExactMatch, descriptor, primaryKeyRow, translationRow);
         if (requireExactMatch && (!validExpression)) {
             return false;
         }
-        return this.secondChild.extractPrimaryKeyValues(requireExactMatch, descriptor, primaryKeyRow, translationRow);
+        return this.secondChild.extractValues(primaryKeyOnly, requireExactMatch, descriptor, primaryKeyRow, translationRow);
     }
 
     /**

@@ -2288,6 +2288,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
         XMLDirectMapping cacheSyncTypeMapping = new XMLDirectMapping();
         cacheSyncTypeMapping.setAttributeName("cacheSynchronizationType");
+        cacheSyncTypeMapping.setGetMethodName("getCacheSynchronizationType");
+        cacheSyncTypeMapping.setSetMethodName("setCacheSynchronizationType");
         cacheSyncTypeMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-sync-type/text()");
         ObjectTypeConverter cacheSyncTypeConverter = new ObjectTypeConverter();
         cacheSyncTypeConverter.addConversionValue("invalidation", Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));

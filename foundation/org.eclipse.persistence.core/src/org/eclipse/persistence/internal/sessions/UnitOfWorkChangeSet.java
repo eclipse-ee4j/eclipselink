@@ -320,7 +320,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
             // navigate through the related change sets here and set their cache synchronization type as well
             ClassDescriptor descriptor = changeSet.getDescriptor();
-            int syncType = descriptor.getCacheSynchronizationType();
+            int syncType = descriptor.getCachePolicy().getCacheSynchronizationType();
 
             // Change sets for new objects will only be sent as part of the UnitOfWorkChangeSet
             // if they are meant to be merged into the distributed cache.

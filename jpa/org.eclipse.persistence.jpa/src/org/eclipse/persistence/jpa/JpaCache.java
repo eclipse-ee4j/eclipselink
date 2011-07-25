@@ -135,6 +135,20 @@ public interface JpaCache extends Cache {
      * Sets an Object to be invalid in the cache.
      */
     void evict(Object object);
+    
+    /**
+     * Sets an Object to be invalid in the cache.
+     * If true is passed, the object is also invalidated across cache coordination.
+     * Cache coordination must be enabled for this to have an affect.
+     */
+    void evict(Object object, boolean invalidateInCluster);
+
+    /**
+     * Sets the object of the class and id to be invalid in the cache.
+     * If true is passed, the object is also invalidated across cache coordination.
+     * Cache coordination must be enabled for this to have an affect.
+     */
+    void evict(Class classToEvict, Object id, boolean invalidateInCluster);
 
     /**
      * Returns the object's Id.

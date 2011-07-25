@@ -1557,7 +1557,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         for (int index = 0; index < pks.length; ++index){
             Object pk = pks[index];
             if (!fromCache.containsKey(pk)){
-                if (elementDescriptor.getCacheKeyType() == CacheKeyType.CACHE_ID){
+                if (this.elementDescriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.CACHE_ID){
                     foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
                 }else{
                     foreignKeyValues.add(pk);

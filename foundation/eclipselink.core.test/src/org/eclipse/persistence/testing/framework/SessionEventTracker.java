@@ -650,6 +650,28 @@ public class SessionEventTracker implements SessionEventListener {
 
     /**
      * PUBLIC:
+     * This Event is raised after the session logs out.
+     */
+    public void preLogout(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC:
+     * This Event is raised after the session logs out.
+     */
+    public void postLogout(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC:
      * This Event is raised after the session logs in.
      */
     public void postLogin(SessionEvent event) {

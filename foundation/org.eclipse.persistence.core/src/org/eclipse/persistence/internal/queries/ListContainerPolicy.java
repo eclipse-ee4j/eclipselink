@@ -217,7 +217,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             //it is a map so the keys are in the list but we do not need them in this case
             Object pk = pks[index];
             if (!fromCache.containsKey(pk)){
-                if (elementDescriptor.getCacheKeyType() == CacheKeyType.CACHE_ID){
+                if (this.elementDescriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.CACHE_ID){
                     foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
                 }else{
                     foreignKeyValues.add(pk);
@@ -228,7 +228,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
     
             ReadAllQuery query = new ReadAllQuery();
-            query.setReferenceClass(elementDescriptor.getJavaClass());
+            query.setReferenceClass(this.elementDescriptor.getJavaClass());
             query.setIsExecutionClone(true);
             query.setTranslationRow(translationRow);
             query.setSession(session);

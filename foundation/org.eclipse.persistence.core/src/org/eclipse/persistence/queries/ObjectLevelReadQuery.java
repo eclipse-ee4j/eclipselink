@@ -783,7 +783,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         // PERF: If a locking query, or isolated always, then cache is ignored, so no point checking.
         // An error should be thrown on prepare is checkCacheOnly is used with these.
-        if ((!unitOfWork.isNestedUnitOfWork()) && (this.descriptor.shouldIsolateObjectsInUnitOfWork()  || isLockQuery()) || unitOfWork.shouldForceReadFromDB(this, null)) {
+        if ((!unitOfWork.isNestedUnitOfWork()) && (this.descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()  || isLockQuery()) || unitOfWork.shouldForceReadFromDB(this, null)) {
             return null;
         }
 

@@ -176,6 +176,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Descriptor Properties.
         descriptor.useSoftCacheWeakIdentityMap();
         descriptor.setIdentityMapSize(100);
+        descriptor.getCachePolicy().addCacheIndex("F_NAME", "L_NAME");
         descriptor.setSequenceNumberFieldName("EMPLOYEE.EMP_ID");
         descriptor.setSequenceNumberName("EMP_SEQ");
         VersionLockingPolicy lockingPolicy = new VersionLockingPolicy();

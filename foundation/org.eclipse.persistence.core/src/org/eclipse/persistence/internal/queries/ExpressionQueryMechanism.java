@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -151,7 +152,6 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             } else {
                 additionalJoin = queryManager.getMultipleTableJoinExpression();
                 if (additionalJoin == null) {
-                    additionalJoin.getBuilder().setWasAdditionJoinCriteriaUsed(true);
                     return expression;
                 }
             }
@@ -844,23 +844,33 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         } else {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
                         }
-                        if (cachedObject != null) {
-                            // Must ensure that it matches the expression.
-                            try {
-                                // PERF: 3639015 - cloning the expression no longer required
-                                // when using the root session.
-                                ExpressionBuilder builder = selectionCriteria.getBuilder();
-                                builder.setSession(session.getRootSession(null));
-                                builder.setQueryClass(descriptor.getJavaClass());
-                                if (!selectionCriteria.doesConform(cachedObject, session, translationRow, policyToUse)) {
-                                    cachedObject = null;
-                                }
-                            } catch (QueryException exception) {// Ignore if expression too complex.
-                                if (query.shouldCheckCacheOnly()) {// Throw on only cache.
-                                    throw exception;
-                                }
+                    } else {
+                        CacheKey cacheKey = descriptor.getCachePolicy().checkCacheByIndex(selectionCriteria, translationRow, descriptor, session);
+                        if (cacheKey != null) {
+                            if (query.requiresDeferredLocks()) {
+                                cacheKey.checkDeferredLock();
+                            } else {
+                                cacheKey.checkReadLock();                                
+                            }
+                            cachedObject = cacheKey.getObject();
+                        }                        
+                    }
+                    if (cachedObject != null) {
+                        // Must ensure that it matches the expression.
+                        try {
+                            // PERF: 3639015 - cloning the expression no longer required
+                            // when using the root session.
+                            ExpressionBuilder builder = selectionCriteria.getBuilder();
+                            builder.setSession(session.getRootSession(null));
+                            builder.setQueryClass(descriptor.getJavaClass());
+                            if (!selectionCriteria.doesConform(cachedObject, session, translationRow, policyToUse)) {
                                 cachedObject = null;
                             }
+                        } catch (QueryException exception) {// Ignore if expression too complex.
+                            if (query.shouldCheckCacheOnly()) {// Throw on only cache.
+                                throw exception;
+                            }
+                            cachedObject = null;
                         }
                     }
 
@@ -943,7 +953,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // If only checking the cache, and empty, return invalid, unless it is a unit of work,
         // in which case the parent cache still needs to be checked.
         if ((cachedObject == null) && query.shouldCheckCacheOnly()
-                && ((uow == null) ||  (!uow.isNestedUnitOfWork() && descriptor.shouldIsolateObjectsInUnitOfWork()))) {
+                && ((uow == null) ||  (!uow.isNestedUnitOfWork() && descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()))) {
             return InvalidObject.instance;
         }
 

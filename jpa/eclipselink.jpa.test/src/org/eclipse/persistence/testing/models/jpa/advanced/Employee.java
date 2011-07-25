@@ -19,6 +19,7 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.ChangeTracking;
 import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.Convert;
@@ -190,6 +191,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 )
 // overrides IdValidation.NEGATIVE set in persistence.xml
 @PrimaryKey(validation=IdValidation.ZERO)
+@CacheIndex(columnNames={"F_NAME", "L_NAME"})
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }

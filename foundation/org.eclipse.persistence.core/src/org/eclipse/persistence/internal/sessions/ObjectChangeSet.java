@@ -103,7 +103,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         this.classType = descriptor.getJavaClass();
         this.className = this.classType.getName();
         this.descriptor = descriptor;
-        this.cacheSynchronizationType = descriptor.getCacheSynchronizationType();
+        this.cacheSynchronizationType = descriptor.getCachePolicy().getCacheSynchronizationType();
         this.unitOfWorkChangeSet = parent;
         this.isAggregate = false;
     }

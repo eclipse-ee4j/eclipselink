@@ -213,7 +213,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
                 return null;
             }
             result[index] = row.get(sourceKeyField);
-            if (getReferenceDescriptor().getCacheKeyType() == CacheKeyType.ID_VALUE) {
+            if (getReferenceDescriptor().getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) {
                 return result[index];
             }
         }
@@ -348,7 +348,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      */
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()) {
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection

@@ -492,7 +492,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         DatabaseRecord translationRow = new DatabaseRecord();
         List foreignKeyValues = new ArrayList(keyInfo.length - fromCache.size());
         
-        CacheKeyType cacheKeyType = referenceDescriptor.getCacheKeyType();
+        CacheKeyType cacheKeyType = referenceDescriptor.getCachePolicy().getCacheKeyType();
         for (int index = 0; index < keyInfo.length; ++index){
             Object pk = keyInfo[index];
             if (!fromCache.containsKey(pk)){
@@ -703,7 +703,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 return null;
             }
             result[index] = row.get(sourceKeyField);
-            if (getReferenceDescriptor().getCacheKeyType() == CacheKeyType.ID_VALUE) {
+            if (getReferenceDescriptor().getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) {
                 return result[index];
             }
         }

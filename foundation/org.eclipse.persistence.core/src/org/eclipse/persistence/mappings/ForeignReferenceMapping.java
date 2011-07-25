@@ -709,7 +709,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void postInitialize(AbstractSession session) {
         super.postInitialize(session);
-        if (this.referenceDescriptor != null && ! this.referenceDescriptor.isSharedIsolation()){
+        if (this.referenceDescriptor != null && ! this.referenceDescriptor.getCachePolicy().isSharedIsolation()){
             this.isCacheable = false;
         }
     }
@@ -1005,7 +1005,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     @Override
     public boolean isLockableMapping(){
-        return !(this.usesIndirection()) && !referenceDescriptor.isIsolated();
+        return !(this.usesIndirection()) && !referenceDescriptor.getCachePolicy().isIsolated();
     }
     
     /**
@@ -1220,7 +1220,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         getSelectionQuery().setDescriptor(getReferenceDescriptor());
         getSelectionQuery().setSourceMapping(this);
         if (!getSelectionQuery().hasSessionName()) {
-            getSelectionQuery().setName(session.getName());
+            getSelectionQuery().setSessionName(session.getName());
         }
         if (getSelectionQuery().getPartitioningPolicy() == null) {
             getSelectionQuery().setPartitioningPolicy(getPartitioningPolicy());
@@ -1959,7 +1959,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()) {
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection

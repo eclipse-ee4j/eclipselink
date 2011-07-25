@@ -92,6 +92,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionA
 import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheIndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.TimeOfDayMetadata;
@@ -212,6 +213,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildOptimisticLockingDescriptor());
         addDescriptor(buildCacheDescriptor());
         addDescriptor(buildCacheInterceptorDescriptor());
+        addDescriptor(buildCacheIndexDescriptor());
         addDescriptor(buildFetchAttributeDescriptor());
         addDescriptor(buildFetchGroupDescriptor());
         addDescriptor(buildTimeOfDayDescriptor());
@@ -585,6 +587,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getIndexMapping());
+        descriptor.addMapping(getCacheIndexMapping());
         descriptor.addMapping(getGeneratedValueMapping());
         descriptor.addMapping(getLobMapping());
         descriptor.addMapping(getTemporalMapping());
@@ -1344,6 +1347,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getCacheInterceptorMapping());
+        descriptor.addMapping(getCacheIndexesMapping());
         descriptor.addMapping(getFetchGroupMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
@@ -1752,6 +1756,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getIndexMapping());
+        descriptor.addMapping(getCacheIndexMapping());
         descriptor.addMapping(getGeneratedValueMapping());
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getEnumeratedMapping());
@@ -1792,6 +1797,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getSchemaAttributeMapping());
         descriptor.addMapping(getUniqueAttributeMapping());
         
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: index
+     */
+    protected ClassDescriptor buildCacheIndexDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(CacheIndexMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getColumnNamesMapping());
+                
         return descriptor;
     }
     
@@ -2008,6 +2027,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrimaryKeyMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
+        descriptor.addMapping(getCacheIndexesMapping());
         descriptor.addMapping(getCacheInterceptorMapping());
         descriptor.addMapping(getFetchGroupMapping());
         descriptor.addMapping(getConverterMapping());
@@ -4163,6 +4183,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeCollectionMapping getCacheIndexesMapping() {
+        XMLCompositeCollectionMapping indexesMapping = new XMLCompositeCollectionMapping();
+        indexesMapping.setAttributeName("m_cacheIndexes");
+        indexesMapping.setGetMethodName("getCacheIndexes");
+        indexesMapping.setSetMethodName("setCacheIndexes");
+        indexesMapping.setReferenceClass(CacheIndexMetadata.class);
+        indexesMapping.setXPath("orm:cache-index");
+        return indexesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getIndexMapping() {
         XMLCompositeObjectMapping indexMapping = new XMLCompositeObjectMapping();
         indexMapping.setAttributeName("m_index");
@@ -4170,6 +4203,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         indexMapping.setSetMethodName("setIndex");
         indexMapping.setReferenceClass(IndexMetadata.class);
         indexMapping.setXPath("orm:index");
+        return indexMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getCacheIndexMapping() {
+        XMLCompositeObjectMapping indexMapping = new XMLCompositeObjectMapping();
+        indexMapping.setAttributeName("m_cacheIndex");
+        indexMapping.setGetMethodName("getCacheIndex");
+        indexMapping.setSetMethodName("setCacheIndex");
+        indexMapping.setReferenceClass(CacheIndexMetadata.class);
+        indexMapping.setXPath("orm:cache-index");
         return indexMapping;
     }
     

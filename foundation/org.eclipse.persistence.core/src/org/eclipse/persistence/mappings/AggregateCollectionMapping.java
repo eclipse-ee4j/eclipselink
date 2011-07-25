@@ -1875,7 +1875,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * collection based on the changeset
      */
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()){
             if (!this.isCacheable && !targetSession.isProtectedSession()){
                 setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             }
@@ -1937,7 +1937,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Merge changes from the source to the target object.
      */
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (this.descriptor.isProtectedIsolation()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
             if (!this.isCacheable && !targetSession.isProtectedSession()){
                 setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
             }

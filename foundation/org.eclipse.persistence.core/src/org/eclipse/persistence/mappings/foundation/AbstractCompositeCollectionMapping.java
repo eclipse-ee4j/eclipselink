@@ -799,7 +799,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Build and return an aggregate collection from the specified row.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
-        if (this.descriptor.isProtectedIsolation()){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()){
             if (this.isCacheable && isTargetProtected && cacheKey != null){
                 //cachekey will be null when isolating to uow
                 //used cached collection

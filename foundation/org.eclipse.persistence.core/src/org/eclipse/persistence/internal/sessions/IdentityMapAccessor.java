@@ -21,6 +21,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
@@ -1042,6 +1043,20 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         getIdentityMapManager().putQueryResult(query, parameters, results);
     }
 
+    /**
+     * Index the cache key by the index values.
+     */
+    public void putCacheKeyByIndex(CacheIndex index, CacheId indexValues, CacheKey cacheKey, ClassDescriptor descriptor) {
+        getIdentityMapManager().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);        
+    }
+    
+    /**
+     * Return the cache key for the cache index or null if not found.
+     */
+    public CacheKey getCacheKeyByIndex(CacheIndex index, CacheId indexValues, boolean shouldCheckExpiry, ClassDescriptor descriptor) { 
+        return getIdentityMapManager().getCacheKeyByIndex(index, indexValues, shouldCheckExpiry, descriptor);        
+    }
+    
     /**
      * INTERNAL:
      * Register the object with the cache.

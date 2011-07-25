@@ -555,7 +555,7 @@ public class MergeManager {
         if (parentCacheKey != null){
             original = parentCacheKey.getObject();
         }else{
-            if (descriptor.isProtectedIsolation()  && descriptor.hasNoncacheableMappings()){
+            if (descriptor.getCachePolicy().isProtectedIsolation()  && descriptor.hasNoncacheableMappings()){
                 this.session.refreshObject(clone);
                 return clone;
             }
@@ -623,12 +623,14 @@ public class MergeManager {
         CacheKey cacheKey = mergeChangesOfWorkingCopyIntoOriginal(clone, objectChangeSet, descriptor, parentSession, unitOfWork);
         Object original = cacheKey.getObject();
         AbstractSession sharedSession = parentSession;
-        if (descriptor.isProtectedIsolation()){
+        if (descriptor.getCachePolicy().isProtectedIsolation()) {
             if (parentSession.isIsolatedClientSession()){
                 //merge into the shared cache as well.
                 sharedSession = parentSession.getParent();
                 cacheKey = mergeChangesOfWorkingCopyIntoOriginal(clone, objectChangeSet, descriptor, sharedSession, unitOfWork);
-            }else if (!parentSession.isProtectedSession()){
+            }
+            // Must always merge the foreign keys in the shared session.
+            if (!sharedSession.isProtectedSession()) {
                 descriptor.getObjectBuilder().cacheForeignKeyValues(clone, cacheKey, descriptor, sharedSession);
             }
         }
@@ -645,16 +647,33 @@ public class MergeManager {
     /**
      * Recursively merge to clone into the original in its parent.
      * The map is used to resolve recursion.
+     * This is used to merge objects from the unit of work into the shared (or isolated) cache.
      */
     protected CacheKey mergeChangesOfWorkingCopyIntoOriginal(Object clone, ObjectChangeSet objectChangeSet, ClassDescriptor descriptor, AbstractSession targetSession, UnitOfWorkImpl unitOfWork) {
-
+        /** This is the merge used by the unit of work on commit.
+            *** This is a very complex method that handles several different use cases of the unit of work. ***
+            These include:
+            #1 - normal merge of new and changed objects with pre-acquired merge locks
+            #2 - old merge without merge locks
+            #3 - nested units of work
+            #4 - no identity map, cache identity map, cleared identity map
+            #5 - objects read or merged into uow not in shared cache
+            #6 - merging references to objects not in shared cache
+            #7 - merging references to detached objects
+            #8 - merging into protected cache
+            #9 - grid cache
+        */        
+        
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         // This always finds an original different from the clone, even if it has to create one.
         // This must be done after special cases have been computed because it registers unregistered new objects.
         // First check the cache key.
         Object original = null;
         CacheKey cacheKey = null;
-        if (!targetSession.isClientSession() && objectChangeSet != null) {
+        // First check the change set, all new or changed object should have a change set with an active cache key.
+        // The client session check is for the protected cache support, the active cache key is from the server session, so protected cache cannot use it
+        if ((!targetSession.isClientSession() || !descriptor.getCachePolicy().isProtectedIsolation()) && (objectChangeSet != null)) {
+            // #1 - Normal case, cache key is already locked.
             cacheKey = objectChangeSet.getActiveCacheKey();
             if (cacheKey != null) {
                 original =  cacheKey.getObject();
@@ -663,58 +682,77 @@ public class MergeManager {
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(clone, unitOfWork);
         // If the cache key was missing check the cache.
+        // This occurs in the old merge, or if a new or changed object references an existing object that needs to be merged.
         if (cacheKey == null) {
+            // #2 - old merge, #3 - nested, #6 referenced objects, #7 detached objects, #8 protected cache
             cacheKey = targetSession.getCacheKeyFromTargetSessionForMerge(implementation, builder, descriptor, this);
             if (cacheKey != null){
                 original = cacheKey.getObject();
             }
         }
-        if (original == null  && !descriptor.getFullyMergeEntity()){
+        // FullyMergeEntity is a special grid cache flag.
+        // The original will be null for new objects, objects merged or read into the uow, or referenced objects that are not in the cache.
+        if (original == null  && !descriptor.getFullyMergeEntity()) {
+            // #1, #2, #3 new objects
             original = unitOfWork.getOriginalVersionOfObjectOrNull(clone, objectChangeSet, descriptor, targetSession);
-            //original was not in cache.  Make sure it is placed in the cache.
-            if (original != null){
-                if (cacheKey == null){
+            // Original was not in cache.  Make sure it is placed in the cache.
+            if (original != null) {
+                if (cacheKey == null) {
+                    // #2, 4, 6, 7 - This occurs if the object was removed from the cache, or No/CacheIdentityMap, and using old merge, or a referenced object.
                     cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, targetSession), original, descriptor, this, targetSession);
-                }else{
+                } else {
                     if (cacheKey.getObject() != null){
                         original = cacheKey.getObject();
-                    }else{
+                    } else {
                         cacheKey.setObject(original);
                     }
                 }
+            } else {
+                // #1 No original, there is only an original if registerObject is used, registerNewObject or JPA never have an original.
             }
         }
         // Always merge into the original.
         try {
             if (original == null || descriptor.getFullyMergeEntity()) {
+                // #1, 2, 3, 9, 4, 5, 6
                 // If original does not exist then we must merge the entire object.
+                // This occurs when an object is new, was merged or read into the unit of work and, or referenced objects is not in the shared cache.
                 boolean originalWasNull = false;
                 if (original == null){
                     originalWasNull = true;
                     original = unitOfWork.buildOriginal(clone);
                 }
                 if (objectChangeSet == null) {
-                    //no changeset so this would not have been locked as part of the 
+                    // #6 - references to uncached objects
+                    // No changeset so this would not have been locked as part of the unit of work acquireLocks, so must append a lock.
+                    // This should only occur when a changed or new object references another object that is not in the cache.
                     cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, targetSession), original, descriptor, this, targetSession);
                     if (cacheKey.getObject() != null){
                         original = cacheKey.getObject();
-                    }else{
+                    } else {
                         cacheKey.setObject(original);
                     }
                     objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+
                     if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
                         // mark the instance in the cache as invalid as we may have just merged a stub if
                         // a detached stub was referenced by a managed entity
                         cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
                     }
-                } else{
-                    cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getId(), original, descriptor, this, targetSession);
+                } else {
+                    // #1, 2, 3, new objects, #9 grid
+                    if (cacheKey == null) {
+                        // #2 - The cache key should only be null for the old merge.
+                        cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getId(), original, descriptor, this, targetSession);
+                    }
                     if (cacheKey.getObject() != null){
                         original = cacheKey.getObject();
-                    }else{
+                    } else {
+                        // #1, 2, 3, new objects
                         cacheKey.setObject(original);
                     }
                     if (!objectChangeSet.isNew()) {
+                        // #5 read in uow, #9 grid
                         objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
                         if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
                             // mark the instance in the cache as invalid as we may have just merged a stub if
@@ -729,25 +767,22 @@ public class MergeManager {
                 }
                 updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
             } else if (objectChangeSet == null) {
-                // PERF: If we have no change set if it is existing, then no merging is required.
-                // If it is new, then merge the object (normally a new object would have a change set, so this is an odd case.
-                if (unitOfWork.isCloneNewObject(clone)) {
-                    cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, targetSession), original, descriptor, this, targetSession);
-                    objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
-                    updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
-                }
+                // #6, 7 - referenced objects
+                // PERF: If we have no change set and it has an original, then no merging is required, just use the original object.                
             } else {
+                // #1, 2, 3 existing objects, new objects with originals
                 // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the 
                 // shared cache for filling in foreign reference relationships. If merge did not occur in some cases (new  objects, garbage 
                 // collection objects, object read in a transaction) then no object would be in the shared cache and foreign reference 
                 // mappings would be set to null when they should be set to an object.
                 if (objectChangeSet.hasChanges()) {
-                    //only attempt to invalidate if we would have merged.  This saves us from a potential deadlock on get
-                    //writeLockValue when we do not own the lock.
-                    if (!objectChangeSet.isNew) {
+                    // #1, 2, 3 existing objects, new objects with originals
+                    // Only attempt to invalidate if we would have merged.  This saves us from a potential deadlock on get
+                    // writeLockValue when we do not own the lock.
+                    if (!objectChangeSet.isNew()) {
                         if (objectChangeSet.shouldInvalidateObject(original, targetSession) && (!unitOfWork.isNestedUnitOfWork())) {
                             // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
-                            // and custom SQL could still produce invalid new objects.
+                            // and custom SQL could still produce invalid new objects. ? This seems to contradict the new check?
                             targetSession.getIdentityMapAccessor().invalidateObject(original);
                             // no need to update cacheKey properties here
                         }
@@ -755,10 +790,15 @@ public class MergeManager {
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                         objectBuilder.clearPrimaryKey(original);
                     }
-                    //if there are no changes then we just need a reference to the object so skip the merge
-                    // saves trying to lock related objects after the fact producing deadlocks
+                    // #1, 2, 3, merge from the change set into the existing cached object, or new original
+                    // Note for new objects the change set may be empty, and object builder may merge from the clone into the original.
                     objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, false);
                     updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
+                } else {
+                    // #6, 7 - reference object, but object was in shared cache, and had no changed, so just use the reference.
+                    // What if the original object feel out of the cache? i.e. #4 case, the object being put back in may have detached references.
+                    // If there are no changes then we just need a reference to the object so skip the merge
+                    // saves trying to lock related objects after the fact producing deadlocks
                 }
             }
         } catch (QueryException exception) {

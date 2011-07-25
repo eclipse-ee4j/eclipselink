@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
@@ -59,6 +60,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
 
     /** A table of identity maps with the key being the query */
     protected Map<Object, IdentityMap> queryResults;
+    
+    /** A map of indexes on the cache. */
+    protected Map<CacheIndex, IdentityMap> cacheIndexes;
 
     /** A reference to the session owning this manager. */
     protected AbstractSession session;
@@ -84,9 +88,11 @@ public class IdentityMapManager implements Serializable, Cloneable {
         } else if (session.isIsolatedClientSession()) {
             this.identityMaps = new HashMap();
             this.queryResults = new HashMap();
+            this.cacheIndexes = new HashMap();
         } else {
             this.identityMaps = new ConcurrentHashMap();
             this.queryResults = new ConcurrentHashMap();
+            this.cacheIndexes = new ConcurrentHashMap();
         }
         checkIsCacheAccessPreCheckRequired();
     }
@@ -369,7 +375,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 try {
                     constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
                     IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, values));
-                    if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
+                    if ((descriptor != null) && (descriptor.getCachePolicy().getCacheInterceptorClass() != null)) {
                         constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
                         Object params[] = new Object[]{map, this.session};
                         map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
@@ -425,6 +431,13 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public void clearQueryCache() {
         this.queryResults = new ConcurrentHashMap();
+    }
+
+    /**
+     * Clear all index caches.
+     */
+    public void clearCacheIndexes() {
+        this.cacheIndexes = new ConcurrentHashMap();
     }
 
     /**
@@ -935,7 +948,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         // PERF: Avoid synchronization through get and putIfAbsent double-check.
         IdentityMap identityMap = this.identityMaps.get(descriptorClass);
         if (identityMap == null) {
-            if (returnNullIfNoMap && descriptor.getCacheInterceptorClass() == null) {
+            if (returnNullIfNoMap && descriptor.getCachePolicy().getCacheInterceptorClass() == null) {
                 //interceptor monitors the identity map and needs to know that a request occurred.
                 return null;
             }
@@ -1001,6 +1014,56 @@ public class IdentityMapManager implements Serializable, Cloneable {
             return null;
         }
         return key.getObject();
+    }
+
+    /**
+     * Return the cache key for the cache index or null if not found.
+     */
+    public CacheKey getCacheKeyByIndex(CacheIndex index, CacheId indexValues, boolean shouldCheckExpiry, ClassDescriptor descriptor) {
+        if (this.cacheIndexes == null) {
+            return null;
+        }       
+        IdentityMap map = this.cacheIndexes.get(index);
+        if (map == null) {
+            return null;
+        }
+
+        CacheKey cacheKey = map.getCacheKey(indexValues, false);
+        if (cacheKey == null) {
+            return null;
+        }
+        // The cache key is nested as the object cache key is put into the cache.
+        cacheKey = (CacheKey)cacheKey.getObject();
+        if (cacheKey == null) {
+            return null;
+        }
+        if (shouldCheckExpiry && descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey)) {
+            return null;
+        }
+        return cacheKey;
+    }
+
+    /**
+     * Index the cache key by the index values.
+     */
+    public void putCacheKeyByIndex(CacheIndex index, CacheId indexValues, CacheKey cacheKey, ClassDescriptor descriptor) {
+        if (this.cacheIndexes == null) {
+            return;
+        }
+        if (indexValues == null) {
+            return;
+        }
+        IdentityMap map = this.cacheIndexes.get(index);
+        if (map == null) {
+            synchronized (this.cacheIndexes) {
+                map = this.cacheIndexes.get(index);
+                if (map == null) {
+                    map = buildNewIdentityMap(index.getCacheType(), index.getCacheSize(), null, false);
+                    this.cacheIndexes.put(index, map);
+                }
+            }
+        }
+        map.put(indexValues, cacheKey, null, 0);
     }
 
     protected AbstractSession getSession() {
@@ -1092,6 +1155,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         clearLastAccessedIdentityMap();
         setIdentityMaps(new ConcurrentHashMap());
         clearQueryCache();
+        clearCacheIndexes();
     }
 
     /**

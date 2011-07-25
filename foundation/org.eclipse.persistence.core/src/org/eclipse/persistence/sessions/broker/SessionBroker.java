@@ -771,6 +771,9 @@ public class SessionBroker extends DatabaseSessionImpl {
         if(!isLoggedIn) {
             return;
         }
+        if (this.eventManager != null) {
+            this.eventManager.preLogout(this);
+        }
         if (!isClientSessionBroker()) {
             for (Iterator sessionEnum = getSessionsByName().values().iterator();
                      sessionEnum.hasNext();) {
@@ -778,8 +781,11 @@ public class SessionBroker extends DatabaseSessionImpl {
                 session.logout();
             }
         }
-        sequencing = null;
-        isLoggedIn = false;
+        this.sequencing = null;
+        this.isLoggedIn = false;
+        if (this.eventManager != null) {
+            this.eventManager.postLogout(this);
+        }
     }
 
     /**
