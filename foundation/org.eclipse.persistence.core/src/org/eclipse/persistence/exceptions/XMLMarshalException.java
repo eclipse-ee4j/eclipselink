@@ -17,6 +17,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
+/**
+ * <P><B>Purpose</B>: XMLMarshalExceptions are raised when issues are encountered
+ * during XMLMarshaller or XMLUnmarshaller operations.
+ * </P>
+ */
 public class XMLMarshalException extends ValidationException {
     public static final int INVALID_XPATH_STRING = 25001;
     public static final int INVALID_XPATH_INDEX_STRING = 25002;

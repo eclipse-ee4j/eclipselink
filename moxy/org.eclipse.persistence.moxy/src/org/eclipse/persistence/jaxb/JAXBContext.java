@@ -556,11 +556,20 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return contextState.getGenerator().getAnnotationsProcessor().hasSwaRef();
     }
 
+    /**
+     * The JAXBContextInput is used to create a JAXBContextState which is responsible for accessing
+     * the underlying XMLContext</p>
+     */
     public static abstract class JAXBContextInput {
 
         protected Map properties;
         protected ClassLoader classLoader;
 
+        /**
+         * Create a new JAXBContextInput with the specified Map of properties and ClassLoader.
+         * @param properties Map of properties.
+         * @param classLoader the classLoader to use.  If null then Thread.currentThread().getContextClassLoader() will be used.
+         */
         public JAXBContextInput(Map properties, ClassLoader classLoader) {
             this.properties = properties;
             if(null == classLoader) {

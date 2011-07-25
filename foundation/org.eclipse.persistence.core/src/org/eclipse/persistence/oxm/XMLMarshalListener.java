@@ -12,7 +12,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm;
 
-public interface XMLMarshalListener {
+/**
+ * <p>An implementation of XMLMarshalListener can be set on an XMLMarshaller to provide additional
+ * behaviour during marshal operations.</p>
+ */
+public interface XMLMarshalListener {	
+
+    /**
+     * This event will be called before an object is marshalled.
+     *
+     * @param target The object that will be marshalled.
+     */
     public void beforeMarshal(Object target);
+    
+    /**
+     * This event  will be called after an object is marshalled.
+     *
+     * @param target The object that was marshalled.
+     */
     public void afterMarshal(Object target);
 }

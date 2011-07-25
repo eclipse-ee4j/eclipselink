@@ -15,6 +15,10 @@ package org.eclipse.persistence.jaxb.compiler;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
+/**
+ *  <p>Class used to log warnings during the processing of JAXB annotations and
+ *  OXM XML bindings files.</p> 
+ */
 public class JAXBMetadataLogger {
 
     public final static String NO_PROPERTY_FOR_JAVA_ATTRIBUTE = "jaxb_metadata_warning_ignoring_java_attribute";
@@ -24,14 +28,13 @@ public class JAXBMetadataLogger {
     public final static String INVALID_TYPE_ON_MAP = "jaxb_metadata_warning_ignoring_type_on_map";
 
     /**
-     * This is the default constructor.
-     * 
+     * Create a new JAXBMetadataLogger
      */
     public JAXBMetadataLogger() {
     }
 
     /**
-     * The default constructor sets the log level on the SessionLog.
+     * Create a new JAXBMetadataLogger and set the logLevel.
      * 
      * @param logLevel
      * @see SessionLog
@@ -43,8 +46,8 @@ public class JAXBMetadataLogger {
     /**
      * Logs a message at the SessionLog.INFO level.
      * 
-     * @param message
-     * @param args
+     * @param message The message to log
+     * @param args The arguments corresponding with this message
      * @see SessionLog
      */
     public void log(String message, Object[] args) {
@@ -54,8 +57,8 @@ public class JAXBMetadataLogger {
     /**
      * Logs a Warning message to the SessionLog.
      * 
-     * @param message
-     * @param args
+     * @param message The message to log
+     * @param args The arguments corresponding with this message
      * @see SessionLog
      */
     public void logWarning(String message, Object[] args) {

@@ -22,27 +22,53 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
 import org.xml.sax.ErrorHandler;
 
+/**
+ * <p>Implementation of org.xml.sax.ErrorHandler.  When JAXBMarshaller or JAXBUnmarshaller
+ * is given a ValidationEventHandler a JAXBErrorHandler is used to wrap it.  This
+ * ErrorHandler is then used by the underlying XMLMarshaller or XMLUnmarshaller.
+ * </p>
+ */
 public class JAXBErrorHandler implements ErrorHandler {
 
     private ValidationEventHandler eventHandler;
 
+    /**
+     * Create a new JAXBErrorHandler with the specified ValidationEventHandler
+     * @param validationEventHandler
+     */
     public JAXBErrorHandler(ValidationEventHandler validationEventHandler) {
         super();
         eventHandler = validationEventHandler;
     }
 
+    /**
+     * Handle warnings  
+     * The exception will be given to the ValidationEventHandler at to attempt to handle.
+     * @param exception the SAXParseException that occurred
+     */
     public void warning(SAXParseException exception) throws SAXException {
         handleException(exception, ValidationEvent.WARNING);
     }
 
+    /**
+     * Handle errors.  
+     * The exception will be given to the ValidationEventHandler at to attempt to handle.
+     * @param exception the SAXParseException that occurred
+     */
     public void error(SAXParseException exception) throws SAXException {
         handleException(exception, ValidationEvent.ERROR);
     }
 
+    /**
+     * Handle fatal errors.  
+     * The exception will be given to the ValidationEventHandler at to attempt to handle.
+     * @param exception the SAXParseException that occurred
+     */
     public void fatalError(SAXParseException exception) throws SAXException {
         handleException(exception, ValidationEvent.FATAL_ERROR);
     }
 
+    
     private void handleException(SAXParseException exception, int severity) throws SAXException {
         ValidationEventLocatorImpl eventLocator = new ValidationEventLocatorImpl(exception);
         if(exception instanceof MarshalSAXParseException) {
@@ -54,6 +80,10 @@ public class JAXBErrorHandler implements ErrorHandler {
         }
     }
 
+    /**
+     * Return the ValidationEventHandler associated with this JAXBErrorHandler.
+     * @return the ValidationEventHandler associated with this JAXBErrorHandler.
+     */
     public ValidationEventHandler getValidationEventHandler() {
         return eventHandler;
     }

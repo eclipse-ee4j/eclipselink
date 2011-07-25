@@ -65,6 +65,21 @@ import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 
+/**
+ * INTERNAL:
+ * <p>
+ * Purpose: XMLProcessor is used to process the meta data provided
+ * in external OXM XML files.  This information is then used in conjunction with the 
+ * information from AnnotationsProcess to generate schemas (via SchemaGenerator) 
+ * and mappings (via MappingsGenerator).
+ * </p>
+ * 
+ * <p>
+ * As a general rule meta data provided in external OXM XML files overrides meta data
+ * specified through annotations.
+ * </p>
+ * @see org.eclipse.persistence.jaxb.compiler.Generator 
+ */
 public class XMLProcessor {
     private Map<String, XmlBindings> xmlBindingMap;
     private JavaModelInput jModelInput;
@@ -1762,6 +1777,11 @@ public class XMLProcessor {
         property.setGenericType(genericType);
     }
     
+    /**
+     * This method checks for class and package level adapters after the type of a property has been set.
+     * @param prop the property that needs to be updated 
+     * @param owningInfo the typeInfo that represents the owner of this property.
+     */
     public void reapplyPackageAndClassAdapters(Property prop, TypeInfo owningInfo) {
         if(prop.getXmlJavaTypeAdapter() != null) {
             //if there's already a property level adapter, don't apply package/class level
@@ -1786,6 +1806,11 @@ public class XMLProcessor {
         }
     }
     
+    /**
+     * This method is used to merge several bindings files into one XMLBindings object.
+     * @param bindings the list of XmlBindings objects to merge.
+     * @return XmlBindings object representing the merged files.
+     */
     public static XmlBindings mergeXmlBindings(List<XmlBindings> bindings) {
         if(bindings.size() == 0) {
             return null;
