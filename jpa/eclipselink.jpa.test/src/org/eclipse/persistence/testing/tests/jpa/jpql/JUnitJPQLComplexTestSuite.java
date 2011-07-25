@@ -384,9 +384,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexLengthTest()
     {
-        EntityManager em = createEntityManager();          
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSQLServer()) {
+            getServerSession().logMessage("Warning SQL doesnot support LENGTH function");
+            return;
+        }
         
-        Assert.assertFalse("Warning SQLServer does not support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
+        EntityManager em = createEntityManager();          
         
         Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         clearCache();
@@ -560,10 +563,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexReverseLengthTest()
     {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSQLServer()) {
+            getServerSession().logMessage("Warning SQL doesnot support LENGTH function");
+            return;
+        }
         
         EntityManager em = createEntityManager();          
-        
-        Assert.assertFalse("Warning SQLServer does not support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
         
         Employee expectedResult = (Employee) getServerSession().readAllObjects(Employee.class).firstElement();
         clearCache();

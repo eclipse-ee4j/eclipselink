@@ -861,9 +861,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
     
     public void simpleLengthTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSQLServer()) {
+            getServerSession().logMessage("Warning SQL doesnot support LENGTH function");
+            return;
+        }
+        
         EntityManager em = createEntityManager();
-
-        Assert.assertFalse("Warning SQL doesnot support LENGTH function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
 
         Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).elementAt(0);
 

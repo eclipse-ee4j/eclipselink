@@ -855,8 +855,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testPessimisticLockingNamedQuery() {
         ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
         
-        // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateNoWaitSupported("fieldaccess")) {
+        // Cannot create parallel entity managers in the server. Skip on SQLServer since dead lock.
+        if (! isOnServer() && isSelectForUpateNoWaitSupported("fieldaccess") && !(session.getPlatform().isSQLServer())) {
             EntityManager em = createEntityManager("fieldaccess");
             Employee employee;
             
