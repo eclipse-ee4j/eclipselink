@@ -22,6 +22,7 @@ import java.util.Set;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
 
 /**
@@ -68,8 +69,9 @@ public class XRDynamicPropertiesManager extends DynamicPropertiesManager {
 
     @Override
     public void postConstruct(DynamicEntity entity) {
-        super.postConstruct(entity);
-        // TODO - build custom Fetch group artifacts for sparse merge
+        if (DynamicEntityImpl.class.isAssignableFrom(entity.getClass())) {
+            super.postConstruct(entity);
+        }
     }
 
 }
