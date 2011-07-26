@@ -92,7 +92,9 @@ public class XMLDescriptor extends ClassDescriptor {
         this.objectBuilder = new TreeObjectBuilder(this);
 
         this.shouldOrderMappings = false;
-        this.descriptorIsAggregate();
+        descriptorIsAggregate();
+        
+        getCachePolicy().setIdentityMapClass(AbstractIdentityMap.getDefaultIdentityMapClass());
     }
 
     /**
