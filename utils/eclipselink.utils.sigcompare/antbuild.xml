@@ -1,0 +1,99 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+*     egwin - update to adopt calling standards
+*     pkrogh - modified for sigcompare
+#******************************************************************************/-->
+<project name="eclipselink.utils.sigcompare" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="sigcompare.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail unless="sigcompare.is.local" message="Not running from '${ant.project.name}' directory"/>
+
+    <!-- properties checked into SVN -->
+    <property file="./antbuild.properties"/>
+
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
+    </tstamp>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.qualifier"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+
+    <!-- all -->
+    <target name="build" depends="clean, compile, package" description="build sigcompare jar"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="." file="${sig-compare.jar}"/>
+        </delete>
+    </target>
+ 
+
+    <!-- compile -->
+    <target name="compile" description="compile sig compare Util">
+        <mkdir dir="${classes.dir}"/>
+       <!-- Set Compile Path-->
+        <path id="sigcompare.compile.path">
+            <pathelement path="../../eclipselink.jar"/>
+        </path>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               classpathref="sigcompare.compile.path"
+               failonerror="true"> 
+        </javac>
+    </target>
+        
+    <!-- package -->
+    <target name="package" description="jar the util">
+        <jar jarfile="./${sig-compare.jar}">
+             <manifest>
+                <attribute name="Specification-Title"    value="${sigcompare.util.specification.title}"/>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Title"   value="${sigcompare.util.implementation.title}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Release-Designation"    value="${release.designation}"/>
+            </manifest>
+            <fileset dir="${classes.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+
+</project>
