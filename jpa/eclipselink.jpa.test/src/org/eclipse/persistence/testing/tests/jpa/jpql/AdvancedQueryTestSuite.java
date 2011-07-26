@@ -2413,7 +2413,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         String lastName = null;
         try {
             // Load an employee into the cache.  
-            Query query = em.createQuery("Select employee from Employee employee");
+            Query query = em.createQuery("Select employee from Employee employee where employee.lastName = 'Chanley'");
             List result = query.getResultList();
             employee = (Employee)result.get(0);
             lastName = employee.getLastName();
@@ -2435,6 +2435,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             employee.setLastName("fail");
             commitTransaction(em);
+            query = em.createQuery("Select employee from Employee employee where employee.firstName = :firstName and employee.lastName = :lastName");
+            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+            query.setParameter("firstName", employee.getFirstName());
+            query.setParameter("lastName", employee.getLastName());
             counter.getSqlStatements().clear();
             try {
                 queryResult = null;
