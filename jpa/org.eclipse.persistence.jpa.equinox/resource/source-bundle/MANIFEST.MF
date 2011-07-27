@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: EclipseLink Dynamic Weaving Fragment for Equinox Source
-Bundle-SymbolicName: org.eclipse.persistence.jpa.equinox.source
-Bundle-Version: 1.0.2
-Eclipse-SourceBundle: org.eclipse.persistence.jpa.equinox;version="1.0.2"
