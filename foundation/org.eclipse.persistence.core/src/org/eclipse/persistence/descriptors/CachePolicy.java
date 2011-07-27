@@ -238,7 +238,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Some attributes have default values defined in Project.
      * If such the value for the attribute hasn't been set then the default value is assigned.
      */
-    protected void assignDefaultValues(AbstractSession session) {
+    public void assignDefaultValues(AbstractSession session) {
         if(this.identityMapSize == -1) {
             this.identityMapSize = session.getProject().getDefaultIdentityMapSize();
         }

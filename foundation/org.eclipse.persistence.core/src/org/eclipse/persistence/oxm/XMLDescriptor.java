@@ -93,8 +93,6 @@ public class XMLDescriptor extends ClassDescriptor {
 
         this.shouldOrderMappings = false;
         descriptorIsAggregate();
-        
-        getCachePolicy().setIdentityMapClass(AbstractIdentityMap.getDefaultIdentityMapClass());
     }
 
     /**
@@ -516,7 +514,7 @@ public class XMLDescriptor extends ClassDescriptor {
         if (hasInterfacePolicy()) {
             preInterfaceInitialization(session);
         }
-
+        getCachePolicy().assignDefaultValues(session);
     }
 
     /**
