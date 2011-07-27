@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Advanced Multitenant Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant</package>
+    
+    <entity name="XMLMafiaFamily" class="MafiaFamily">
+        <multitenant>
+            <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
+        </multitenant>
+        <table name="XML_MAFIA_FAMILY"/>
+        <secondary-table name="XML_FAMILY_REVENUE"/>
+        <named-query name="findJPQLXMLMafiaFamilies">
+            <query>SELECT s from XMLMafiaFamily s</query>
+        </named-query>
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <basic name="revenue">
+                <column name="REVENUE" table="XML_FAMILY_REVENUE"/>
+            </basic>
+            <one-to-many name="mafiosos" mapped-by="family">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <element-collection name="tags">
+                <column name="TAG"/>
+                <collection-table name="XML_FAMILY_TAGS">
+                    <join-column name="FAMILY_ID"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLMafioso" class="Mafioso">
+        <multitenant>
+            <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
+        </multitenant>
+        <table name="XML_MAFIOSO"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-column name="DTYPE"/>
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value/>
+            </id>
+            <basic name="firstName"/>
+            <basic name="lastName"/>
+            <basic name="gender">
+                <object-type-converter name="gender" data-type="String" object-type="Mafioso$Gender">
+                    <conversion-value data-value="F" object-value="Female"/>
+                    <conversion-value data-value="M" object-value="Male"/>
+                </object-type-converter>
+            </basic>
+            <many-to-one name="family">
+                <join-column name="FAMILY_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLBoss" class="Boss">
+        <table name="XML_BOSS"/>
+        <discriminator-value>DON</discriminator-value>
+        <named-query name="UpdateXMLBossName">
+            <query>UPDATE XMLBoss b set b.firstName = :name where b.id = :id</query>
+        </named-query>
+        <attributes>
+            <one-to-one name="underboss">
+                <join-column name="UNDERBOSS_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLUnderboss" class="Underboss">
+        <table name="XML_UNDERBOSS"/>
+        <discriminator-value>LITTLE_DON</discriminator-value>
+        <attributes>
+            <one-to-many name="capos" mapped-by="underboss"/>
+            <one-to-one name="boss" mapped-by="underboss">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLCapo" class="Capo">
+        <table name="XML_CAPO"/>
+        <discriminator-value>CAPO</discriminator-value>
+        <attributes>
+            <many-to-one name="underboss"/>
+            <one-to-many name="soldiers" mapped-by="capo"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLSoldier" class="Soldier">
+        <table name="XML_SOLDIER"/>
+        <discriminator-value>SOLDIER</discriminator-value>
+        <attributes>
+            <many-to-one name="capo"/>
+            <many-to-many name="contracts" mapped-by="soldiers">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-many>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLContract" class="Contract">
+        <multitenant type="SINGLE_TABLE"/>
+        <table name="XML_CONTRACT"/>
+        <named-query name="FindAllXmlContracts">
+            <query>SELECT c FROM XMLContract c</query>
+        </named-query>
+        <named-query name="UpdateAllXmlContractDescriptions">
+            <query>UPDATE XMLContract c SET c.description = 'voided'</query>
+        </named-query>
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value/>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <basic name="tenantId">
+                <column name="TENANT_ID" insertable="false" updatable="false"/>
+            </basic>
+            <version name="version"/>
+            <many-to-many name="soldiers">
+                <join-table name="XML_CONTRACT_SOLDIER">
+                    <join-column name="CONTRACT_ID"/>
+                    <inverse-join-column name="SOLDIER_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-many>
+            
+        </attributes>
+    </entity>
+    
+</entity-mappings>
