@@ -378,6 +378,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
         tests.add("testCharFieldDefaultNullValue");
         tests.add("testMergeNewReferencingOldChanged");
+        tests.add("testApplicationManagedInServer");
         // Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache.
         // Uncomment testMergeNewReferencingOldChangedClearCache when the bug is fixed.
         // tests.add("testMergeNewReferencingOldChangedClearCache");
@@ -5107,6 +5108,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } else {
             // Get entity manager just to login back the session, then close em
             getEntityManagerFactory().createEntityManager().close();
+        }
+    }
+
+    /**
+     * The same persistence unit in the server should have the same session for container or application managed.
+     */
+    public void testApplicationManagedInServer() {
+        EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl)Persistence.createEntityManagerFactory("default");
+        try {
+            if (getDatabaseSession() != factory.getServerSession()) {
+                fail("Application managed persistence unit is not the same as the container managed session.  Deployment is broken."
+                        + getDatabaseSession().getName() + " != " + factory.getServerSession().getName());
+            }
+        } finally {
+            factory.close();
         }
     }
     
