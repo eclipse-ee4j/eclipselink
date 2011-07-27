@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
@@ -362,9 +363,18 @@ public class XMLContext {
      * the QName parameter.
      */
     public XMLDescriptor getDescriptor(QName qName) {
-        return xmlContextState.getDescriptor(qName);
+    	XPathQName xpathQName = new XPathQName(qName.getNamespaceURI(), qName.getLocalPart(), true);
+    	return xmlContextState.getDescriptor(xpathQName);
     }
 
+    /**
+     * INTERNAL: Return the XMLDescriptor with the default root mapping matching
+     * the QName parameter.
+     */
+    public XMLDescriptor getDescriptor(XPathQName xpathQName) {
+    	return xmlContextState.getDescriptor(xpathQName);
+    }
+    
     public void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
         xmlContextState.addDescriptorByQName(qName, descriptor);
     }
@@ -691,7 +701,6 @@ public class XMLContext {
      */
     public Object createByQualifiedName(String namespace, String typeName, boolean isGlobalType) throws IllegalArgumentException {
         QName qName = new QName(namespace, typeName);
-
         XMLDescriptor d = null;
         if (!isGlobalType) {
             d = getDescriptor(qName);
@@ -856,8 +865,14 @@ public class XMLContext {
         }
 
         private void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
+        	XPathQName xpathQName = new XPathQName(qName.getNamespaceURI(), qName.getLocalPart(), true);
+        	addDescriptorByQName(xpathQName, descriptor);
+        }
+        
+        private void addDescriptorByQName(XPathQName qName, XMLDescriptor descriptor) {
             descriptorsByQName.put(qName, descriptor);
         }
+        
 
         /**
          * INTERNAL: Add and initialize a new session to the list of sessions
@@ -915,8 +930,17 @@ public class XMLContext {
          * INTERNAL: Return the XMLDescriptor with the default root mapping matching
          * the QName parameter.
          */
-        private XMLDescriptor getDescriptor(QName qName) {
+        private XMLDescriptor getDescriptor(XPathQName qName) {
             return (XMLDescriptor) descriptorsByQName.get(qName);
+        }
+        
+        /**
+         * INTERNAL: Return the XMLDescriptor with the default root mapping matching
+         * the QName parameter.
+         */
+        private XMLDescriptor getDescriptor(QName qName) {
+        	XPathQName xpathQName = new XPathQName(qName.getNamespaceURI(), qName.getLocalPart(), true);
+        	return (XMLDescriptor) descriptorsByQName.get(xpathQName);
         }
 
         /**
@@ -1128,7 +1152,7 @@ public class XMLContext {
          * INTERNAL:
          */
         private void storeXMLDescriptorByQName(XMLDescriptor xmlDescriptor) {
-            QName descriptorQName;
+            XPathQName descriptorQName;
             String defaultRootName;
 
             List tableNames = xmlDescriptor.getTableNames();
@@ -1142,22 +1166,22 @@ public class XMLContext {
                         if (index > -1) {
                             String defaultRootPrefix = defaultRootName.substring(0, index);
                             String defaultRootNamespaceURI = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
-                            descriptorQName = new QName(defaultRootNamespaceURI, defaultRootLocalName);
+                            descriptorQName = new XPathQName(defaultRootNamespaceURI, defaultRootLocalName, true);
                         } else {
                             if(xmlDescriptor.getNamespaceResolver() != null) {
-                                descriptorQName = new QName(xmlDescriptor.getNamespaceResolver().getDefaultNamespaceURI(), defaultRootLocalName);
+                                descriptorQName = new XPathQName(xmlDescriptor.getNamespaceResolver().getDefaultNamespaceURI(), defaultRootLocalName, true);
                             } else {
-                                descriptorQName = new QName(defaultRootLocalName);
+                                descriptorQName = new XPathQName(defaultRootLocalName, true);
                             }
                         }
                         if (!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-                            descriptorsByQName.put(descriptorQName, xmlDescriptor);
+                        	addDescriptorByQName(descriptorQName, xmlDescriptor);
                         } else {
                             //this means we have a descriptor that is a child in an inheritance hierarchy
                             storeXMLDescriptorByQName((XMLDescriptor) xmlDescriptor.getInheritancePolicy().getParentDescriptor());
-                            XMLDescriptor existingDescriptor = (XMLDescriptor) descriptorsByQName.get(descriptorQName);
+                            XMLDescriptor existingDescriptor = (XMLDescriptor) getDescriptor(descriptorQName);
                             if (existingDescriptor == null) {
-                                descriptorsByQName.put(descriptorQName, xmlDescriptor);
+                            	addDescriptorByQName(descriptorQName, xmlDescriptor);
                             }
                         }
                     }

@@ -12,15 +12,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.nested;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.EmailAddress;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.MailingAddress;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nested.Project;
 
-public class CompositeCollectionNestedTestCases extends XMLMappingTestCases {
+public class CompositeCollectionNestedTestCases extends XMLWithJSONMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nested/CompositeCollectionNested.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nested/CompositeCollectionNested.json";
   private final static int CONTROL_EMPLOYEE_ID = 123;
   private final static int CONTROL_EMPLOYEE2_ID = 789;
   private final static String CONTROL_PROJECT_NAME = "secret project";
@@ -44,6 +45,7 @@ public class CompositeCollectionNestedTestCases extends XMLMappingTestCases {
   public CompositeCollectionNestedTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
     setProject(new CompositeCollectionNestedProject());
   }
 

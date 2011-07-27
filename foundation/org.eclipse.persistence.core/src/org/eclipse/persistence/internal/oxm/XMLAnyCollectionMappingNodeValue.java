@@ -146,7 +146,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
                         prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
-                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false);
+                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.getUnmarshaller().isNamespaceAware());
                     if(xmlAnyCollectionMapping.getConverter() != null) {
                         childObject = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
                     }

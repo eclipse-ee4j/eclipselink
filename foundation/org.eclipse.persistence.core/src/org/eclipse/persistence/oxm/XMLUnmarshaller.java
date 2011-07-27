@@ -175,7 +175,15 @@ public class XMLUnmarshaller implements Cloneable {
             schemasAreInitialized = true;
         }
     }
-
+    
+    /**
+     * Namespaces will be ignored during unmarshal operations when this method returns false.
+     * @return if this unmarshaller should process namespace information
+     */
+    public boolean isNamespaceAware(){
+    	return mediaType == MediaType.APPLICATION_XML;    	
+    }
+    
     /**
      * Set the MediaType for this xmlUnmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy

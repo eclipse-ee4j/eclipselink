@@ -398,7 +398,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                             // wrap the object in an XMLRoot
                             // if we know the descriptor use it to wrap the Element in an XMLRoot (if necessary)
                             if (referenceDescriptor != null) {
-                                objVal = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
+                                objVal = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.getUnmarshaller().isNamespaceAware());
                                 cp.addInto(objVal, container, session);
                             } else {
                                 // no descriptor, so manually build the XMLRoot

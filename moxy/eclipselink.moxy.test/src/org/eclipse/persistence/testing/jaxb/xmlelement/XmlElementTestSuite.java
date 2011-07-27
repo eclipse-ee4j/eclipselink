@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.xmlelement;
 
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.EmptyCollectionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.FullTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlelement.model.FullTestCasesNS;
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.SpecialCharacterTestCases;
 
 import junit.framework.Test;
@@ -29,6 +30,7 @@ public class XmlElementTestSuite extends TestSuite {
         suite.addTestSuite(XmlElementCollectionTestCases.class);
         suite.addTestSuite(XmlElementNillableTestCases.class);
         suite.addTestSuite(FullTestCases.class);
+        suite.addTestSuite(FullTestCasesNS.class);
         suite.addTestSuite(EmptyCollectionTestCases.class);
         suite.addTestSuite(SpecialCharacterTestCases.class);
 

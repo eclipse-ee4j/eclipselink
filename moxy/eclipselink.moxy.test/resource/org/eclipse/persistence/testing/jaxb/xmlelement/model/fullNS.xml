@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:order xmlns:ns0="myuri" xmlns:ns1="testuri2">
+   <items>
+        <item>
+           <id>1</id>
+	    	<money>
+               <cost>5.00</cost>
+    	       <price>7.99</price>
+    	    </money>
+	    	<description>nice item</description>
+            <description>comes in blue or red</description>    
+       </item>
+       <item>
+          <id>2</id>
+          <money>
+              <cost>10.00</cost>
+              <price>15.99</price>
+	      </money>
+          <description>big item</description>
+          <description>very heavy</description>
+        </item>
+   </items>
+   <customerInput>
+      <comments>comment1</comments>
+      <comments>comment2</comments>
+      <comments>comment3</comments>
+      <comments></comments>
+   </customerInput>
+   <ns1:customer id="0">
+      <firstName>Jane</firstName>
+      <lastName>Smith</lastName>
+	  <contact>
+      <address>
+          <street>Main Street</street>
+          <city>Ottawa</city>
+          <id>1</id>
+      </address>
+      </contact>
+      <firstTimeCustomer>false</firstTimeCustomer>
+	  <orderNumbers>10</orderNumbers>
+	  <orderNumbers>20</orderNumbers>
+	  <orderNumbers>30</orderNumbers>
+   </ns1:customer>
+   <id>1</id>
+</ns0:order>

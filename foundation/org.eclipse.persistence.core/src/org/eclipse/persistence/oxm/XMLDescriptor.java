@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
-import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -694,7 +693,7 @@ public class XMLDescriptor extends ClassDescriptor {
     public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord, boolean forceWrap) {
         String elementLocalName = unmarshalRecord.getLocalName();
         String elementNamespaceUri = unmarshalRecord.getRootElementNamespaceUri();
-        if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, null)) {
+        if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, null, unmarshalRecord.getUnmarshaller().isNamespaceAware())) {
             XMLRoot xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
@@ -724,9 +723,9 @@ public class XMLDescriptor extends ClassDescriptor {
       * @param elementPrefix
       * @return object
       */
-    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap) {
+    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware) {
 
-        if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
+        if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
             // if the DOMRecord element != descriptor's default 
             // root element, create an XMLRoot, populate and return it
             XMLRoot xmlRoot = new XMLRoot();
@@ -738,8 +737,12 @@ public class XMLDescriptor extends ClassDescriptor {
         return object;
     }
 
-    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap) {
-        if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
+    /**
+     * INTERNAL:
+     * @return
+     */
+    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware) {
+        if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
             // if the DOMRecord element != descriptor's default 
             // root element, create an XMLRoot, populate and return it
             XMLRoot xmlRoot = new XMLRoot();
@@ -754,7 +757,11 @@ public class XMLDescriptor extends ClassDescriptor {
 
     }
     
-    public boolean shouldWrapObject(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix) {
+    /**
+     * INTERNAL:
+     * @return
+     */
+    public boolean shouldWrapObject(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean isNamespaceAware) {
         if(resultAlwaysXMLRoot){
             return true;
         }
@@ -767,13 +774,19 @@ public class XMLDescriptor extends ClassDescriptor {
             // resolve namespace prefix if one exists
             String defaultRootName = defaultRootField.getXPathFragment().getLocalName();
             String defaultRootNamespaceUri = defaultRootField.getXPathFragment().getNamespaceURI();
-
             // if the DOMRecord element == descriptor's default 
             // root element, return the object as per usual
-            if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.length() == 0)) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.length() == 0)) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
-                    .equals(elementNamespaceUri))))
-                    && (defaultRootName.equals(elementLocalName))) {
-                return false;
+
+            if(isNamespaceAware){
+            	if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.length() == 0)) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.length() == 0)) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
+                        .equals(elementNamespaceUri))))
+                        && (defaultRootName.equals(elementLocalName))) {
+                    return false;
+                }
+            }else{
+                if (defaultRootName.equals(elementLocalName)) {
+                    return false;
+                }
             }
         }
         return true;

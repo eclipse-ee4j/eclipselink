@@ -51,28 +51,40 @@ public class XPathFragment {
     private String prefix;
     private String localName;
     private String namespaceURI;
-    private QName qname;
     protected boolean nameIsText = false;
     protected boolean isSelfFragment = false;
     private QName leafElementType;
     private boolean generatedPrefix = false;   
     private XPathPredicate predicate; 
+    
+    private boolean isNamespaceAware;
+    
+    public XPathFragment(String xpathString) {
+    	this();
+        setXPath(xpathString);        
+    }
 
-    public XPathPredicate getPredicate() {
-        return predicate;
+    public XPathFragment() {
+        super();
+        setNamespaceAware(true);        
     }
 
     public void setPredicate(XPathPredicate condition) {
         this.predicate = condition;
     }
-
-    public XPathFragment(String xpathString) {
-        setXPath(xpathString);
+    
+    public boolean isNamespaceAware() {
+    	return isNamespaceAware;
     }
 
-    public XPathFragment() {
-        super();
+    public void setNamespaceAware(boolean isNamespaceAware) {
+        this.isNamespaceAware = isNamespaceAware;
     }
+
+    public XPathPredicate getPredicate() {
+        return predicate;
+    }
+
 
     public XPathFragment getNextFragment() {
         return nextFragment;
@@ -195,15 +207,7 @@ public class XPathFragment {
         	this.namespaceURI = namespaceURI;
         }
     }
-
-    public QName getQName() {
-        return qname;
-    }
-
-    public void setQName(QName q) {
-        qname = q;
-    }
-
+    
     private int hasIndex(String xpathString) {
         int index = -1;
         int startindex = xpathString.lastIndexOf('[');
@@ -305,7 +309,22 @@ public class XPathFragment {
             if(null != predicate && !predicate.equals(xPathFragment.getPredicate())) {
                 return false;
             }
-            return ((nameIsText && xPathFragment.nameIsText()) || (localName == xPathFragment.getLocalName()) || ((localName != null) && localName.equals(xPathFragment.getLocalName()))) && ((namespaceURI == xPathFragment.getNamespaceURI()) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.getNamespaceURI()))) && (this.indexValue == xPathFragment.getIndexValue()) && (nameIsText == xPathFragment.nameIsText());
+            
+           if(isNamespaceAware && xPathFragment.isNamespaceAware){
+	            if(namespaceURI == null){
+	            	if(xPathFragment.getNamespaceURI() != null){
+	            		return false;
+	            	}
+	            }else{
+	            	if(xPathFragment.getNamespaceURI() == null){
+	            		return false;
+	            	}else if(namespaceURI != xPathFragment.getNamespaceURI() && !(namespaceURI.equals(xPathFragment.getNamespaceURI()))){
+	            		return false;
+	            	}
+	            }
+            }
+            return ((nameIsText && xPathFragment.nameIsText()) || (getLocalName() == xPathFragment.getLocalName()) || ((getLocalName() != null) && getLocalName().equals(xPathFragment.getLocalName()))) && (this.indexValue == xPathFragment.getIndexValue()) && (nameIsText == xPathFragment.nameIsText());
+            
         } catch (ClassCastException e) {
             return false;
         }

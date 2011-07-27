@@ -132,8 +132,8 @@ public class JSONWriterRecord extends MarshalRecord {
 
                super.openStartElement(xPathFragment, namespaceResolver);
                 isStartElementOpen = true;
-                writer.write('"');
-                writer.write(xPathFragment.getShortName());
+                writer.write('"');                
+                writer.write(xPathFragment.getLocalName());
                 writer.write("\" : ");
                 
                 if((xPathFragment.getNextFragment() == null || xPathFragment.getNextFragment().nameIsText()) && position != null && position.isCollection()) {

@@ -55,6 +55,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
@@ -1172,6 +1173,16 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             return childRecord;
         } else {
             return childRecordPool.remove(childRecordPool.size() - 1).initialize(treeObjectBuilder);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setUnmarshaller(XMLUnmarshaller unmarshaller) {
+        super.setUnmarshaller(unmarshaller);
+        if(xPathFragment != null){
+        	xPathFragment.setNamespaceAware(unmarshaller.isNamespaceAware());
         }
     }
 
