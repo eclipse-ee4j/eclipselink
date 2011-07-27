@@ -11,7 +11,7 @@ Include-Resource:\
  ${weaving.2.base.dir}/about.html,\
  ${weaving.2.base.dir}/readme.html,\
  ${weaving.2.base.dir}/license.html,\
- ./hookconfigurators.properties
+ hookconfigurators.properties=${resource.dir}/hookconfigurators.properties
 Import-Package: !*
 Specification-Version: ${release.version}
 

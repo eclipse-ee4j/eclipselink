@@ -235,7 +235,7 @@
             <fileset dir="${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
-             <fileset dir="${weaving.build.location}">
+             <fileset dir="${resource.dir}">
                 <include name="hookconfigurators.properties"/>
             </fileset>
         </jar>
