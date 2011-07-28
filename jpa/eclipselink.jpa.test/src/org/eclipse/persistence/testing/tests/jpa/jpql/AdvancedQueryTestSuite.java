@@ -2463,7 +2463,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter("name", buyer.getName());
             counter.getSqlStatements().clear();
             Buyer queryResult2 = (Buyer)query.getSingleResult();
-            if (queryResult2 != buyer) {
+            if (queryResult2.getName().equals(buyer.getName())) {
                 fail("Buyers are not equal: " + buyer + ", " + queryResult2);
             }
             if (counter.getSqlStatements().size() > 0) {
