@@ -40,7 +40,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 /**
  * This context is used to store information related to the JPQL query.
  *
- * @version 2.3
+ * @version 2.3.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -225,6 +225,16 @@ public class JPQLQueryContext {
 	}
 
 	/**
+	 * Returns the {@link DeclarationResolver} of this context and not from the current query's
+	 * declaration.
+	 *
+	 * @return The {@link DeclarationResolver} for this context
+	 */
+	public DeclarationResolver getActualDeclarationResolver() {
+		return getDeclarationResolverImp();
+	}
+
+	/**
 	 * Returns the current {@link JPQLQueryContext}, i.e. the context of the query being manipulated,
 	 * which can either be the top-level query or a subquery.
 	 *
@@ -383,6 +393,15 @@ public class JPQLQueryContext {
 		finally {
 			visitor.dispose();
 		}
+	}
+
+	/**
+	 * Returns the parent context if the current context is not the root context.
+	 *
+	 * @return The parent context or <code>null</code> if the current context is the root
+	 */
+	public JPQLQueryContext getParent() {
+		return parent;
 	}
 
 	/**
