@@ -75,6 +75,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
         this.assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
         this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         //this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
@@ -104,6 +105,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
         this.assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
         this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         // this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
@@ -133,6 +135,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
         this.assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
         this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         //this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
@@ -191,6 +194,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
         this.assertEquals(type.getBaseTypes().size(), 1);
         Type baseType = (Type)type.getBaseTypes().get(0);
         this.assertEquals(baseType, SDOConstants.SDO_INT);
+        assertEquals(((SDOType)baseType).getSubTypes().size(), 0);
         //this.assertEquals(baseType.getName(), "int");
         //this.assertEquals(baseType.getURI(), "commonj.sdo");
         // dataType
