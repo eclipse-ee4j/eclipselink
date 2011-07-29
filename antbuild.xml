@@ -118,6 +118,13 @@
     <!-- The default for junit.lib is still "junit.jar", even though we now depend upon junit 4.5  -->
     <property file="${trunk.build.location}/antbuild.properties"/>
 
+    <!-- Needed for Maven/Tycho builds -->
+    <condition property="M2_HOME" value="${env.M2_HOME}"
+                                  else="C:/apache-maven-3.0.3">
+        <isset property="env.M2_HOME"/>
+    </condition>
+    <echo message="Maven install set to: '${M2_HOME}'"/>
+
     <!-- Needed because some buildfiles depend upon JDK6 -->
     <condition property="java_is_v5" value="true">
         <contains string="${java.version}" substring="1.5"/>
@@ -173,6 +180,7 @@
     <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
+    <!-- target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar, verify-eclipselink-jar-packaging" description="build all EclipseLink distribution files except docs and tests"/ -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
 
     <!-- compiles and builds all components, packages eclipselink.jar and src zip. -->
@@ -212,8 +220,20 @@
             <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
         </delete>
     </target>
-    <!-- target name="clean-maven-built" description="Clean the maven built runtime projects">
-        <property name="M2_HOME" value="C:/apache-maven-3.0.3"/>
+
+    <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core-mavenbuilt, clean-core-antbuilt">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="clean"/>
+        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+    </target>
+    <target name="clean-core-mavenbuilt" if="use.maven" description="Clean the maven built runtime projects">
         <java dir="${eclipselink.mvn.parent}" fork="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -224,8 +244,8 @@
                 </fileset>
              </classpath>
         </java>
-    </target -->
-    <target name="clean-runtime-built" description="Clean the runtime projects" > <!-- depends="clean-maven-built" -->
+    </target>
+    <target name="clean-core-antbuilt" unless="use.maven" description="Clean the runtime projects" >
         <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="clean"/>
@@ -238,16 +258,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="clean"/>
-        
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="clean"/>
-        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
     <target name="clean-testing" description="Clean the testing projects">
@@ -260,8 +270,8 @@
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core" depends="clean-runtime-checkedin"> <!-- ,clean-maven-built" -->
-        <!-- property name="M2_HOME" value="C:/apache-maven-3.0.3"/>
+    <target name="build-core-maven" if="use.maven">
+        <property name="M2_HOME" value="C:/apache-maven-3.0.3"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -283,8 +293,10 @@
                 <include name="**/org.eclipse.persistence*.jar"/>
                 <exclude name="**/*-sources.jar"/>
             </fileset>
-        </copy -->
+        </copy>
+    </target>
     
+    <target name="build-core-ant" unless="use.maven">
         <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
@@ -297,7 +309,9 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
+    </target>
 
+    <target name="build-core" depends="clean-runtime-checkedin, build-core-maven, build-core-ant">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
@@ -331,14 +345,14 @@
     </target>
 
     <!-- Compiles all utils components. -->
-    <target name="build-util" depends="build-dbws-utils, build-mw-and-rename"/>
+    <target name="build-util" depends="build-dbws-utils">
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"    target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}" target="all"/>
+    </target>
 
     <target name="build-dbws-utils" unless="java_is_v5">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"      target="build"/>
-    </target>
-    <target name="build-mw-and-rename">
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"    target="build"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}" target="all"/>
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
@@ -566,6 +580,23 @@
         </jar>
     </target>
 
+    <target name="verify-eclipselink-jar-packaging">
+        <property name="custom.tasks.lib" value="${trunk.build.location}/buildsystem/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <taskdef name="say" classname="${custom.echo.task.class}" classpath="${custom.tasks.lib}"/>
+            <resourcecount property="count">
+                <zipentry archive="${eclipselink.jar}" name="*"/>
+            </resourcecount>
+        <echo message="count='${count}'"/>
+        <condition property="eclipselink.src.exist">
+        	 <not>
+        	     <equals arg1="${count}" arg2="0"/>
+        	 </not>
+        </condition>
+        <say message="EclipseLink jar verified! '${eclipselink.src.exist}'" unless="eclipselink.src.exist"/>
+        <say message="Source exists in EclipseLink jarfile! ${eclipselink.src.exist}" if="eclipselink.src.exist"/>
+    </target>
+    
     <target name="package-eclipselink-bundles">
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
