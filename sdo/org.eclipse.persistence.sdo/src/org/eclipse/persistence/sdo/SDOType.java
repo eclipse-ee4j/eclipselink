@@ -455,7 +455,10 @@ public class SDOType implements Type, Serializable {
 
             updateSubtypes(type);
 
-            type.getSubTypes().add(this);
+            if(!(type.isDataType() && (type.getQName().getNamespaceURI() == SDOConstants.SDO_URL || type.getQName().getNamespaceURI() == SDOConstants.SDOJAVA_URL))) {
+                type.getSubTypes().add(this);
+            }
+
             if (type.isOpen() && this.isOpen()) {
                 //don't want any mappings on this descriptor
                 DatabaseMapping anyCollectionMapping = getXmlDescriptor().getMappingForAttributeName(ANY_MAPPING_ATTRIBUTE_NAME);
