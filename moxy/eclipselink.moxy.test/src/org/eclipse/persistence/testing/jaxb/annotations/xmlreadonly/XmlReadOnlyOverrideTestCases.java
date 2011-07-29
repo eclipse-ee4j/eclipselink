@@ -9,13 +9,16 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
-public class XmlReadOnlyOverrideTestCases extends JAXBTestCases {
+public class XmlReadOnlyOverrideTestCases extends JAXBWithJSONTestCases {
     private static final String XML_READ_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlreadonly/employee_read.xml";
+    private static final String JSON_READ_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlreadonly/employee_read.json";
     public XmlReadOnlyOverrideTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_READ_RESOURCE);
+        setControlJSON(JSON_READ_RESOURCE);
     }
     
 

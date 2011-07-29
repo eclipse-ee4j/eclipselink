@@ -13,12 +13,14 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XMLTransformationNoArgCtorTestCases extends JAXBTestCases {
+public class XMLTransformationNoArgCtorTestCases extends JAXBWithJSONTestCases{
     public XMLTransformationNoArgCtorTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {EmployeeWithAddressAndTransformer.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.xml");
+        setControlJSON("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.json");
     }
     
     public Object getControlObject() {

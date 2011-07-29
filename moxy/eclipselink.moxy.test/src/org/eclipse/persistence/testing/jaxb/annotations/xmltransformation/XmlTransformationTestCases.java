@@ -12,20 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlTransformationTestCases extends JAXBTestCases {
+public class XmlTransformationTestCases extends JAXBWithJSONTestCases {
     public XmlTransformationTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Employee.class});
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/transformation/employee1.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/transformation/employee1.json");
     }
     
     public Object getControlObject() {

@@ -1,0 +1,42 @@
+{"company":{
+     "employee-data":[
+     {
+        "id":101,
+        "work-address":{
+           "id":100,
+           "city":"Ottawa"
+	 }
+     },
+     {
+        "id":102,
+        "work-address":{
+           "id":100,
+           "city":"Kanata"
+	 }
+     }
+     ],
+     "business-address":[
+      {
+       "id":100,
+       "street":"99 Some St.",
+       "suite":"1001",
+	"city":"Kanata",
+	"postal":"K0A3m0"
+      },
+      {
+       "id":100,
+       "street":"45 O'Connor St.",
+       "suite":"400",
+	"city":"Ottawa",
+	"postal":"K1P1A4"
+      },
+      {
+       "id":200,
+       "street":"1 Anystreet Rd.",
+       "suite":"9",
+	"city":"Ottawa",
+	"postal":"K4P1A2"
+      }
+     ]
+  }
+}

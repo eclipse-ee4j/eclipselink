@@ -12,10 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,27 +23,38 @@ import java.net.URL;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     private String controlJSONLocation;
+    private String controlJSONWriteLocation;
 
     public JAXBWithJSONTestCases(String name) throws Exception {
         super(name);
     }
 
     public void setControlJSON(String location) {
-        this.controlJSONLocation = location;
+        this.controlJSONLocation = location;        
+    }
+    
+    public void setWriteControlJSON(String location) {
+        this.controlJSONWriteLocation = location;        
+    }
+    
+    public String getWriteControlJSON(){
+    	if(controlJSONWriteLocation != null){
+    		return controlJSONWriteLocation;
+    	}else{
+    		return controlJSONLocation;
+    	}
     }
 
     public void testJSONUnmarshalFromInputStream() throws Exception {
         Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
         jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
-
-        InputStream inputStream = getJSONStream();
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Object testObject = jsonUnmarshaller.unmarshal(inputStream);
         inputStream.close();
         assertEquals(getControlObject(), testObject);
@@ -55,7 +64,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
         jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
 
-        InputStream inputStream = getJSONStream();
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         InputSource inputSource = new InputSource(inputStream);
         Object testObject = jsonUnmarshaller.unmarshal(inputSource);
         inputStream.close();
@@ -66,7 +75,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
         jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
 
-        InputStream inputStream = getJSONStream();
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Reader reader = new InputStreamReader(inputStream);
         Object testObject = jsonUnmarshaller.unmarshal(reader);
         reader.close();
@@ -126,7 +135,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     private void compareStrings(String test, String testString) {
         log(test);
         log("Expected (With All Whitespace Removed):");
-        String expectedString = getJSONControlString(controlJSONLocation).replaceAll("[ \b\t\n\r' ']", "");
+        String expectedString = getJSONControlString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
         log(expectedString);
         log("\nActual (With All Whitespace Removed):");
         testString = testString.replaceAll("[ \b\t\n\r]", "");
@@ -136,11 +145,11 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     protected String getJSONControlString(String fileName){
         StringBuffer sb = new StringBuffer();
-        try {
-            InputStream inputStream = getJSONStream();
+        try {            
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-           String str;
+            String str;
             while (bufferedReader.ready()) {
                 sb.append(bufferedReader.readLine());
             }
@@ -152,10 +161,6 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             fail();
         }
         return sb.toString();
-    }
-
-    private InputStream getJSONStream() {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
     }
 
     private URL getJSONURL() {

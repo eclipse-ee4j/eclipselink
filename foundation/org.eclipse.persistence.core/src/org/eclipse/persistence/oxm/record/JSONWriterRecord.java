@@ -145,7 +145,8 @@ public class JSONWriterRecord extends MarshalRecord {
             }
            
            if(addOpenBrace){
-              if(!(xPathFragment.getHasText() || xPathFragment.isAttribute())) {
+        	  XPathFragment next = xPathFragment.getNextFragment();
+        	  if(!(xPathFragment.isAttribute() || xPathFragment.nameIsText() || (next != null && next.nameIsText()))){              
             	    writer.write('{');
               }
            }
@@ -202,6 +203,9 @@ public class JSONWriterRecord extends MarshalRecord {
     }
     
     private void attribute(String namespaceURI, String localName, String qName, String value, boolean wrapInQuotes) {
+    	 if(namespaceURI != null && namespaceURI == XMLConstants.XMLNS_URL){
+    		 return;
+    	 }
         try {        	
             Level position = null;
             if(!levels.isEmpty()){
@@ -253,7 +257,10 @@ public class JSONWriterRecord extends MarshalRecord {
         }
         try {
              if(addCloseBrace){
-                if(!(xPathFragment.getHasText() || xPathFragment.isAttribute())) {
+                //if(!(xPathFragment.getHasText() || xPathFragment.isAttribute())) {
+            	  XPathFragment next = xPathFragment.getNextFragment();
+            	  if(!(xPathFragment.isAttribute() || xPathFragment.nameIsText() || (next != null && next.nameIsText()))){
+                
                     writer.write('}');
                 }             
             }
@@ -288,10 +295,16 @@ public class JSONWriterRecord extends MarshalRecord {
      }
 
      public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
+    	 if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == XMLConstants.XMLNS_URL){
+    		 return;
+    	 }
          openStartElement(xPathFragment, namespaceResolver);
          characters(schemaType, value, false);
       	 endElement(xPathFragment, namespaceResolver);
      }     
+     
+     
+     
      
      public void characters(QName schemaType, Object value, boolean isCDATA){      
     	 

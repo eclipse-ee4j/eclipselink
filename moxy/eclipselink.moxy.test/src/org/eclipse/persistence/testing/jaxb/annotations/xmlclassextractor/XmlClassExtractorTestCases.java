@@ -15,15 +15,16 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlClassExtractorTestCases extends JAXBTestCases {
+public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlclassextractor/parkinglot.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlclassextractor/parkinglot.json";
     public XmlClassExtractorTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Car.class, Vehicle.class, ParkingLot.class});
         setControlDocument(XML_RESOURCE);
-        
+        setControlJSON(JSON_RESOURCE);
     }
     
     public Object getControlObject() {

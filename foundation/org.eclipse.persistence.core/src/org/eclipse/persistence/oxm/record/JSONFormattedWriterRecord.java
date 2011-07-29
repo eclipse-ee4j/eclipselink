@@ -110,8 +110,9 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 if(position !=null && position.isEmptyCollection()){
             	    position.setEmptyCollection(false);
                 }
-            }
-            if(!(xPathFragment.getHasText() || xPathFragment.isAttribute())) {
+            }            
+            XPathFragment next = xPathFragment.getNextFragment();
+            if(!(xPathFragment.isAttribute() || xPathFragment.nameIsText() || (next != null && next.nameIsText()))){
                 writer.write('{');
             }
             

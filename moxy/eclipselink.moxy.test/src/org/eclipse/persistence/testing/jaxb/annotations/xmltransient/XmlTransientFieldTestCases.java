@@ -13,15 +13,18 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlTransientFieldTestCases extends JAXBTestCases {
+public class XmlTransientFieldTestCases extends JAXBWithJSONTestCases{
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/xmltransient.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/xmltransient.json";
 
     public XmlTransientFieldTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {FieldRoot.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

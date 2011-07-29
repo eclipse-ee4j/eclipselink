@@ -121,10 +121,9 @@ public abstract class MarshalRecord extends XMLRecord {
         }
         XMLField xmlField = convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
-        XMLConversionManager xcm = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (lastFragment.nameIsText()) {
-            String stringValue = (String)xcm.convertObject(value, String.class);
-            characters(stringValue);
+            characters(xmlField.getSchemaType(), value, xmlField.isCDATA());
+            
         } else if (lastFragment.isAttribute()) {
             attribute(lastFragment, xmlField.getNamespaceResolver(), value, xmlField.getSchemaType());
         } else {

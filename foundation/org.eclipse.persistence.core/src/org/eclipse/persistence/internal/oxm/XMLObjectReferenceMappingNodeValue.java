@@ -171,15 +171,14 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         }
 
         QName schemaType = getSchemaType(xmlField, fieldValue, session);
-        String stringValue = marshalRecord.getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 
         if (xPathFragment.isAttribute()) {
-            marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
+            marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
             marshalRecord.closeStartGroupingElements(groupingFragment);
-            marshalRecord.characters(stringValue);
+            marshalRecord.characters(schemaType, fieldValue, false);
         }
         return true;
     }

@@ -19,12 +19,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
 import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 import org.eclipse.persistence.oxm.MediaType;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
@@ -112,7 +108,6 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     private void compareStrings(String test, String testString) {
         log(test);
         log("Expected (With All Whitespace Removed):");
-        //String expectedString = getJSONControlString(controlJSONLocation).replaceAll("[ \b\t\n\r' ']", "");
         String expectedString = getJSONControlString(getJSONWriteControlLocation()).replaceAll("[ \b\t\n\r' ']", "");
         log(expectedString);
         log("\nActual (With All Whitespace Removed):");

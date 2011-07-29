@@ -20,13 +20,15 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
-public class XMLTransformationNoArgCtorXMLBindingsTestCases extends JAXBTestCases {
+public class XMLTransformationNoArgCtorXMLBindingsTestCases extends JAXBWithJSONTestCases {
     public XMLTransformationNoArgCtorXMLBindingsTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {EmployeeWithAddress.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.xml");
+        setControlJSON("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.json");
     }
     
     public Object getControlObject() {

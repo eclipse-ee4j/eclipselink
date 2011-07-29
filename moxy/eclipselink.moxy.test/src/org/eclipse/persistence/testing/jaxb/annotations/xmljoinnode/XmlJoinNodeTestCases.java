@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlJoinNodeTestCases extends JAXBTestCases {
-    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmljoinnode/company.xml";
+public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
+    private static final String XML_RESOURCE =  "org/eclipse/persistence/testing/jaxb/annotations/xmljoinnode/company.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmljoinnode/company.json";
 
     public XmlJoinNodeTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{ Company.class });
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
     
     public Object getControlObject() {

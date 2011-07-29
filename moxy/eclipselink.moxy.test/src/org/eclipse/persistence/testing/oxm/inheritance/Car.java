@@ -23,8 +23,12 @@ public class Car extends Vehicle {
     public int milesPerGallon;
 
     public boolean equals(Object theVehicle) {
+        
+        if (!(theVehicle instanceof Car)){
+        	return false;
+        }
         boolean isEqual = super.equals(theVehicle);
-        if (isEqual && theVehicle instanceof Car) {
+        if (isEqual) {
             if (numberOfDoors == ((Car)theVehicle).numberOfDoors) {
                 if (milesPerGallon == ((Car)theVehicle).milesPerGallon) {
                     return true;

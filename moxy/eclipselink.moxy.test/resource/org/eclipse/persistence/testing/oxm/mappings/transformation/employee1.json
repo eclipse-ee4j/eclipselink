@@ -1,0 +1,8 @@
+{"employee":{
+    "name":"John Smith",
+    "normal-hours":{
+       "start-time":"9:00AM",
+       "end-time":"5:00PM"
+    }
+  }
+}

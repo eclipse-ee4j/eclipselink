@@ -13,16 +13,22 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlReadOnlyTestCases extends JAXBTestCases {
+public class XmlReadOnlyTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_READ_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlreadonly/employee_read.xml";
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlreadonly/employee_write.xml";
+    
+    private static final String JSON_READ_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlreadonly/employee_read.json";
+    private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlreadonly/employee_write.json";
     public XmlReadOnlyTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Employee.class});
         setControlDocument(XML_READ_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_READ_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
     }
     
     public Object getControlObject() {

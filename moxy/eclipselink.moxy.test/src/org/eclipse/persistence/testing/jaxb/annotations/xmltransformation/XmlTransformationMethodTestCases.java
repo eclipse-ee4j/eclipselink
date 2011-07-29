@@ -13,13 +13,15 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlTransformationMethodTestCases extends JAXBTestCases {
-  public XmlTransformationMethodTestCases(String name) throws Exception {
+public class XmlTransformationMethodTestCases extends JAXBWithJSONTestCases{
+public XmlTransformationMethodTestCases(String name) throws Exception {
       super(name);
       setClasses(new Class[] {EmployeeTransformationMethod.class});
       setControlDocument("org/eclipse/persistence/testing/oxm/mappings/transformation/employee1.xml");
-  }
+      setControlJSON("org/eclipse/persistence/testing/oxm/mappings/transformation/employee1.json");
+   }
   
   public Object getControlObject() {
       EmployeeTransformationMethod emp = new EmployeeTransformationMethod();

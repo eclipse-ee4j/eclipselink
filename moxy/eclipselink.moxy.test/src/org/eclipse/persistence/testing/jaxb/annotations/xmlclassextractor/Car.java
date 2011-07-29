@@ -21,12 +21,16 @@ public class Car extends Vehicle {
     public int numberOfDoors;
     @XmlElement(name="miles-per-gallon")
     public int milesPerGallon;
-
-    public boolean equals(Object theVehicle) {
+       
+   public boolean equals(Object theVehicle) {
+        
+        if (!(theVehicle instanceof Car)){
+        	return false;
+        }
         boolean isEqual = super.equals(theVehicle);
-        if (isEqual && theVehicle instanceof Car) {
-            if (numberOfDoors == ((Car) theVehicle).numberOfDoors) {
-                if (milesPerGallon == ((Car) theVehicle).milesPerGallon) {
+        if (isEqual) {
+            if (numberOfDoors == ((Car)theVehicle).numberOfDoors) {
+                if (milesPerGallon == ((Car)theVehicle).milesPerGallon) {
                     return true;
                 }
             }

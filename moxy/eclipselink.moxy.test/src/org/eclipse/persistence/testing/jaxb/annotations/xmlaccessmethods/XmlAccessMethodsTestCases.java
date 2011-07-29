@@ -12,27 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods;
 
-import java.io.File;
-import java.io.InputStream;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Document;
-
-public class XmlAccessMethodsTestCases extends JAXBTestCases {
+public class XmlAccessMethodsTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlaccessmethods/employee.xml";
     private static final String WRITE_XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlaccessmethods/employee_write.xml";
+
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlaccessmethods/employee.json";
+    private static final String WRITE_JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlaccessmethods/employee_write.json";
 
     public XmlAccessMethodsTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(WRITE_XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(WRITE_JSON_RESOURCE);
     }
 
     public Object getControlObject() {
