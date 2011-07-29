@@ -665,7 +665,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
     public void testModArgumentValidation()
     {
-        Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
+        //Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
 
         String ejbqlString;
         List result;

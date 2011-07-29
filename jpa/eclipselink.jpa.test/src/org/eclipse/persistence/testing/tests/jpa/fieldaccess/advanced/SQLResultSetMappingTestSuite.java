@@ -78,6 +78,11 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         return suite;
     }
     
+    @Override
+    public String getPersistenceUnitName() {
+        return "fieldaccess";
+    }
+    
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -100,7 +105,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
         query.setShouldRefreshIdentityMapResult(true);
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             List results = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(query);
@@ -162,7 +167,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
         query.setShouldRefreshIdentityMapResult(true);
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             List results = (List)getServerSession("fieldaccess").executeQuery(query);
@@ -241,10 +246,12 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
     }
 
     public void testPessimisticLocking() throws Exception {
-        if (!isSelectForUpateSupported("fieldaccess")) {
+        // Not all database support locking or the for update syntax.
+        if (!getDatabaseSession().getPlatform().isOracle() && !getDatabaseSession().getPlatform().isMySQL()) {
+            warning("FOR UPDATE syntax not supported.");
             return;
         }
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         SmallProject smallProject = (SmallProject)getServerSession("fieldaccess").readObject(SmallProject.class);
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("PessimisticLocking");
         EntityResult entityResult = new EntityResult(SmallProject.class);
@@ -286,7 +293,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         entityResult.addFieldResult(new FieldResult("address.id", "EMP_ADDR"));
 
         resultSetMapping.addResult(entityResult);
-        SQLCall call = new SQLCall("SELECT t0.EMP_ID, t1.EMP_ID, t0.F_NAME, t0.L_NAME, t0.VERSION, t1.SALARY, t0.START_DATE AS STARTDATE, t0.END_DATE, t0.ADDR_ID AS EMP_ADDR, t0.manager_EMP_ID FROM CMP3_FA_EMPLOYEE t0, CMP3_FA_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND ( t0.L_NAME = 'Smith' ))");
+        SQLCall call = new SQLCall("SELECT t0.EMP_ID, t1.EMP_ID, t0.F_NAME, t0.L_NAME, t0.VERSION, t1.SALARY, t0.START_DATE AS STARTDATE, t0.END_DATE, t0.ADDR_ID AS EMP_ADDR, t0.MANAGER_EMP_ID FROM CMP3_FA_EMPLOYEE t0, CMP3_FA_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND ( t0.L_NAME = 'Smith' ))");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
         List results = (List)getServerSession("fieldaccess").executeQuery(query);
