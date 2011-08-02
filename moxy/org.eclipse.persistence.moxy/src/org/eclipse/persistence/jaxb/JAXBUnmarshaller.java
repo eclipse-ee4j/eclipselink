@@ -252,7 +252,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            Class classToUnmarshalTo = javaClass;
+            Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
             if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
                 Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(javaClass.getCanonicalName());
                 if(generatedClass != null){
