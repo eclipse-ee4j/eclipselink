@@ -40,10 +40,10 @@ import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
-	private Class[] classes;
 
 	public JAXBListOfObjectsTestCases(String name) throws Exception {
 		super(name);
@@ -180,6 +180,32 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
             xmlToObjectTest(obj, newControlObj);    
         }
     } 
+    
+    public void testXMLToObjectFromNode() throws Exception {
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
+            Node node  = parser.parse(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(node);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+    
+    
+    public void testXMLToObjectFromNodeWithClass() throws Exception {
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
+            Node node  = parser.parse(instream);
+            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(node, getClassForDeclaredTypeOnUnmarshal());
+
+            JAXBElement controlObj = (JAXBElement)getControlObject();            
+            JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
+            xmlToObjectTest(obj, newControlObj);  
+            
+            instream.close();
+        }
+    }
+    
     
 	public void testObjectToXMLStreamWriter() throws Exception {
 		if (System.getProperty("java.version").contains("1.6")) {

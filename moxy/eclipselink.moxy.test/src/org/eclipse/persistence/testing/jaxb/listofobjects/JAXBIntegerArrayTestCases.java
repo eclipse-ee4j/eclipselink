@@ -15,15 +15,12 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.employee.Employee;
 
 public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xml";
