@@ -277,6 +277,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
+        this.cachePolicy = new CachePolicy();
         
         this.additionalWritableMapKeyFields = new ArrayList(2);
         this.foreignKeyValuesForCaching = new HashSet<DatabaseField>();
