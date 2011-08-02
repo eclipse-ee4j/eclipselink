@@ -46,12 +46,21 @@ public class JavaSECMPInitializer extends JPAInitializer {
     public static Instrumentation globalInstrumentation;
     // Adding this flag because globalInstrumentation could be set to null after weaving is done.
     protected static boolean usesAgent;
+    // Adding this flag to know that within a JEE container so weaving should be enabled without an agent for non managed persistence units.
+    protected static boolean isInContainer;
     // Indicates whether has been initialized - that could be done only once.
     protected static boolean isInitialized;
     // Singleton corresponding to the main class loader. Created only if agent is used.
     protected static JavaSECMPInitializer initializer;
     // Used as a lock in getJavaSECMPInitializer. Don't substitute for Boolean.TRUE.
     protected static Boolean initializationLock = new Boolean(true);
+
+    public static boolean isInContainer() {
+        return isInContainer;
+    }
+    public static void setIsInContainer(boolean isInContainer) {
+        JavaSECMPInitializer.isInContainer = isInContainer;
+    }
 
     /**
      * Get the singleton entityContainer.
@@ -115,7 +124,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         String weaving = EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, properties, null);
         // Check usesAgent instead of globalInstrumentation!=null because globalInstrumentation is set to null after initialization,
         // but we still have to keep weaving so that the resulting projects correspond to the woven (during initialization) classes.
-        if (!usesAgent) {
+        if (!usesAgent && !isInContainer) {
             if (weaving == null) {
                properties.put(PersistenceUnitProperties.WEAVING, "false");
                weaving = "false";

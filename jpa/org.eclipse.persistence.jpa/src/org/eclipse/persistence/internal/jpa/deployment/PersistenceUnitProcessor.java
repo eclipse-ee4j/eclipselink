@@ -159,6 +159,15 @@ public class PersistenceUnitProcessor {
             JarURLConnection conn =
                     JarURLConnection.class.cast(pxmlURL.openConnection());
             result = conn.getJarFileURL();
+        } else if("zip".equals(protocol)) { // NOI18N
+            // e.g. zip:/tmp/a_ear/b.jar!/META-INF/persistence.xml
+            // stolen from java.net.JarURLConnection.parseSpecs method
+            String spec = pxmlURL.getFile();
+            int separator = spec.lastIndexOf("!/");
+            if (separator == -1) {
+                separator = spec.length() - 1;
+            }
+            result = new URL("file", "", spec.substring(0, separator++));
         // mkeith - add bundle protocol cases
         } else if ("bundleentry".equals(protocol)) {           
             result = new URL("bundleentry://" + pxmlURL.getAuthority());
