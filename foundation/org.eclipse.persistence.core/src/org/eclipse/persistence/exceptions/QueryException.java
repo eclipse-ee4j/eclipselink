@@ -496,13 +496,14 @@ public class QueryException extends ValidationException {
     }
 
     /**
-     * An exception was throwing while using a ReportQuery with a constructor expession
+     * An exception was throwing while using a ReportQuery with a constructor expression
      */
     public static QueryException exceptionWhileUsingConstructorExpression(Exception thrownException, DatabaseQuery query) {
         Object[] args = { thrownException };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION, args));
         queryException.setErrorCode(EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION);
+        queryException.setInternalException(thrownException);
         queryException.setQuery(query);
         return queryException;
     }
