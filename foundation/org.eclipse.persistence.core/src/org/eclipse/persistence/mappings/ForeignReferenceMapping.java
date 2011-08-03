@@ -1219,9 +1219,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         getSelectionQuery().setName(getAttributeName());
         getSelectionQuery().setDescriptor(getReferenceDescriptor());
         getSelectionQuery().setSourceMapping(this);
-        if (!getSelectionQuery().hasSessionName()) {
-            getSelectionQuery().setSessionName(session.getName());
-        }
         if (getSelectionQuery().getPartitioningPolicy() == null) {
             getSelectionQuery().setPartitioningPolicy(getPartitioningPolicy());
         }
