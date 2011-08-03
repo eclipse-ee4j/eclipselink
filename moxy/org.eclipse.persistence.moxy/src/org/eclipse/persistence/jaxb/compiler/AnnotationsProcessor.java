@@ -674,7 +674,7 @@ public class AnnotationsProcessor {
                 buildNewTypeInfo(jClassArray);
             }
             
-            processVirtualPropertiesForSuperClass(javaClass, info);
+            processPropertiesSuperClass(javaClass, info);
 
             // add properties
             info.setProperties(getPropertiesForClass(javaClass, info));
@@ -690,16 +690,22 @@ public class AnnotationsProcessor {
         return typeInfo;
     }
 
-    private void processVirtualPropertiesForSuperClass(JavaClass cls, TypeInfo info) {
+    /*
+     * Get virtual property and XmlID information from parent and set it on info if available
+     */
+    private void processPropertiesSuperClass(JavaClass cls, TypeInfo info) {
         JavaClass superClass = (JavaClass) cls.getSuperclass();
         if(superClass == null) {
             return;
         }
         TypeInfo superClassInfo = this.typeInfo.get(superClass.getQualifiedName());
         if(superClassInfo != null) {
-            processVirtualPropertiesForSuperClass(superClass, superClassInfo);
+        	processPropertiesSuperClass(superClass, superClassInfo);
             if(superClassInfo.getXmlVirtualAccessMethods() != null && info.getXmlVirtualAccessMethods() == null) {
                 info.setXmlVirtualAccessMethods(superClassInfo.getXmlVirtualAccessMethods());
+            }
+            if(superClassInfo.isIDSet()){
+            	info.setIDProperty(superClassInfo.getIDProperty());
             }
         }
     }
