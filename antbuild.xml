@@ -180,7 +180,6 @@
     <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
-    <!-- target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar, verify-eclipselink-jar-packaging" description="build all EclipseLink distribution files except docs and tests"/ -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
 
     <!-- compiles and builds all components, packages eclipselink.jar and src zip. -->
