@@ -849,6 +849,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
             typeQName = null;
             levelIndex--;
+            if(this.isNil() && levelIndex > 0) {
+                this.setNil(false);
+            }
             if ((0 == levelIndex) && (null != getParentRecord()) && !isSelfRecord()) {
                 endDocument();
                 // don't endElement on, or pass control to, a 'self' parent
@@ -860,6 +863,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 xmlReader.setContentHandler(pRec);
                 xmlReader.setLexicalHandler(pRec);
             }
+            
        } catch (EclipseLinkException e) {
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;

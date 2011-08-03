@@ -1,0 +1,10 @@
+<x:employee-data id="10" xmlns:x="examplenamespace">
+   <firstName>Bob</firstName>
+   <lastName>Smith</lastName>
+   <birthday>2005-05-24T16:06:53.0</birthday>
+   <responsibilities>
+      <responsibility>Fix Bugs</responsibility>
+      <responsibility/>
+      <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:nil="true"/> 
+   </responsibilities>
+</x:employee-data>

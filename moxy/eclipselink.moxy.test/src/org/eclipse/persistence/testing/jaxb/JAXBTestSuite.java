@@ -60,6 +60,7 @@ public class JAXBTestSuite extends TestCase {
         TestSuite suite = new TestSuite("JAXB20 Compiler Test Suite");
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.employee.EmployeeNamespaceCancellationTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.employee.EmployeeNullInCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.emptystring.EmptyStringTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.emptystring.ListsTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlrootelement.InnerClassTestCases.class);
