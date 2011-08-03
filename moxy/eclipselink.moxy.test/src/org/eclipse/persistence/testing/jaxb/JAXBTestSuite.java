@@ -36,6 +36,7 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestS
 import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsSingleIdRefTestCases;
@@ -106,6 +107,7 @@ public class JAXBTestSuite extends TestCase {
         // suite.addTestSuite(XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);
         suite.addTestSuite(XmlIdRefObjectTestCases.class);
+        suite.addTestSuite(XmlIdRefInheritanceTestCases.class);
         suite.addTestSuite(XmlIdRefsTestCases.class);
         suite.addTestSuite(XmlIdRefsObjectTestCases.class);
         suite.addTestSuite(XmlElementsIdRefTestCases.class);

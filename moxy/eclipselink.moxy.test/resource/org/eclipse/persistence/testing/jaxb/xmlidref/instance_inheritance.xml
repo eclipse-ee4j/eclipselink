@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<school xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <students>
+      <student>
+	     <id>1</id>
+		 <studentNumber>B123</studentNumber>
+      </student>
+	  <student>
+	     <id>2</id>
+		 <studentNumber>B456</studentNumber>
+	  </student>
+	  <student xsi:type="transferStudent">
+	     <id>3</id>
+		 <studentNumber>B789</studentNumber>
+		 <previousSchool>Carleton</previousSchool>
+	  </student>
+	  <student>
+	    <id>4</id>
+		<studentNumber>B987</studentNumber>
+	  </student>
+   </students>
+   <classPresident>3</classPresident>
+</school>
