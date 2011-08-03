@@ -424,9 +424,14 @@ public class DOMReader extends XMLReaderAdapter {
                     if (item.getNamespaceURI() == null) {
                         itemNS = XMLConstants.EMPTY_STRING;
                     }
-                    if ((itemNS.equals(uri)) && (item.getLocalName() != null && item.getLocalName().equals(localName))) {
-                        return item.getValue();
+                    
+                    String itemName = item.getLocalName();
+                    if(itemName == null){
+                    	itemName = item.getNodeName();
                     }
+                    if ((itemNS.equals(uri)) && (itemName != null && itemName.equals(localName))) {
+                 	   return item.getValue();   
+                    }                   
                 }
             }
             return null;
