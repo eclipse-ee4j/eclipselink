@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-import javax.xml.XMLConstants;
+import org.eclipse.persistence.oxm.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.MarshalException;
 import javax.xml.parsers.DocumentBuilder;
@@ -52,7 +52,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
         JAXBContext jc = JAXBContextFactory.createContext(classes, null);
         marshaller = (JAXBMarshaller) jc.createMarshaller();
 
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         InputStream stream = ClassLoader.getSystemResourceAsStream(SCHEMA);
         Schema schema = sf.newSchema(new StreamSource(stream));
         stream.close();

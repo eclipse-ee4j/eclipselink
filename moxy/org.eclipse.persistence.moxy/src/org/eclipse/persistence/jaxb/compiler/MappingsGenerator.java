@@ -381,6 +381,7 @@ public class MappingsGenerator {
             JavaClass adapterClass = helper.getJavaClass(xja.getValue());
             JavaClass valueType = property.getActualType();
             DatabaseMapping mapping;
+            boolean isArray = property.getType().isArray() && !property.getType().getRawName().equals("byte[]");
 
             // if the value type is something we have a descriptor for, create
             // a composite mapping
@@ -402,7 +403,7 @@ public class MappingsGenerator {
                         mapping = generateAnyObjectMapping(property, descriptor, namespaceInfo);
                         ((XMLAnyObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                     }
-                } else if (isCollectionType(property)) {
+                } else if (isCollectionType(property) || isArray) {
                     if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
                     	mapping = generateBinaryDataCollectionMapping(property, descriptor, namespaceInfo);
                     	((XMLBinaryDataCollectionMapping) mapping).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
