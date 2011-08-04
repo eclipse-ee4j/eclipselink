@@ -201,7 +201,12 @@ public class Property implements Cloneable {
      * @param parameterType
      */
     private void setTypeFromAdapterClass(JavaClass newType, JavaClass parameterType) {
-        if (isCollectionType(this.getType()) && !(isCollectionType(parameterType))) {
+        boolean isArray = this.getType().isArray() && !this.getType().getRawName().equals("byte[]");
+        boolean isParamTypeArray = false;
+        if(parameterType != null) {
+            isParamTypeArray = parameterType.isArray() && !parameterType.getRawName().equals("byte[]");
+        }
+        if ((isCollectionType(this.getType()) || isArray) && !(isCollectionType(parameterType) || isParamTypeArray)) {
             this.setGenericType(newType);
         } else {
             this.setOriginalType(this.getType());
