@@ -177,6 +177,7 @@ public class MetadataAsmFactory extends MetadataFactory {
     public class ClassMetadataVisitor implements ClassVisitor {
 
         private boolean isLazy;
+        private boolean processedMemeber;
         private MetadataClass classMetadata;
 
         ClassMetadataVisitor(MetadataClass metadataClass, boolean isLazy) {
@@ -208,6 +209,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+            this.processedMemeber = true;
             if (this.classMetadata.isLazy()) {
                 return null;
             }
@@ -215,6 +217,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+            this.processedMemeber = true;
             if (this.classMetadata.isLazy() || name.indexOf("init>") != -1) {
                 return null;
             }
@@ -223,6 +226,10 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
+                // If an annotation is found, parse the whole class.
+                if (!this.processedMemeber && this.classMetadata.isLazy()) {
+                    this.classMetadata.setIsLazy(false);
+                }
                 return new MetadataAnnotationVisitor(this.classMetadata, desc);
             }
             return null;
