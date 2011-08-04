@@ -35,7 +35,7 @@ public abstract class MetadataFactory {
     public static boolean ALLOW_JDK = false;
     
     /** Stores all metadata for classes. */
-    private Map<String, MetadataClass> m_metadataClasses;
+    protected Map<String, MetadataClass> m_metadataClasses;
     
     protected MetadataLogger m_logger;
     protected ClassLoader m_loader;
@@ -108,6 +108,11 @@ public abstract class MetadataFactory {
      * Return the class metadata for the class name.
      */
     public abstract MetadataClass getMetadataClass(String className);
+    
+    /**
+     * Return the class metadata for the class name.
+     */
+    public abstract MetadataClass getMetadataClass(String className, boolean isLazy);
     
     /**
      * INTERNAL:

@@ -12,27 +12,27 @@
  ******************************************************************************/  
  package org.eclipse.persistence.testing.tests.jpa.performance.misc;
 
-import javax.persistence.*;
-
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
- * This test compares the performance of EntityManagerFactory creation.
- * This only measure deploy, not predeploy.
+ * This test compares the performance of metadata processing.
  */
-public class JPABootstrapPerformanceTest extends PerformanceRegressionTestCase {
+public class JPAMetadataPerformanceTest extends PerformanceRegressionTestCase {
 
-    public JPABootstrapPerformanceTest() {
-        setDescription("This tests the JPA deployment and bootstraping performance.");
+    public JPAMetadataPerformanceTest() {
+        setDescription("This tests the JPA metadata processing.");
     }
 
     /**
      * Rebuild EntityManagerFactory.
      */
     public void test() throws Exception {
-        getExecutor().getEntityManagerFactory().close();
-        getExecutor().setEntityManagerFactory(null);
-        EntityManager manager = createEntityManager();
-        manager.close();
+        MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(getAbstractSession()), getClass().getClassLoader());
+        for (Class javaClass : ((EntityManagerFactoryImpl)getExecutor().getEntityManagerFactory()).getServerSession().getDescriptors().keySet()) {
+            factory.getMetadataClass(javaClass.getName());
+        }
     }
 }

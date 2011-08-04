@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public class MetadataClass extends MetadataAnnotatedElement {
+    protected boolean m_isLazy;
     protected boolean m_isAccessible;
     protected boolean m_isPrimitive;
     protected boolean m_isJDK;
@@ -67,7 +68,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * Create the metadata class with the class name.
      */
-    public MetadataClass(MetadataFactory factory, String name) {
+    public MetadataClass(MetadataFactory factory, String name, boolean isLazy) {
         super(factory);
         setName(name);
         
@@ -78,10 +79,14 @@ public class MetadataClass extends MetadataAnnotatedElement {
         setType(name); 
         
         m_isAccessible = true;
-        m_interfaces = new ArrayList<String>();
-        m_enclosedClasses = new ArrayList<MetadataClass>();
-        m_fields = new HashMap<String, MetadataField>(); 
-        m_methods = new HashMap<String, MetadataMethod>();
+        m_isLazy = isLazy;
+    }
+
+    /**
+     * Create the metadata class with the class name.
+     */
+    public MetadataClass(MetadataFactory factory, String name) {
+        this(factory, name, false);
     }
     
     /**
@@ -89,7 +94,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Mainly used for primitive defaults.
      */
     public MetadataClass(MetadataFactory factory, Class cls) {
-        this(factory, cls.getName());
+        this(factory, cls.getName(), false);
         m_isPrimitive = cls.isPrimitive();
     }
 
@@ -97,6 +102,9 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public void addEnclosedClass(MetadataClass enclosedClass) {
+        if (m_enclosedClasses == null) {
+            m_enclosedClasses = new ArrayList<MetadataClass>();
+        }
         m_enclosedClasses.add(enclosedClass);
     }
     
@@ -104,6 +112,9 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public void addField(MetadataField field) {
+        if (m_fields == null) {
+            m_fields = new HashMap<String, MetadataField>();
+        }
         m_fields.put(field.getName(), field);
     }
     
@@ -111,6 +122,9 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public void addInterface(String interfaceName) {
+        if (m_interfaces == null) {
+            m_interfaces = new ArrayList<String>();
+        }
         m_interfaces.add(interfaceName);
     }
     
@@ -118,6 +132,9 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public void addMethod(MetadataMethod method) {
+        if (m_methods == null) {
+            m_methods = new HashMap<String, MetadataMethod>();
+        }
         m_methods.put(method.getName(), method);
     }
     
@@ -213,6 +230,9 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * enums and inner classes.
      */
     public List<MetadataClass> getEnclosedClasses() {
+        if (m_enclosedClasses == null) {
+            m_enclosedClasses = new ArrayList<MetadataClass>();
+        }
         return m_enclosedClasses;
     }
     
@@ -231,7 +251,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Search for any declared or inherited field.
      */
     public MetadataField getField(String name, boolean checkSuperClass) {
-        MetadataField field = m_fields.get(name);
+        MetadataField field = getFields().get(name);
         
         if (checkSuperClass && (field == null) && (getSuperclassName() != null)) {
             return getSuperclass().getField(name);
@@ -244,6 +264,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public Map<String, MetadataField> getFields() {
+        if (m_fields == null) {
+            m_fields = new HashMap<String, MetadataField>();
+            if (m_isLazy) {
+                m_factory.getMetadataClass(getName(), false);
+            }
+        }
         return m_fields;
     }
 
@@ -251,6 +277,9 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public List<String> getInterfaces() {
+        if (m_interfaces == null) {
+            m_interfaces = new ArrayList<String>();
+        }
         return m_interfaces;
     }
     
@@ -259,7 +288,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return the method with the name and no arguments.
      */
     protected MetadataMethod getMethod(String name) {
-        return m_methods.get(name);
+        return getMethods().get(name);
     }
 
     /**
@@ -287,7 +316,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return the method with the name and argument types (class names).
      */
     public MetadataMethod getMethod(String name, List<String> arguments, boolean checkSuperClass) {
-        MetadataMethod method = m_methods.get(name);
+        MetadataMethod method = getMethods().get(name);
         while ((method != null) && !method.getParameters().equals(arguments)) {
             method = method.getNext();
         }
@@ -334,6 +363,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public Map<String, MetadataMethod> getMethods() {
+        if (m_methods == null) {
+            m_methods = new HashMap<String, MetadataMethod>();
+            if (m_isLazy) {
+                m_factory.getMetadataClass(getName(), false);
+            }
+        }
         return m_methods;
     }
     
@@ -538,7 +573,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public void setSuperclassName(String superclass) {
         m_superclassName = superclass;
-    } 
+    }
     
     /**
      * INTERNAL:
@@ -549,5 +584,13 @@ public class MetadataClass extends MetadataAnnotatedElement {
                 || name.startsWith("org.eclipse.persistence.internal."))) {
             setIsJDK(true);
         }
+    }
+
+    public boolean isLazy() {
+        return m_isLazy;
+    }
+
+    public void setIsLazy(boolean isLazy) {
+        m_isLazy = isLazy;
     }
 }

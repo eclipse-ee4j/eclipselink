@@ -67,21 +67,22 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Build the class metadata for the class name using ASM to read the class
      * byte codes.
      */
-    protected void buildClassMetadata(String className) {
-        ClassMetadataVisitor visitor = new ClassMetadataVisitor();
+    protected void buildClassMetadata(MetadataClass metadataClass, String className, boolean isLazy) {
+        ClassMetadataVisitor visitor = new ClassMetadataVisitor(metadataClass, isLazy);
         InputStream stream = null;
         try {
             String resourceString = className.replace('.', '/') + ".class";
             stream = m_loader.getResourceAsStream(resourceString);
 
             ClassReader reader = new ClassReader(stream);
-            reader.accept(visitor, 0);
+            Attribute[] attributes = new Attribute[0];
+            reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         } catch (Exception exception) {
             // Some basic types can't be found, so can just be registered
             // (i.e. arrays). Also, VIRTUAL classes may also not exist,
             // therefore, tag the MetadataClass as loadable false. This will be
             // used to determine if a class will be dynamically created or not.
-            MetadataClass metadataClass = new MetadataClass(this, className);
+            metadataClass = new MetadataClass(this, className, false);
             metadataClass.setIsAccessible(false);
             addMetadataClass(metadataClass);
         } finally {
@@ -99,15 +100,27 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Return the class metadata for the class name.
      */
     public MetadataClass getMetadataClass(String className) {
+        return getMetadataClass(className, false);
+    }
+
+    /**
+     * Return the class metadata for the class name.
+     */
+    public MetadataClass getMetadataClass(String className, boolean isLazy) {
         if (className == null) {
             return null;
         }
 
-        if (!metadataClassExists(className)) {
-            buildClassMetadata(className);
+        MetadataClass metaClass = m_metadataClasses.get(className);
+        if ((metaClass == null) || (!isLazy && metaClass.isLazy())) {
+            if (metaClass != null) {
+                metaClass.setIsLazy(false);
+            }
+            buildClassMetadata(metaClass, className, isLazy);
+            metaClass = m_metadataClasses.get(className);
         }
 
-        return getMetadataClasses().get(className);
+        return metaClass;
     }
 
     /**
@@ -163,22 +176,27 @@ public class MetadataAsmFactory extends MetadataFactory {
      */
     public class ClassMetadataVisitor implements ClassVisitor {
 
+        private boolean isLazy;
         private MetadataClass classMetadata;
 
-        ClassMetadataVisitor() {
+        ClassMetadataVisitor(MetadataClass metadataClass, boolean isLazy) {
+            this.isLazy = isLazy;
+            this.classMetadata = metadataClass;
         }
 
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
             String className = toClassName(name);
-            classMetadata = new MetadataClass(MetadataAsmFactory.this, className);
-            addMetadataClass(classMetadata);
-            classMetadata.setName(className);
-            classMetadata.setSuperclassName(toClassName(superName));
-            classMetadata.setModifiers(access);
-            classMetadata.setGenericType(processDescription(signature, true));
+            if ((this.classMetadata == null) || !this.classMetadata.getName().equals(className)) {
+                this.classMetadata = new MetadataClass(MetadataAsmFactory.this, className, isLazy);
+                addMetadataClass(this.classMetadata);
+            }
+            this.classMetadata.setName(className);
+            this.classMetadata.setSuperclassName(toClassName(superName));
+            this.classMetadata.setModifiers(access);
+            this.classMetadata.setGenericType(processDescription(signature, true));
 
             for (String interfaceName : interfaces) {
-                classMetadata.addInterface(toClassName(interfaceName));
+                this.classMetadata.addInterface(toClassName(interfaceName));
             }
         }
 
@@ -190,14 +208,14 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-            if (classMetadata.isJDK()) {
+            if (this.classMetadata.isLazy()) {
                 return null;
             }
             return new MetadataFieldVisitor(this.classMetadata, access, name, desc, signature, value);
         }
 
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            if (classMetadata.isJDK() || name.indexOf("init>") != -1) {
+            if (this.classMetadata.isLazy() || name.indexOf("init>") != -1) {
                 return null;
             }
             return new MetadataMethodVisitor(this.classMetadata, access, name, signature, desc, exceptions);
@@ -438,16 +456,19 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
         List<String> arguments = new ArrayList<String>();
         int index = 0;
-        while (index < desc.length()) {
-            char next = desc.charAt(index);
-            if (TOKENS.indexOf(next) == -1) {
+        int length = desc.length();
+        // PERF: Use char array to make char index faster (note this is a heavily optimized method, be very careful on changes)
+        char[] chars = desc.toCharArray();
+        while (index < length) {
+            char next = chars[index];
+            if (('(' != next) && (')' != next) && ('<' != next) && ('>' != next) && (';' != next)) {
                 if (next == 'L') {
                     index++;
                     int start = index;
-                    next = desc.charAt(index);
-                    while (TOKENS.indexOf(next) == -1) {
+                    next = chars[index];
+                    while (('(' != next) && (')' != next) && ('<' != next) && ('>' != next) && (';' != next)) {
                         index++;
-                        next = desc.charAt(index);
+                        next = chars[index];
                     }
                     arguments.add(toClassName(desc.substring(start, index)));
                 } else if (!isGeneric && (PRIMITIVES.indexOf(next) != -1)) {
@@ -457,16 +478,16 @@ public class MetadataAsmFactory extends MetadataFactory {
                     // Arrays.
                     int start = index;
                     index++;
-                    next = desc.charAt(index);
+                    next = chars[index];
                     // Nested arrays.
                     while (next == '[') {
                         index++;
-                        next = desc.charAt(index);
+                        next = chars[index];
                     }
                     if (PRIMITIVES.indexOf(next) == -1) {
                         while (next != ';') {
                             index++;
-                            next = desc.charAt(index);
+                            next = chars[index];
                         }
                         arguments.add(toClassName(desc.substring(start, index + 1)));
                     } else {

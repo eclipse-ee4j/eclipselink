@@ -12,6 +12,8 @@
  ******************************************************************************/  
  package org.eclipse.persistence.testing.tests.jpa.performance.misc;
 
+import java.util.Map;
+
 import javax.persistence.*;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -20,9 +22,9 @@ import org.eclipse.persistence.testing.framework.*;
  * This test compares the performance of EntityManagerFactory creation.
  * This only measure deploy, not predeploy.
  */
-public class JPABootstrapPerformanceTest extends PerformanceRegressionTestCase {
+public class JPA2BootstrapPerformanceTest extends PerformanceRegressionTestCase {
 
-    public JPABootstrapPerformanceTest() {
+    public JPA2BootstrapPerformanceTest() {
         setDescription("This tests the JPA deployment and bootstraping performance.");
     }
 
@@ -32,6 +34,8 @@ public class JPABootstrapPerformanceTest extends PerformanceRegressionTestCase {
     public void test() throws Exception {
         getExecutor().getEntityManagerFactory().close();
         getExecutor().setEntityManagerFactory(null);
+        Map properties = getExecutor().getEntityManagerProperties();
+        getExecutor().setEntityManagerFactory(Persistence.createEntityManagerFactory("performance2", properties));
         EntityManager manager = createEntityManager();
         manager.close();
     }

@@ -68,7 +68,7 @@ public abstract class MetadataAccessibleObject {
      * INTERNAL:
      */
     public MetadataClass getMetadataClass(String className) {
-        return m_factory.getMetadataClass(className);
+        return m_factory.getMetadataClass(className, true);
     }
 
     /**

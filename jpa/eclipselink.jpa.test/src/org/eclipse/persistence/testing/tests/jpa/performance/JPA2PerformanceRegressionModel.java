@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance2.*;
+import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPA2BootstrapPerformanceTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPA2ReadAllEmployeeCompletelyPerformanceComparisonTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPA2ReadAllEmployeeComplexExpressionPerformanceComparisonTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPA2ReadAllEmployeePerformanceComparisonTest;
@@ -46,6 +47,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
     public void addTests() {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
+        addTest(getMiscTestSuite());
     }
 
     public TestSuite getReadingTestSuite() {
@@ -72,6 +74,16 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
         suite.addTest(new JPA2UpdateEmployeePerformanceComparisonTest());
         suite.addTest(new JPA2ComplexUpdateEmployeePerformanceComparisonTest());
         suite.addTest(new JPA2MassInsertEmployeePerformanceComparisonTest());
+        
+        return suite;        
+    }
+
+    public TestSuite getMiscTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("JPAMiscTestSuite");
+        suite.setDescription("This suite tests miscellaneous performance.");
+
+        suite.addTest(new JPA2BootstrapPerformanceTest());
         
         return suite;        
     }

@@ -340,15 +340,25 @@ public class TestExecutor {
      */
     public EntityManagerFactory getEntityManagerFactory() {
         if (entityManagerFactory == null) {
-            Map properties = new HashMap();
-            properties.put(PersistenceUnitProperties.JDBC_DRIVER, getSession().getLogin().getDriverClassName());
-            properties.put(PersistenceUnitProperties.JDBC_URL, getSession().getLogin().getConnectionString());
-            properties.put(PersistenceUnitProperties.JDBC_USER, getSession().getLogin().getUserName());
-            properties.put(PersistenceUnitProperties.JDBC_PASSWORD, getSession().getLogin().getPassword());
-            properties.put(PersistenceUnitProperties.LOGGING_LEVEL, getSession().getSessionLog().getLevelString());
+            Map properties = getEntityManagerProperties();
             entityManagerFactory = Persistence.createEntityManagerFactory("performance", properties);
         }
         return entityManagerFactory;
+    }
+    
+    /**
+     * Return the executor entity manager factory.
+     * This lazy initializes from the "performance" persistent unit using the default provider,
+     * and configures the TopLink properties to connect to the executor's session's login.
+     */
+    public Map getEntityManagerProperties() {
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.JDBC_DRIVER, getSession().getLogin().getDriverClassName());
+        properties.put(PersistenceUnitProperties.JDBC_URL, getSession().getLogin().getConnectionString());
+        properties.put(PersistenceUnitProperties.JDBC_USER, getSession().getLogin().getUserName());
+        properties.put(PersistenceUnitProperties.JDBC_PASSWORD, getSession().getLogin().getPassword());
+        properties.put(PersistenceUnitProperties.LOGGING_LEVEL, getSession().getSessionLog().getLevelString());
+        return properties;
     }
     
     /**

@@ -985,7 +985,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             
             if (entityListeners != null) {
                 for (Object entityListenerClass : (Object[]) entityListeners.getAttribute("value")) {
-                    EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, getMetadataClass((String) entityListenerClass), this);
+                    EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, getMetadataClass((String) entityListenerClass, false), this);
                     listener.process(this, loader, false);
                 }
             }

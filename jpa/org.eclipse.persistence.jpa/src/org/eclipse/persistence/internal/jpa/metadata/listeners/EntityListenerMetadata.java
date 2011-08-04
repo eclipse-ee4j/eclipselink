@@ -457,7 +457,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         // 2 - Set any annotation defined methods second. We should only add
         // add them if they were not overridden in XML.
         for (Method method : methods) {
-            MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass()).getMethod(method.getName(), method.getParameterTypes());
+            MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass().getName(), false).getMethod(method.getName(), method.getParameterTypes());
             // Metadata method can be null when dealing with jdk methods: equals, notify, toString, wait etc.. 
             if (metadataMethod != null) {
                 if (metadataMethod.isAnnotationPresent(PostLoad.class, classAccessor) && m_postLoad == null) {

@@ -22,6 +22,7 @@ import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPABootstrapPerformanceTest;
+import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPAMetadataPerformanceTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressNamedQueryPerformanceComparisonTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressPerformanceComparisonTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressSimpleExpressionPerformanceComparisonTest;
@@ -164,6 +165,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         suite.setDescription("This suite tests miscellaneous performance.");
 
         suite.addTest(new JPABootstrapPerformanceTest());
+        suite.addTest(new JPAMetadataPerformanceTest());
         
         return suite;        
     }
