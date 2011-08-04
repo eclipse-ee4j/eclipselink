@@ -2463,7 +2463,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(oxProject));
         if (!comparer.isNodeEqual(controlDoc, resultDoc))
         {
-            assertTrue("control document not same as instance document - " + controlDoc + " - " + resultDoc);
+            assertTrue("control document not same as instance document - " + controlDoc + " - " + resultDoc, false);
         }
 
         SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
