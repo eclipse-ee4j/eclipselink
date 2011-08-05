@@ -85,6 +85,9 @@ public class JSONWriterRecord extends MarshalRecord {
      */
     public void startDocument(String encoding, String version) {
         try {
+             if(levels.isEmpty()) {            	
+                 levels.push(new Level(true));                
+             } 
             writer.write('{');
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
@@ -97,6 +100,7 @@ public class JSONWriterRecord extends MarshalRecord {
     public void endDocument() {
         try {
             writer.write('}');
+            levels.pop();
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

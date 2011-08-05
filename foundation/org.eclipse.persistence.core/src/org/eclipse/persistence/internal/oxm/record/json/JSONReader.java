@@ -51,13 +51,28 @@ public class JSONReader extends XMLReaderAdapter {
             JSONParser parser = new JSONParser(tokens);
             CommonTree commonTree = (CommonTree) parser.object().getTree();
             contentHandler.startDocument();
-            parse(commonTree);
+            parseRoot(commonTree);
             contentHandler.endDocument();
         } catch(RecognitionException e) {
             throw new SAXParseException(e.getLocalizedMessage(), input.getPublicId(), input.getSystemId(), e.line, e.index, e);
        }
     }
 
+    private void parseRoot(Tree tree) throws SAXException {
+    	if(tree.getType() == JSONLexer.OBJECT){
+    		int children = tree.getChildCount();
+    		if(children == 1){
+    			parse((CommonTree) tree.getChild(0));
+    		}else{
+    			contentHandler.startElement("", "", null, attributes.setTree(tree));
+    			for(int x=0, size=tree.getChildCount(); x<size; x++) {
+    	           parse((CommonTree) tree.getChild(x));
+    	        }
+    			contentHandler.endElement("","", null);
+    		}
+    	}
+    }
+    
     private void parse(Tree tree) throws SAXException {
         switch(tree.getType()) {
         case JSONLexer.PAIR: {

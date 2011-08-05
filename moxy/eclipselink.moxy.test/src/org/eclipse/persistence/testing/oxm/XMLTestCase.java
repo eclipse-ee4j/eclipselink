@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.oxm;
 
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class XMLTestCase extends junit.framework.TestCase {
     private XMLComparer xmlComparer;
@@ -43,6 +44,14 @@ public class XMLTestCase extends junit.framework.TestCase {
         }
         
         assertTrue("Documents are not equal.\nCONTROL:\n" + controlString + "\nTEST:\n" + testString, isEqual);
+    }
+    
+    protected void compareValues(Object controlValue, Object testValue){
+        if(controlValue instanceof Node && testValue instanceof Node) {
+            assertXMLIdentical(((Node)controlValue).getOwnerDocument(), ((Node)testValue).getOwnerDocument());
+        } else {
+            assertEquals(controlValue, testValue);
+        }
     }
     
     public XMLComparer getXMLComparer() {

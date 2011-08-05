@@ -929,7 +929,7 @@ public class XMLMarshaller implements Cloneable {
         }
         marshalRecord.setSession(session);
         
-        if (null != rootFragment) {
+        if (null != rootFragment && !(rootFragment.getLocalName().equals(XMLConstants.EMPTY_STRING))) {
             marshalRecord.startPrefixMappings(nr);
             if (!isXMLRoot && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
                 // throw an exception if the name has a : in it but the namespaceresolver is null
@@ -984,7 +984,8 @@ public class XMLMarshaller implements Cloneable {
             }
         }
 
-        if (null != rootFragment) {
+        if (null != rootFragment && !(rootFragment.getLocalName().equals(XMLConstants.EMPTY_STRING))) {
+            
             marshalRecord.endElement(rootFragment, nr);
             marshalRecord.endPrefixMappings(nr);
         }

@@ -12,16 +12,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.Iterator;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
@@ -332,5 +339,83 @@ public abstract class OXTestCase extends XMLTestCase {
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
+    }
+    
+    public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
+        assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
+        assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
+        assertEquals(controlObj.getDeclaredType(), testObj.getDeclaredType());
+
+        Object controlValue = controlObj.getValue();
+        Object testValue = testObj.getValue();
+
+        if(controlValue == null) {
+            if(testValue == null){
+                return;
+            }
+            fail("Test value should have been null");
+        }else{
+            if(testValue == null){
+                fail("Test value should not have been null");
+            }
+        }
+
+        if(controlValue.getClass().isArray()){
+            compareArrays(controlValue, testValue);
+        }
+        else if (controlValue instanceof Collection){
+            Collection controlCollection = (Collection)controlValue;
+            Collection testCollection = (Collection)testValue;
+            Iterator<Object> controlIter = controlCollection.iterator();
+            Iterator<Object> testIter = testCollection.iterator();
+            assertEquals(controlCollection.size(), testCollection.size());
+            while(controlIter.hasNext()){
+                Object nextControl = controlIter.next();
+                Object nextTest = testIter.next();
+                compareValues(nextControl, nextTest);
+            }
+        }else{
+            compareValues(controlValue, testValue);
+        }
+    }
+  
+
+    protected void compareArrays(Object controlValue, Object testValue) {
+        assertTrue("Test array is not an Array", testValue.getClass().isArray());
+        int controlSize = Array.getLength(controlValue);
+        assertTrue("Control and test arrays are not the same length", controlSize == Array.getLength(testValue));
+        for(int x=0; x<controlSize; x++) {
+            Object controlItem = Array.get(controlValue, x);
+            Object testItem = Array.get(testValue, x);
+            if(null == controlItem) {
+                assertEquals(null, testItem);
+                Class controlItemClass = controlItem.getClass();
+                if(controlItemClass.isArray()) {
+                    compareArrays(controlItem, testItem);
+                } else {
+                    assertEquals(controlItem, testItem);
+                }
+            }
+        }
+    }
+    
+    protected String loadFileToString(String fileName){
+        StringBuffer sb = new StringBuffer();
+        try {            
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String str;
+            while (bufferedReader.ready()) {
+                sb.append(bufferedReader.readLine());
+            }
+            bufferedReader.close();
+            inputStreamReader.close();
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+        return sb.toString();
     }
 }

@@ -40,6 +40,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 
 import org.w3c.dom.Node;
@@ -328,8 +329,21 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if(null == javaClass) {
             throw new IllegalArgumentException();
         }
-        try {
-            Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
+        Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
+
+        try {        	
+        	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
+        		if (source instanceof StreamSource) {
+                    StreamSource streamSource = (StreamSource) source;
+                    if (null != streamSource.getReader()) {
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(), new InputSource(streamSource.getReader()), classToUnmarshalTo), javaClass);
+                    } else if (null != streamSource.getInputStream()) {                        
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), javaClass);
+                    } else {                    	                    	
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), javaClass);                    	
+                    }
+                } 
+        	}
             return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), javaClass);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
