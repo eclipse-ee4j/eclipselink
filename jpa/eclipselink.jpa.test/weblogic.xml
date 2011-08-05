@@ -79,9 +79,6 @@
         </delete>
         <delete dir="${eclipselink.jpa.test}/${temp.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${temp.dir}"/>
-        <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
-            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="*.py"/>
-        </copy>
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_install.py"/>
@@ -105,6 +102,9 @@
     </target>
 
     <target name="pass-weblogic-and-database-info">
+        <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="*.py"/>
+        </copy>
         <replace dir="${eclipselink.jpa.test}/${temp.dir}">
             <include name="**/*.py"/>
             <replacefilter token="%%WL_HOME%%" value="${weblogic.installdir}"/>
@@ -113,6 +113,7 @@
             <replacefilter token="%%WL_USR%%" value="${server.user}"/>
             <replacefilter token="%%WL_PWD%%" value="${server.pwd}"/>
             <replacefilter token="%%WL_DOMAIN%%" value="${weblogic.domain}"/>
+            <replacefilter token="%%DOMAIN_NAME%%" value="${domain.name}"/>
             <replacefilter token="%%TARGET_SERVER%%" value="${target.server}"/>
             <replacefilter token="%%DBDRV%%" value="${db.driver}"/>
             <replacefilter token="%%DBURL%%" value="${db.url}"/>
@@ -147,9 +148,6 @@
 
     <!-- This creates datasource and deploy to the server. -->
     <target name="weblogic-setup">
-        <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
-            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="*.py"/>
-        </copy>
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <antcall target="weblogic-datasource-setup" inheritRefs="true"/>
     </target>
@@ -190,6 +188,7 @@
 
     <!-- Set EclipseLink JPA as DefaultJPAProvider for wls. -->
     <target name="weblogic-domain-setup">
+        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_domain_setup.py"/>
             <classpath>
@@ -210,9 +209,6 @@
 
     <!-- Create three datasources aginst Oracle, DB2 and MySQL for running composite test models. -->
     <target name="weblogic-composite-setup">
-        <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
-            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="wls_composite*.py"/>
-        </copy>
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_composite_setup.py"/>
@@ -248,9 +244,6 @@
     <target name="weblogic-deploy">
         <property name="ear.dir" value="${eclipselink.jpa.test}"/>
         <property name="ear.name" value="${application.name}.ear"/>
-        <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
-            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="wls_*deploy.py"/>
-        </copy>
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <replace dir="${eclipselink.jpa.test}/${temp.dir}">
             <include name="**/wls_*deploy.py"/>
