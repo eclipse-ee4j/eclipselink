@@ -18,7 +18,7 @@ connect('%%WL_USR%%','%%WL_PWD%%','t3://%%WL_HOST%%:%%WL_PORT%%')
 edit()
 startEdit()
 
-cd('/JPA/%%WL_DOMAIN%%')
+cd('/JPA/%%DOMAIN_NAME%%')
 cmo.setDefaultJPAProvider('org.eclipse.persistence.jpa.PersistenceProvider')
 
 save()
