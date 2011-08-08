@@ -1721,16 +1721,25 @@ public class AnnotationsProcessor {
 
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
             XmlPath xmlPath = (XmlPath) helper.getAnnotation(javaHasAnnotations, XmlPath.class);
-            property.setXmlPath(xmlPath.value());
-
+            property.setXmlPath(xmlPath.value());            
+            boolean isAttribute = xmlPath.value().indexOf('@') > -1;
+            property.setIsAttribute(isAttribute);
             // set schema name
-            String schemaName = XMLProcessor.getNameFromXPath(xmlPath.value(), property.getPropertyName(), property.isAttribute());
+            String schemaName = XMLProcessor.getNameFromXPath(xmlPath.value(), property.getPropertyName(), isAttribute);
             QName qName;
             NamespaceInfo nsInfo = getPackageInfoForPackage(cls).getNamespaceInfo();
-            if (nsInfo.isElementFormQualified()) {
-                qName = new QName(nsInfo.getNamespace(), schemaName);
-            } else {
-                qName = new QName(schemaName);
+            if(isAttribute){
+            	if (nsInfo.isAttributeFormQualified()) {
+                    qName = new QName(nsInfo.getNamespace(), schemaName);
+                } else {
+                    qName = new QName(schemaName);
+                }
+            }else{
+                if (nsInfo.isElementFormQualified()) {
+                    qName = new QName(nsInfo.getNamespace(), schemaName);
+                } else {
+                    qName = new QName(schemaName);
+                }
             }
             property.setSchemaName(qName);
         } else {
