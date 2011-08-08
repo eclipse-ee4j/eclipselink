@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="myns" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="myns" elementFormDefault="qualified">
+<xsd:complexType name="testObjectToAttributeWithXmlAttribute">
+      <xsd:sequence>
+         <xsd:element name="something" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="theFlag" type="xsd:boolean" use="required"/>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="ns0:testObjectToAttributeWithXmlAttribute"/>
+</xsd:schema>

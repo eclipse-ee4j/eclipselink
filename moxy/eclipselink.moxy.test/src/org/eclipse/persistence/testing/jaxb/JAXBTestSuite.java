@@ -47,6 +47,9 @@ import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.XmlInlineBinaryDataT
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBDOMTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmixed.XmlMixedTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToAttributeTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToElementWithXmlAttributeTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathWithXmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueByteArrayTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
@@ -198,6 +201,9 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(PropOrderTestCases.class);
         suite.addTestSuite(LazyInitTestCases.class);
         suite.addTestSuite(XmlMixedTestCases.class);
+        suite.addTestSuite(XmlPathToElementWithXmlAttributeTestCases.class);
+        suite.addTestSuite(XmlPathToAttributeTestCases.class);
+        suite.addTestSuite(XmlPathWithXmlAttributeTestCases.class);
         return suite;
     }
 
