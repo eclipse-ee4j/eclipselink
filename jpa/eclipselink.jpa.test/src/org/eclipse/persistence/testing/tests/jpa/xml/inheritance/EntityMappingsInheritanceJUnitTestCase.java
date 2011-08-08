@@ -103,7 +103,14 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
      */
     public void testSetup() {
         DatabaseSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
-        new InheritanceTableCreator().replaceTables(session);
+        try{
+            new InheritanceTableCreator().replaceTables(session);
+        }catch(Exception ex){
+            if (ex.getMessage().indexOf("java.sql.SQLSyntaxErrorException: ORA-00955: name is already used by an existing object") != -1) {
+                ex.printStackTrace();
+            }else
+                fail("testSetup threw exception: " + ex.getMessage());
+        }
         clearCache(m_persistenceUnit);
     }
     
