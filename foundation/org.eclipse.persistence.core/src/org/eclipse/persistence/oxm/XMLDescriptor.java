@@ -92,6 +92,7 @@ public class XMLDescriptor extends ClassDescriptor {
 
         this.shouldOrderMappings = false;
         descriptorIsAggregate();
+        setIdentityMapSize(100);
     }
 
     /**
