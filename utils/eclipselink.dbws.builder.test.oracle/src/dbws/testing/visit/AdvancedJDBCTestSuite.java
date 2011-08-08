@@ -14,6 +14,7 @@ package dbws.testing.visit;
 
 //javase imports
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -2463,7 +2464,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(oxProject));
         if (!comparer.isNodeEqual(controlDoc, resultDoc))
         {
-            assertTrue("control document not same as instance document - " + controlDoc + " - " + resultDoc, false);
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(p, writer);
+            assertTrue("control document not same as instance document - " + oxProject + " - " + writer.toString(), false);
         }
 
         SchemaModelGenerator schemaGenerator = new SchemaModelGenerator();
