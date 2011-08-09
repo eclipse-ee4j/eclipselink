@@ -75,6 +75,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     08/09/2011
+ *       Masumi Ito, Fujitsu - Bug 351791 - NPE occurs on specifying two kinds of primary key generators on orm.xml
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -663,7 +665,7 @@ public class MetadataProject {
         }
             
         for (TableGeneratorMetadata otherTableGenerator : m_tableGenerators.values()) {
-            if ((tableGenerator != otherTableGenerator) && otherTableGenerator.getPkColumnValue().equals(sequenceGenerator.getSequenceName())) {
+            if ((tableGenerator != otherTableGenerator) && (otherTableGenerator.getPkColumnValue() != null) && otherTableGenerator.getPkColumnValue().equals(sequenceGenerator.getSequenceName())) {                // generator name will be used instead of an empty sequence name / pk column name
                 // generator name will be used instead of an empty sequence name / pk column name
                 if (otherTableGenerator.getPkColumnValue().length() > 0) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), otherTableGenerator.getLocation());
@@ -727,7 +729,7 @@ public class MetadataProject {
         }
             
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
-            if ((otherSequenceGenerator != sequenceGenerator) && sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
+            if ((otherSequenceGenerator != sequenceGenerator) && (sequenceGenerator.getSequenceName() != null) && sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
                 // generator name will be used instead of an empty sequence name / pk column name
                 if (sequenceGenerator.getSequenceName().length() > 0) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), tableGenerator.getLocation());
