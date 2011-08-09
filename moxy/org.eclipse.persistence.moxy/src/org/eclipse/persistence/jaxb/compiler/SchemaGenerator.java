@@ -209,7 +209,6 @@ public class SchemaGenerator {
             }
         }
 
-        ArrayList<String> propertyNames = info.getPropertyNames();
         Property xmlValueProperty = info.getXmlValueProperty();
        
         boolean hasMappedAttributes = false;
@@ -614,7 +613,7 @@ public class SchemaGenerator {
             allSchemas = new ArrayList<Schema>();
         }
         Schema schema = schemaForNamespace.get(namespace);
-        if (schema == null) {
+        if (schema == null && !XMLConstants.XML_NAMESPACE_URL.equals(namespace)) {
             schema = new Schema();
             String schemaName = SCHEMA + schemaCount + SCHEMA_EXT;
 
@@ -858,13 +857,16 @@ public class SchemaGenerator {
     private boolean addImportIfRequired(Schema sourceSchema, Schema importSchema, String importNamespace) {
         if (importSchema != sourceSchema && !(importNamespace != null && importNamespace.equals(XMLConstants.SCHEMA_URL))) {
             String schemaName = null;
-            if (importSchema != null) {
-                schemaName = importSchema.getName();
-            } else if (importNamespace != null) {
-                NamespaceInfo nInfo = getNamespaceInfoForNamespace(importNamespace);
-                schemaName = nInfo.getLocation();
+            if(XMLConstants.XML_NAMESPACE_URL.equals(importNamespace)){
+                schemaName = XMLConstants.XML_NAMESPACE_SCHEMA_LOCATION;
+            }else{           
+                if (importSchema != null) {
+                    schemaName = importSchema.getName();
+                } else if (importNamespace != null) {
+                    NamespaceInfo nInfo = getNamespaceInfoForNamespace(importNamespace);
+                    schemaName = nInfo.getLocation();
+                }
             }
-
             // may need to relativize the schema name
             if (schemaName != null && importSchema != null) {
                 URI relativizedURI = null;

@@ -44,6 +44,7 @@ public class XMLConstants {
     public static final String XMLNS_URL = "http://www.w3.org/2000/xmlns/";
     public static final String XML_NAMESPACE_PREFIX = "xml";
     public static final String XML_NAMESPACE_URL = "http://www.w3.org/XML/1998/namespace";
+    public static final String XML_NAMESPACE_SCHEMA_LOCATION = "http://www.w3.org/XML/1998/xml.xsd";    
     public static final String SCHEMA_TYPE_ATTRIBUTE = "type";
     public static final String SCHEMA_NIL_ATTRIBUTE = "nil";
     public static final String REF_URL = "http://ws-i.org/profiles/basic/1.1/xsd";
