@@ -350,6 +350,7 @@
       <table name="CMP3_XML_SCIENTIST"/>
         <id-class class="org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.ScientistPK"/>
         <sequence-generator name="XML_SCIENTIST_SEQUENCE_GENERATOR" sequence-name="SCIENTIST_SEQ" allocation-size="1"/>
+        <table-generator name="TBL_GEN" table="NAME_TBL"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
