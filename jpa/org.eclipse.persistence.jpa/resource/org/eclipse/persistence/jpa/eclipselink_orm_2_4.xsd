@@ -2223,6 +2223,7 @@
 
 
       <xsd:element name="noncacheable" type="orm:emptyType" minOccurs="0"/>
+       <xsd:element name="delete-all" type="orm:emptyType" minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -3905,6 +3906,7 @@
      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
       <xsd:element name="noncacheable" type="orm:emptyType" minOccurs="0"/>
+       <xsd:element name="delete-all" type="orm:emptyType" minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>

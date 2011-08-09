@@ -67,6 +67,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.annotations.CompositeMember;
+import org.eclipse.persistence.annotations.DeleteAll;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -140,7 +141,9 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private String m_compositeMember;
     
     private TemporalMetadata m_mapKeyTemporal;
-    
+
+    private Boolean m_deleteAll;
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -248,6 +251,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Set the order column if one is defined.
         if (isAnnotationPresent(OrderColumn.class)) {
             m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), this);
+        }
+        
+        if (isAnnotationPresent(DeleteAll.class)) {
+            m_deleteAll = Boolean.TRUE;
         }
     }
     
@@ -409,6 +416,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     protected DatabaseTable getDefaultTableForEntityMapKey(){
         return getCollectionTable().getDatabaseTable();
+    }
+    
+    public Boolean getDeleteAll() {
+        return this.m_deleteAll;
     }
     
     /**
@@ -723,6 +734,19 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     }
     
     /**
+     * INTERNAL:
+     * Used by our XML writing facility.
+     * Returns false unless m_deleteAll is both set and true
+     * @return
+     */
+    public boolean isDeleteAll(){
+        if (m_deleteAll != null && m_deleteAll){
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * INTERNAL: 
      * Process the element collection metadata.
      */
@@ -775,6 +799,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             } else {
                 ((AggregateCollectionMapping) mapping).addTargetForeignKeyField(fkField, pkField);
             }
+        }
+        
+        if (m_deleteAll != null && mapping.isPrivateOwned()){
+            mapping.setMustDeleteReferenceObjectsOneByOne(!m_deleteAll);
         }
     }
     
@@ -920,6 +948,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     public void setCompositeMember(String compositeMember) {
         m_compositeMember = compositeMember;
+    }
+    
+    public void setDeleteAll(Boolean m_deleteAll) {
+        this.m_deleteAll = m_deleteAll;
     }
     
     /**

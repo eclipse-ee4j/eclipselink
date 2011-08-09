@@ -18,6 +18,7 @@ import javax.persistence.*;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.privateowned.*;
 
@@ -54,7 +55,8 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToManyPrivateOwnedRemovalUsingClassic"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testEmbeddedWithCascadeFromPOUsingClassic"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToOnePrivateOwnedFromExistingObjectUsingClassic"));
-        
+        suite.addTest(new PrivateOwnedJUnitTestCase("testPrivateOwnedCycleWithOneToMany"));
+        suite.addTest(new PrivateOwnedJUnitTestCase("testDeleteAll"));
         return suite;
     }
 
@@ -1003,4 +1005,76 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         }
     }
     
+    // Bug 350599 
+    public void testPrivateOwnedCycleWithOneToMany(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Vehicle vehicle = new Vehicle();
+        Chassis chassis = new Chassis();
+        Mount mount = new Mount();
+        
+        vehicle.setChassis(chassis);
+        chassis.addMount(mount);
+        mount.setVehicle(vehicle);
+        
+        em.persist(vehicle);
+        em.flush();
+        clearCache();
+        em.clear();
+        MountPK pk = new MountPK(mount.getId(), chassis.getId());
+        vehicle = em.find(Vehicle.class, vehicle.getId());
+
+        em.remove(vehicle);
+
+        em.flush();
+        
+        clearCache();
+        em.clear();
+        
+        vehicle = em.find(Vehicle.class, vehicle.getId());
+        assertNull("vehicle was not deleted.", vehicle);
+        
+        chassis = em.find(Chassis.class, chassis.getId());
+        assertNull("chassis was not deleted.", chassis);
+        
+        mount = em.find(Mount.class, pk);
+        assertNull("mount was not deleted.", mount);
+        
+        rollbackTransaction(em);
+    }
+    
+    // Bug 350599  
+    public void testDeleteAll(){
+        EntityManager em = createEntityManager();
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        beginTransaction(em);
+        Chassis chassis = new Chassis();
+
+        Wheel wheel = new Wheel();
+        chassis.addWheel(wheel);
+        wheel = new Wheel();
+        chassis.addWheel(wheel);
+        em.persist(chassis);
+        em.flush();
+        em.clear();
+        clearCache();
+
+        chassis = em.find(Chassis.class, chassis.getId());
+        em.remove(chassis);
+        
+        counter.getQueries().clear();
+        counter.getSqlStatements().clear();
+        em.flush();
+        try{
+            // The point of this assert to to ensure that only one SQL statement is executed to remove the two wheels.
+            // if at some point in the future, this assert fails as a result of a change in the mappings of chassis
+            // this assert can be adjusted as long as the number of delete statements for Wheel is unaffected
+            assertTrue("An incorrect number of SQL statements were issued.", counter.getSqlStatements().size() == 2);
+        } finally{
+            counter.remove();
+            rollbackTransaction(em);
+        }
+        
+    }
 }

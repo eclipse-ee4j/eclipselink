@@ -142,6 +142,10 @@
                 </cascade>
                 <property name="attributeName" value="manager"/>
             </many-to-one>
+            <many-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Department" fetch="EAGER">
+                <join-column name="DEPT_ID" referenced-column-name="ID"/>
+                <property name="attributeName" value="department"/>
+            </many-to-one>
             <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
                 <cascade>
                     <cascade-all/>
@@ -323,6 +327,15 @@
                     <cascade-merge/>
                 </cascade>
                 <property name="attributeName" value="customers"/>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity name="XMLADVDepartment" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Department" access="PROPERTY">
+        <attributes>
+            <one-to-many name="equipment" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Equipment" mapped-by="department">
+                <map-key/>
+                <private-owned/>
+                <delete-all/>
             </one-to-many>
         </attributes>
     </entity>

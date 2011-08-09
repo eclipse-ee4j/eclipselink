@@ -39,7 +39,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCREDITLINESTable());
         addTableDefinition(buildCUSTOMERTable());
         addTableDefinition(buildDEALERTable());
+        addTableDefinition(buildDEPTTable());
         addTableDefinition(buildEMPLOYEETable());
+        addTableDefinition(buildEQUIPMENTTable());
+        addTableDefinition(buildEQUIPMENTCODETable());
         addTableDefinition(buildLARGEPROJECTTable());
         addTableDefinition(buildMANTable());
         addTableDefinition(buildPARTNERLINKTable());
@@ -415,6 +418,46 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public static TableDefinition buildDEPTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_DEPT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(60);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        FieldDefinition fieldHEAD = new FieldDefinition();
+        fieldHEAD.setName("DEPT_HEAD");
+        fieldHEAD.setTypeName("NUMERIC");
+        fieldHEAD.setSize(15);
+        fieldHEAD.setSubSize(0);
+        fieldHEAD.setIsPrimaryKey(false);
+        fieldHEAD.setIsIdentity(false);
+        fieldHEAD.setUnique(false);
+        fieldHEAD.setShouldAllowNull(true);
+        table.addField(fieldHEAD);
+        
+        return table;
+    }
+    
     public static TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
@@ -580,6 +623,17 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldPayScale.setShouldAllowNull(true);
         table.addField(fieldPayScale);
         
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition fieldDeptID = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        fieldDeptID.setName("DEPT_ID");
+        fieldDeptID.setTypeName("NUMERIC");
+        fieldDeptID.setSize(15);
+        fieldDeptID.setShouldAllowNull(true );
+        fieldDeptID.setIsPrimaryKey(false );
+        fieldDeptID.setUnique(false );
+        fieldDeptID.setIsIdentity(false );
+        fieldDeptID.setForeignKeyFieldName("CMP3_XML_DEPT.ID");
+        table.addField(fieldDeptID);
+        
         return table;
     }
 
@@ -611,6 +665,88 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
+    
+    public static TableDefinition buildEQUIPMENTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_EQUIP");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("DESCRIP");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(100);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldDEPTID = new FieldDefinition();
+        fieldDEPTID.setName("DEPT_ID");
+        fieldDEPTID.setTypeName("NUMERIC");
+        fieldDEPTID.setSize(15);
+        fieldDEPTID.setShouldAllowNull(true);
+        fieldDEPTID.setIsPrimaryKey(false);
+        fieldDEPTID.setUnique(false);
+        fieldDEPTID.setIsIdentity(false);
+        fieldDEPTID.setForeignKeyFieldName("CMP3_XML_DEPT.ID");
+        table.addField(fieldDEPTID);
+        
+        FieldDefinition fieldCODEID = new FieldDefinition();
+        fieldCODEID.setName("CODE_ID");
+        fieldCODEID.setTypeName("NUMERIC");
+        fieldCODEID.setSize(15);
+        fieldCODEID.setShouldAllowNull(true);
+        fieldCODEID.setIsPrimaryKey(false);
+        fieldCODEID.setUnique(false);
+        fieldCODEID.setIsIdentity(false);
+        fieldCODEID.setForeignKeyFieldName("CMP3_XML_EQUIP_CODE.ID");
+        table.addField(fieldCODEID);
+
+        return table;
+    }
+    
+    
+    public static TableDefinition buildEQUIPMENTCODETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_EQUIP_CODE");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldCODE = new FieldDefinition();
+        fieldCODE.setName("CODE");
+        fieldCODE.setTypeName("VARCHAR2");
+        fieldCODE.setSize(1);
+        fieldCODE.setSubSize(0);
+        fieldCODE.setIsPrimaryKey(false);
+        fieldCODE.setIsIdentity(false);
+        fieldCODE.setUnique(false);
+        fieldCODE.setShouldAllowNull(false);
+        table.addField(fieldCODE);
+
+        return table;
+    }
+    
     public static TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_XML_LPROJECT");

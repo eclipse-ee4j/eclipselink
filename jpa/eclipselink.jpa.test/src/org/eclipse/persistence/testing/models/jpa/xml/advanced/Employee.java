@@ -102,6 +102,8 @@ public class Employee implements Serializable {
     //Transient value used to keep track of how many times enterSIN method was called
     private int sinChangeCounter = 0;
     
+    private Department department;
+    
 	public Employee () {
         phoneNumbers = new Vector<PhoneNumber>();
         projects = new Vector<Project>();
@@ -228,6 +230,11 @@ public class Employee implements Serializable {
     
     public List<Dealer> getDealers() {
         return dealers;
+    }
+    
+    @Transient
+    public Department getDepartment() { 
+        return department; 
     }
     
     /**
@@ -433,6 +440,10 @@ public class Employee implements Serializable {
     
     public void setDealers(List<Dealer> dealers) {
         this.dealers = dealers;
+    }
+    
+    public void setDepartment(Department department) {
+        this.department = department;
     }
     
     /**

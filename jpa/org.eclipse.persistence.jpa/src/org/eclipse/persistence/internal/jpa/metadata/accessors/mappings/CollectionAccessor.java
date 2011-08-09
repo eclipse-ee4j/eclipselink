@@ -68,6 +68,7 @@ import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
+import org.eclipse.persistence.annotations.DeleteAll;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -130,6 +131,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     private TemporalMetadata m_mapKeyTemporal;
     
+    private Boolean m_deleteAll;
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -224,6 +227,12 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         if (isAnnotationPresent(MapKeyConvert.class)) {
             m_mapKeyConvert = (String) getAnnotation(MapKeyConvert.class).getAttribute("value");
         }
+        
+        if (isAnnotationPresent(DeleteAll.class)) {
+            if (isPrivateOwned()){
+                m_deleteAll = Boolean.TRUE;
+            }
+        }
     }
     
     /**
@@ -301,6 +310,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
                 return false;
             }
             
+            if (! valuesMatch(m_deleteAll, collectionAccessor.getDeleteAll())) {
+                return false;
+            }
+            
             return valuesMatch(m_mapKeyTemporal, collectionAccessor.getMapKeyTemporal());
         }
         
@@ -330,6 +343,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     public String getDefaultFetchType() {
         return FetchType.LAZY.name();
+    }
+    
+    public Boolean getDeleteAll() {
+        return this.m_deleteAll;
     }
     
     /**
@@ -536,6 +553,19 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
+     * Used by our XML writing facility.
+     * Returns false unless m_deleteAll is both set and true
+     * @return
+     */
+    public boolean isDeleteAll(){
+        if (m_deleteAll != null && m_deleteAll){
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
@@ -595,6 +625,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         if (m_orderColumn != null) {
             m_orderColumn.process(mapping, getDescriptor());
         }
+        
+        if (m_deleteAll != null && mapping.isPrivateOwned()){
+            mapping.setMustDeleteReferenceObjectsOneByOne(!m_deleteAll);
+        }
     }
     
     /**
@@ -629,7 +663,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
         }
     }
-        
+    
+    public void setDeleteAll(Boolean m_deleteAll) {
+        this.m_deleteAll = m_deleteAll;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

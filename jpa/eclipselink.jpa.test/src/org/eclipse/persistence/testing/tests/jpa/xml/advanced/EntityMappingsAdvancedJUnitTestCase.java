@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.Query;
@@ -70,12 +71,14 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefau
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Bungalow;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Confidant;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
@@ -194,6 +197,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEM2", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEMF", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testComplexAdditionalCriteria", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteAll", persistenceUnit));
         }
         
         return suite;
@@ -2043,5 +2047,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             e.printStackTrace();
             fail("An error occurred: " + e.getMessage());
         }
+    }
+
+    public void testDeleteAll(){
+        Map descriptors = getServerSession(m_persistenceUnit).getDescriptors();
+        ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(Department.class);
+        OneToManyMapping mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("equipment");
+        assertFalse("<delete-all> xml did not work correctly", mapping.mustDeleteReferenceObjectsOneByOne());
     }
 }

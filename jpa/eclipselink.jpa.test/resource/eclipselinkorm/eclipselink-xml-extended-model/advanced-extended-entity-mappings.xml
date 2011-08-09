@@ -75,6 +75,9 @@
                     <cascade-persist/>
                 </cascade>
             </many-to-one>
+            <many-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Department" fetch="EAGER">
+                <join-column name="DEPT_ID" referenced-column-name="ID"/>
+            </many-to-one>
             <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
                 <cascade>
                     <cascade-all/>
@@ -175,6 +178,9 @@
                     <cascade-persist/>
                 </cascade>
             </many-to-one>
+            <many-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Department" fetch="EAGER">
+                <join-column name="DEPT_ID" referenced-column-name="ID"/>
+            </many-to-one>
             <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
                 <cascade>
                     <cascade-all/>
@@ -636,6 +642,51 @@
                     <cascade-persist/>
                 </cascade>
             </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLADVDepartment" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Department" access="PROPERTY">
+      <table name="CMP3_XML_DEPT"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE"/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="employees" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" mapped-by="department"/>
+            <one-to-one name="departmentHead" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee">
+                <join-column name="DEPT_HEAD"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLADVEquipment" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Equipment" access="PROPERTY">
+      <table name="CMP3_XML_EQUIP"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE"/>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <many-to-one name="department" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Department">
+                <join-column name="DEPT_ID" referenced-column-name="ID"/>
+            </many-to-one>
+            <many-to-one name="equipmentCode" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.EquipmentCode">
+                <join-column name="CODE_ID" referenced-column-name="ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLADVEquipmentCode" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EquipmentCode" access="PROPERTY">
+      <table name="CMP3_XML_EQUIP_CODE"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE"/>
+            </id>
+            <basic name="code"/>
         </attributes>
     </entity>
     <entity name="XMLCubicle" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.Cubicle" access="PROPERTY">

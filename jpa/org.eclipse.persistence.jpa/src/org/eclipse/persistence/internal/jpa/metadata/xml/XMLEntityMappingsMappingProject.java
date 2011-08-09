@@ -1128,6 +1128,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
+        descriptor.addMapping(getDeleteAllMapping());
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
         descriptor.addMapping(getRoundRobinPartitioningMapping());
@@ -2416,6 +2417,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
+        descriptor.addMapping(getDeleteAllMapping());
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
         descriptor.addMapping(getRoundRobinPartitioningMapping());
@@ -3945,6 +3947,22 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         dataTypeMapping.setSetMethodName("setDataTypeName");
         dataTypeMapping.setXPath("@data-type");
         return dataTypeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getDeleteAllMapping() {
+        XMLDirectMapping deleteAllMapping = new XMLDirectMapping();
+        deleteAllMapping.setAttributeName("m_deleteAll");
+        deleteAllMapping.setGetMethodName("getDeleteAll");
+        deleteAllMapping.setSetMethodName("setDeleteAll");
+        deleteAllMapping.setXPath("orm:delete-all");
+        deleteAllMapping.setConverter(new EmptyElementConverter());
+        IsSetNullPolicy deleteAllPolicy = new IsSetNullPolicy("isDeleteAll");
+        deleteAllPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        deleteAllMapping.setNullPolicy(deleteAllPolicy);
+        return deleteAllMapping;
     }
     
     /**
