@@ -38,9 +38,14 @@ public class Chassis {
     @PrivateOwned
     protected List<Wheel> wheels; // private-owned 1:M
 
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="chassis")
+    @PrivateOwned
+    protected List<Mount> vehicleMounts;
+    
     public Chassis() {
         super();
         this.wheels = new ArrayList<Wheel>();
+        this.vehicleMounts = new ArrayList<Mount>();
     }
     
     public Chassis(long serialNumber) {
@@ -80,6 +85,24 @@ public class Chassis {
     public void removeWheel(Wheel wheel) {
         getWheels().remove(wheel);
         wheel.setChassis(null);
+    }
+
+    public List<Mount> getVehicleMounts() {
+        return vehicleMounts;
+    }
+
+    public void setVehicleMounts(List<Mount> vehicleMounts) {
+        this.vehicleMounts = vehicleMounts;
+    }
+    
+    public void addMount(Mount mount) {
+        getVehicleMounts().add(mount);
+        mount.setChassis(this);
+    }
+    
+    public void removeMount(Mount mount) {
+        getVehicleMounts().remove(mount);
+        mount.setChassis(null);
     }
     
 }

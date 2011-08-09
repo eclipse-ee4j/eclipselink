@@ -18,6 +18,7 @@ import javax.persistence.*;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.privateowned.*;
 
@@ -54,6 +55,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToManyPrivateOwnedRemovalUsingClassic"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testEmbeddedWithCascadeFromPOUsingClassic"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToOnePrivateOwnedFromExistingObjectUsingClassic"));
+        suite.addTest(new PrivateOwnedJUnitTestCase("testPrivateOwnedCycleWithOneToMany"));
         
         return suite;
     }
@@ -1001,6 +1003,45 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
                 
             closeEntityManager(em);
         }
+    }
+    
+    // Bug 350599 
+    public void testPrivateOwnedCycleWithOneToMany(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Vehicle vehicle = new Vehicle();
+        Chassis chassis = new Chassis();
+        Mount mount = new Mount();
+        
+        vehicle.setChassis(chassis);
+        chassis.addMount(mount);
+        mount.setVehicle(vehicle);
+        
+        em.persist(vehicle);
+        em.flush();
+        clearCache();
+        em.clear();
+        MountPK pk = new MountPK(mount.getId(), chassis.getId());
+        vehicle = em.find(Vehicle.class, vehicle.getId());
+
+        em.remove(vehicle);
+
+        em.flush();
+        
+        clearCache();
+        em.clear();
+        
+        vehicle = em.find(Vehicle.class, vehicle.getId());
+        assertNull("vehicle was not deleted.", vehicle);
+        
+        chassis = em.find(Chassis.class, chassis.getId());
+        assertNull("chassis was not deleted.", chassis);
+        
+        mount = em.find(Mount.class, pk);
+        assertNull("mount was not deleted.", mount);
+        
+        rollbackTransaction(em);
     }
     
 }

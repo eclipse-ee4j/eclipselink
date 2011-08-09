@@ -2746,6 +2746,36 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * This method returns true if this descriptor has either a ForeignReferenceMapping to 
+     * an object aside from the one described by descriptor or more than one ForeignReferenceMapping
+     * to descriptor.  (i.e. It determines if there is any mapping aside from a backpointer to a mapping
+     * defined in descriptor)
+     * @param descriptor
+     * @return
+     */
+    public boolean hasRelationshipsExceptBackpointer(ClassDescriptor descriptor){
+        Iterator<DatabaseMapping> i = mappings.iterator();
+        boolean foundRelationship = false;
+        while (i.hasNext()){
+            DatabaseMapping mapping = i.next();
+            if (mapping.isForeignReferenceMapping()){
+                ForeignReferenceMapping frMapping = (ForeignReferenceMapping)mapping;
+                if (frMapping.getReferenceDescriptor().equals(descriptor)){
+                    if (foundRelationship){
+                        return true;
+                    } else {
+                        foundRelationship = true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this descriptor has Returning policy.
      */
     public boolean hasReturningPolicy() {

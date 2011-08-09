@@ -72,7 +72,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected OrderCorrectionType orderCorrectionType;
     
     /** Store if the mapping can batch delete reference objects. */
-    protected boolean mustDeleteReferenceObjectsOneByOne;
+    protected Boolean mustDeleteReferenceObjectsOneByOne = null;
     
     /**
      * PUBLIC:
@@ -310,7 +310,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return;
         }
         // PERF: If private owned and not instantiated, then avoid instantiating, delete-all will handle deletion.
-        if (this.isPrivateOwned && usesIndirection() && (!mustDeleteReferenceObjectsOneByOne())) {
+        if ((this.isPrivateOwned) && usesIndirection() && (!mustDeleteReferenceObjectsOneByOne())) {
             if (!this.indirectionPolicy.objectIsEasilyInstantiated(cloneAttribute)) {
                 return;
             }
@@ -1298,7 +1298,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * one by one, as opposed to with a single DELETE statement.
      */
     public boolean mustDeleteReferenceObjectsOneByOne() {
-        return this.mustDeleteReferenceObjectsOneByOne;
+        return this.mustDeleteReferenceObjectsOneByOne == null || this.mustDeleteReferenceObjectsOneByOne;
     }
 
     /**
@@ -1697,11 +1697,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void postInitialize(AbstractSession session) {
         super.postInitialize(session);
         this.containerPolicy.postInitialize(session);
-        if (this.referenceDescriptor != null) {
+        if (this.referenceDescriptor != null && this.mustDeleteReferenceObjectsOneByOne == null) {
             this.mustDeleteReferenceObjectsOneByOne = this.referenceDescriptor.hasDependencyOnParts()
                     || this.referenceDescriptor.usesOptimisticLocking()
                     || (this.referenceDescriptor.hasInheritance() && this.referenceDescriptor.getInheritancePolicy().shouldReadSubclasses())
-                    || this.referenceDescriptor.hasMultipleTables() || this.containerPolicy.propagatesEventsToCollection();
+                    || this.referenceDescriptor.hasMultipleTables() || this.containerPolicy.propagatesEventsToCollection()
+                    || this.referenceDescriptor.hasRelationshipsExceptBackpointer(descriptor);
         } else {
             this.mustDeleteReferenceObjectsOneByOne = false;
         }
@@ -2064,7 +2065,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Note: Calling this method disables an optimization of the delete
      * behavior
      */
-    public void setMustDeleteReferenceObjectsOneByOne(boolean deleteOneByOne) {
+    public void setMustDeleteReferenceObjectsOneByOne(Boolean deleteOneByOne) {
         this.mustDeleteReferenceObjectsOneByOne = deleteOneByOne;
     }
     

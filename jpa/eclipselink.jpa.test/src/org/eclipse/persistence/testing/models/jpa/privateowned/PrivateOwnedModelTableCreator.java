@@ -21,6 +21,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         setName("EJB3PrivateOwnedModelTableCreator");
         addTableDefinition(buildVEHICLETable());
         addTableDefinition(buildCHASSISTable());
+        addTableDefinition(buildMOUNTTable());
         addTableDefinition(buildENGINETable());
         addTableDefinition(buildSPARKPLUGTable());
         addTableDefinition(buildWHEELTable());
@@ -164,6 +165,60 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldSERIALNUMBER.setShouldAllowNull(true);
         fieldSERIALNUMBER.setUnique(false);
         table.addField(fieldSERIALNUMBER);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildMOUNTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_PO_MOUNT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(10);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setUnique(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCHASSIS_ID = new FieldDefinition();
+        fieldCHASSIS_ID.setName("ID2");
+        fieldCHASSIS_ID.setTypeName("NUMERIC");
+        fieldCHASSIS_ID.setSize(10);
+        fieldCHASSIS_ID.setSubSize(0);
+        fieldCHASSIS_ID.setIsPrimaryKey(true);
+        fieldCHASSIS_ID.setIsIdentity(true);
+        fieldCHASSIS_ID.setShouldAllowNull(false);
+        fieldCHASSIS_ID.setUnique(false);
+        table.addField(fieldCHASSIS_ID);
+        
+        FieldDefinition fieldVEHICLE_ID = new FieldDefinition();
+        fieldVEHICLE_ID.setName("VEHICLE_ID");
+        fieldVEHICLE_ID.setTypeName("NUMERIC");
+        fieldVEHICLE_ID.setSize(10);
+        fieldVEHICLE_ID.setSubSize(0);
+        fieldVEHICLE_ID.setIsPrimaryKey(false);
+        fieldVEHICLE_ID.setIsIdentity(false);
+        fieldVEHICLE_ID.setShouldAllowNull(false);
+        fieldVEHICLE_ID.setUnique(false);
+        table.addField(fieldVEHICLE_ID);
+        
+        ForeignKeyConstraint foreignKeyMOUNT_VEHICLE = new ForeignKeyConstraint();
+        foreignKeyMOUNT_VEHICLE.setName("PO_MOUNT_VEH_ID");
+        foreignKeyMOUNT_VEHICLE.setTargetTable("CMP3_PO_VEHICLE"); 
+        foreignKeyMOUNT_VEHICLE.addSourceField("VEHICLE_ID");
+        foreignKeyMOUNT_VEHICLE.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyMOUNT_VEHICLE);
+        
+        ForeignKeyConstraint foreignKeyMOUNT_CHASSIS = new ForeignKeyConstraint();
+        foreignKeyMOUNT_CHASSIS.setName("PO_MOUNT_CHA_ID");
+        foreignKeyMOUNT_CHASSIS.setTargetTable("CMP3_PO_CHASSIS"); 
+        foreignKeyMOUNT_CHASSIS.addSourceField("ID2");
+        foreignKeyMOUNT_CHASSIS.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyMOUNT_CHASSIS);
         
         return table;
     }

@@ -35,7 +35,7 @@ public class Vehicle {
     
     protected String model;
     
-    @OneToOne (cascade=CascadeType.ALL)
+    @OneToOne (fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     @PrivateOwned
     protected Chassis chassis; // private-owned 1:1
     
