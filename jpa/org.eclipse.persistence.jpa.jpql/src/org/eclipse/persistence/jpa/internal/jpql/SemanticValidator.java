@@ -138,7 +138,7 @@ import static org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemMessages
  *
  * @see GrammarValidator
  *
- * @version 2.3
+ * @version 2.3.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -262,9 +262,20 @@ public final class SemanticValidator extends AbstractValidator {
 		return resolver;
 	}
 
-	private void collectDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
+	private void collectAllDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
 
-		for (Declaration declaration : queryContext.getDeclarations()) {
+		JPQLQueryContext context = queryContext.getCurrentContext();
+
+		while (context != null) {
+			collectDeclarationIdentificationVariables(context, identificationVariables);
+			context = context.getParent();
+		}
+	}
+
+	private void collectDeclarationIdentificationVariables(JPQLQueryContext queryContext,
+	                                                       Map<String, List<IdentificationVariable>> identificationVariables) {
+
+		for (Declaration declaration : queryContext.getActualDeclarationResolver().getDeclarations()) {
 
 			// Register the identification variable from the base expression
 			IdentificationVariable identificationVariable = declaration.identificationVariable;
@@ -591,7 +602,7 @@ public final class SemanticValidator extends AbstractValidator {
 
 		// Collect the identification variables from the Declarations
 		Map<String, List<IdentificationVariable>> identificationVariables = new HashMap<String, List<IdentificationVariable>>();
-		collectDeclarationIdentificationVariables(identificationVariables);
+		collectDeclarationIdentificationVariables(queryContext.getCurrentContext(), identificationVariables);
 
 		// Check for duplicate identification variables
 		for (Map.Entry<String, List<IdentificationVariable>> entry : identificationVariables.entrySet()) {
@@ -602,6 +613,10 @@ public final class SemanticValidator extends AbstractValidator {
 				}
 			}
 		}
+
+		// Now collect the identification variables from the parent queries
+		identificationVariables.clear();
+		collectAllDeclarationIdentificationVariables(identificationVariables);
 
 		// Check for undeclared identification variables
 		for (IdentificationVariable identificationVariable : usedIdentificationVariables) {
@@ -1757,13 +1772,25 @@ public final class SemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SimpleSelectStatement expression) {
+
+		// Keep a copy of the identification variables that are used throughout the parent query
+		List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<IdentificationVariable>(usedIdentificationVariables);
+
+		// Create a context for the subquery
 		queryContext.newSubqueryContext(expression);
+
 		try {
 			super.visit(expression);
+
+			// Validate the identification variables that are used within the subquery
 			validateIdentificationVariables();
 		}
 		finally {
+			// Revert back to the parent context
 			queryContext.disposeSubqueryContext();
+
+			// Revert the list to what it was
+			usedIdentificationVariables.retainAll(oldUsedIdentificationVariables);
 		}
 	}
 

@@ -22,7 +22,7 @@ import org.junit.Test;
 /**
  * The unit-tests testing {@link SemanticValidator}.
  *
- * @version 2.3
+ * @version 2.3.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -885,6 +885,47 @@ public final class SemanticValidatorTest extends AbstractValidatorTest {
 		String query = "SELECT a.name FROM Employee e";
 		int startPosition = "SELECT ".length();
 		int endPosition   = "SELECT a".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariable_Invalid_NotDeclared,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_IdentificationVariable_Invalid_NotDeclared_3() throws Exception {
+
+		String query = "select t from TestEntity t where t.id = (select max(tt.id) from TestEntity tt)";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariable_Invalid_NotDeclared
+		);
+	}
+
+	@Test
+	public void test_IdentificationVariable_Invalid_NotDeclared_4() throws Exception {
+
+		String query = "select t from TestEntity t where t.id = (select max(t.id) from TestEntity tt)";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariable_Invalid_NotDeclared
+		);
+	}
+
+	@Test
+	public void test_IdentificationVariable_Invalid_NotDeclared_5() throws Exception {
+
+		String query = "select t from TestEntity t where t.id = (select max(e.id) from TestEntity tt)";
+		int startPosition = "select t from TestEntity t where t.id = (select max(".length();
+		int endPosition   = startPosition + 1;
 
 		List<JPQLQueryProblem> problems = validate(query);
 
