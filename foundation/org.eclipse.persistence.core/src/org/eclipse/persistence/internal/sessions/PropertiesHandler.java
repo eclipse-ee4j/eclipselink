@@ -10,6 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
         Gordon Yorke - VM managed entity detachment
+ *     Eduard Bartsch, SAP - Fix for Bug 351186 - ConcurrentModificationException Exception in PropertiesHandler 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -219,18 +220,15 @@ public class PropertiesHandler {
         static Map getPrefixValuesFromMap(String name, Map m, boolean useSystemAsDefault) {
             Map mapOut = new HashMap();
             
-            Iterator it;
             if(useSystemAsDefault) {
-                it = (Iterator)AccessController.doPrivileged(
-                    new PrivilegedAction() {
-                        public Object run() {
-                            return System.getProperties().entrySet().iterator();
-                        }    
+                Map.Entry[] entries = (Map.Entry[]) AccessController.doPrivileged(new PrivilegedAction() {
+                    public Object run() {
+                        return System.getProperties().entrySet().toArray(new Map.Entry[] {});
+                        }
                     }
                 );
-    
-                while(it.hasNext()) {
-                    Map.Entry entry = (Map.Entry)it.next();
+
+                for (Map.Entry entry:entries) {
                     String str = (String)entry.getKey();
                     if(str.startsWith(name)) {
                         String entityName = str.substring(name.length(), str.length());
@@ -239,7 +237,7 @@ public class PropertiesHandler {
                 }
             }
             
-            it = m.entrySet().iterator();
+            Iterator it = m.entrySet().iterator();
             while(it.hasNext()) {
                 Map.Entry entry = (Map.Entry)it.next();
                 String str = (String)entry.getKey();
