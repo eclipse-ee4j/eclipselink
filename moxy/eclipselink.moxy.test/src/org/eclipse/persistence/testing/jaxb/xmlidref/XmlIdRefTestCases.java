@@ -17,14 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  *
  */
-public class XmlIdRefTestCases extends JAXBTestCases {
+public class XmlIdRefTestCases  extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance.xml";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/control_schema.xsd";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance.json";
     private static final String CONTROL_ID = "222";
     private static final String CONTROL_NAME = "Joe Smith";
     private static final String CONTROL_ADD_ID_1 = "199";
@@ -50,6 +51,7 @@ public class XmlIdRefTestCases extends JAXBTestCases {
         classes[2] = Root.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     protected Object getControlObject() {

@@ -17,10 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlElementsIdRefTestCases extends JAXBTestCases {
+public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/instance.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/instance.json";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/control_schema.xsd";
     private static final String CONTROL_ID = "222";
     private static final String CONTROL_NAME = "Joe Smith";
@@ -29,11 +30,6 @@ public class XmlElementsIdRefTestCases extends JAXBTestCases {
     private static final String CONTROL_ADD_CITY_1 = "Anyothertown";
     private static final String CONTROL_ADD_COUNTRY_1 = "Canada";
     private static final String CONTROL_ADD_ZIP_1 = "X0X0X0";
-    private static final String CONTROL_ADD_ID_2 = "99";
-    private static final String CONTROL_ADD_STREET_2 = "Some St.";
-    private static final String CONTROL_ADD_CITY_2 = "Anytown";
-    private static final String CONTROL_ADD_COUNTRY_2 = "Canada";
-    private static final String CONTROL_ADD_ZIP_2 = "X0X0X0";
     private static final String CONTROL_PHONE_ID_1 = "123";
     private static final String CONTROL_PHONE_NUM_1 = "613-123-4567";
     private static final String CONTROL_PHONE_ID_2 = "456";
@@ -48,6 +44,7 @@ public class XmlElementsIdRefTestCases extends JAXBTestCases {
         classes[3] = PhoneNumber.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     protected Object getControlObject() {
@@ -94,55 +91,6 @@ public class XmlElementsIdRefTestCases extends JAXBTestCases {
         return root;
     }
 
-    /*public Object getWriteControlObject() {
-        ArrayList rootAddresses = new ArrayList();
-        ArrayList rootPhones = new ArrayList();
-
-        EmployeeWithElements employee = new EmployeeWithElements();
-        employee.id = CONTROL_ID;
-        employee.name = CONTROL_NAME;
-        
-        Address address = new Address();
-        address.id = CONTROL_ADD_ID_1;
-        address.street = CONTROL_ADD_STREET_1;
-        address.city = CONTROL_ADD_CITY_1;
-        address.country = CONTROL_ADD_COUNTRY_1;
-        address.zip = CONTROL_ADD_ZIP_1;
-        address.emp = new Vector<EmployeeWithElements>();
-        address.emp.add(employee);
-        rootAddresses.add(address);
-        
-        employee.address = address;
-        
-        address = new Address();
-        address.id = CONTROL_ADD_ID_2;
-        address.street = CONTROL_ADD_STREET_2;
-        address.city = CONTROL_ADD_CITY_2;
-        address.country = CONTROL_ADD_COUNTRY_2;
-        address.zip = CONTROL_ADD_ZIP_2;
-        rootAddresses.add(address);
-        employee.phones = new ArrayList();
-        
-        PhoneNumber num = new PhoneNumber();
-        num.id = CONTROL_PHONE_ID_1;
-        num.number = CONTROL_PHONE_NUM_1;
-        num.emp = employee;
-        employee.phones.add(num);
-        rootPhones.add(num);
-        
-        num = new PhoneNumber();
-        num.id = CONTROL_PHONE_ID_2;
-        num.number = CONTROL_PHONE_NUM_2;
-        num.emp = employee;
-        employee.phones.add(num);
-        rootPhones.add(num);
-        
-        Root root = new Root();
-        root.employee = employee;
-        root.addresses = rootAddresses;
-        root.phoneNumbers = rootPhones;
-        return root;
-    }*/
     
     public void testSchemaGen() throws Exception {
         List<InputStream> controlSchemas = new ArrayList<InputStream>();

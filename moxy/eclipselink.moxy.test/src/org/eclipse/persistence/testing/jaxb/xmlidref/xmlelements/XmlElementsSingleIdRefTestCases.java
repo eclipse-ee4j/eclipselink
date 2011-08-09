@@ -17,10 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlElementsSingleIdRefTestCases extends JAXBTestCases {
+public class XmlElementsSingleIdRefTestCases extends JAXBWithJSONTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/instance_single.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/instance_single.json";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/control_schema_single.xsd";
     private static final String CONTROL_ID = "222";
     private static final String CONTROL_NAME = "Joe Smith";
@@ -28,12 +29,7 @@ public class XmlElementsSingleIdRefTestCases extends JAXBTestCases {
     private static final String CONTROL_ADD_STREET_1 = "Some Other St.";
     private static final String CONTROL_ADD_CITY_1 = "Anyothertown";
     private static final String CONTROL_ADD_COUNTRY_1 = "Canada";
-    private static final String CONTROL_ADD_ZIP_1 = "X0X0X0";
-    private static final String CONTROL_ADD_ID_2 = "99";
-    private static final String CONTROL_ADD_STREET_2 = "Some St.";
-    private static final String CONTROL_ADD_CITY_2 = "Anytown";
-    private static final String CONTROL_ADD_COUNTRY_2 = "Canada";
-    private static final String CONTROL_ADD_ZIP_2 = "X0X0X0";
+    private static final String CONTROL_ADD_ZIP_1 = "X0X0X0";    
     private static final String CONTROL_PHONE_ID_1 = "123";
     private static final String CONTROL_PHONE_NUM_1 = "613-123-4567";
     private static final String CONTROL_PHONE_ID_2 = "456";
@@ -48,6 +44,7 @@ public class XmlElementsSingleIdRefTestCases extends JAXBTestCases {
         classes[3] = PhoneSingle.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     protected Object getControlObject() {

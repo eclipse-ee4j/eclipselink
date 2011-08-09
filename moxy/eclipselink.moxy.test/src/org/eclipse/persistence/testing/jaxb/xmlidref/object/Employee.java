@@ -21,7 +21,6 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 @XmlRootElement(name="employee")
 public class Employee {

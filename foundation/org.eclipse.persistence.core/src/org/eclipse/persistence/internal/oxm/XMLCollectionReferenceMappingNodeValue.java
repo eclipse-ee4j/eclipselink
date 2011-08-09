@@ -238,12 +238,12 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCollectionReferenceMapping.usesSingleNode()) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-            if (xPathFragment.isAttribute()) {
-                marshalRecord.attribute(xPathFragment, namespaceResolver, (String) value);
+            if (xPathFragment.isAttribute()) {                
+                marshalRecord.attribute(xPathFragment, namespaceResolver, (String) value, null);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-                marshalRecord.characters((String) value);
+                marshalRecord.characters(null, (String)value, false);
             }
         } else {
             QName schemaType;
@@ -252,20 +252,18 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 return false;
             }
             schemaType = getSchemaType(xmlField, fieldValue, session);
-            String stringValue = marshalRecord.getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
-            if (stringValue != null) {
-                marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-                XPathFragment nextFragment = xPathFragment.getNextFragment();
-                if (nextFragment.isAttribute()) {
-                    marshalRecord.attribute(nextFragment, namespaceResolver, stringValue);
-                    marshalRecord.closeStartElement();
-                } else {
-                    marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
-                    marshalRecord.closeStartElement();
-                    marshalRecord.characters(stringValue);
-                }
-                marshalRecord.endElement(xPathFragment, namespaceResolver);
+        
+            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+            XPathFragment nextFragment = xPathFragment.getNextFragment();
+            if (nextFragment.isAttribute()) {
+                marshalRecord.attribute(nextFragment, namespaceResolver, fieldValue, schemaType);                    
+                marshalRecord.closeStartElement();
+            } else {
+                marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
+                marshalRecord.closeStartElement();
+                marshalRecord.characters(schemaType, fieldValue, false);
             }
+            marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
         return true;
     }

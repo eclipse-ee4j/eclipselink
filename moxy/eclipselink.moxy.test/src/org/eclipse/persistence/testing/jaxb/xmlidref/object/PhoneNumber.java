@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.jaxb.xmlidref.object;
 
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

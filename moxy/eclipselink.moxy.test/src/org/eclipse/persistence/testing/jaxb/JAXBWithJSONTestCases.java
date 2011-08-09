@@ -28,7 +28,7 @@ import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
-    private String controlJSONLocation;
+    protected String controlJSONLocation;
     private String controlJSONWriteLocation;
 
     public JAXBWithJSONTestCases(String name) throws Exception {
@@ -135,7 +135,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     private void compareStrings(String test, String testString) {
         log(test);
         log("Expected (With All Whitespace Removed):");
-        String expectedString = getJSONControlString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
+        String expectedString = loadFileToString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
         log(expectedString);
         log("\nActual (With All Whitespace Removed):");
         testString = testString.replaceAll("[ \b\t\n\r]", "");
@@ -143,25 +143,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         assertEquals(expectedString, testString);
     }
 
-    protected String getJSONControlString(String fileName){
-        StringBuffer sb = new StringBuffer();
-        try {            
-            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String str;
-            while (bufferedReader.ready()) {
-                sb.append(bufferedReader.readLine());
-            }
-            bufferedReader.close();
-            inputStreamReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
-        return sb.toString();
-    }
+
 
     private URL getJSONURL() {
         return Thread.currentThread().getContextClassLoader().getResource(controlJSONLocation);

@@ -14,11 +14,12 @@ package org.eclipse.persistence.testing.jaxb.xmlidrefs.object;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlIdRefsObjectTestCases extends JAXBTestCases {
+public class XmlIdRefsObjectTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidrefs/object.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidrefs/object.json";
     private static final String CONTROL_PHONE_ID_1 = "123";
     private static final String CONTROL_PHONE_ID_2 = "456";
 
@@ -28,6 +29,7 @@ public class XmlIdRefsObjectTestCases extends JAXBTestCases {
         classes[0] = Root.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     protected Object getControlObject() {
