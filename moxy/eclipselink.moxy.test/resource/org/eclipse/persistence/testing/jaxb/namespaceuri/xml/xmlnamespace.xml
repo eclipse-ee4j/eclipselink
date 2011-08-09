@@ -1,0 +1,4 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:address xmlns:ns0="myns" xml:lang="blah">
+    <street>theStreet</street>
+</ns0:address>
