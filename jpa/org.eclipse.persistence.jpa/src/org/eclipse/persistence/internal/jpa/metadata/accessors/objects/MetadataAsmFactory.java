@@ -75,7 +75,8 @@ public class MetadataAsmFactory extends MetadataFactory {
             stream = m_loader.getResourceAsStream(resourceString);
 
             ClassReader reader = new ClassReader(stream);
-            reader.accept(visitor, 0);
+            Attribute[] attributes = new Attribute[0];
+            reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         } catch (Exception exception) {
             // Some basic types can't be found, so can just be registered
             // (i.e. arrays). Also, VIRTUAL classes may also not exist,
@@ -438,16 +439,19 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
         List<String> arguments = new ArrayList<String>();
         int index = 0;
-        while (index < desc.length()) {
-            char next = desc.charAt(index);
-            if (TOKENS.indexOf(next) == -1) {
+        int length = desc.length();
+        // PERF: Use char array to make char index faster (note this is a heavily optimized method, be very careful on changes)
+        char[] chars = desc.toCharArray();
+        while (index < length) {
+            char next = chars[index];
+            if (('(' != next) && (')' != next) && ('<' != next) && ('>' != next) && (';' != next)) {
                 if (next == 'L') {
                     index++;
                     int start = index;
-                    next = desc.charAt(index);
-                    while (TOKENS.indexOf(next) == -1) {
+                    next = chars[index];
+                    while (('(' != next) && (')' != next) && ('<' != next) && ('>' != next) && (';' != next)) {
                         index++;
-                        next = desc.charAt(index);
+                        next = chars[index];
                     }
                     arguments.add(toClassName(desc.substring(start, index)));
                 } else if (!isGeneric && (PRIMITIVES.indexOf(next) != -1)) {
@@ -457,16 +461,16 @@ public class MetadataAsmFactory extends MetadataFactory {
                     // Arrays.
                     int start = index;
                     index++;
-                    next = desc.charAt(index);
+                    next = chars[index];
                     // Nested arrays.
                     while (next == '[') {
                         index++;
-                        next = desc.charAt(index);
+                        next = chars[index];
                     }
                     if (PRIMITIVES.indexOf(next) == -1) {
                         while (next != ';') {
                             index++;
-                            next = desc.charAt(index);
+                            next = chars[index];
                         }
                         arguments.add(toClassName(desc.substring(start, index + 1)));
                     } else {

@@ -179,11 +179,14 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * @param map A Map of integration-level properties for use
      * by the persistence provider.
      */
-    public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties){
+    public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {
+        // Record that we are inside a JEE container to allow weaving for non managed persistence units.
+        JavaSECMPInitializer.setIsInContainer(true);
+        
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         
         EntityManagerSetupImpl emSetupImpl = null;
-        if(EntityManagerSetupImpl.mustBeCompositeMember(info)) {
+        if (EntityManagerSetupImpl.mustBeCompositeMember(info)) {
             // persistence unit cannot be used standalone (only as a composite member).
             // still the factory will be created but attempt to createEntityManager would cause an exception. 
             emSetupImpl = new EntityManagerSetupImpl(info.getPersistenceUnitName(), info.getPersistenceUnitName());
