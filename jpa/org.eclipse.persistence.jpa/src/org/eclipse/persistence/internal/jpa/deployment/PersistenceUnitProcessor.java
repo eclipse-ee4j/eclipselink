@@ -168,8 +168,19 @@ public class PersistenceUnitProcessor {
                 separator = spec.length() - 1;
             }
             result = new URL("file", "", spec.substring(0, separator++));
-        // mkeith - add bundle protocol cases
-        } else if ("bundleentry".equals(protocol)) {           
+        } else if("wsjar".equals(protocol)) { // NOI18N
+            // e.g. wsjar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
+            // but WS gives use jar:file:..., so we need to match it.
+            String spec = pxmlURL.getFile();
+            int separator = spec.lastIndexOf("!/");
+            if (separator == -1) {
+                separator = spec.length();
+            } else {
+                separator = separator + 2;
+            }
+            result = new URL("jar", "", spec.substring(0, separator));
+        } else if ("bundleentry".equals(protocol)) {
+            // mkeith - add bundle protocol cases
             result = new URL("bundleentry://" + pxmlURL.getAuthority());
         } else if ("bundleresource".equals(protocol)) {           
             result = new URL("bundleresource://" + pxmlURL.getAuthority());

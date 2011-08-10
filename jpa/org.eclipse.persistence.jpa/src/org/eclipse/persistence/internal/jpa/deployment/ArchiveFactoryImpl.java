@@ -90,7 +90,7 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
             } else {
                 // e.g. file:/tmp/a_ear/lib/pu.jarlo
                 // It's not a directory. Then it must be a jar file.
-                result = new JarFileArchive(new JarFile(f), descriptorLocation);
+                result = new JarFileArchive(rootUrl, new JarFile(f), descriptorLocation);
             }
         } else if ("jar".equals(protocol)) { // NOI18N
             JarURLConnection conn = JarURLConnection.class.cast(rootUrl.openConnection());
@@ -104,7 +104,7 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
                 // but containers (e.g.) WebLogic return this kind of URL,
                 // so we better handle this in our code to improve pluggability.
                 // Read the entire jar file.
-                result = new JarFileArchive(conn.getJarFile(), descriptorLocation);
+                result = new JarFileArchive(rootUrl, conn.getJarFile(), descriptorLocation);
             } else if (je.isDirectory()) {
                 // e.g. jar:file:/tmp/a_ear/b.war!/WEB-INF/classes/
                 // entryName [je.getName()] is a directory

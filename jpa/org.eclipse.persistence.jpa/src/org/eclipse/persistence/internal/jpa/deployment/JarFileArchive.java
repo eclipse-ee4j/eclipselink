@@ -45,13 +45,13 @@ public class JarFileArchive extends ArchiveBase implements Archive {
     private Logger logger;
 
     @SuppressWarnings("deprecation")
-    public JarFileArchive(JarFile jarFile, String descriptorLocation) throws MalformedURLException {
-        this(jarFile, descriptorLocation, Logger.global);
+    public JarFileArchive(URL rootUrl, JarFile jarFile, String descriptorLocation) throws MalformedURLException {
+        this(rootUrl, jarFile, descriptorLocation, Logger.global);
     }
 
-    public JarFileArchive(JarFile jarFile, String descriptorLocation, Logger logger)
+    public JarFileArchive(URL rootUrl, JarFile jarFile, String descriptorLocation, Logger logger)
             throws MalformedURLException {
-        super(new File(jarFile.getName()).toURI().toURL(), descriptorLocation);
+        super(rootUrl, descriptorLocation);
         logger.entering("JarFileArchive", "JarFileArchive", // NOI18N
                 new Object[]{jarFile});
         this.logger = logger;
