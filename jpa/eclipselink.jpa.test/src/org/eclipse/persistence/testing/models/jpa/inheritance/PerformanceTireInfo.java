@@ -20,7 +20,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="CMP3_TIRE")
 @DiscriminatorValue("Performance")
-public class PerformanceTireInfo extends TireInfo implements Serializable {
+public class PerformanceTireInfo extends TireInfo<Integer> implements Serializable {
     protected Integer speedrating;
 
     public PerformanceTireInfo() {}
