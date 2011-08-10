@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.Map.Entry;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -135,6 +137,11 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
             if (xPathFragment.getPrefix() != null) {
                 qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
+            if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {
+                for(Entry<String, String> next:unmarshalRecord.getPrefixesForFragment().entrySet()) {
+                    builder.startPrefixMapping(next.getKey(), next.getValue());
+                }
+            }            
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
             XMLReader xmlReader = unmarshalRecord.getXMLReader();
             xmlReader.setContentHandler(builder);

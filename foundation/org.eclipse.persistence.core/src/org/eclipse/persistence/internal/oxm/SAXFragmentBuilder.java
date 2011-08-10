@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -49,6 +50,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             Node parent = this.nodes.get(nodes.size() - 1);
             parent.appendChild(text);
+            processNamespacesForText(text.getTextContent(), (Element)parent);
             stringBuffer.reset();
         }
         if (null != namespaceURI && namespaceURI.length() == 0) {
@@ -113,27 +115,14 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             if (attributeNamespaceURI == null && atts.getQName(x).startsWith(XMLConstants.XMLNS + XMLConstants.COLON)) {
         		attributeNamespaceURI = XMLConstants.XMLNS_URL;
             }
-            
+            String value = atts.getValue(x);
             if (attributeNamespaceURI == null) {
-                element.setAttribute(atts.getQName(x), atts.getValue(x));
+                element.setAttribute(atts.getQName(x), value);
             } else {
-                String value = atts.getValue(x);
                 element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value == null ? XMLConstants.EMPTY_STRING : value);
-
-                if (XMLConstants.SCHEMA_INSTANCE_URL.equals(attributeNamespaceURI) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(atts.getLocalName(x))) {
-                    int colonIndex = value.indexOf(XMLConstants.COLON);
-                    if (colonIndex > -1) {
-                        String prefix = value.substring(0, colonIndex);
-                        String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(element, prefix);
-                        if (uri == null || uri.length() == 0) {                            
-                            //walk up unmarshalRecords to find prefix
-                            String theUri = owningRecord.resolveNamespacePrefix(prefix);
-                            if (theUri != null && theUri.length() > 0) {
-                                element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, theUri);
-                            }
-                        }
-                    }
-                }
+            }
+            if(value != null) {
+                processNamespacesForText(value, element);
             }
         }
     }
@@ -145,6 +134,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
                 stringBuffer.reset();
+                processNamespacesForText(text.getTextContent(), endedElement);
             }
 
             //just the doc left in the stack. Finish this off.
@@ -203,5 +193,31 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
         return null;
 
-    }    
+    } 
+    
+    /**
+     * Adds a namespace declaration to the parent element if the textValue represents a
+     * prefixed qualified name. The determination of a qname is based on the existance of a
+     * colon character and the ability to resolve the characters before the colon to a 
+     * namespace uri. 
+     * @param textValue
+     * @param parentNode
+     */
+    private void processNamespacesForText(String textValue, Element parentNode) {
+        //If the text value is a qname, we may need to do namespace processing
+        int colon = textValue.indexOf(':');
+        if(colon != -1) {
+            String prefix = textValue.substring(0, colon);
+            XMLPlatform platform = XMLPlatformFactory.getInstance().getXMLPlatform();
+            String uri = platform.resolveNamespacePrefix(parentNode, prefix);
+            if(uri == null) {
+                uri = this.owningRecord.resolveNamespacePrefix(prefix);
+                if(uri != null) {
+                    //add namespace declaration
+                    addNamespaceDeclaration(parentNode, prefix, uri);
+                }
+            }
+        }
+    }
+    
 }

@@ -12,15 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
+import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 
+import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 public class XmlAnyElementTestCases extends JAXBTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xml";
@@ -62,5 +70,28 @@ public class XmlAnyElementTestCases extends JAXBTestCases {
 
         return employee;
     }
+    public void testXMLToObjectFromSAXSource() throws Exception {
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputSource source = new InputSource(instream);
+            
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            try {
+                factory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);
+            } catch(org.xml.sax.SAXNotRecognizedException ex) {
+                //  ignore if the parser doesn't recognize or support this feature
+            } catch(org.xml.sax.SAXNotSupportedException ex) {
+            } catch (ParserConfigurationException e) {
+            }
+            
+            org.xml.sax.XMLReader reader = factory.newSAXParser().getXMLReader();
+            SAXSource saxSource = new SAXSource(reader, source);
+            
+            Object testObject = jaxbUnmarshaller.unmarshal(saxSource);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }	
 
 }

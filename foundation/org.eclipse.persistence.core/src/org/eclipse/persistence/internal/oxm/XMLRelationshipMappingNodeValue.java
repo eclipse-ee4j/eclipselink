@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map.Entry;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -178,6 +180,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
 
+            if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {
+                for(Entry<String, String> next:unmarshalRecord.getPrefixesForFragment().entrySet()) {
+                    builder.startPrefixMapping(next.getKey(), next.getValue());
+                }
+            }
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
             XMLReader xmlReader = unmarshalRecord.getXMLReader();
             xmlReader.setContentHandler(builder);
