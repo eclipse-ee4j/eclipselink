@@ -22,7 +22,11 @@ import javax.persistence.PrePersist;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AbstractBus<I> extends FueledVehicle {
+/**
+ * Note there are multiple generics in the declaration here, some of which are not used.  These were added
+ * as a test for bug 336133.  Please do not remove
+ */
+public abstract class AbstractBus<H extends TireInfo<J>, I extends TireInfo<J>, J> extends FueledVehicle {
     public static int PRE_PERSIST_COUNT = 0;
 
     protected Collection<I> tires = new ArrayList<I>();

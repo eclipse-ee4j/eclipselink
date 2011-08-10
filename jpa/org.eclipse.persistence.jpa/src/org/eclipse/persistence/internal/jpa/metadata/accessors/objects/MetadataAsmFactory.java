@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
  *     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in 
  *           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
  *     04/21/2011-2.3 dclarke: Upgraded to support ASM 3.3.1
+ *     08/10/2011-2.3 Lloyd Fernandes : Bug 336133 - Validation error during processing on parameterized generic OneToMany Entity relationship from MappedSuperclass
  ******************************************************************************/
 import java.io.IOException;
 import java.io.InputStream;
@@ -464,6 +465,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         List<String> arguments = new ArrayList<String>();
         int index = 0;
         int length = desc.length();
+        boolean isGenericTyped=false;
         // PERF: Use char array to make char index faster (note this is a heavily optimized method, be very careful on changes)
         char[] chars = desc.toCharArray();
         while (index < length) {
@@ -478,6 +480,18 @@ public class MetadataAsmFactory extends MetadataFactory {
                         next = chars[index];
                     }
                     arguments.add(toClassName(desc.substring(start, index)));
+                    if(isGenericTyped) {
+                        isGenericTyped=false;
+                        if(next == '<') {
+                            int cnt = 1;
+                            while((cnt > 0) && (++index<desc.length())) {
+                               switch (desc.charAt(index)) {
+                                    case '<': cnt ++; break;
+                                    case '>': cnt --; break;
+                               }
+                            }
+                         }
+                     }
                 } else if (!isGeneric && (PRIMITIVES.indexOf(next) != -1)) {
                     // Primitives.
                     arguments.add(getPrimitiveName(next));
@@ -503,6 +517,16 @@ public class MetadataAsmFactory extends MetadataFactory {
                 } else {
                     // Is a generic type variable.
                     arguments.add(new String(new char[] { next }));
+                    if((index+1) < length) {
+                       if(desc.charAt(index+1)==':') {
+                           isGenericTyped=true;
+                           index ++;
+                           arguments.add(":");
+                           if(desc.charAt(index+1)==':') {
+                               index ++;
+                           }
+                       }
+                    }
                 }
             }
             index++;

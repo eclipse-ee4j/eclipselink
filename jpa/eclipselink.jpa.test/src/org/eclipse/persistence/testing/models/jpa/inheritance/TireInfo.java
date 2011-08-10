@@ -22,11 +22,18 @@ import static javax.persistence.InheritanceType.*;
 @Inheritance(strategy=SINGLE_TABLE)
 @DiscriminatorColumn(name="TIRE_TYPE")
 @DiscriminatorValue("Normal")
-public class TireInfo extends TireInfoMappedSuperclass implements Serializable {
+/**
+ * Note Y is currently not used, but was added as a test for bug 336133.  Please do not remove,
+ * but feel free to add meaning to Y.
+ */
+public class TireInfo<Y> extends TireInfoMappedSuperclass implements Serializable {
     protected Integer id;
 
     public TireInfo() {}
 
+    @Transient
+    private Y variable;
+    
 	@Id
     @GeneratedValue(strategy=TABLE, generator="TIRE_TABLE_GENERATOR")
 	@TableGenerator(
