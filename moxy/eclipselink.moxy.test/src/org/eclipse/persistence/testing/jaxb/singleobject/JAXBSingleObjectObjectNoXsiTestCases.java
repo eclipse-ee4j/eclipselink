@@ -14,31 +14,23 @@ package org.eclipse.persistence.testing.jaxb.singleobject;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.UnmarshalException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases.ExtendedXMLStreamReaderReader;
-import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
 
 public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
 
@@ -109,6 +101,15 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
             instream.close();
             xmlToObjectTest(testObject);
         }
+    }
+    
+    public void testXMLToObjectFromNode() throws Exception {
+        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+        InputSource inputSource = new InputSource(instream);
+        Document testDocument = parser.parse(inputSource);
+        Object testObject = getJAXBUnmarshaller().unmarshal(testDocument, Object.class);
+        instream.close();
+        xmlToObjectTest(testObject);
     }
 
     public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {

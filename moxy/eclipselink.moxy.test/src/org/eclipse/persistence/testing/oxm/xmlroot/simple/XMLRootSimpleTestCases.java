@@ -73,7 +73,7 @@ public class XMLRootSimpleTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
-    public void testXMLToObjectFromDocument() throws Exception {
+    public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), String.class);
         xmlToObjectTest(testObject);
     }

@@ -28,8 +28,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.testing.oxm.xmlroot.Person;
-import org.w3c.dom.Document;
 
 public class XMLRootDurationTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/simple/duration.xml";    
@@ -72,7 +70,7 @@ public class XMLRootDurationTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
-    public void testXMLToObjectFromDocument() throws Exception {
+    public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), Duration.class);
         xmlToObjectTest(testObject);
     }

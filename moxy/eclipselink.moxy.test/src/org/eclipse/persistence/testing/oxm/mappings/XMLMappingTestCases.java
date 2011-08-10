@@ -17,23 +17,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.TypeInfoProvider;
 import javax.xml.validation.Validator;
 import javax.xml.validation.ValidatorHandler;
@@ -50,11 +44,11 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -62,7 +56,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
@@ -212,6 +205,16 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Object testObject = xmlUnmarshaller.unmarshal(instream);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+    
+    public void testXMLToObjectFromNode() throws Exception {
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
+            Node node  = parser.parse(instream);
+            Object testObject = xmlUnmarshaller.unmarshal(node);
             instream.close();
             xmlToObjectTest(testObject);
         }

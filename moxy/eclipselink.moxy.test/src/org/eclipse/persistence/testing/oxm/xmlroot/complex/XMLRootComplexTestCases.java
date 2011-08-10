@@ -25,6 +25,7 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.w3c.dom.Node;
 
 public class XMLRootComplexTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/complex/employee.xml";
@@ -61,7 +62,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
         xmlToObjectTest(testObject);
     }
 
-    public void testXMLToObjectFromDocument() throws Exception {
+    public void testXMLToObjectFromNode() throws Exception {
         Object testObject = xmlUnmarshaller.unmarshal(getControlDocument(), Person.class);
         xmlToObjectTest(testObject);
     }
@@ -70,7 +71,7 @@ public class XMLRootComplexTestCases extends XMLMappingTestCases {
         java.net.URL url = ClassLoader.getSystemResource(getXMLResource());
         Object testObject = xmlUnmarshaller.unmarshal(url, Person.class);
         xmlToObjectTest(testObject);
-    }
+    }    
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {

@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.sax.SAXSource;
@@ -30,7 +29,6 @@ import org.xml.sax.InputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases.ExtendedXMLStreamReaderReader;
 import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 
 /**
@@ -70,7 +68,7 @@ public class JAXBElementTestCases extends JAXBTestCases {
     	target = targetCls;
     }
     
-    public void testXMLToObjectFromDocument() throws Exception {
+    public void testXMLToObjectFromNode() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         InputSource inputSource = new InputSource(instream);
         Document testDocument = parser.parse(inputSource);

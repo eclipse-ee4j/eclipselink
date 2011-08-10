@@ -418,6 +418,17 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    public void testXMLToObjectFromNode() throws Exception {
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
+            Node node  = parser.parse(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(node);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+  
+    
     public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);

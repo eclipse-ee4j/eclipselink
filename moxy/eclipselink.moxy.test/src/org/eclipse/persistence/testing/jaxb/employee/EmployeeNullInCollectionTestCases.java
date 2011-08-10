@@ -20,19 +20,15 @@ import java.util.Calendar;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
-import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases.ExtendedXMLStreamReaderReader;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 public class EmployeeNullInCollectionTestCases extends JAXBTestCases {
 
@@ -139,6 +135,17 @@ public class EmployeeNullInCollectionTestCases extends JAXBTestCases {
             xmlToObjectTest(testObject);
         }
     }
+    
+    public void testXMLToObjectFromNode() throws Exception {
+        if(isUnmarshalTest()) {
+            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
+            Node node  = parser.parse(instream);
+            Object testObject = jaxbUnmarshaller.unmarshal(node, Employee_B.class);
+            instream.close();
+            xmlToObjectTest(testObject);
+        }
+    }
+  
     
     public void testXMLToObjectFromURL() throws Exception {
         if(isUnmarshalTest()) {
