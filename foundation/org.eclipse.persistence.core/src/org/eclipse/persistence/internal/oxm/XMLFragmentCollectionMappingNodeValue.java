@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.Map.Entry;
+
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
@@ -81,6 +83,11 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
             if(xPathFragment.getPrefix() != null) {
                 qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
+            if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {
+                for(Entry<String, String> next:unmarshalRecord.getPrefixesForFragment().entrySet()) {
+                    builder.startPrefixMapping(next.getKey(), next.getValue());
+                }
+            }            
             builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
             XMLReader xmlReader = unmarshalRecord.getXMLReader();
             xmlReader.setContentHandler(builder);

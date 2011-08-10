@@ -1,4 +1,5 @@
 <root>
   <simple-element>123</simple-element>
+  <qname-element xmlns:myns="somenamespaceuri">myns:localname</qname-element>
   <complex-element><child>value</child></complex-element>
 </root>

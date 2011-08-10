@@ -109,6 +109,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     protected String rootElementName;
     protected String rootElementNamespaceUri;
     private SAXFragmentBuilder fragmentBuilder;
+    private Map<String, String> prefixesForFragment;
     private String encoding;
     private String version;
     private String schemaLocation;
@@ -126,6 +127,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         super();
         this.xPathFragment = new XPathFragment();
         this.childRecordPool = new ArrayList<UnmarshalRecord>();
+        this.prefixesForFragment = new HashMap<String, String>();
         initialize(treeObjectBuilder);
     }
 
@@ -611,6 +613,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         getUnmarshalNamespaceResolver().push(prefix, uri);
+        prefixesForFragment.put(prefix, uri);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
@@ -752,6 +755,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                     }
                 }
             }
+            this.prefixesForFragment.clear();
         } catch (EclipseLinkException e) {
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;
@@ -1189,5 +1193,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         	xPathFragment.setNamespaceAware(unmarshaller.isNamespaceAware());
         }
     }
-
+    
+    /**
+     * INTERNAL
+     * Returns a Map of any prefix mappings that were made before the most recent start
+     * element event. This Map is used so the prefix mappings can be passed along to a 
+     * fragment builder in the event that the element in question is going to be unmarshalled
+     * as a Node.
+     */
+    public Map<String, String> getPrefixesForFragment() {
+        return prefixesForFragment;
+    }
 }
