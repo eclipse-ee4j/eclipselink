@@ -398,7 +398,11 @@ public class DOMReader extends XMLReaderAdapter {
         }
 
         public String getURI(int index) {
-            return attrs.get(index).getNamespaceURI();
+            String uri = attrs.get(index).getNamespaceURI();
+            if(uri == null) {
+                uri = XMLConstants.EMPTY_STRING;
+            }
+            return uri;
         }
 
         public String getValue(int index) {
