@@ -104,6 +104,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw;
+import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Loot;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
@@ -204,6 +206,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
         suite.addTest(new AdvancedJPAJunitTest("testMapBuildReferencesPKList"));
+        suite.addTest(new AdvancedJPAJunitTest("testListBuildReferencesPKList"));
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
@@ -484,6 +487,39 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertTrue("ValueFromPKList returned list of different size from actual entity.", equipments.size() == dept.getEquipment().size());
         for (Equipment equip : dept.getEquipment().values()){
             assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
+        }
+        rollbackTransaction(em);
+    }
+    
+    public void testListBuildReferencesPKList(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Jigsaw jigsaw = new Jigsaw();
+        for (int i = 1; i < 11; i++) {
+            jigsaw.addPiece(new JigsawPiece(i));
+        }
+        em.persist(jigsaw);
+       
+        em.flush();
+        
+        clearCache();
+        
+        AbstractSession session = (AbstractSession) JpaHelper.getEntityManager(em).getActiveSession();
+        ClassDescriptor descriptor = session.getDescriptorForAlias("Jigsaw");
+        
+        Jigsaw foundJigsaw = (Jigsaw) em.find(Jigsaw.class, jigsaw.getId());
+        int expectedNumber = foundJigsaw.getPieces().size();
+        
+        ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("pieces");
+        Object[] pks = mapping.buildReferencesPKList(foundJigsaw, mapping.getAttributeValueFromObject(foundJigsaw), session);
+        assertEquals("PK list is of incorrect size", expectedNumber, pks.length);
+        
+        List<JigsawPiece> elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, session);
+        assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
+        
+        for (JigsawPiece element : elements){
+            assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
         }
         rollbackTransaction(em);
     }

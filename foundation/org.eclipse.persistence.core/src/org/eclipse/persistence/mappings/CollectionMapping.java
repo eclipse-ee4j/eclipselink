@@ -1138,6 +1138,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         
         if(!this.containerPolicy.isOrderedListPolicy()) {
             setContainerPolicy(new OrderedListContainerPolicy(this.containerPolicy.getContainerClass()));
+            // re-prepare replaced container policy as we are initializing
+            getContainerPolicy().prepare(getSelectionQuery(), session);
         }
         OrderedListContainerPolicy orderedListContainerPolicy = (OrderedListContainerPolicy)this.containerPolicy;  
         orderedListContainerPolicy.setListOrderField(this.listOrderField);
