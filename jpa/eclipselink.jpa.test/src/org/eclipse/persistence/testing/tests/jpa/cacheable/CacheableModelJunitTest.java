@@ -47,6 +47,8 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueDerivedIDEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueDerivedIDPK;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity;
@@ -260,6 +262,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testFindWithEMLegacyProperties"));
             suite.addTest(new CacheableModelJunitTest("testMergeNonCachedWithRelationship"));
             suite.addTest(new CacheableModelJunitTest("testIndirectCollectionRefreshBehavior"));
+            suite.addTest(new CacheableModelJunitTest("testDerivedIDProtectedRead"));
         }
         return suite;
     }
@@ -1698,6 +1701,34 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
       }
+    
+    // Bug 352533
+    public void testDerivedIDProtectedRead(){
+        EntityManager em = createEntityManager();
+        CacheableFalseEntity cf = null;
+        CacheableTrueDerivedIDEntity ctdid  = null;
+        try{
+            beginTransaction(em);
+            cf = new CacheableFalseEntity();
+            em.persist(cf);
+            em.flush();
+            
+            ctdid = new CacheableTrueDerivedIDEntity("desc1", cf);
+            em.persist(ctdid);
+            commitTransaction(em);
+            em.clear();
+            
+            ctdid = em.find(CacheableTrueDerivedIDEntity.class, new CacheableTrueDerivedIDPK(ctdid.getPk().getDescription(), cf.getId()));
+            assertNotNull("The protected cached relationship was not properly retrieved", ctdid.getCacheableFalse());
+        } finally {
+            beginTransaction(em);
+            cf = em.find(CacheableFalseEntity.class, cf.getId());
+            em.remove(cf);
+            em.remove(ctdid);
+            commitTransaction(em);
+        }
+        
+    }
     
     /**
      * Convenience method.

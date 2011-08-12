@@ -374,7 +374,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         Object resultCollection = policy.containerInstance(results.size());
                         Object iterator = policy.iteratorFor(results);
                         while (policy.hasNext(iterator)) {
-                            Object result = ((UnitOfWorkImpl)session).registerExistingObject(policy.next(iterator, session), this.descriptor);
+                            Object result = ((UnitOfWorkImpl)session).registerExistingObject(policy.next(iterator, session), this.descriptor, null);
                             policy.addInto(result, resultCollection, session);
                         }
                         return resultCollection;

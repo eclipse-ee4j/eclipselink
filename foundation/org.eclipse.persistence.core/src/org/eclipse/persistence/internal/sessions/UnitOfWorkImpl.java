@@ -3851,7 +3851,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(existingObject, this);
-        Object registeredObject = this.registerExistingObject(implementation, descriptor);
+        Object registeredObject = this.registerExistingObject(implementation, descriptor, null);
 
         // Bug # 3212057 - workaround JVM bug (MWN)
         if (implementation != existingObject) {
@@ -3870,7 +3870,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return The clone of the original object, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
      */
-    public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor) {
+    public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor, Object queryPrimaryKey) {
         if (this.isClassReadOnly(descriptor.getJavaClass(), descriptor)) {
             return objectToRegister;
         }
@@ -3889,7 +3889,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (registeredObject == null) {
                 // Check if object is existing, if it is it must be cloned into the unit of work
                 // otherwise it is a new object
-                Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToRegister, this, true);
+                Object primaryKey = queryPrimaryKey;
+                if (primaryKey == null){
+                    primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToRegister, this, true);
+                }
                 // The primary key may be null for a new object in a nested unit of work (is existing in nested, new in parent).
                 if (primaryKey != null) {
                     // Always check the cache first.

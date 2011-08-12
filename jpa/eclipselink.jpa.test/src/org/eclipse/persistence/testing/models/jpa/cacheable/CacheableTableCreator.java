@@ -27,6 +27,7 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCACHEABLE_FALSE_DETAIL_BPTable());
         addTableDefinition(buildCACHEABLE_FALSE_TO_DETAILTable());
         addTableDefinition(buildCACHEABLE_TRUE_ENTITYTable());
+        addTableDefinition(buildCACHEABLE_TRUE_DERIVED_ID_ENTITYTable());
         addTableDefinition(buildSUB_CACHEABLE_FALSE_ENTITYTable());
         addTableDefinition(buildSUB_CACHEABLE_NONE_ENTITYTable());
         addTableDefinition(buildCACHEABLE_PROTECTED_ENTITYTable());
@@ -256,6 +257,34 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         fieldDTYPE.setShouldAllowNull(true);
         table.addField(fieldDTYPE);
     
+        return table;
+    }
+    
+    public static TableDefinition buildCACHEABLE_TRUE_DERIVED_ID_ENTITYTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CACHEABLE_TRUE_DER");
+        
+        FieldDefinition fieldCF_ID = new FieldDefinition();
+        fieldCF_ID.setName("CF_ID");
+        fieldCF_ID.setTypeName("NUMERIC");
+        fieldCF_ID.setSize(15);
+        fieldCF_ID.setShouldAllowNull(false);
+        fieldCF_ID.setIsPrimaryKey(true);
+        fieldCF_ID.setUnique(false);
+        fieldCF_ID.setIsIdentity(true);
+        fieldCF_ID.setForeignKeyFieldName("JPA_CACHEABLE_FALSE.ID");
+        table.addField(fieldCF_ID);
+        
+        FieldDefinition fieldDESC = new FieldDefinition();
+        fieldDESC.setName("DESCRIPTION");
+        fieldDESC.setTypeName("VARCHAR");
+        fieldDESC.setSize(75);
+        fieldDESC.setShouldAllowNull(true);
+        fieldDESC.setIsPrimaryKey(true);
+        fieldDESC.setUnique(false);
+        fieldDESC.setIsIdentity(true);
+        table.addField(fieldDESC);
+        
         return table;
     }
     

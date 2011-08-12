@@ -808,6 +808,17 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     }
 
     /**
+     * INTERNAL:
+     * Return the primary key stored in this query 
+     * 
+     * @return the selection id of this ReadObjectQuery
+     */
+    @Override
+    protected Object getQueryPrimaryKey(){
+        return getSelectionId();
+    }
+    
+    /**
      * PUBLIC:
      * Return Id of the object to be selected by the query.
      */
