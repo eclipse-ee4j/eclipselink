@@ -20,7 +20,12 @@ public class EmployeeNamespace
 	@XmlElement(name="id", namespace="my.cool/namespace")
 	public int id;
 
-	public void setSomething() {}
+	// the following are invalid set/get methods and should be ignored 
+	public void setSomething() {}  // no input parameter
+	public void getSomething() {}  // void return type
+    public void isSomething() {}   // void return type
+    public Object getSomething(Object it) { return new Object(); }  // has an input parameter
+    public Boolean isSomething(Boolean it) { return true; }  // has an input parameter
 
 	public String toString()
 	{
