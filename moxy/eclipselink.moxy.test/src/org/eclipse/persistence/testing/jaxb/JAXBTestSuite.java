@@ -58,6 +58,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlValueListTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsStringTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsIntegerTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsReferencedClassTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsComplexTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementTestCases.class);

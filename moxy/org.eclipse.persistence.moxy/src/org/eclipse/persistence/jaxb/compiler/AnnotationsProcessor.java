@@ -642,6 +642,17 @@ public class AnnotationsProcessor {
                     buildNewTypeInfo(jClassArray);
                 }
             }
+            
+            if(property.isChoice()) {
+            	processChoiceProperty(property, info, javaClass, propertyType);
+            	for(Property choiceProp:property.getChoiceProperties()) {
+            		JavaClass cls = choiceProp.getActualType();
+            		if(shouldGenerateTypeInfo(cls)) {
+            			JavaClass[] jClassArray = new JavaClass[] {cls};
+            			buildNewTypeInfo(jClassArray);
+            		}
+            	}
+            }
         }
     }
 
