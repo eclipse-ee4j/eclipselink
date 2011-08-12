@@ -83,7 +83,7 @@
                 <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Plant</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-<!--        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode> --> 
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<properties>
 		           %%server-platform-property%%
                    <property name="eclipselink.target-database" value="%%database-platform%%"/>
