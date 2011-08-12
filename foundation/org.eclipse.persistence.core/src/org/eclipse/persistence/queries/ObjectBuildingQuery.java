@@ -262,6 +262,19 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     }
 
     /**
+     * INTERNAL:
+     * Return the primary key stored in this query if there is one
+     * This is overridden by subclasses that actually hold a primary key
+     * 
+     * @return
+     * 
+     * @see ReadObjectQuery
+     */
+    protected Object getQueryPrimaryKey(){
+        return null;
+    }
+    
+    /**
      * PUBLIC:
      * Return the reference class of the query.
      */
@@ -383,12 +396,12 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             // bug # 3183379 either the object comes from the shared cache and is existing, or
             //it is from a parent unit of work and this unit of work does not need to know if it is new
             //or not.  It will query the parent unit of work to determine newness.
-            clone = unitOfWork.registerExistingObject(result, concreteDescriptor);
+           
+            clone = unitOfWork.registerExistingObject(result, concreteDescriptor, getQueryPrimaryKey());
         }
         postRegisterIndividualResult(clone, result, primaryKey, unitOfWork, joinManager, concreteDescriptor);
         return clone;
     }
-
 
     /**
      * Post process the object once it is registered in the unit of work.
