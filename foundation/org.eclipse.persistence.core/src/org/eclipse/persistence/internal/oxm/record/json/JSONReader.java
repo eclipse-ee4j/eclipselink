@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.oxm.record.json;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,10 +43,15 @@ public class JSONReader extends XMLReaderAdapter {
     public void parse(InputSource input) throws IOException, SAXException {
         try {
             CharStream charStream;
+            InputStream inputStream = null;
             if(null != input.getByteStream()) {
                 charStream = new ANTLRInputStream(input.getByteStream());
-            } else {
+            } else if (null != input.getCharacterStream()){
                 charStream = new ANTLRReaderStream(input.getCharacterStream());
+            } else {
+                URL url = new URL(input.getSystemId());
+                inputStream = url.openStream();
+                charStream = new ANTLRInputStream(inputStream);
             }
             JSONLexer lexer = new JSONLexer(charStream);
             TokenRewriteStream tokens = new TokenRewriteStream(lexer);
@@ -53,6 +60,9 @@ public class JSONReader extends XMLReaderAdapter {
             contentHandler.startDocument();
             parseRoot(commonTree);
             contentHandler.endDocument();
+            if(null != inputStream) {
+                inputStream.close();
+            }
         } catch(RecognitionException e) {
             throw new SAXParseException(e.getLocalizedMessage(), input.getPublicId(), input.getSystemId(), e.line, e.index, e);
        }
