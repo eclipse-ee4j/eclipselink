@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:c="http://www.example.com/contacts" xmlns:a="http://www.example.com/address" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:import schemaLocation="schema2.xsd" namespace="http://www.example.com/contacts"/>
+   <xsd:import schemaLocation="schema3.xsd" namespace="http://www.example.com/contacts"/>
    <xsd:complexType name="employee">
       <xsd:sequence>
          <xsd:element name="info" minOccurs="0">

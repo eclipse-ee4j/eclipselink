@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:ns0="myns" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:import schemaLocation="schema1.xsd" namespace="myns"/>
+   <xsd:import schemaLocation="schema2.xsd" namespace="myns"/>
    <xsd:complexType name="foos">
       <xsd:sequence>
          <xsd:element name="items" minOccurs="0">

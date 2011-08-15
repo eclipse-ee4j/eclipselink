@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:v="http://www.example.com/vehicles" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/vehicles"/>
+   <xsd:import schemaLocation="schema2.xsd" namespace="http://www.example.com/vehicles"/>
    <xsd:complexType name="car">
       <xsd:sequence>
          <xsd:element name="features" minOccurs="0">

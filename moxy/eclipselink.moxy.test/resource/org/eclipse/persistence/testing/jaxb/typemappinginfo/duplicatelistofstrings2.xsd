@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="someUri" xmlns:ns0="someUri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:import schemaLocation="schema0.xsd"/>
+   <xsd:import schemaLocation="schema1.xsd"/>
    <xsd:element name="testTagname4" type="listOfObject2"/>
    <xsd:element name="testTagname3" type="listOfString"/>
    <xsd:element name="testTagname" type="listOfObject"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="myns">
-   <xsd:import namespace="myns" schemaLocation="schema1.xsd"/>
+   <xsd:import namespace="myns" schemaLocation="schema2.xsd"/>
    <xsd:complexType name="stringIntegerMap">
       <xsd:sequence>
          <xsd:element maxOccurs="unbounded" minOccurs="0" name="entry">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:x="listOfObjectsNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:import schemaLocation="schema0.xsd" namespace="listOfObjectsNamespace"/>
+   <xsd:import schemaLocation="schema1.xsd" namespace="listOfObjectsNamespace"/>
    <xsd:complexType name="stringEmployeeHashtable">
       <xsd:sequence>
          <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
