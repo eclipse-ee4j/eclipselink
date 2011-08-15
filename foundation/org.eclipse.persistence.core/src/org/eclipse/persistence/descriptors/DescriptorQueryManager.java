@@ -29,12 +29,14 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
+import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.CompoundExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 
@@ -983,6 +985,11 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         } else if (exp.isFunctionExpression()) {
             for (Expression e : (Vector<Expression>) ((FunctionExpression) exp).getChildren()) {
                 updatePropertyParameterExpression(e);
+            }
+        } else if (exp.isSubSelectExpression()) {
+            ReportQuery subSelectQuery = ((SubSelectExpression) exp).getSubQuery();
+            for (ReportItem item : subSelectQuery.getItems()) {
+                updatePropertyParameterExpression(item.getAttributeExpression());
             }
         }
         

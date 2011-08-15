@@ -73,11 +73,17 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSCHOOLTable());
         addTableDefinition(buildBOLTTable());
         addTableDefinition(buildNUTTable());
+        addTableDefinition(buildPERSONTable());
+        addTableDefinition(buildEATERTable());
+        addTableDefinition(buildFOODTable());
+        addTableDefinition(buildSANDWICHTable());
         addTableDefinition(buildLOOTTable());
         addTableDefinition(buildADVSIMPLEENTITYTable());
         addTableDefinition(buildADVECSIMPLETable());
         addTableDefinition(buildCMP3_JIGSAWTable());
         addTableDefinition(buildCMP3_JIGSAW_PIECETable());
+        addTableDefinition(buildRABBITTable());
+        addTableDefinition(buildRABBITFOOTTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -1459,6 +1465,206 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSALARY.setShouldAllowNull(true);
         table.addField(fieldSALARY);
 
+        return table;
+    }
+    
+    public TableDefinition buildRABBITTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_AC_RABBIT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(60);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
+    public TableDefinition buildRABBITFOOTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_AC_RABBIT_FOOT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldRABBITID = new FieldDefinition();
+        fieldRABBITID.setName("RABBIT_ID");
+        fieldRABBITID.setTypeName("NUMERIC");
+        fieldRABBITID.setSize(15);
+        fieldRABBITID.setShouldAllowNull(true);
+        fieldRABBITID.setIsPrimaryKey(false);
+        fieldRABBITID.setIsIdentity(false);
+        fieldRABBITID.setUnique(false);
+        table.addField(fieldRABBITID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("CAPTION");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(60);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
+    public TableDefinition buildFOODTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_AC_FOOD");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("F_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDTYPE = new FieldDefinition();
+        fieldDTYPE.setName("DTYPE");
+        fieldDTYPE.setTypeName("VARCHAR");
+        fieldDTYPE.setSize(10);
+        fieldDTYPE.setShouldAllowNull(true);
+        fieldDTYPE.setIsPrimaryKey(false);
+        fieldDTYPE.setUnique(false);
+        fieldDTYPE.setIsIdentity(false);
+        table.addField(fieldDTYPE);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSANDWICHTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_AC_SANDWICH");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("S_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        fieldID.setForeignKeyFieldName("JPA_AC_FOOD.F_ID");
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("S_NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(60);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("S_DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(120);
+        fieldDESCRIPTION.setSubSize(0);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        table.addField(fieldDESCRIPTION);
+        
+        return table;
+    }
+    
+    public TableDefinition buildPERSONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_AC_PERSON");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("P_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDTYPE = new FieldDefinition();
+        fieldDTYPE.setName("DTYPE");
+        fieldDTYPE.setTypeName("VARCHAR");
+        fieldDTYPE.setSize(10);
+        fieldDTYPE.setShouldAllowNull(true);
+        fieldDTYPE.setIsPrimaryKey(false);
+        fieldDTYPE.setUnique(false);
+        fieldDTYPE.setIsIdentity(false);
+        table.addField(fieldDTYPE);
+    
+        return table;
+    }
+    
+    public TableDefinition buildEATERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_AC_EATER");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("E_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        fieldID.setForeignKeyFieldName("JPA_AC_PERSON.P_ID");
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("E_NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(60);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldSANDWICH = new FieldDefinition();
+        fieldSANDWICH.setName("SANDWICH_ID");
+        fieldSANDWICH.setTypeName("NUMERIC");
+        fieldSANDWICH.setSize(15);
+        fieldSANDWICH.setShouldAllowNull(true);
+        fieldSANDWICH.setIsPrimaryKey(false);
+        fieldSANDWICH.setUnique(false);
+        fieldSANDWICH.setIsIdentity(false);
+        //fieldSANDWICH.setForeignKeyFieldName("JPA_AC_SANDWICH.S_ID");
+        table.addField(fieldSANDWICH);
+        
         return table;
     }
     

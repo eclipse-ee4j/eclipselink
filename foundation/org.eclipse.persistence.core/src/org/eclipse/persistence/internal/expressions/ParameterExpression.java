@@ -393,7 +393,8 @@ public class ParameterExpression extends BaseExpression {
      * into part of some larger expression. You normally would not call this directly, instead calling twist,
      * (see the comment there for more details).
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         if (isProperty()) {
             return context.getProperty(getField());
         } else {

@@ -337,17 +337,18 @@ public abstract class CompoundExpression extends Expression {
      * Used to change an expression off of one base to an expression off of a different base.
      * i.e. expression on address to an expression on an employee's address.
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         Vector arguments;
 
         if (this.secondChild == null) {
             arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
         } else {
             arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-            arguments.addElement(this.secondChild.twistedForBaseAndContext(newBase, context));
+            arguments.addElement(this.secondChild.twistedForBaseAndContext(newBase, context, oldBase));
         }
 
-        Expression first = this.firstChild.twistedForBaseAndContext(newBase, context);
+        Expression first = this.firstChild.twistedForBaseAndContext(newBase, context, oldBase);
         return first.performOperator(this.operator, arguments);
     }
 

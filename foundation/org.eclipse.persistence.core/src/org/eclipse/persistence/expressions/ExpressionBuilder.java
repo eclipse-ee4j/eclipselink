@@ -432,7 +432,8 @@ public class ExpressionBuilder extends ObjectExpression {
      * @param context
      * @return
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         return newBase;
     }
 

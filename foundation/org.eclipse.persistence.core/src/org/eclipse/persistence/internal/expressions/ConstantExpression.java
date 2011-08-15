@@ -202,7 +202,8 @@ public class ConstantExpression extends Expression {
      * into part of some larger expression. You normally would not call this directly, instead calling twist
      * See the comment there for more details"
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         return (Expression)this.clone();
     }
 

@@ -2399,6 +2399,13 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
+    public boolean isSubSelectExpression() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean isTableExpression() {
         return false;
     }
@@ -4156,7 +4163,7 @@ public abstract class Expression implements Serializable, Cloneable {
         if (expression == null) {
             return null;
         }
-        return expression.twistedForBaseAndContext(newBase, this);
+        return expression.twistedForBaseAndContext(newBase, this, null);
 
     }
 
@@ -4167,7 +4174,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * into part of some larger expression. You normally would not call this directly, instead calling twist
      * See the comment there for more details"
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         // Will be overridden by subclasses
         return this;
     }

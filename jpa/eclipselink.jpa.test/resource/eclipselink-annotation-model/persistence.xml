@@ -301,4 +301,18 @@
         </properties>
     </persistence-unit>
     
+    <persistence-unit name="additional-criteria">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Person</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Eater</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Food</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sandwich</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Rabbit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.RabbitFoot</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.session-name" value="additional-criteria"/>
+        </properties>
+    </persistence-unit>
+    
 </persistence>

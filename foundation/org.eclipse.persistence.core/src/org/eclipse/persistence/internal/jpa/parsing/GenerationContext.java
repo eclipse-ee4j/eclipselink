@@ -64,7 +64,17 @@ public class GenerationContext {
     }
 
     public Expression expressionFor(String aliasName) {
-        return (Expression)expressions.get(aliasName);
+        Expression exp = (Expression) expressions.get(aliasName);
+        
+        if (exp == null && (! expressions.isEmpty()) && isSelectGenerationContext()) {
+            GenerationContext outerContext = ((SelectGenerationContext) this).getOuterContext();
+            
+            if (outerContext != null) {
+                return outerContext.expressionFor(aliasName);
+            }
+        }
+       
+        return exp;
     }
 
     public Class getBaseQueryClass() {
@@ -142,6 +152,10 @@ public class GenerationContext {
         return memberOfNode != null;
     }
 
+    public boolean isSelectGenerationContext() {
+        return false;
+    }
+    
     //Answer true if we should use outer joins in our get() (vs getAllowingNull())
     public boolean shouldUseOuterJoins() {
         return false;
