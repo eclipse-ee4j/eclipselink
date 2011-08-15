@@ -133,7 +133,7 @@ public class SchemaGenerator {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToPackageInfoMappings = packageToPackageInfoMappings;
-        this.schemaCount = 0;
+        this.schemaCount = 1;
         this.schemaTypeInfo = new HashMap<String, SchemaTypeInfo>(typeInfo.size());
         this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
 

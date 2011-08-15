@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:employee-data xmlns:x="examplenamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="examplenamespace schema0.xsd ">
+<x:employee-data xmlns:x="examplenamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="examplenamespace schema1.xsd ">
   <firstName>firstName</firstName>
   <birthday>2001-01-01</birthday>
   <age>0</age>

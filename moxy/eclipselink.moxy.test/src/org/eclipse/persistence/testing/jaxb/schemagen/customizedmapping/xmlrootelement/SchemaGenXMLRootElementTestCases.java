@@ -49,7 +49,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
             validator.validate(ss);
@@ -69,7 +69,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
             validator.validate(ss);
@@ -89,7 +89,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
             validator.validate(ss);
@@ -109,7 +109,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
             validator.validate(ss);
@@ -130,7 +130,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema2.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
             validator.validate(ss);
@@ -151,7 +151,7 @@ public class SchemaGenXMLRootElementTestCases extends SchemaGenTestCases {
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
-            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema2.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
             validator.validate(ss);
