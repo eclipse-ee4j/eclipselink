@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -73,6 +73,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw;
+import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -162,6 +164,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
         suite.addTest(new AdvancedJPAJunitTest("testMapBuildReferencesPKList"));
+        suite.addTest(new AdvancedJPAJunitTest("testListBuildReferencesPKList"));
         if (!isJPA10()) {
             // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
             suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
@@ -214,6 +217,38 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         rollbackTransaction(em);
     }
     
+    public void testListBuildReferencesPKList(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Jigsaw jigsaw = new Jigsaw();
+        for (int i = 1; i < 11; i++) {
+            jigsaw.addPiece(new JigsawPiece(i));
+        }
+        em.persist(jigsaw);
+       
+        em.flush();
+        
+        clearCache();
+        
+        AbstractSession session = (AbstractSession) JpaHelper.getEntityManager(em).getActiveSession();
+        ClassDescriptor descriptor = session.getDescriptorForAlias("Jigsaw");
+        
+        Jigsaw foundJigsaw = (Jigsaw) em.find(Jigsaw.class, jigsaw.getId());
+        int expectedNumber = foundJigsaw.getPieces().size();
+        
+        ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("pieces");
+        Object[] pks = mapping.buildReferencesPKList(foundJigsaw, mapping.getAttributeValueFromObject(foundJigsaw), session);
+        assertEquals("PK list is of incorrect size", expectedNumber, pks.length);
+        
+        List<JigsawPiece> elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, session);
+        assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
+        
+        for (JigsawPiece element : elements){
+            assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
+        }
+        rollbackTransaction(em);
+    }
     /**
      * This test performs minimal sanity testing on the advanced JPA model
      * in order to verify metamodel creation.<p>

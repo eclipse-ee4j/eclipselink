@@ -60,6 +60,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildADVENTITYAENTITYDTable());
         addTableDefinition(buildENTITYETable());
         addTableDefinition(buildADVENTITYAENTITYETable());
+        addTableDefinition(buildCMP3_JIGSAWTable());
+        addTableDefinition(buildCMP3_JIGSAW_PIECETable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -1776,4 +1778,70 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
         return table;
     }
+ 
+   public TableDefinition buildCMP3_JIGSAWTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_JIGSAW");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        return table;
+    }
+
+    public TableDefinition buildCMP3_JIGSAW_PIECETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_JIGSAW_PIECE");
+        
+        FieldDefinition fieldFK_JIGSAW_ID = new FieldDefinition();
+        fieldFK_JIGSAW_ID.setName("FK_JIGSAW_ID");
+        fieldFK_JIGSAW_ID.setTypeName("NUMBER");
+        fieldFK_JIGSAW_ID.setSize(15);
+        fieldFK_JIGSAW_ID.setSubSize(0);
+        fieldFK_JIGSAW_ID.setIsPrimaryKey(false);
+        fieldFK_JIGSAW_ID.setIsIdentity(false);
+        fieldFK_JIGSAW_ID.setUnique(false);
+        fieldFK_JIGSAW_ID.setShouldAllowNull(true);
+        table.addField(fieldFK_JIGSAW_ID);
+        
+        FieldDefinition fieldPIECE_NUMBER = new FieldDefinition();
+        fieldPIECE_NUMBER.setName("PIECE_NUMBER");
+        fieldPIECE_NUMBER.setTypeName("NUMBER");
+        fieldPIECE_NUMBER.setSize(10);
+        fieldPIECE_NUMBER.setSubSize(0);
+        fieldPIECE_NUMBER.setIsPrimaryKey(false);
+        fieldPIECE_NUMBER.setIsIdentity(false);
+        fieldPIECE_NUMBER.setUnique(false);
+        fieldPIECE_NUMBER.setShouldAllowNull(true);
+        table.addField(fieldPIECE_NUMBER);
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        ForeignKeyConstraint foreignKeyCMP3_JIGSAW_PIECE_CMP3_JIGSAW = new ForeignKeyConstraint();
+        foreignKeyCMP3_JIGSAW_PIECE_CMP3_JIGSAW.setName("CMP3_JIGSAW_PIECE_CMP3_JIGSAW");
+        foreignKeyCMP3_JIGSAW_PIECE_CMP3_JIGSAW.setTargetTable("CMP3_JIGSAW");
+        foreignKeyCMP3_JIGSAW_PIECE_CMP3_JIGSAW.addSourceField("FK_JIGSAW_ID");
+        foreignKeyCMP3_JIGSAW_PIECE_CMP3_JIGSAW.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyCMP3_JIGSAW_PIECE_CMP3_JIGSAW);
+        
+        return table;
+    }
+
 }
