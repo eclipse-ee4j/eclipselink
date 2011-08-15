@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.security;
 
 import java.security.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.lang.reflect.*;
 
 /**
@@ -30,7 +32,19 @@ import java.lang.reflect.*;
 public class PrivilegedAccessHelper {
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
-
+    private static Map<String, Class> primitiveClasses;
+    
+    static {
+        primitiveClasses = new HashMap<String, Class>();
+        primitiveClasses.put("boolean", boolean.class);
+        primitiveClasses.put("int", int.class);
+        primitiveClasses.put("long", long.class);
+        primitiveClasses.put("float", float.class);
+        primitiveClasses.put("double", double.class);
+        primitiveClasses.put("char", char.class);
+        primitiveClasses.put("byte", byte.class);
+        primitiveClasses.put("void", void.class);
+    }
     /**
      * Finding a field within a class potentially has to navigate through it's superclasses to eventually
      * find the field.  This method is called by the public getDeclaredField() method and does a recursive
@@ -78,6 +92,11 @@ public class PrivilegedAccessHelper {
      * @param className
      */
     public static Class getClassForName(final String className) throws ClassNotFoundException {
+        // Check for primitive types.
+        Class primitive = primitiveClasses.get(className);
+        if (primitive != null) {
+            return primitive;
+        }
         return Class.forName(className);
     }
 
@@ -85,6 +104,11 @@ public class PrivilegedAccessHelper {
      * Execute a java Class.forName() wrap the call in a doPrivileged block if necessary.
      */
     public static Class getClassForName(final String className, final boolean initialize, final ClassLoader loader) throws ClassNotFoundException {
+        // Check for primitive types.
+        Class primitive = primitiveClasses.get(className);
+        if (primitive != null) {
+            return primitive;
+        }
         return Class.forName(className, initialize, loader);
     }
 
