@@ -157,8 +157,9 @@ public class TableExpression extends DataExpression {
      * into part of some larger expression. You normally would not call this directly, instead calling twist
      * See the comment there for more details"
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
-        Expression twistedBase = getBaseExpression().twistedForBaseAndContext(newBase, context);
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
+        Expression twistedBase = getBaseExpression().twistedForBaseAndContext(newBase, context, oldBase);
         return twistedBase.getTable(getTable());
 
     }

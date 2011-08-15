@@ -506,7 +506,8 @@ public class FunctionExpression extends BaseExpression {
      * into part of some larger expression. You normally would not call this directly, instead calling twist
      * See the comment there for more details"
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         if (this.children.isEmpty()) {
             return (Expression)clone();
         }
@@ -514,12 +515,12 @@ public class FunctionExpression extends BaseExpression {
 
         // For functions the base is the first child, we only want the arguments so start at the second.
         for (int index = 1; index < this.children.size(); index++) {
-            newChildren.addElement(((Expression)children.elementAt(index)).twistedForBaseAndContext(newBase, context));
+            newChildren.addElement(((Expression)children.elementAt(index)).twistedForBaseAndContext(newBase, context, oldBase));
         }
 
         // Aply the function to the twisted old base.
-        Expression oldBase = (Expression)this.children.elementAt(0);
-        return oldBase.twistedForBaseAndContext(newBase, context).performOperator(this.operator, newChildren);
+        Expression oldBaseExp = (Expression)this.children.elementAt(0);
+        return oldBaseExp.twistedForBaseAndContext(newBase, context, oldBase).performOperator(this.operator, newChildren);
     }
 
     /**

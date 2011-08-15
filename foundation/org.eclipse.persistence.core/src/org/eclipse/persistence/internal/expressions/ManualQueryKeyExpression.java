@@ -111,8 +111,9 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
      * into part of some larger expression. You normally would not call this directly, instead calling twist
      * See the comment there for more details"
      */
-    public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
-        ObjectExpression twistedBase = (ObjectExpression)getBaseExpression().twistedForBaseAndContext(newBase, context);
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
+        ObjectExpression twistedBase = (ObjectExpression)getBaseExpression().twistedForBaseAndContext(newBase, context, oldBase);
         return twistedBase.getManualQueryKey(getName(), getDescriptor());
 
     }

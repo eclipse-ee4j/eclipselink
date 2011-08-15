@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,7 @@ import java.util.Vector;
 
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
@@ -79,6 +81,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Bag;
@@ -106,7 +109,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.Violation.ViolationID;
 import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode.ViolationCodeId;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Bolt;
+import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Eater;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Nut;
+import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Rabbit;
+import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.RabbitFoot;
+import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sandwich;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
@@ -213,6 +220,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEM2"));
             suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithParameterFromEMF"));
             suite.addTest(new AdvancedJPAJunitTest("testComplexAdditionalCriteria"));
+            suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaBetweenEntities"));
+            suite.addTest(new AdvancedJPAJunitTest("testAdditionalCriteriaWithSubQuery"));
             
             // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
             suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
@@ -599,6 +608,84 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         closeEntityManager(em);
     }
 
+    /**
+     * Test additional criteria when used on two entities that have a 
+     * relationship between the two.
+     */
+    public void testAdditionalCriteriaBetweenEntities() {
+        EntityManager em = createEntityManager("additional-criteria");
+
+        try {
+            beginTransaction(em);
+            
+            em.setProperty("SANDWICH_DESCRIPTION", "%hot%");
+            em.setProperty("EATER_NAME", "%Glutton%");
+            
+            Sandwich sandwich = new Sandwich();
+            sandwich.setName("The Inferno");
+            sandwich.setDescription("A hot and spicy crazy concoction");
+            em.persist(sandwich);
+            
+            Eater eater = new Eater();
+            eater.setName("Glutton for spicy");
+            eater.setSandwhich(sandwich);
+            em.persist(eater);
+            
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache("additional-criteria");
+            
+            List<Eater> glutonSpicyEaters = em.createQuery("select e from Eater e").getResultList();
+            Sandwich sw = glutonSpicyEaters.get(0).getSandwhich();
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Test additional criteria when using a sub query.
+     */
+    public void testAdditionalCriteriaWithSubQuery() {
+        EntityManager em = createEntityManager("additional-criteria");
+
+        try {       
+            beginTransaction(em);
+            
+            Rabbit rabbit = new Rabbit();
+            rabbit.setName("Bugs");
+            em.persist(rabbit);
+            
+            RabbitFoot rabbitFoot = new RabbitFoot();
+            rabbitFoot.setCaption("Caption of Bugs");
+            rabbitFoot.setRabbitId(rabbit.getId());
+            em.persist(rabbitFoot);
+            
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache("additional-criteria");
+            
+            List<Eater> rabbits = em.createQuery("select this from Rabbit this").getResultList();
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
     /**
      * Bug 328114
      */

@@ -879,7 +879,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Set the group bys.
      */
-    protected void setGroupByExpressions(List<Expression> groupByExpressions) {
+    public void setGroupByExpressions(List<Expression> groupByExpressions) {
         this.groupByExpressions = groupByExpressions;
     }
     
@@ -939,7 +939,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * Set the ReportQueryItems defining the attributes to be read.
      */
-    protected void setItems(List<ReportItem> items) {
+    public void setItems(List<ReportItem> items) {
         this.items = items;
     }
 

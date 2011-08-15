@@ -118,6 +118,10 @@ public class SelectGenerationContext extends GenerationContext {
     public boolean hasMemberOfNode() {
         return memberOfNode != null;
     }
+    
+    public boolean isSelectGenerationContext() {
+        return true;
+    }
 
     /** */
     public GenerationContext getOuterContext() {
@@ -128,7 +132,7 @@ public class SelectGenerationContext extends GenerationContext {
      * Iterate the set of variables declared in an outer scope and
      * connect the inner variable expression with the outer one.
      */
-    public Expression joinVariables(Set variables) {
+    public Expression joinVariables(Set variables) {        
         if ((outer == null) || (variables == null) || variables.isEmpty()) {
             // not an inner query or no variables to join
             return null;
@@ -139,9 +143,14 @@ public class SelectGenerationContext extends GenerationContext {
             VariableNode var = new VariableNode(name);
             Expression innerExpr = var.generateExpression(this);
             Expression outerExpr = var.generateExpression(outer);
-            Expression join = innerExpr.equal(outerExpr);
-            expr = var.appendExpression(expr, join);
+            
+            // Join them only if they are not the same.
+            if (innerExpr != outerExpr) {
+                Expression join = innerExpr.equal(outerExpr);
+                expr = var.appendExpression(expr, join);
+            }
         }
         return expr;
+        
     }
 }
