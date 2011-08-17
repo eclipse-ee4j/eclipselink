@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlTransientFieldTestCases extends JAXBWithJSONTestCases{

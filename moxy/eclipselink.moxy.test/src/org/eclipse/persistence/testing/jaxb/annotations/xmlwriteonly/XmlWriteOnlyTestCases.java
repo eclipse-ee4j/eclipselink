@@ -12,17 +12,19 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly.Employee;
 
-public class XmlWriteOnlyTestCases extends JAXBTestCases {
+public class XmlWriteOnlyTestCases extends JAXBWithJSONTestCases{
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlwriteonly/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlwriteonly/employee.json";
 
     public XmlWriteOnlyTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Employee.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
     
     public Object getControlObject() {
