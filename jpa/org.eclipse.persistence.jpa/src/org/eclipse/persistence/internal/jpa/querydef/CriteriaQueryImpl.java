@@ -540,7 +540,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                 }
             }
-            if (this.where != null && ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
+            if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null  && 
+                    ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
                 reportQuery.setReferenceClass(((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass());
                 reportQuery.setExpressionBuilder(((InternalSelection) this.where).getCurrentNode().getBuilder());
             } else {
