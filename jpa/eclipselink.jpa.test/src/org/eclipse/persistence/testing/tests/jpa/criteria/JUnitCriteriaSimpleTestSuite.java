@@ -39,6 +39,7 @@ import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -191,6 +192,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("largeProjectCastTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("mapCastTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("oneToOneCastTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleQuery"));
         
         return suite;
     }
@@ -2829,6 +2831,28 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+    
+    /**
+     * Test a Tuple query with a where claise and a conjunction.
+     */
+    public void testTupleQuery() {
+        EntityManager em = createEntityManager();
+        
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
+        
+        Root<Employee> emp = criteria.from(Employee.class);
+        Path exp = emp.get("lastName");
+
+        criteria.multiselect(exp, qb.count(exp));
+        criteria.where(qb.conjunction());
+        criteria.groupBy(exp);
+
+        TypedQuery<Tuple> query = em.createQuery(criteria);
+        
+        List<Tuple> list = query.getResultList();
+    }
+
 }
 
 
