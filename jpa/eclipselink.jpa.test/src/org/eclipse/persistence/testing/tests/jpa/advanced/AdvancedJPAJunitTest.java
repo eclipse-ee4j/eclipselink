@@ -634,12 +634,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em.persist(eater);
             
             commitTransaction(em);
-            
-            em.clear();
-            clearCache("additional-criteria");
-            
-            List<Eater> glutonSpicyEaters = em.createQuery("select e from Eater e").getResultList();
-            Sandwich sw = glutonSpicyEaters.get(0).getSandwhich();
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
