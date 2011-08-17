@@ -20,11 +20,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +55,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
-import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -84,7 +80,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
     public JAXBTestCases(String name) throws Exception {
         super(name);
-    }
+    } 
 
     public XMLContext getXMLContext(Project project) {
         return new XMLContext(project, classLoader);
@@ -192,6 +188,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void testXMLToObjectFromInputStream() throws Exception {
+    	
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Object testObject = jaxbUnmarshaller.unmarshal(instream);
@@ -199,7 +196,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             xmlToObjectTest(testObject);
         }
     }
-
+    
     public void testRoundTrip() throws Exception{
         if(isUnmarshalTest()) {
             InputStream instream = null;
@@ -296,7 +293,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
         assertEquals(sizeBefore, sizeAfter);
 
-        StringReader reader = new StringReader(writer.toString());
+        StringReader reader = new StringReader(writer.toString());        
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
         writer.close();
@@ -417,7 +414,6 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             xmlToObjectTest(testObject);
         }
     }
-
     public void testXMLToObjectFromNode() throws Exception {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
@@ -533,6 +529,23 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    protected String validateAgainstSchema(InputStream src, Source schemaSource) {
+        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        Schema theSchema;
+        try {            
+            theSchema = sFact.newSchema(schemaSource);
+            Validator validator = theSchema.newValidator();            
+            StreamSource ss = new StreamSource(src);             
+            validator.validate(ss);
+        } catch (Exception e) {
+            if (e.getMessage() == null) {
+                return "An unknown exception occurred.";
+            }
+            return e.getMessage();
+        }
+        return null;
+    }
+    
     public class MySchemaOutputResolver extends SchemaOutputResolver {
         // keep a list of processed schemas for the validation phase of the
         // test(s)
