@@ -63,6 +63,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 8)
  *     07/03/2011-2.3.1 Guy Pelletier 
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+ *     08/18/2011-2.3.1 Guy Pelletier 
+ *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -2099,6 +2101,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Attribute mappings.
         descriptor.addMapping(getTypeAttributeMapping());
+        descriptor.addMapping(getIncludeCriteriaAttributeMapping());
         
         return descriptor;
     }
@@ -4183,6 +4186,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         idClassMapping.setSetMethodName("setIdClassName");
         idClassMapping.setXPath("orm:id-class/@class");
         return idClassMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getIncludeCriteriaAttributeMapping() {
+        XMLDirectMapping includeCriteriaMapping = new XMLDirectMapping();
+        includeCriteriaMapping.setAttributeName("m_includeCriteria");
+        includeCriteriaMapping.setGetMethodName("getIncludeCriteria");
+        includeCriteriaMapping.setSetMethodName("setIncludeCriteria");
+        includeCriteriaMapping.setXPath("@include-criteria");
+        return includeCriteriaMapping;
     }
     
     /**

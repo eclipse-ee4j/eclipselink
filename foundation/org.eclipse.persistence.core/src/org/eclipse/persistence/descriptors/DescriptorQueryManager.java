@@ -15,6 +15,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     05/24/2011-2.3 Guy Pelletier 
  *       - 345962: Join fetch query when using tenant discriminator column fails.
+ *     08/18/2011-2.3.1 Guy Pelletier 
+ *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -69,6 +71,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected transient DeleteObjectQuery deleteQuery;
     protected DoesExistQuery doesExistQuery;
     protected ClassDescriptor descriptor;
+    protected boolean includeTenantCriteria;
     protected boolean hasCustomMultipleTableJoinExpression;
     protected transient String additionalCriteria;
     protected transient Expression additionalJoinExpression;
@@ -102,6 +105,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Initialize the state of the descriptor query manager
      */
     public DescriptorQueryManager() {
+        this.includeTenantCriteria = true;
         this.queries = new LinkedHashMap(5);
         this.cachedUpdateCalls = new ConcurrentFixedCache(10);
         this.cachedExpressionQueries = new ConcurrentFixedCache(20);
@@ -816,6 +820,13 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     */
+    public boolean includeTenantCriteria() {
+        return includeTenantCriteria;
+    }
+    
+    /**
+     * INTERNAL:
      * Post initialize the mappings
      */
     public void initialize(AbstractSession session) {
@@ -942,7 +953,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
                 additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
             } 
             
-            if (descriptor.hasTenantDiscriminatorFields()) {
+            if (descriptor.hasTenantDiscriminatorFields() && includeTenantCriteria) {
                 ExpressionBuilder builder = new ExpressionBuilder();
                 
                 for (DatabaseField discriminatorField : descriptor.getTenantDiscriminatorFields().keySet()) {
@@ -1350,6 +1361,18 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         this.insertQuery.setDescriptor(getDescriptor());
     }
 
+    /**
+     * ADVANCED:
+     * Set this boolean to exlude tenant column criteria in the additional
+     * join expression. This is of particualar use when using Oracle VPD
+     * that handles tenant identifiers. Setting this flag to false will ensure
+     * EclipseLink does not futher filter tenant information (and only populate 
+     * it)
+     */
+    public void setIncludeTenantCriteria(boolean includeTenantCriteria) {
+        this.includeTenantCriteria = includeTenantCriteria;
+    }
+    
     /**
      * ADVANCED:
      * Set the receiver's insert call.

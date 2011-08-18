@@ -15,7 +15,9 @@
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     08/18/2011-2.3.1 Guy Pelletier 
+ *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
 
@@ -51,6 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 2.3
  */
 public class MultitenantMetadata extends ORMetadata {
+    private Boolean m_includeCriteria;
     private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
     private String m_type;
     
@@ -70,6 +73,7 @@ public class MultitenantMetadata extends ORMetadata {
         super(multitenant, accessor);
         
         m_type = (String) multitenant.getAttribute("value");
+        m_includeCriteria = (Boolean) multitenant.getAttributeBooleanDefaultTrue("includeCriteria");
 
         // Look for a @TenantDiscriminators
         if (accessor.isAnnotationPresent(TenantDiscriminatorColumns.class)) {
@@ -95,11 +99,23 @@ public class MultitenantMetadata extends ORMetadata {
             if (! valuesMatch(m_type, multitenant.getType())) {
                 return false;
             }
+            
+            if (! valuesMatch(m_includeCriteria, multitenant.getIncludeCriteria())) {
+                return false;
+            }
 
             return valuesMatch(m_tenantDiscriminatorColumns, multitenant.getTenantDiscriminatorColumns());
         }
         
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getIncludeCriteria() {
+        return m_includeCriteria;
     }
     
     /**
@@ -116,6 +132,13 @@ public class MultitenantMetadata extends ORMetadata {
      */
     public String getType() {
         return m_type;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean includeCriteria() {
+        return m_includeCriteria == null || m_includeCriteria.booleanValue();
     }
     
     /**
@@ -199,6 +222,17 @@ public class MultitenantMetadata extends ORMetadata {
         for (TenantDiscriminatorColumnMetadata tenantDiscriminator : m_tenantDiscriminatorColumns) {
             tenantDiscriminator.process(descriptor);
         }
+        
+        // Set the include criteria flag on the query manager.
+        descriptor.getClassDescriptor().getDescriptorQueryManager().setIncludeTenantCriteria(includeCriteria());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setIncludeCriteria(Boolean includeCriteria) {
+        m_includeCriteria = includeCriteria;
     }
     
     /**

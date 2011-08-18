@@ -3321,6 +3321,7 @@
       <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="type" type="orm:multitenant-type"/>
+    <xsd:attribute name="include-criteria" type="xsd:boolean"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->

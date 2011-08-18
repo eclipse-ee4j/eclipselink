@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
- *       - 337323: Multi-tenant with shared schema support (part 1) 
+ *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     08/18/2011-2.3.1 Guy Pelletier 
+ *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata 
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
 
@@ -40,4 +42,13 @@ public @interface Multitenant {
      * (Optional) Specify the multi-tenant strategy to use.
      */
     MultitenantType value() default MultitenantType.SINGLE_TABLE;
+    
+    /**
+     * (Optional) Indicate if the database requires the tenant criteria to
+     * be added to the SELECT, UPDATE, and DELETE queries. By default this is
+     * done but when set to false the queries will not be modified and it will
+     * be up to the application or database to ensure that the correct criteria 
+     * is applied to all queries.
+     */
+    boolean includeCriteria() default true;
 }
