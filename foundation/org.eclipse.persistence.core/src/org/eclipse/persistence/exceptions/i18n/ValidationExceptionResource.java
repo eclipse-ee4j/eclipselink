@@ -158,7 +158,9 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7157", "Entity class [{0}] must use a @JoinColumn instead of @Column to map its relationship attribute [{1}]."},
                                            { "7158", "Error encountered when building the @NamedQuery [{1}] from entity class [{0}]."},
                                            { "7159", "The map key [{0}] on the entity class [{1}] could not be found for the mapping [{2}]."},
-                                           { "7160", "@OneToMany for attribute name [{1}] in entity class [{0}] should not have @JoinColumn(s) specified. In the case where the @OneToMany is not mapped by another entity (that is, it is the owning side and is uni-directional), it should specify (optional through defaulting) a @JoinTable."},
+                                           { "7160", "@OneToMany for attribute name [{1}] in entity class [{0}] should not have JoinColumn(s) specified. " +
+                                                     "Where a @OneToMany is not mapped by another entity (i.e. it is the owning side and is uni-directional) a @JoinTable must be specified, not @JoinColumn(s). " +
+                                                     "If @JoinTable is not specified, a default join table will be used instead; Specify @JoinTable only if the default configuration should be overridden." },
                                            { "7161", "Entity class [{0}] has no primary key specified. It should define either an @Id, @EmbeddedId or an @IdClass." +
                                                      " If you have defined PK using any of these annotations then make sure that you do not have " +
                                                      "mixed access-type (both fields and properties annotated) in your entity class hierarchy."},
