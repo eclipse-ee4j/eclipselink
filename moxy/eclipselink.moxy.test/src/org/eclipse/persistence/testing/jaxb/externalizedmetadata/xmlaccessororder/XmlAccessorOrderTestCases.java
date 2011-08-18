@@ -12,107 +12,90 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 /**
  * Tests XmlAccessorOrder via eclipselink-oxm.xml
  *
  */
-public class XmlAccessorOrderTestCases extends ExternalizedMetadataTestCases {
-    private MySchemaOutputResolver outputResolver; 
+
+public class XmlAccessorOrderTestCases extends JAXBTestCases {
+ 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-ordered.xml";
+    private static final String XML_UNORDERED_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-unordered.xml";
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlAccessorOrderTestCases(String name) {
+    public XmlAccessorOrderTestCases(String name) throws Exception{
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setContextPath(CONTEXT_PATH);
     }
     
-    /**
-     * Tests @XmlAccessorOrder override via eclipselink-oxm.xml.  The Employee object
-     * has the order set to 'UNDEFINED', but this is overridden in the metadata xml
-     * file - 'ALPHABETICAL'.
-     * 
-     * Positive test.
-     */
-    public void testXmlAccessorOrderOverride() {
-        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-        String src = PATH + "employee-ordered.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/eclipselink-oxm.xml");
 
-    /**
-     * Tests @XmlAccessorOrder override via eclipselink-oxm.xml.  The Employee object
-     * has the order set to 'UNDEFINED', but this is overridden in the metadata xml
-     * file - 'ALPHABETICAL'.
-     * 
-     * Negative test.
-     */
-    public void testXmlAccessorOrderOverrideInvalidDoc() {
-        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-        String src = PATH + "employee-unordered.xml";
-        String result = validateAgainstSchema(src, null, outputResolver);
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}
+    
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee.xsd");
+    	controlSchemas.add(is);
+    	super.testSchemaGen(controlSchemas);
+    }
+    
+    public void testInstanceDocValidation() throws Exception {
+    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee.xsd");        
+        StreamSource schemaSource = new StreamSource(schema); 
+                
+        MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
+        
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );        
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+    }
+    
+    
+    public void testNegativeInstanceDocValidation() throws Exception {
+    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee.xsd");       
+        StreamSource schemaSource = new StreamSource(schema); 
+                
+        MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
+        
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_UNORDERED_RESOURCE);
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );        
         assertTrue("Schema validation passed unxepectedly", result != null);
-    }
+    }   
 
-    /**
-     * Tests overriding @XmlAccessorOrder set in package-info.java via
-     * eclipselink-oxm.xml.  Here, the order is set to 'UNDEFINED' in
-     * package-info.java, but this is overridden in the metadata xml
-     * file - 'ALPHABETICAL'.
-     * 
-     * Positive test.
-     */
-    public void testXmlAccessorOrderPackageLevelOverride() {
-        String contextPath = CONTEXT_PATH + ".packagelevel";
-        String path = PATH + "packagelevel/";
-        
-        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.Employee.class }, contextPath, path, 1);
-        
-        String src = PATH + "employee-ordered.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
-    
-    /**
-     * Tests overriding @XmlAccessorOrder set at the package level in eclipselink-oxm.xml with
-     * one set at the class level in eclipselink-oxm.xml.  Here, the order is set to 
-     * 'ALPHABETICAL' at the package level, but overridden as 'UNDEFINED'.
-     * 
-     * Positive test.
-     */
-    public void testXmlAccessorOrderClassOverridesPackage() {
-        String contextPath = CONTEXT_PATH + ".packagelevel.classoverride";
-        String path = PATH + "packagelevel/classoverride/";
-        
-        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.classoverride.Employee.class }, contextPath, path, 1);
-        
-        String src = PATH + "employee-unordered.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
-    
-    /**
-     * Tests the @XmlAccessorOrder set in the java class will override one set in 
-     * eclipselink-oxm.xml at the package level.  eclipselink-oxm.xml will have 
-     * 'ALPHABETICAL' at the package level, but it will be set to 'UNDEFINED' in the
-     * java class.
-     * 
-     * Positive test.
-     */
-    public void testXmlAccessorOrderJavaClassOverridesPackage() {
-        String contextPath = CONTEXT_PATH + ".packagelevel.javaclassoverride";
-        String path = PATH + "packagelevel/javaclassoverride/";
-        
-        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.javaclassoverride.Employee.class }, contextPath, path, 1);
-        
-        String src = PATH + "employee-unordered.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
+	
+	protected Object getControlObject() {
+		Employee emp = new Employee();
+		emp.a = "A-String";
+	    emp.b = "B-string";
+	    emp.g =	"G-String";
+		return emp;
+	}
+
 }

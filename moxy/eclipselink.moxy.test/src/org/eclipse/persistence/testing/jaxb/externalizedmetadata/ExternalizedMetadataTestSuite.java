@@ -16,15 +16,12 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.Exce
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory.ExceptionHandlingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.JAXBContextFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.MappingsTestSuite;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeMappingTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.AnyObjectMappingTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.CompositeMappingTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.CompositeCollecitonMappingTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection.DirectCollectionMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsFourFilesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.XMLAccessorOrderPackageInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.classoverride.XMLAccessorOrderClassOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.javaclassoverride.XMLAccessorOrderJavaClassOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.XmlAccessorTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.list.XmlAdapterListTestCases;
@@ -93,6 +90,9 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlTypeTestCases.class);
         suite.addTestSuite(XmlAccessorTypeTestCases.class);
         suite.addTestSuite(XmlAccessorOrderTestCases.class);
+        suite.addTestSuite(XMLAccessorOrderPackageInfoTestCases.class);
+        suite.addTestSuite(XMLAccessorOrderClassOverrideTestCases.class);
+        suite.addTestSuite(XMLAccessorOrderJavaClassOverrideTestCases.class);       
         suite.addTestSuite(JAXBContextFactoryTestCases.class);
         suite.addTestSuite(XmlElementTestCases.class);
         suite.addTestSuite(XmlAdapterTestCases.class);

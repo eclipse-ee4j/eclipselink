@@ -19,4 +19,21 @@ public class Employee {
     public String g;
     public String b;
     public String a;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Employee){
+    		Employee empObj = (Employee)obj;
+    		if(!a.equals(empObj.a)){
+    			return false;
+    		}
+    		if(!b.equals(empObj.b)){
+    			return false;
+    		}
+    		if(!g.equals(empObj.g)){
+    			return false;
+    		}
+    		return true;
+    	}
+    	return false;
+    }
 }
