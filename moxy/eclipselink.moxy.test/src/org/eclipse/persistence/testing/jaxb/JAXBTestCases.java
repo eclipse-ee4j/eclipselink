@@ -17,11 +17,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +67,8 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -506,6 +510,10 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         getJAXBContext().generateSchema(outputResolver);
 
         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+        compareSchemas(controlSchemas, generatedSchemas);
+    }
+    
+    public void compareSchemas(List<InputStream> controlSchemas, List<Writer> generatedSchemas) throws Exception {
         assertEquals(controlSchemas.size(), generatedSchemas.size());
 
         for(int i=0;i<controlSchemas.size(); i++){
@@ -530,7 +538,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     protected String validateAgainstSchema(InputStream src, Source schemaSource) {
+    	return validateAgainstSchema(src, schemaSource, null);
+    }
+    protected String validateAgainstSchema(InputStream src, Source schemaSource, MyMapStreamSchemaOutputResolver outputResolver) {
         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        sFact.setResourceResolver(new ResourceResolver(outputResolver));
+
         Schema theSchema;
         try {            
             theSchema = sFact.newSchema(schemaSource);
@@ -599,6 +612,28 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
 
+    public static class MyMapStreamSchemaOutputResolver extends SchemaOutputResolver {
+        // keep a list of processed schemas for the validation phase of the test(s)
+        public Map<String, Writer> schemaFiles;
+        
+        public MyMapStreamSchemaOutputResolver() {
+            schemaFiles = new HashMap<String, Writer>();
+        }
+        
+        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+            //return new StreamResult(System.out);
+            if (namespaceURI == null) {
+                namespaceURI = "";
+            }
+            
+            StringWriter sw = new StringWriter();
+            schemaFiles.put(namespaceURI, sw);
+            Result res = new StreamResult(sw);
+            res.setSystemId(suggestedFileName);
+            return res;
+        }
+    }
+    
     protected void logDocument(Document document){
        try {
               TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -663,6 +698,55 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             }
         }
 
+    }
+    
+    /**
+     * Class responsible from resolving schema imports during schema
+     * validation.
+     *
+     */
+    class ResourceResolver implements LSResourceResolver {
+        private MyMapStreamSchemaOutputResolver oResolver;
+        
+        public ResourceResolver(MyMapStreamSchemaOutputResolver resolver) {
+            oResolver = resolver;
+        }
+        public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseUri) {
+            return new MyLSInput(namespaceURI, oResolver);
+        }
+    }
+    
+    /**
+     * Class which will be returned to from resolveResource() call in 
+     * ResourceResolver.
+     * 
+     */
+    class MyLSInput implements LSInput {
+        private String sValue;
+        private MyMapStreamSchemaOutputResolver oResolver;
+
+        public MyLSInput(String value, MyMapStreamSchemaOutputResolver resolver) {
+            sValue = value;
+            oResolver = resolver;
+        }
+        public void setSystemId(String arg0) {}
+        public void setStringData(String arg0) {}
+        public void setPublicId(String arg0) {}
+        public void setEncoding(String arg0) {}
+        public void setCharacterStream(Reader arg0) {}
+        public void setCertifiedText(boolean arg0) {}
+        public void setByteStream(InputStream arg0) {}
+        public void setBaseURI(String arg0) {}
+        public String getSystemId() {return null;}
+        public String getStringData() {
+            return oResolver.schemaFiles.get(sValue).toString();
+        }
+        public String getPublicId() {return null;}
+        public String getEncoding() {return null;}
+        public Reader getCharacterStream() {return null;}
+        public boolean getCertifiedText() {return false;}
+        public InputStream getByteStream() {return null;}
+        public String getBaseURI() {return null;}
     }
 
 }

@@ -12,38 +12,32 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests multiple mappings for single field. 
  *
  */
-public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/";
-    private static final String XSD_DOC = PATH + "schema.xsd";
+public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
+	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/read.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/read.json";
+
     private final static int DAY = 12;
     private final static int MONTH = 4;
     private final static int YEAR = 1997;
-    private JAXBContext jCtx;
 
     private Calendar calendar;
 
@@ -52,9 +46,11 @@ public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCa
      *
      * @param name
      */
-    public MultipleMappingPerFieldTestCases(String name) {
+    public MultipleMappingPerFieldTestCases(String name) throws Exception{
         super(name);
-
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{CustomQuoteRequest.class});
         calendar = new GregorianCalendar(YEAR, MONTH, DAY);
         calendar.clear(Calendar.ZONE_OFFSET);
     }
@@ -62,7 +58,7 @@ public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCa
     /**
      * Create the control Object.
      */
-    private CustomQuoteRequest getControlObject() {
+    public Object getControlObject() {
         CustomQuoteRequest ctrlObj = new CustomQuoteRequest();
         ctrlObj.requestId = "100";
         ctrlObj.currencyPairCode = "CAD";
@@ -70,15 +66,14 @@ public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCa
         return ctrlObj;
     }
     
-    /**
-     * 
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-        Map<String, File> properties = new HashMap<String, File>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(PATH + "oxm.xml"));
-        jCtx = JAXBContextFactory.createContext(new Class[] { CustomQuoteRequest.class }, properties);
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/oxm.xml");
+
+ 		Map<String, InputStream> properties = new HashMap<String, InputStream>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputStream);
+	    
+        return properties;
+	}
 
     /**
      * We expect two mappings for 'currencyPairCode'.  We will verify mapping count, 
@@ -88,7 +83,7 @@ public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCa
      * 
      */
     public void testMappings() {
-        XMLDescriptor xDesc = ((org.eclipse.persistence.jaxb.JAXBContext) jCtx).getXMLContext().getDescriptor(new QName("QuoteRequest"));
+        XMLDescriptor xDesc = ((org.eclipse.persistence.jaxb.JAXBContext) jaxbContext).getXMLContext().getDescriptor(new QName("QuoteRequest"));
         assertNotNull("No descriptor was generated for CustomQuoteRequest.", xDesc);
         int currencyPairCodeCount = 0;
         int dateCount = 0;
@@ -126,66 +121,11 @@ public class MultipleMappingPerFieldTestCases extends ExternalizedMetadataTestCa
         assertTrue("Expected [3] mappings for attribute [date], but was [" + dateCount + "]", dateCount == 3);
     }
     
-    /**
-     * Tests schema generation.
-     * 
-     * Positive test.
-     */
-    public void testSchemaGen() throws Exception {
-        MySchemaOutputResolver employeeResolver = new MySchemaOutputResolver(); 
-        jCtx.generateSchema(employeeResolver);
-        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(XSD_DOC));
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/schema.xsd");
+    	controlSchemas.add(is);
+    	super.testSchemaGen(controlSchemas);
     }
-
-    /**
-     * Tests unmarshal operation.  
-     * 
-     * Positive test.
-     */
-    public void testUnmarshal() {
-        // load instance doc
-        String src = PATH + "read.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-        CustomQuoteRequest ctrlEmp = getControlObject();
-
-        try {
-            CustomQuoteRequest empObj = (CustomQuoteRequest) jCtx.createUnmarshaller().unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-    
-    /**
-     * Tests marshal operation.  
-     * 
-     * Positive test.
-     */
-    public void testMarshal() {
-        // setup control document
-        String src = PATH + "write.xml";
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-        try {
-            CustomQuoteRequest ctrlEmp = getControlObject();
-            Marshaller marshaller = jCtx.createMarshaller();
-            marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
+ 
 }

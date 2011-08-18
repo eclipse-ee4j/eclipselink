@@ -17,16 +17,18 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class ListsTestCases extends JAXBTestCases{
+public class ListsTestCases extends JAXBWithJSONTestCases{
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/emptystring/listsTests.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/emptystring/listsTests.json";
 	private final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/emptystring/listsTestsWrite.xml";
 
 	public ListsTestCases(String name) throws Exception {
 		super(name);
-	    setControlDocument(XML_RESOURCE);        
+	    setControlDocument(XML_RESOURCE);   
+	    setControlJSON(JSON_RESOURCE);
 	    setWriteControlDocument(XML_RESOURCE_WRITE);
         Class[] classes = new Class[1];
 	    classes[0] = ListsTestObject.class;
@@ -49,6 +51,7 @@ public class ListsTestCases extends JAXBTestCases{
 			
 		return testObject;
 	}
+	
     public void testSchemaGen() throws Exception {
         List<InputStream> controlSchemas = new ArrayList<InputStream>();		
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/emptystring/listsTests.xsd");

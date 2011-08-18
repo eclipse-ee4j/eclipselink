@@ -1,0 +1,36 @@
+{"employee":{
+   "empId":101,
+   "info":{
+      "contact-info":{
+         "addresses":{
+         "address":[
+	   {          
+	    "id":67,
+	    "city":"Kanata",
+	    "street":"66 Lakview Drive",
+	    "province":"ON",
+	    "postalCode":"K2M2K7"
+          },
+	  {          
+	    "id":76,
+	    "city":"Ottawa",
+	    "street":"45 O'Connor St.",
+	    "province":"ON",
+	    "postalCode":"K1P1A4"
+          }
+	]
+	}
+      },      
+   "write-only":{
+       "address":[{        
+           "id":77,
+	    "city":"Woodlawn",
+	    "street":"463 Bayview Dr.",
+	    "province":"ON",
+	    "postalCode":"K0A3M0"
+       }
+       ]
+   }
+   }
+}
+}

@@ -23,7 +23,7 @@ public class ContainerPropertyTestCases extends JAXBTestCases {
 	public ContainerPropertyTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[] {Employee.class, Address.class, PhoneNumber.class});
-		setControlDocument(XML_RESOURCE);
+		setControlDocument(XML_RESOURCE);	
 	}
 	
 	public Employee getControlObject() {

@@ -12,24 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlCompositeCollectionMappings via eclipselink-oxm.xml
  * 
  */
-public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/";
+public class CompositeCollecitonMappingTestCases extends JAXBWithJSONTestCases {
+	
+	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xml";
+	private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.json";
+	private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.json";
     private static final int HOME_ID = 67;
     private static final String HOME_RO_STRING = "some garbage text";
     private static final String HOME_CITY = "Kanata";
@@ -51,38 +56,39 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     private static final String WO_STREET = "463 Bayview Dr.";
     private static final String WO_PROVINCE = "ON";
     private static final String WO_POSTAL = "K0A3M0";
-    private static final String EMPLOYEES_NS = "http://www.example.com/employees"; 
-    private static final String CONTACTS_NS = "http://www.example.com/contacts"; 
-    
-    private MyStreamSchemaOutputResolver employeeResolver;
+        
+    private Employee writeCtrlObject;
 
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public CompositeCollecitonMappingTestCases(String name) {
+    public CompositeCollecitonMappingTestCases(String name) throws Exception{
         super(name);
+        setClasses(new Class[]{Employee.class});
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
     }
     
-    /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
-     * 
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-        employeeResolver = new MyStreamSchemaOutputResolver(); 
-        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2, employeeResolver);
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee-oxm.xml");
 
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+		        
+        return properties;
+	}
+      
     /**
      * Create the control Employee object for reading.
      * 
      */
-    public Employee getReadControlObject() {
+    public Object getControlObject() {
         // setup Addresses
         Address hAddress = new Address();
         hAddress.id = HOME_ID;
@@ -101,8 +107,8 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
 
         List<Address> adds = new ArrayList<Address>();
         adds.add(hAddress);
-        adds.add(wAddress);
-
+        adds.add(wAddress);              
+       
         // setup read-only Address list
         Address roAddress = new Address();
         roAddress.id = RO_ID;
@@ -114,22 +120,11 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
         List<Address> roAdds = new ArrayList<Address>();
         roAdds.add(roAddress);
         
-        // setup write-only Address list
-        Address woAddress = new Address();
-        woAddress.id = WO_ID;
-        woAddress.city = WO_CITY;
-        woAddress.street = WO_STREET;
-        woAddress.province = WO_PROVINCE;
-        woAddress.postalCode = WO_POSTAL;
-
-        List<Address> woAdds = new ArrayList<Address>();
-        woAdds.add(woAddress);
-
         Employee emp = new Employee();
         emp.id = 101;
         emp.addresses = adds;
         emp.readOnlyAddressList = roAdds;
-        emp.writeOnlyAddressList = woAdds;
+        
         return emp;
     }
     
@@ -139,86 +134,73 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
      * For null policy test of ABSENT_NODE we will add some null addresses.
      * 
      */
-    public Employee getControlObject() {
-        Employee emp = getReadControlObject();
-        emp.addresses.add(null);
-        emp.addresses.add(null);
-        return emp;
+    public Object getWriteControlObject() {
+    	if(writeCtrlObject == null){
+            Employee emp = (Employee)getReadControlObject();
+            emp.addresses.add(null);
+            emp.addresses.add(null);            
+            
+         // setup write-only Address list
+            Address woAddress = new Address();
+            woAddress.id = WO_ID;
+            woAddress.city = WO_CITY;
+            woAddress.street = WO_STREET;
+            woAddress.province = WO_PROVINCE;
+            woAddress.postalCode = WO_POSTAL;
+            
+            List<Address> woAdds = new ArrayList<Address>();
+            woAdds.add(woAddress);
+            emp.writeOnlyAddressList = woAdds;
+            writeCtrlObject = emp;
+    	}
+        return writeCtrlObject;
     }
     
-    public void testSchemaGenAndValidation() {
-        // validate employee schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(PATH + "employee.xsd"));
-        // validate contacts schema
-        compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS).toString(), new File(PATH + "contacts.xsd"));
+    public void xmlToObjectTest(Object testObject) throws Exception {
+    	super.xmlToObjectTest(testObject);
+   	    assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);   	    	   
+    }
+
+    public void testRoundTrip() throws Exception{
+    	//doesn't apply since read and write only mappings are present    	
+    }
+    
+    public void objectToXMLDocumentTest(Document testDocument) throws Exception {
+        super.objectToXMLDocumentTest(testDocument);
+        assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
+    }
+
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");
+    	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/contacts.xsd");
+    	controlSchemas.add(is);
+    	controlSchemas.add(is2);
+    	super.testSchemaGen(controlSchemas);
+    }
+    
+    public void testInstanceDocValidation() throws Exception {
+    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");        
+        StreamSource schemaSource = new StreamSource(schema); 
+                
+        MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
         
-        // validate employee.xml
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPLOYEES_NS, employeeResolver);
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xml");
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );        
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-
-        // validate write-employee.xml
-        src = PATH + "write-employee.xml";
-        result = validateAgainstSchema(src, EMPLOYEES_NS, employeeResolver);
-        assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
     }
     
-    /**
-     * Tests XmlCompositeCollectionMapping configuration via eclipselink-oxm.xml. 
-     * Here an unmarshal operation is performed. Utilizes xml-attribute and 
-     * xml-element.
-     * 
-     * Positive test.
-     */
-    public void testCompositeCollectionMappingUnmarshal() {
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(PATH + "employee.xml");
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + PATH + "employee.xml" + "]");
-        }
-        // tweak control object
-        Employee ctrlEmp = getReadControlObject();
-        // write-only address list will not be read in
-        ctrlEmp.writeOnlyAddressList = null;
-        try {
-            Employee empObj = (Employee) jaxbContext.createUnmarshaller().unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+    public void testWriteInstanceDocValidation() throws Exception {
+    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/employee.xsd");        
+        StreamSource schemaSource = new StreamSource(schema); 
+        
+        MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
+        
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/write-employee.xml");        
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver);
+        assertTrue("Instance doc validation (write-employee) failed unxepectedly: " + result, result == null);
     }
 
-    /**
-     * Tests XmlCompositeCollectionMapping configuration via eclipselink-oxm.xml. Here a
-     * marshal operation is performed. Utilizes xml-attribute and xml-element
-     * 
-     * Positive test.
-     */
-    public void testCompositeCollectionMappingMarshal() {
-        // load instance doc
-        String src = PATH + "write-employee.xml";
-        // setup control document
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-        try {
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            Employee ctrlEmp = getControlObject();
-            marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
-            assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
 }

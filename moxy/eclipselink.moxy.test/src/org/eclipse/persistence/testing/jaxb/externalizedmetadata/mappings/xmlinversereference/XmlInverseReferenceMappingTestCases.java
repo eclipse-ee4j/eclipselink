@@ -12,30 +12,27 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 /**
  *
  */
-public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTestCases {
+public class XmlInverseReferenceMappingTestCases extends JAXBTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.xml";
     private static final String CONTROL_ID = "a222";
     private static final String CONTROL_NAME = "Joe Smith";
@@ -53,13 +50,11 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
     private static final String CONTROL_PHONE_NUM_1 = "613-123-4567";
     private static final String CONTROL_PHONE_ID_2 = "a456";
     private static final String CONTROL_PHONE_NUM_2 = "613-234-5678";
-
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/";
-    private MySchemaOutputResolver employeeResolver;
     
     public XmlInverseReferenceMappingTestCases(String name) throws Exception {
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setClasses(new Class[]{Root.class});
     }
 
     protected Root getControlObject() {
@@ -147,75 +142,26 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
         return root;
     }
     
-    /**
-     * The schema is generated here.  Note that schema generation will create the 
-     * JAXBContext.
-     *  
-     */
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();        
-        employeeResolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root-oxm.xml");
 
-    public void testSchemaGenAndValidation() {
-        // validate root schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
-        // validate root.xml
-        String src = PATH + "root.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
-        assertTrue("Instance doc validation (root.xml) failed unxepectedly: " + result, result == null);
-    }
-
-    public void testInverseReferenceMarshal() {
-        // setup control document
-        String src = PATH + "root.xml";
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // test marshal
-        Root ctrlObj = getWriteControlObject();
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        try {
-            marshaller.marshal(ctrlObj, testDoc);
-            //marshaller.marshal(ctrlObj, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}
     
-    public void testInverseReferenceUnmarshal() {
-        // load instance doc
-        String src = PATH + "root.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // unmarshal
-        Root ctrlObj = getControlObject();
-        Root root = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            root = (Root) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", root);
-            assertTrue("Unmarshal failed:  Root objects are not equal", ctrlObj.equals(root));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.xsd");
+    	controlSchemas.add(is);
+    	super.testSchemaGen(controlSchemas);
     }
-    
-    public void testAddressContainerType() {
-        XMLDescriptor xDesc = jaxbContext.getXMLContext().getDescriptor(new QName("address"));
+
+    public void testAddressContainerType() {    	
+        XMLDescriptor xDesc = xmlContext.getDescriptor(new QName("address"));
         assertNotNull("No descriptor was generated for Address.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("emp");
         assertNotNull("No mapping exists on Address for attribute [emp].", mapping);

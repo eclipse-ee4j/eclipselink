@@ -1,0 +1,13 @@
+{"document-root":{
+   "employees":{
+       "employee":[{}]
+   },
+   "addresses":{
+       "address":[
+         {"aid":"a100"},
+         {"aid":"a101"},
+         {"aid":"a102"}
+       ]
+   }
+}
+}

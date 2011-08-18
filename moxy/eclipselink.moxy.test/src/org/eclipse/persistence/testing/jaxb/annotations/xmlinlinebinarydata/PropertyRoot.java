@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -48,5 +50,21 @@ public class PropertyRoot {
     public void setC(byte[] c) {
         this.c = c;
     }
-
+   
+    public boolean equals(Object obj){
+    	if(obj instanceof PropertyRoot){
+    		PropertyRoot pr = ((PropertyRoot)obj);
+    		if(!Arrays.equals(a, pr.getA())){
+    			return false;
+    		}
+    		if(!Arrays.equals(b, pr.getB())){
+    			return false;
+    		}
+    		if(!Arrays.equals(c, pr.getC())){
+    			return false;
+    		}
+    		return true;
+    	}
+        return false;
+    }
 }

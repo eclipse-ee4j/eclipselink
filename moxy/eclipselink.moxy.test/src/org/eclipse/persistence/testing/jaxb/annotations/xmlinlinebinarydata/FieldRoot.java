@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlInlineBinaryData;
@@ -50,6 +52,23 @@ public class FieldRoot {
 
     public void setC(byte[] c) {
         this.c = c;
+    }
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof FieldRoot){
+    	    FieldRoot fr = ((FieldRoot)obj);
+    		if(!Arrays.equals(a, fr.getA())){
+    			return false;
+    		}
+    		if(!Arrays.equals(b, fr.getB())){
+    			return false;
+    		}
+    		if(!Arrays.equals(c, fr.getC())){
+    			return false;
+    		}
+    		return true;
+    	}
+        return false;
     }
 
 }

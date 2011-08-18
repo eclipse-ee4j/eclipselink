@@ -1,0 +1,20 @@
+{"document-root":{
+   "employees":{
+       "employee":[{
+            "contact-info":{
+               "work-address":{
+	          "work-address-id":"a101"
+	       }
+             }
+	}
+	]
+   },
+   "addresses":{
+       "address":[
+         {"aid":"a100"},
+         {"aid":"a101"},
+         {"aid":"a102"}
+       ]
+   }
+}
+}
