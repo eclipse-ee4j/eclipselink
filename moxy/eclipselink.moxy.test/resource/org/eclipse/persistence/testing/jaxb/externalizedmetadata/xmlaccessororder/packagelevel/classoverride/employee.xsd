@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="g" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="b" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="a" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee-type" type="employee"/>
+</xsd:schema>
