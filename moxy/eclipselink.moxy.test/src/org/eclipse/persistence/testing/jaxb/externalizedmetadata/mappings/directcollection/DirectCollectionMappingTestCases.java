@@ -12,31 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlDirectCollectionMapping via eclipselink-oxm.xml
  *
  */
-public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/";
+public class DirectCollectionMappingTestCases extends JAXBTestCases {
     
-    private MySchemaOutputResolver employeeResolver;
+	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/employee.xml";
+	private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/write-employee.xml";
 
     private static final int EMPID = 101;
     private static final String PRJ_ID1 = "01";
@@ -49,22 +47,27 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
     private static final String CDATA_1 = "<characters>a b c d e f g</characters>";
     private static final String CDATA_2 = "<characters>h i j k l m n</characters>";
     
+    private Employee writeCtrlObject;
+    
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public DirectCollectionMappingTestCases(String name) {
+    public DirectCollectionMappingTestCases(String name) throws Exception{
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
+        setClasses(new Class[]{});
     }
 
     /**
      * Create the control Employee.
      */
-    private Employee getControlObject() {
+    public Object getControlObject() {
         List<String> prjIds = new ArrayList<String>();
         prjIds.add(PRJ_ID1);
-        prjIds.add(null);
+        prjIds.add("");
         prjIds.add(PRJ_ID2);
         prjIds.add(PRJ_ID3);
         
@@ -72,9 +75,6 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
         sals.add(Float.valueOf(SAL_1));
         sals.add(Float.valueOf(SAL_2));
         
-        List<String> pData = new ArrayList<String>();
-        pData.add(PDATA_1);
-        pData.add(PDATA_2);
 
         List<String> cData = new ArrayList<String>();
         cData.add(CDATA_1);
@@ -84,103 +84,85 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
         ctrlEmp.id = EMPID;
         ctrlEmp.projectIds = prjIds;
         ctrlEmp.salaries = sals;
-        ctrlEmp.privateData = pData;
+        
         ctrlEmp.characterData = cData;
         return ctrlEmp;
     }
+ 
     
-    /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
-     * 
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 1);
+    public Object getWriteControlObject() {
+    	if(writeCtrlObject == null){
+    		writeCtrlObject = (Employee)getControlObject();
+    		List<String> pData = new ArrayList<String>();
+    	    pData.add(PDATA_1);
+    	    pData.add(PDATA_2);
+    	    writeCtrlObject.privateData = pData;
+    	    
+    	    writeCtrlObject.projectIds.remove(1);
+    	    writeCtrlObject.projectIds.add(1, null);
+    	}
+    	return writeCtrlObject;        
+   
+    }
+    
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/eclipselink-oxm.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}
+    
+    public void xmlToObjectTest(Object testObject) throws Exception {
+    	super.xmlToObjectTest(testObject);
+   	    assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);
     }
 
-    /**
-     * Tests schema generation for XmlDirectMapping via eclipselink-oxm.xml.
-     * Utilizes xml-attribute and xml-element. xml-value is tested separately
-     * below.
-     * Instance documents will be validated here as well.
-     * 
-     * Positive test.
-     */
-    public void testSchemaGenAndValidation() {
-        // validate schemas
-        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employees.xsd"));
-        // validate employee.xml
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+    public void testRoundTrip() throws Exception{
+    	//doesn't apply since read and write only mappings are present    	
+    }
+    
+    public void objectToXMLDocumentTest(Document testDocument) throws Exception {
+        super.objectToXMLDocumentTest(testDocument);
+        assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
+    }  
+    
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/employees.xsd");
+    	controlSchemas.add(is);
+    	super.testSchemaGen(controlSchemas);
+    }
+    
+    public void testInstanceDocValidation() throws Exception {
+    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/employees.xsd");        
+        StreamSource schemaSource = new StreamSource(schema); 
+                
+        MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
+        
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/employee.xml");
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver );        
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-        // validate write-employee.xml
-        src = PATH + "write-employee.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
-        assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
-    }
-
-    /**
-     * Tests XmlDirectCollectionMapping configuration via eclipselink-oxm.xml.
-     * Here an unmarshal operation is performed.  
-     * 
-     * Positive test.
-     */
-    public void testDirectCollectionUnmarshal() {
-        // load instance doc
-        String src = PATH + "employee.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-        // tweak control object
-        Employee ctrlEmp = getControlObject();
-        // unmarshal null will result in "" being set in the object
-        ctrlEmp.projectIds.remove(1);
-        ctrlEmp.projectIds.add(1, "");
-        // 'privateData' is write only
-        ctrlEmp.privateData = null;
-
-        try {
-            Employee empObj = (Employee) jaxbContext.createUnmarshaller().unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
     }
     
-    /**
-     * Tests XmlDirectCollectionMapping configuration via eclipselink-oxm.xml.
-     * Here a marshal operation is performed.  
-     * 
-     * Positive test.
-     */
-    public void testDirectCollectionMarshal() {
-        // setup control document
-        String src = PATH + "write-employee.xml";
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-        try {
-            Employee ctrlEmp = getControlObject();
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
-            assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
+    public void testWriteInstanceDocValidation() throws Exception {
+    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/employees.xsd");        
+        StreamSource schemaSource = new StreamSource(schema); 
+        
+        MyMapStreamSchemaOutputResolver outputResolver = new MyMapStreamSchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
+        
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/write-employee.xml");        
+        String result = validateAgainstSchema(instanceDocStream, schemaSource, outputResolver);
+        assertTrue("Instance doc validation (write-employee) failed unxepectedly: " + result, result == null);
+    }
+       
+    public void testObjectToContentHandler() throws Exception {
+    	//See Bug 355143 
+
     }
 }
