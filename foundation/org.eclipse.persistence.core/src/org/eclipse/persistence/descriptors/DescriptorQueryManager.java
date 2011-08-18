@@ -1363,11 +1363,13 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * Set this boolean to exlude tenant column criteria in the additional
-     * join expression. This is of particualar use when using Oracle VPD
-     * that handles tenant identifiers. Setting this flag to false will ensure
-     * EclipseLink does not futher filter tenant information (and only populate 
-     * it)
+     * Boolean used to indicate if the database requires the tenant criteria to
+     * be added to the SELECT, UPDATE, and DELETE queries. By default this is
+     * done but when set to false the queries will not be modified and it will
+     * be up to the application or database to ensure that the correct criteria 
+     * is applied to all queries.
+     * 
+     * @see org.eclipse.persistence.annotations.Multitenant
      */
     public void setIncludeTenantCriteria(boolean includeTenantCriteria) {
         this.includeTenantCriteria = includeTenantCriteria;
