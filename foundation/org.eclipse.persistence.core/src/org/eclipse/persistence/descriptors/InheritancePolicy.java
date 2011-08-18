@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     08/18/2011-2.3.1 Guy Pelletier 
+ *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -1150,6 +1152,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
                 String property = getParentDescriptor().getTenantDiscriminatorFields().get(discriminatorField);
                 getDescriptor().addTenantDiscriminatorField(property, discriminatorField);
             }
+            
+            // Copy down the include criteria flag.
+            getDescriptor().getQueryManager().setIncludeTenantCriteria(getParentDescriptor().getQueryManager().includeTenantCriteria());
             
             setClassIndicatorMapping(getParentDescriptor().getInheritancePolicy().getClassIndicatorMapping());
             setShouldUseClassNameAsIndicator(getParentDescriptor().getInheritancePolicy().shouldUseClassNameAsIndicator());
