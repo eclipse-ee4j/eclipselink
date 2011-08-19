@@ -407,13 +407,13 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
     
     private void initializeRecord(Attributes attrs) throws SAXException{
+        this.setAttributes(attrs);
     	XMLDescriptor xmlDescriptor = (XMLDescriptor) treeObjectBuilder.getDescriptor();    	
     	if(!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
     		initialize((TreeObjectBuilder)xmlDescriptor.getObjectBuilder());
     		initializeRecord((XMLMapping)null);
         	return;
         }
-    	this.setAttributes(attrs);
     	Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(this, session);
     	 if (classValue == null) {
              // no xsi:type attribute - look for type indicator on the default root element

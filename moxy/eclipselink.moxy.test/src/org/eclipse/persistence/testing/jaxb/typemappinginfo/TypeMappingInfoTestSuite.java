@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.simple.EmptyClassTes
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.simple.TypeMappingInfoNullTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype.ListOfCustomerNoXmlXsiTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype.ListOfCustomerXsiTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype.self.SingleEmployeeTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -74,6 +75,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(TypeMappingInfoNullTypeTestCases.class);
         suite.addTestSuite(ListOfCustomerXsiTypeTestCases.class);
         suite.addTestSuite(ListOfCustomerNoXmlXsiTypeTestCases.class);
+        suite.addTestSuite(SingleEmployeeTestCases.class);
         suite.addTestSuite(ArrayWithAnnotationsTestCases.class);
         suite.addTestSuite(NullStringTestCases.class);
  
