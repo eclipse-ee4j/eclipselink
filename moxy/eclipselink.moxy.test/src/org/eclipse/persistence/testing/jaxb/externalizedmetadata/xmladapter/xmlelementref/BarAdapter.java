@@ -14,8 +14,6 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xml
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
-
 public final class BarAdapter extends XmlAdapter<Object, String> {
     public BarAdapter() {}
 	
