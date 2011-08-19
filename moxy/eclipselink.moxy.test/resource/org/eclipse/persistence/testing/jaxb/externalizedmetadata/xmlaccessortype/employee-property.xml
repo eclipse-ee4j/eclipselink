@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <employee-type>
 	<id>66</id>
-	<isSet>false</isSet>
+	<isSet>true</isSet>
 </employee-type>

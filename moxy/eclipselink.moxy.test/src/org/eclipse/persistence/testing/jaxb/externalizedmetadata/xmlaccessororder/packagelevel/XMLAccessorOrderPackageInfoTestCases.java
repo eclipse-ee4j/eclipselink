@@ -22,7 +22,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests overriding @XmlAccessorOrder set in package-info.java via
@@ -32,14 +32,16 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
  * 
  * Positive test.
  */
-public class XMLAccessorOrderPackageInfoTestCases extends JAXBTestCases{
+public class XMLAccessorOrderPackageInfoTestCases extends JAXBWithJSONTestCases{
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-ordered.xml";    
-
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-ordered.json";
 	public XMLAccessorOrderPackageInfoTestCases(String name) throws Exception {
 		super(name);
         setClasses(new Class[]{Employee.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+
 	}
 	
 	protected Object getControlObject() {

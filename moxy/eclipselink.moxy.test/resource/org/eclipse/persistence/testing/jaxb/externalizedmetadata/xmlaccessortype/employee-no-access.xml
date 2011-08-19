@@ -3,5 +3,5 @@
 	<firstName>firstName</firstName>
 	<lastName>lastName</lastName>
 	<id>666</id>
-	<isSet>false</isSet>
+	<isSet>true</isSet>
 </employee-type>

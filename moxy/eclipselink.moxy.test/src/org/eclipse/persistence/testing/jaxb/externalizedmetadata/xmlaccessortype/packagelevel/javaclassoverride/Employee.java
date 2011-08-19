@@ -23,6 +23,14 @@ public class Employee {
     public String lastName;
     private int id;
 
+    public Employee(){
+    }
+    
+    public Employee(int id){
+    	this.id = id;
+    }
+    
+    
     public int getId() {
         return id;
     }
@@ -30,5 +38,29 @@ public class Employee {
     public boolean getIsSet() {
         return true;
     }
-    
+ 
+    public boolean equals(Object obj){
+    	if(obj instanceof Employee){
+    		Employee empObj = (Employee)obj;
+    		if(firstName == null){
+    			if(empObj.firstName !=null){
+    				return false;
+    			}    				
+    		}else if(!firstName.equals(empObj.firstName)){
+    			return false;
+    		}
+    		if(lastName == null){
+    			if(empObj.lastName !=null){
+    				return false;
+    			}    				
+    		}else if(!lastName.equals(empObj.lastName)){
+    			return false;
+    		}
+    		if(id != empObj.id){
+    			return false;
+    		}
+    		return true;
+    	}
+    	return false;
+    }
 }

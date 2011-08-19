@@ -22,7 +22,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 
 /**
@@ -32,13 +32,15 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
  * 
  * Positive test.
  */
-public class XMLAccessorOrderClassOverrideTestCases extends JAXBTestCases{
+public class XMLAccessorOrderClassOverrideTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-unordered.xml";    
-
-	public XMLAccessorOrderClassOverrideTestCases(String name) throws Exception {
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-unordered.json";
+	
+    public XMLAccessorOrderClassOverrideTestCases(String name) throws Exception {
 		super(name);
         setClasses(new Class[]{Employee.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);        
 	}
 	
 	protected Object getControlObject() {

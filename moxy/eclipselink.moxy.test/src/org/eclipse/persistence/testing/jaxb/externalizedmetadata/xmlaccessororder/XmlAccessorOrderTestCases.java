@@ -22,17 +22,18 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlAccessorOrder via eclipselink-oxm.xml
  *
  */
 
-public class XmlAccessorOrderTestCases extends JAXBTestCases {
+public class XmlAccessorOrderTestCases extends JAXBWithJSONTestCases {
  
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder";
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-ordered.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-ordered.json";
     private static final String XML_UNORDERED_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlaccessororder/employee-unordered.xml";
     
     /**
@@ -44,6 +45,7 @@ public class XmlAccessorOrderTestCases extends JAXBTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setContextPath(CONTEXT_PATH);
+        setControlJSON(JSON_RESOURCE);
     }
     
     public Map getProperties(){
