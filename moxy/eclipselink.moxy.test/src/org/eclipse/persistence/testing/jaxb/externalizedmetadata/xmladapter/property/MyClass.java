@@ -31,6 +31,7 @@ public class MyClass {
         if (this.id != sc.id) {
             return false;
         }
-        return (this.cal.YEAR == sc.cal.YEAR && this.cal.MONTH == sc.cal.MONTH && this.cal.DATE == sc.cal.DATE);
+        //return (this.cal.YEAR == sc.cal.YEAR && this.cal.MONTH == sc.cal.MONTH && this.cal.DATE == sc.cal.DATE);
+        return (this.cal.get(cal.YEAR) == sc.cal.get(cal.YEAR) && this.cal.get(cal.MONTH) == sc.cal.get(cal.MONTH) && cal.get(cal.DATE) == sc.cal.get(cal.DATE));
     }
 }

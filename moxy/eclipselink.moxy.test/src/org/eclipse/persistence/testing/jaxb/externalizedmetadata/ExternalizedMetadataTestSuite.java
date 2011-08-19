@@ -32,8 +32,13 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.property.XmlAccessorTypePropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.publicmember.XmlAccessorTypePublicMemberTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.AdapterOnClassTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.hexbinary.AdapterHexBinaryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.list.XmlAdapterListTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.list.XmlAdapterListsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative.XmlAdapterNegativeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.AdapterOnPackageTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property.AdapterOnPropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.unspecified.XmlAdapterUnspecifiedClassTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.ClassLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.PackageLevelTestCases;
@@ -111,7 +116,10 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XMLAccessorOrderJavaClassOverrideTestCases.class);       
         suite.addTestSuite(JAXBContextFactoryTestCases.class);
         suite.addTestSuite(XmlElementTestCases.class);
-        suite.addTestSuite(XmlAdapterTestCases.class);
+        suite.addTestSuite(AdapterOnClassTestCases.class);
+        suite.addTestSuite(AdapterOnPropertyTestCases.class);
+        suite.addTestSuite(AdapterHexBinaryTestCases.class);
+        suite.addTestSuite(AdapterOnPackageTestCases.class);
         suite.addTestSuite(XmlAdapterNegativeTestCases.class);
         suite.addTestSuite(XmlAdapterUnspecifiedClassTestCases.class);
         suite.addTestSuite(ClassLevelTestCases.class);
@@ -141,6 +149,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlJoinNodeTestCases.class);
         suite.addTestSuite(XmlMetadataCompleteTestCases.class);
         suite.addTestSuite(XmlAdapterListTestCases.class);
+        suite.addTestSuite(XmlAdapterListsTestCases.class);
         suite.addTestSuite(MultipleBindingsSimpleTestCases.class);
         suite.addTestSuite(MultipleBindingsFourFilesTestCases.class);
         suite.addTestSuite(SplitPackageTestCases.class);

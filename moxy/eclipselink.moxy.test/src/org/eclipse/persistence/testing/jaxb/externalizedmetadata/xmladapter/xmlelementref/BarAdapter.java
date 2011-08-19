@@ -27,7 +27,7 @@ public final class BarAdapter extends XmlAdapter<Object, String> {
     }
 
     public Object marshal(String arg0) throws Exception {
-        if (arg0.equals(XmlAdapterTestCases.BAR_ITEM)) {
+        if (arg0.equals("66")) {
             Bar bar = new Bar();
             bar.id = arg0;
             return bar;
