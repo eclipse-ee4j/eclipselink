@@ -15,4 +15,12 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 //@javax.xml.bind.annotation.XmlRootElement(name="foobar")
 public class Bar {
     public int id;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Bar){
+    		return id == ((Bar)obj).id;
+    	}
+    	return false;
+    }
+    	
 }

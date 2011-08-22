@@ -12,60 +12,43 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import junit.textui.TestRunner;
-
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.Employee;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 /**
  * Tests inheritance configuration via XmlDiscriminatorNode & XmlDiscriminatorValue. 
  *
  */
-public class XmlDiscriminatorTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/";
-    private static final String OXM_DOC = PATH + "vehicle-oxm.xml";
-    private static final String XSD_DOC = PATH + "vehicle.xsd";
-    private static final String INSTANCE_DOC = PATH + "vehicle.xml";
-    private static final String WRITE_DOC = PATH + "vehicle-write.xml";
-    private Class[] classes;
-    private MySchemaOutputResolver resolver;
-    private JAXBContext jCtx;
+public class XmlDiscriminatorTestCases extends JAXBTestCases {
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle.xml";
+
+    private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-write.xml";
 
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlDiscriminatorTestCases(String name) {
+    public XmlDiscriminatorTestCases(String name)throws Exception {
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
+        setClasses(new Class[] { Car.class, Vehicle.class });
     }
-    
-    /**
-     * This method will be responsible for schema generation, which will create the 
-     * JAXBContext we will use and validate the eclipselink metadata file.
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-        classes = new Class[] { Car.class, Vehicle.class };
-        // schema generation also creates the JAXBContext
-        resolver = generateSchemaWithFileName(classes, CONTEXT_PATH, OXM_DOC, 1);
-        jCtx = getJAXBContext();
-        assertNotNull("Setup failed: JAXBContext is null", jCtx);
-    }
-    
-    private JAXBElement getControlObject() {
+   
+    public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
         car.milesPerGallon = 26;
@@ -75,63 +58,26 @@ public class XmlDiscriminatorTestCases extends ExternalizedMetadataTestCases {
         return new JAXBElement(new QName("vehicle-data"), Vehicle.class, car);
     }
     
-    /**
-     * Validate schema generation.
-     * 
-     */
-    public void testSchemaGen() {
-        // validate vehicle schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(XSD_DOC));
-    }
-    
-    public void testUnmarshalCar() {
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(INSTANCE_DOC);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + INSTANCE_DOC + "]");
-        }
 
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            Object jElt = unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", jElt);
-            assertTrue("Unmarshalled object is not a JAXBElement.", jElt instanceof JAXBElement);
-            JAXBElement ctrlElt = getControlObject();
-            JAXBElement jaxbElt = (JAXBElement) jElt;
-            assertTrue("JAXBElement names are not equal;  expected ["+ctrlElt.getName()+"] but was ["+jaxbElt.getName()+"].", ctrlElt.getName().equals(jaxbElt.getName()));
-            assertTrue("JAXBElement declared types are not equal; expected ["+ctrlElt.getDeclaredType()+"] but was ["+jaxbElt.getDeclaredType()+"].", ctrlElt.getDeclaredType() == jaxbElt.getDeclaredType());
-            assertTrue("JAXBElement values are not equal; expected ["+ctrlElt.getValue()+"] but was ["+jaxbElt.getValue()+"].", ctrlElt.getValue().equals(jaxbElt.getValue()));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
-    }
-    
-    public void testMarshalCar() {
-        // setup control document
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(WRITE_DOC);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + WRITE_DOC + "].");
-        }
+	public Map getProperties(){
+	    InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-oxm.xml");
 
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            //marshaller.marshal(getControlObject(), System.out);
-            marshaller.marshal(getControlObject(), testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator", new StreamSource(inputStream));
+		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+	        
+	    return properties;
+	}
+	
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle.xsd");
+    	
+    	controlSchemas.add(is);
+    	
+    	super.testSchemaGen(controlSchemas);
+    	
     }
-    
-    public static void main(String[] args) {
-        String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator.XmlDiscriminatorTestCases" };
-        TestRunner.main(arguments);
-    }
+  
 }

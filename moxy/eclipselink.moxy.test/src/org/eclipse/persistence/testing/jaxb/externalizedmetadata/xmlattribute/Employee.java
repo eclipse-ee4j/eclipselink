@@ -29,4 +29,43 @@ public class Employee {
     public int id;
     
     public Object things;
+    
+    public boolean equals(Object obj) {
+        Employee eObj;
+        try {
+            eObj = (Employee) obj;
+        } catch (ClassCastException cce) {
+            return false;
+        }
+        if(!(firstName.equals(eObj.firstName))){
+        	return false;
+        }
+        if(!(lastName.equals(eObj.lastName))){
+        	return false;
+        }
+        if(id != eObj.id){
+        	return false;
+        }
+        if(things instanceof List){
+        	if(!(eObj.things instanceof List)){
+        		return false;
+        	}
+        	if(((List)things).size() != ((List)eObj.things).size() ){
+        		return false;
+        	}
+        	for(int i=0;i<((List)things).size(); i++){
+        		Object next = ((List)things).get(i);
+        		Object nextCompare =((List)eObj.things).get(i);
+        		if(!(next.equals(nextCompare))){
+        			return false;
+        		}
+        	}
+        }else{
+        	if(!(things.equals(eObj.things))){
+        		return false;
+        	}
+        }
+        
+        return true;
+    }
 }

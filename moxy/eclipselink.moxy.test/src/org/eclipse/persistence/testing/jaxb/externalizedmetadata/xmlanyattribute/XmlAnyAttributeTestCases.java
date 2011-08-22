@@ -12,139 +12,81 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute;
 
-import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 /**
  * Tests XmlAnyElement via eclipselink-oxm.xml
  *
  */
-public class XmlAnyAttributeTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/";
+public class XmlAnyAttributeTestCases extends JAXBTestCases {
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/employee.xml";
     public static final String RETURN_STRING = "Giggity";
-    JAXBContext jCtx;
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlAnyAttributeTestCases(String name) {
+    public XmlAnyAttributeTestCases(String name) throws Exception{
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setClasses(new Class[]{Employee.class});
     }
     
-    /**
-     * The JAXBContext to be used for these tests is created here.
-     * 
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-        try {
-            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
-        } catch (JAXBException e) {
-            //e.printStackTrace();
-            fail("JAXBContext creation failed unexpectedly.");
-        }
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/eclipselink-oxm.xml");
 
-    /**
-     * Tests schema generation for @XmlAnyAttribute override via eclipselink-oxm.xml.
-     * This test will also verify that an @XmlAnyAttribute in code can be overridden
-     * with xml-element in XML, while a second property can be set as an
-     * xml-any-attribute in XML.  Two xml-any-attributes would cause an exception if 
-     * the overrides don't work properly.   
-     * 
-     * Positive test.
-     */
-    public void testXmlAnyAttributeSchemaGen() {
-        // generate schema
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver(); 
-        jCtx.generateSchema(outputResolver);
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
         
-        // validate schema
-        String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
-    
-    /**
-     * Tests @XmlAnyAttribute via eclipselink-oxm.xml.  Here, a number of
-     * overrides are performed. An unmarshal operation is performed, 
-     * then a marshal operation is performed to ensure the Any is 
-     * processed correctly.
-     * 
-     * Positive test.
-     */
-    public void testXmlAnyAttributeUnmarshalThenMarshal() {
-        // setup control Employee
-        Employee ctrlEmp = new Employee();
-        ctrlEmp.a = 1;
-        ctrlEmp.b = "3";
-        HashMap<QName, Object> someStuff = new HashMap<QName, Object>();
-        someStuff.put(new QName("www.example.com", "stuff"), "blah");
-        ctrlEmp.stuff = someStuff;
-
-        // test unmarshal
-        Employee emp = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            String src = PATH + "employee.xml";
-            emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
-            assertNotNull("The Employee object is null after unmarshal.", emp);
-            assertTrue("The unmarshalled Employee does not match the control Employee", ctrlEmp.equals(emp));
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred unmarshalling the document.");
-        }
-        
-        String src = PATH + "employee.xml";
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        Document testDoc = parser.newDocument();
-        
-        // test marshal
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            marshaller.marshal(ctrlEmp, testDoc);
-            assertTrue("The Employee did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred marshalling the Employee.");
-        }
-    }
-
+        return properties;
+	}
+	
+  
     /**
      * Test setting the map class via container-type attribute.
      * 
      * Positive test.
      */
     public void testContainerType() {
-        XMLDescriptor xDesc = jCtx.getXMLContext().getDescriptor(new QName("employee"));
+        XMLDescriptor xDesc = xmlContext.getDescriptor(new QName("employee"));
         assertNotNull("No descriptor was generated for Employee.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("stuff");
         assertNotNull("No mapping exists on Employee for attribute [stuff].", mapping);
         assertTrue("Expected an XMLAnyAttributeMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyAttributeMapping);
         assertTrue("Expected map class [java.util.LinkedHashMap] but was ["+((XMLAnyAttributeMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLAnyAttributeMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedHashMap"));
+    }
+
+	protected Object getControlObject() {
+        Employee ctrlEmp = new Employee();
+	    ctrlEmp.a = 1;
+	    ctrlEmp.b = "3";
+	    HashMap<QName, Object> someStuff = new HashMap<QName, Object>();
+	    someStuff.put(new QName("www.example.com", "stuff"), "blah");
+	    ctrlEmp.stuff = someStuff;
+	    return ctrlEmp;
+	}
+	
+    public void testSchemaGen() throws Exception {
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/schema.xsd");
+    	controlSchemas.add(is);
+    	super.testSchemaGen(controlSchemas);
     }
 }

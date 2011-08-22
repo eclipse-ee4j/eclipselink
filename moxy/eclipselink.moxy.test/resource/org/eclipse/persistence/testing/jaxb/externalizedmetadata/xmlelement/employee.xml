@@ -4,5 +4,5 @@
   <last-name>LastName</last-name>
   <id>66</id>
   <ns0:aUtilDate>1976-02-17T06:15:30.0+03:00</ns0:aUtilDate>
-  <myInt/>
+  <myInt>66</myInt>
 </employee>

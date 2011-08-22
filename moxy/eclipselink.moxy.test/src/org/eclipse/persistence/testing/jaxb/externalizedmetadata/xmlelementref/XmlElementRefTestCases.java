@@ -12,176 +12,83 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlElementRef via eclipselink-oxm.xml
  *
  */
-public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/";
+public class XmlElementRefTestCases extends JAXBTestCases {
     
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo.xml";
+    private Object writeObject;
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlElementRefTestCases(String name) {
+    public XmlElementRefTestCases(String name)throws Exception {
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setClasses(new Class[] { Foo.class });
     }
     
-    /**
-     * Tests @XmlElementRef schema generation via eclipselink-oxm.xml.  
-     * 
-     * Positive test.
-     */
-    public void testXmlElementRefSchemaGen() {
-        MySchemaOutputResolver outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-        // validate schema
-        String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
+	public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/eclipselink-oxm.xml");
 
-    /**
-     * Tests @XmlElementRef schema generation via eclipselink-oxm.xml.  Here, an
-     * xml-element-wrapper is also used.
-     * 
-     * Positive test.
-     */
-    public void testXmlElementRefWithWrapperSchemaGen() {
-        String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Foos.class, Bar.class }, CONTEXT_PATH, metadataFile, 1);
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
         
-        // validate schema
-        String controlSchema = PATH + "schema_wrapper.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
-
-    /**
-     * Tests @XmlElementRef via eclipselink-oxm.xml.
-     * 
-     * Positive test.
-     */
-    public void testXmlElementRef() {
-        // load XML metadata
+        return properties;
+	}
+    
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/schema.xsd");
     	
-    	Class[] classesToProcess = new Class[] { Foo.class };
-        MySchemaOutputResolver outputResolver = generateSchema(classesToProcess, CONTEXT_PATH , PATH, 1);
-    	        
-        // load instance doc
-        String src = PATH + "foo.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // unmarshal
-        Object obj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            obj = unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", obj == null);
-            assertTrue("Unmarshalled object was expected to be [Foo] but was [" + obj.getClass().getName() + "]", obj instanceof Foo);
-            Foo f = (Foo) obj;
-            assertNull("Item is non-null after unmarshal but is set write-only.", f.item);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        // set item manually, as it is write-only and was not set during unmarshal
-        Bar b = new Bar();
-        b.id = 66;
-        Foo f = (Foo) obj;
-        f.item = b;
-        try {
-            //marshaller.marshal(obj, System.out);
-            marshaller.marshal(obj, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-            assertTrue("Method accessor was not called as expected.", ((Foo) obj).accessedViaMethod);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+    	controlSchemas.add(is);
+    	
+    	super.testSchemaGen(controlSchemas);
+    	
     }
 
-    /**
-     * Tests @XmlElementRef via eclipselink-oxm.xml.  Here an xml-element-wrapper
-     * is also used.
-     * 
-     * Positive test.
-     */
-    public void testXmlElementRefWithWrapper() {
-        String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Foos.class, Bar.class }, CONTEXT_PATH, metadataFile, 1);
+	public Object getControlObject() {
+		Foo foo = new Foo();
+		return foo;
+	}
+	
+	public Object getWriteControlObject() {
+		if(writeObject == null){
+			Foo foo = new Foo();
+			Bar bar = new Bar();
+			bar.id = 66;
+			foo.item = bar;
+			writeObject = foo;
+		}
+		return writeObject;
+	}
+	
 
-        // make sure container-type was processed correctly
-        XMLDescriptor xDesc = jaxbContext.getXMLContext().getDescriptor(new QName("foos"));
-        assertNotNull("No descriptor was generated for Foos.", xDesc);
-        DatabaseMapping mapping = xDesc.getMappingForAttributeName("items");
-        assertNotNull("No mapping exists on Foos for attribute [items].", mapping);
-        assertTrue("Expected an XMLChoiceCollectionMapping for attribute [items], but was [" + mapping.toString() +"].", mapping instanceof XMLChoiceCollectionMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
-        
-        // load instance doc
-        String src = PATH + "foo-wrapper.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // unmarshal
-        Object obj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            obj = unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", obj == null);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        try {
-            marshaller.marshal(obj, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+    public void objectToXMLDocumentTest(Document testDocument) throws Exception {    	
+    	super.objectToXMLDocumentTest(testDocument);
+        assertTrue("Method accessor was not called as expected.", ((Foo) writeObject).accessedViaMethod);
     }
+	
+    public void testRoundTrip(){
+    	//not applicable with write only mappings.
+    }
+
 }

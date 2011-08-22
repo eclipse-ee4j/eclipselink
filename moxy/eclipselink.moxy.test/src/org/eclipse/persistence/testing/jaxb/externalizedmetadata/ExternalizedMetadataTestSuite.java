@@ -48,9 +48,11 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentre
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor.XmlClassExtractorTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer.XmlCustomizerTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer.XmlCustomizerWithOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator.XmlDiscriminatorTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.XmlElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.XmlElementRefTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.XmlElementRefWithWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.XmlElementRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.XmlElementsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElementWrapperTestCases;
@@ -126,6 +128,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(PropertyLevelTestCases.class);
         suite.addTestSuite(XmlAttributeTestCases.class);
         suite.addTestSuite(XmlCustomizerTestCases.class);
+        suite.addTestSuite(XmlCustomizerWithOverrideTestCases.class);
         suite.addTestSuite(XmlElementWrapperTestCases.class);
         suite.addTestSuite(XmlValueTestCases.class);
         suite.addTestSuite(XmlListTestCases.class);
@@ -137,6 +140,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlAttachmentRefCases.class);
         suite.addTestSuite(XmlElementsTestCases.class);
         suite.addTestSuite(XmlElementRefTestCases.class);
+        suite.addTestSuite(XmlElementRefWithWrapperTestCases.class);
         suite.addTestSuite(XmlElementRefsTestCases.class);
         suite.addTestSuite(XmlSchemaTypeTestCases.class);
         suite.addTestSuite(XmlSchemaTypesTestCases.class);

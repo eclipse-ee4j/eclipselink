@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -33,6 +31,20 @@ public class Foo {
     
     public void setBarItem(Bar item) {
         this.item = item;
+    }
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Foo){
+    		if(item == null){
+    			if(((Foo)obj).item != null){
+    				return false;
+    			}
+    			return true;
+    		}else{
+         		return item.equals(((Foo)obj).item);
+    		}
+    	}
+    	return false;
     }
 
 }

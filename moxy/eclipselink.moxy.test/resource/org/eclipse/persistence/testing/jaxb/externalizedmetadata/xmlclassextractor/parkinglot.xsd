@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="car">
+      <xsd:complexContent>
+         <xsd:extension base="vehicle">
+            <xsd:sequence>
+               <xsd:element name="number-of-doors" type="xsd:int"/>
+               <xsd:element name="miles-per-gallon" type="xsd:int"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="vehicle">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="model" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="manufacturer" type="xsd:string"/>
+         <xsd:element name="top-speed" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="parkingLot">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="vehicles">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="vehicle" type="vehicle"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="parking-lot" type="parkingLot"/>
+   <xsd:element name="car" type="car"/>
+   <xsd:element name="vehicle" type="vehicle"/>
+</xsd:schema>

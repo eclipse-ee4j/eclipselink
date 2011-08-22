@@ -12,8 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer;
 
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -22,26 +25,18 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 /**
  * Tests XmlCustomizer - this annotation facilitates descriptor customization.
  *
  */
-public class XmlCustomizerTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/";
-
-    /**
-     * This is the preferred (and only) constructor.
-     * 
-     * @param name
-     */
-    public XmlCustomizerTestCases(String name) {
-        super(name);
-    }
+public class XmlCustomizerTestCases extends JAXBWithJSONTestCases {
     
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/employee_no_overrides.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/employee_no_overrides.json";
+
     /**
      * Test @XmlCustomizer annotation on the Java class.  Here, no XML override
      * is performed.  The instance doc will contain 'first-name' and 'last-name' 
@@ -50,41 +45,24 @@ public class XmlCustomizerTestCases extends ExternalizedMetadataTestCases {
      * 
      * Positive test.
      */
-    public void testXmlCustomizerNoOverride() {
-        Class<?>[] classes = { 
-                Employee.class
-            };
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classes, null);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
-
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        Marshaller marshaller = jaxbContext.createMarshaller();
-
-        Object obj;
-        try {
-            // test unmarshal
-            obj = unmarshaller.unmarshal(new StreamSource(new StringReader(getInstanceDocument())));
-            assertTrue("Unmarshal operation failed - objects are not equal", obj.equals(getControlObject()));
-
-            // test marshal
-            StringWriter sw = new StringWriter();
-            marshaller.marshal(obj, sw);
-
-            String ctrlString = OXTestCase.removeWhiteSpaceFromString(getInstanceDocument());
-            String testString = OXTestCase.removeWhiteSpaceFromString(sw.toString());
-            assertTrue("Comparison failed - expected \n'" + ctrlString + "'\n but was \n'" + testString + "'\n", ctrlString.equals(testString));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
+    public XmlCustomizerTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{Employee.class});
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
     }
     
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/employee.xsd");
+    	
+    	controlSchemas.add(is);
+    	
+    	super.testSchemaGen(controlSchemas);
+    	
+    	
+    }
+ 
     /**
      * Test @XmlCustomizer annotation on the Java class.  Here, no XML override
      * is performed.  The instance doc will contain 'firstName' and 'lastName' 
@@ -126,60 +104,12 @@ public class XmlCustomizerTestCases extends ExternalizedMetadataTestCases {
             fail("An unexpected exception occurred");
         }
     }
-    
-    /**
-     * Test @XmlCustomizer via XML override.  The instance doc will contain 'my-first-name' 
-     * and 'my-last-name' tags which are changed by the customizer from 'firstName' and
-     * 'lastName' respectively.  Note that the customizer set via annotations 
-     * (MyEmployeeCustomizer) will be overridden.
-     * 
-     * Positive test.
-     */
-    public void testXmlCustomizerOverride() {
-        Class<?>[] classes = { 
-                Employee.class
-            };
-
-        String metadataFile = PATH + "my-eclipselink-oxm.xml";
-        
-        Class[] classesToProcess = new Class[] { Employee.class };
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH , metadataFile, 1);
-  
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        Marshaller marshaller = jaxbContext.createMarshaller();
-
-        Object obj;
-        try {
-            // test unmarshal
-            obj = unmarshaller.unmarshal(new StreamSource(new StringReader(getInstanceDocumentForXmlOverride())));
-            assertTrue("Unmarshal operation failed - objects are not equal", obj.equals(getControlObject()));
-
-            // test marshal
-            StringWriter sw = new StringWriter();
-            marshaller.marshal(obj, sw);
-
-            String ctrlString = OXTestCase.removeWhiteSpaceFromString(getInstanceDocumentForXmlOverride());
-            String testString = OXTestCase.removeWhiteSpaceFromString(sw.toString());
-            assertTrue("Comparison failed - expected \n'" + ctrlString + "'\n but was \n'" + testString + "'\n", ctrlString.equals(testString));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
-    }
-
-    private String getInstanceDocument() {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee><first-name>Joe</first-name><last-name>Oracle</last-name></employee>";
-    }
-    
+       
     private String getInstanceDocumentInvalid() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee><firstName>Joe</firstName><lastName>Oracle</lastName></employee>";
     }
-    
-    private String getInstanceDocumentForXmlOverride() {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee><my-first-name>Joe</my-first-name><my-last-name>Oracle</my-last-name></employee>";
-    }
-    
-    private Employee getControlObject() {
+     
+    public Object getControlObject() {
         Employee emp = new Employee();
         emp.firstName = "Joe";
         emp.lastName = "Oracle";

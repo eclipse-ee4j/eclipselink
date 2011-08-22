@@ -14,56 +14,66 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextrac
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import junit.textui.TestRunner;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 /**
  * Tests XmlClassExtractor via eclipselink-oxm.xml
  * 
  */
-public class XmlClassExtractorTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/";
-    private static final String INSTANCE_DOC = PATH + "parkinglot.xml";
-    private Class[] classes;
-    private MySchemaOutputResolver resolver;
-    private JAXBContext jCtx;
+public class XmlClassExtractorTestCases extends JAXBTestCases {
+   private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/parkinglot.xml";
+
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlClassExtractorTestCases(String name) {
+    public XmlClassExtractorTestCases(String name) throws Exception{
         super(name);
+        setClasses(new Class[]{Car.class, Vehicle.class, ParkingLot.class });
+        setControlDocument(XML_RESOURCE);
     }
 
-    /**
-     * This method will be responsible for schema generation, which will create the 
-     * JAXBContext we will use and validate the eclipselink metadata file.
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-        classes = new Class[] { Car.class, Vehicle.class, ParkingLot.class };
-        // schema generation also creates the JAXBContext
-        resolver = generateSchemaWithFileName(classes, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 1);
-        jCtx = getJAXBContext();
-        assertNotNull("Setup failed: JAXBContext is null", jCtx);
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/eclipselink-oxm.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}
     
+    
+    public Map getInvalidProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/eclipselink-oxm-no-extractor.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}
+   
     /**
      * Returns the control ParkingLot instance.
      */
-    public ParkingLot getControlObject() {
+    public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
         car.milesPerGallon = 30;
@@ -78,32 +88,18 @@ public class XmlClassExtractorTestCases extends ExternalizedMetadataTestCases {
         lot.setVehicles(vehicles);
         return lot;
     }
-
-    /**
-     * Tests unmarshal doc with ClassExtractor set.
-     * 
-     * Positive test.
-     */
-    public void testUnmarshal() {
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(INSTANCE_DOC);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + INSTANCE_DOC + "]");
-        }
-
-        // setup control ParkingLot
-        ParkingLot ctrlLot = getControlObject();
-
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            ParkingLot lotObj = (ParkingLot) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", lotObj);
-            assertTrue("Unmarshal failed:  ParkingLot objects are not equal", ctrlLot.equals(lotObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
+    
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/parkinglot.xsd");
+    	
+    	controlSchemas.add(is);
+    	
+    	super.testSchemaGen(controlSchemas);
+    	
+    	
     }
+    
 
     /**
      * Tests unmarshal doc without ClassExtractor set - should cause an
@@ -112,38 +108,21 @@ public class XmlClassExtractorTestCases extends ExternalizedMetadataTestCases {
      * 
      * Negative test.
      */
-    public void testUnmarshalFailure() {
+    public void testUnmarshalFailure() throws Exception{
         // create the JAXBContext for this test (metadata file is validated as well)
-        JAXBContext jaxbContext = null;
+        JAXBContext jaxbContextInvalid = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Car.class, Vehicle.class, ParkingLot.class}, getInvalidProperties());
+        Unmarshaller unmarshaller = jaxbContextInvalid.createUnmarshaller();
         try {
-            jaxbContext = createContext(classes, CONTEXT_PATH, PATH + "eclipselink-oxm-no-extractor.xml");
-        } catch (JAXBException jex) {
-            jex.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-        
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(INSTANCE_DOC);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + INSTANCE_DOC + "]");
-        }
+            InputStream iDocStream = getClass().getClassLoader().getResourceAsStream(XML_RESOURCE);
 
-        // setup control ParkingLot
-        ParkingLot ctrlLot = getControlObject();
-
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
             ParkingLot lotObj = (ParkingLot) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", lotObj);
-            assertFalse("Unmarshal did not fail as expected", ctrlLot.equals(lotObj));
+            assertFalse("Unmarshal did not fail as expected", getControlObject().equals(lotObj));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("An unexpected exception occurred");
         }
     }
-    
-    public static void main(String[] args) {
-        String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor.XmlClassExtractorTestCases" };
-        TestRunner.main(arguments);
-    }
+
+  
 }
