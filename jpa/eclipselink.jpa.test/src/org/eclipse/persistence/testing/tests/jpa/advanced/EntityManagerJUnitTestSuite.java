@@ -7902,27 +7902,27 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testWeaving() {
         // Only test if weaving was on, test runs without weaving must set this system property.
         if (isWeavingEnabled()) {
-            internalTestWeaving(new Employee(), true, true);
-            internalTestWeaving(new FormerEmployment(), true, false);
-            internalTestWeaving(new Address(), true, false);
-            internalTestWeaving(new PhoneNumber(), true, false);
-            internalTestWeaving(new EmploymentPeriod(), true, false);
+            internalTestWeaving(new Employee(), isWeavingForChangeTrackingEnabled(), true);
+            internalTestWeaving(new FormerEmployment(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new Address(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new PhoneNumber(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new EmploymentPeriod(), isWeavingForChangeTrackingEnabled(), false);
             internalTestWeaving(new Buyer(), false, false);  // field-locking
             internalTestWeaving(new GoldBuyer(), false, false);  // field-locking
             internalTestWeaving(new PlatinumBuyer(), false, false);  // field-locking
-            internalTestWeaving(new Department(), true, false);  // eager 1-m
-            internalTestWeaving(new Golfer(), true, false);
-            internalTestWeaving(new GolferPK(), true, false);
-            internalTestWeaving(new SmallProject(), true, false);
-            internalTestWeaving(new LargeProject(), true, false);
-            internalTestWeaving(new Man(), true, false);
-            internalTestWeaving(new Woman(), true, false);
+            internalTestWeaving(new Department(), isWeavingForChangeTrackingEnabled(), false);  // eager 1-m
+            internalTestWeaving(new Golfer(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new GolferPK(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new SmallProject(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new LargeProject(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new Man(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new Woman(), isWeavingForChangeTrackingEnabled(), false);
             internalTestWeaving(new Vegetable(), false, false);  // serialized
             internalTestWeaving(new VegetablePK(), false, false);
-            internalTestWeaving(new WorldRank(), true, false);
-            internalTestWeaving(new Equipment(), true, false);
-            internalTestWeaving(new EquipmentCode(), true, false);
-            internalTestWeaving(new PartnerLink(), true, false);
+            internalTestWeaving(new WorldRank(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new Equipment(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new EquipmentCode(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new PartnerLink(), isWeavingForChangeTrackingEnabled(), false);
         }
     }
     

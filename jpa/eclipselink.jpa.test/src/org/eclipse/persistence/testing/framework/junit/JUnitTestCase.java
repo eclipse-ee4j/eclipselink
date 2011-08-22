@@ -161,6 +161,24 @@ public abstract class JUnitTestCase extends TestCase {
         return isJTA;
     }
     
+    public boolean isWeavingForChangeTrackingEnabled() {
+        return isWeavingForChangeTrackingEnabled(getPersistenceUnitName());
+    }
+    
+    public boolean isWeavingForChangeTrackingEnabled(String persistenceUnitName) {
+        Object changeTrackingWeaving = JUnitTestCase.getDatabaseSession(persistenceUnitName).getProperty("eclipselink.weaving.changetracking");
+        
+        if (changeTrackingWeaving == null) {
+            changeTrackingWeaving = System.getProperty("eclipselink.weaving.changetracking");
+        }
+        
+        if ("false".equals(changeTrackingWeaving)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     /**
      * Return if the tests were run using weaving, agent or static.
      */
