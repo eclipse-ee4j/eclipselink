@@ -973,10 +973,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
                 }
             }
             
-            // The make sure the additional join expression has the correct 
-            // context, rebuild the additional join expression on a new 
-            // expression builder.
-            additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
+            if (additionalJoinExpression != null) {
+                // The make sure the additional join expression has the correct 
+                // context, rebuild the additional join expression on a new 
+                // expression builder.
+                additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
+            }
         }
     }
     
