@@ -233,6 +233,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** Allow queries to be targeted at specific connection pools. */
     protected PartitioningPolicy partitioningPolicy;
     
+    /** Used at descriptor initialization time to propogate protected settings for relationships **/
+    protected Set<ClassDescriptor> isolatedAndProtectedDescriptors;
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -247,6 +249,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         this.numberOfActiveUnitsOfWork = 0;
         this.isInBroker = false;
         this.isSynchronized = false;
+        this.isolatedAndProtectedDescriptors = new HashSet<ClassDescriptor>();
     }
 
     /**
@@ -2253,6 +2256,16 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return integrityChecker;
     }
 
+    /**
+     * INTERNAL:
+     * Return the set of isolated and protected descriptors.  This list
+     * is used for descriptor initialization.
+     * @return
+     */
+    public Set<ClassDescriptor> getIsolatedAndProtectedDescriptors(){
+        return isolatedAndProtectedDescriptors;
+    }
+    
     /**
      * PUBLIC:
      * Return the writer to which an accessor writes logged messages and SQL.

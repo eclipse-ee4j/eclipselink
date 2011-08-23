@@ -52,6 +52,7 @@ public class TestUpdate extends JPA1Base {
     public void testUpdateRelationWithCompositeKey() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
+        env.evictAll(em);
         try {
             Employee emp = new Employee(17, "first", "last", null /* department */
             );

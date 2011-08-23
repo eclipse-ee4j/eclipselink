@@ -1966,6 +1966,13 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
     }
     
+    @Override
+    public void collectQueryParameters(Set<DatabaseField> cacheFields){
+        for (DatabaseField field : sourceToTargetKeyFields.keySet()) {
+            cacheFields.add(field);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Return all the fields populated by this mapping, these are foreign keys only.

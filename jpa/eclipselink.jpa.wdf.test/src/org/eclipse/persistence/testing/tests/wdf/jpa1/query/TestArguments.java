@@ -197,13 +197,10 @@ public class TestArguments extends QueryTest {
         try {
             getEnvironment().beginTransaction(em);
             MotorVehicle motorVehicle = new MotorVehicle();
-            motorVehicle.setId(Short.valueOf((short) 1));
             motorVehicle.setTransmissionType(TransmissionType.AUTOMATIC);
             Truck truck = new Truck();
-            truck.setId(Short.valueOf((short) 2));
             truck.setTransmissionType(TransmissionType.STICK_SHIFT);
             Car car = new Car();
-            car.setId(Short.valueOf((short) 3));
             em.persist(motorVehicle);
             em.persist(truck);
             em.persist(car);

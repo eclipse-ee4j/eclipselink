@@ -286,6 +286,19 @@ public class SessionBroker extends DatabaseSessionImpl {
     }
 
     /**
+     * INTERNAL:
+     * Used at session initialization time to maintain information about caching
+     */
+    @Override
+    public void clearIsolatedAndProtectedDescriptors(){
+        Set<ClassDescriptor> descriptors = new HashSet<ClassDescriptor>();
+        for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
+            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
+            databaseSession.clearIsolatedAndProtectedDescriptors();
+        }
+    }
+
+    /**
      * PUBLIC:
      * Return true if the pre-defined query is defined on the session.
      */
@@ -372,6 +385,23 @@ public class SessionBroker extends DatabaseSessionImpl {
         return null;
     }
 
+
+    /**
+     * INTERNAL:
+     * Return the set of isolated and protected descriptors.  This list
+     * is used for descriptor initialization.
+     * @return
+     */
+    @Override
+    public Set<ClassDescriptor> getIsolatedAndProtectedDescriptors(){
+        Set<ClassDescriptor> descriptors = new HashSet<ClassDescriptor>();
+        for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
+            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
+            descriptors.addAll(databaseSession.getIsolatedAndProtectedDescriptors());
+        }
+        return descriptors;
+    }
+    
     /**
      * INTERNAL:
      * Gets the parent SessionBroker.

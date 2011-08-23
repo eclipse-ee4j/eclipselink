@@ -88,7 +88,6 @@
 		           %%server-platform-property%%
                    <property name="eclipselink.target-database" value="%%database-platform%%"/>
                    <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/> 
-                   <property name="eclipselink.cache.shared.default" value="false"/>    
                    <property name="eclipselink.temporal.mutable" value="true"/> 
                    <property name="eclipselink.weaving" value="false"/>
                    <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
