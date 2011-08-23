@@ -179,6 +179,24 @@ public abstract class JUnitTestCase extends TestCase {
         return true;
     }
     
+    public boolean isWeavingForFetchGroupsEnabled() {
+        return isWeavingForFetchGroupsEnabled(getPersistenceUnitName());
+    }
+    
+    public boolean isWeavingForFetchGroupsEnabled(String persistenceUnitName) {
+        Object fetchGroupsWeaving = JUnitTestCase.getDatabaseSession(persistenceUnitName).getProperty("eclipselink.weaving.fetchgroups");
+        
+        if (fetchGroupsWeaving == null) {
+            fetchGroupsWeaving = System.getProperty("eclipselink.weaving.fetchgroups");
+        }
+        
+        if ("false".equals(fetchGroupsWeaving)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     /**
      * Return if the tests were run using weaving, agent or static.
      */

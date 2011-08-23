@@ -7904,34 +7904,34 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testWeaving() {
         // Only test if weaving was on, test runs without weaving must set this system property.
         if (isWeavingEnabled()) {
-            internalTestWeaving(new Employee(), isWeavingForChangeTrackingEnabled(), true);
-            internalTestWeaving(new FormerEmployment(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new Address(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new PhoneNumber(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new EmploymentPeriod(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new Buyer(), false, false);  // field-locking
-            internalTestWeaving(new GoldBuyer(), false, false);  // field-locking
-            internalTestWeaving(new PlatinumBuyer(), false, false);  // field-locking
-            internalTestWeaving(new Department(), isWeavingForChangeTrackingEnabled(), false);  // eager 1-m
-            internalTestWeaving(new Golfer(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new GolferPK(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new SmallProject(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new LargeProject(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new Man(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new Woman(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new Vegetable(), false, false);  // serialized
-            internalTestWeaving(new VegetablePK(), false, false);
-            internalTestWeaving(new WorldRank(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new Equipment(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new EquipmentCode(), isWeavingForChangeTrackingEnabled(), false);
-            internalTestWeaving(new PartnerLink(), isWeavingForChangeTrackingEnabled(), false);
+            internalTestWeaving(new Employee(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), true);
+            internalTestWeaving(new FormerEmployment(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new Address(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new PhoneNumber(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new EmploymentPeriod(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new Buyer(), false, isWeavingForFetchGroupsEnabled(), false);  // field-locking
+            internalTestWeaving(new GoldBuyer(), false, isWeavingForFetchGroupsEnabled(), false);  // field-locking
+            internalTestWeaving(new PlatinumBuyer(), false, isWeavingForFetchGroupsEnabled(), false);  // field-locking
+            internalTestWeaving(new Department(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);  // eager 1-m
+            internalTestWeaving(new Golfer(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new GolferPK(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new SmallProject(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new LargeProject(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new Man(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new Woman(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new Vegetable(), false, isWeavingForFetchGroupsEnabled(), false);  // serialized
+            internalTestWeaving(new VegetablePK(), false, isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new WorldRank(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new Equipment(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new EquipmentCode(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
+            internalTestWeaving(new PartnerLink(), isWeavingForChangeTrackingEnabled(), isWeavingForFetchGroupsEnabled(), false);
         }
     }
     
     /**
      * Test that the object was weaved.
      */
-    public void internalTestWeaving(Object object, boolean changeTracking, boolean indirection) {
+    public void internalTestWeaving(Object object, boolean changeTracking, boolean fetchGroups, boolean indirection) {
         if (!(object instanceof PersistenceWeaved)) {
             fail("Object not weaved:" + object);
         }
@@ -7949,7 +7949,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (!(object instanceof PersistenceEntity)) {
                 fail("Object not weaved for PersistenceEntity:" + object);
             }
-            if (!(object instanceof FetchGroupTracker)) {
+            if (fetchGroups && !(object instanceof FetchGroupTracker)) {
                 fail("Object not weaved for FetchGroupTracker:" + object);
             }
         }
@@ -9795,7 +9795,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 assertTrue("ProviderUtil did not return LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.LOADED));
                 
                 emp = em.getReference(Employee.class, emp.getId());
-                assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.NOT_LOADED));
+                // If fetch group weaving is off then we will load EAGER mappings and LOADED will be returned.
+                if (isWeavingForFetchGroupsEnabled()) {
+                    assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.NOT_LOADED));
+                } else {
+                    assertTrue("ProviderUtil did not return LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.LOADED));
+                }
             } else {
                 assertTrue("(NonWeaved) ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.UNKNOWN));
                 
