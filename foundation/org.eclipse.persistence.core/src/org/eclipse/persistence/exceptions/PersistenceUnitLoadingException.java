@@ -39,6 +39,7 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
     public static final int SESSION_NAME_ALREADY_IN_USE= 30016;
     public static final int PERSISTENCE_UNIT_NAME_ALREADY_IN_USE= 30017;
     public static final int EXCEPTION_CREATING_ARCHIVE_FACTORY = 30018;
+    public static final int CANNOT_REFRESH_EMF_CREATED_FROM_SESSION = 30019;
 
 
     /**
@@ -220,6 +221,13 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
         return loadingException;
     }
     
+    public static PersistenceUnitLoadingException cannotRefreshEntityManagerFactoryCreatedFromSession(String persistenceUnitName) {
+        Object[] args = { persistenceUnitName };
+
+        PersistenceUnitLoadingException loadingException = new PersistenceUnitLoadingException(ExceptionMessageGenerator.buildMessage(PersistenceUnitLoadingException.class, CANNOT_REFRESH_EMF_CREATED_FROM_SESSION, args));
+        loadingException.setErrorCode(CANNOT_REFRESH_EMF_CREATED_FROM_SESSION);
+        return loadingException;
+    }
     
     public String getResourceName(){
         return resourceName;

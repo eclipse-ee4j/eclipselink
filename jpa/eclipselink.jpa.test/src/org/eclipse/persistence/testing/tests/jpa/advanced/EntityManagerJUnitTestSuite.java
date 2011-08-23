@@ -96,6 +96,7 @@ import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityException;
+import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
@@ -384,6 +385,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // tests.add("testMergeNewReferencingOldChangedClearCache");
         tests.add("testAddAndDeleteSameObject");
         tests.add("testDeleteAllProjects");
+        tests.add("testEMFBuiltWithSession");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -499,14 +501,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testEMFClose() {
         // This test tests the bug fix for 260511
-    	// The NPE would be thrown if the EnityManager 
-    	// was created through the constructor
-    	String errorMsg = "";
-    	EntityManagerFactory em = new EntityManagerFactoryImpl(JUnitTestCase.getServerSession());
+        // The NPE would be thrown if the EnityManager 
+        // was created through the constructor
+        String errorMsg = "";
+        EntityManagerFactory em = new EntityManagerFactoryImpl(JUnitTestCase.getServerSession());
         try {
-        	em.close();
+            em.close();
         } catch (RuntimeException ex) {
-        	errorMsg ="EMFClose: " + ex.getMessage() +";";
+            errorMsg ="EMFClose: " + ex.getMessage() +";";
         }
 
         if(errorMsg.length() > 0) {
@@ -11444,6 +11446,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         if (errorMsg.length() > 0) {
             fail(errorMsg);
+        }
+    }
+    
+    // Bug 348766
+    public void testEMFBuiltWithSession(){
+        EntityManagerFactory emf = new EntityManagerFactoryImpl(JUnitTestCase.getServerSession());
+        EntityManager em = null;
+        try{
+            em = emf.createEntityManager(new HashMap());
+        } catch (Exception e){
+            fail("Exception thrown while creating entity manager with entity manager factory created from session: " + e.getMessage());
+        }
+        beginTransaction(em);
+        Employee emp = new Employee();
+        em.persist(emp);
+        commitTransaction(em);
+        beginTransaction(em);
+        emp = (Employee)em.find(Employee.class, emp.getId());
+        em.remove(emp);
+        commitTransaction(em);
+        
+        Exception loadingException = null;
+        try{
+            JpaHelper.getEntityManagerFactory(emf).refreshMetadata(new HashMap());
+        } catch (PersistenceUnitLoadingException e){
+            loadingException = e;
+        }
+        if (loadingException == null){
+            fail("Proper exception not thrown when refreshing metadata: ");
         }
     }
 }
