@@ -34,7 +34,8 @@ public class PersistenceUnitLoadingExceptionResource extends ListResourceBundle 
                                            { "30015", "An exception was thrown while loading validation group class: {0}."},
                                            { "30016", "Session name {0} cannot be used by persistence unit {1}, it is already used by persistence unit {2}"},
                                            { "30017", "Persistence unit {0} is defined in both URL:{1} and URL:{2}. Cannot have several persistence units with the same name loaded by the same classloader."},
-                                           { "30018", "Exception: {1} occured while trying to instantiate user-specified ArchiveFactory: {0}."}
+                                           { "30018", "Exception: {1} occured while trying to instantiate user-specified ArchiveFactory: {0}."},
+                                           { "30019", "You are calling refreshMetadata on an EntityManagerFactory for persistence unit {0}.  The metadata cannot be refreshed because this EntityManagerFactory was created from a session object rather derived from a persistence unit."}
     };
 
     /**

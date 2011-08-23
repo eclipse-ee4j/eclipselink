@@ -27,6 +27,7 @@ import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -190,6 +191,9 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      */
     public void refreshMetadata(Map properties){
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
+        if (setupImpl == null){
+            throw PersistenceUnitLoadingException.cannotRefreshEntityManagerFactoryCreatedFromSession(delegate.getServerSession().getName());
+        }
         String sessionName = setupImpl.getSessionName();
         Map existingProperties = delegate.getProperties();
         Map deployProperties = new HashMap();
@@ -277,7 +281,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     protected EntityManagerImpl createEntityManagerImpl(Map properties) {
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
-        if (setupImpl.isMetadataExpired()){
+        if (setupImpl != null && setupImpl.isMetadataExpired()){
             String sessionName = setupImpl.getSessionName();
             EntityManagerSetupImpl storedImpl = null;
             synchronized (EntityManagerFactoryProvider.emSetupImpls){
