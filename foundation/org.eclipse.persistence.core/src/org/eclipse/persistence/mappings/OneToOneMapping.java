@@ -465,6 +465,13 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return clone;
     }
     
+    @Override
+    public void collectQueryParameters(Set<DatabaseField> cacheFields){
+        for (DatabaseField field : sourceToTargetKeyFields.keySet()) {
+            cacheFields.add(field);
+        }
+    }
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.

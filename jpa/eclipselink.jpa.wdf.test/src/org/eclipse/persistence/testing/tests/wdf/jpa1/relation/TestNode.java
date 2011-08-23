@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.relation;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -143,6 +144,9 @@ public class TestNode extends JPA1Base {
             final int rootId = 30;
             Node root = new Node(rootId, null);
             root.setParent(root);
+            Set<Node> children = new HashSet<Node>();
+            children.add(root);
+            root.setChildren(children);
             em.persist(root);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);

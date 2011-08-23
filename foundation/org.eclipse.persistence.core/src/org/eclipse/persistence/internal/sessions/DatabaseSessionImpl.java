@@ -267,6 +267,14 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
+     * Used at session initialization time to maintain information about caching
+     */
+    public void clearIsolatedAndProtectedDescriptors(){
+        getIsolatedAndProtectedDescriptors().clear();
+    }
+    
+    /**
+     * INTERNAL:
      * Connect the session only.
      */
     public void connect() throws DatabaseException {
@@ -409,6 +417,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     descriptor.preInitialize(this);
                     descriptor.initialize(this);
                     descriptor.postInitialize(this);
+                    if (!descriptor.isSharedIsolation()){
+                        descriptor.notifyReferencingDescriptorsOfIsolation();
+                    }
+                    descriptor.getCachePolicy().postInitialize(descriptor);
                     getCommitManager().initializeCommitOrder();
                 } catch (RuntimeException exception) {
                     getIntegrityChecker().handleError(exception);
@@ -529,6 +541,15 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     getIntegrityChecker().handleError(exception);
                 }
             }
+            
+            Iterator<ClassDescriptor> isolatedAndProtectedIterator = getIsolatedAndProtectedDescriptors().iterator();
+            while (isolatedAndProtectedIterator.hasNext()){
+                ClassDescriptor descriptor = isolatedAndProtectedIterator.next();
+                descriptor.notifyReferencingDescriptorsOfIsolation();
+                descriptor.getCachePolicy().postInitialize(descriptor);
+            }
+            
+            clearIsolatedAndProtectedDescriptors();
 
             if (getIntegrityChecker().hasErrors()) {
                 //CR#4011
@@ -540,7 +561,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
         getCommitManager().initializeCommitOrder();
     }
-
+    
     /**
      * INTERNAL:
      * Return if this session is a database session.

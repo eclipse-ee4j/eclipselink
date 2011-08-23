@@ -71,4 +71,6 @@ public interface JPAEnvironment {
     public Object getPropertyValue(EntityManager em, String key);
 
     public void evict(EntityManager em, Class<?> clazz);
+    
+    public void evictAll(EntityManager em);
 }

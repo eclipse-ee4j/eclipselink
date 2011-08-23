@@ -99,6 +99,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             SEED_SET.addAll(HANS_SET);
             SEED_SET.addAll(FRED_SET);
         } finally {
+            env.evictAll(em);
             closeEntityManager(em);
         }
     }
@@ -335,6 +336,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             verify(projects.size() == 3, "not exactly 3 projects but " + projects.size());
             env.rollbackTransactionAndClear(em);
         } finally {
+            env.evictAll(em);
             closeEntityManager(em);
         }
     }

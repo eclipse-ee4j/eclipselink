@@ -52,6 +52,7 @@ public class TestCascadeRemove extends JPA1Base {
     public void testSimpleCascadeNew() throws SQLException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
+        env.evictAll(em);
         try {
             // one-to-many relationship
             CascadingNode child = new CascadingNode(1, null);

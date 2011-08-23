@@ -72,7 +72,7 @@ public class CachePolicy implements Cloneable, Serializable {
 
     /** Configures how the unit of work uses the session cache. */
     protected int unitOfWorkCacheIsolationLevel = UNDEFINED_ISOLATATION;
-    public static final int UNDEFINED_ISOLATATION = -1;
+    public static final int UNDEFINED_ISOLATATION = -1; // UNDEFINED_ISOLATATION will be treated as USE_SESSION_CACHE_AFTER_TRANSACTION when set at runtime
     public static final int USE_SESSION_CACHE_AFTER_TRANSACTION = 0;
     public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1; // this is the default behaviour even when undefined.
     public static final int ISOLATE_CACHE_AFTER_TRANSACTION = 2;
@@ -124,7 +124,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Allow the inheritance properties of the descriptor to be initialized.
      * The descriptor's parent must first be initialized.
      */
-    public void postInitialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
+    public void postInitialize(ClassDescriptor descriptor) throws DescriptorException {
         // PERF: If using isolated cache, then default uow isolation to always (avoids merge/double build).
         if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
             if (isIsolated()) {

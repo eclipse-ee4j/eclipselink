@@ -664,11 +664,14 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      */
     @Override
     public Object removeFromIdentityMap(Object key, Class theClass, ClassDescriptor descriptor, Object object) {
-        if (!descriptor.getCachePolicy().isSharedIsolation()) {
-            return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
-        } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(key, theClass, descriptor, object);
+        Object removedObject = null;
+        if (descriptor.isIsolated() || descriptor.isProtectedIsolation()) {
+            removedObject = getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
         }
+        if (!descriptor.isIsolated()){
+            removedObject = ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().removeFromIdentityMap(key, theClass, descriptor, object);
+        }
+        return removedObject;
     }
 
     /**

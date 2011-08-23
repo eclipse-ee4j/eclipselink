@@ -43,6 +43,7 @@ public class TestBidirectionalOneToOne extends JPA1Base {
         clearAllTables(); // clear all tables;
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
+        env.evictAll(em);
         try {
             env.beginTransaction(em);
             Department dep = new Department(17, "diverses");
@@ -58,6 +59,7 @@ public class TestBidirectionalOneToOne extends JPA1Base {
             em.persist(blue);
             env.commitTransactionAndClear(em);
         } finally {
+            env.evictAll(em);
             closeEntityManager(em);
         }
     }

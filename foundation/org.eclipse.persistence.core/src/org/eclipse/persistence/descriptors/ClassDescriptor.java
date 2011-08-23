@@ -3383,11 +3383,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 child.postInitialize(session);
             }
         }
-        //Must do this before postInitialize on mappings as the mappings will be
-        //updated based on the cache isolation.
-        if (getCachePolicy().getCacheIsolation() != null && getCachePolicy().getCacheIsolation() != CacheIsolationType.SHARED) {
-            notifyReferencingDescriptorsOfIsolation();
-        }
 
         // Allow mapping to perform post initialization.
         for (DatabaseMapping mapping : getMappings()) {
@@ -3478,20 +3473,33 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         getObjectBuilder().postInitialize(session);
         getQueryManager().postInitialize(session);
-        getCachePolicy().postInitialize(this, session);
 
+        if (!isSharedIsolation()){
+            session.getIsolatedAndProtectedDescriptors().add(this);
+        }
+        
         validateAfterInitialization(session);
 
         checkDatabase(session);
     }
 
-    protected void notifyReferencingDescriptorsOfIsolation() {
+    public void notifyReferencingDescriptorsOfIsolation() {
         for (ClassDescriptor descriptor : this.referencingClasses){
             if (descriptor.getCachePolicy().getCacheIsolation() == null || descriptor.getCachePolicy().getCacheIsolation() == CacheIsolationType.SHARED) {
                 descriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.PROTECTED);
                 if (descriptor.getCachePolicy().getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION){
                     descriptor.getCachePolicy().setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
                 }
+                for (DatabaseMapping mapping: descriptor.getMappings()){
+                    if (mapping.isForeignReferenceMapping()){
+                        ForeignReferenceMapping frMapping = ((ForeignReferenceMapping)mapping);
+                        if (frMapping.getReferenceDescriptor() == this){
+                            frMapping.setIsCacheable(false);
+                            frMapping.collectQueryParameters(descriptor.getForeignKeyValuesForCaching());
+                        }
+                    }
+                }
+                descriptor.notifyReferencingDescriptorsOfIsolation();
             }
         }
     }

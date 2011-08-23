@@ -134,6 +134,7 @@ public class TestRemove extends JPA1Base {
          */
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
+        env.evictAll(em);
         try {
             // 1. find an existing department, remove it and remove it again
             final int id1 = (flushBeforePersist ? 100 : 0) + 21;

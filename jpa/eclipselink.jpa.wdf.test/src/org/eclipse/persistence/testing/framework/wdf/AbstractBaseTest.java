@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.management.RuntimeErrorException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -257,6 +256,31 @@ public abstract class AbstractBaseTest {
                 throw new RuntimeException(e);
             }
         }
+        
+        @Override
+        public void evictAll(EntityManager em) {
+            Object delegate = em.getDelegate();
+            Method getEntityManagerFactoryMethod;
+            try {
+                getEntityManagerFactoryMethod = delegate.getClass().getMethod("getEntityManagerFactory");
+                Object emf = getEntityManagerFactoryMethod.invoke(delegate);
+                
+                Method getCacheMethod = emf.getClass().getMethod("getCache");
+                Object cache =  getCacheMethod.invoke(emf);
+                
+                Method evictClassMethod = cache.getClass().getMethod("evictAll", new Class[]{});
+                
+                evictClassMethod.invoke(cache, new Object[]{});
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
     }
 
@@ -348,6 +372,11 @@ public abstract class AbstractBaseTest {
 
         @Override
         public void evict(EntityManager em, Class<?> clazz) {
+            throw new UnsupportedOperationException();
+        }
+        
+        @Override
+        public void evictAll(EntityManager em) {
             throw new UnsupportedOperationException();
         }
 
