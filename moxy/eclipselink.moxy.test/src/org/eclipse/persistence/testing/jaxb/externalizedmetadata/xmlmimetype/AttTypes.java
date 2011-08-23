@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype;
 
 import java.awt.Image;
+import java.util.Arrays;
 
 import javax.activation.DataHandler;
 import javax.xml.transform.Source;
@@ -23,4 +24,16 @@ public class AttTypes {
     public DataHandler d;
     public Source s;
     public Image i; 
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof AttTypes){
+    		AttTypes attObj = (AttTypes)obj;
+    		if(d == null && attObj.d != null || s == null && attObj.s != null || i == null && attObj.i != null || (d != null && !(d.equals(attObj.d))) || (i != null && !(i.equals(attObj.i))) || (s != null && !(s.equals(attObj.s)))){
+    			return false;
+    		}
+    		return Arrays.equals(b, attObj.b);
+    		
+    	}
+    	return false;
+    }
 }

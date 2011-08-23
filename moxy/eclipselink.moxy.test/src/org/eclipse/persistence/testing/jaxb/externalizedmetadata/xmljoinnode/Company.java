@@ -23,4 +23,23 @@ public class Company {
         this.employees = employees;
         this.buildingAddresses = buildingAddresses;
     }
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Company){
+    		Company compObj = (Company)obj;
+    		if(employees.size() != compObj.employees.size() || buildingAddresses.size() != compObj.buildingAddresses.size()){
+    			return false;
+    		}
+    		return employees.containsAll(compObj.employees) 
+    		      && compObj.employees.containsAll(employees)
+    		      && buildingAddresses. containsAll(compObj.buildingAddresses)
+    		      && compObj.buildingAddresses.containsAll(buildingAddresses);
+    		//if(employees.containsAll(compObj.employees) && compObj.employees.containsAll()){
+    			 
+    		//}
+    		
+    		//return true;
+    	}
+    	return false;
+    }
 }

@@ -31,4 +31,19 @@ public class Employee {
         this.id = id;
         this.workAddress = workAddress;
     }
+    
+    public boolean equals(Object obj){
+        if(obj instanceof Employee){
+        	Employee empObj = (Employee)obj;
+        	if(!(id.equals(empObj.id))){
+        		return false;
+        	}
+        	if(!(workAddress.equals(empObj.workAddress))){
+        		return false;
+        	}
+        	return true;
+        }
+        return false;
+    }
+     	
 }

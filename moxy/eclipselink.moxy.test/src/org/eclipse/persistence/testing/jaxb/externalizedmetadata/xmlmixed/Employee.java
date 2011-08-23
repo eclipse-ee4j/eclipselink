@@ -24,4 +24,30 @@ public class Employee {
      * @javax.xml.bind.annotation.XmlMixed
      */
     public java.util.List<Object> stuff;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Employee){
+    		Employee empObj = (Employee)obj;
+    		if(a != empObj.a){
+    			return false;
+    		}
+    		if(!(b.equals(empObj.b))){
+    			return false;
+    		}
+    		if(stuff.size() != empObj.stuff.size()){
+    			return false;
+    		}
+    		for(int i=0;i<stuff.size(); i++){
+    			Object next = stuff.get(i);
+    			Object nextCompare = empObj.stuff.get(i);
+    			if(!(next.equals(nextCompare))){
+    				return false;
+    			}
+    		}
+    		
+    		
+    		return true;
+    	}
+    	return false;
+    }
 }

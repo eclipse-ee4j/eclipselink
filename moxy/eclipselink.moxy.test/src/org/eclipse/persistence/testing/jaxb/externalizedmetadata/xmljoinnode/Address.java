@@ -40,4 +40,18 @@ public class Address {
         this.cityName = cityName;
         this.postal = postal;
     }
+    
+    public boolean equals(Object obj){
+       if(obj instanceof Address){
+    	   Address addrObj = (Address)obj;
+    	   return addrObj.id.equals(addrObj.id)
+    	       && addrObj.street.equals(addrObj.street)
+    	       && addrObj.suite.equals(addrObj.suite)
+    	       && addrObj.cityName.equals(addrObj.cityName)
+    	       && addrObj.postal.equals(addrObj.postal);
+       }
+       return false;
+    }
+    
+    
 }

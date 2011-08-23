@@ -12,95 +12,68 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 /**
  * Tests XmlMimeType via eclipselink-oxm.xml
  *
  */
-public class XmlMimeTypeCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/";
+public class XmlMimeTypeCases extends JAXBTestCases {    
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/att-types.xml";
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlMimeTypeCases(String name) {
-        super(name);
-        outputResolver = new MySchemaOutputResolver();
-    }
-    
-    /**
-     * Tests @XmlMimeType override via eclipselink-oxm.xml.  
-     * 
-     * Positive test.
-     */
-    public void testXmlMimeTypeSchemaGen() {
-        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-        // validate schema
-        String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
-    
-    public void testXmlMimeTypeUnmarshalThenMarshal() {
-    	
-    	Class[] classes = new Class[] { AttTypes.class };
-    	MySchemaOutputResolver outputResolver = generateSchema(classes, CONTEXT_PATH, PATH, 1);
-    	
-        // test unmarshal
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
+    public XmlMimeTypeCases(String name) throws Exception {
+        super(name);        
+        setControlDocument(XML_RESOURCE);
+        setClasses(new Class[] { AttTypes.class });
+        jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
         MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-        
-        String instanceDoc = PATH + "att-types.xml";
-        InputStream iDocStream = loader.getResourceAsStream(instanceDoc);
-        if (iDocStream == null) {
-            fail("Couldn't load instance document [" + instanceDoc + "]");
-        }
-        
-        AttTypes attTypes = null;
-        try {
-            attTypes = (AttTypes) unmarshaller.unmarshal(new StreamSource(iDocStream));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-        
-        // test marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
-        Document testDoc = parser.newDocument();
-        try {
-            marshaller.marshal(attTypes, testDoc);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
+        jaxbMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
 
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(instanceDoc);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + instanceDoc + "].");
-        }
-        assertTrue("Unmarshal then marshal failed", compareDocuments(ctrlDoc, testDoc));
     }
+    
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/eclipselink-oxm.xml");
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}    
+
+	public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/schema.xsd");    	
+    	controlSchemas.add(is);    	
+    	
+    	super.testSchemaGen(controlSchemas);
+ 
+    }
+
+	protected Object getControlObject() {
+		AttTypes attTypes = new AttTypes();
+		String s = "THISISATEXTSTRINGFORTHISDATAHANDLER";
+    	byte[] bytes = s.getBytes();
+		attTypes.b = bytes;	       
+		return attTypes;
+	}
+  
 }

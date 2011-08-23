@@ -12,70 +12,62 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 /**
  * Tests XmlList via eclipselink-oxm.xml
  *
  */
-public class XmlListTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
+public class XmlListTestCases extends JAXBTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/employee.xml";
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlListTestCases(String name) {
+    public XmlListTestCases(String name) throws Exception{
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setContextPath(CONTEXT_PATH);
     }
     
-    /**
-     * Tests @XmlList via eclipselink-oxm.xml.  This tests validates
-     * schema generation when an @XmlList is present in code/xml.   
-     * 
-     * Positive test.
-     */
-    public void doSchemaGeneration() {
-        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-        shouldGenerateSchema = false;
-        // validate schema
-        String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/eclipselink-oxm.xml");
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}    
+
+	public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/schema.xsd");    	
+    	controlSchemas.add(is);    	
+    	
+    	super.testSchemaGen(controlSchemas);
+    	
+    	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/schema.xsd");
+    	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+    	validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));
+
+    	
     }
 
-    /**
-     * Tests @XmlList via eclipselink-oxm.xml.
-     * 
-     * Positive test.
-     */
-    public void testXmlList() {
-        if (shouldGenerateSchema) {
-            doSchemaGeneration();
-        }
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
-    
     /**
      * Tests exception handling for @XmlList via eclipselink-oxm.xml.
      * This test should cause an exception as xml-list can only be used
@@ -85,137 +77,35 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
      * Negative test.
      */
     public void testXmlListInvalid() {
-        String metadataFile = PATH + "eclipselink-oxm-invalid.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
+    	
+    	InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/eclipselink-oxm-invalid.xml");
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
+	    invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
         boolean exception = false;
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        MySchemaOutputResolver msor = new MySchemaOutputResolver();
-        try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+	    try {
+            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), invalidProperties);
+            MySchemaOutputResolver msor = new MySchemaOutputResolver();
             jaxbContext.generateSchema(msor);
         } catch (Exception ex) {
             exception = true;
         }
         assertTrue("The expected exception was not thrown", exception);
+
     }
 
-    /**
-     * Tests @XmlList via eclipselink-oxm.xml.  Here the @XmlList annotation
-     * set on stringData is overridden to false.
-     * 
-     * Positive test.
-     */
-    public void testXmlListNoStringData() {
-        String metadataFile = PATH + "eclipselink-oxm-no-stringdata.xml";
-        MySchemaOutputResolver msor = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
-
-        // validate schema
-        String controlSchema = PATH + "schema-no-stringdata.xsd";
-        compareSchemas(msor.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
-
-    /**
-     * Tests @XmlList via eclipselink-oxm.xml.  A marshal operation is 
-     * performed to ensure the list is processed correctly.
-     * 
-     * Positive test.
-     */
-    public void testXmlListMarshal() {
-        if (shouldGenerateSchema) {
-            doSchemaGeneration();
-        }
-        
+	protected Object getControlObject() {
+		  
         Employee emp = new Employee();
         java.util.List<String> data = new ArrayList<String>();
         data.add("xxx");
         data.add("yyy");
         data.add("zzz");
         emp.data = data;
+        return emp;
         
-        Document testDoc = parser.newDocument();
-        
-        Marshaller marshaller = getJAXBContext().createMarshaller();
-        try {
-            marshaller.marshal(emp, testDoc);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred marshalling the Employee.");
-        }
-
-        String src = PATH + "employee.xml";
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-    }
-
-    /**
-     * Tests @XmlList via eclipselink-oxm.xml.  An unmarshal operation 
-     * is performed to ensure the list is processed correctly.
-     * 
-     * Positive test.
-     */
-    public void testXmlListUnmarshal() {
-        if (shouldGenerateSchema) {
-            doSchemaGeneration();
-        }
-        
-        Employee emp = null;
-        Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
-        try {
-            String src = PATH + "employee.xml";
-            emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
-            assertNotNull("The Employee object is null after unmarshal.", emp);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred unmarshalling the document.");
-        }
-
-        Employee ctrlEmp = new Employee();
-        java.util.List<String> data = new ArrayList<String>();
-        data.add("xxx");
-        data.add("yyy");
-        data.add("zzz");
-        ctrlEmp.data = data;
-        
-        assertTrue("The unmarshalled Employee did not match the control Employee object.", ctrlEmp.equals(emp));
-    }
-    
-    /**
-     * Tests xml-list use with xml-attribute via eclipselink-oxm.xml.
-     * 
-     * Positive test.
-     */
-    public void testXmlListOnXmlAttribute() {
-        String metadataFile = PATH + "eclipselink-oxm-data-attribute.xml";
-
-        MySchemaOutputResolver msor = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
-
-        /*
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        */
-        
-        // validate schema
-        String controlSchema = PATH + "schema-data-attribute.xsd";
-        compareSchemas(msor.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        String src = PATH + "employee-data-attribute.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, msor);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
+	}
 }

@@ -13,8 +13,18 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed;
 
 import java.io.File;
-import javax.xml.bind.Unmarshaller;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Element;
 
@@ -22,48 +32,53 @@ import org.w3c.dom.Element;
  * Tests XmlMixed via eclipselink-oxm.xml
  *
  */
-public class XmlMixedTestCases extends ExternalizedMetadataTestCases {
+public class XmlMixedTestCases extends JAXBTestCases {
     private boolean shouldGenerateSchema = true;
     private MySchemaOutputResolver outputResolver; 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/employee.xml";
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlMixedTestCases(String name) {
+    public XmlMixedTestCases(String name) throws Exception {
         super(name);
-        outputResolver = new MySchemaOutputResolver();
+        setControlDocument(XML_RESOURCE);
+        setClasses(new Class[]{Employee.class});
     }
 
-    private void doSchemaGeneration() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            // validate schema
-            String controlSchema = PATH + "schema.xsd";
-            compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-            shouldGenerateSchema = false;
-        }
-    }    
-    
-    /**
-     * Tests @XmlMixed override via eclipselink-oxm.xml.  
-     * 
-     * Positive test.
-     */
-    public void testXmlMixed() {
-        doSchemaGeneration();
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/eclipselink-oxm.xml");
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}    
+
+	public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/schema.xsd");    	
+    	controlSchemas.add(is);    	
+    	
+    	super.testSchemaGen(controlSchemas);
+    	
+    	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/schema.xsd");
+    	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+    	validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));
+
+    	
     }
+   
     
     /**
      * 
      * Positive test.
-     */
+     *//*
     public void testXmlMixedUnmarshal() {
     	
     	Class[] classes = new Class[] { Employee.class };
@@ -87,4 +102,24 @@ public class XmlMixedTestCases extends ExternalizedMetadataTestCases {
         assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.1' to be instanceof [Element] but was [" + emp.stuff.get(1) + "]", emp.stuff.get(1) instanceof Element);
         assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.2' to be instanceof [String] but was [" + emp.stuff.get(2) + "]", emp.stuff.get(2) instanceof String);
     }
+*/	
+	protected Object getControlObject() {
+		Employee emp = new Employee();
+		emp.a = 1;
+		emp.b = "3";
+		List stuffList= new ArrayList();
+		stuffList.add("\n ");
+		stuffList.add("\n blah. \n");
+		stuffList.add("\n ");
+		
+		Element elem = parser.newDocument().createElementNS("extra", "e:stuff");
+		elem.setTextContent("This is my stuff.");
+		stuffList.add(elem); 
+		
+		stuffList.add("\n lame. \n");
+
+		emp.stuff = stuffList;
+		
+		return emp;
+	}
 }
