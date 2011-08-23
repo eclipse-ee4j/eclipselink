@@ -12,71 +12,90 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import java.io.InputStream;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
- * Tests XmlSeeAlso via eclipselink-oxm.xml
- *
+ * Tests generation for Employee when xml-see-also is defined.  Overrides the
+ * @XmlSeeAlso on Employee (XmlSeeAlsoTestCases.class) with (MySimpleClass, 
+ * MyOtherClass)
+ * 
+ * Positive test.
  */
-public class XmlSeeAlsoTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/";
-    
+public class XmlSeeAlsoTestCases extends JAXBWithJSONTestCases {
+
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/employee.json";
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlSeeAlsoTestCases(String name) {
+    public XmlSeeAlsoTestCases(String name) throws Exception{
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{Employee.class});
     }
     
-    /**
-     * Tests generation for Employee when xml-see-also is defined.  Overrides the
-     * @XmlSeeAlso on Employee (XmlSeeAlsoTestCases.class) with (MySimpleClass, 
-     * MyOtherClass)
-     * 
-     * Positive test.
-     */
-    public void testEmployeeGeneration() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/eclipselink-oxm.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}
+    
+    
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/schema1.xsd");
+    	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/schema2.xsd");
+    	controlSchemas.add(is);
+    	controlSchemas.add(is2);
+    	super.testSchemaGen(controlSchemas);
+    	
+     	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/schema1.xsd");
+    	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+    	String result = validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+
     }
 
+	protected Object getControlObject() {
+		Employee emp = new Employee();
+		emp.firstName ="firstName";
+		emp.lastName = "LastName";	
+		return emp;
+	}
+    
     /**
      * Tests generation of an xml-see-also class in the same package as Employee
      * 
      * Positive test.
      */
+    
     public void testXmlSeeAlsoSamePackage() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "mysimpleclass.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
+        
+        String src = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/mysimpleclass.xml";
+     	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(src);
+     	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlseealso/schema1.xsd");
 
-    /**
-     * Tests generation of an xml-see-also class from a package different than Employee's
-     * 
-     * Positive test.
-     */
-    public void testXmlSeeAlsoOtherPackage() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 2);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "myotherclass.xml";
-        String result = validateAgainstSchema(src, "http://www.example.com/xsd", outputResolver);
+        String result = validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
+        
 }

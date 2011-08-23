@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.com" xmlns:ns1="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:nsx="http://www.example.com/xsds/real" targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="state" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="city" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="zip" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+         <xsd:element name="myInt" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="address" type="ns1:address"/>
+   <xsd:element name="employee" type="ns1:employee"/>
+</xsd:schema>

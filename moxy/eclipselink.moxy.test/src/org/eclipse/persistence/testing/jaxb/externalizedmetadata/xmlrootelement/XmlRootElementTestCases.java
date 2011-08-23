@@ -12,57 +12,69 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlRootElement via eclipselink-oxm.xml
  *
  */
-public class XmlRootElementTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlrootelement/";
+public class XmlRootElementTestCases extends JAXBWithJSONTestCases {
+    
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlrootelement/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlrootelement/employee.json";
     
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlRootElementTestCases(String name) {
+    public XmlRootElementTestCases(String name) throws Exception {
         super(name);
-        outputResolver = new MySchemaOutputResolver();
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{Employee.class});
     }
     
-    /**
-     * Tests @XmlRootElement override via eclipselink-oxm.xml.  @XmlRootElement name
-     * 'employee' is overridden as 'employee-data'.
-     * 
-     * Positive test.
-     */
-    public void testXmlRootElementOverrideValid() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlrootelement/eclipselink-oxm.xml");
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}    
+  
+ 
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlrootelement/schema.xsd");    	
+    	controlSchemas.add(is);    	
+    	
+    	super.testSchemaGen(controlSchemas);
+    	
+    	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlrootelement/schema.xsd");
+    	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+    	String result = validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+
+    	
     }
-    
-    /**
-     * Tests @XmlRootElement override via eclipselink-oxm.xml.  @XmlRootElement name
-     * 'employee' is overridden as 'employee-data'.
-     * 
-     * Negative test.
-     */
-    public void testXmlRootElementOverrideInvalid() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "employee-invalid.xml";
-        String result = validateAgainstSchema(src, null, outputResolver);
-        assertTrue("Schema validation passed unxepectedly", result != null);
-    }
+	
+	protected Object getControlObject() {
+		Employee emp = new Employee();
+		emp.firstName ="firstName";
+		emp.lastName = "LastName";		
+		return emp;
+	}
 }

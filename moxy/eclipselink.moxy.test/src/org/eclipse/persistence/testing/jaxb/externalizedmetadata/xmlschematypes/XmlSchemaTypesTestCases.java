@@ -12,104 +12,73 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes;
 
-import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.Employee;
-import org.w3c.dom.Document;
 
 /**
  * Tests XmlSchemaTypes via eclipselink-oxm.xml
  *
  */
-public class XmlSchemaTypesTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematypes/";
-    
+public class XmlSchemaTypesTestCases extends JAXBTestCases {    
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematypes/employee.xml";
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlSchemaTypesTestCases(String name) {
+    public XmlSchemaTypesTestCases(String name) throws Exception{
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setClasses(new Class[]{Employee.class});
     }
 
-    /**
-     * Tests @XmlSchemaTypes schema generation via eclipselink-oxm.xml.  Here, a 
-     * package-level xml-schema-types declaration exists.  It has one entry, 
-     * whose value "date" should override the one set in code ("year").
-     * 
-     * Positive test.
-     */
-    public void testXmlSchemaTypesSchemaGen() {
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, PATH, 1);
-        // validate schema
-        String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
-    
-    /**
-     * Tests @XmlSchemaTypes via eclipselink-oxm.xml.
-     * 
-     * Positive test.
-     */
-    public void testXmlSchemaTypes() {
-        // load XML metadata
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, PATH, 1);
-
-        // load instance doc
-        String src = PATH + "employee.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // setup control Employee
+    protected Object getControlObject() {
+		Employee emp = new Employee();
+		
+		//setup control Employee
         GregorianCalendar calendar = new GregorianCalendar();
         Date theDate = new Date(new Long("1262840400000"));
         calendar.setTime(theDate);
-        Employee emp = new Employee();
+        
         emp.hireDate = calendar;
         emp.lengthOfEmployment = new BigDecimal("1.000010");
+		
+		return emp;
+	}
+	
+	public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematypes/eclipselink-oxm.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
         
-        // unmarshal
-        Employee obj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            obj = (Employee) unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", obj == null);
-            assertTrue("Unmarshal failed - object is not equal to control Employee", emp.equals(obj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        try {
-            marshaller.marshal(emp, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+        return properties;
+	}
+    
+    
+    public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematypes/schema.xsd");
+    	
+    	controlSchemas.add(is);
+    	
+    	super.testSchemaGen(controlSchemas);
+    
     }
+    
 }

@@ -23,17 +23,19 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
-public class NamespaceTestCases extends JAXBTestCases{
+public class NamespaceTestCases extends JAXBWithJSONTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/namespace.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/namespace/namespace.json";
     public NamespaceTestCases(String name) throws Exception {
         super(name);		
     }
 	
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         super.setUp();
         Type[] types = new Type[1];
         types[0] = Address.class;

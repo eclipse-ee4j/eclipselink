@@ -69,6 +69,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed.XmlMix
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.NameTransformerExceptionTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.NameTransformerSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.NameTransformerTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.XmlRegistryNonLocalTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.XmlRegistryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement.XmlRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.XmlSchemaTestCases;
@@ -151,6 +152,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlEnumTestCases.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(XmlRegistryTestCases.class);
+        suite.addTestSuite(XmlRegistryNonLocalTestCases.class);
         suite.addTestSuite(XmlClassExtractorTestCases.class);
         suite.addTestSuite(XmlDiscriminatorTestCases.class);
         suite.addTestSuite(XmlJoinNodeTestCases.class);

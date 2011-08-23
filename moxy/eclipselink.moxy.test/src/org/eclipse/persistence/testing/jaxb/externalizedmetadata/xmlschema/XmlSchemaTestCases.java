@@ -12,148 +12,102 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema;
 
-import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
-import org.eclipse.persistence.internal.oxm.schema.model.Schema;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-/**
- * Tests XmlSchema via eclipselink-oxm.xml
- *
- */
-public class XmlSchemaTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/";
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
+
+/** Tests package-info override via eclipselink-oxm.xml.  
+* 
+* The value in package-info.java for prefix 'nsx' is "http://www.example.com/xsds/fake", but 
+* due to the override in the oxm.xml file it should be "http://www.example.com/xsds/real".
+* 
+* The value in package-info.java for target namespace is 
+* "http://www.eclipse.org/eclipselink/xsds/persistence/oxm/junk", but due to the override in
+* the oxm.xml file it should be "http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+* 
+* Also, elementForm and attributeForm are both QUALIFIED in package-info, but set to 
+* UNQUALIFIED in the oxm.xml file. 
+* 
+* Positive test.
+*/
+public class XmlSchemaTestCases extends JAXBWithJSONTestCases {
     static String PREFIX = "nsx";
     static String NSX_OVERRIDE_VALUE = "http://www.example.com/xsds/real";
     static boolean FORM_DEFAULT_VALUE = false;
     static String NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm";
-    
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee.xml";
+    private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee-write.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee.json";
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlSchemaTestCases(String name) {
+    public XmlSchemaTestCases(String name) throws Exception {
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{Employee.class});
     }
     
-    /**
-     * Tests package-info override via eclipselink-oxm.xml.  
-     * 
-     * The value in package-info.java for prefix 'nsx' is "http://www.example.com/xsds/fake", but 
-     * due to the override in the oxm.xml file it should be "http://www.example.com/xsds/real".
-     * 
-     * The value in package-info.java for target namespace is 
-     * "http://www.eclipse.org/eclipselink/xsds/persistence/oxm/junk", but due to the override in
-     * the oxm.xml file it should be "http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
-     * 
-     * Also, elementForm and attributeForm are both QUALIFIED in package-info, but set to 
-     * UNQUALIFIED in the oxm.xml file. 
-     * 
-     * Positive test.
-     */
-    public void testXmlSchemaOverride() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            shouldGenerateSchema = false;
-        }
-        File schemaFile = outputResolver.schemaFiles.get("http://www.eclipse.org/eclipselink/xsds/persistence/oxm");
-        Project proj = new SchemaModelProject();
-        XMLContext context = new XMLContext(proj);
-        XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-        try {
-            Schema schema = (Schema) unmarshaller.unmarshal(schemaFile, Schema.class);
-            NamespaceResolver nsr = schema.getNamespaceResolver();
-            String uri = nsr.resolveNamespacePrefix("nsx");
-            assertTrue("Expected uri [" + NSX_OVERRIDE_VALUE + "] for prefix [" + PREFIX + "] but was null", uri != null);
-            assertTrue("Expected uri [" + NSX_OVERRIDE_VALUE + "] for prefix [" + PREFIX + "] but was [ " + uri + "]", uri.equals(NSX_OVERRIDE_VALUE));
-            
-            boolean elementQualified = schema.isElementFormDefault();
-            assertTrue("Expected elementFormDefault [" + FORM_DEFAULT_VALUE + "] but was [" + elementQualified + "]", elementQualified == FORM_DEFAULT_VALUE);
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/eclipselink-oxm.xml");
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+        
+        return properties;
+	}    
 
-            boolean attributeQualified = schema.isAttributeFormDefault();
-            assertTrue("Expected attributeFormDefault [" + FORM_DEFAULT_VALUE + "] but was [" + attributeQualified + "]", attributeQualified == FORM_DEFAULT_VALUE);
-
-            String targetNamespace = schema.getTargetNamespace();
-            assertTrue("Expected target namespace [" + NAMESPACE + "] but was null", targetNamespace != null);
-            assertTrue("Expected target namespace [" + NAMESPACE + "] but was [ " + targetNamespace + "]", targetNamespace.equals(NAMESPACE));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            fail(ex.getMessage());
-        }
-    }
-    
-    /**
-     * Tests XmlSchema namespace declaration via eclipselink-oxm.xml.  The namespace
-     * information in package-info.java should be overridden.
-     * 
-     * Positive test.
-     */
-    public void testEmployeeValidation() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
+	public void testSchemaGen() throws Exception{
+    	List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee.xsd");
+    	controlSchemas.add(is);
+    	
+    	super.testSchemaGen(controlSchemas);
+ 
+    	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee.xsd");
+    	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+    	String result = validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));	    	
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
-    
-    /**
-     * Tests XmlSchema namespace declaration via eclipselink-oxm.xml.  The namespace
-     * information in package-info.java should be overridden. This test case should
-     * fail due to an invalid namespace.
-     * 
-     * Negative test.
-     */
-    public void testInvalidEmployeeValidation() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "employee-invalidnamespace.xml";
-        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
-        assertTrue("Schema validation passed unxepectedly", result != null);
-    }
 
-    /**
-     * Tests XmlSchema namespace declaration via eclipselink-oxm.xml.  The namespace
-     * information in package-info.java should be overridden.
-     *  
-     * Positive test.
-     */
-    public void testAddressValidation() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "address.xml";
-        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
+    	InputStream schemaInputStream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee.xsd");       
+    	InputStream invalidControlDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee-invalidnamespace.xml");
+    	result = validateAgainstSchema(invalidControlDocStream, new StreamSource(schemaInputStream2));
+        assertTrue("Schema validation passed unxepectedly", result != null);
+
+    	InputStream schemaInputStream3 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee.xsd");       
+
+    	InputStream addressControlDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/address.xml");
+    	result = validateAgainstSchema(addressControlDocStream, new StreamSource(schemaInputStream3));
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+
+    	InputStream schemaInputStream4 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/employee.xsd");       
+
+    	InputStream addressInvalidControlDocStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschema/address-invalidnamespace.xml");
+    	result = validateAgainstSchema(addressInvalidControlDocStream, new StreamSource(schemaInputStream4));
+        assertTrue("Schema validation passed unxepectedly", result != null);
+
     }
 
-    /**
-     * Tests XmlSchema namespace declaration via eclipselink-oxm.xml.  The namespace
-     * information in package-info.java should be overridden. This test case should
-     * fail due to an invalid namespace.
-     * 
-     * Negative test.
-     */
-    public void testInvalidAddressValidation() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            shouldGenerateSchema = false;
-        }
-        String src = PATH + "address-invalidnamespace.xml";
-        String result = validateAgainstSchema(src, "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", outputResolver);
-        assertTrue("Schema validation passed unxepectedly", result != null);
-    }
+	protected Object getControlObject() {
+		Employee emp = new Employee();
+		emp.firstName ="firstName";
+		emp.lastName = "LastName";		
+		return emp;
+	}
+    
 }

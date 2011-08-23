@@ -26,29 +26,23 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
+public class XmlRegistryNonLocalTestCases extends JAXBTestCases{
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/foos.xml";
 
-/**
- * Tests XmlRegistry and XmlElementDecl via eclipselink-oxm.xml
- *
- */
-public class XmlRegistryTestCases extends JAXBTestCases {
-    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/foo.xml";
-    
-    /**
-     * This is the preferred (and only) constructor.
-     * 
-     * @param name
-     */
-    public XmlRegistryTestCases(String name) throws Exception {
-        super(name);
-        setControlDocument(XML_RESOURCE);
-        setClasses(new Class[]{ObjectFactory1.class});
-    }
-    
-
+	public XmlRegistryNonLocalTestCases(String name) throws Exception {
+		super(name);
+		setControlDocument(XML_RESOURCE);
+		setClasses(new Class[] { FooBar.class, ObjectFactory2.class });
+	}
+	
+	protected Object getControlObject() {	
+		QName name = new QName("foos");
+		JAXBElement jaxbElement = new JAXBElement<Integer>(name, Integer.class, 5);
+		return jaxbElement;
+	}
 	
 	  public Map getProperties(){
-			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/eclipselink-oxm.xml");
+			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/eclipselink-oxm-non-local.xml");
 			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
 		    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry", new StreamSource(inputStream));
 		    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
@@ -60,23 +54,17 @@ public class XmlRegistryTestCases extends JAXBTestCases {
      
 	public void testSchemaGen() throws Exception{
 	    	List controlSchemas = new ArrayList();
-	    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/schema.xsd");    	
+	    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/schema-non-local.xsd");    	
 	    	controlSchemas.add(is);    	
 	    	
 	    	super.testSchemaGen(controlSchemas);
 	    	
-	    	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/schema.xsd");
+	    	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/schema-non-local.xsd");
 	    	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
 	    	String result = validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));
 	        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
 
+	    	
 	    }
-    
-	public Object getControlObject() {
-		
-		FooBar foobar = new FooBar();
-		QName name = new QName("foo");
-		JAXBElement jaxbElement = new JAXBElement<String>(name, String.class, "This is some foo.");
-		return jaxbElement;
-	}
+
 }

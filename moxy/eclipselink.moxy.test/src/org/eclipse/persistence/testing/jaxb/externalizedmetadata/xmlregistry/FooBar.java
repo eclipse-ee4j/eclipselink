@@ -24,4 +24,11 @@ public class FooBar {
     //    @XmlElementRef(name="bar",type=JAXBElement.class)
     //})
     public List<JAXBElement<String>> fooOrBar;
+    
+    public boolean equals (Object obj){
+    	if(obj instanceof FooBar){
+    		return true;
+    	}
+    	return false;
+    }
 }

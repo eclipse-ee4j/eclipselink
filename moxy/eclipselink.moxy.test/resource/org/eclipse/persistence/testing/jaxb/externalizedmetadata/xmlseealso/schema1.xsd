@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="myOtherClass">
+      <xsd:sequence>
+         <xsd:element name="myId" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+         <xsd:element name="myInt" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="mySimpleClass">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="someString" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="mysimpleclass" type="mySimpleClass"/>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>
