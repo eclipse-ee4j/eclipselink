@@ -15,4 +15,5 @@
          </xsd:extension>
       </xsd:complexContent>
    </xsd:complexType>
+   <xsd:element name="employee" type="employee"/>
 </xsd:schema>

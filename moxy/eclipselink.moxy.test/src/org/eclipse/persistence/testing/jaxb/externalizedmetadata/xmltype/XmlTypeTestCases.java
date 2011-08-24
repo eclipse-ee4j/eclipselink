@@ -12,27 +12,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference.Root;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlType via eclipselink-oxm.xml
  *
  */
-public class XmlTypeTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/";
+public class XmlTypeTestCases extends JAXBWithJSONTestCases {
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/employee.json";    
     static final int EMP_ID = 101;
     static final String EMP_FIRST = "Joe";
     static final String EMP_LAST = "Oracle";
@@ -42,19 +40,17 @@ public class XmlTypeTestCases extends ExternalizedMetadataTestCases {
      * 
      * @param name
      */
-    public XmlTypeTestCases(String name) {
+    public XmlTypeTestCases(String name) throws Exception {
         super(name);
-    }
-    
-    public void setUp() throws Exception {
-        super.setUp();
-        outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 1);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[] { Employee.class });
     }
     
     /**
      * Create the control Employee.
      */
-    private Employee getControlObject() {
+    public Object getControlObject() {
         Employee ctrlEmp = new Employee();
         ctrlEmp.id = EMP_ID;
         ctrlEmp.firstName = EMP_FIRST;
@@ -62,10 +58,26 @@ public class XmlTypeTestCases extends ExternalizedMetadataTestCases {
         return ctrlEmp;
     }
     
-    public void testEmployeeSchemaGen() {
-        // validate employee schema
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/eclipselink-oxm.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype", new StreamSource(inputStream));
+		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+	        
+	    return properties;
+	}
+	    
+	    
+	public void testSchemaGen() throws Exception{
+	   	List controlSchemas = new ArrayList();
+	   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/employee.xsd");	    	
+	   	controlSchemas.add(is);
+	   	
+	   	super.testSchemaGen(controlSchemas);	  
+	}
+    
 
     /**
      * Validate instance document(s).
@@ -75,85 +87,16 @@ public class XmlTypeTestCases extends ExternalizedMetadataTestCases {
      * ("id", "firstName", "lastName") with ("id", "lastName", "firstName")
      */
     public void testInstanceDocValidation() {
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-        src = PATH + "employee-invalid.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
+    	
+    	InputStream schemaInputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/employee.xsd");
+    	InputStream controlDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+    	String result = validateAgainstSchema(controlDocStream, new StreamSource(schemaInputStream));
+    	assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+        
+    	InputStream schemaInputStream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/employee.xsd");
+    	InputStream controlDocStream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/employee-invalid.xml");
+    	
+    	result = validateAgainstSchema(controlDocStream2, new StreamSource(schemaInputStream2));
         assertTrue("Instance doc validation (employee-invalid) succeeded unxepectedly: " + result, result != null);
-    }
-
-    public void testUnmarshal() {
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(PATH + "employee.xml");
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + PATH + "employee.xml" + "]");
-        }
-
-        // setup control Employee
-        Employee ctrlEmp = getControlObject();
-        try {
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-    
-    public void testMarshal() {
-        // load instance doc
-        String src = PATH + "employee.xml";
-
-        // setup control document
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // test marshal
-        try {
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            Employee ctrlEmp = getControlObject();
-            marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
-
-    public void testEmployeeFactoryClass() {
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(PATH + "employee.xml");
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + PATH + "employee.xml" + "]");
-        }
-
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-factory-class-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-
-        // setup control Employee
-        Employee ctrlEmp = getControlObject();
-        try {
-            Employee empObj = (Employee) jCtx.createUnmarshaller().unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Factory method was not called as expected", empObj.fromFactoryMethod);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
     }
 }

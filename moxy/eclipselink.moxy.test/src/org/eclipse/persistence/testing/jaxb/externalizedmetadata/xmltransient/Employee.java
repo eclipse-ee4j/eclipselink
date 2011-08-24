@@ -23,4 +23,20 @@ public class Employee {
     public int getMyInt() {
         return 66;
     }
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Employee){
+    		
+    		if(!firstName.equals(((Employee)obj).firstName)){
+    			return false;
+    		}
+    		if(lastName == null){
+    			if(((Employee)obj).lastName != null){
+    				return false;
+    			}
+    			return true;
+    		}else return lastName.equals(((Employee)obj).lastName);
+    	}
+    	return false;
+    }
 }

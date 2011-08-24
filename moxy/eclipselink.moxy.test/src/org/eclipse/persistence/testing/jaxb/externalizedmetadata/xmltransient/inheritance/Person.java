@@ -18,4 +18,12 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Person {
     public String name;
     public int age;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Person){
+    		Person personObj = (Person)obj;
+    		return name.equals(personObj.name) && age == personObj.age;
+    	}
+    	return false;
+    }
 }

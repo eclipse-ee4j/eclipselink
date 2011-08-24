@@ -12,6 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Employee extends Person {
     public int employeeId;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Employee){
+    		if(! super.equals(obj)){
+    			return false;
+    		}
+    		return employeeId == ((Employee)obj).employeeId;
+    	}
+    	return false;
+    }
 }

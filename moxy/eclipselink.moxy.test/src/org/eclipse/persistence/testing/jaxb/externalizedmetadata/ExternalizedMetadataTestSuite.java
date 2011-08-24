@@ -79,8 +79,15 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso.XmlSeeAlsoTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.XmlTransientPropertyToTransientClassTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.XmlTransientTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance.XmlTransientInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.splitpackage.SplitPackageTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.classlevel.XmlTransientUnsetClassTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.EmployeeFactoryClassTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPriceTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPricesTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPriceTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPricesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueTestCases;
 
 import junit.framework.Test;
@@ -96,6 +103,8 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTest(MappingsTestSuite.suite());
         suite.addTest(ExceptionHandlingTestSuite.suite());
         suite.addTestSuite(XmlTransientTestCases.class);
+        suite.addTestSuite(XmlTransientUnsetClassTestCases.class);
+        suite.addTestSuite(XmlTransientInheritanceTestCases.class);
         suite.addTestSuite(XmlTransientPropertyToTransientClassTestCases.class);
         suite.addTestSuite(XmlSeeAlsoTestCases.class);
         suite.addTestSuite(XmlSchemaTestCases.class);
@@ -105,6 +114,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(NameTransformerSimpleTestCases.class);
         suite.addTestSuite(XmlRootElementTestCases.class);
         suite.addTestSuite(XmlTypeTestCases.class);
+        suite.addTestSuite(EmployeeFactoryClassTestCases.class);
         suite.addTestSuite(XmlAccessorTypeTestCases.class);
         suite.addTestSuite(XmlAccessorTypeFieldTestCases.class);
      	suite.addTestSuite(XmlAccessorTypeNoneTestCases.class);
@@ -134,6 +144,11 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlCustomizerWithOverrideTestCases.class);
         suite.addTestSuite(XmlElementWrapperTestCases.class);
         suite.addTestSuite(XmlValueTestCases.class);
+        suite.addTestSuite(XmlValueCdnPriceTestCases.class);
+        suite.addTestSuite(XmlValueInternationalPriceTestCases.class);
+        //Commented out until bug 355719 is fixed
+        //suite.addTestSuite(XmlValueInternationalPricesTestCases.class);
+        //suite.addTestSuite(XmlValueCdnPricesTestCases.class);
         suite.addTestSuite(XmlListTestCases.class);
         suite.addTestSuite(XmlListNoStringTestCases.class);
         suite.addTestSuite(XmlListOnXmlAttributeTestCases.class);

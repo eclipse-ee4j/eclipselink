@@ -18,25 +18,24 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 
+import junit.framework.TestCase;
+
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.splitpackage.b.Foo;
 
-public class SplitPackageTestCases extends ExternalizedMetadataTestCases {
+public class SplitPackageTestCases extends TestCase{
 
     private static String BINDING_FILE_A = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltransient/splitpackage/a/binding-a.xml"; 
 
-    private JAXBContext jaxbContext;
-
-    public SplitPackageTestCases(String name) {
+    public SplitPackageTestCases(String name) throws Exception{
         super(name);
     }
-
+    
     public void testJAXBContextCreation() throws Exception {
         InputStream bindingFileA = SplitPackageTestCases.class.getClassLoader().getResourceAsStream(BINDING_FILE_A);
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindingFileA);
-        jaxbContext = JAXBContextFactory.createContext(new Class[] {Foo.class}, properties);
+        JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {Foo.class}, properties);
     }
 
 }

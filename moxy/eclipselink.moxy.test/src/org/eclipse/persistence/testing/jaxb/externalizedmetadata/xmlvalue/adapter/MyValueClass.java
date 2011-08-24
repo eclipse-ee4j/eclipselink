@@ -12,13 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 //@XmlRootElement(name="boolean")
 public class MyValueClass {
     //@XmlJavaTypeAdapter(MyValueAdapter.class)
     //@XmlValue
     public Boolean blah;
+    
+    public boolean equals(Object obj){
+      if(obj instanceof MyValueClass){
+    	  return blah.equals(((MyValueClass)obj).blah);
+      }
+      return false;
+    }
 }

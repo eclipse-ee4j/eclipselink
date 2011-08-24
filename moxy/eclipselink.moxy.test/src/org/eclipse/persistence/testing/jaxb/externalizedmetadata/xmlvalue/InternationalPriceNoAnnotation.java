@@ -15,4 +15,12 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue;
 public class InternationalPriceNoAnnotation {
     public java.math.BigDecimal price;
     public String currency;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof InternationalPriceNoAnnotation){
+    		InternationalPriceNoAnnotation priceObj = (InternationalPriceNoAnnotation)obj;
+    		return currency.equals(priceObj.currency) && price.equals(priceObj.price);
+    	}
+    	return false;
+    }
 }

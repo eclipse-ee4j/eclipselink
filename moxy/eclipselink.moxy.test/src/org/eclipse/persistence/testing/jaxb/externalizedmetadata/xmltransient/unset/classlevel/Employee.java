@@ -19,4 +19,11 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name="employee")
 public class Employee {
     public String firstName;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Employee){
+    		return firstName.equals(((Employee)obj).firstName);
+    	}
+    	return false;
+    }
 }

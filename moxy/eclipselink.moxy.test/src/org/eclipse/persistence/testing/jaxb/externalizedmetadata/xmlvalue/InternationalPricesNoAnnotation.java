@@ -12,7 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue;
 
+import java.util.Arrays;
+
 public class InternationalPricesNoAnnotation {
     public java.math.BigDecimal[] prices;
     public String currency;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof InternationalPricesNoAnnotation){
+    		InternationalPricesNoAnnotation priceObj = (InternationalPricesNoAnnotation)obj;
+    		return currency.equals(priceObj.currency) && Arrays.equals(prices, priceObj.prices);
+    	}
+    	return false;
+    }
 }
