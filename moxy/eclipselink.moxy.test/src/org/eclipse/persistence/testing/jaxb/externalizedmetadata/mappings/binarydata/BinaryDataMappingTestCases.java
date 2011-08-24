@@ -12,153 +12,107 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases; 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlBinaryDataMappings via eclipselink-oxm.xml
  * 
  */
-public class BinaryDataMappingTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/";
+public class BinaryDataMappingTestCases extends JAXBTestCases  {
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/mydata.xml";
+    private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/write-mydata.xml";
     
     private static final byte[] BYTES0123 = new byte[] { 0, 1, 2, 3 };
     private static final byte[] BYTES1234 = new byte[] { 1, 2, 3, 4 };
     private static final byte[] BYTES2345 = new byte[] { 2, 3, 4, 5 };
 
+    private MyData ctrlObject;
+    
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public BinaryDataMappingTestCases(String name) {
+    public BinaryDataMappingTestCases(String name) throws Exception {
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
+        setClasses(new Class[] { MyData.class });
     }
     
-    /**
-     * 
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
 
     /**
      * Return the control MyData.
      * 
      * @return
      */
-    public MyData getControlObject() {
+    public Object getControlObject() {
+        // setup control object
+        MyData ctrlData = new MyData();
+        ctrlData.bytes = BYTES0123;
+        ctrlData.readOnlyBytes = BYTES1234;        
+     // writeOnlyBytes will not be read in
+        ctrlData.writeOnlyBytes = null;
+        
+        return ctrlData;
+    }
+    
+    public Object getWriteControlObject() {
+    	if(ctrlObject == null){
         // setup control object
         MyData ctrlData = new MyData();
         ctrlData.bytes = BYTES0123;
         ctrlData.readOnlyBytes = BYTES1234;
         ctrlData.writeOnlyBytes = BYTES2345;
-        return ctrlData;
+        
+        ctrlObject = ctrlData;
+    	}
+    	return ctrlObject;
     }
     
-    /**
-     * Verify schema generation was correct.  Instance docs will be validated 
-     * here as well.
-     * 
-     */
-    public void testSchemaGenAndValidation() {
-        // generate the schema
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { MyData.class }, CONTEXT_PATH, PATH + "mydata-oxm.xml", 1);
-        // validate the schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "mydata.xsd"));
-        // validate mydata.xml
-        String src = PATH + "mydata.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        assertTrue("Instance doc validation (mydata.xml) failed unxepectedly: " + result, result == null);
-        // validate write-mydata.xml
-        src = PATH + "write-mydata.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        assertTrue("Instance doc validation (write-mydata.xml) failed unxepectedly: " + result, result == null);
-    }
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/mydata-oxm.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata", new StreamSource(inputStream));
+		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+	        
+	    return properties;
+	}
     
-    /**
-     * Tests XmlBinaryDataMapping configuration via eclipselink-oxm.xml. 
-     * Here an unmarshal operation is performed. Utilizes xml-attribute and 
-     * xml-element.
-     * 
-     * Positive test.
-     */
-    public void testBinaryDataMappingUnmarshal() {
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(PATH + "mydata.xml");
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + PATH + "mydata.xml" + "]");
-        }
+	public void xmlToObjectTest(Object testObject) throws Exception{
+		super.xmlToObjectTest(testObject);
+		MyData myObj=(MyData)testObject;
+	    assertTrue("Accessor method was not called as expected", myObj.wasSetCalled);
 
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { MyData.class }, CONTEXT_PATH, PATH + "mydata-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-        
-        // setup the control MyData
-        MyData ctrlData = getControlObject();
-        // writeOnlyBytes will not be read in
-        ctrlData.writeOnlyBytes = null;
-        try {
-            Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-            MyData myObj = (MyData) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", myObj);
-            assertTrue("Accessor method was not called as expected", myObj.wasSetCalled);
-            assertTrue("Unmarshal failed:  MyData objects are not equal", ctrlData.equals(myObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+	}
+	
+	public void objectToXMLDocumentTest(Document testDocument) throws Exception{
+		  super.objectToXMLDocumentTest(testDocument);
+		 assertTrue("Accessor method was not called as expected", ctrlObject.wasGetCalled);
     }
-
-    /**
-     * Tests XmlBinaryDataMapping configuration via eclipselink-oxm.xml. Here a
-     * marshal operation is performed. Utilizes xml-attribute and xml-element
-     * 
-     * Positive test.
-     */
-    public void testBinaryDataMappingMarshal() {
-        // load instance doc
-        String src = PATH + "write-mydata.xml";
-        // setup control document
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { MyData.class }, CONTEXT_PATH, PATH + "mydata-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-        
-        try {
-            MyData ctrlData = getControlObject();
-            Marshaller marshaller = jCtx.createMarshaller();
-            marshaller.marshal(ctrlData, testDoc);
-            //marshaller.marshal(getControlObject(), System.out);
-            assertTrue("Accessor method was not called as expected", ctrlData.wasGetCalled);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
+	    
+	public void testSchemaGen() throws Exception{
+	   	List controlSchemas = new ArrayList();
+	   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/mydata.xsd");
+	   	
+	   	controlSchemas.add(is);
+	   		   	
+	   	super.testSchemaGen(controlSchemas);	  
+	}
+	public void testRoundTrip(){
+		//not applicable with write only mappings
+	}
 }
