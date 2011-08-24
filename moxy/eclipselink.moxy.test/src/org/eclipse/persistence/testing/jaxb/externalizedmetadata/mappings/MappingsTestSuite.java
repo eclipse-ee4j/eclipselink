@@ -14,7 +14,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycollection.AnyCollectionMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycollection.AnyCollectionReadOnlyMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycollection.AnyCollectionWriteOnlyMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.AnyObjectMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.AnyObjectReadOnlyMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.AnyObjectWriteOnlyMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata.BinaryDataMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydatacollection.BinaryDataCollectionMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.ChoiceMappingEmployeeTestCases;
@@ -51,7 +55,11 @@ public class MappingsTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("Mappings Test Suite");
         suite.addTestSuite(AnyAttributeMappingTestCases.class);
         suite.addTestSuite(AnyCollectionMappingTestCases.class);
+        suite.addTestSuite(AnyCollectionReadOnlyMappingTestCases.class); 
+        suite.addTestSuite(AnyCollectionWriteOnlyMappingTestCases.class);
         suite.addTestSuite(AnyObjectMappingTestCases.class);
+        suite.addTestSuite(AnyObjectReadOnlyMappingTestCases.class);
+        suite.addTestSuite(AnyObjectWriteOnlyMappingTestCases.class);
         suite.addTestSuite(BinaryDataMappingTestCases.class);
         suite.addTestSuite(BinaryDataCollectionMappingTestCases.class);        
         suite.addTestSuite(ChoiceMappingEmployeeTestCases.class);
