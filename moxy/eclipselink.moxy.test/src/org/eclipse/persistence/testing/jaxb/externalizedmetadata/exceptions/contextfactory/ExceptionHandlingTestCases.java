@@ -24,13 +24,14 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 /**
  * Tests externalized metadata processor exception handling.
  *
  */
-public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
+public class ExceptionHandlingTestCases extends OXTestCase {
+	
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/exceptions/contextfactory/";
     
@@ -56,7 +57,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -76,7 +77,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -97,7 +98,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -117,7 +118,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -137,7 +138,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         ints.add(new Integer(666));
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, ints);
         try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -152,7 +153,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testInvalidClassName() {
         String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
@@ -163,7 +164,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -178,7 +179,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testInvalidMetadataFile() {
         String metadataFile = PATH + "eclipselink-oxm-invalid.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
@@ -189,7 +190,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContextFactory.createContext(CONTEXT_PATH, loader, properties);
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
@@ -206,7 +207,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
     	String validPath = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/";
     	String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory";
     	String metadataFile = validPath + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
@@ -217,7 +218,7 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
         try {
-            JAXBContext ctx = JAXBContextFactory.createContext(contextPath, loader, properties);  
+            JAXBContext ctx = JAXBContextFactory.createContext(contextPath, getClass().getClassLoader(), properties);  
         } catch (javax.xml.bind.JAXBException e) {
         	assertTrue(e.getLinkedException() instanceof JAXBException);
         	assertEquals(JAXBException.JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE, ((JAXBException)e.getLinkedException()).getErrorCode());
