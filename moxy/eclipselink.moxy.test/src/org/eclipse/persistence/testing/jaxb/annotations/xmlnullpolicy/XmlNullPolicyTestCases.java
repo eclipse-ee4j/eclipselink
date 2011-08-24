@@ -12,32 +12,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy;
 
-import java.io.File;
 import java.io.InputStream;
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlDirectMappings via eclipselink-oxm.xml
  * 
  */
-public class XmlNullPolicyTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/";
+public class XmlNullPolicyTestCases extends JAXBTestCases {
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/employee.xml";
+    private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/write-employee.xml";
     private static final String FNAME = "Joe";
     private static final String LNAME = "Oracle";
     private static final String PNAME = "XML External Metadata Support";
@@ -49,21 +43,21 @@ public class XmlNullPolicyTestCases extends ExternalizedMetadataTestCases {
     private static final Double SALARY = 123456.78;
     private static final String CHARACTER_DATA = "<characters>a b c d e f g</characters>";
     private static final String PRIVATE_DATA = "This is some private data";
-    private static final String EMPLOYEES_NS = "http://www.example.com/employees";
-    private static final String PROJECTS_NS = "http://www.example.com/projects";
-    private static final String CURRENCY = "CAD";
-    private static final double PRICE = 123.456;
-
+    
+    private Employee ctrlEmp;
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public XmlNullPolicyTestCases(String name) {
+    public XmlNullPolicyTestCases(String name) throws Exception{
         super(name);
+        setClasses(new Class[] { Employee.class });
+        setControlDocument(XML_RESOURCE);
+        setWriteControlDocument(XML_WRITE_RESOURCE);
     }
 
-    private Employee getControlObject() {
+    public Object getControlObject() {
         Employee ctrlEmp = new Employee();
         ctrlEmp.firstName = FNAME;
         ctrlEmp.lastName = LNAME;
@@ -76,131 +70,75 @@ public class XmlNullPolicyTestCases extends ExternalizedMetadataTestCases {
         ctrlEmp.privateData = PRIVATE_DATA;
         ctrlEmp.characterData = CHARACTER_DATA;
         ctrlEmp.projectId = PROJECT_ID;
-        return ctrlEmp;
-    }
-
-
-    /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
-     * 
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * Tests schema generation for XmlDirectMapping via eclipselink-oxm.xml.
-     * Utilizes xml-attribute and xml-element. xml-value is tested separately
-     * below.  Instance doc validation is done here as well.
-     * 
-     * Positive test.
-     */
-    public void testSchemaGenAndValidation() {
-        // generate employee and project schemas
-        MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(); 
-        generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, resolver);
-        // validate employees schema
-        String controlSchema = PATH + "employees.xsd";
-        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS).toString(), new File(controlSchema));
-        // validate employee.xml
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);
-        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-        // validate write-employee.xml
-        src = PATH + "write-employee.xml";
-        result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);
-        assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
-    }
-
-    /**
-     * Tests XmlDirectMapping configuration via eclipselink-oxm.xml. Here an
-     * unmarshal operation is performed. Utilizes xml-attribute and xml-element.
-     * xml-value is tested separately below.
-     * 
-     * Positive test.
-     */
-    public void testDirectMappingUnmarshal() {
-        // create the JAXBContext
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
-        // load instance doc
-        String src = PATH + "employee.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // setup control Employee
-        Employee ctrlEmp = getControlObject();
+        
         // 'privateData' is write only
         ctrlEmp.privateData = null;
         // JAXB will default a null String to "" 
         ctrlEmp.someString = "";
-
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-            assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
-            assertTrue("Set was not called for absent node as expected", empObj.isAStringSet);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+        
+        return ctrlEmp;
     }
-
-    /**
-     * Tests XmlDirectMapping configuration via eclipselink-oxm.xml. Here a
-     * marshal operation is performed. Utilizes xml-attribute and xml-element.
-     * xml-value is tested separately below.
-     * 
-     * Positive test.
-     */
-    public void testDirectMappingMarshal() {
-        // create the JAXBContext
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
-        // load instance doc
-        String src = PATH + "write-employee.xml";
-
-        // setup control document
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // test marshal
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            Employee ctrlEmp = getControlObject();
-            ctrlEmp.setSomeString(null);
-            marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-            assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
+    
+    public Object getWriteControlObject() {
+    	if(ctrlEmp == null){
+        ctrlEmp = new Employee();
+        ctrlEmp.firstName = FNAME;
+        ctrlEmp.lastName = LNAME;
+        ctrlEmp.empId = EMPID;
+        ctrlEmp.mgrId = MGRID;
+        ctrlEmp.setProject(PNAME);
+        ctrlEmp.data1 = DATA1;
+        ctrlEmp.data2 = DATA2;
+        ctrlEmp.salary = SALARY;
+        ctrlEmp.privateData = PRIVATE_DATA;
+        ctrlEmp.characterData = CHARACTER_DATA;
+        ctrlEmp.projectId = PROJECT_ID;
+        ctrlEmp.setSomeString(null);
+    	}
+        return ctrlEmp;
     }
+    public void testSchemaGen() throws Exception{
+	   	List controlSchemas = new ArrayList();
+	   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/employees.xsd");
+	   	InputStream is2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/employees2.xsd");
+	   	controlSchemas.add(is);
+	   	controlSchemas.add(is2);	   	
+	   	super.testSchemaGen(controlSchemas);	  
+	}
+	
+    public Map getProperties(){
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/eclipselink-oxm.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy", new StreamSource(inputStream));
+		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+	        
+	    return properties;
+	}
+
+    public void objectToXMLDocumentTest(Document testDocument) throws Exception{
+    	super.objectToXMLDocumentTest(testDocument);
+        assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
+
+    }
+        
+    public void xmlToObjectTest(Object testObject) throws Exception{
+    	super.xmlToObjectTest(testObject);
+    	Employee empObj = (Employee)testObject;
+        assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
+        assertTrue("Set was not called for absent node as expected", empObj.isAStringSet);
+  
+
+    }
+	
+	public void testRoundTrip(){
+		//not applicable with write only mappings
+	}
+
+	 public void testObjectToContentHandler() throws Exception {
+	   	//See Bug 355143 
+
+	 }
+
 }
