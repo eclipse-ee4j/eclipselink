@@ -23,7 +23,10 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.collectionreference.CollectionReferenceMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.CompositeMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.CompositeCollecitonMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingTeamTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingVehicleTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingXmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection.DirectCollectionMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple.MultipleMappingPerFieldTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference.ObjectReferenceMappingReadOnlyTestCases;
@@ -57,6 +60,9 @@ public class MappingsTestSuite extends TestSuite {
         suite.addTestSuite(CompositeMappingTestCases.class);
         suite.addTestSuite(DirectCollectionMappingTestCases.class);
         suite.addTestSuite(DirectMappingTestCases.class);
+        suite.addTestSuite(DirectMappingTeamTestCases.class);
+        suite.addTestSuite(DirectMappingXmlValueTestCases.class);
+        suite.addTestSuite(DirectMappingVehicleTestCases.class);
         suite.addTestSuite(MultipleMappingPerFieldTestCases.class);
         suite.addTestSuite(ObjectReferenceMappingTestCases.class);
         suite.addTestSuite(ObjectReferenceMappingReadOnlyTestCases.class);

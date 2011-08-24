@@ -5,6 +5,7 @@
     </xml-schema>
 	<java-types>
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Car">
+		    <xml-root-element name="car" />
             <java-attributes>
                 <xml-element java-attribute="horsepower" xml-path="features/v:horsepower/text()" />
             </java-attributes>

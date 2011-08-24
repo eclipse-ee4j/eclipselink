@@ -23,4 +23,5 @@
          </xsd:element>
       </xsd:sequence>
    </xsd:complexType>
+   <xsd:element name="car" type="car"/>
 </xsd:schema>

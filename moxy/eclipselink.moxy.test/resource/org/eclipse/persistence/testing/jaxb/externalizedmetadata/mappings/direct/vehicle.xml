@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<car xmlns:v="http://www.example.com/vehicles">
+   <features> 
+     <v:horsepower>123</v:horsepower>
+   </features>
+</car>

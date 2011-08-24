@@ -14,4 +14,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direc
 
 public class Car {
     public String horsepower;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Car){
+    		return horsepower.equals(((Car)obj).horsepower);
+    	}
+    	return false;
+    }
 }

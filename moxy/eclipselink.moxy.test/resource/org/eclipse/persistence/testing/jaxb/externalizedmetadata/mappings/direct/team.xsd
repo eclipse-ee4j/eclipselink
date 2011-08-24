@@ -14,4 +14,5 @@
          </xsd:element>
       </xsd:sequence>
    </xsd:complexType>
+   <xsd:element name="team" type="team"/>
 </xsd:schema>

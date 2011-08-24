@@ -6,6 +6,7 @@
     </xml-schema>
 	<java-types>
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Team">
+		    <xml-root-element name="team" />
             <java-attributes>
                 <xml-element java-attribute="address" xml-path="contact-info/a:home-address/text()" />
                 <xml-element java-attribute="personalInfo" xml-path="contact-info/p:personal-info/text()" />

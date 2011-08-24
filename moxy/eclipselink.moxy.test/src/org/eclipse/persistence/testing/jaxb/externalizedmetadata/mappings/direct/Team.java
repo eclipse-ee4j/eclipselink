@@ -15,4 +15,12 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direc
 public class Team {
     public String address;
     public String personalInfo;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof Team){
+    		Team teamObj = (Team)obj;
+    		return address.equals(teamObj.address) && personalInfo.equals(teamObj.personalInfo);
+    	}
+    	return false;
+    }
 }
