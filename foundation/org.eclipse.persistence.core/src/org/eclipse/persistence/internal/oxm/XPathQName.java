@@ -92,5 +92,18 @@ public class XPathQName {
 		return ((localName == qName.localName) || ((localName != null) && localName.equals(qName.localName)));         
 	}
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        if(null != namespaceUri && namespaceUri.length() > 0) {
+            stringBuilder.append('{');
+            stringBuilder.append(namespaceUri);
+            stringBuilder.append('}');
+        }
+        if(null != localName) {
+            stringBuilder.append(localName);
+        }
+        return stringBuilder.toString();
+    }
 
 }
