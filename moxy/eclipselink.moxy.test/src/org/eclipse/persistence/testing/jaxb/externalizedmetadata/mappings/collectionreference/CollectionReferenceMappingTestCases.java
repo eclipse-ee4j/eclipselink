@@ -12,44 +12,69 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.collectionreference;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlCollectionReferenceMapping via eclipselink-oxm.xml
  *
  */
-public class CollectionReferenceMappingTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.collectionreference";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/";
+public class CollectionReferenceMappingTestCases extends JAXBTestCases {
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.xml";
     
     private static final String ADD_ID1 = "a100";
     private static final String ADD_ID2 = "a101";
     private static final String ADD_ID3 = "a102";
 
+    private Root ctrlObj;
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public CollectionReferenceMappingTestCases(String name) {
+    public CollectionReferenceMappingTestCases(String name) throws Exception {
         super(name);
+        setClasses(new Class[]{Root.class});
+        setControlDocument(XML_RESOURCE);        
     }
+    
+
+	public Map getProperties(){
+			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root-oxm.xml");
+
+			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+			metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.collectionreference", new StreamSource(inputStream));
+			Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+			properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+		        
+		    return properties;
+		}
+		    
+		    
+		public void testSchemaGen() throws Exception{
+		   	List controlSchemas = new ArrayList();
+		   	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.xsd");
+		   
+		   	controlSchemas.add(is);
+		   	
+		   	super.testSchemaGen(controlSchemas);	  
+		}
 
     /**
      * Create the control Root.
      */
-    private Root getControlObject() {
+    public Object getControlObject() {
+    	if(ctrlObj == null){
         Root root = new Root();
         List<Employee> emps = new ArrayList<Employee>();
         List<Address> adds = new ArrayList<Address>();
@@ -76,309 +101,20 @@ public class CollectionReferenceMappingTestCases extends ExternalizedMetadataTes
         root.addresses = adds;
         root.employees = emps;
         
-        return root;
+        ctrlObj = root;
+    	}
+    	return ctrlObj;
     }
     
-    /**
-     * Create the control write-only Root.
-     */
-    private Root getWriteOnlyControlObject() {
-        Root root = new Root();
-        List<Employee> emps = new ArrayList<Employee>();
-        List<Address> adds = new ArrayList<Address>();
+    public void objectToXMLDocumentTest (Document testDocument) throws Exception{
+    	super.objectToXMLDocumentTest(testDocument);
+        assertTrue("Accessor method was not called as expected", ctrlObj.employees.get(0).wasGetCalled);
 
-        Address wAddress1 = new Address();
-        wAddress1.id = ADD_ID1;
-        adds.add(wAddress1);
-        
-        Address wAddress2 = new Address();
-        wAddress2.id = ADD_ID2;
-        adds.add(wAddress2);
-        
-        Address wAddress3 = new Address();
-        wAddress3.id = ADD_ID3;
-        adds.add(wAddress3);
-        
-        Employee ctrlEmp = new Employee();
-        ctrlEmp.workAddresses = null;
-        emps.add(ctrlEmp);
-
-        root.addresses = adds;
-        root.employees = emps;
-        
-        return root;
-    }
-
-    /**
-     * 
-     */
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * Tests schema generation for XmlCollectionReferenceMapping via eclipselink-oxm.xml.
-     * Instance docs are validated as well.
-     * 
-     * Positive test.
-     */
-    public void testSchemaGenAndValidation() {
-        // generate root schema
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
-        // validate root schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
-        // validate root.xml
-        String src = PATH + "root.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        assertTrue("Instance doc validation (root.xml) failed unxepectedly: " + result, result == null);
-
-        // generate read only schema
-        resolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "read-only-oxm.xml", 1);
-        // validate read only schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
-        // validate root.xml
-        src = PATH + "root.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        assertTrue("Instance doc validation (root.xml vs. read-only XSD) failed unxepectedly: " + result, result == null);
-        // validate marshal-read-only.xml
-        src = PATH + "marshal-read-only.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        assertTrue("Instance doc validation (marshal-read-only.xml) failed unxepectedly: " + result, result == null);
-
-        // generate write only schema
-        resolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "write-only-oxm.xml", 1);
-        // validate write only schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
-        // validate root.xml against write only schema
-        src = PATH + "root.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        assertTrue("Instance doc validation (root.xml vs. write-only XSD) failed unxepectedly: " + result, result == null);
-    }
-
-    /**
-     * Tests XmlObjectCollectionMapping configuration via eclipselink-oxm.xml.
-     * Here an unmarshal operation is performed.  
-     * 
-     * Positive test.
-     */
-    public void testCollectionReferenceUnmarshal() {
-        // load instance doc
-        String src = PATH + "root.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-
-        // unmarshal
-        Root ctrlObj = getControlObject();
-        Root root = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            root = (Root) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", root);
-            assertTrue("Unmarshal failed:  Root objects are not equal", ctrlObj.equals(root));
-            assertTrue("Accessor method was not called as expected", root.employees.get(0).wasSetCalled);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
     }
     
-    /**
-     * Tests XmlCollectionReferenceMapping configuration via eclipselink-oxm.xml.
-     * Here a marshal operation is performed.  
-     * 
-     * Positive test.
-     */
-    public void testCollectionReferenceMarshal() {
-        // setup control document
-        String src = PATH + "root.xml";
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-
-        // test marshal
-        Root ctrlObj = getControlObject();
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            marshaller.marshal(ctrlObj, testDoc);
-            //marshaller.marshal(ctrlObj, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-            assertTrue("Accessor method was not called as expected", ctrlObj.employees.get(0).wasGetCalled);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
-
-    /**
-     * Tests XmlObjectCollectionMapping configuration via eclipselink-oxm.xml.
-     * Here an unmarshal operation is performed. Here the source is set as 
-     * read-only. 
-     * 
-     * Positive test.
-     */
-    public void testCollectionReferenceReadOnlyUnmarshal() {
-        // load instance doc
-        String src = PATH + "root.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "read-only-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-
-        // unmarshal
-        Root ctrlObj = getControlObject();
-        Root root = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            root = (Root) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", root);
-            assertTrue("Unmarshal failed:  Root objects are not equal", ctrlObj.equals(root));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
+    public void testRoundTrip(){
+		//accessor method wont get hit with this test as the check is on the ctrlObj but in this
+    	//case it isn' tthe ctrlObj that gets written.
+	}
     
-    /**
-     * Tests XmlCollectionReferenceMapping configuration via eclipselink-oxm.xml.
-     * Here a marshal operation is performed.  Here the source is set as 
-     * read-only, so the addresses should not be written out.
-     * 
-     * Positive test.
-     *
-     * NOTE:  this test can be enabled when bug# 308390 is fixed
-     * 
-     */
-    public void testCollectionReferenceReadOnlyMarshal() {
-        // setup control document
-        String src = PATH + "marshal-read-only.xml";
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "read-only-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-
-        // test marshal
-        Root ctrlObj = getControlObject();
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            marshaller.marshal(ctrlObj, testDoc);
-            //marshaller.marshal(ctrlObj, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
-
-    /**
-     * Tests XmlObjectCollectionMapping configuration via eclipselink-oxm.xml.
-     * Here an unmarshal operation is performed. Here the source is set as 
-     * write-only, so the addresses should not be read in. 
-     * 
-     * Positive test.
-     *
-     * NOTE:  this test can be enabled when bug# 308471 is fixed
-     */
-    public void testCollectionReferenceWriteOnlyUnmarshal() {
-        // load instance doc
-        String src = PATH + "root.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "write-only-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-
-        // unmarshal
-        Root ctrlObj = getWriteOnlyControlObject();
-        Root root = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-        try {
-            root = (Root) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", root);
-            assertTrue("Unmarshal failed:  Root objects are not equal", ctrlObj.equals(root));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-    
-    /**
-     * Tests XmlCollectionReferenceMapping configuration via eclipselink-oxm.xml.
-     * Here a marshal operation is performed.  Here the source is set as 
-     * write-only.
-     * 
-     * Positive test.
-     */
-    public void testCollectionReferenceWriteOnlyMarshal() {
-        // setup control document
-        String src = PATH + "root.xml";
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "write-only-oxm.xml");
-        } catch (JAXBException e1) {
-            fail("JAXBContext creation failed: " + e1.getMessage());
-        }
-
-        // test marshal
-        Root ctrlObj = getControlObject();
-        Marshaller marshaller = jCtx.createMarshaller();
-        try {
-            marshaller.marshal(ctrlObj, testDoc);
-            //marshaller.marshal(ctrlObj, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
 }
