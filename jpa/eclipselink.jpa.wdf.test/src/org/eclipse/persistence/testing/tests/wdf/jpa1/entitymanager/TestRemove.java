@@ -62,6 +62,7 @@ public class TestRemove extends JPA1Base {
          */
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
+        env.evictAll(em);
         try {
             Department dep = new Department(1, "HUGO");
             env.beginTransaction(em);
