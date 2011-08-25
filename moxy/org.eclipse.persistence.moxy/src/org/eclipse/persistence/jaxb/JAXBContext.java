@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
@@ -117,7 +118,7 @@ import org.eclipse.persistence.sessions.Session;
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
 
-    static final String MEDIA_TYPE = "eclipselink.media.type"; 
+    public static final String MEDIA_TYPE = "eclipselink.media.type"; 
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
@@ -151,7 +152,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Object to XML mappings.
      */
     public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
-        contextState = new JAXBContextState(context, generator, boundTypes);
+        contextState = new JAXBContextState(context, generator, boundTypes, null);
     }
 
     /**
@@ -159,7 +160,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Object to XML mappings.
      */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
-        contextState = new JAXBContextState(context, generator, boundTypes);
+        contextState = new JAXBContextState(context, generator, boundTypes, null);
     }
 
     /**
@@ -242,46 +243,17 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBMarshaller.  The JAXBMarshaller is used to convert Java objects
      * to XML.
      */
-    public JAXBMarshaller createMarshaller() {
-        JAXBContextState currentJAXBContextState = contextState;
-        XMLContext xmlContext = currentJAXBContextState.getXMLContext();
-        Generator generator = currentJAXBContextState.getGenerator();
-        // create a JAXBIntrospector and set it on the marshaller
-        JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
-        if (generator != null && generator.hasMarshalCallbacks()) {
-            // initialize each callback in the map
-            for (Iterator callIt = generator.getMarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
-                MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(callIt.next());
-                cb.initialize(generator.getClass().getClassLoader());
-            }
-            marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
-        }
-        //marshaller.setClassToGeneratedClasses(this.classToGeneratedClasses);
-        marshaller.setJaxbContext(this);
-        return marshaller;
+    public JAXBMarshaller createMarshaller() {    	
+        return contextState.createMarshaller(this);                
     }
 
     /**
      * Create a JAXBUnmarshaller.  The JAXBUnmarshaller is used to convert XML into
      * Java objects.
      */
-    public JAXBUnmarshaller createUnmarshaller() {
-        JAXBContextState currentJAXBContextState = contextState;
-        XMLContext xmlContext = currentJAXBContextState.getXMLContext();
-        Generator generator = currentJAXBContextState.getGenerator();
-        JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
-        if (generator != null && generator.hasUnmarshalCallbacks()) {
-            // initialize each callback in the map
-            for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
-                UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(callIt.next());
-                cb.initialize(generator.getClass().getClassLoader());
-            }
-            unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
-        }
-        unmarshaller.setJaxbContext(this);
-        return unmarshaller;
+    public JAXBUnmarshaller createUnmarshaller() {    	 
+        return contextState.createUnmarshaller(this);                
     }
-
     /**
      * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
      * an XSD.
@@ -697,13 +669,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
             try {
                 Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace);
-                return createContextState(generator, loader, classesToBeBound);
+                return createContextState(generator, loader, classesToBeBound, properties);
             } catch (Exception ex) {
                 throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
             }
         }
 
-        private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, Type[] typesToBeBound) throws Exception {
+        private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, Type[] typesToBeBound, Map properties) throws Exception {
             Project proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {
@@ -733,7 +705,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
             }
 
-            return new JAXBContextState(xmlContext, generator, typesToBeBound);
+            return new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
         }
 
         /**
@@ -831,13 +803,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
             try {
                 Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
-                return createContextState(generator, loader, typesToBeBound);
+                JAXBContextState contextState = createContextState(generator, loader, typesToBeBound, properties);                
+                return contextState;
             } catch (Exception ex) {
                 throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
             }
         }
 
-        private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, TypeMappingInfo[] typesToBeBound) throws Exception {
+        private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, TypeMappingInfo[] typesToBeBound, Map properties) throws Exception {
             Project proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {
@@ -866,7 +839,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if(generator.getAnnotationsProcessor().getPackageToPackageInfoMappings().size() > 1){
                 ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
             }
-            return new JAXBContextState(xmlContext, generator, typesToBeBound);
+            return new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
         }
 
         /**
@@ -928,7 +901,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
         private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
         private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
-
+        private Map properties;
+        
         protected JAXBContextState() {
         }
 
@@ -936,7 +910,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             xmlContext = context;
         }
 
-        protected JAXBContextState(XMLContext context, Generator generator, Type[] boundTypes) {
+        protected JAXBContextState(XMLContext context, Generator generator, Type[] boundTypes, Map properties) {
             this(context);
             this.generator = generator;
             this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
@@ -948,9 +922,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 newTypeInfo.setType(boundTypes[i]);
                 this.boundTypes[i] = newTypeInfo;
             }
+            if(properties != null){
+               this.properties = new HashMap(properties);
+            }
         }
 
-        protected JAXBContextState(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
+        protected JAXBContextState(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes, Map properties) {
             this(context);
             this.generator = generator;
             this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
@@ -959,6 +936,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfoToGeneratedClasses();
             this.setTypeMappingInfoToJavaTypeAdapaters(createAdaptersForAdapterClasses(generator.getAnnotationsProcessor().getTypeMappingInfoToAdapterClasses()));
             this.boundTypes = boundTypes;
+            if(properties != null){
+                this.properties = new HashMap(properties);
+             }
         }
 
         private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
@@ -1157,6 +1137,57 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         public void setXMLContext(XMLContext xmlContext) {
             this.xmlContext = xmlContext;
+        }
+
+        public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) {
+            // create a JAXBIntrospector and set it on the marshaller
+            JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
+            if (generator != null && generator.hasMarshalCallbacks()) {
+                // initialize each callback in the map
+                for (Iterator callIt = generator.getMarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
+                    MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(callIt.next());
+                    cb.initialize(generator.getClass().getClassLoader());
+                }
+                marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
+            }
+            marshaller.setJaxbContext(jaxbContext);
+            if(properties != null){
+                String mediaTypeValue = (String)properties.get(JAXBContext.MEDIA_TYPE);
+                if(mediaTypeValue != null){
+                    try {
+                        marshaller.setProperty(JAXBContext.MEDIA_TYPE, mediaTypeValue);
+                    } catch (PropertyException e) {					
+                	    org.eclipse.persistence.exceptions.JAXBException.errorOccurredSettingMediaType(mediaTypeValue, e);
+                    }
+                }            
+            }
+        
+            return marshaller;
+        }
+        
+        public JAXBUnmarshaller createUnmarshaller(JAXBContext jaxbContext) {
+
+             JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
+             if (generator != null && generator.hasUnmarshalCallbacks()) {
+                 // initialize each callback in the map
+                 for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
+                     UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(callIt.next());
+                     cb.initialize(generator.getClass().getClassLoader());
+                 }
+                 unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
+             }
+             unmarshaller.setJaxbContext(jaxbContext);
+             if(properties != null){
+                 String mediaTypeValue = (String)properties.get(JAXBContext.MEDIA_TYPE);
+                 if(mediaTypeValue != null){
+                     try {
+             	    	unmarshaller.setProperty(JAXBContext.MEDIA_TYPE, mediaTypeValue);
+                     } catch (PropertyException e) {
+                     	org.eclipse.persistence.exceptions.JAXBException.errorOccurredSettingMediaType(mediaTypeValue, e);
+     	            }
+                 }            
+             }
+             return unmarshaller;
         }
 
     }

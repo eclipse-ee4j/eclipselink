@@ -27,20 +27,20 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 
+import org.eclipse.persistence.testing.jaxb.json.JSONTestCases;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
-public class NoRootElementTestCases extends OXTestCase{    
+public class NoRootElementTestCases extends JSONTestCases {    
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";    
-    private JAXBContext jaxbContext;
     
 	public NoRootElementTestCases(String name) throws Exception {
-	    super(name);		
-	    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-	    jaxbContext = JAXBContextFactory.createContext(new Class[]{Address.class}, null, classLoader);
+	    super(name);
+	    setControlJSON(JSON_RESOURCE);
+	    setClasses(new Class[]{Address.class});	    
 
 	}
 
-	public Object getReadControlObject() {
+	public Object getControlObject() {
 		Address addr = new Address();
 		addr.setId(10);
 		addr.setCity("Ottawa");
@@ -50,78 +50,6 @@ public class NoRootElementTestCases extends OXTestCase{
 		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, addr);
 		return jbe;
 	}
-
-	 public void testObjectToJSONStringWriter() throws Exception {    	
-	    Marshaller jsonMarshaller = jaxbContext.createMarshaller();
-	    jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
-	        
-	    StringWriter sw = new StringWriter();
-	    Object obj = ((JAXBElement)getReadControlObject()).getValue();
-	    jsonMarshaller.marshal(obj, sw);
-	    compareStrings("**testObjectToJSONStringWriter**", sw.toString());
-	       
-	 }
-	 
-	 public void testJAXBElementToJSONStringWriter() throws Exception {    	
-	    Marshaller jsonMarshaller = jaxbContext.createMarshaller();
-	    jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
-	        
-	    StringWriter sw = new StringWriter();
-	    jsonMarshaller.marshal(getReadControlObject(), sw);
-	    compareStrings("**testJAXBElementToJSONStringWriter**", sw.toString());
-	        
-	 }
-	 
-     private void compareStrings(String testName, String testString) {
-	    log(testName);
-	    log("Expected (With All Whitespace Removed):");
-	    String expectedString = loadFileToString(JSON_RESOURCE).replaceAll("[ \b\t\n\r ]", "");
-	    log(expectedString);
-	    log("\nActual (With All Whitespace Removed):");
-	    testString = testString.replaceAll("[ \b\t\n\r]", "");
-	    log(testString);
-	    assertEquals(expectedString, testString);
-	 }
-	 
-    public void testJSONToObjectFromInputSourceWithClass() throws Exception {    	
-        Unmarshaller jsonUnmarshaller = jaxbContext.createUnmarshaller();
-        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
-
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(JSON_RESOURCE);
-        StreamSource ss = new StreamSource(inputStream);
-        JAXBElement testObject = ((JAXBUnmarshaller)jsonUnmarshaller).unmarshal(ss, Address.class);
-        inputStream.close();
-        jsonToObjectTest(testObject);
-    }
-    
-    public void testJSONToObjectFromReaderWithClass() throws Exception {    	
-        Unmarshaller jsonUnmarshaller = jaxbContext.createUnmarshaller();
-        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(JSON_RESOURCE);
-        InputStreamReader reader = new InputStreamReader(inputStream);
-        StreamSource ss = new StreamSource(reader);
-        JAXBElement testObject = ((JAXBUnmarshaller)jsonUnmarshaller).unmarshal(ss, Address.class);
-        inputStream.close();
-
-        jsonToObjectTest(testObject);
-    }
-    
-    
-    public void jsonToObjectTest(Object testObject) throws Exception {
-        log("\n**jsonToObjectTest**");
-        log("Expected:");
-        log(getReadControlObject().toString());
-        log("Actual:");
-        log(testObject.toString());
-
-        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-            JAXBElement controlObj = (JAXBElement)getReadControlObject();
-            JAXBElement testObj = (JAXBElement)testObject;
-            compareJAXBElementObjects(controlObj, testObj);
-        } else {
-            fail("Should have returned a JAXBElement but didn't");
-        }
-    }
     
    
 }

@@ -228,6 +228,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getNoNamespaceSchemaLocation();
         } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
             return xmlMarshaller.isFragment();
+        } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
+            return xmlMarshaller.getMediaType().getName();
         }
         throw new PropertyException("Unsupported Property");
     }
@@ -546,13 +548,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
-                if("application/json".equals(value)) {
-                    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
-                } else if("application/xml".equals(value)) {
-                    xmlMarshaller.setMediaType(MediaType.APPLICATION_XML);
-                } else {
-                    throw new PropertyException(key, value);
-                }
+            	MediaType mType = MediaType.getMediaTypeByName((String)value);
+            	if(mType != null){
+            	   xmlMarshaller.setMediaType(mType);
+            	}else{
+            	   throw new PropertyException(key, value);
+            	}
             } else {
                 throw new PropertyException(key, value);
             }

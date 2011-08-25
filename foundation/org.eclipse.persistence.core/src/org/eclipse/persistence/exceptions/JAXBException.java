@@ -109,6 +109,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int CANNOT_REFRESH_METADATA = 50077;
     public static final int XJB_NOT_SOURCE = 50078;
     public static final int XSD_IMPORT_NOT_SOURCE = 50079;
+    public static final int EXCEPTION_SETTING_MEDIATYPE = 50080;
 
     protected JAXBException(String message) {
         super(message);
@@ -1006,5 +1007,16 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(XSD_IMPORT_NOT_SOURCE);
         return validationException;
     }
+    
 
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred setting the media type
+     */
+    public static JAXBException errorOccurredSettingMediaType(String mediaTypeValue, Exception ex) {
+        Object[] args = {mediaTypeValue };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, EXCEPTION_SETTING_MEDIATYPE, args), ex);
+        validationException.setErrorCode(EXCEPTION_SETTING_MEDIATYPE);
+        return validationException;
+    }
 }

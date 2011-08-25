@@ -232,8 +232,18 @@ public class XMLMarshaller implements Cloneable {
      * @param mediaType
      */
     public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
+        this.mediaType = mediaType;        
     }    
+    
+    /**
+     * Get the MediaType for this xmlMarshaller.
+     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
+     * If not set the default is MediaType.APPLICATION_XML
+     * @return MediaType
+     */
+    public MediaType getMediaType(){
+    	return mediaType;
+    }
 
     /**
       * Get the schema location set on this XMLMarshaller

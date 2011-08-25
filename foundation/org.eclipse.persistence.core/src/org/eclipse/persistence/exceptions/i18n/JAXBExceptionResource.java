@@ -99,6 +99,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50077", "Cannot refresh metadata.  Metadata must be provided as an XML Node in order to support refreshing."},
         {"50078", "Cannot process external bindings files (XJB).  To use external bindings files, both XSD and XJB must be provided as javax.xml.transform.Sources."},
         {"50079", "Cannot process schemas.  If using schema imports, XSDs must be provided as a javax.xml.transform.Source."},
+        {"50080", "An error occurred setting the media type on the marshaller to [{0}]"}
     };
 
     /**

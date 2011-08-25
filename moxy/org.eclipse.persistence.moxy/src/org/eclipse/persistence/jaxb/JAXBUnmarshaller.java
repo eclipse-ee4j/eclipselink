@@ -711,13 +711,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         if(key.equals(JAXBContext.MEDIA_TYPE)) {
-            if("application/json".equals(value)) {
-            	xmlUnmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-            } else if("application/xml".equals(value)) {                
-                xmlUnmarshaller.setMediaType(MediaType.APPLICATION_XML);
-            } else {
-                throw new PropertyException(key, value);
-            }
+        	MediaType mType = MediaType.getMediaTypeByName((String)value);
+        	if(mType != null){
+        		xmlUnmarshaller.setMediaType(mType);
+        	}else{
+        	   throw new PropertyException(key, value);
+        	}       
         } else {
             throw new PropertyException(key, value);
         }
@@ -728,11 +727,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         } 
         if(key.equals(JAXBContext.MEDIA_TYPE)) {
-            if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
-                return "application/json";
-            } else {
-                return "application/xml";
-            }
+        	return xmlUnmarshaller.getMediaType().getName();
         }
         throw new PropertyException("Unsupported Property");
     }
