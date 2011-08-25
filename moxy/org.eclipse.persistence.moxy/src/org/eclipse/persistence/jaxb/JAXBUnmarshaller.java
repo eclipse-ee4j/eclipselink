@@ -53,6 +53,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
@@ -725,7 +726,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
-        }
+        } 
         if(key.equals(JAXBContext.MEDIA_TYPE)) {
             if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
                 return "application/json";
@@ -812,21 +813,22 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if(value instanceof JAXBElement) {
            return (JAXBElement) value;
         }
-
+        
         QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
+        XPathQName xpathQName = new XPathQName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName(), xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML);
         if(value instanceof ManyValue){
             value = ((ManyValue)value).getItem();
         }
 
         Map<QName, Class> qNamesToDeclaredClasses = jaxbContext.getQNamesToDeclaredClasses();
         if(qNamesToDeclaredClasses != null){
-            Class declaredClass = qNamesToDeclaredClasses.get(qname);
+        	Class declaredClass = qNamesToDeclaredClasses.get(qname);    
             if(declaredClass != null){
                 return createJAXBElement(qname, declaredClass, value);
             }
         }
 
-        XMLDescriptor descriptorForQName = xmlUnmarshaller.getXMLContext().getDescriptor(qname);
+        XMLDescriptor descriptorForQName = xmlUnmarshaller.getXMLContext().getDescriptor(xpathQName);
         if(descriptorForQName != null){
             return createJAXBElement(qname, descriptorForQName.getJavaClass(), value);
         }
@@ -840,7 +842,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
         return createJAXBElement(qname, declaredType, value);
     }
-
+  
     private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
 
         if(theClass == null){

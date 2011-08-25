@@ -16,11 +16,12 @@ package org.eclipse.persistence.testing.jaxb.substitution;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class SubstitutionTestCases extends JAXBTestCases {
+public class SubstitutionTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance.json";
 
     public SubstitutionTestCases(String name) throws Exception {
         super(name);
@@ -29,6 +30,7 @@ public class SubstitutionTestCases extends JAXBTestCases {
         classes[1] = Person.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     public Object getControlObject() {

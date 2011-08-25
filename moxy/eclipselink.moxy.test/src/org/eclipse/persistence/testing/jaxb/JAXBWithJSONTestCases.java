@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
@@ -49,13 +50,30 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	}
     }
 
+    
+    public void jsonToObjectTest(Object testObject) throws Exception {
+        log("\n**xmlToObjectTest**");
+        log("Expected:");
+        log(getReadControlObject().toString());
+        log("Actual:");
+        log(testObject.toString());
+
+        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
+            JAXBElement controlObj = (JAXBElement)getReadControlObject();
+            JAXBElement testObj = (JAXBElement)testObject;
+            compareJAXBElementObjects(controlObj, testObj, false);
+        } else {
+        	assertEquals(getReadControlObject(), testObject);
+        }
+    }
+    
     public void testJSONUnmarshalFromInputStream() throws Exception {
         Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
         jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Object testObject = jsonUnmarshaller.unmarshal(inputStream);
         inputStream.close();
-        assertEquals(getReadControlObject(), testObject);
+        jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
@@ -66,7 +84,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         InputSource inputSource = new InputSource(inputStream);
         Object testObject = jsonUnmarshaller.unmarshal(inputSource);
         inputStream.close();
-        assertEquals(getReadControlObject(), testObject);
+        jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromReader() throws Exception {
@@ -78,7 +96,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         Object testObject = jsonUnmarshaller.unmarshal(reader);
         reader.close();
         inputStream.close();
-        assertEquals(getReadControlObject(), testObject);
+        jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromURL() throws Exception {
@@ -87,7 +105,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
         URL url = getJSONURL();
         Object testObject = jsonUnmarshaller.unmarshal(url);
-        assertEquals(getReadControlObject(), testObject);
+        jsonToObjectTest(testObject);
     }
 
     public void testJSONMarshalToOutputStream() throws Exception{
