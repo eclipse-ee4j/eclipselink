@@ -342,8 +342,13 @@ public abstract class OXTestCase extends XMLTestCase {
     }
     
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
+    	compareJAXBElementObjects(controlObj, testObj, true);
+    }
+    public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj, boolean namespaceAware) {
         assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
-        assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
+        if(namespaceAware){
+            assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
+        }
         assertEquals(controlObj.getDeclaredType(), testObj.getDeclaredType());
 
         Object controlValue = controlObj.getValue();
