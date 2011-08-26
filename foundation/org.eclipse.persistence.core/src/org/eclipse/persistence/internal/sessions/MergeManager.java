@@ -465,28 +465,22 @@ public class MergeManager {
 
             // PERF: Get the cached cache-key from the change-set.
             CacheKey cacheKey = changeSet.getActiveCacheKey();
-            boolean locked = false;
             // The cache key should never be null for the new commit locks, but may be depending on the cache isolation level may not be locked,
             // so needs to be re-acquired.
             if (cacheKey == null || !cacheKey.isAcquired()) {                
-                cacheKey = session.getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
-                locked = true;
+                // ELBug 355610 - Use appendLock() instead of acquireLock() for transitioning 
+                // to deferred locks for new objects in order to avoid the possibility of a deadlock.
+                cacheKey = session.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(primaryKey, original, descriptor, this, session);
             }
             descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this, session, false);
-            try {
-                if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
-                    cacheKey.setWriteLockValue(changeSet.getWriteLockValue());
-                }
-                cacheKey.setObject(original);
-                if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || changeSet.isNew()) {
-                    cacheKey.setReadTime(getSystemTime());
-                }
-                cacheKey.updateAccess();
-            } finally {
-                if (locked) {
-                    cacheKey.release();
-                }
+            if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
+                cacheKey.setWriteLockValue(changeSet.getWriteLockValue());
             }
+            cacheKey.setObject(original);
+            if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || changeSet.isNew()) {
+                cacheKey.setReadTime(getSystemTime());
+            }
+            cacheKey.updateAccess();
         }
 
         return original;
