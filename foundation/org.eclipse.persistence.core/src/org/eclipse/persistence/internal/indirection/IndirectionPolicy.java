@@ -338,6 +338,14 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     }
     
     /**
+     * INTERNAL:
+     * set the source object into QueryBasedValueHolder.
+     * Used only by transparent indirection.
+     */
+    public void setSourceObject(Object sourceObject, Object attributeValue) {        
+    }
+    
+    /**
      * ADVANCED:
      * This method will only change the behavior of TransparentIndirectionPolicy.
      * 

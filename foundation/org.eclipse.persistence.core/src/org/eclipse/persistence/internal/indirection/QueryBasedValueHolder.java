@@ -121,7 +121,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     public void postInstantiate(){
         if (query.getSourceMapping() != null && query.getSourceMapping().isForeignReferenceMapping()){
             ClassDescriptor descriptor = session.getDescriptor(sourceObject);
-            if (descriptor != null){
+            if (descriptor != null && !descriptor.isAggregateDescriptor()){
                 session.getIdentityMapAccessorInstance().getIdentityMap(descriptor).lazyRelationshipLoaded(sourceObject, (ForeignReferenceMapping)query.getSourceMapping());
             }
         }
@@ -189,5 +189,9 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         // the
         // session outside a transaction.
         return query.isLockQuery(this.session);
+    }
+    
+    public void setSourceObject(Object sourceObject) {
+        this.sourceObject = sourceObject;
     }
 }
