@@ -538,26 +538,6 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * PUBLIC:
-     * Set if the locator is required for the LOB write. The default is true.
-     * For Oracle thin driver, the locator is recommended for large size
-     * ( >4k for Oracle8, >5.9K for Oracle9) BLOB/CLOB value write.
-     */
-    public void setShouldUseLocatorForLOBWrite(boolean usesLocatorForLOBWrite) {
-        this.usesLocatorForLOBWrite = usesLocatorForLOBWrite;
-    }
-
-    /**
-     * PUBLIC:
-     * Return if the locator is required for the LOB write. The default is true.
-     * For Oracle thin driver, the locator is recommended for large size
-     * ( >4k for Oracle8, >5.9K for Oracle9) BLOB/CLOB value write.
-     */
-    public boolean shouldUseLocatorForLOBWrite() {
-        return usesLocatorForLOBWrite;
-    }
-
-    /**
-     * PUBLIC:
      * Return the BLOB/CLOB value limits on thin driver. The default value is 0.
      * If usesLocatorForLOBWrite is true, locator will be used in case the
      * lob's size is larger than lobValueLimit.
