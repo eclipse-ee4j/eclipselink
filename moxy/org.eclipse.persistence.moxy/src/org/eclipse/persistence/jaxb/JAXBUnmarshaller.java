@@ -652,7 +652,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        throw new PropertyException("Unsupported Property");
+        throw new PropertyException(key);
     }
 
     public Unmarshaller.Listener getListener() {

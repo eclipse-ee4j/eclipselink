@@ -228,7 +228,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
             return xmlMarshaller.isFragment();
         }
-        throw new PropertyException("Unsupported Property");
+        throw new PropertyException(key);
     }
 
     public Schema getSchema() {
