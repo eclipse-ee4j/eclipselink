@@ -729,7 +729,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if(key.equals(JAXBContext.MEDIA_TYPE)) {
         	return xmlUnmarshaller.getMediaType().getName();
         }
-        throw new PropertyException("Unsupported Property");
+        throw new PropertyException(key);
     }
 
     public Unmarshaller.Listener getListener() {

@@ -231,7 +231,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
             return xmlMarshaller.getMediaType().getName();
         }
-        throw new PropertyException("Unsupported Property");
+        throw new PropertyException(key);
     }
 
     public Schema getSchema() {
