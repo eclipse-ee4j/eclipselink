@@ -441,6 +441,20 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     }
     
     /**
+     * INTERNAL:
+     * set the source object into QueryBasedValueHolder.
+     * Used only by transparent indirection.
+     */
+    public void setSourceObject(Object sourceObject, Object attributeValue) {        
+        if( attributeValue instanceof IndirectContainer) {
+            ValueHolderInterface valueHolder = ((IndirectContainer)attributeValue).getValueHolder();
+            if (valueHolder instanceof QueryBasedValueHolder) {
+                ((QueryBasedValueHolder)valueHolder).setSourceObject(sourceObject);
+            }
+        }
+    }
+    
+    /**
      * ADVANCED:
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
