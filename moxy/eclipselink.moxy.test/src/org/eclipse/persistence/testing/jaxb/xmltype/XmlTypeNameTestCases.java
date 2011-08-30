@@ -12,22 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmltype;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class XmlTypeNameTestCases extends JAXBTestCases {
@@ -39,8 +26,9 @@ public class XmlTypeNameTestCases extends JAXBTestCases {
     public XmlTypeNameTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);        
-        Class[] classes = new Class[1];
+        Class[] classes = new Class[2];
         classes[0] = GetPageResponse.class;
+        classes[1] = A2BCDESomeTest.class; //complex type for this should be "a2BCDESomeTest"
         setClasses(classes);
     }
 

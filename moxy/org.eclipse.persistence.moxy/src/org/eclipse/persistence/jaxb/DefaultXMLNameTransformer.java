@@ -61,6 +61,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
         } else {
             typeName = decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
         }
+
         //now capitalize any characters that occur after a "break"
         boolean inBreak = false;
         StringBuffer toReturn = new StringBuffer(typeName.length());
@@ -74,18 +75,20 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
             } else {
                 if (inBreak) {
                     toReturn.append(Character.toUpperCase(next));
+                    inBreak = false;
                 } else {
                     toReturn.append(next);
                 }
             }
         }
         return toReturn.toString();
+		
     }
 
     private String decapitalize(String javaName) {
         char[] name = javaName.toCharArray();
         int i = 0;
-        while (i < name.length && (Character.isUpperCase(name[i]) || !Character.isLetter(name[i]))) {
+		while (i < name.length && (Character.isUpperCase(name[i]))){
             i++;
         }
         if (i > 0) {
