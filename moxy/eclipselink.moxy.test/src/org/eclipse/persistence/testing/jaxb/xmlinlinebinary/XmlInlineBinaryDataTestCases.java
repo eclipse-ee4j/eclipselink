@@ -34,6 +34,7 @@ public class XmlInlineBinaryDataTestCases extends JAXBTestCases{
 		MyDataPropertyAnnotation data = new MyDataPropertyAnnotation();		
 		data.bytes = new byte[] { 0, 1, 2, 3 };
 		data.bytesAttr = new byte[] { 0, 1, 2, 3 };
+		data.bigBytes = new Byte[] { 0, 1, 2, 3 };
 		return data;
 	}
 	

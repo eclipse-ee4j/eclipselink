@@ -122,7 +122,7 @@ public class Helper {
         javaTypes.put(QNAME_CLASS, XMLConstants.QNAME_QNAME);
         javaTypes.put(STRING, XMLConstants.STRING_QNAME);
         // other pairs
-        javaTypes.put(ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
+        javaTypes.put(ABYTE, XMLConstants.BYTE_QNAME);
         javaTypes.put(BOOLEAN, XMLConstants.BOOLEAN_QNAME);
         javaTypes.put(BYTE, XMLConstants.BYTE_QNAME);
         javaTypes.put(GREGORIAN_CALENDAR, XMLConstants.DATE_TIME_QNAME);

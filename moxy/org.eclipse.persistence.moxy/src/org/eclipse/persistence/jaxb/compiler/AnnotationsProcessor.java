@@ -1545,7 +1545,7 @@ public class AnnotationsProcessor {
         }
         if (javaClass.isArray()) {
             String javaClassName = javaClass.getName();
-            if (!(javaClassName.equals(ClassConstants.APBYTE.getName()))) {
+            if (!(javaClassName.equals(ClassConstants.APBYTE.getName()))&& !(javaClassName.equals(ClassConstants.ABYTE.getName()))) {
                 return true;
             }
         }

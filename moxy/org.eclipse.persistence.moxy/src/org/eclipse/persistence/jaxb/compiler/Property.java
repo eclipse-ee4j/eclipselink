@@ -267,7 +267,7 @@ public class Property implements Cloneable {
         	}
             type = cls;  
                 	
-        }else if(cls.isArray()  && !clsName.equals("byte[]")  && !clsName.equals("java.lang.Byte[]")){
+        }else if(cls.isArray()  && !clsName.equals("byte[]") ){
         	type = cls;
         	genericType = cls.getComponentType();
         }else{

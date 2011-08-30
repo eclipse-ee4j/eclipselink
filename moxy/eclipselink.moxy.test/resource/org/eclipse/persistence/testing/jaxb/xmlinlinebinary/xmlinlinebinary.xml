@@ -1,4 +1,8 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <my-data bytesAttr="AAECAw==">
    <bytes>AAECAw==</bytes>
+   <bigBytes>0</bigBytes>
+   <bigBytes>1</bigBytes>
+   <bigBytes>2</bigBytes>
+   <bigBytes>3</bigBytes>
 </my-data>
