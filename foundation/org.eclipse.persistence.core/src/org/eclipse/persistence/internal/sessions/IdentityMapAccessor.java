@@ -394,7 +394,16 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Return the object from the local identity map with the primary and class.
+     * This avoids checking the parent cache for the unit of work.
+     */
+    public Object getFromLocalIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+        return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+    }
+   
     /**
      * ADVANCED:
      * Return the object from the identity with the primary and class.
