@@ -1,0 +1,4 @@
+<ns0:childRoot xmlns:ns0="childnamespace">
+    <parentThing>parentValue</parentThing>
+	<childThing>childValue</childThing>
+</ns0:childRoot>
