@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="childnamespace" xmlns:ns1="parentnamespace" targetNamespace="childnamespace">
+   <xsd:import namespace="parentnamespace" schemaLocation="schema2.xsd"/>
+   <xsd:complexType name="child">
+      <xsd:complexContent>
+         <xsd:extension base="ns1:parent">
+            <xsd:sequence>
+               <xsd:element minOccurs="0" name="childThing" type="xsd:string"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="childRoot" type="ns0:child"/>
+</xsd:schema>

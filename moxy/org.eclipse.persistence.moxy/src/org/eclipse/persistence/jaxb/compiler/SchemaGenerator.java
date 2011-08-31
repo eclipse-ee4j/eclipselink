@@ -63,6 +63,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.sessions.Session;
@@ -245,7 +246,7 @@ public class SchemaGenerator {
                     if (baseType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                         prefix = XMLConstants.SCHEMA_PREFIX;
                     } else {
-                        prefix = getPrefixForNamespace(baseType.getNamespaceURI(), schema.getNamespaceResolver());
+                        prefix = getPrefixForNamespace(schema, baseType.getNamespaceURI());
                     }
                 }
                 String baseTypeName = baseType.getLocalPart();
@@ -292,7 +293,7 @@ public class SchemaGenerator {
                 if (extensionType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                     prefix = XMLConstants.SCHEMA_PREFIX;
                 } else {
-                    prefix = getPrefixForNamespace(extensionType.getNamespaceURI(), schema.getNamespaceResolver());
+                    prefix = getPrefixForNamespace(schema, extensionType.getNamespaceURI());
                 }
             }
             String extensionTypeName = extensionType.getLocalPart();
@@ -318,7 +319,7 @@ public class SchemaGenerator {
                 if (parentTypeInfo != null) {
                     extension = new Extension();
                     // may need to qualify the type
-                    String parentPrefix = getPrefixForNamespace(parentTypeInfo.getClassNamespace(), schema.getNamespaceResolver());
+                    String parentPrefix = getPrefixForNamespace(schema, parentTypeInfo.getClassNamespace());
                     if (parentPrefix != null) {
                         extension.setBaseType(parentPrefix + COLON + parentTypeInfo.getSchemaTypeName());
                     } else {
@@ -680,7 +681,12 @@ public class SchemaGenerator {
         return null;
     }
 
-    public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver) {
+    public String getPrefixForNamespace(Schema schema, String URI) {
+    	//add Import if necessary
+        Schema referencedSchema = this.getSchemaForNamespace(URI);
+        addImportIfRequired(schema, referencedSchema, URI);
+    	
+    	NamespaceResolver namespaceResolver = schema.getNamespaceResolver();
         Enumeration keys = namespaceResolver.getPrefixes();
         while (keys.hasMoreElements()) {
             String next = (String) keys.nextElement();
@@ -701,7 +707,8 @@ public class SchemaGenerator {
      * @return
      */
     public String getOrGeneratePrefixForNamespace(String URI, Schema schema) {
-        String prefix = schema.getNamespaceResolver().resolveNamespaceURI(URI);
+        String prefix = schema.getNamespaceResolver().resolveNamespaceURI(URI);       
+        
         if (prefix == null) {
             if (URI.equals(XMLConstants.SCHEMA_URL)) {
                 prefix = schema.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);
@@ -803,7 +810,7 @@ public class SchemaGenerator {
                         if (nextElement.getSubstitutionHead() != null) {
                             String subLocal = nextElement.getSubstitutionHead().getLocalPart();
                             String subNamespace = nextElement.getSubstitutionHead().getNamespaceURI();
-                            String prefix = getPrefixForNamespace(subNamespace, targetSchema.getNamespaceResolver());
+                            String prefix = getPrefixForNamespace(targetSchema, subNamespace);
                             if (prefix == null || prefix.equals(EMPTY_STRING)) {
                                 element.setSubstitutionGroup(subLocal);
                             } else {
@@ -967,7 +974,7 @@ public class SchemaGenerator {
         String typeName = getTypeName(prop, javaType, schema);
         // may need to qualify the type
         if (typeName != null && !typeName.contains(COLON)) {
-            String prefix = getPrefixForNamespace(schema.getTargetNamespace(), schema.getNamespaceResolver());
+            String prefix = getPrefixForNamespace(schema, schema.getTargetNamespace());
             if (prefix != null) {
                 typeName = prefix + COLON + typeName;
             }
@@ -1504,7 +1511,7 @@ public class SchemaGenerator {
             // may need to qualify the type
             if (typeName != null && !typeName.contains(COLON)) {
                 if (info.getSchema() == schema) {
-                    String prefix = getPrefixForNamespace(schema.getTargetNamespace(), schema.getNamespaceResolver());
+                    String prefix = getPrefixForNamespace(schema, schema.getTargetNamespace());
                     if (prefix != null) {
                         typeName = prefix + COLON + typeName;
                     }
@@ -1541,11 +1548,8 @@ public class SchemaGenerator {
                 //don't overwrite existing global elements and attributes.
                 attributeSchema.getTopLevelAttributes().put(attribute.getName(), attribute);
             }
-            // add an import here if necessary
-            addImportIfRequired(schema, attributeSchema, attributeName.getNamespaceURI());
-
-            Attribute reference = new Attribute();
-            String prefix = getPrefixForNamespace(attributeName.getNamespaceURI(), schema.getNamespaceResolver());
+           Attribute reference = new Attribute();
+            String prefix = getPrefixForNamespace(schema, attributeName.getNamespaceURI());
             if (prefix == null) {
                 reference.setRef(attribute.getName());
             } else {
@@ -1675,10 +1679,8 @@ public class SchemaGenerator {
             Element element = new Element();
             ElementDeclaration decl = referencedElements.get(0);
             String localName = decl.getElementName().getLocalPart();
-            Schema referencedSchema = this.getSchemaForNamespace(decl.getElementName().getNamespaceURI());
-            addImportIfRequired(schema, referencedSchema, decl.getElementName().getNamespaceURI());
-
-            String prefix = this.getPrefixForNamespace(decl.getElementName().getNamespaceURI(), schema.getNamespaceResolver());
+            
+            String prefix = getPrefixForNamespace(schema, decl.getElementName().getNamespaceURI());
             if (decl.getScopeClass() == GLOBAL.class){
                 if (prefix == null || prefix.equals(EMPTY_STRING)) {
                     element.setRef(localName);      
@@ -1703,10 +1705,8 @@ public class SchemaGenerator {
             for (ElementDeclaration elementDecl : referencedElements) {
                 Element element = new Element();
                 String localName = elementDecl.getElementName().getLocalPart();
-                Schema referencedSchema = this.getSchemaForNamespace(elementDecl.getElementName().getNamespaceURI());
-                addImportIfRequired(schema, referencedSchema, elementDecl.getElementName().getNamespaceURI());
 
-                String prefix = this.getPrefixForNamespace(elementDecl.getElementName().getNamespaceURI(), schema.getNamespaceResolver());
+                String prefix = getPrefixForNamespace(schema, elementDecl.getElementName().getNamespaceURI());
                 if (elementDecl.getScopeClass() == GLOBAL.class){
                     if (prefix == null || prefix.equals(EMPTY_STRING)) {
                         element.setRef(localName);
@@ -1714,6 +1714,7 @@ public class SchemaGenerator {
                         element.setRef(prefix + COLON + localName);
                     }
                 } else {
+                    Schema referencedSchema = getSchemaForNamespace(elementDecl.getElementName().getNamespaceURI());
                     element.setType(getTypeName(property, elementDecl.getJavaType(), referencedSchema));
                     element.setName(localName);
                 }
@@ -1772,7 +1773,7 @@ public class SchemaGenerator {
             if (keySchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                 prefix = XMLConstants.SCHEMA_PREFIX;
             } else {
-                prefix = getPrefixForNamespace(keySchemaType.getNamespaceURI(), schema.getNamespaceResolver());
+                prefix = getPrefixForNamespace(schema, keySchemaType.getNamespaceURI());
             }
             if (prefix != null && !prefix.equals(EMPTY_STRING)) {
                 typeName = prefix + COLON + keySchemaType.getLocalPart();
@@ -1799,7 +1800,7 @@ public class SchemaGenerator {
             if (valueSchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                 prefix = XMLConstants.SCHEMA_PREFIX;
             } else {
-                prefix = getPrefixForNamespace(valueSchemaType.getNamespaceURI(), schema.getNamespaceResolver());
+                prefix = getPrefixForNamespace(schema, valueSchemaType.getNamespaceURI());
             }
             if (prefix != null && !prefix.equals(EMPTY_STRING)) {
                 typeName = prefix + COLON + valueSchemaType.getLocalPart();
@@ -1853,10 +1854,7 @@ public class SchemaGenerator {
             // don't overwrite global elements; may have been defined by a type
             attributeSchema.getTopLevelElements().put(referencedElement.getName(), referencedElement);
         }
-        // may need to add an import here
-        addImportIfRequired(schema, attributeSchema, referencedElementURI);
-
-        String prefix = getPrefixForNamespace(referencedElementURI, schema.getNamespaceResolver());
+        String prefix = getPrefixForNamespace(schema, referencedElementURI);
         if (prefix == null) {
             reference.setRef(referencedElement.getName());
         } else {
@@ -2096,7 +2094,7 @@ public class SchemaGenerator {
                 if (info.getClassNamespace().equals(XMLConstants.SCHEMA_URL)) {
                     prefix = XMLConstants.SCHEMA_PREFIX;
                 } else {
-                    prefix = getPrefixForNamespace(info.getClassNamespace(), schema.getNamespaceResolver());
+                    prefix = getPrefixForNamespace(schema, info.getClassNamespace());
                 }
                 if (prefix != null) {
                     typeName = prefix + COLON + typeName;

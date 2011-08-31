@@ -122,7 +122,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         
         //bug 6012173 - changed to initialize namespare uri on indicator field
         //need to be able to compare uri and local name during marshal to see if field is xsi type field
-        if(getClassIndicatorField() != null){
+        if(isRootParentDescriptor() && getClassIndicatorField() != null){
           XMLField classIndicatorXMLField;
           try {
               classIndicatorXMLField = (XMLField)getClassIndicatorField();
