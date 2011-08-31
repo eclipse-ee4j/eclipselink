@@ -358,6 +358,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testInheritanceQuery");
         tests.add("testNullBasicMap");
         tests.add("testFlushClearFind");
+        tests.add("testFlushClearFindNoCascadedLock");
         tests.add("testFlushClearQueryPk");
         tests.add("testFlushClearQueryNonPK");
         tests.add("testNestedBatchQueryHint");
@@ -10239,6 +10240,37 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
             em.remove(emp);
+            commitTransaction(em);
+        }
+    }
+    
+    // Bug 356117
+    public void testFlushClearFindNoCascadedLock(){
+        Map properties = new HashMap();
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Address add = new Address();
+        add.setCity("London");
+        em.persist(add);
+        commitTransaction(em);
+           
+        beginTransaction(em);
+        add = em.find(Address.class, add.getID());
+        add.setCity("Barcelona");
+        em.flush();
+        em.clear();
+    
+        add = em.find(Address.class, add.getID());
+        commitTransaction(em);
+        try{
+            assertTrue("Address city was returned from server cache, when it should not have been", add.getCity().equals("Barcelona"));
+        } finally {
+            clearCache();
+            em.clear();
+            beginTransaction(em);
+            add = em.find(Address.class, add.getID());
+            em.remove(add);
             commitTransaction(em);
         }
     }
