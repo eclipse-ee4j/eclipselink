@@ -213,7 +213,6 @@ public class TestArguments extends QueryTest {
             Object object = iter.next();
             verify(object instanceof MotorVehicle, "wrong instance: " + object.getClass().getName());
             MotorVehicle vehicle = (MotorVehicle) object;
-            verify(vehicle.getId() == 1, "wrong id: " + vehicle.getId());
             verify(!iter.hasNext(), "too many rows");
             query.setParameter("tr", TransmissionType.STICK_SHIFT);
             result = query.getResultList();
