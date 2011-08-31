@@ -3187,6 +3187,9 @@ public class AnnotationsProcessor {
                         }
                     }
 
+                    if(XMLConstants.EMPTY_STRING.equals(url)) {
+                        isDefaultNamespaceAllowed = false;
+                    }
                     if (XMLProcessor.DEFAULT.equals(url)) {
                         url = packageInfo.getNamespace();
                     }
