@@ -226,6 +226,7 @@ public class EmployeePopulator {
             employee.addPhoneNumber(phoneNumberExample1());
             employee.addPhoneNumber(phoneNumberExample2());
             employee.addResponsibility("Sort files");
+            employee.addExperience("The Object People");
             employee.setLocation("Calgary");
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());

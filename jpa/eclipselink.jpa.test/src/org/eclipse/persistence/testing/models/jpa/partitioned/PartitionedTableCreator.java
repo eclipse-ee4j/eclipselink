@@ -26,6 +26,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPROJECT_EMPTable());
         addTableDefinition(buildPROJECTTable());
         addTableDefinition(buildRESPONSTable());
+        addTableDefinition(buildWORKTable());
         addTableDefinition(buildDEPTTable());
         addTableDefinition(buildDEPT_EMPTable());
     }
@@ -383,7 +384,51 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
     
         return table;
     }
+
+    public TableDefinition buildWORKTable() {
+        TableDefinition table = new TableDefinition();
+        // SECTION: TABLE
+        table.setName("PART_WORK");
     
+        // SECTION: FIELD
+        FieldDefinition field = new FieldDefinition();
+        field.setName("EMP_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        //field.setForeignKeyFieldName("PART_EMPLOYEE.EMP_ID");
+        table.addField(field);
+        
+        FieldDefinition location = new FieldDefinition();
+        location.setName("LOCATION");
+        location.setTypeName("VARCHAR");
+        location.setSize(64);
+        location.setShouldAllowNull(false);
+        location.setIsPrimaryKey(true);
+        table.addField(location);
+    
+        // SECTION: FIELD
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("EXPERIENCE");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(200);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(true);
+        table.addField(field1);
+        
+        /*ForeignKeyConstraint foreignKey = new ForeignKeyConstraint();
+        foreignKey.setName("FK_PART_WORK");
+        foreignKey.setTargetTable("PART_EMPLOYEE");
+        foreignKey.addSourceField("EMP_ID");
+        foreignKey.addTargetField("EMP_ID");
+        foreignKey.addSourceField("LOCATION");
+        foreignKey.addTargetField("LOCATION");
+        table.addForeignKeyConstraint(foreignKey);*/
+    
+        return table;
+    }
+
     public TableDefinition buildDEPTTable() {
        TableDefinition table = new TableDefinition();
        table.setName("PART_DEPT");

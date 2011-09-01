@@ -12,6 +12,7 @@
     <entity name="Employee" class="Employee" access="FIELD">
         <table name="PART_EMPLOYEE"/>
         <id-class class="EmployeePK"/>
+        <pinned-partitioning name="PinnedPartitioningTEST" connection-pool="node2"/>
         <value-partitioning name="ValuePartitioningByLOCATION" union-unpartitionable-queries="true" default-connection-pool="default">
             <partition-column name="LOCATION"/>
             <partition connection-pool="node2" value="Ottawa"/>
@@ -86,6 +87,14 @@
                     <join-column name="LOCATION" referenced-column-name="LOCATION"/>
                 </collection-table>
                 <partitioned>ValuePartitioningByLOCATION</partitioned>
+            </element-collection>
+            <element-collection name="experiences">
+                <column name="EXPERIENCE"/>
+                <collection-table name="PART_WORK">
+                    <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+                    <join-column name="LOCATION" referenced-column-name="LOCATION"/>
+                </collection-table>
+                <partitioned>PinnedPartitioningTEST</partitioned>
             </element-collection>
         </attributes>
     </entity>

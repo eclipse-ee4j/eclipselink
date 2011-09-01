@@ -18,6 +18,7 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.Partitioned;
 import org.eclipse.persistence.annotations.RoundRobinPartitioning;
+import org.eclipse.persistence.annotations.PinnedPartitioning;
 import org.eclipse.persistence.annotations.ValuePartitioning;
 import org.eclipse.persistence.annotations.ValuePartition;
 
@@ -42,6 +43,7 @@ import static javax.persistence.GenerationType.*;
             @ValuePartition(connectionPool="node3", value="Toronto")
         })
 @Partitioned("ValuePartitioningByLOCATION")
+@PinnedPartitioning(name="PinnedPartitioningTEST", connectionPool="node2")
 public class Employee implements Serializable, Cloneable {
 
     @Id
@@ -92,6 +94,14 @@ public class Employee implements Serializable, Cloneable {
     @Partitioned("ValuePartitioningByLOCATION")
     private List<String> responsibilities;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "PART_WORK",
+            joinColumns={@JoinColumn(name = "EMP_ID", referencedColumnName = "EMP_ID"),@JoinColumn(name = "LOCATION", referencedColumnName = "LOCATION")})
+    @Column(name="EXPERIENCE")    
+    @Partitioned("PinnedPartitioningTEST")
+    private List<String> experiences;
+
     @OneToMany(cascade = ALL, mappedBy = "owner", orphanRemoval = true)
     private Collection<PhoneNumber> phoneNumbers;
 
@@ -104,6 +114,7 @@ public class Employee implements Serializable, Cloneable {
         this.projects = new ArrayList<Project>();
         this.managedEmployees = new Vector<Employee>();
         this.responsibilities = new Vector<String>();
+        this.experiences = new Vector<String>();
     }
 
     public Employee(String firstName, String lastName) {
@@ -146,6 +157,10 @@ public class Employee implements Serializable, Cloneable {
 
     public void addResponsibility(String responsibility) {
         getResponsibilities().add(responsibility);
+    }
+
+    public void addExperience(String experience) {
+        getExperiences().add(experience);
     }
 
     public Address getAddress() {
@@ -195,6 +210,10 @@ public class Employee implements Serializable, Cloneable {
         return responsibilities;
     }
 
+    public List<String> getExperiences() {
+        return experiences;
+    }
+
     public Integer getVersion() {
         return version;
     }
@@ -216,6 +235,10 @@ public class Employee implements Serializable, Cloneable {
 
     public void removeResponsibility(String responsibility) {
         getResponsibilities().remove(responsibility);
+    }
+
+    public void removeExperience(String experience) {
+        getExperiences().remove(experience);
     }
 
     public void setAddress(Address address) {
@@ -260,6 +283,10 @@ public class Employee implements Serializable, Cloneable {
 
     public void setResponsibilities(List<String> responsibilities) {
         this.responsibilities = responsibilities;
+    }
+
+    public void setExperiences(List<String> experiences) {
+        this.experiences = experiences;
     }
 
     public void setVersion(Integer version) {
