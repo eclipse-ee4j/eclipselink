@@ -80,9 +80,11 @@ public class XMLConstants {
     public static final String NAME = "Name";
     public static final String NCNAME = "NCName";
     public static final String QNAME = "QName";
+    public static final String QUALIFIED = "qualified";
     public static final String SHORT = "short";
     public static final String STRING = "string";
     public static final String TIME = "time";
+    public static final String UNQUALIFIED = "unqualified";
     public static final String UNSIGNED_BYTE = "unsignedByte";
     public static final String UNSIGNED_INT = "unsignedInt";
     public static final String UNSIGNED_SHORT = "unsignedShort";

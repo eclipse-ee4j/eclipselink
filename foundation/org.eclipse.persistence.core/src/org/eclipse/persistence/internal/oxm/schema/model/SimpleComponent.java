@@ -24,6 +24,7 @@ public abstract class SimpleComponent {
     private String fixed;
     private Map attributesMap;
     private Annotation annotation;
+    private String form;
 
     public SimpleComponent() {
         attributesMap = new HashMap();
@@ -88,5 +89,14 @@ public abstract class SimpleComponent {
     
     public boolean isSetDefaultValue() {
         return isSetDefaultValue;
+    }
+    
+
+    public void setForm(String form) {
+        this.form = form;
+    }
+
+    public String getForm() {
+        return form;
     }
 }
