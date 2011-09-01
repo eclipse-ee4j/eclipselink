@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.oxm.inheritance.ns.NSTestCases;
 import org.eclipse.persistence.testing.oxm.inheritance.classextractor.CarClassExtractorTestCases;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.TypeTestSuite;
 
@@ -47,6 +48,7 @@ public class InheritanceTestSuite extends TestCase {
         suite.addTestSuite(CarClassExtractorTestCases.class);
         suite.addTestSuite(InheritanceNoRootOnChildTestCases.class);
         suite.addTestSuite(RootElementTestCases.class);
+        suite.addTestSuite(NSTestCases.class);
         return suite;
     }
 }
