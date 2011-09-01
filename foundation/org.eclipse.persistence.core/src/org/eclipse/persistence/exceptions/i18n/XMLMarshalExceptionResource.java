@@ -50,7 +50,8 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25025", "The UnmappedContentHandler class {0} set on the XMLUnmarshaller must implement org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler." },
                                            { "25026", "Unable to update node [{0}], object not found in cache." },
                                            { "25027", "Unable to retrieve attachment with cid {0} because no AttachmentUnmarshaller was set."},
-                                           { "25028", "No reference descriptor found for mapping {1} due to an unknown xsi:type value: {0}."}
+                                           { "25028", "No reference descriptor found for mapping {1} due to an unknown xsi:type value: {0}."},
+                                           { "25029", "For the prefix [{0}] class [{1}] attempted to assign the namespace URI [{2}], but its parent class [{3}] has already assigned the namespace URI [{4}]."}
     };
 
     /**

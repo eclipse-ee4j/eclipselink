@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -26,6 +27,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -509,8 +511,37 @@ public class XMLDescriptor extends ClassDescriptor {
 
         preInitializeInheritancePolicy(session);
 
+        verifyTableQualifiers(session.getDatasourcePlatform());
+        initializeProperties(session);
+
+        if (hasInterfacePolicy()) {
+            preInterfaceInitialization(session);
+        }
+    }
+
+    
+    @Override
+    protected void preInitializeInheritancePolicy(AbstractSession session) throws DescriptorException {
+        super.preInitializeInheritancePolicy(session);
         // Make sure that parent is already preinitialized
         if (hasInheritance()) {
+            if(isChildDescriptor()) {
+                XMLDescriptor parentDescriptor = (XMLDescriptor) getInheritancePolicy().getParentDescriptor();
+                NamespaceResolver parentNamespaceResolver = parentDescriptor.getNamespaceResolver();
+                if(null != parentNamespaceResolver && parentNamespaceResolver != namespaceResolver) {
+                    if(null == namespaceResolver) {
+                        namespaceResolver = getNonNullNamespaceResolver();
+                    }
+                    for(Entry<String, String> entry : parentNamespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                        String namespaceURI = namespaceResolver.resolveNamespacePrefix(entry.getKey());
+                        if(null == namespaceURI) {
+                            namespaceResolver.put(entry.getKey(), entry.getValue());
+                        } else if(!namespaceURI.equals(entry.getValue())) {
+                            throw XMLMarshalException.subclassAttemptedToOverrideNamespaceDeclaration(entry.getKey(), getJavaClassName(), namespaceURI, parentDescriptor.getJavaClassName(), entry.getValue());
+                        }
+                    }
+                }
+            }
             // The default table will be set in this call once the duplicate
             // tables have been removed.
             getInheritancePolicy().preInitialize(session);
@@ -518,14 +549,6 @@ public class XMLDescriptor extends ClassDescriptor {
             // This must be done now, after validate, before init anything else.
             setInternalDefaultTable();
         }
-
-        verifyTableQualifiers(session.getDatasourcePlatform());
-        initializeProperties(session);
-
-        if (hasInterfacePolicy()) {
-            preInterfaceInitialization(session);
-        }
-
     }
 
     /**

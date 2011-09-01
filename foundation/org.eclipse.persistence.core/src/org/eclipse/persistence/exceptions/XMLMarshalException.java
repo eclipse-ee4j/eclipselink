@@ -45,6 +45,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int OBJ_NOT_FOUND_IN_CACHE = 25026; 
     public static final int NO_ATTACHMENT_UNMARSHALLER_SET = 25027;
     public static final int UNKNOWN_XSI_TYPE = 25028;
+    public static final int SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION = 25029;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -290,5 +291,13 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(UNKNOWN_XSI_TYPE);
         return exception;
     }
-    
+
+    public static XMLMarshalException subclassAttemptedToOverrideNamespaceDeclaration(String prefix, String subClassName, String subClassNamespaceURI, String parentClassName, String parentClassNamespaceURI) {
+        Object[] args = {prefix, subClassName, subClassNamespaceURI, parentClassName, parentClassNamespaceURI};
+
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION, args));
+        exception.setErrorCode(SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION);
+        return exception;
+    }
+
 }

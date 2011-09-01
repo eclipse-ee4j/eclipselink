@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parent:root xmlns:parent="urn:parent" xmlns:child="urn:child" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="parent:child">
+    <parent:parent-prop>parentValue</parent:parent-prop>
+    <child:child-prop>childValue</child:child-prop>
+</parent:root>
