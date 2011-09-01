@@ -127,7 +127,7 @@ public class SessionBroker extends DatabaseSessionImpl {
                 if (mapOfProperties != null) {
                     properties = (Map)mapOfProperties.get(sessionName);
                 }
-                clientBroker.registerSession(sessionName, ((ServerSession)serverSession).acquireClientSession(connectionPolicy, properties));
+                clientBroker.registerSession(sessionName, serverSession.acquireClientSession(connectionPolicy, properties));
             } else {
                 throw ValidationException.cannotAcquireClientSessionFromSession();
             }
@@ -284,19 +284,6 @@ public class SessionBroker extends DatabaseSessionImpl {
             throw globalException;
         }
     }
-
-    /**
-     * INTERNAL:
-     * Used at session initialization time to maintain information about caching
-     */
-    @Override
-    public void clearIsolatedAndProtectedDescriptors(){
-        Set<ClassDescriptor> descriptors = new HashSet<ClassDescriptor>();
-        for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
-            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
-            databaseSession.clearIsolatedAndProtectedDescriptors();
-        }
-    }
     
     /**
      * PUBLIC:
@@ -383,24 +370,7 @@ public class SessionBroker extends DatabaseSessionImpl {
             return ((AbstractSession)enumtr.next()).getAsOfClause();
         }
         return null;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the set of isolated and protected descriptors.  This list
-     * is used for descriptor initialization.
-     * @return
-     */
-    @Override
-    public Set<ClassDescriptor> getIsolatedAndProtectedDescriptors(){
-        Set<ClassDescriptor> descriptors = new HashSet<ClassDescriptor>();
-        for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
-            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
-            descriptors.addAll(databaseSession.getIsolatedAndProtectedDescriptors());
-        }
-        return descriptors;
-    }
-    
+    }    
     
     /**
      * INTERNAL:

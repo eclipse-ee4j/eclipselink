@@ -72,7 +72,9 @@ public class CachePolicy implements Cloneable, Serializable {
 
     /** Configures how the unit of work uses the session cache. */
     protected int unitOfWorkCacheIsolationLevel = UNDEFINED_ISOLATATION;
-    public static final int UNDEFINED_ISOLATATION = -1; // UNDEFINED_ISOLATATION will be treated as USE_SESSION_CACHE_AFTER_TRANSACTION when set at runtime
+    /* Required to resolve initialization. */
+    protected boolean wasDefaultUnitOfWorkCacheIsolationLevel;
+    public static final int UNDEFINED_ISOLATATION = -1;
     public static final int USE_SESSION_CACHE_AFTER_TRANSACTION = 0;
     public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1; // this is the default behaviour even when undefined.
     public static final int ISOLATE_CACHE_AFTER_TRANSACTION = 2;
@@ -121,12 +123,17 @@ public class CachePolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Allow the inheritance properties of the descriptor to be initialized.
-     * The descriptor's parent must first be initialized.
+     * Initialize the cache isolation setting.
+     * This may need to be called multiple times as notifyReferencingDescriptorsOfIsolation() can change the cache isolation.
      */
-    public void postInitialize(ClassDescriptor descriptor) throws DescriptorException {
+    public void postInitialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
+        if (!isSharedIsolation()) {
+            descriptor.notifyReferencingDescriptorsOfIsolation(session);
+        }
+        
         // PERF: If using isolated cache, then default uow isolation to always (avoids merge/double build).
-        if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
+        if ((getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) || this.wasDefaultUnitOfWorkCacheIsolationLevel) {
+            this.wasDefaultUnitOfWorkCacheIsolationLevel = true;
             if (isIsolated()) {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
             } else if (isProtectedIsolation()) {
@@ -134,6 +141,14 @@ public class CachePolicy implements Cloneable, Serializable {
             } else {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
             }
+        }
+
+        // Record that there is an isolated class in the project.
+        if (!isSharedIsolation()) {
+            session.getProject().setHasIsolatedClasses(true);
+        }
+        if (!shouldIsolateObjectsInUnitOfWork() && !descriptor.shouldBeReadOnly()) {
+            session.getProject().setHasNonIsolatedUOWClasses(true);
         }
     }
 

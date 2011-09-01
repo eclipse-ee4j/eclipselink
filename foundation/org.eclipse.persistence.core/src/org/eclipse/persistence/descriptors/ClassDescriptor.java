@@ -3360,14 +3360,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getHistoryPolicy() != null) {
             session.getProject().setHasGenericHistorySupport(true);
         }
-
-        // Record that there is an isolated class in the project.
-        if (!getCachePolicy().isSharedIsolation()) {
-            session.getProject().setHasIsolatedClasses(true);
-        }
-        if (!getCachePolicy().shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
-            session.getProject().setHasNonIsolatedUOWClasses(true);
-        }
         
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(POST_INITIALIZED) || isInvalid()) {
@@ -3473,33 +3465,22 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         getObjectBuilder().postInitialize(session);
         getQueryManager().postInitialize(session);
-
-        if (!isSharedIsolation()){
-            session.getIsolatedAndProtectedDescriptors().add(this);
-        }
+        getCachePolicy().postInitialize(this, session);
         
         validateAfterInitialization(session);
 
         checkDatabase(session);
     }
 
-    public void notifyReferencingDescriptorsOfIsolation() {
+    /**
+     * INTERNAL:
+     * Configure all descriptors referencing this class to be protected and update their cache settings.
+     */
+    public void notifyReferencingDescriptorsOfIsolation(AbstractSession session) {
         for (ClassDescriptor descriptor : this.referencingClasses){
             if (descriptor.getCachePolicy().getCacheIsolation() == null || descriptor.getCachePolicy().getCacheIsolation() == CacheIsolationType.SHARED) {
                 descriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.PROTECTED);
-                if (descriptor.getCachePolicy().getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION){
-                    descriptor.getCachePolicy().setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
-                }
-                for (DatabaseMapping mapping: descriptor.getMappings()){
-                    if (mapping.isForeignReferenceMapping()){
-                        ForeignReferenceMapping frMapping = ((ForeignReferenceMapping)mapping);
-                        if (frMapping.getReferenceDescriptor() == this){
-                            frMapping.setIsCacheable(false);
-                            frMapping.collectQueryParameters(descriptor.getForeignKeyValuesForCaching());
-                        }
-                    }
-                }
-                descriptor.notifyReferencingDescriptorsOfIsolation();
+                descriptor.getCachePolicy().postInitialize(descriptor, session);
             }
         }
     }

@@ -264,14 +264,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public void addSequence(Sequence sequence) {
         getProject().getLogin().getDatasourcePlatform().addSequence(sequence, this.getSequencingHome().isConnected());        
     }
-
-    /**
-     * INTERNAL:
-     * Used at session initialization time to maintain information about caching
-     */
-    public void clearIsolatedAndProtectedDescriptors(){
-        getIsolatedAndProtectedDescriptors().clear();
-    }
     
     /**
      * INTERNAL:
@@ -417,10 +409,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     descriptor.preInitialize(this);
                     descriptor.initialize(this);
                     descriptor.postInitialize(this);
-                    if (!descriptor.isSharedIsolation()){
-                        descriptor.notifyReferencingDescriptorsOfIsolation();
-                    }
-                    descriptor.getCachePolicy().postInitialize(descriptor);
                     getCommitManager().initializeCommitOrder();
                 } catch (RuntimeException exception) {
                     getIntegrityChecker().handleError(exception);
@@ -541,15 +529,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     getIntegrityChecker().handleError(exception);
                 }
             }
-            
-            Iterator<ClassDescriptor> isolatedAndProtectedIterator = getIsolatedAndProtectedDescriptors().iterator();
-            while (isolatedAndProtectedIterator.hasNext()){
-                ClassDescriptor descriptor = isolatedAndProtectedIterator.next();
-                descriptor.notifyReferencingDescriptorsOfIsolation();
-                descriptor.getCachePolicy().postInitialize(descriptor);
-            }
-            
-            clearIsolatedAndProtectedDescriptors();
 
             if (getIntegrityChecker().hasErrors()) {
                 //CR#4011
