@@ -543,6 +543,11 @@ public class SchemaModelProject extends Project {
         typeMapping.setXPath("@type");
         descriptor.addMapping(typeMapping);
 
+        XMLDirectMapping formMapping = new XMLDirectMapping();
+        formMapping.setAttributeName("form");
+        formMapping.setXPath("@form");
+        descriptor.addMapping(formMapping);
+        
         XMLDirectMapping refMapping = new XMLDirectMapping();
         refMapping.setAttributeName("ref");
         refMapping.setXPath("@ref");
@@ -746,6 +751,11 @@ public class SchemaModelProject extends Project {
         typeMapping.setXPath("@type");
         descriptor.addMapping(typeMapping);
 
+        XMLDirectMapping formMapping = new XMLDirectMapping();
+        formMapping.setAttributeName("form");
+        formMapping.setXPath("@form");
+        descriptor.addMapping(formMapping);
+        
         XMLDirectMapping useMapping = new XMLDirectMapping();
         useMapping.setAttributeName("use");
         useMapping.setXPath("@use");

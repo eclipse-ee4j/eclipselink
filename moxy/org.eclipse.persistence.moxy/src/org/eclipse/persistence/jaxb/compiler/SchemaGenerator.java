@@ -1973,7 +1973,7 @@ public class SchemaGenerator {
      * @param typeInfo the TypeInfo that owns the given Property
      */
     private void addElementToSchema(Element element, String elementURI, boolean isPositional, TypeDefParticle compositor, Schema schema) {
-        String lookupNamespace = schema.getTargetNamespace();
+    	String lookupNamespace = schema.getTargetNamespace();
         if (lookupNamespace == null) {
             lookupNamespace = EMPTY_STRING;
         }
@@ -1982,9 +1982,20 @@ public class SchemaGenerator {
         if (namespaceInfo != null) {
             isElementFormQualified = namespaceInfo.isElementFormQualified();
         }
+        boolean addRef = false;
+        boolean sameNamespace = elementURI.equals(lookupNamespace);
+        
         // handle element reference
-        if ((isElementFormQualified && !elementURI.equals(lookupNamespace))
-                    || (!isElementFormQualified && !elementURI.equals(EMPTY_STRING))){
+        if (isElementFormQualified && !sameNamespace){
+            addRef = true;
+        } else if(!isElementFormQualified  && !elementURI.equals(EMPTY_STRING)){
+        	if(sameNamespace){
+        		element.setForm(XMLConstants.QUALIFIED);	
+        	}else{
+        		addRef = true;	
+        	}        	        
+        } 
+        if(addRef){
             addElementRefToSchema(schema, compositor, element, elementURI);
         } else {
             // for positional mappings we could have multiple elements with same name; check before adding

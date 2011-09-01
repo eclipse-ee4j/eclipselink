@@ -25,7 +25,7 @@
                <xsd:list itemType="xsd:string"/>
             </xsd:simpleType>
          </xsd:element>
-         <xsd:element ref="x:peep" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="peep" type="x:employee-type"/>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int" use="required"/>
    </xsd:complexType>
@@ -34,7 +34,6 @@
          <xsd:element name="id" type="xsd:int"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="peep" type="x:employee-type"/>
    <xsd:element name="employee-data" type="x:employee-type"/>
    <xsd:simpleType name="department">
       <xsd:restriction base="xsd:int">
