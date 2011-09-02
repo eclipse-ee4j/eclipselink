@@ -25,6 +25,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlproperty.XmlPropertyT
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationMethodTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationTestCases;
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.inheritance.InheritanceDuplicateTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCases;
@@ -129,6 +130,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBElementBase64TestCases.class);
         suite.addTestSuite(JAXBElementDataHandlerTestCases.class);
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
+        suite.addTestSuite(InheritanceDuplicateTestCases.class);
         // suite.addTestSuite(JAXBInheritanceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
         suite.addTest(XmlAdapterTestSuite.suite());
