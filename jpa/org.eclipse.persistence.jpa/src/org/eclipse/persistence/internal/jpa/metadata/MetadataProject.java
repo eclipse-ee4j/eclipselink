@@ -269,7 +269,7 @@ public class MetadataProject {
     
     // Boolean to specify if we should uppercase all field names.
     // @see PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES
-    private boolean m_forceFieldNamesToUpperCase = false;
+    private boolean m_forceFieldNamesToUpperCase = true;
     
     // Contains those embeddables and entities that are VIRTUAL (do not exist)
     private Set<ClassAccessor> m_virtualClasses;
