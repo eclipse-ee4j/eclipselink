@@ -1910,10 +1910,37 @@ public class AnnotationsProcessor {
                 }
             }
         }
+
+        properties = removeSuperclassProperties(cls, properties);
+
         // default to alphabetical ordering
         // RI compliancy
         Collections.sort(properties, new PropertyComparitor());
         return properties;
+    }
+
+    private ArrayList<Property> removeSuperclassProperties(JavaClass cls, ArrayList<Property> properties) {
+        ArrayList<Property> revisedProperties = new ArrayList<Property>();
+        revisedProperties.addAll(properties);
+
+        // Check for any get() methods that are overridden in the subclass.
+        // If we find any, remove the property, because it is already defined on
+        // the superclass.
+        JavaClass superClass = cls.getSuperclass();
+        if (null != superClass) {
+            TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
+            if (superClassInfo != null && !superClassInfo.isTransient()) {
+                for (Property prop : properties) {
+                    for (Property superProp : superClassInfo.getProperties().values()) {
+                        if (superProp.getGetMethodName() != null && superProp.getGetMethodName().equals(prop.getGetMethodName())) {
+                            revisedProperties.remove(prop);
+                        }
+                    }
+                }
+            }
+        }
+
+        return revisedProperties;
     }
 
     public ArrayList getPublicMemberPropertiesForClass(JavaClass cls, TypeInfo info) {

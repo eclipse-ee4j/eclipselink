@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
+import org.eclipse.persistence.testing.jaxb.inheritance.InheritanceDuplicateTestCases;
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
@@ -94,6 +95,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBElementBase64TestCases.class);
         suite.addTestSuite(JAXBElementDataHandlerTestCases.class);
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
+        suite.addTestSuite(InheritanceDuplicateTestCases.class);
         // suite.addTestSuite(JAXBInheritanceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
         suite.addTest(XmlAdapterTestSuite.suite());
