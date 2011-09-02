@@ -126,7 +126,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * INTERNAL:
      * This is a place holder for reseting the listener on one of the subclasses
      */
-    public void clearChanges(Object object, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
+    public void clearChanges(Object object, UnitOfWorkImpl uow, ClassDescriptor descriptor, boolean forRevert) {
     }
 
     /**
@@ -249,7 +249,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
                 descriptor.getObjectBuilder().mergeChangesIntoObject(backupClone, objectChangeSet, clone, mergeManager);
             }
         }
-        clearChanges(clone, uow, descriptor);
+        clearChanges(clone, uow, descriptor, false);
     }
 
     /**
@@ -266,9 +266,9 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * This method is used to revert an object within the unit of work
      * @param cloneMapping may not be the same as what is in the uow
      */
-    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping) {
+    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping, boolean forRefresh) {
         cloneMapping.put(clone, buildBackupClone(clone, descriptor.getObjectBuilder(), uow));
-        clearChanges(clone, uow, descriptor);
+        clearChanges(clone, uow, descriptor, forRefresh);
     }
 
     /**

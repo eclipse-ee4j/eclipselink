@@ -124,10 +124,10 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
      * INTERNAL:
      * Clear the changes in the ObjectChangeListener
      */
-    public void clearChanges(Object clone, UnitOfWorkImpl uow, ClassDescriptor descriptor) {
+    public void clearChanges(Object clone, UnitOfWorkImpl uow, ClassDescriptor descriptor, boolean forRefresh) {
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)clone)._persistence_getPropertyChangeListener();
         if (listener != null) {
-            listener.clearChanges();
+            listener.clearChanges(forRefresh);
         } else {
             listener = (ObjectChangeListener)setChangeListener(clone, uow, descriptor);
         }

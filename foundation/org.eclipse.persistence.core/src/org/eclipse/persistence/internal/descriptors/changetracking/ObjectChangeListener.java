@@ -93,7 +93,7 @@ public class ObjectChangeListener implements PropertyChangeListener {
      * Clear a change flag used in this method.  This will be called in TopLink's UnitOfWork
      * commit process when a change set has been calculated for an object.
      */
-    public void clearChanges() {
+    public void clearChanges(boolean forRefresh) {
         hasChanges = false;
     }
 }

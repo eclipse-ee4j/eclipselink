@@ -517,7 +517,7 @@ public class MergeManager {
             descriptor.getObjectChangePolicy().enableEventProcessing(clone);
         }
         //update the change policies with the refresh
-        descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping());
+        descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping(), true);
         Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, this.session, true);
         if (primaryKey == null) {
             return clone;

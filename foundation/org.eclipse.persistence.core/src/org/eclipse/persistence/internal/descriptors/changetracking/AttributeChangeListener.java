@@ -158,8 +158,11 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * INTERNAL:
      * Clear the changes in this listener
      */
-    public void clearChanges() {
-        super.clearChanges();
+    public void clearChanges(boolean forRefresh) {
+        super.clearChanges(forRefresh);
+        if (forRefresh && this.objectChangeSet != null){
+            this.objectChangeSet.clear(true);
+        }
         this.objectChangeSet = null;
     }
 
