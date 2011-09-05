@@ -293,12 +293,24 @@ public class EntityManagerSetupImpl {
             return sessionName;
         }
 
+        // ELBug 355603 - Prepend the application id if present in properties. 
+        // This property will be set by the WebLogic Server if the persistence unit 
+        // is deployed as part of shared library to construct a unique session name
+        String applicationId = (String)properties.get("weblogic.application-id");
         if (isComposite(puInfo)) {
             // Composite doesn't use connection properties.
+            if (applicationId != null) {
+                return applicationId + persistenceUnitUniqueName;
+            }
+            
             return persistenceUnitUniqueName;
         } else {
             // In case no SESSION_NAME specified (or empty String) - build one
             // by concatenating persistenceUnitUniqueName and suffix build of connection properties' names and values.
+            if (applicationId != null) {
+                return applicationId + persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
+            }
+            
             return persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
         }
     }
