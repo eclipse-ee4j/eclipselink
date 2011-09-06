@@ -137,9 +137,19 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
             if (in == null) { // for directories, we may get InputStream as null
             	return false;
             }
-            JarInputStream jis = new JarInputStream(in);
-            jis.close();
-            return true; // we are successful in creating a Jar format IS
+            JarInputStream jis = null;
+            try {
+                jis = new JarInputStream(in);
+                if (jis.getNextEntry() == null){// if there is no next entry, this jar stream can't be used
+                    return false;
+                }
+                return true; // we are successful in creating a Jar format IS
+            } finally {
+                if (jis != null){
+                    jis.close();
+                }
+            }
+
         } catch (IOException ioe) {
             if (in != null) {
             	in.close();
