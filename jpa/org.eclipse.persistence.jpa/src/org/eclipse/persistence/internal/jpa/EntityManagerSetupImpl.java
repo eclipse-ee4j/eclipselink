@@ -2016,7 +2016,7 @@ public class EntityManagerSetupImpl {
         }
         String connectionString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGGING_CONNECTION, m, session);
         if (connectionString != null) {
-            log.setShouldPrintConnection(Boolean.parseBoolean(sessionString));
+            log.setShouldPrintConnection(Boolean.parseBoolean(connectionString));
         }
         String exString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGGING_EXCEPTIONS, m, session);
         if (exString != null) {
