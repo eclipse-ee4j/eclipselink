@@ -85,7 +85,7 @@ public class JarFileArchive extends ArchiveBase implements Archive {
 
     public URL getEntryAsURL(String entryPath) throws IOException {
         return jarFile.getEntry(entryPath)!= null ?
-                new URL("jar:"+rootURL+"!/"+entryPath) : null; // NOI18N
+                new URL("jar:"+new File(jarFile.getName()).toURI().toURL()+"!/"+entryPath) : null; // NOI18N
     }
 
     public void close() {     
