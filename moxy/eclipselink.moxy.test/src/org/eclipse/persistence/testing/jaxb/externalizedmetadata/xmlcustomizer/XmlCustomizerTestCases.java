@@ -70,8 +70,9 @@ public class XmlCustomizerTestCases extends JAXBWithJSONTestCases {
      * 'last-name' respectively.
      * 
      * Negative test.
+     * @throws JAXBException 
      */
-    public void testXmlCustomizerNoOverrideFail() {
+    public void testXmlCustomizerNoOverrideFail() throws JAXBException {
         Class<?>[] classes = { 
                 Employee.class
             };

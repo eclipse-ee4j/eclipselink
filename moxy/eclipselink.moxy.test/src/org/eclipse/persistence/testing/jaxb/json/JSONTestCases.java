@@ -12,8 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.Map;
 
@@ -21,17 +20,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.testing.jaxb.json.norootelement.Address;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
-
 public abstract class JSONTestCases extends OXTestCase{
-	private JAXBContext jaxbContext;	  
+	protected JAXBContext jaxbContext;	  
 	protected Marshaller jsonMarshaller;
 	protected Unmarshaller jsonUnmarshaller;
 	protected ClassLoader classLoader;
@@ -101,69 +96,69 @@ public abstract class JSONTestCases extends OXTestCase{
         jsonMarshaller = jaxbContext.createMarshaller();
         jsonUnmarshaller = jaxbContext.createUnmarshaller();
     }
-
-    
-	 public void testObjectToJSONStringWriter() throws Exception {    	
-		        
-		    StringWriter sw = new StringWriter();
-		    Object obj = ((JAXBElement)getReadControlObject()).getValue();
-		    jsonMarshaller.marshal(obj, sw);
-		    compareStrings("**testObjectToJSONStringWriter**", sw.toString());
-		       
-		 }
-		 
-		 public void testJAXBElementToJSONStringWriter() throws Exception {    	
-		    StringWriter sw = new StringWriter();
-		    jsonMarshaller.marshal(getReadControlObject(), sw);
-		    compareStrings("**testJAXBElementToJSONStringWriter**", sw.toString());
-		        
-		 }
-		 
-	     private void compareStrings(String testName, String testString) {
-		    log(testName);
-		    log("Expected (With All Whitespace Removed):");
-		    String expectedString = loadFileToString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
-		    log(expectedString);
-		    log("\nActual (With All Whitespace Removed):");
-		    testString = testString.replaceAll("[ \b\t\n\r]", "");
-		    log(testString);
-		    assertEquals(expectedString, testString);
-		 }
-		 
-	    public void testJSONToObjectFromInputSourceWithClass() throws Exception {    	
-
-	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-	        StreamSource ss = new StreamSource(inputStream);
-	        JAXBElement testObject = ((JAXBUnmarshaller)jsonUnmarshaller).unmarshal(ss, Address.class);
-	        inputStream.close();
-	        jsonToObjectTest(testObject);
-	    }
 	    
-	    public void testJSONToObjectFromReaderWithClass() throws Exception {    		        
-	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-	        InputStreamReader reader = new InputStreamReader(inputStream);
-	        StreamSource ss = new StreamSource(reader);
-	        JAXBElement testObject = ((JAXBUnmarshaller)jsonUnmarshaller).unmarshal(ss, Address.class);
-	        inputStream.close();
+    public void jsonToObjectTest(Object testObject) throws Exception {
+        log("\n**jsonToObjectTest**");
+        log("Expected:");
+        log(getReadControlObject().toString());
+        log("Actual:");
+        log(testObject.toString());
 
-	        jsonToObjectTest(testObject);
-	    }
+        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
+            JAXBElement controlObj = (JAXBElement)getReadControlObject();
+            JAXBElement testObj = (JAXBElement)testObject;
+            compareJAXBElementObjects(controlObj, testObj);
+        } else {
+            assertEquals(getReadControlObject(), testObject);
+        }
+    }
 	    
-	    
-	    public void jsonToObjectTest(Object testObject) throws Exception {
-	        log("\n**jsonToObjectTest**");
-	        log("Expected:");
-	        log(getReadControlObject().toString());
-	        log("Actual:");
-	        log(testObject.toString());
-
-	        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-	            JAXBElement controlObj = (JAXBElement)getReadControlObject();
-	            JAXBElement testObj = (JAXBElement)testObject;
-	            compareJAXBElementObjects(controlObj, testObj);
-	        } else {
-	            fail("Should have returned a JAXBElement but didn't");
-	        }
-	    }
 	   
+	protected void compareStrings(String test, String testString) {
+	    log(test);
+	    log("Expected (With All Whitespace Removed):");
+	    String expectedString = loadFileToString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
+	    log(expectedString);
+	    log("\nActual (With All Whitespace Removed):");
+	    testString = testString.replaceAll("[ \b\t\n\r]", "");
+	    log(testString);
+	    assertEquals(expectedString, testString);
+	}
+	
+	public void testObjectToJSONStringWriter() throws Exception {    	
+	    StringWriter sw = new StringWriter();
+		jsonMarshaller.marshal(getWriteControlObject(), sw);
+		compareStrings("**testObjectToJSONStringWriter**", sw.toString());		       
+    }
+	
+	 public void testJSONMarshalToOutputStream() throws Exception{
+	        ByteArrayOutputStream os = new ByteArrayOutputStream();
+	        jsonMarshaller.marshal(getWriteControlObject(), os);
+	        compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+	        os.close();
+	    }
+
+	 public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
+	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	    ByteArrayOutputStream os = new ByteArrayOutputStream();
+		jsonMarshaller.marshal(getWriteControlObject(), os);
+		compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+		os.close();
+	}
+
+	public void testJSONMarshalToStringWriter() throws Exception{
+	    jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
+		StringWriter sw = new StringWriter();
+		jsonMarshaller.marshal(getWriteControlObject(), sw);
+		compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
+	}
+
+	public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
+	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		StringWriter sw = new StringWriter();
+		jsonMarshaller.marshal(getWriteControlObject(), sw);
+		compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
+	}
+		 
+	  
 }

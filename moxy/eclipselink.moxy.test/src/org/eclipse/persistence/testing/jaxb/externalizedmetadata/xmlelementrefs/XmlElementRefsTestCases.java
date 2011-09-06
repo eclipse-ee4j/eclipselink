@@ -62,8 +62,9 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      * Tests @XmlElementRefs via eclipselink-oxm.xml.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlElementRefs() {
+    public void testXmlElementRefs() throws JAXBException {
         // load XML metadata
     	MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
           

@@ -12,32 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 
-
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.json.JSONWithUnmarshalToClassTestCases;
 
-import org.eclipse.persistence.testing.jaxb.json.JSONTestCases;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
-
-public class NoRootElementTestCases extends JSONTestCases {    
+public class NoRootElementTestCases extends JSONWithUnmarshalToClassTestCases {    
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";    
     
 	public NoRootElementTestCases(String name) throws Exception {
 	    super(name);
 	    setControlJSON(JSON_RESOURCE);
-	    setClasses(new Class[]{Address.class});	    
-
+	    setClasses(new Class[]{Address.class});
 	}
 
 	public Object getControlObject() {
@@ -50,7 +38,24 @@ public class NoRootElementTestCases extends JSONTestCases {
 		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, addr);
 		return jbe;
 	}
-    
-   
+
+	public void testJSONToObjectFromInputSourceWithClass() throws Exception{
+		testJSONToObjectFromInputSourceWithClass(Address.class);
+	    
+	}
+ 
+	public void testJSONToObjectFromReaderWithClass() throws Exception{
+		testJSONToObjectFromReaderWithClass(Address.class);
+	}
+	
+	 public void testJAXBElementObjectToJSONStringWriter() throws Exception {    	
+	        
+		StringWriter sw = new StringWriter();
+		Object obj = ((JAXBElement)getReadControlObject()).getValue();
+		jsonMarshaller.marshal(obj, sw);
+		compareStrings("**testObjectToJSONStringWriter**", sw.toString());
+    }
+
+  
 }
 

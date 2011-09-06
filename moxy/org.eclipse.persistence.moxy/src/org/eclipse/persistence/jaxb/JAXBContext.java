@@ -119,6 +119,7 @@ import org.eclipse.persistence.sessions.Session;
 public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     public static final String MEDIA_TYPE = "eclipselink.media.type"; 
+    public static final String JSON_ATTRIBUTE_PREFIX = "json.attribute.prefix";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
@@ -243,7 +244,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBMarshaller.  The JAXBMarshaller is used to convert Java objects
      * to XML.
      */
-    public JAXBMarshaller createMarshaller() {    	
+    public JAXBMarshaller createMarshaller() throws javax.xml.bind.JAXBException{    	
         return contextState.createMarshaller(this);                
     }
 
@@ -251,8 +252,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBUnmarshaller.  The JAXBUnmarshaller is used to convert XML into
      * Java objects.
      */
-    public JAXBUnmarshaller createUnmarshaller() {    	 
-        return contextState.createUnmarshaller(this);                
+    public JAXBUnmarshaller createUnmarshaller() throws javax.xml.bind.JAXBException{    	         
+		return contextState.createUnmarshaller(this);		               
     }
     /**
      * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
@@ -1139,7 +1140,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.xmlContext = xmlContext;
         }
 
-        public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) {
+        public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
             // create a JAXBIntrospector and set it on the marshaller
             JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
             if (generator != null && generator.hasMarshalCallbacks()) {
@@ -1152,20 +1153,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
             marshaller.setJaxbContext(jaxbContext);
             if(properties != null){
-                String mediaTypeValue = (String)properties.get(JAXBContext.MEDIA_TYPE);
-                if(mediaTypeValue != null){
-                    try {
-                        marshaller.setProperty(JAXBContext.MEDIA_TYPE, mediaTypeValue);
-                    } catch (PropertyException e) {					
-                	    org.eclipse.persistence.exceptions.JAXBException.errorOccurredSettingMediaType(mediaTypeValue, e);
-                    }
-                }            
+            	setPropertyOnMarshaller(JAXBContext.MEDIA_TYPE, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, marshaller);
             }
         
             return marshaller;
         }
         
-        public JAXBUnmarshaller createUnmarshaller(JAXBContext jaxbContext) {
+        public JAXBUnmarshaller createUnmarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
 
              JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
              if (generator != null && generator.hasUnmarshalCallbacks()) {
@@ -1178,17 +1173,25 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
              }
              unmarshaller.setJaxbContext(jaxbContext);
              if(properties != null){
-                 String mediaTypeValue = (String)properties.get(JAXBContext.MEDIA_TYPE);
-                 if(mediaTypeValue != null){
-                     try {
-             	    	unmarshaller.setProperty(JAXBContext.MEDIA_TYPE, mediaTypeValue);
-                     } catch (PropertyException e) {
-                     	org.eclipse.persistence.exceptions.JAXBException.errorOccurredSettingMediaType(mediaTypeValue, e);
-     	            }
-                 }            
+            	setPropertyOnUnmarshaller(JAXBContext.MEDIA_TYPE, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, unmarshaller);
              }
              return unmarshaller;
         }
+        
+        private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException{
+            String propertyValue = (String)properties.get(propertyName);
+            if(propertyValue != null){          
+                marshaller.setProperty(propertyName, propertyValue);
+            }
+         }
+        
+        private void setPropertyOnUnmarshaller(String propertyName, JAXBUnmarshaller unmarshaller) throws PropertyException{
+            String propertyValue = (String)properties.get(propertyName);
+            if(propertyValue != null){        
+                unmarshaller.setProperty(propertyName, propertyValue);
+            }
+         }
 
     }
 

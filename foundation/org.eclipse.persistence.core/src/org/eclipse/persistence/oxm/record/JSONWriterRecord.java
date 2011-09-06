@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -64,6 +65,16 @@ public class JSONWriterRecord extends MarshalRecord {
     protected boolean isProcessingCData = false;
     protected Stack<Level> levels = new Stack<Level>();
     protected static final String NULL="null";
+    protected String attributePrefix = null;
+    
+    /**
+     * INTERNAL:
+     */
+    public void setMarshaller(XMLMarshaller marshaller) {
+        super.setMarshaller(marshaller);
+        attributePrefix = (String)marshaller.getProperty("json.attribute.prefix");
+    }
+    
     /**
      * Return the Writer that the object will be marshalled to.
      * @return The marshal target.
@@ -136,7 +147,10 @@ public class JSONWriterRecord extends MarshalRecord {
 
                super.openStartElement(xPathFragment, namespaceResolver);
                 isStartElementOpen = true;
-                writer.write('"');                
+                writer.write('"');   
+                if(xPathFragment.isAttribute() && attributePrefix != null){
+                	writer.write(attributePrefix);
+                }
                 writer.write(xPathFragment.getLocalName());
                 writer.write("\" : ");
                 
@@ -222,7 +236,10 @@ public class JSONWriterRecord extends MarshalRecord {
                 }        		
             }        	
         	
-            writer.write('"');                        		
+            writer.write('"');
+            if(attributePrefix != null){
+            	writer.write(attributePrefix);	
+            }
             writer.write(localName);
             writer.write('"');				
             writer.write(':');
@@ -302,6 +319,7 @@ public class JSONWriterRecord extends MarshalRecord {
     	 if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == XMLConstants.XMLNS_URL){
     		 return;
     	 }
+    	 xPathFragment.setAttribute(true);
          openStartElement(xPathFragment, namespaceResolver);
          characters(schemaType, value, false);
       	 endElement(xPathFragment, namespaceResolver);

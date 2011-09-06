@@ -67,8 +67,9 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
      * object and comparing the documents.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlAttachmentRefUnmarshalThenMarshal() {
+    public void testXmlAttachmentRefUnmarshalThenMarshal() throws JAXBException {
       /*  String metadataFile = PATH + "eclipselink-oxm.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {

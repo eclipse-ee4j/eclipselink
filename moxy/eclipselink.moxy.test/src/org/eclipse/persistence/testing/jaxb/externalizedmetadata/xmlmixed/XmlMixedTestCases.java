@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed;
 
 import java.io.File;
+
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
@@ -63,8 +65,9 @@ public class XmlMixedTestCases extends ExternalizedMetadataTestCases {
     /**
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlMixedUnmarshal() {
+    public void testXmlMixedUnmarshal() throws JAXBException {
     	
     	Class[] classes = new Class[] { Employee.class };
     	MySchemaOutputResolver outputResolver = generateSchema(classes, CONTEXT_PATH, PATH, 1);

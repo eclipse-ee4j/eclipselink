@@ -109,7 +109,7 @@ public class XmlIdRefTestCases extends ExternalizedMetadataTestCases {
         assertTrue("Expected primary key field [primary-key/@aid] for Address, but was [" + pkFields.elementAt(0) + "]", pkFields.elementAt(0).equals("primary-key/@aid"));
     }
     
-    public void testUnmarshal() {
+    public void testUnmarshal() throws JAXBException {
         // load instance doc
         InputStream iDocStream = loader.getResourceAsStream(INSTANCE_DOC);
         if (iDocStream == null) {
@@ -133,7 +133,7 @@ public class XmlIdRefTestCases extends ExternalizedMetadataTestCases {
         }
     }
     
-    public void testMarshal() {
+    public void testMarshal() throws JAXBException {
         // setup control document
         Document testDoc = parser.newDocument();
         Document ctrlDoc = parser.newDocument();

@@ -124,8 +124,9 @@ public class XmlElementsTestCases extends ExternalizedMetadataTestCases {
      * Tests @XmlElements via eclipselink-oxm.xml.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlElements() {
+    public void testXmlElements() throws JAXBException {
         // load XML metadata
     	
     	Class[] classes = new Class[] { Foo.class};
@@ -174,8 +175,9 @@ public class XmlElementsTestCases extends ExternalizedMetadataTestCases {
      * is also used.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlElementsWithWrapper() {
+    public void testXmlElementsWithWrapper() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
         
         Class[] classes = new Class[]{Foo.class};

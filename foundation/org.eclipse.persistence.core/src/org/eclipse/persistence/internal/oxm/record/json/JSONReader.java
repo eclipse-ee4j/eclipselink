@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRInputStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRReaderStream;
@@ -36,7 +37,16 @@ public class JSONReader extends XMLReaderAdapter {
 
     private static final String TRUE = "true";
     private static final String FALSE = "false";
-
+    private Properties properties;
+    String attributePrefix = null;
+    
+    public JSONReader(Properties props){
+    	attributePrefix = props.getProperty("json.attribute.prefix");
+    	if(attributePrefix == ""){
+    		attributePrefix = null;
+    	}
+    }
+    
     private JSONAttributes attributes = new JSONAttributes(); 
 
     @Override
@@ -74,7 +84,7 @@ public class JSONReader extends XMLReaderAdapter {
     		if(children == 1){
     			parse((CommonTree) tree.getChild(0));
     		}else{
-    			contentHandler.startElement("", "", null, attributes.setTree(tree));
+    			contentHandler.startElement("", "", null, attributes.setTree(tree, attributePrefix));
     			for(int x=0, size=tree.getChildCount(); x<size; x++) {
     	           parse((CommonTree) tree.getChild(x));
     	        }
@@ -92,7 +102,11 @@ public class JSONReader extends XMLReaderAdapter {
             } else {
                 Tree stringTree = tree.getChild(0);
                 String localName = stringTree.getText().substring(1, stringTree.getText().length() - 1);
-                contentHandler.startElement("", localName, localName, attributes.setTree(valueTree));
+                if(attributePrefix != null && localName.startsWith(attributePrefix)){
+                	break;
+                }else{
+                    contentHandler.startElement("", localName, localName, attributes.setTree(valueTree, attributePrefix));
+                }
                 parse(valueTree);
                 contentHandler.endElement("", localName, localName);                
             }
@@ -123,7 +137,7 @@ public class JSONReader extends XMLReaderAdapter {
             String parentLocalName = parentStringTree.getText().substring(1, parentStringTree.getText().length() - 1);
             for(int x=0, size=tree.getChildCount(); x<size; x++) {
             	CommonTree nextChildTree = (CommonTree) tree.getChild(x);                
-            	contentHandler.startElement("", parentLocalName, parentLocalName, attributes.setTree(nextChildTree));
+            	contentHandler.startElement("", parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix));
                 parse(nextChildTree);
                 contentHandler.endElement("", parentLocalName, parentLocalName);
             }
@@ -147,10 +161,12 @@ public class JSONReader extends XMLReaderAdapter {
     private static class JSONAttributes extends IndexedAttributeList {
 
         private Tree tree;
+        private String attributePrefix;
 
-        public JSONAttributes setTree(Tree tree) {
+        public JSONAttributes setTree(Tree tree, String attributePrefix) {
             reset();
-            this.tree = tree;              
+            this.tree = tree;
+            this.attributePrefix = attributePrefix;
             return this;
         }
                
@@ -169,6 +185,14 @@ public class JSONReader extends XMLReaderAdapter {
                     for(int x=0; x<tree.getChildCount(); x++) {
                         Tree childTree = tree.getChild(x);
                         String attributeLocalName = childTree.getChild(0).getText().substring(1, childTree.getChild(0).getText().length() - 1);
+         
+                        if(attributePrefix != null){
+                        	if(attributeLocalName.startsWith(attributePrefix)){
+                        	    attributeLocalName = attributeLocalName.substring(attributePrefix.length());
+                        	}else{
+                        		break;
+                        	}
+                        }
                         Tree childValueTree = childTree.getChild(1);
                         switch(childValueTree.getType()) {
                         case JSONLexer.STRING: {

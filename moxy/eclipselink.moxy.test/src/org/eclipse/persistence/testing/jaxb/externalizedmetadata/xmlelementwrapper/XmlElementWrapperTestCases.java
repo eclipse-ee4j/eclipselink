@@ -173,8 +173,9 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
      * the wrapper is processed correctly.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlElementWrapperMarshal() {
+    public void testXmlElementWrapperMarshal() throws JAXBException {
         if (shouldGenerateSchema) {
             doTestSchemaGeneration();
         }
@@ -211,8 +212,9 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
      * the wrapper is processed correctly.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlElementWrapperUnmarshal() {
+    public void testXmlElementWrapperUnmarshal() throws JAXBException {
         if (shouldGenerateSchema) {
             doTestSchemaGeneration();
         }

@@ -554,6 +554,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	}else{
             	   throw new PropertyException(key, value);
             	}
+            } else if (JAXBContext.JSON_ATTRIBUTE_PREFIX.equals(key)) {
+            	xmlMarshaller.getProperties().put(JAXBContext.JSON_ATTRIBUTE_PREFIX, value);
             } else {
                 throw new PropertyException(key, value);
             }

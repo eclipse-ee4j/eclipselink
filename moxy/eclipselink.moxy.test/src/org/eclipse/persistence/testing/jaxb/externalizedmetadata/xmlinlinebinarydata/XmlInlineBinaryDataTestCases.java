@@ -61,8 +61,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * we should use an attachment, and not inline the binary data.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testClassLevelXmlInlineBinaryOverride() {
+    public void testClassLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class-override.xml";
         
         Class[] classes = new Class[] { MyDataClassAnnotation.class };
@@ -126,8 +127,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * using an attachment.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testPropertyLevelXmlInlineBinaryOverride() {
+    public void testPropertyLevelXmlInlineBinaryOverride() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
         
         Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
@@ -186,8 +188,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
+     * @throws JAXBException 
      */
-    public void testClassLevelXmlInlineBinaryNoOverride() {
+    public void testClassLevelXmlInlineBinaryNoOverride() throws JAXBException {
         JAXBContext jaxbContext = null;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyDataClassAnnotation.class }, null);
@@ -254,8 +257,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * not inline the binary data.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testPropertyLevelXmlInlineBinaryOverrideViaMetadata() {
+    public void testPropertyLevelXmlInlineBinaryOverrideViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-property-override.xml";
         
         Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
@@ -317,8 +321,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * class annotations, and no property level XML metadata declarations.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testClassLevelXmlInlineBinaryViaMetadata() {
+    public void testClassLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-class.xml";
         
         Class[] classes = new Class[] { MyData.class };
@@ -377,8 +382,9 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      *
      * THIS TEST CAN BE ENABLED UPON RESOLUTION OF BUG# 299948
+     * @throws JAXBException 
      */
-    public void testPropertyLevelXmlInlineBinaryViaMetadata() {
+    public void testPropertyLevelXmlInlineBinaryViaMetadata() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm.xml";
         
         Class[] classes = new Class[] { MyData.class };

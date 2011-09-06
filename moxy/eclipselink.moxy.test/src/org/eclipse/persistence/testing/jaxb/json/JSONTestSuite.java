@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json;
 
-import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixEmptyStringTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnContextTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -20,7 +22,9 @@ import junit.framework.TestSuite;
 public class JSONTestSuite extends TestSuite {
     public static Test suite() {
     	  TestSuite suite = new TestSuite("JSONTestSuite");
-          suite.addTestSuite(NoRootElementTestCases.class);
+          suite.addTestSuite(JSONAttributePrefixOnContextTestCases.class);
+          suite.addTestSuite(JSONAttributePrefixEmptyStringTestCases.class);
+          suite.addTestSuite(JSONAttributePrefixOnMarshallerTestCases.class);
           return suite;
 	}
 }

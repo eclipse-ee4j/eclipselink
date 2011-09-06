@@ -100,7 +100,10 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             }
             if(position == null || !position.isCollection() || position.isEmptyCollection()){               
                 isStartElementOpen = true;
-                writer.write('"');                                
+                writer.write('"');       
+                if(xPathFragment.isAttribute() && attributePrefix != null){
+                	writer.write(attributePrefix);
+                }
                 writer.write(xPathFragment.getLocalName());
                 writer.write("\" : ");
             

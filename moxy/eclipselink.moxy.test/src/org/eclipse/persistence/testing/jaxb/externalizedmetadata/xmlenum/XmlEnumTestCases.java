@@ -57,8 +57,9 @@ public class XmlEnumTestCases extends ExternalizedMetadataTestCases {
      * Tests @XmlEnum via eclipselink-oxm.xml.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlEnumUnmarshalThenMarshal() {
+    public void testXmlEnumUnmarshalThenMarshal() throws JAXBException {
         // load XML metadata
         String metadataFile = PATH + "eclipselink-oxm-game.xml";
         

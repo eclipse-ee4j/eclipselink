@@ -276,8 +276,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * detect that the handler was used during unmarshal.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testDomHandler() {
+    public void testDomHandler() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-dom-handler.xml";
         JAXBContext jCtx = null;
         try {
@@ -309,8 +310,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * ensure the Any is processed correctly.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlAnyElementUnmarshal() {
+    public void testXmlAnyElementUnmarshal() throws JAXBException {
         // test unmarshal
         Unmarshaller unmarshaller = getEmpContext().createUnmarshaller();
         try {
@@ -330,8 +332,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * the Any is processed correctly.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlAnyElementMarshal() {
+    public void testXmlAnyElementMarshal() throws JAXBException {
         Document testDoc = parser.newDocument();
         
         // test marshal
@@ -359,8 +362,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * known, i.e. can be eagerly marshalled to.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testLaxTrue() {
+    public void testLaxTrue() throws JAXBException {
         String metadataFile = PATH + "eclipselink-oxm-lax.xml";
         JAXBContext jCtx = null;
         try {
@@ -397,8 +401,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * unmarshalled to an Element, since lax is false.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testLaxFalse() {
+    public void testLaxFalse() throws JAXBException {
         // setup the control Employee
         Element empElt = null;
         try {
@@ -435,8 +440,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Tests AnyObjectMapping.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlAdapterMarshalSingle() {
+    public void testXmlAdapterMarshalSingle() throws JAXBException {
         Marshaller marshaller = getEmpAdapterContext().createMarshaller();
         try {
             Document testDoc = parser.newDocument();
@@ -460,8 +466,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Tests AnyObjectMapping.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlAdapterUnmarshalSingle() {
+    public void testXmlAdapterUnmarshalSingle() throws JAXBException {
         Unmarshaller unmarshaller = getEmpAdapterContext().createUnmarshaller();
         try {
             String src = PATH + "employee-default-ns.xml";
@@ -478,8 +485,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Tests AnyCollectionMapping.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlAdapterMarshalCollection() {
+    public void testXmlAdapterMarshalCollection() throws JAXBException {
         Marshaller marshaller = getEmpAdapterListContext().createMarshaller();
         try {
             Document testDoc = parser.newDocument();
@@ -504,8 +512,9 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Tests AnyCollectionMapping.
      * 
      * Positive test.
+     * @throws JAXBException 
      */
-    public void testXmlAdapterUnmarshalCollection() {
+    public void testXmlAdapterUnmarshalCollection() throws JAXBException {
         Unmarshaller unmarshaller = getEmpAdapterListContext().createUnmarshaller();
         try {
             String src = PATH + "employee-with-list.xml";
