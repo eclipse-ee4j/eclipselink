@@ -182,6 +182,11 @@ public class MetadataMirrorFactory extends MetadataFactory {
         
         return metadataClass;
     }
+
+    @Override
+    public MetadataClass getMetadataClass(String className, boolean isLazy) {
+        return getMetadataClass(className);
+    }
     
     /**
      * INTERNAL:

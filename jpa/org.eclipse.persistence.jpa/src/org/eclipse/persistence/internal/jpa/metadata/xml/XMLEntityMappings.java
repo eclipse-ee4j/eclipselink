@@ -515,7 +515,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the entities
         for (EntityAccessor entity : getEntities()) {
             // Initialize the class with the package from entity mappings.
-            MetadataClass entityClass = getMetadataClass(getPackageQualifiedClassName(entity.getClassName()));
+            MetadataClass entityClass = getMetadataClass(getPackageQualifiedClassName(entity.getClassName()), false);
             
             // Initialize the entity with its metadata descriptor and project.
             // This initialization must be done before a potential merge below.
@@ -533,7 +533,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the embeddables.
         for (EmbeddableAccessor embeddable : getEmbeddables()) {
             // Initialize the class with the package from entity mappings.
-            MetadataClass embeddableClass = getMetadataClass(getPackageQualifiedClassName(embeddable.getClassName()));
+            MetadataClass embeddableClass = getMetadataClass(getPackageQualifiedClassName(embeddable.getClassName()), false);
             
             // Initialize the embeddable with its metadata descriptor and project.
             // This initialization must be done before a potential merge below.
@@ -551,7 +551,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the mapped superclasses
         for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
             // Initialize the class with the package from entity mappings.
-            MetadataClass mappedSuperclassClass = getMetadataClass(getPackageQualifiedClassName(mappedSuperclass.getClassName()));
+            MetadataClass mappedSuperclassClass = getMetadataClass(getPackageQualifiedClassName(mappedSuperclass.getClassName()), false);
 
             // Initialize the mapped superclass with a metadata descriptor and project.
             // This initialization must be done before a potential merge below.

@@ -312,7 +312,15 @@ public abstract class ORMetadata {
      * Return the MetadataClass for the class name.
      */
     public MetadataClass getMetadataClass(String className) {
-        return getMetadataFactory().getMetadataClass(getFullyQualifiedClassName(className));
+        return getMetadataClass(className, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the MetadataClass for the class name.
+     */
+    public MetadataClass getMetadataClass(String className, boolean isLazy) {
+        return getMetadataFactory().getMetadataClass(getFullyQualifiedClassName(className), isLazy);
     }
     
     /**

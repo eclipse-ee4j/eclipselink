@@ -22,7 +22,6 @@ import java.util.Map;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -280,7 +279,7 @@ public class TransformerFactory {
         classDetails.setShouldWeaveChangeTracking(weaveChangeTracking);
         classDetails.setShouldWeaveFetchGroups(weaveFetchGroups);
         classDetails.setShouldWeaveInternal(weaveInternal);
-        MetadataMethod method = metadataClass.getMethod("clone", new ArrayList());
+        MetadataMethod method = metadataClass.getMethod("clone", new ArrayList(), false);
         classDetails.setImplementsCloneMethod(method != null);
         return classDetails;
     }

@@ -68,8 +68,8 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Build the class metadata for the class name using ASM to read the class
      * byte codes.
      */
-    protected void buildClassMetadata(String className) {
-        ClassMetadataVisitor visitor = new ClassMetadataVisitor();
+    protected void buildClassMetadata(MetadataClass metadataClass, String className, boolean isLazy) {
+        ClassMetadataVisitor visitor = new ClassMetadataVisitor(metadataClass, isLazy);
         InputStream stream = null;
         try {
             String resourceString = className.replace('.', '/') + ".class";
@@ -83,7 +83,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             // (i.e. arrays). Also, VIRTUAL classes may also not exist,
             // therefore, tag the MetadataClass as loadable false. This will be
             // used to determine if a class will be dynamically created or not.
-            MetadataClass metadataClass = new MetadataClass(this, className);
+            metadataClass = new MetadataClass(this, className, false);
             metadataClass.setIsAccessible(false);
             addMetadataClass(metadataClass);
         } finally {
@@ -101,15 +101,27 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Return the class metadata for the class name.
      */
     public MetadataClass getMetadataClass(String className) {
+        return getMetadataClass(className, false);
+    }
+
+    /**
+     * Return the class metadata for the class name.
+     */
+    public MetadataClass getMetadataClass(String className, boolean isLazy) {
         if (className == null) {
             return null;
         }
 
-        if (!metadataClassExists(className)) {
-            buildClassMetadata(className);
+        MetadataClass metaClass = m_metadataClasses.get(className);
+        if ((metaClass == null) || (!isLazy && metaClass.isLazy())) {
+            if (metaClass != null) {
+                metaClass.setIsLazy(false);
+            }
+            buildClassMetadata(metaClass, className, isLazy);
+            metaClass = m_metadataClasses.get(className);
         }
 
-        return getMetadataClasses().get(className);
+        return metaClass;
     }
 
     /**
@@ -165,22 +177,28 @@ public class MetadataAsmFactory extends MetadataFactory {
      */
     public class ClassMetadataVisitor implements ClassVisitor {
 
+        private boolean isLazy;
+        private boolean processedMemeber;
         private MetadataClass classMetadata;
 
-        ClassMetadataVisitor() {
+        ClassMetadataVisitor(MetadataClass metadataClass, boolean isLazy) {
+            this.isLazy = isLazy;
+            this.classMetadata = metadataClass;
         }
 
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
             String className = toClassName(name);
-            classMetadata = new MetadataClass(MetadataAsmFactory.this, className);
-            addMetadataClass(classMetadata);
-            classMetadata.setName(className);
-            classMetadata.setSuperclassName(toClassName(superName));
-            classMetadata.setModifiers(access);
-            classMetadata.setGenericType(processDescription(signature, true));
+            if ((this.classMetadata == null) || !this.classMetadata.getName().equals(className)) {
+                this.classMetadata = new MetadataClass(MetadataAsmFactory.this, className, isLazy);
+                addMetadataClass(this.classMetadata);
+            }
+            this.classMetadata.setName(className);
+            this.classMetadata.setSuperclassName(toClassName(superName));
+            this.classMetadata.setModifiers(access);
+            this.classMetadata.setGenericType(processDescription(signature, true));
 
             for (String interfaceName : interfaces) {
-                classMetadata.addInterface(toClassName(interfaceName));
+                this.classMetadata.addInterface(toClassName(interfaceName));
             }
         }
 
@@ -192,14 +210,16 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-            if (classMetadata.isJDK()) {
+            this.processedMemeber = true;
+            if (this.classMetadata.isLazy()) {
                 return null;
             }
             return new MetadataFieldVisitor(this.classMetadata, access, name, desc, signature, value);
         }
 
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            if (classMetadata.isJDK() || name.indexOf("init>") != -1) {
+            this.processedMemeber = true;
+            if (this.classMetadata.isLazy() || name.indexOf("init>") != -1) {
                 return null;
             }
             return new MetadataMethodVisitor(this.classMetadata, access, name, signature, desc, exceptions);
@@ -207,6 +227,10 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
+                // If an annotation is found, parse the whole class.
+                if (!this.processedMemeber && this.classMetadata.isLazy()) {
+                    this.classMetadata.setIsLazy(false);
+                }
                 return new MetadataAnnotationVisitor(this.classMetadata, desc);
             }
             return null;
