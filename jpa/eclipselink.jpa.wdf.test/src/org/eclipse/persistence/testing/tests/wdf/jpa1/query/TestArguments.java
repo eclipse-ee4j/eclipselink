@@ -205,6 +205,8 @@ public class TestArguments extends QueryTest {
             em.persist(truck);
             em.persist(car);
             getEnvironment().commitTransactionAndClear(em);
+            short mvId = motorVehicle.getId();
+            short truckId = truck.getId();
             Query query = em.createQuery("select m from MotorVehicle m where m.transmissionType = :tr");
             query.setParameter("tr", TransmissionType.AUTOMATIC);
             List result = query.getResultList();
@@ -213,6 +215,7 @@ public class TestArguments extends QueryTest {
             Object object = iter.next();
             verify(object instanceof MotorVehicle, "wrong instance: " + object.getClass().getName());
             MotorVehicle vehicle = (MotorVehicle) object;
+            verify(vehicle.getId() == mvId, "wrong id: " + vehicle.getId());
             verify(!iter.hasNext(), "too many rows");
             query.setParameter("tr", TransmissionType.STICK_SHIFT);
             result = query.getResultList();
@@ -221,7 +224,7 @@ public class TestArguments extends QueryTest {
             object = iter.next();
             verify(object instanceof MotorVehicle, "wrong instance: " + object.getClass().getName());
             vehicle = (MotorVehicle) object;
-            verify(vehicle.getId() == 2, "wrong id: " + vehicle.getId());
+            verify(vehicle.getId() == truckId, "wrong id: " + vehicle.getId());
             verify(!iter.hasNext(), "too many rows");
         } finally {
             closeEntityManager(em);
