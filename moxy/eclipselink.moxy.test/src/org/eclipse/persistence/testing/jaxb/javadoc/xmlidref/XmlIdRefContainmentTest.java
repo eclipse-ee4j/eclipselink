@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlidref;
 
 //Example 2
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlIdRefContainmentTest extends JAXBTestCases{
+public class XmlIdRefContainmentTest extends JAXBWithJSONTestCases{
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlidref/xmlidrefcontainment.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlidref/xmlidrefcontainment.json";
 	
 	public XmlIdRefContainmentTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[4];
 		classes[0] = Customer.class;
 		classes[1] = Invoice.class;

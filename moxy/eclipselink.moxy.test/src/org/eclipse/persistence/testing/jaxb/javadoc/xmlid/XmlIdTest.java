@@ -12,10 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlid;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlIdTest extends JAXBTestCases {
+public class XmlIdTest extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlid/xmlid.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlid/xmlid.json";    
  
     public XmlIdTest(String name) throws Exception {
         super(name);
@@ -23,6 +24,7 @@ public class XmlIdTest extends JAXBTestCases {
         classes[0] = Customer.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     protected Object getControlObject() {

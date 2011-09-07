@@ -1,0 +1,13 @@
+{"customer-data":{
+	"customer":{
+	        "customerID":"Alice",
+		"name":"Alice Jane",
+		"customerID":"Alice"
+		},
+	"shipping":{
+		"customer":"Alice"
+        },
+	"invoice":{
+         	"customer":"Alice"
+	}
+}}

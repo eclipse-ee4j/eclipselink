@@ -12,15 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlattribute;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class MapPropertyToXmlAttributeTest extends JAXBTestCases {
+public class MapPropertyToXmlAttributeTest extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlattribute/propertyxmlattribute.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlattribute/propertyxmlattribute.json";
 	
 	public MapPropertyToXmlAttributeTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = USPrice.class;
 		setClasses(classes);

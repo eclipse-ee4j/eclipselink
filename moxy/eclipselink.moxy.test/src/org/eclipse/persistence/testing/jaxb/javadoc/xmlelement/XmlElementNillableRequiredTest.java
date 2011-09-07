@@ -12,28 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlelement;
 
-import junit.framework.TestCase;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.math.BigDecimal;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-
-import java.io.IOException;
-
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-public class XmlElementNillableRequiredTest extends JAXBTestCases {
-
+public class XmlElementNillableRequiredTest extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelement/xmlelementnillrequired.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelement/xmlelementnillrequired.json";	
 	
 	public XmlElementNillableRequiredTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = USPrice.class;
 		setClasses(classes);

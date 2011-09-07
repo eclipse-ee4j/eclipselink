@@ -12,16 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlenumvalue;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlEnumValueConstantNameValueTest extends JAXBTestCases {
-
+public class XmlEnumValueConstantNameValueTest extends JAXBWithJSONTestCases{
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlenumvalue/xmlenumvalueconstantname.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlenumvalue/xmlenumvalueconstantname.json";
 	
 	public XmlEnumValueConstantNameValueTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[3];
 		classes[0] = Coin.class;
 		classes[1] = Card.class;

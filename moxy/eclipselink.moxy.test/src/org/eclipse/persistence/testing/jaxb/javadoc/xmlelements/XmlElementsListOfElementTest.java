@@ -12,22 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlelements;
 
-import java.util.List;
 import java.util.ArrayList;
-//import java.util.Calendar;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlElementsListOfElementTest extends JAXBTestCases {
+public class XmlElementsListOfElementTest extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelements/xmlelementslist.xml";
-    private final static int CONTROL_ID = 10;
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelements/xmlelementslist.json";
 
     public XmlElementsListOfElementTest(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);     
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = XmlElementsListOfElement.class;
-        //classes[1] = Address.class;
         setClasses(classes);
     }
 

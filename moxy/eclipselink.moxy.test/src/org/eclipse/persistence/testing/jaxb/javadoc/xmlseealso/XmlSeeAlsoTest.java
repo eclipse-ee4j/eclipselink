@@ -13,16 +13,17 @@
 
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso;
 
-import java.io.IOException;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlSeeAlsoTest extends JAXBTestCases {
+public class XmlSeeAlsoTest extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlseealso/xmlseealso.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlseealso/xmlseealso.json";
 
 	public XmlSeeAlsoTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Animal.class;
 		// classes[1] = Dog.class;

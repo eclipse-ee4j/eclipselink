@@ -12,17 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmltransient;
 
-import java.io.IOException;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-public class XmlTransientTest extends JAXBTestCases{
+public class XmlTransientTest extends JAXBWithJSONTestCases{
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltransient/xmltransient.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltransient/xmltransient.json";
 	
 	public XmlTransientTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Address.class;
 		setClasses(classes);

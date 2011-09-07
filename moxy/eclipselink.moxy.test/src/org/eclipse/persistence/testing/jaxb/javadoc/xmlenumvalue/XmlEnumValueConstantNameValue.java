@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlenumvalue;
 // Example 2
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlRootElement
      public class XmlEnumValueConstantNameValue { 
