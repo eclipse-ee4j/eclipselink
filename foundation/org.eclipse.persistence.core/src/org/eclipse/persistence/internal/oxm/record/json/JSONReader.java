@@ -41,10 +41,12 @@ public class JSONReader extends XMLReaderAdapter {
     String attributePrefix = null;
     
     public JSONReader(Properties props){
-    	attributePrefix = props.getProperty("json.attribute.prefix");
-    	if(attributePrefix == ""){
-    		attributePrefix = null;
-    	}
+		if(props != null){
+    	    attributePrefix = props.getProperty("json.attribute.prefix");
+    	    if(attributePrefix == ""){
+    		    attributePrefix = null;
+    	    }
+		}
     }
     
     private JSONAttributes attributes = new JSONAttributes(); 
