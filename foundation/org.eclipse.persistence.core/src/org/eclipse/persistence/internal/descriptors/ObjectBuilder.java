@@ -781,17 +781,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
         CacheKey cacheKey = null;
         // Keep track if we actually built/refresh the object.
         boolean cacheHit = true;
+        boolean domainWasMissing = true;
         try {
             // Check if the objects exists in the identity map.
             if (query.shouldMaintainCache() && (! query.shouldRetrieveBypassCache() || ! query.shouldStoreBypassCache())) {
                 cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
                 domainObject = cacheKey.getObject();
+                domainWasMissing = domainObject == null;
             }
 
-            if (domainObject == null || query.shouldRetrieveBypassCache()) {
+            if (domainWasMissing || query.shouldRetrieveBypassCache()) {
                 cacheHit = false;
-                boolean domainWasMissing = domainObject == null;
-                if (domainObject == null || query.shouldStoreBypassCache()){
+                if (domainObject == null || query.shouldStoreBypassCache()) {
                     if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                         domainObject = ((ReadObjectQuery)query).getSelectionObject();
                     } else {
@@ -805,7 +806,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         cacheKey.setObject(domainObject);
                     }
                     copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
-                }else if (returnCacheKey && (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache()))){
+                } else if (returnCacheKey && (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache()))) {
                     cacheKey = new CacheKey(primaryKey);
                     cacheKey.setObject(domainObject);
                 }
@@ -877,7 +878,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (!cacheHit) {
             concreteDescriptor.getObjectBuilder().instantiateEagerMappings(domainObject, session);
             if (query.shouldMaintainCache() && (cacheKey != null)) {
-                concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, databaseRow, domainObject, concreteDescriptor, session);
+                concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, databaseRow, domainObject, concreteDescriptor, session, !domainWasMissing);
             }
         }
         
@@ -3429,7 +3430,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean isTargetCloneOfOriginal) {
         // PERF: Just merge the object for new objects, as the change set is not populated.
         if ((source != null) && changeSet.isNew() && (!this.descriptor.shouldUseFullChangeSetsForNewObjects())) {
-            mergeIntoObject(target,  true, source, mergeManager, targetSession, false, isTargetCloneOfOriginal);
+            mergeIntoObject(target,  changeSet, true, source, mergeManager, targetSession, false, isTargetCloneOfOriginal);
         } else {
             List changes = changeSet.getChanges();
             int size = changes.size();
@@ -3460,7 +3461,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This merge also prevents the extra step of calculating the changes when it is not required.
      */
     public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        mergeIntoObject(target, isUnInitialized, source, mergeManager, targetSession, false, false);
+        mergeIntoObject(target, null, isUnInitialized, source, mergeManager, targetSession, false, false);
     }
     
     /**
@@ -3470,7 +3471,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * If 'cascadeOnly' is true, only foreign reference mappings are merged.
      * If 'isTargetCloneOfOriginal' then the target was create through a shallow clone of the source, so merge basics is not required.
      */
-    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
+    public void mergeIntoObject(Object target, ObjectChangeSet changeSet, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
         // cascadeOnly is introduced to optimize merge 
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
@@ -3503,6 +3504,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DescriptorEvent event = new DescriptorEvent(target);
             event.setSession(mergeManager.getSession());
             event.setOriginalObject(source);
+            event.setChangeSet(changeSet);
             event.setEventCode(DescriptorEventManager.PostMergeEvent);
             this.descriptor.getEventManager().executeEvent(event);
         }

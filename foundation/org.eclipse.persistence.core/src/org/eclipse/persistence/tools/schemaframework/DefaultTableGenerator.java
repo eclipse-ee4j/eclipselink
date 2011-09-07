@@ -268,42 +268,44 @@ public class DefaultTableGenerator {
 
         //build each field definition and figure out which table it goes
         for (DatabaseField dbField : descriptor.getFields()) {
-            boolean isPKField = false;
-
-            //first check if the field is a pk field in the default table.
-            isPKField = descriptor.getPrimaryKeyFields().contains(dbField);
-
-            //then check if the field is a pk field in the secondary table(s), this is only applied to the multiple tables case.
-            Map secondaryKeyMap = descriptor.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
-
-            if (secondaryKeyMap != null) {
-                isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
-            }
-            
-            // Now check if it is a tenant discriminat column primary key field.
-            isPKField = isPKField || dbField.isPrimaryKey();
-
-            //build or retrieve the field definition.
-            FieldDefinition fieldDef = getFieldDefFromDBField(dbField);            
-            if (isPKField) {
-                fieldDef.setIsPrimaryKey(true);
-                // Check if the generation strategy is IDENTITY
-                String sequenceName = descriptor.getSequenceNumberName();
-                DatabaseLogin login = this.project.getLogin();
-                Sequence seq = login.getSequence(sequenceName);
-                if(seq instanceof DefaultSequence) {
-                    seq = login.getDefaultSequence();
+            if (dbField.isCreatable()) {
+                boolean isPKField = false;
+    
+                //first check if the field is a pk field in the default table.
+                isPKField = descriptor.getPrimaryKeyFields().contains(dbField);
+    
+                //then check if the field is a pk field in the secondary table(s), this is only applied to the multiple tables case.
+                Map secondaryKeyMap = descriptor.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
+    
+                if (secondaryKeyMap != null) {
+                    isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
                 }
-                //The native sequence whose value should be acquired after insert is identity sequence
-                boolean isIdentity = seq instanceof NativeSequence && seq.shouldAcquireValueAfterInsert();
-                fieldDef.setIsIdentity(isIdentity);
-            }
-
-            //find the table the field belongs to, and add it to the table, only if not already added.
-            tableDefintion = this.tableMap.get(dbField.getTableName());
-
-            if ((tableDefintion != null) && !tableDefintion.getFields().contains(fieldDef)) {
-                tableDefintion.addField(fieldDef);
+                
+                // Now check if it is a tenant discriminat column primary key field.
+                isPKField = isPKField || dbField.isPrimaryKey();
+    
+                //build or retrieve the field definition.
+                FieldDefinition fieldDef = getFieldDefFromDBField(dbField);            
+                if (isPKField) {
+                    fieldDef.setIsPrimaryKey(true);
+                    // Check if the generation strategy is IDENTITY
+                    String sequenceName = descriptor.getSequenceNumberName();
+                    DatabaseLogin login = this.project.getLogin();
+                    Sequence seq = login.getSequence(sequenceName);
+                    if(seq instanceof DefaultSequence) {
+                        seq = login.getDefaultSequence();
+                    }
+                    //The native sequence whose value should be acquired after insert is identity sequence
+                    boolean isIdentity = seq instanceof NativeSequence && seq.shouldAcquireValueAfterInsert();
+                    fieldDef.setIsIdentity(isIdentity);
+                }
+    
+                //find the table the field belongs to, and add it to the table, only if not already added.
+                tableDefintion = this.tableMap.get(dbField.getTableName());
+    
+                if ((tableDefintion != null) && !tableDefintion.getFields().contains(fieldDef)) {
+                    tableDefintion.addField(fieldDef);
+                }
             }
         }
     }

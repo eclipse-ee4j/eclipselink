@@ -88,6 +88,12 @@ public class CacheKey implements Serializable, Cloneable {
     protected boolean isIsolated;
     
     /**
+     * The ID of the database transaction that last wrote the object.
+     * This is used for database change notification.
+     */
+    protected Object transactionId;
+
+    /**
      * Internal:
      * Only used by subclasses that may want to wrap the cache key.  Could be replaced
      * by switching to an interface.
@@ -489,6 +495,14 @@ public class CacheKey implements Serializable, Cloneable {
 
     public void setIsWrapper(boolean isWrapper) {
         this.isWrapper = isWrapper;
+    }
+    
+    public Object getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(Object transactionId) {
+        this.transactionId = transactionId;
     }
     
     public Object waitForObject(){

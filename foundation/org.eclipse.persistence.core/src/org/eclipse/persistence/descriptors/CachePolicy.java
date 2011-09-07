@@ -14,8 +14,9 @@ package org.eclipse.persistence.descriptors;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.io.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -92,7 +93,7 @@ public class CachePolicy implements Cloneable, Serializable {
     /** This flag controls how the MergeManager should merge an Entity when merging into the shared cache.*/
     protected boolean fullyMergeEntity;
     
-    protected List<CacheIndex> cacheIndexes;
+    protected Map<List<DatabaseField>, CacheIndex> cacheIndexes;
 
     /**
      * PUBLIC:
@@ -159,7 +160,7 @@ public class CachePolicy implements Cloneable, Serializable {
      */
     public void initialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {        
         if (hasCacheIndexes()) {
-            for (CacheIndex index : getCacheIndexes()) {
+            for (CacheIndex index : getCacheIndexes().values()) {
                 for (int count = 0; count < index.getFields().size(); count++) {
                     index.getFields().set(count, descriptor.buildField(index.getFields().get(count)));
                 }
@@ -194,13 +195,21 @@ public class CachePolicy implements Cloneable, Serializable {
     
     /**
      * PUBLIC:
+     * Return the cache index for the field names.
+     */
+    public CacheIndex getCacheIndex(List<DatabaseField> fields) {
+        return getCacheIndexes().get(fields);
+    }
+    
+    /**
+     * PUBLIC:
      * Add the cache index to the descriptor's cache settings.
      * This allows for cache hits to be obtained on non-primary key fields.
      * The primary key is always indexed in the cache.
      * Cache indexes are defined by their database column names.
      */
     public void addCacheIndex(CacheIndex index) {
-        getCacheIndexes().add(index);
+        getCacheIndexes().put(index.getFields(), index);
     }
     
     /**
@@ -229,14 +238,14 @@ public class CachePolicy implements Cloneable, Serializable {
         return (this.cacheIndexes != null) && (!this.cacheIndexes.isEmpty());
     }
     
-    public List<CacheIndex> getCacheIndexes() {
+    public Map<List<DatabaseField>, CacheIndex> getCacheIndexes() {
         if (this.cacheIndexes == null) {
-            this.cacheIndexes = new ArrayList<CacheIndex>();
+            this.cacheIndexes = new HashMap<List<DatabaseField>, CacheIndex>();
         }
         return this.cacheIndexes;
     }
 
-    public void setCacheIndexes(List<CacheIndex> cacheIndexes) {
+    public void setCacheIndexes(Map<List<DatabaseField>, CacheIndex> cacheIndexes) {
         this.cacheIndexes = cacheIndexes;
     }
     
@@ -775,19 +784,21 @@ public class CachePolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Index the object by index in the cache using its row.
      */
-    public void indexObjectInCache(CacheKey cacheKey, AbstractRecord databaseRow, Object domainObject, ClassDescriptor descriptor, AbstractSession session) {
+    public void indexObjectInCache(CacheKey cacheKey, AbstractRecord databaseRow, Object domainObject, ClassDescriptor descriptor, AbstractSession session, boolean refresh) {
         if (!hasCacheIndexes()) {
             return;
         }
-        for (CacheIndex index : this.cacheIndexes) {
-            List<DatabaseField> fields = index.getFields();
-            int size = fields.size();
-            Object[] values = new Object[size];
-            for (int count = 0; count < size; count++) {
-                values[count] = databaseRow.get(fields.get(count));
+        for (CacheIndex index : this.cacheIndexes.values()) {
+            if (!refresh || index.isUpdatable()) {
+                List<DatabaseField> fields = index.getFields();
+                int size = fields.size();
+                Object[] values = new Object[size];
+                for (int count = 0; count < size; count++) {
+                    values[count] = databaseRow.get(fields.get(count));
+                }
+                CacheId indexValues = new CacheId(values);
+                session.getIdentityMapAccessorInstance().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);
             }
-            CacheId indexValues = new CacheId(values);
-            session.getIdentityMapAccessorInstance().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);
         }
     }
 
@@ -799,28 +810,30 @@ public class CachePolicy implements Cloneable, Serializable {
         if (!hasCacheIndexes()) {
             return;
         }
-        for (CacheIndex index : this.cacheIndexes) {
-            List<DatabaseField> fields = index.getFields();
-            int size = fields.size();
-            Object[] values = new Object[size];
-            for (int count = 0; count < size; count++) {
-                values[count] = descriptor.getObjectBuilder().extractValueFromObjectForField(object, fields.get(count), session);
-            }
-            CacheId indexValues = new CacheId(values);
-            CacheKey cacheKey = null;
-            Object id = null;
-            if (changeSet != null) {
-                cacheKey = changeSet.getActiveCacheKey();
-                if (cacheKey == null) {
-                    id = changeSet.getId();
+        for (CacheIndex index : this.cacheIndexes.values()) {
+            if ((changeSet == null) || (changeSet.isNew() && index.isInsertable()) || (!changeSet.isNew() && index.isUpdatable())) {
+                List<DatabaseField> fields = index.getFields();
+                int size = fields.size();
+                Object[] values = new Object[size];
+                for (int count = 0; count < size; count++) {
+                    values[count] = descriptor.getObjectBuilder().extractValueFromObjectForField(object, fields.get(count), session);
                 }
-            } else {
-                id = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, session);
+                CacheId indexValues = new CacheId(values);
+                CacheKey cacheKey = null;
+                Object id = null;
+                if (changeSet != null) {
+                    cacheKey = changeSet.getActiveCacheKey();
+                    if (cacheKey == null) {
+                        id = changeSet.getId();
+                    }
+                } else {
+                    id = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, session);
+                }
+                if (cacheKey == null) {
+                    cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(id, descriptor.getJavaClass(), descriptor, true);
+                }
+                session.getIdentityMapAccessorInstance().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);
             }
-            if (cacheKey == null) {
-                cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(id, descriptor.getJavaClass(), descriptor, true);
-            }
-            session.getIdentityMapAccessorInstance().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);
         }
     }
 
@@ -836,7 +849,7 @@ public class CachePolicy implements Cloneable, Serializable {
         if (record == null) {
             return null;
         }
-        for (CacheIndex index : this.cacheIndexes) {
+        for (CacheIndex index : this.cacheIndexes.values()) {
             List<DatabaseField> fields = index.getFields();
             int size = fields.size();
             Object[] values = new Object[size];

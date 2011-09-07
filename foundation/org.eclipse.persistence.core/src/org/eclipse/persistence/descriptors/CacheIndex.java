@@ -26,16 +26,18 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
  * @see CachePolicy
  */
 public class CacheIndex implements Cloneable, Serializable {
+    protected boolean isUpdatable = true;
+    protected boolean isInsertable = true;
+
     protected List<DatabaseField> fields;
     /** Allows the cache size to be set. */
     protected int cacheSize;
 
     /** Allows the identity map class type to be set. */
-    protected Class cacheType;
+    protected Class cacheType = ClassConstants.WeakIdentityMap_Class;
 
     public CacheIndex() {
         this.fields = new ArrayList<DatabaseField>();
-        this.cacheType = ClassConstants.WeakIdentityMap_Class;
     }
     
     public CacheIndex(DatabaseField fields[]) {
@@ -43,7 +45,6 @@ public class CacheIndex implements Cloneable, Serializable {
         for (DatabaseField field : fields) {
             this.fields.add(field);
         }
-        this.cacheType = ClassConstants.WeakIdentityMap_Class;
     }
     
     public CacheIndex(String... fields) {
@@ -52,6 +53,36 @@ public class CacheIndex implements Cloneable, Serializable {
             this.fields.add(new DatabaseField(field));
         }
         this.cacheType = ClassConstants.WeakIdentityMap_Class;
+    }
+    
+    /**
+     * Return if the index field can be updated.
+     */
+    public boolean isUpdatable() {
+        return isUpdatable;
+    }
+    
+    /**
+     * Set if the index field can be updated.
+     * If updateable the object will be re-indexed on each update/refresh.
+     */
+    public void setIsUpdatable(boolean isUpdatable) {
+        this.isUpdatable = isUpdatable;
+    }
+    
+    /**
+     * Return if the index field can be inserted.
+     */
+    public boolean isInsertable() {
+        return isInsertable;
+    }
+    
+    /**
+     * Set if the index field can be inserted.
+     * If insertable the object will be indexed after index.
+     */
+    public void setIsInsertable(boolean isInsertable) {
+        this.isInsertable = isInsertable;
     }
 
     /**
@@ -110,5 +141,9 @@ public class CacheIndex implements Cloneable, Serializable {
 
     public void setFields(List<DatabaseField> fields) {
         this.fields = fields;
+    }
+    
+    public String toString() {
+        return "CacheIndex(" + getFields() + ")";
     }
 }

@@ -345,7 +345,12 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "failover", "Connection pool [{0}] is dead, failing over to poll [{1}]." },
                                             { "release_connection", "Connection released to connection pool [{0}]." },
                                             { "max_time_exceeded_for_acquirerequiredlocks_wait", "MAX TIME {0} seconds EXCEEDED FOR WRITELOCKMANAGER WAIT.  Waiting on Entity type: {1}with pk: {2} currently locked by thread: {3} with the following trace:\n"},
-                                            { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element" }
+                                            { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element" },
+                                            { "dcn_registering", "Registering for database change event notification." },
+                                            { "dcn_change_event", "Receieved database change event [{0}]." },
+                                            { "dcn_invalidate", "Invalidating cache key [{0}] from database change event for class [{1}]." },
+                                            { "dcn_register_table", "Registering table [{0}] for database change event notification." },
+                                            { "dcn_unregister", "Removing registering for database change event notification." },
     };
 
     /**

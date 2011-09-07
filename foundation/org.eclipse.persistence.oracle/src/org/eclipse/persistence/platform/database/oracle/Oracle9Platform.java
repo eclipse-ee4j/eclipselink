@@ -164,6 +164,8 @@ public class Oracle9Platform extends Oracle8Platform {
             return getTIMESTAMPTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
             return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
+        } else if (type == OracleTypes.ROWID) {
+            return resultSet.getString(columnNumber);
         } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);

@@ -118,7 +118,9 @@ public abstract class DistributedServersModel extends TestModel {
     public void reset() {
         if (isRegistryStarted()) {
             try {
-                java.rmi.registry.Registry registry = java.rmi.registry.LocateRegistry.getRegistry(1099);
+                if (requiresRegistry()) {
+                    java.rmi.registry.LocateRegistry.getRegistry(1099);
+                }
                 Enumeration enumtr = getDistributedServers().elements();
                 while (enumtr.hasMoreElements()) {
                     DistributedServer server = (DistributedServer)enumtr.nextElement();
@@ -141,20 +143,25 @@ public abstract class DistributedServersModel extends TestModel {
         registryStarted = newRegistryStarted;
     }
 
+    public boolean requiresRegistry() {
+        return true;
+    }
+    
     /**
      * This method sets up the distributed servers and the registry
      * Creation date: (7/21/00 10:44:03 AM)
      */
     public void setup() {
-        java.rmi.registry.Registry registry = null;
         if (!isRegistryStarted()) {
             try {
-                registry = java.rmi.registry.LocateRegistry.createRegistry(1099);
+                if (requiresRegistry()) {
+                    java.rmi.registry.LocateRegistry.createRegistry(1099);
+                }
                 setRegistryStarted(true);
             } catch (Exception exception) {
                 System.out.println(exception.toString());
                 try {
-                    registry = java.rmi.registry.LocateRegistry.getRegistry(1099);
+                    java.rmi.registry.LocateRegistry.getRegistry(1099);
                     setRegistryStarted(true);
                 } catch (Exception secondTryException) {
                     System.out.println(secondTryException.toString());
@@ -162,7 +169,9 @@ public abstract class DistributedServersModel extends TestModel {
             }
         } else {
             try {
-                registry = java.rmi.registry.LocateRegistry.getRegistry(1099);
+                if (requiresRegistry()) {
+                    java.rmi.registry.LocateRegistry.getRegistry(1099);
+                }
                 setRegistryStarted(true);
                 Enumeration servers = getDistributedServers().elements();
                 while (servers.hasMoreElements()) {
@@ -174,22 +183,20 @@ public abstract class DistributedServersModel extends TestModel {
                 System.out.println(exception.toString());
             }
         }
+        DistributedServer server = createDistributedServer(getSession());
+        getDistributedServers().removeAllElements();
+        getDistributedServers().addElement(server);
+        server.run();
+        // Must ensure the server starts up before starting to run tests.
         try {
-            DistributedServer server = createDistributedServer(getSession());
-            getDistributedServers().removeAllElements();
-            getDistributedServers().addElement(server);
-            server.run();
-            // Must ensure the server starts up before starting to run tests.
-            server.join();
             // The run actually spawns another thread to run the service on, so must laso wait for that one.
             Thread.sleep(1000);
-            startCacheSynchronization();
-            // This also spawn a thread in initialize so also wait for it to finish.
+        } catch (Exception ignore) {}
+        startCacheSynchronization();
+        // This also spawn a thread in initialize so also wait for it to finish.
+        try {
             Thread.sleep(2000);
-        } catch (Exception exception) {
-            System.out.println(exception.toString());
-
-        }
+        } catch (Exception ignore) {}
     }
 
     public abstract void startCacheSynchronization();

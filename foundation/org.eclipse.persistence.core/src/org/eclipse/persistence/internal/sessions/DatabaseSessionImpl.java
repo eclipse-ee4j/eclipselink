@@ -32,6 +32,7 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.events.DatabaseEventNotificationListener;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
@@ -61,6 +62,11 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  *    </ul>
  */
 public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.persistence.sessions.DatabaseSession {
+
+    /**
+     * Database event listener, this allows database events to invalidate the cache.
+     */
+    protected DatabaseEventNotificationListener databaseEventListener;
 
     /**
      * INTERNAL:
@@ -114,6 +120,21 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
     public boolean isLoggedIn() {
         return isLoggedIn;
+    }
+    
+    /**
+     * Return the database event listener, this allows database events to invalidate the cache.
+     */
+    public DatabaseEventNotificationListener getDatabaseEventListener() {
+        return databaseEventListener;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the database event listener, this allows database events to invalidate the cache.
+     */
+    public void setDatabaseEventListener(DatabaseEventNotificationListener databaseEventListener) {
+        this.databaseEventListener = databaseEventListener;
     }
     
     /**
@@ -540,7 +561,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
         getCommitManager().initializeCommitOrder();
     }
-    
+
     /**
      * INTERNAL:
      * Return if this session is a database session.
@@ -697,6 +718,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             getDatasourcePlatform().initialize();
             getIdentityMapAccessorInstance().getIdentityMapManager().checkIsCacheAccessPreCheckRequired();
         }
+        if (this.databaseEventListener != null) {
+            this.databaseEventListener.register(this);
+        }
     }
 
     /**
@@ -755,6 +779,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         
         if (getAccessor() == null) {
             return;
+        }
+        
+        if (this.databaseEventListener != null) {
+            this.databaseEventListener.remove(this);
         }
         
         // We're logging out so turn off change propagation.

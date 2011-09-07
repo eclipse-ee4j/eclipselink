@@ -524,7 +524,7 @@ public class MergeManager {
             
             // Merge into the clone from the original and use the clone as 
             // backup as anything different should be merged.
-            builder.mergeIntoObject(registeredObject, false, rmiClone, this, this.session, cascadeOnly, false);  
+            builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, this.session, cascadeOnly, false);  
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
         }
@@ -726,7 +726,7 @@ public class MergeManager {
                     } else {
                         cacheKey.setObject(original);
                     }
-                    objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
 
                     if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
                         // mark the instance in the cache as invalid as we may have just merged a stub if
@@ -747,7 +747,7 @@ public class MergeManager {
                     }
                     if (!objectChangeSet.isNew()) {
                         // #5 read in uow, #9 grid
-                        objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                        objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
                         if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
                             // mark the instance in the cache as invalid as we may have just merged a stub if
                             // a detached stub was referenced by a managed entity

@@ -16,14 +16,19 @@ package org.eclipse.persistence.testing.framework;
  * This superclass can be used to inherit transaction setup and reset to ensure the database is not modified.
  */
 public abstract class TransactionalTestCase extends AutoVerifyTestCase {
+    public static boolean disableTransactions = false;
 
     protected void setup() {
-        getAbstractSession().beginTransaction();
+        if (!disableTransactions) {
+            getAbstractSession().beginTransaction();
+        }
     }
 
     public void reset() {
         if (getAbstractSession().isInTransaction() || getSession().isRemoteSession()) {
-            getAbstractSession().rollbackTransaction();
+            if (!disableTransactions) {
+                getAbstractSession().rollbackTransaction();
+            }
         }
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }

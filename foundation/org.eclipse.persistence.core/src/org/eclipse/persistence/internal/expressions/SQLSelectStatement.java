@@ -1478,7 +1478,10 @@ public class SQLSelectStatement extends SQLStatement {
     public void rebuildAndAddExpressions(List expressions, List allExpressions, ExpressionBuilder primaryBuilder, Map clonedExpressions) {
         for (int index = 0; index < expressions.size(); index++) {
             Object fieldOrExpression = expressions.get(index);
-
+            // Allow for special fields that contain a functional transformation.
+            if (fieldOrExpression instanceof FunctionField) {
+                fieldOrExpression = ((FunctionField)fieldOrExpression).getExpression();
+            }
             if (fieldOrExpression instanceof Expression) {
                 Expression expression = (Expression)fieldOrExpression;
                 ExpressionBuilder originalBuilder = expression.getBuilder();

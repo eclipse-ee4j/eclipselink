@@ -61,6 +61,7 @@
     <property name="oracle_test.2.core.test.dir" value="../eclipselink.core.test"/>
     <property name="oracle_test.2.jpa.dir"       value="${oracle_test.2.base.dir}/jpa/org.eclipse.persistence.jpa"/>
     <property name="oracle_test.2.jpa.test.dir"  value="${oracle_test.2.base.dir}/jpa/eclipselink.jpa.test"/>
+    <property name="oracle_test.2.jpa.plugins.dir"       value="${oracle_test.2.base.dir}/jpa/plugins"/>
     <property name="oracle_test.plugins.dir"     value="../plugins"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
@@ -293,7 +294,7 @@
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.public.dependency.path">
-            <pathelement path="${oracle_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
+            <pathelement path="${oracle_test.2.jpa.plugins.dir}/${persistence20.jar}"/>
             <fileset dir="${oracle_test.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
         </path>
     </target>
@@ -391,6 +392,12 @@
             <zipfileset dir="resource/timestamptz" includes="*.xml" prefix="META-INF"/>
             <fileset dir="${oracle_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/timestamptz/**"/>
+        </jar>
+        <!-- Package the dcn JPA model jar. -->
+        <jar jarfile="eclipselink-dcn-model.jar">
+            <zipfileset dir="resource/dcn" includes="*.xml" prefix="META-INF"/>
+            <fileset dir="${oracle_test.classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/dcn/**"/>
         </jar>
         <!-- Package the JPA oracle specific tests jar. -->
         <jar jarfile="eclipselink-jpa-oracle-tests.jar">

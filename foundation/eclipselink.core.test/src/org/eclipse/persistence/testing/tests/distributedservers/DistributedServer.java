@@ -27,7 +27,7 @@ import org.eclipse.persistence.sessions.Session;
  * Cache Synchronisation feature.  This object places a RemoteDispatcher into
  * an RMI registry and then starts a session connection.
  */
-public abstract class DistributedServer extends Thread {
+public abstract class DistributedServer {
     /** This attribute holds this threads session */
     public DatabaseSession session;
 

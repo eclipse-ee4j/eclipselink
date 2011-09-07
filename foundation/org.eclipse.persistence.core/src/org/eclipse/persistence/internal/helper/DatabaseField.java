@@ -41,6 +41,7 @@ public class DatabaseField implements Cloneable, Serializable {
     protected boolean isNullable;
     protected boolean isUpdatable;
     protected boolean isInsertable;
+    protected boolean isCreatable;
     protected boolean isPrimaryKey;
     protected String columnDefinition;
     
@@ -146,6 +147,7 @@ public class DatabaseField implements Cloneable, Serializable {
         isNullable = true;
         isUpdatable = true;
         isInsertable = true;
+        isCreatable = true;
         isPrimaryKey = false;
         columnDefinition = "";
     }
@@ -606,6 +608,14 @@ public class DatabaseField implements Cloneable, Serializable {
      */
     public void setNameForComparisons(String name){
         this.nameForComparisons = name;
+    }
+    
+    public boolean isCreatable() {
+        return isCreatable;
+    }
+
+    public void setCreatable(boolean isCreatable) {
+        this.isCreatable = isCreatable;
     }
     
     /**

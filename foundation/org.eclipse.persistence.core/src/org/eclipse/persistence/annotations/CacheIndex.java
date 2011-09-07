@@ -41,4 +41,10 @@ public @interface CacheIndex {
      * Not required when annotated on a field/method.
      */
     String[] columnNames() default {};
+    
+    /**
+     * Specify if the indexed field is updateable.
+     * If updateable the object will be re-indexed on each update/refresh.
+     */
+    boolean updateable() default true;
 }
