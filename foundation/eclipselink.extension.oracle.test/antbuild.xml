@@ -90,6 +90,7 @@
         <echo message="    ${oracle_test.build.location}/${eclipselink.oracle.depend.test.jar}"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-struct-converter-model.jar"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-customfeatures-model.jar"/>
+        <echo message="    ${oracle_test.build.location}/eclipselink-dcn-model.jar"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-jpa-oracle-tests.jar"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${oracle_test.classes.dir}"/>
@@ -98,6 +99,7 @@
             <fileset dir="${oracle_test.build.location}" includes="${eclipselink.oracle.depend.test.jar}"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-struct-converter-model.jar"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-customfeatures-model.jar"/>
+            <fileset dir="${oracle_test.build.location}" includes="eclipselink-dcn-model.jar"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-jpa-oracle-tests.jar"/>
         </delete>
     </target>
