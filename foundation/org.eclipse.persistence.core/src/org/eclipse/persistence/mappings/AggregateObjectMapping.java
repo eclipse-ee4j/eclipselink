@@ -1387,7 +1387,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         super.postInitialize(session);
 
         if (getReferenceDescriptor() != null) {
-            getReferenceDescriptor().getCachePolicy().setCacheIsolation(descriptor.getCachePolicy().getCacheIsolation());
+            getReferenceDescriptor().getCachePolicy().setCacheIsolation(this.descriptor.getCachePolicy().getCacheIsolation());
             // Changed as part of fix for bug#4410581 aggregate mapping can not be set to use change tracking if owning descriptor does not use it.
             // Basically the policies should be the same, but we also allow deferred with attribute for CMP2 (courser grained).
             if (getDescriptor().getObjectChangePolicy().getClass().equals(DeferredChangeDetectionPolicy.class)) {

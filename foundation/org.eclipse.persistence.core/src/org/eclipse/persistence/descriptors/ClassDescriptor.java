@@ -3400,7 +3400,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if (getCachePolicy().isProtectedIsolation() &&
                     ((mapping.isForeignReferenceMapping() && !mapping.isCacheable())
                     || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings()))) {
-                ((ForeignReferenceMapping)mapping).collectQueryParameters(this.foreignKeyValuesForCaching);
+                mapping.collectQueryParameters(this.foreignKeyValuesForCaching);
             }
             if (mapping.isLockableMapping()){
                 getLockableMappings().add(mapping);
@@ -3481,6 +3481,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if (descriptor.getCachePolicy().getCacheIsolation() == null || descriptor.getCachePolicy().getCacheIsolation() == CacheIsolationType.SHARED) {
                 descriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.PROTECTED);
                 descriptor.getCachePolicy().postInitialize(descriptor, session);
+                for (DatabaseMapping mapping : descriptor.getMappings()) {
+                    if (mapping.isAggregateMapping() && (mapping.getReferenceDescriptor() != null)) {
+                        mapping.getReferenceDescriptor().getCachePolicy().setCacheIsolation(CacheIsolationType.PROTECTED);
+                    }
+                }
             }
         }
     }

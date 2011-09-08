@@ -631,7 +631,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             // converted to the correct (for the mapping) type lock value.
             Object convertedLockValue = this.lockMapping.getAttributeValue(lockValue, session); 
             if (objectChangeSet != null && (!objectChangeSet.isNew() || query.getDescriptor().shouldUseFullChangeSetsForNewObjects())) {
-                Object oldValue = oldValue = this.lockMapping.getAttributeValueFromObject(object);
+                Object oldValue = this.lockMapping.getAttributeValueFromObject(object);
                 this.lockMapping.setAttributeValueInObject(object, convertedLockValue);
                 objectChangeSet.setWriteLockValue(lockValue);
                 // Don't use ObjectChangeSet.updateChangeRecordForAttributeWithMappedObject to avoid unnecessary conversion - convertedLockValue is already converted.
