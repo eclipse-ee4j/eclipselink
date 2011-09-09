@@ -951,7 +951,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             if ((objectChangeSet == null) && (((UnitOfWorkImpl)session).getUnitOfWorkChangeSet() != null)) {
                 objectChangeSet = (ObjectChangeSet)((UnitOfWorkImpl)session).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object);
             }
-            if (objectChangeSet != null) {
+            if (objectChangeSet != null && (!objectChangeSet.isNew() || query.getDescriptor().shouldUseFullChangeSetsForNewObjects())) {
                 updateChangeSet(descriptor, objectChangeSet, sequenceNumberField, object);
                 objectChangeSet.setId(primaryKey);
             }
