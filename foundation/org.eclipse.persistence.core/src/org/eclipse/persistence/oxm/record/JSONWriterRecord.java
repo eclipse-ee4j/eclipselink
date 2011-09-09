@@ -65,14 +65,19 @@ public class JSONWriterRecord extends MarshalRecord {
     protected boolean isProcessingCData = false;
     protected Stack<Level> levels = new Stack<Level>();
     protected static final String NULL="null";
-    protected String attributePrefix = null;
+    protected String attributePrefix;
+    protected NamespaceResolver namespaces;
+    protected String namespaceSeperator = ".";
+    protected boolean namespaceAware;
     
     /**
      * INTERNAL:
      */
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
-        attributePrefix = (String)marshaller.getProperty("json.attribute.prefix");
+        attributePrefix = marshaller.getAttributePrefix();
+        namespaces = marshaller.getNamespaceResolver();
+        namespaceAware = marshaller.isNamespaceAware();
     }
     
     /**
@@ -151,6 +156,22 @@ public class JSONWriterRecord extends MarshalRecord {
                 if(xPathFragment.isAttribute() && attributePrefix != null){
                 	writer.write(attributePrefix);
                 }
+                           
+                if(namespaceAware){
+                    if(xPathFragment.getNamespaceURI() != null){
+                        String prefix = null;
+                    	if(namespaces !=null){
+                	        prefix = namespaces.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                    	} else if(namespaceResolver != null){
+                	    	prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                	    }
+                    	if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
+                    		writer.write(prefix);
+                    		writer.write(namespaceSeperator);
+                    	}
+                    }
+                }
+                
                 writer.write(xPathFragment.getLocalName());
                 writer.write("\" : ");
                 
@@ -319,6 +340,7 @@ public class JSONWriterRecord extends MarshalRecord {
     	 if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == XMLConstants.XMLNS_URL){
     		 return;
     	 }
+    	 xPathFragment.setAttribute(true);
     	 xPathFragment.setAttribute(true);
          openStartElement(xPathFragment, namespaceResolver);
          characters(schemaType, value, false);

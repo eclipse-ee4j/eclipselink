@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStre
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -38,15 +39,22 @@ public class JSONReader extends XMLReaderAdapter {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
     private Properties properties;
-    String attributePrefix = null;
+    private String attributePrefix = null;
+    private NamespaceResolver namespaces = null;
+    private boolean namespaceAware;
+    private String namespaceSeperator = ".";
     
-    public JSONReader(Properties props){
-		if(props != null){
-    	    attributePrefix = props.getProperty("json.attribute.prefix");
-    	    if(attributePrefix == ""){
-    		    attributePrefix = null;
-    	    }
-		}
+    public JSONReader(){
+    	this(null, null, false);
+    }
+    
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware){
+        this.attributePrefix = attrPrefix;
+    	if(attributePrefix == XMLConstants.EMPTY_STRING){
+    	    attributePrefix = null;    	    	
+    	}
+    	namespaces = nr;
+    	this.namespaceAware = namespaceAware;
     }
     
     private JSONAttributes attributes = new JSONAttributes(); 
@@ -86,11 +94,11 @@ public class JSONReader extends XMLReaderAdapter {
     		if(children == 1){
     			parse((CommonTree) tree.getChild(0));
     		}else{
-    			contentHandler.startElement("", "", null, attributes.setTree(tree, attributePrefix));
+    			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeperator, namespaceAware));
     			for(int x=0, size=tree.getChildCount(); x<size; x++) {
     	           parse((CommonTree) tree.getChild(x));
     	        }
-    			contentHandler.endElement("","", null);
+    			contentHandler.endElement(XMLConstants.EMPTY_STRING,XMLConstants.EMPTY_STRING, null);
     		}
     	}
     }
@@ -104,13 +112,24 @@ public class JSONReader extends XMLReaderAdapter {
             } else {
                 Tree stringTree = tree.getChild(0);
                 String localName = stringTree.getText().substring(1, stringTree.getText().length() - 1);
+                
                 if(attributePrefix != null && localName.startsWith(attributePrefix)){
                 	break;
-                }else{
-                    contentHandler.startElement("", localName, localName, attributes.setTree(valueTree, attributePrefix));
                 }
+                              
+                String uri = XMLConstants.EMPTY_STRING;
+                if(namespaceAware && namespaces != null){
+                	int nsIndex = localName.indexOf(namespaceSeperator);
+                	if(nsIndex > -1){
+                		String prefix = localName.substring(0, nsIndex);
+                		localName = localName.substring(nsIndex + namespaceSeperator.length());
+                		uri = namespaces.resolveNamespacePrefix(prefix);                		
+                	}
+                }
+             
+                contentHandler.startElement(uri, localName, localName, attributes.setTree(valueTree, attributePrefix, namespaces, namespaceSeperator, namespaceAware));
                 parse(valueTree);
-                contentHandler.endElement("", localName, localName);                
+                contentHandler.endElement(uri, localName, localName);                
             }
             break;
         }
@@ -137,11 +156,22 @@ public class JSONReader extends XMLReaderAdapter {
         case JSONLexer.ARRAY: {
             Tree parentStringTree = tree.getParent().getChild(0);
             String parentLocalName = parentStringTree.getText().substring(1, parentStringTree.getText().length() - 1);
+            
+            String uri = XMLConstants.EMPTY_STRING;
+            if(namespaceAware && namespaces != null){
+            	int nsIndex = parentLocalName.indexOf(namespaceSeperator);
+            	if(nsIndex > -1){
+            		String prefix = parentLocalName.substring(0, nsIndex);
+            		parentLocalName = parentLocalName.substring(nsIndex + namespaceSeperator.length());
+            		uri = namespaces.resolveNamespacePrefix(prefix);                		
+            	}
+            }
+            
             for(int x=0, size=tree.getChildCount(); x<size; x++) {
             	CommonTree nextChildTree = (CommonTree) tree.getChild(x);                
-            	contentHandler.startElement("", parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix));
+            	contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeperator, namespaceAware));
                 parse(nextChildTree);
-                contentHandler.endElement("", parentLocalName, parentLocalName);
+                contentHandler.endElement(uri, parentLocalName, parentLocalName);
             }
            
             break;
@@ -164,11 +194,17 @@ public class JSONReader extends XMLReaderAdapter {
 
         private Tree tree;
         private String attributePrefix;
+        private String namespaceSeperator;
+        private NamespaceResolver namespaces;
+        private boolean namespaceAware;
 
-        public JSONAttributes setTree(Tree tree, String attributePrefix) {
+        public JSONAttributes setTree(Tree tree, String attributePrefix, NamespaceResolver nr, String namespaceSeperator, boolean namespaceAware) {
             reset();
             this.tree = tree;
             this.attributePrefix = attributePrefix;
+            this.namespaces = nr;
+            this.namespaceSeperator = namespaceSeperator;
+            this.namespaceAware = namespaceAware;
             return this;
         }
                
@@ -195,30 +231,42 @@ public class JSONReader extends XMLReaderAdapter {
                         		break;
                         	}
                         }
+                        
+                        String uri = XMLConstants.EMPTY_STRING;
+                        if(namespaceAware && namespaces != null){
+                        	int nsIndex = attributeLocalName.indexOf(namespaceSeperator);
+                        	if(nsIndex > -1){
+                        		String prefix = attributeLocalName.substring(0, nsIndex);
+                        		attributeLocalName = attributeLocalName.substring(nsIndex + namespaceSeperator.length());
+                        		uri = namespaces.resolveNamespacePrefix(prefix);                        
+                        	}
+                        }
+                        
                         Tree childValueTree = childTree.getChild(1);
                         switch(childValueTree.getType()) {
                         case JSONLexer.STRING: {
                             String stringValue = childValueTree.getChild(0).getText();
-                            attributes.add(new Attribute("", attributeLocalName, attributeLocalName, stringValue.substring(1, stringValue.length() - 1)));
+                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue.substring(1, stringValue.length() - 1)));
                             break;
                         }
                         case JSONLexer.NUMBER: {
-                            attributes.add(new Attribute("", attributeLocalName, attributeLocalName, childValueTree.getChild(0).getText()));
+                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, childValueTree.getChild(0).getText()));
                             break;
                         }
                         case JSONLexer.TRUE: {
-                            attributes.add(new Attribute("", attributeLocalName, attributeLocalName, TRUE));
+                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, TRUE));
                             break;
                         }
                         case JSONLexer.FALSE: {
-                            attributes.add(new Attribute("", attributeLocalName, attributeLocalName, FALSE));
+                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, FALSE));
                             break;
                         }
                         case JSONLexer.NULL: {
-                            attributes.add(new Attribute("", attributeLocalName, attributeLocalName, ""));
+                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, XMLConstants.EMPTY_STRING));
                             break;
                         }
-                        }
+                     }
+  
                     }
                     
                 } else {

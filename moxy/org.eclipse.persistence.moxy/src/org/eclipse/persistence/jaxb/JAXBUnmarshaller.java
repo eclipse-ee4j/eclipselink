@@ -47,6 +47,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -91,6 +92,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private XMLInputFactory xmlInputFactory;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
+    private NamespaceResolver namespaceResolver;
+    private String attributePrefix;
 
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
@@ -188,7 +191,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         try {
             Object value = null;
             if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
-                value = xmlUnmarshaller.unmarshal(new JSONReader(xmlUnmarshaller.getProperties()), inputSource);
+                value = xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, xmlUnmarshaller.isNamespaceAware()), inputSource);
             } else {
                 value = xmlUnmarshaller.unmarshal(inputSource);
             }
@@ -203,7 +206,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(null == reader) {
                 throw XMLMarshalException.nullArgumentException();
             }
-            return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(new JSONReader(xmlUnmarshaller.getProperties()), new InputSource(reader)));
+            return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix,namespaceResolver, xmlUnmarshaller.isNamespaceAware()), new InputSource(reader)));
         }
         try {
             if(null == xmlInputFactory ||
@@ -337,11 +340,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
         		if (source instanceof StreamSource) {
                     StreamSource streamSource = (StreamSource) source;
                     if (null != streamSource.getReader()) {
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(xmlUnmarshaller.getProperties()), new InputSource(streamSource.getReader()), classToUnmarshalTo), javaClass);
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, xmlUnmarshaller.isNamespaceAware()), new InputSource(streamSource.getReader()), classToUnmarshalTo), javaClass);
                     } else if (null != streamSource.getInputStream()) {                        
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(xmlUnmarshaller.getProperties()), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), javaClass);
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, xmlUnmarshaller.isNamespaceAware()), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), javaClass);
                     } else {                    	                    	
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(xmlUnmarshaller.getProperties()), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), javaClass);                    	
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, xmlUnmarshaller.isNamespaceAware()), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), javaClass);                    	
                     }
                 } 
         	}
@@ -714,11 +717,17 @@ public class JAXBUnmarshaller implements Unmarshaller {
         	MediaType mType = MediaType.getMediaTypeByName((String)value);
         	if(mType != null){
         		xmlUnmarshaller.setMediaType(mType);
+        		xmlUnmarshaller.setNamespaceAware(mType == MediaType.APPLICATION_XML || namespaceResolver !=null);
         	}else{
         	   throw new PropertyException(key, value);
         	}       
-        }else if(key.equals(JAXBContext.JSON_ATTRIBUTE_PREFIX)){ 
-            xmlUnmarshaller.getProperties().put(JAXBContext.JSON_ATTRIBUTE_PREFIX, value);        	
+        } else if(key.equals(JAXBContext.ATTRIBUTE_PREFIX)){ 
+        	attributePrefix = (String)value;
+        } else if (JAXBContext.NAMESPACES.equals(key)) {
+        	Map<String, String> namespaces = (Map<String, String>)value;
+        	NamespaceResolver nr = new NamespaceResolver();
+        	nr.getPrefixesToNamespaces().putAll(namespaces);            
+        	setNamespaceResolver(nr);
         } else {
             throw new PropertyException(key, value);
         }
@@ -896,5 +905,37 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return new UnmarshalException(xmlMarshalException);
         }
     }   
+
+    /**
+	 * INTERNAL:
+     * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
+     * Ignored unmarshaling XML.   
+	 * @since 2.4
+     */
+	public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
+		this.namespaceResolver = namespaceResolver;
+		if(namespaceResolver != null){
+			xmlUnmarshaller.setNamespaceAware(true);
+		}
+	}
+
+	 /**
+     * Value that will be used to prefix attributes.  
+     * Ignored unmarshaling XML.   
+	 * @since 2.4
+     * @return
+     */
+    public String getAttributePrefix() {
+		return attributePrefix;
+	}
+
+    /**
+     * Value that will be used to prefix attributes.  
+     * Ignored unmarshaling XML.   
+	 * @since 2.4
+     */
+	public void setAttributePrefix(String attributePrefix) {
+		this.attributePrefix = attributePrefix;
+	}
 
 }

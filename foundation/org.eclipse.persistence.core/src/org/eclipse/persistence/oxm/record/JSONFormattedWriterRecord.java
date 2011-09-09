@@ -104,6 +104,23 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 if(xPathFragment.isAttribute() && attributePrefix != null){
                 	writer.write(attributePrefix);
                 }
+                
+                
+                if(namespaceAware){
+                	if(xPathFragment.getNamespaceURI() != null){
+                        String prefix = null;
+                    	if(namespaces !=null){
+                	        prefix = namespaces.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                    	} else if(namespaceResolver != null){
+                	    	prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                	    }
+                    	if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
+                    		writer.write(prefix);
+                    		writer.write(namespaceSeperator);
+                    	}
+                    }
+                }
+                
                 writer.write(xPathFragment.getLocalName());
                 writer.write("\" : ");
             

@@ -54,7 +54,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             InputSource inputSource = new InputSource(inputStream);
             xmlUnmarshaller.setMediaType(MediaType.APPLICATION_JSON);
             
-            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(null), inputSource);
+            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(), inputSource);
             
     	    inputStream.close();
     	    assertEquals(getReadControlObject(), testObject);

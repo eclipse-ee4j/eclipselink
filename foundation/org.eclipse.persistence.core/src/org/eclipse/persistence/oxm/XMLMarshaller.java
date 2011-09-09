@@ -101,6 +101,9 @@ public class XMLMarshaller implements Cloneable {
     private Properties marshalProperties;
     private Schema schema;
     private MediaType mediaType = MediaType.APPLICATION_XML;
+	private String attributePrefix;
+    private NamespaceResolver namespaceResolver;
+    private boolean namespaceAware;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -165,6 +168,7 @@ public class XMLMarshaller implements Cloneable {
         setEncoding(XMLConstants.DEFAULT_XML_ENCODING);
         setFormattedOutput(true);
         marshalProperties = new Properties();
+        namespaceAware = (mediaType == MediaType.APPLICATION_XML);
     }
 
     /**
@@ -232,7 +236,8 @@ public class XMLMarshaller implements Cloneable {
      * @param mediaType
      */
     public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;        
+        this.mediaType = mediaType;
+        namespaceAware = (mediaType == MediaType.APPLICATION_XML || namespaceResolver != null);       
     }    
     
     /**
@@ -1465,5 +1470,53 @@ public class XMLMarshaller implements Cloneable {
         clone.setSchemaLocation(schemaLocation);
         return clone;
     }
+    /**
+     * Value that will be used to prefix attributes.  
+     * Ignored marshalling XML.   
+     * @return
+	 * @since 2.4
+     */
+    public String getAttributePrefix() {
+		return attributePrefix;
+	}
+    
+    /**
+     * Value that will be used to prefix attributes.  
+     * Ignored marshalling XML.
+	 * @since 2.4	 
+     */
+	public void setAttributePrefix(String attributePrefix) {
+		this.attributePrefix = attributePrefix;
+	}
+
+	/**
+     * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
+     * Ignored marshalling XML.   
+	 * @since 2.4
+     * @return
+     */
+	public NamespaceResolver getNamespaceResolver() {
+		return namespaceResolver;
+	}
+
+	/**
+     * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
+     * Ignored marshalling XML.  
+	 * @since 2.4	 
+     */
+	public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
+		this.namespaceResolver = namespaceResolver;
+		if(namespaceResolver != null){
+			namespaceAware = true;
+		}
+	}
+	
+	/**
+	 * INTERNAL
+	 * @since 2.4
+	 */
+	public boolean isNamespaceAware() {
+		return namespaceAware;
+	}
 
 }

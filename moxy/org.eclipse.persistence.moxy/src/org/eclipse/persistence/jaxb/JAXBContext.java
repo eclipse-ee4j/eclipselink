@@ -117,9 +117,21 @@ import org.eclipse.persistence.sessions.Session;
  */
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
-
-    public static final String MEDIA_TYPE = "eclipselink.media.type"; 
-    public static final String JSON_ATTRIBUTE_PREFIX = "json.attribute.prefix";
+	
+    /** The Constant MEDIA_TYPE. This can be used as the property name with 
+     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
+     * the properties supplied during JAXBContext creation*/
+    public static final String MEDIA_TYPE = "eclipselink.media.type";
+    
+    /** The Constant ATTRIBUTE_PREFIX. This can be used as the property name with 
+     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
+     * the properties supplied during JAXBContext creation*/ 
+    public static final String ATTRIBUTE_PREFIX = "attribute.prefix";    
+    
+    /** The Constant NAMESPACES. This can be used as the property name with 
+     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
+     * the properties supplied during JAXBContext creation*/
+    public static final String NAMESPACES = "namespaces";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
@@ -1154,7 +1166,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             marshaller.setJaxbContext(jaxbContext);
             if(properties != null){
             	setPropertyOnMarshaller(JAXBContext.MEDIA_TYPE, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.ATTRIBUTE_PREFIX, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.NAMESPACES, marshaller);
             }
         
             return marshaller;
@@ -1174,25 +1187,25 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
              unmarshaller.setJaxbContext(jaxbContext);
              if(properties != null){
             	setPropertyOnUnmarshaller(JAXBContext.MEDIA_TYPE, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.ATTRIBUTE_PREFIX, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.NAMESPACES, unmarshaller);
              }
              return unmarshaller;
         }
-        
         private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException{
-            String propertyValue = (String)properties.get(propertyName);
+            Object propertyValue = properties.get(propertyName);
             if(propertyValue != null){          
                 marshaller.setProperty(propertyName, propertyValue);
             }
          }
         
         private void setPropertyOnUnmarshaller(String propertyName, JAXBUnmarshaller unmarshaller) throws PropertyException{
-            String propertyValue = (String)properties.get(propertyName);
+        	Object propertyValue = properties.get(propertyName);
             if(propertyValue != null){        
                 unmarshaller.setProperty(propertyName, propertyValue);
             }
          }
-
+     
     }
 
 }

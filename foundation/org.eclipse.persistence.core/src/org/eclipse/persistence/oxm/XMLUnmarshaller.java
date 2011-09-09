@@ -103,6 +103,7 @@ public class XMLUnmarshaller implements Cloneable {
     private Class unmappedContentHandlerClass;
     private StrBuffer stringBuffer;
     private MediaType mediaType = MediaType.APPLICATION_XML;
+    private boolean namespaceAware;
 
     static {
         try {
@@ -136,6 +137,7 @@ public class XMLUnmarshaller implements Cloneable {
         setXMLContext(xmlContext);
         stringBuffer = new StrBuffer();
         initialize(parserFeatures);
+        namespaceAware = (mediaType == MediaType.APPLICATION_XML);
     }
 
     private void initialize(Map<String, Boolean> parserFeatures) {
@@ -177,13 +179,22 @@ public class XMLUnmarshaller implements Cloneable {
     }
     
     /**
+     * INTERNAL:
      * Namespaces will be ignored during unmarshal operations when this method returns false.
      * @return if this unmarshaller should process namespace information
      */
     public boolean isNamespaceAware(){
-    	return mediaType == MediaType.APPLICATION_XML;    	
+    	return namespaceAware;
     }
     
+   /**
+     * INTERNAL:
+     * Namespaces will be ignored during unmarshal operations when this is set to false;
+     */
+    public void setNamespaceAware(boolean isNamespaceAware){
+    	namespaceAware = isNamespaceAware;
+    }
+
     /**
      * Set the MediaType for this xmlUnmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
@@ -682,5 +693,5 @@ public class XMLUnmarshaller implements Cloneable {
         clone.setValidationMode(getValidationMode());
         return clone;
     }
-
+  
 }

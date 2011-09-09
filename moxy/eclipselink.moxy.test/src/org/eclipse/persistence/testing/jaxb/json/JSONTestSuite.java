@@ -15,6 +15,11 @@ package org.eclipse.persistence.testing.jaxb.json;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixEmptyStringTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
+import org.eclipse.persistence.testing.jaxb.json.namespaces.DifferentNamespacesTestCases;
+import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnContextTestCases;
+import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnUnmarshalOnlyTestCases;
+import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementNSTestCases;
+import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -25,6 +30,11 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(JSONAttributePrefixOnContextTestCases.class);
           suite.addTestSuite(JSONAttributePrefixEmptyStringTestCases.class);
           suite.addTestSuite(JSONAttributePrefixOnMarshallerTestCases.class);
+          suite.addTestSuite(DifferentNamespacesTestCases.class);
+          suite.addTestSuite(NamespacesOnContextTestCases.class);
+          suite.addTestSuite(NamespacesOnUnmarshalOnlyTestCases.class);
+          suite.addTestSuite(NoRootElementTestCases.class);
+          suite.addTestSuite(NoRootElementNSTestCases.class);
           return suite;
 	}
 }

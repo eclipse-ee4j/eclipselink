@@ -67,7 +67,7 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
         jsonToObjectTest(testObject);
     }
 
-	private URL getJSONURL() {	    	
+	protected URL getJSONURL() {	    	
 	    return Thread.currentThread().getContextClassLoader().getResource(controlJSONLocation);
 	}
 }

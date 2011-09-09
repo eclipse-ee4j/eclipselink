@@ -12,10 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 
-import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  *  INTERNAL:

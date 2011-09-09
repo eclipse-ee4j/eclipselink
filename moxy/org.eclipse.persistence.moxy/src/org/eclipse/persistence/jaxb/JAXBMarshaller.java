@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -554,8 +555,15 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	}else{
             	   throw new PropertyException(key, value);
             	}
-            } else if (JAXBContext.JSON_ATTRIBUTE_PREFIX.equals(key)) {
-            	xmlMarshaller.getProperties().put(JAXBContext.JSON_ATTRIBUTE_PREFIX, value);
+            } else if (JAXBContext.ATTRIBUTE_PREFIX.equals(key)) {            	
+            	xmlMarshaller.setAttributePrefix((String)value);            	
+            } else if (JAXBContext.NAMESPACES.equals(key)) {    
+            	if(value != null){
+            	    Map<String, String> namespaces = (Map<String, String>)value;
+            	    NamespaceResolver nr = new NamespaceResolver();
+            	    nr.getPrefixesToNamespaces().putAll(namespaces);            
+                    xmlMarshaller.setNamespaceResolver(nr);
+            	}
             } else {
                 throw new PropertyException(key, value);
             }

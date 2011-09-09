@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,28 +8,25 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith - August 2011 - 2.4 - Initial implementation
+ *     Denise Smith - 2.4
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.json.norootelement;
+package org.eclipse.persistence.testing.jaxb.json.namespaces;
 
-
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"street", "city"})
 public class Address {
-	
-	private int id;
-	@XmlElement(namespace="namespace1")
+	@XmlSchemaType(name="integer")
+    private String id;
     private String street;
-	@XmlElement(namespace="namespace1")
     private String city;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
     
