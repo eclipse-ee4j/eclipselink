@@ -19,6 +19,8 @@
  *       - 343632: Can't map a compound constraint because of exception: 
  *                 The reference column name [y] mapped on the element [field x] 
  *                 does not correspond to a valid field on the mapping reference
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -430,6 +432,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int MISSING_XML_FILE_FOR_METADATA_SOURCE = 7341;
 
     public static final int INVALID_BOOLEAN_VALUE_FOR_SETTING_ALLOW_NATIVESQL_QUERIES = 7342;
+    
+    public static final int VPD_MULTIPLE_IDENTIFIERS_SPECIFIED = 7343;
+    public static final int VPD_NOT_SUPPORTED = 7344;
     
     /**
      * INTERNAL:
@@ -1847,6 +1852,20 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { name, tableName, location };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_UNIQUE_CONSTRAINTS_WITH_SAME_NAME_SPECIFIED, args));
         validationException.setErrorCode(MULTIPLE_UNIQUE_CONSTRAINTS_WITH_SAME_NAME_SPECIFIED);
+        return validationException;
+    }
+    
+    public static ValidationException multipleVPDIdentifiersSpecified(String identifier1, String entityClassName1, String identifier2, String entityClassName2) {
+        Object[] args = { identifier1, entityClassName1, identifier2, entityClassName2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, VPD_MULTIPLE_IDENTIFIERS_SPECIFIED, args));
+        validationException.setErrorCode(VPD_MULTIPLE_IDENTIFIERS_SPECIFIED);
+        return validationException;
+    }
+    
+    public static ValidationException vpdNotSupported(String platformName) {
+        Object[] args = { platformName };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, VPD_NOT_SUPPORTED, args));
+        validationException.setErrorCode(VPD_NOT_SUPPORTED);
         return validationException;
     }
     

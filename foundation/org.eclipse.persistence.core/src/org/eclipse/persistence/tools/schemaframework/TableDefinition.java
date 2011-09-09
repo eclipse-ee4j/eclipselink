@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Dies Koper - avoid generating constraints on platforms that do not support constraint generation
  *     Dies Koper - add support for creating indices on tables
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  *******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -48,8 +50,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
     protected String creationPrefix;
     protected String creationSuffix;
     private boolean createSQLFiles;
+    private boolean createVPDCalls;
+    private String tenantFieldName;
 
     public TableDefinition() {
+        createVPDCalls = false;
         this.fields = new ArrayList<FieldDefinition>();
         this.indexes = new ArrayList<IndexDefinition>();
         this.foreignKeyMap = new HashMap<String, ForeignKeyConstraint>();
@@ -384,7 +389,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
             writer.write(")");
             //let the platform write out the CreationSuffix and the platform's default tableCreationSuffix
             session.getPlatform().writeTableCreationSuffix(writer, getCreationSuffix());
-
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -401,6 +405,47 @@ public class TableDefinition extends DatabaseObjectDefinition {
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
+        return writer;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public Writer buildVPDCreationPolicyWriter(AbstractSession session, Writer writer) {
+        try {
+            writer.write(session.getPlatform().getVPDCreationPolicyString(getName(), session));
+            return writer;
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public Writer buildVPDCreationFunctionWriter(AbstractSession session, Writer writer) {
+        try {
+            writer.write(session.getPlatform().getVPDCreationFunctionString(getName(), tenantFieldName));
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+        
+        return writer;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public Writer buildVPDDeletionWriter(AbstractSession session, Writer writer) {
+        try {
+            writer.write(session.getPlatform().getVPDDeletionString(getName(), session));
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+        
         return writer;
     }
 
@@ -1013,6 +1058,14 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public void setIndexes(List<IndexDefinition> indexes) {
         this.indexes = indexes;
     }
+    
+    /**
+     * PUBLIC:
+     */
+    public void setCreateVPDCalls(boolean createVPDCalls, String tenantFieldName) {
+        this.createVPDCalls = createVPDCalls;
+        this.tenantFieldName = tenantFieldName;
+    }
 
     /**
      * PUBLIC:
@@ -1084,6 +1137,20 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void setUniqueKeys(List<UniqueKeyConstraint> uniqueKeys) {
         this.uniqueKeys = uniqueKeys;
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses who care should override this method.
+     */
+    public boolean shouldCreateVPDCalls(AbstractSession session) {
+        if (createVPDCalls) {
+            if (! session.getPlatform().supportsVPD()) {
+                throw ValidationException.vpdNotSupported(session.getPlatform().getClass().getName());
+            }
+        }
+        
+        return createVPDCalls;
     }
     
     /**

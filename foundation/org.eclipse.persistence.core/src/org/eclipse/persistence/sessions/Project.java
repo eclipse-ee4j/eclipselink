@@ -23,6 +23,8 @@
  *         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API     
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries 
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType 
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -32,6 +34,7 @@ import java.io.*;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -58,6 +61,9 @@ public class Project implements Serializable, Cloneable {
     protected Login datasourceLogin;
     protected Map<Class, ClassDescriptor> descriptors;
     protected List<ClassDescriptor> orderedDescriptors;
+    
+    // Currently only one is supported.
+    protected MultitenantPolicy multitenantPolicy;
 
     /** Holds the default set of read-only classes that apply to each UnitOfWork. */
     protected Vector defaultReadOnlyClasses;
@@ -131,6 +137,10 @@ public class Project implements Serializable, Cloneable {
     /** Ensures that only one thread at a time can add/remove descriptors */
     protected Object descriptorsLock = new Boolean(true);
 
+    /** VPD connection settings */
+    protected String vpdIdentifier;
+    protected String vpdLastIdentifierClassName; // Used for validation exception.
+    
     /**
      * PUBLIC:
      * Create a new project.
@@ -168,7 +178,7 @@ public class Project implements Serializable, Cloneable {
         this();
         this.datasourceLogin = login;
     }
-
+    
     /**
      * PUBLIC:
      * Return the default setting for configuring if dates and calendars are mutable.
@@ -238,6 +248,25 @@ public class Project implements Serializable, Cloneable {
      */
     public void setQueries(List<DatabaseQuery> queries) {
         this.queries = queries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the VPD identifier for this project. This identifier should be
+     * populated from a descriptor VPDMultitenantPolicy and should not be
+     * set directly.
+     */
+    public void setVPDIdentifier(String vpdIdentifier) {
+        this.vpdIdentifier = vpdIdentifier;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set from individual descriptors from the project that set a VPD
+     * identifier and used in validation exception. 
+     */
+    public void setVPDLastIdentifierClassName(String vpdLastIdentifierClassName) {
+        this.vpdLastIdentifierClassName = vpdLastIdentifierClassName;
     }
     
     /**
@@ -672,7 +701,30 @@ public class Project implements Serializable, Cloneable {
         }
         return this.sqlResultSetMappings.get(sqlResultSetMapping);
     }
+    
+    /**
+     * INTERNAL:
+     * Return the name of the last class to set a VPD identifiers.
+     */
+    public String getVPDLastIdentifierClassName() {
+        return vpdLastIdentifierClassName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the VPD identifier for this project.
+     */
+    public String getVPDIdentifier() {
+        return vpdIdentifier;
+    }
 
+    /**
+     * INTERNAL:
+     */
+    public MultitenantPolicy getMultitenantPolicy() {
+        return multitenantPolicy;
+    }
+    
     /**
      * INTERNAL:
      * Answers if at least one Descriptor or Mapping had a HistoryPolicy at initialize time.
@@ -855,6 +907,15 @@ public class Project implements Serializable, Cloneable {
     }
     
     /**
+     * PUBLIC:
+     * Return true if there is a VPD identifier for this project. Will not be
+     * set till after descriptor initialization.
+     */
+    public boolean hasVPDIdentifier() {
+        return vpdIdentifier != null;
+    }
+    
+    /**
      * INTERNAL:
      * Set to true during descriptor initialize if any descriptor uses ProxyIndirection
      * Determines if ProxyIndirectionPolicy.getValueFromProxy should be called.
@@ -868,6 +929,14 @@ public class Project implements Serializable, Cloneable {
      */
     public void setLogin(DatabaseLogin datasourceLogin) {
         this.datasourceLogin = datasourceLogin;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the multitenant policy. 
+     */
+    public void setMultitenantPolicy(MultitenantPolicy policy) {
+        multitenantPolicy = policy;
     }
 
     /**

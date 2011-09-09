@@ -19,6 +19,8 @@
  *       - 343632: Can't map a compound constraint because of exception: 
  *                 The reference column name [y] mapped on the element [field x] 
  *                 does not correspond to a valid field on the mapping reference
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -324,6 +326,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7340", "There are multiple mapping files called [{0}] in classpath."},
                                            { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataSource.  Please specify one using either persitence unit property eclipselink.metadata-source.xml.file or eclipselink.metadata-source.xml.url"},
                                            { "7342", "The specified boolean value [{0}] for setting allow native sql queries is invalid, the value must either be ''true'' or ''false''."},
+                                           { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3]} uses [{2}]. When using a Multitenant VPD strategy, there can only be one tenant discriminator column per entity and its context property must be consistent across all the Multitenant VPD entities."},
+                                           { "7344", "VPD (connections and DDL generation) is not supported for the platform: [{0}]."},
                                            
  };
     

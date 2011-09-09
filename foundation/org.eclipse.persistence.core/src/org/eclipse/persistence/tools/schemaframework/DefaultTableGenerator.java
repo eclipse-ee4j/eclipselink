@@ -14,6 +14,8 @@
  *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -183,6 +185,11 @@ public class DefaultTableGenerator {
             // can not exist on their own.
             if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor()) {
                 postInitTableSchema(descriptor);
+                
+                // If VPD descriptor we need to generate some DDL for its default table.
+                if (descriptor.hasMultitenantPolicy()) {
+                    descriptor.getMultitenantPolicy().addToTableDefinition(getTableDefFromDBTable(descriptor.getDefaultTable()));
+                }
             }
         }
 

@@ -10,6 +10,8 @@
  * Contributors:
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
 
@@ -36,5 +38,12 @@ public enum MultitenantType {
      * When supported, this type specifies that different tables are used for 
      * each tenant. The table scan  be uniquely identified by name, schema/tablespace.
      */
-    TABLE_PER_TENANT 
+    TABLE_PER_TENANT, 
+    
+    /**
+     * Specifies that the DB will handle the tenant filtering on all SELECT,
+     * UPDATE and DELETE queries. Using this type assumes that the platform
+     * used with your persistence unit does indeed support VPD.
+     */
+    VPD
 }

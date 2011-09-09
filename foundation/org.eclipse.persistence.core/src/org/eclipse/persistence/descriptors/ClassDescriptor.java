@@ -20,6 +20,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -29,6 +31,7 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
+import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -82,7 +85,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected transient DatabaseTable defaultTable;
     protected List<DatabaseField> primaryKeyFields;
     protected transient Map<DatabaseTable, Map<DatabaseField, DatabaseField>> additionalTablePrimaryKeyFields;
-    protected transient Map<DatabaseField, String> tenantDiscriminatorFields;
     protected transient List<DatabaseTable> multipleTableInsertOrder;
     protected transient Map<DatabaseTable, Set<DatabaseTable>> multipleTableForeignKeys;
     /** Support delete cascading on the database for multiple and inheritance tables. */
@@ -147,6 +149,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected String partitioningPolicyName;
     protected PartitioningPolicy partitioningPolicy;
     protected CMPPolicy cmpPolicy;
+    protected MultitenantPolicy multitenantPolicy;
 
     //manage fetch group behaviors and operations
     protected FetchGroupManager fetchGroupManager;
@@ -287,7 +290,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.fields = NonSynchronizedVector.newInstance();
         this.allFields = NonSynchronizedVector.newInstance();
         this.constraintDependencies = NonSynchronizedVector.newInstance(2);
-        this.tenantDiscriminatorFields = new HashMap(5);
         this.multipleTableForeignKeys = new HashMap(5);
         this.queryKeys = new HashMap(5);
         this.initializationStage = UNINITIALIZED;
@@ -546,24 +548,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void addTableName(String tableName) {
         addTable(new DatabaseTable(tableName));
-    }
-    
-    /**
-     * INTERNAL:
-     * Return all the tenant id fields.
-     */
-    public void addTenantDiscriminatorField(String property, DatabaseField field) {
-        if (tenantDiscriminatorFields.containsKey(field)) {
-            String currentProperty = tenantDiscriminatorFields.get(field);
-            
-            if (! currentProperty.equals(property)) {
-                // Adding a different property for the same field is not 
-                // allowed. If it is the same we'll just ignore it.
-                throw ValidationException.multipleContextPropertiesForSameTenantDiscriminatorFieldSpecified(getJavaClassName(), field.getQualifiedName(), currentProperty, property);
-            }
-        } else {
-            tenantDiscriminatorFields.put(field, property);
-        }
     }
 
     /**
@@ -2308,6 +2292,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         return associations;
     }
+    
+    /**
+     * INTERNAL:
+     * Retun the multitenant policy
+     */
+    public MultitenantPolicy getMultitenantPolicy() {
+        return multitenantPolicy;
+    }
 
     /**
      * INTERNAL:
@@ -2586,14 +2578,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public Vector<DatabaseTable> getTables() {
         return tables;
-    }
-
-    /**
-     * INTERNAL:
-     * Return all the tenant id fields.
-     */
-    public Map<DatabaseField, String> getTenantDiscriminatorFields() {
-        return tenantDiscriminatorFields;
     }
 
     /**
@@ -2957,16 +2941,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
         getObjectBuilder().initialize(session);
         
-        // After the mappings have been initialized validate the read only
-        // mapped discriminator column mappings.
-        if (hasTenantDiscriminatorFields()) {
-            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
-                DatabaseMapping mapping = getObjectBuilder().getMappingForField(discriminatorField);
-                
-                if (mapping != null && ! mapping.isReadOnly()) {
-                    throw ValidationException.nonReadOnlyMappedTenantDiscriminatorField(getJavaClassName(), discriminatorField.getQualifiedName());
-                }
-            }
+        // Initialize the multitenant policy only after the mappings have been
+        // initialized.
+        if (hasMultitenantPolicy()) {
+            getMultitenantPolicy().initialize(session);
         }
         
         if (shouldOrderMappings()) {
@@ -3566,6 +3544,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
         getObjectBuilder().postInitialize(session);
         getQueryManager().postInitialize(session);
 
+        // Post initialize the multitenant policy after the query manager.
+        if (hasMultitenantPolicy()) {
+            getMultitenantPolicy().postInitialize(session);
+        }
 
         if (!isSharedIsolation()){
             session.getIsolatedAndProtectedDescriptors().add(this);
@@ -3708,13 +3690,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         
         // Once the table and mapping information has been settled, we'll need 
-        // to set tenant  id fields on the descriptor for each table. These are 
-        // at least used  for DDL generation. Doesn't seem to interfere or 
+        // to set tenant id fields on the descriptor for each table. These are 
+        // at least used for DDL generation. Doesn't seem to interfere or 
         // duplicate anything else we have done to support tenant id fields.
-        if (hasTenantDiscriminatorFields()) {
-            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {                
-                getFields().add(buildField(discriminatorField));
-            }
+        if (hasMultitenantPolicy()) {
+            getMultitenantPolicy().preInitialize(session);
         }
         
         verifyTableQualifiers(session.getDatasourcePlatform());
@@ -4573,6 +4553,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Set a multitenant policy on the descriptor.
+     */
+    public void setMultitenantPolicy(MultitenantPolicy multitenantPolicy) {
+        this.multitenantPolicy = multitenantPolicy;
+    }
+    
+    /**
      * ADVANCED:
      * Return if delete cascading has been set on the database for the descriptor's
      * multiple tables.
@@ -5071,14 +5059,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean hasTablePerClassPolicy() {
         return hasInterfacePolicy() && interfacePolicy.isTablePerClassPolicy();
-    }
-    
-    /**
-     * INTERNAL:
-     * Return if this descriptor has specified some tenant discriminator fields.
-     */
-    public boolean hasTenantDiscriminatorFields() {
-        return ! tenantDiscriminatorFields.isEmpty();
     }
     
     /**
@@ -6260,6 +6240,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean hasMultipleTableConstraintDependecy() {
         return hasMultipleTableConstraintDependecy;
+    }
+    
+    /**
+     * Return true if the descriptor has a multitenant policy
+     */
+    public boolean hasMultitenantPolicy() {
+        return multitenantPolicy != null;
     }
 
     /**

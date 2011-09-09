@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Markus Karg - bug fix for log operator
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -37,6 +39,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
@@ -51,7 +55,9 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * @since TOPLink/Java 1.0
  */
 public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
-   
+    protected static DataModifyQuery vpdSetIdentifierQuery;
+    protected static DataModifyQuery vpdClearIdentifierQuery;
+    
     /** 
      * Advanced attribute indicating whether identity is supported,
      * see comment to setSupportsIdentity method.
@@ -382,6 +388,75 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     
     /**
      * INTERNAL:
+     * Return an Oracle defined VPD clear identifier query.
+     */
+    @Override
+    public DatabaseQuery getVPDClearIdentifierQuery(String vpdIdentifier) {
+        if (vpdClearIdentifierQuery == null) {
+            vpdClearIdentifierQuery = new DataModifyQuery("CALL DBMS_SESSION.CLEAR_IDENTIFIER()");
+        }
+    
+        return vpdClearIdentifierQuery;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return an Oracle defined VPD identifier function. Used for DDL generation.
+     */
+    @Override
+    public String getVPDCreationFunctionString(String tableName, String tenantFieldName) {
+        String functionName = tableName + "_ident_func";
+        return "CREATE OR REPLACE FUNCTION " + functionName + " (p_schema in VARCHAR2 default NULL, p_object in VARCHAR2 default NULL) RETURN VARCHAR2 AS BEGIN return '" + tenantFieldName + " = sys_context(''userenv'', ''client_identifier'')'; END;";
+    }
+    
+    /**
+     * INTERNAL:
+     * Return an Oracle defined VPD identifier policy. Used for DDL generation.
+     */
+    @Override
+    public String getVPDCreationPolicyString(String tableName, AbstractSession session) {
+        try {
+            String functionName = tableName + "_ident_func";
+            String schemaName = session.getAccessor().getConnection().getMetaData().getUserName();
+            String policyName = tableName + "_todo_list_policy";
+                
+            return "\nCALL DBMS_RLS.ADD_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "', '" + schemaName + "', '" + functionName +"', 'select, update, delete')\n";
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("could not extract user name from getMetadata");
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return an Oracle defined VPD identifier policy deletion. Used for DDL generation.
+     */
+    @Override
+    public String getVPDDeletionString(String tableName, AbstractSession session) {
+        try {
+            String schemaName = session.getAccessor().getConnection().getMetaData().getUserName();
+            String policyName = tableName + "_todo_list_policy";
+            return "\nCALL DBMS_RLS.DROP_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "')";
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("could not extract user name from getMetadata");
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return an Oracle defined VPD set identifier query.
+     */
+    
+    @Override
+    public DatabaseQuery getVPDSetIdentifierQuery(String vpdIdentifier) {
+        if (vpdSetIdentifierQuery == null) {
+            vpdSetIdentifierQuery = new DataModifyQuery("CALL DBMS_SESSION.SET_IDENTIFIER(#" + vpdIdentifier + ")");
+        }
+        
+        return vpdSetIdentifierQuery;
+    }
+    
+    /**
+     * INTERNAL:
      * Get a timestamp value from a result set.
      * Overrides the default behavior to specifically return a timestamp.  Added
      * to overcome an issue with the oracle 9.0.1.4 JDBC driver.
@@ -631,6 +706,13 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Return if database stored functions are supported.
      */
     public boolean supportsStoredFunctions() {
+        return true;
+    }
+    
+    /**
+     * Oracle db supports VPD.
+     */
+    public boolean supportsVPD() {
         return true;
     }
 

@@ -19,10 +19,13 @@
  *     06/1/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 9)
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,11 +41,15 @@ import javax.persistence.TypedQuery;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
@@ -53,9 +60,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Task;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
 
 public class AdvancedMultiTenantJunitTest extends JUnitTestCase { 
+    public static final String MULTI_TENANT_VPD_PU = "multi-tenant-vpd";
     public static final String MULTI_TENANT_PU = "multi-tenant-shared-emf";
     public static final String MULTI_TENANT_PU_123 = "multi-tenant-123";
     
@@ -97,6 +106,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily123"));
         
         suite.addTest(new AdvancedMultiTenantJunitTest("testComplexMultitenantQueries"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testVPDEMPerTenant"));
         
         return suite;
     }
@@ -679,6 +689,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     protected void validateMafiaFamily707(EntityManager em) {
         clearCache(MULTI_TENANT_PU);
         em.clear();
+        this.getServerSession(MULTI_TENANT_PU).setLogLevel(0);
         
         MafiaFamily family = em.find(MafiaFamily.class, family707);
         assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
@@ -873,5 +884,69 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
+    }
+    
+    public void testVPDEMPerTenant() {
+        if (getPlatform(MULTI_TENANT_VPD_PU).isOracle()) {
+            EntityManager em1 = createEntityManager(MULTI_TENANT_VPD_PU);
+            em1.setProperty("tenant.id", "bsmith@here.com");
+            
+            EntityManager em2 = createEntityManager(MULTI_TENANT_VPD_PU);
+            em2.setProperty("tenant.id", "gdune@there.ca");
+            
+            try {
+                testInsert(em1, "blah", false);
+                testInsert(em2, "halb", false);
+                
+                assertTrue("Found more than one result", em1.createQuery("Select t from Task t").getResultList().size() == 1);
+                assertTrue("Found more than one result", em2.createQuery("Select t from Task t").getResultList().size() == 1);
+                
+                Task task1 = testInsertWithOneSubtask(em1, "Rock that Propsal", false, "Write Proposal", false);
+                
+                assertNotNull(em1.find(Task.class, task1.getId()));
+                assertNull(em2.find(Task.class, task1.getId())); // negative test
+                
+                Task task3 = testInsert(em2, "mow lawn", true);
+                
+                assertNull(em1.find(Task.class, task3.getId())); // negative test
+                assertNotNull(em2.find(Task.class, task3.getId()));
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em1)){
+                    rollbackTransaction(em1);
+                }
+                
+                throw e;
+            } finally {
+                closeEntityManager(em1);
+                closeEntityManager(em2);
+            }
+        } else {
+            warning("VPD tests currently run only on an Oracle platform");
+        }
+    }
+
+    private Task testInsert(EntityManager em, String description, boolean isCompleted) {
+        beginTransaction(em);
+        Task task = new Task();
+        task.setDescription(description);
+        task.setCompleted(isCompleted);
+        em.persist(task);
+        commitTransaction(em);
+        return task;
+    }
+
+    private Task testInsertWithOneSubtask(EntityManager em, String description, boolean isCompleted, String subtaskDesc, boolean isSubtaskCompleted) {
+        beginTransaction(em);        
+        Task task = new Task();
+        Task subtask = new Task();
+        task.setDescription(description);
+        task.setCompleted(isCompleted);
+        subtask.setDescription(subtaskDesc);
+        subtask.setCompleted(isSubtaskCompleted);
+        task.addSubtask(subtask);
+        em.persist(subtask);
+        em.persist(task);
+        commitTransaction(em);
+        return task;
     }
 }

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -691,9 +693,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Modifying the translation row here will modify it on the original 
         // query which is not good. So we have to clone the translation row if
         // we are going to append tenant discriminator fields to it.
-        if (descriptor.hasTenantDiscriminatorFields()) {
+        if (descriptor.hasMultitenantPolicy()) {
             translationRow = translationRow.clone();
-            descriptor.getObjectBuilder().addTenantDiscriminatorFieldToRow(translationRow, getSession());
+            descriptor.getMultitenantPolicy().addFieldsToRow(translationRow, getSession());
         }
     }
 

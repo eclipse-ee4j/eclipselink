@@ -15,7 +15,11 @@
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     08/18/2011-2.3.1 Guy Pelletier 
+ *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
 
@@ -26,6 +30,9 @@ import org.eclipse.persistence.annotations.MultitenantType;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumns;
 import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.SingleTableMultitenantPolicy;
+import org.eclipse.persistence.descriptors.VPDMultitenantPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -35,6 +42,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * Object to hold onto multi-tenant metadata.
@@ -51,6 +60,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 2.3
  */
 public class MultitenantMetadata extends ORMetadata {
+    private Boolean m_includeCriteria;
     private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
     private String m_type;
     
@@ -70,6 +80,7 @@ public class MultitenantMetadata extends ORMetadata {
         super(multitenant, accessor);
         
         m_type = (String) multitenant.getAttribute("value");
+        m_includeCriteria = (Boolean) multitenant.getAttributeBooleanDefaultTrue("includeCriteria");
 
         // Look for a @TenantDiscriminators
         if (accessor.isAnnotationPresent(TenantDiscriminatorColumns.class)) {
@@ -95,11 +106,23 @@ public class MultitenantMetadata extends ORMetadata {
             if (! valuesMatch(m_type, multitenant.getType())) {
                 return false;
             }
+            
+            if (! valuesMatch(m_includeCriteria, multitenant.getIncludeCriteria())) {
+                return false;
+            }
 
             return valuesMatch(m_tenantDiscriminatorColumns, multitenant.getTenantDiscriminatorColumns());
         }
         
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getIncludeCriteria() {
+        return m_includeCriteria;
     }
     
     /**
@@ -121,6 +144,13 @@ public class MultitenantMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
+    public boolean includeCriteria() {
+        return m_includeCriteria == null || m_includeCriteria.booleanValue();
+    }
+    
+    /**
+     * INTERNAL:
+     */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
@@ -133,32 +163,56 @@ public class MultitenantMetadata extends ORMetadata {
      * INTERNAL:
      */
     public void process(MetadataDescriptor descriptor)  {
-        if (m_type == null || m_type.equals(MultitenantType.SINGLE_TABLE.name())) {
-            // Single table multi-tenancy.
-            processTenantDiscriminators(descriptor);
+        RelationalDescriptor classDescriptor = descriptor.getClassDescriptor();
+        
+        if (m_type == null || m_type.equals(MultitenantType.SINGLE_TABLE.name()) || m_type.equals(MultitenantType.VPD.name())) {
+            // Initialize the policy.
+            SingleTableMultitenantPolicy policy;
+            if (m_type == null || m_type.equals(MultitenantType.SINGLE_TABLE.name())) {
+                policy = new SingleTableMultitenantPolicy(classDescriptor);
+                
+                // As soon as we find one entity that is multitenant, turn off 
+                // native SQL queries Users can set the property on their 
+                // persistence unit if they want it back on. Or per query.
+                getProject().setAllowNativeSQLQueries(false);
+            
+                // Set the include criteria flag on the query manager.
+                policy.setIncludeTenantCriteria(includeCriteria());
+            } else {
+                policy = new VPDMultitenantPolicy(classDescriptor);
+                
+                // Within VPD, we must ensure we are using an Always exclusive mode.
+                ((ServerSession) getProject().getSession()).getDefaultConnectionPolicy().setExclusiveMode(ConnectionPolicy.ExclusiveMode.Always);
+                
+                // When in VPD, do not include the criteria.
+                policy.setIncludeTenantCriteria(false);
+            }
+            
+            // Single table multi-tenancy (perhaps using VPD).
+            processTenantDiscriminators(descriptor, policy);
+            
+            // Set the policy on the descriptor.
+            classDescriptor.setMultitenantPolicy(policy);
+            
+            // If the intention of the user is to use a shared emf with 
+            // multitenant entities, those must use a PROTECTED cache. Don't
+            // overwrite an isolated setting though. Caching details are 
+            // processed before multitenant and you don't want to overwrite a 
+            // user setting.
+            if (getProject().usesMultitenantSharedEmf() && classDescriptor.isSharedIsolation()) {                
+                classDescriptor.setCacheIsolation(CacheIsolationType.PROTECTED);
+            }
         } else { 
             // TODO: to be implemented at some point.
             throw new RuntimeException("Unsupported multitenant type: " + m_type);
         }
-        
-        
-        // If the intention of the user is to use a shared entity manager 
-        // factory with multi-tenant entities, those must use a PROTECTED cache. 
-        if (getProject().usesMultitenantSharedEmf()) {
-            descriptor.getClassDescriptor().setCacheIsolation(CacheIsolationType.PROTECTED);
-        }
-        
-        // As soon as we find one entity that is multitenant, turn off native
-        // SQL queries. Users can set the property on their persistence unit
-        // if they want it back on. Or per individual query.
-        getProject().getProject().setAllowNativeSQLQueries(false);
     }
     
     /**
      * INTERNAL:
      * Process the tenant discriminator metadata.
      */
-    protected void processTenantDiscriminators(MetadataDescriptor descriptor) {
+    protected void processTenantDiscriminators(MetadataDescriptor descriptor, SingleTableMultitenantPolicy policy) {
         // Check for tenant discriminator columns from a parent class.
         if (descriptor.isInheritanceSubclass()) {
             // If we are an inheritance subclass, our parent will have been
@@ -197,8 +251,16 @@ public class MultitenantMetadata extends ORMetadata {
             
         // Process the tenant discriminators now.
         for (TenantDiscriminatorColumnMetadata tenantDiscriminator : m_tenantDiscriminatorColumns) {
-            tenantDiscriminator.process(descriptor);
+            tenantDiscriminator.process(descriptor, policy);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setIncludeCriteria(Boolean includeCriteria) {
+        m_includeCriteria = includeCriteria;
     }
     
     /**

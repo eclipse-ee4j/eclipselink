@@ -77,6 +77,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     08/09/2011
  *       Masumi Ito, Fujitsu - Bug 351791 - NPE occurs on specifying two kinds of primary key generators on orm.xml
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1769,6 +1771,15 @@ public class MetadataProject {
      */
     public void removeMappedSuperclassAccessor(MetadataClass metadataClass) {
         m_mappedSuperclasseAccessors.remove(metadataClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * When at least one entity is found that is multitenant, we turn off
+     * native SQL queries.
+     */
+    public void setAllowNativeSQLQueries(boolean allowNativeSQLQueries) {
+        getProject().setAllowNativeSQLQueries(allowNativeSQLQueries);
     }
     
     /**

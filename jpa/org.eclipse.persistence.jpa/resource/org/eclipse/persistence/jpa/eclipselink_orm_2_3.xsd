@@ -3333,7 +3333,14 @@
              * Specifies that different tables are used for each tenant. The table scan 
              * be uniquely identified by name, schema/tablespace.
              */
-            TABLE_PER_TENANT 
+            TABLE_PER_TENANT,
+            
+            /**
+             * Specifies that the DB will handle the tenant filtering on all SELECT,
+             * UPDATE and DELETE queries. Using this type assumes that the platform
+             * used with your persistence unit does indeed support VPD.
+             */
+            VPD
         }
 
       </xsd:documentation>
@@ -3341,6 +3348,7 @@
     <xsd:restriction base="xsd:token">
       <xsd:enumeration value="SINGLE_TABLE"/>
       <xsd:enumeration value="TABLE_PER_TENANT"/>
+      <xsd:enumeration value="VPD"/>
     </xsd:restriction>
   </xsd:simpleType>
   
