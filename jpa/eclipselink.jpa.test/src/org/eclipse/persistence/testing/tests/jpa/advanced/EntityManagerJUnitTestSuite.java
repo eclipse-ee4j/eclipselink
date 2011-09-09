@@ -9653,12 +9653,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         emp.setLastName("Joseph");
         commitTransaction(em);
         
-        em.refresh(emp);
-        assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
-
         beginTransaction(em);
-        em.remove(emp);
-        commitTransaction(em);
+        try{
+            em.refresh(emp);
+            assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+        } finally{
+            em.remove(emp);
+            commitTransaction(em);
+        }
     }
     
     // Bug 335322
@@ -9684,12 +9686,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.clear();     
         clearCache();
         
-        emp = em.find(Employee.class, emp.getId());
-        assertTrue("The first name was reverted even though it was written.", emp.getFirstName().equals("Joe"));
-
         beginTransaction(em);
-        em.remove(emp);
-        commitTransaction(em);
+        try{
+            emp = em.find(Employee.class, emp.getId());
+            assertTrue("The first name was reverted even though it was written.", emp.getFirstName().equals("Joe"));
+        } finally {
+            em.remove(emp);
+            commitTransaction(em);
+        }
     }
 
 }
