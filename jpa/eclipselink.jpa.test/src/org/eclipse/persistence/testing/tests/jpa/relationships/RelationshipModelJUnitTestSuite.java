@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
+import java.util.Iterator;
+
 import javax.persistence.EntityManager;
 
 import junit.framework.Test;
@@ -21,6 +23,12 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.relationships.Auditor;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
@@ -65,6 +73,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testCustomerServiceRepMap"));
         
         suite.addTest(new RelationshipModelJUnitTestSuite("testOne2OneRelationTables"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testChangeSetForNewObject"));
 
         return suite;
     }
@@ -296,5 +305,50 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         assertTrue("Order2 read back did not match the original", getServerSession().compareObjects(order2, refreshedOrder2));
         
         closeEntityManager(em);
+    }
+    
+    // Bug 357103
+    public void testChangeSetForNewObject(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Customer cust = new Customer();
+        cust.setName("Joe");
+        em.persist(cust);
+        Order order = new Order();
+        order.setQuantity(1);
+        em.persist(order);
+        cust.addOrder(order);
+        commitTransaction(em);
+        
+        RepeatableWriteUnitOfWork uow = null;
+        try{
+            beginTransaction(em);
+            cust = em.find(Customer.class, cust.getCustomerId());
+            Order order2 = new Order();
+            order2.setQuantity(2);
+            order2.setShippingAddress("123 Main St.");
+            em.persist(order2);
+            cust.addOrder(order2);
+            
+            EntityManagerImpl impl = (EntityManagerImpl)JpaHelper.getEntityManager(em);
+            uow = impl.getActivePersistenceContext(null);
+            em.flush();
+            UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)uow.getCumulativeUOWChangeSet();
+            ObjectChangeSet customerChangeSet = uowChangeSet.getCloneToObjectChangeSet().get(cust);
+            CollectionChangeRecord orderChangeRecord = (CollectionChangeRecord)customerChangeSet.getChangesForAttributeNamed("orders");
+            Iterator<ObjectChangeSet> i = orderChangeRecord.getAddObjectList().keySet().iterator();
+            while(i.hasNext()){
+                ObjectChangeSet orderChangeSet = i.next();
+                assertTrue("There are changes in the change set.  There should be no changes for a new object.", orderChangeSet.getChanges().isEmpty());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally{
+            rollbackTransaction(em);
+            beginTransaction(em);
+            cust = em.find(Customer.class, cust.getCustomerId());
+            em.remove(cust);
+            commitTransaction(em);
+        }
     }
 }
