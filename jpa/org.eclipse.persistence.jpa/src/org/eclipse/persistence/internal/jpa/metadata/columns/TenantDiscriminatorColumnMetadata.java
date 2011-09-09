@@ -14,9 +14,12 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import org.eclipse.persistence.descriptors.SingleTableMultitenantPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -143,7 +146,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     /**
      * INTERNAL:
      */
-    public void process(MetadataDescriptor descriptor) {
+    public void process(MetadataDescriptor descriptor, SingleTableMultitenantPolicy policy) {
         DatabaseField tenantDiscriminatorField = getDatabaseField();
             
         // Set the field name. This will take care of any any delimited 
@@ -161,7 +164,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
             m_contextProperty = MULTITENANT_PROPERTY_DEFAULT;
         }
 
-        descriptor.getClassDescriptor().addTenantDiscriminatorField(m_contextProperty, tenantDiscriminatorField);
+        policy.addTenantDiscriminatorField(m_contextProperty, tenantDiscriminatorField);
     }
     
     /**

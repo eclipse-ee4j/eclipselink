@@ -14,6 +14,8 @@
  *     Dies Koper (Fujitsu) - bug fix for printFieldUnique()
  *     Dies Koper (Fujitsu) - added methods to create/drop indices
  *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -73,6 +75,7 @@ import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
@@ -807,7 +810,45 @@ public class DatabasePlatform extends DatasourcePlatform {
             accessor.getConnection().commit();
         }
     }
-
+    
+    /**
+     * Any platform that supports VPD should implement this method.
+     */
+    public DatabaseQuery getVPDClearIdentifierQuery(String vpdIdentifier) {
+        return null;
+    }
+    
+    /**
+     * Any platform that supports VPD should implement this method. Used for DDL 
+     * generation.
+     */
+    public String getVPDCreationFunctionString(String tableName, String tenantFieldName) {
+        return null;
+    }
+    
+    /**
+     * Any platform that supports VPD should implement this method. Used for DDL 
+     * generation.
+     */
+    public String getVPDCreationPolicyString(String tableName, AbstractSession session) {
+        return null;
+    }
+    
+    /**
+     * Any platform that supports VPD should implement this method. Used for DDL 
+     * generation.
+     */
+    public String getVPDDeletionString(String tableName, AbstractSession session) {
+        return null;
+    }
+    
+    /**
+     * Any platform that supports VPD should implement this method.
+     */
+    public DatabaseQuery getVPDSetIdentifierQuery(String vpdIdentifier) {
+        return null;
+    }
+    
     /**
      * INTERNAL
      * We support more primitive than JDBC does so we must do conversion before printing or binding.
@@ -2025,6 +2066,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean supportsUniqueKeyConstraints() {
         return true;
     }
+    
+    /**
+     * By default, platforms do not support VPD. Those that do need to override
+     * this method.
+     */
+    public boolean supportsVPD() {
+        return false;
+    }
 
     public boolean supportsNativeSequenceNumbers() {
         return this.supportsSequenceObjects() || this.supportsIdentity();
@@ -3045,7 +3094,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public String buildCreateIndex(String fullTableName, String indexName, String... columnNames) {
         return buildCreateIndex(fullTableName, indexName, "", false, columnNames);
     }
-
+    
     /**
      * INTERNAL:
      * Override this method with the platform's CREATE INDEX statement.

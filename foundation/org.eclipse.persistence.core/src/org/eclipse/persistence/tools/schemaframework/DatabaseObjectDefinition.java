@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -42,13 +44,40 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Returns the writer used for creation of this object.
      */
     public abstract Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException;
+    
+    /**
+     * INTERNAL:
+     * Sub classes should override.
+     */
+    public Writer buildVPDCreationPolicyWriter(AbstractSession session, Writer writer) {
+        // Does nothing .. subclasses should override
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Sub classes should override.
+     */
+    public Writer buildVPDCreationFunctionWriter(AbstractSession session, Writer writer) {
+        // Does nothing .. subclasses should override
+        return null;
+    }
 
     /**
      * INTERNAL:
-     * Returns the writer used for creation of this object.
+     * Sub classes should override.
+     */
+    public Writer buildVPDDeletionWriter(AbstractSession session, Writer writer) {
+        // Does nothing .. subclasses should override
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the writer used for deletion of this object.
      */
     public abstract Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException;
-
+    
     /**
      * PUBLIC:
      */
@@ -70,6 +99,11 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
             this.createOnDatabase(session);
         } else {
             this.buildCreationWriter(session, schemaWriter);
+            
+            if (shouldCreateVPDCalls(session)) {
+                buildVPDCreationPolicyWriter(session, schemaWriter);
+                buildVPDCreationFunctionWriter(session, schemaWriter);
+            }
         }
     }
 
@@ -79,6 +113,19 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      */
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         session.executeNonSelectingCall(new SQLCall(buildCreationWriter(session, new StringWriter()).toString()));
+        
+        if (shouldCreateVPDCalls(session)) {
+            session.executeNonSelectingCall(new SQLCall(buildVPDCreationPolicyWriter(session, new StringWriter()).toString()));
+            session.executeNonSelectingCall(new SQLCall(buildVPDCreationFunctionWriter(session, new StringWriter()).toString()));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses who care should override this method.
+     */
+    public boolean shouldCreateVPDCalls(AbstractSession session) {
+        return false;
     }
 
     /**
@@ -87,6 +134,10 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      */
     public void dropFromDatabase(AbstractSession session) throws EclipseLinkException {
         session.executeNonSelectingCall(new SQLCall(buildDeletionWriter(session, new StringWriter()).toString()));
+        
+        if (shouldCreateVPDCalls(session)) {
+            session.executeNonSelectingCall(new SQLCall(buildVPDDeletionWriter(session, new StringWriter()).toString()));
+        }
     }
 
     /**
@@ -99,6 +150,10 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
             this.dropFromDatabase(session);
         } else {
             buildDeletionWriter(session, schemaWriter);
+            
+            if (shouldCreateVPDCalls(session)) {
+                buildVPDDeletionWriter(session, schemaWriter);
+            }
         }
     }
 

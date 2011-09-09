@@ -13,6 +13,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     08/18/2011-2.3.1 Guy Pelletier 
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -1147,14 +1149,11 @@ public class InheritancePolicy implements Serializable, Cloneable {
         if (isChildDescriptor()) {
             updateTables();
             
-            // Copy down the tenant discriminator fields.
-            for (DatabaseField discriminatorField : getParentDescriptor().getTenantDiscriminatorFields().keySet()) {
-                String property = getParentDescriptor().getTenantDiscriminatorFields().get(discriminatorField);
-                getDescriptor().addTenantDiscriminatorField(property, discriminatorField);
+            // Clone the multitenant policy and set on child descriptor.
+            if (getParentDescriptor().hasMultitenantPolicy()) {
+                MultitenantPolicy clonedMultitenantPolicy = (MultitenantPolicy) getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
+                getDescriptor().setMultitenantPolicy(clonedMultitenantPolicy);
             }
-            
-            // Copy down the include criteria flag.
-            getDescriptor().getQueryManager().setIncludeTenantCriteria(getParentDescriptor().getQueryManager().includeTenantCriteria());
             
             setClassIndicatorMapping(getParentDescriptor().getInheritancePolicy().getClassIndicatorMapping());
             setShouldUseClassNameAsIndicator(getParentDescriptor().getInheritancePolicy().shouldUseClassNameAsIndicator());

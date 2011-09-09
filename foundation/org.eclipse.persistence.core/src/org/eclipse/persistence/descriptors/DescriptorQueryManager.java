@@ -17,6 +17,8 @@
  *       - 345962: Join fetch query when using tenant discriminator column fails.
  *     08/18/2011-2.3.1 Guy Pelletier 
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -71,7 +73,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected transient DeleteObjectQuery deleteQuery;
     protected DoesExistQuery doesExistQuery;
     protected ClassDescriptor descriptor;
-    protected boolean includeTenantCriteria;
     protected boolean hasCustomMultipleTableJoinExpression;
     protected transient String additionalCriteria;
     protected transient Expression additionalJoinExpression;
@@ -105,7 +106,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Initialize the state of the descriptor query manager
      */
     public DescriptorQueryManager() {
-        this.includeTenantCriteria = true;
         this.queries = new LinkedHashMap(5);
         this.cachedUpdateCalls = new ConcurrentFixedCache(10);
         this.cachedExpressionQueries = new ConcurrentFixedCache(20);
@@ -817,13 +817,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             ((DatabaseQuery)it.next()).setDescriptor(descriptor);
         }
     }
-
-    /**
-     * INTERNAL:
-     */
-    public boolean includeTenantCriteria() {
-        return includeTenantCriteria;
-    }
     
     /**
      * INTERNAL:
@@ -932,53 +925,30 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         // If the additional criteria is specified, append it to the additional
         // join expression. We do this in postInitialize after all the mappings
         // have been fully initialized.
-        if (additionalCriteria != null || descriptor.hasTenantDiscriminatorFields()) {
-            // if the additional criteria is only tenant id then we'll need to get by this check.
-            if (additionalCriteria != null) {
-                if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().hasView()) {
-                    throw DescriptorException.additionalCriteriaNotSupportedWithInheritanceViews(getDescriptor());
-                }
+        if (additionalCriteria != null) {
+            if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().hasView()) {
+                throw DescriptorException.additionalCriteriaNotSupportedWithInheritanceViews(getDescriptor());
+            }
             
-                String jpql = "select this from " + descriptor.getAlias() + " this where " + additionalCriteria.trim();
+            String jpql = "select this from " + descriptor.getAlias() + " this where " + additionalCriteria.trim();
             
-                JPQLParseTree parseTree = JPQLParser.buildParseTree(jpql);
-                parseTree.setClassLoader(session.getLoader());
-                DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
-                databaseQuery.setJPQLString(jpql);
-                parseTree.populateQuery(databaseQuery, (AbstractSession) session);
-                parseTree.addParametersToQuery(databaseQuery);
+            JPQLParseTree parseTree = JPQLParser.buildParseTree(jpql);
+            parseTree.setClassLoader(session.getLoader());
+            DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
+            databaseQuery.setJPQLString(jpql);
+            parseTree.populateQuery(databaseQuery, (AbstractSession) session);
+            parseTree.addParametersToQuery(databaseQuery);
             
-                updatePropertyParameterExpression(databaseQuery.getSelectionCriteria());
+            updatePropertyParameterExpression(databaseQuery.getSelectionCriteria());
                  
-                additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
-            } 
+            additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
+        } 
             
-            if (descriptor.hasTenantDiscriminatorFields() && includeTenantCriteria) {
-                ExpressionBuilder builder = new ExpressionBuilder();
-                
-                for (DatabaseField discriminatorField : descriptor.getTenantDiscriminatorFields().keySet()) {
-                    String property = descriptor.getTenantDiscriminatorFields().get(discriminatorField);
-                    // Add the tenant discriminator field context property as the parameter.
-                    // Do not initialize the database field with the property as it could be tenant.id 
-                    // and we do not want to de-qualify it.
-                    DatabaseField newField = new DatabaseField();
-                    newField.setName(property, session.getPlatform());
-                    Expression tenantIdExpression = builder.and(builder.getField(discriminatorField).equal(builder.getProperty(newField)));
-                    
-                    if (additionalJoinExpression == null) {
-                        additionalJoinExpression = tenantIdExpression;
-                    } else {
-                        additionalJoinExpression = additionalJoinExpression.and(tenantIdExpression);
-                    }
-                }
-            }
-            
-            if (additionalJoinExpression != null) {
-                // The make sure the additional join expression has the correct 
-                // context, rebuild the additional join expression on a new 
-                // expression builder.
-                additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
-            }
+        if (additionalJoinExpression != null) {
+            // The make sure the additional join expression has the correct 
+            // context, rebuild the additional join expression on a new 
+            // expression builder.
+            additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
         }
     }
     
@@ -1361,20 +1331,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         }
         this.insertQuery.setIsUserDefined(true);
         this.insertQuery.setDescriptor(getDescriptor());
-    }
-
-    /**
-     * ADVANCED:
-     * Boolean used to indicate if the database requires the tenant criteria to
-     * be added to the SELECT, UPDATE, and DELETE queries. By default this is
-     * done but when set to false the queries will not be modified and it will
-     * be up to the application or database to ensure that the correct criteria 
-     * is applied to all queries.
-     * 
-     * @see org.eclipse.persistence.annotations.Multitenant
-     */
-    public void setIncludeTenantCriteria(boolean includeTenantCriteria) {
-        this.includeTenantCriteria = includeTenantCriteria;
     }
     
     /**

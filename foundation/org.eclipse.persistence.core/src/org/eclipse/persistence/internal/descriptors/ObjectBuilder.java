@@ -13,6 +13,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -208,23 +210,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key has changed.
         if (object instanceof PersistenceEntity) {
             ((PersistenceEntity)object)._persistence_setId(null);
-        }
-    }
-
-    /**
-     * Add the tenant discriminator information to the database row. This is 
-     * required when  building a row for an insert or an update of a concrete 
-     * child descriptor.
-     */
-    public void addTenantDiscriminatorFieldToRow(AbstractRecord row, AbstractSession session) {
-        if (getDescriptor().hasTenantDiscriminatorFields()) {
-            Map<DatabaseField, String> tenantDiscriminatorFields = getDescriptor().getTenantDiscriminatorFields();
-        
-            for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
-                String property = tenantDiscriminatorFields.get(discriminatorField);
-                Object propertyValue = session.getProperty(property);
-                row.put(discriminatorField, propertyValue);
-            }
         }
     }
   
@@ -1196,7 +1181,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If the session uses multi-tenancy, add the tenant id field.
-        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        if (getDescriptor().hasMultitenantPolicy()) {
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+        }
         
         return databaseRow;
     }
@@ -1233,7 +1220,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If the session uses multi-tenancy, add the tenant id field.
-        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        if (getDescriptor().hasMultitenantPolicy()) {
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+        }
         
         return databaseRow;
     }
@@ -1258,7 +1247,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If the session uses multi-tenancy, add the tenant id field.
-        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        if (getDescriptor().hasMultitenantPolicy()) {
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+        }
         
         return databaseRow;
     }
@@ -1325,7 +1316,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If the session uses multi-tenancy, add the tenant id field.
-        addTenantDiscriminatorFieldToRow(databaseRow, query.getExecutionSession());
+        if (getDescriptor().hasMultitenantPolicy()) {
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, query.getExecutionSession());            
+        }
         
         return databaseRow;
     }
@@ -1438,7 +1431,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If the session uses multi-tenancy, add the tenant id field.
-        addTenantDiscriminatorFieldToRow(databaseRow, session);
+        if (getDescriptor().hasMultitenantPolicy()) {
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+        }
         
         // remove any fields from the databaseRow
         trimFieldsForInsert(session, databaseRow);

@@ -12,7 +12,9 @@
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     09/09/2011-2.3.1 Guy Pelletier 
+ *       - 356197: Add new VPD type to MultitenantType 
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -288,7 +290,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             addQuery(query.getName(), query);
         }
     }
-
 
     /**
      * INTERNAL:
@@ -1230,6 +1231,20 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public void executeNonSelectingSQL(String sqlString) throws DatabaseException {
         executeNonSelectingCall(new SQLCall(sqlString));
+    }
+    
+    /**
+     * Used to execute connection queries on post acquire and pre release
+     * connection events (e.g. for VPD). 
+     */
+    private void executeQuery(Accessor accessor, DatabaseQuery query, String arg) {
+        query.setAccessor(accessor);
+        
+        List argValues = new ArrayList();
+        query.addArgument(arg);
+        argValues.add(getProperty(arg));
+            
+        executeQuery(query, argValues);
     }
 
     /**
@@ -4471,13 +4486,21 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             }
         }
     }
-
+    
     /**
      * INTERNAL:
      * This method rises appropriate for the session event(s)
      * right after connection is acquired.
      */
     public void postAcquireConnection(Accessor accessor) {
+        if (getProject().hasVPDIdentifier()) {
+            if (getPlatform().supportsVPD()) {
+                executeQuery(accessor, getPlatform().getVPDSetIdentifierQuery(getProject().getVPDIdentifier()), getProject().getVPDIdentifier());
+            } else {
+                throw ValidationException.vpdNotSupported(getPlatform().getClass().getName());
+            }
+        }
+        
         if (this.eventManager != null) { 
             this.eventManager.postAcquireConnection(accessor);
         }
@@ -4489,6 +4512,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * right before the connection is released.
      */
     public void preReleaseConnection(Accessor accessor) {
+        if (getProject().hasVPDIdentifier()) {
+            if (getPlatform().supportsVPD()) {
+                executeQuery(accessor, getPlatform().getVPDClearIdentifierQuery(getProject().getVPDIdentifier()), getProject().getVPDIdentifier());
+            } else {
+                throw ValidationException.vpdNotSupported(getPlatform().getClass().getName());
+            }
+        }
+        
         if (this.eventManager != null) { 
             this.eventManager.preReleaseConnection(accessor);
         }
