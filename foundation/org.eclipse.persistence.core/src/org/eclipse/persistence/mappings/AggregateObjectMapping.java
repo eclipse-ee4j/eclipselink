@@ -1493,7 +1493,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
         }
         
-        if(changeSet != null) {
+        if(changeSet != null && (!changeSet.isNew() || query.getDescriptor().shouldUseFullChangeSetsForNewObjects())) {
             AggregateChangeRecord record = (AggregateChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
             if(aggregate == null) {
                 if(record != null) {
