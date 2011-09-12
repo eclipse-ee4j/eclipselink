@@ -268,7 +268,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             return;
         }
         if (mapping.isDirectToFieldMapping()) {
-            if(changeSet != null && (!changeSet.isNew() || query.getDescriptor().shouldUseFullChangeSetsForNewObjects())) {
+            if(changeSet != null && (!changeSet.isNew() || (query.getDescriptor() != null && query.getDescriptor().shouldUseFullChangeSetsForNewObjects()))) {
                 DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)changeSet.getChangesForAttributeNamed(mapping.getAttributeName());
                 Object oldAttributeValue = null;
                 if (changeRecord == null) {
