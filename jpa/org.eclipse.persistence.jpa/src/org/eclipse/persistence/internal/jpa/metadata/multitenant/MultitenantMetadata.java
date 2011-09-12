@@ -200,7 +200,7 @@ public class MultitenantMetadata extends ORMetadata {
             // processed before multitenant and you don't want to overwrite a 
             // user setting.
             if (getProject().usesMultitenantSharedEmf() && classDescriptor.isSharedIsolation()) {                
-                classDescriptor.setCacheIsolation(CacheIsolationType.PROTECTED);
+                classDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
             }
         } else { 
             // TODO: to be implemented at some point.
