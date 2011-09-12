@@ -208,6 +208,34 @@ public class JSONReader extends XMLReaderAdapter {
             return this;
         }
                
+        
+        private void addSimpleAttribute(List attributes, String uri, String attributeLocalName,Tree childValueTree){
+        	 switch(childValueTree.getType()) {
+             case JSONLexer.STRING: {
+                 String stringValue = childValueTree.getChild(0).getText();
+                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue.substring(1, stringValue.length() - 1)));
+                 break;
+             }
+             case JSONLexer.NUMBER: {
+                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, childValueTree.getChild(0).getText()));
+                 break;
+             }
+             case JSONLexer.TRUE: {
+                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, TRUE));
+                 break;
+             }
+             case JSONLexer.FALSE: {
+                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, FALSE));
+                 break;
+             }
+             case JSONLexer.NULL: {
+                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, XMLConstants.EMPTY_STRING));
+                 break;
+             } 
+        	 }
+        }
+
+        
         @Override
         protected List<Attribute> attributes() {
             if(null == attributes) {            	
@@ -243,30 +271,14 @@ public class JSONReader extends XMLReaderAdapter {
                         }
                         
                         Tree childValueTree = childTree.getChild(1);
-                        switch(childValueTree.getType()) {
-                        case JSONLexer.STRING: {
-                            String stringValue = childValueTree.getChild(0).getText();
-                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue.substring(1, stringValue.length() - 1)));
-                            break;
+                        if(childValueTree.getType() == JSONLexer.ARRAY){
+                        	for(int y=0, size=childValueTree.getChildCount(); y<size; y++) {
+                            	CommonTree nextChildTree = (CommonTree) childValueTree.getChild(y);
+                            	addSimpleAttribute(attributes, uri, attributeLocalName, nextChildTree);
+                        	}
+                        }else{
+                            addSimpleAttribute(attributes, uri, attributeLocalName, childValueTree);
                         }
-                        case JSONLexer.NUMBER: {
-                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, childValueTree.getChild(0).getText()));
-                            break;
-                        }
-                        case JSONLexer.TRUE: {
-                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, TRUE));
-                            break;
-                        }
-                        case JSONLexer.FALSE: {
-                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, FALSE));
-                            break;
-                        }
-                        case JSONLexer.NULL: {
-                            attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, XMLConstants.EMPTY_STRING));
-                            break;
-                        }
-                     }
-  
                     }
                     
                 } else {

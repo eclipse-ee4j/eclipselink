@@ -181,22 +181,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         complexType = false;
     }
 
-    /**
-     * INTERNAL:
-     */
-    public void cdata(String value) {
-        //Format the CDATA on it's own line
-        try {
-            if(isStartElementOpen) {
-                writer.write('>');
-                isStartElementOpen = false;
-            }
-            super.cdata(value);
-            complexType=false;
-        }catch(IOException ex) {
-            throw XMLMarshalException.marshalException(ex);
-        }
-    }
 
     /**
      * Receive notification of a node.

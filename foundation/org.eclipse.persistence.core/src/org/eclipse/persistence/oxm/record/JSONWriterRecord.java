@@ -455,17 +455,7 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void cdata(String value) {
-        try {
-            if(isStartElementOpen) {
-                isStartElementOpen = false;
-                writer.write('>');
-            }
-            writer.write("<![CDATA[");
-            writer.write(value);
-            writer.write("]]>");
-        } catch(IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+    	writeStringValueCharacters(value);    	
     }
 
     /**

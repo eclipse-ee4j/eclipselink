@@ -12,21 +12,17 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.cdata;
 
-import java.util.HashMap;
-import java.util.Vector;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-
-public class XmlCDATATestCases extends JAXBTestCases {
+public class XmlCDATATestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlcdata/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlcdata/employee.json";
     public XmlCDATATestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Employee.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
     
     public Object getControlObject() {
@@ -35,6 +31,7 @@ public class XmlCDATATestCases extends JAXBTestCases {
         emp.xmlData = "<root><child>A string wrapped in cdata</child></root>";
         return emp;
     }
+    
     @Override
     public void testObjectToContentHandler() {
         //CDATA sections don't work with content handlers

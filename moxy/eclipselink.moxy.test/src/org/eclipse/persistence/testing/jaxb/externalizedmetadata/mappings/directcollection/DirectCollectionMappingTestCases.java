@@ -23,7 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.w3c.dom.Document;
 
@@ -31,10 +31,12 @@ import org.w3c.dom.Document;
  * Tests XmlDirectCollectionMapping via eclipselink-oxm.xml
  *
  */
-public class DirectCollectionMappingTestCases extends JAXBTestCases {
+public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
     
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/employee.xml";
 	private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/write-employee.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/employee.json";
+	private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/write-employee.json";
 
     private static final int EMPID = 101;
     private static final String PRJ_ID1 = "01";
@@ -58,6 +60,8 @@ public class DirectCollectionMappingTestCases extends JAXBTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
         setClasses(new Class[]{});
     }
 
