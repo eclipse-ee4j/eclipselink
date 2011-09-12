@@ -57,6 +57,8 @@ public class Helper {
     public final static String PBOOLEAN = "boolean";
     public final static String PBYTE = "byte";
     public final static String CALENDAR = "java.util.Calendar";
+    public final static String CHARACTER = "java.lang.Character";
+    public final static String CHAR = "char";
     public final static String PDOUBLE = "double";
     public final static String PFLOAT = "float";
     public final static String PINT = "int";
@@ -121,6 +123,8 @@ public class Helper {
         javaTypes.put(PSHORT, XMLConstants.SHORT_QNAME);
         javaTypes.put(QNAME_CLASS, XMLConstants.QNAME_QNAME);
         javaTypes.put(STRING, XMLConstants.STRING_QNAME);
+        javaTypes.put(CHAR, XMLConstants.STRING_QNAME);
+        javaTypes.put(CHARACTER, XMLConstants.STRING_QNAME);
         // other pairs
         javaTypes.put(ABYTE, XMLConstants.BYTE_QNAME);
         javaTypes.put(BOOLEAN, XMLConstants.BOOLEAN_QNAME);
