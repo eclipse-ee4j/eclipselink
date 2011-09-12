@@ -37,7 +37,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -51,7 +50,6 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueDerived
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueDerivedIDPK;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity;
-import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity;
@@ -72,14 +70,14 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableRelationshi
  * "UNSPECIFIED"
  */
 public class CacheableModelJunitTest extends JUnitTestCase {
-    private static int m_cacheableTrueEntity1Id;
-    private static int m_cacheableForceProtectedEntity1Id;
-    private static int m_cacheableTrueEntity2Id;
-    private static int m_childCacheableFalseEntityId;
-    private static int m_cacheableProtectedEntityId;
-    private static int m_forcedProtectedEntityCompositId;
+    protected static int m_cacheableTrueEntity1Id;
+    protected static int m_cacheableForceProtectedEntity1Id;
+    protected static int m_cacheableTrueEntity2Id;
+    protected static int m_childCacheableFalseEntityId;
+    protected static int m_cacheableProtectedEntityId;
+    protected static int m_forcedProtectedEntityCompositId;    
+    protected static int m_cacheableRelationshipsEntityId;
     
-	private static int m_cacheableRelationshipsEntityId;
     public CacheableModelJunitTest() {
         super();
     }
@@ -196,7 +194,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     public void setUp() {
-        super.setUp();
         clearDSCache();
     }
     
@@ -516,28 +513,32 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      * Test refresh using EM properties 
      */
     public void testRefreshWithEMProperties() {
-        // This will put the entity in the cache.
-        EntityManager em = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
-        
-        // Update the database manually through a different EM
-        String updatedName = "testRefreshWithEMProperties";
-        updateCacheableTrueEntityNameInSharedCache(updatedName);
-       
-        // This setting should be ignored on a refresh operation ...
-        em.setProperty(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
-        beginTransaction(em);
-        try{
-            em.refresh(cachedEntity);
-            commitTransaction(em);
-        }catch(Exception ex){
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // This will put the entity in the cache.
+            EntityManager em = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+            // Update the database manually through a different EM
+            String updatedName = "testRefreshWithEMProperties";
+            updateCacheableTrueEntityNameInSharedCache(updatedName);
+           
+            // This setting should be ignored on a refresh operation ...
+            em.setProperty(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
+            beginTransaction(em);
+            try{
+                cachedEntity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+                em.refresh(cachedEntity);
+                commitTransaction(em);
+            }catch(Exception ex){
+                ex.printStackTrace();
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }finally{
+                closeEM(em);
             }
-        }finally{
-            closeEM(em);
+            assertTrue("CacheableTrueEntity should have been refreshed.", cachedEntity.getName().equals(updatedName));
         }
-        assertTrue("CacheableTrueEntity should have been refreshed.", cachedEntity.getName().equals(updatedName));
         
     }
     
@@ -545,29 +546,33 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      * Test refresh using refresh properties. 
      */
     public void testRefreshWithRefreshProperties() {
-        // This will put the entity in the cache.
-        EntityManager em = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
-        
-        // Update the database manually through a different EM
-        String updatedName = "testRefreshWithRefreshProperties";
-        updateCacheableTrueEntityNameInSharedCache(updatedName);
-        
-        HashMap properties = new HashMap();
-        // This setting should be ignored on a refresh operation ...
-        properties.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
-        beginTransaction(em);
-        try{
-            em.refresh(cachedEntity, properties);
-        }catch(Exception ex){ 
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // This will put the entity in the cache.
+            EntityManager em = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+            
+            // Update the database manually through a different EM
+            String updatedName = "testRefreshWithRefreshProperties";
+            updateCacheableTrueEntityNameInSharedCache(updatedName);
+            
+            HashMap properties = new HashMap();
+            // This setting should be ignored on a refresh operation ...
+            properties.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
+            beginTransaction(em);
+            try{
+                cachedEntity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
+                em.refresh(cachedEntity, properties);
+                commitTransaction(em);
+            }catch(Exception ex){ 
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+            }finally{
+                closeEM(em);
             }
-        }finally{
-            closeEM(em);
+            assertTrue("CacheableTrueEntity should have been refreshed.", cachedEntity.getName().equals(updatedName));
         }
-        assertTrue("CacheableTrueEntity should have been refreshed.", cachedEntity.getName().equals(updatedName));
-        
     }
     
     /**
@@ -576,31 +581,34 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      * CacheStoreMode = BYPASS
      */
     public void testRetrieveBYPASSStoreBYPASS1() {
-        // Put the entity in the EM UOW and shared cache.
-        EntityManager em = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
-        
-        // Update the entity name in the shared cache through a different EM.
-        String updatedName = "testRetrieveBYPASSStoreBYPASS1";
-        updateCacheableTrueEntityNameInSharedCache(updatedName);
-        
-        // Execute find by pk query using Retrieve BYPASS, Store BYPASS on EM.
-        // It should return the same entity.
-        CacheableTrueEntity entity1 = findCacheableTrueEntity_BYPASS_BYPASS(em, m_cacheableTrueEntity1Id);
-        assertTrue("The entity instances must be the same", entity1 == cachedEntity);
-        assertTrue("The name should not of been refreshed", entity1.getName().equals(cachedEntity.getName()));
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) { 
+            // Put the entity in the EM UOW and shared cache.
+            EntityManager em = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
             
-        // Issue a find using refresh on EM, should pick up the updated name.
-        HashMap properties = new HashMap();
-        properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
-        CacheableTrueEntity entity1b = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
-        assertTrue("CacheableTrueEntity should of been refreshed.", entity1b.getName().equals(updatedName));
-        closeEM(em);
-        
-        // On a different EM execute a find by pk using Retrieve BYPASS, 
-        // Store BYPASS, we should get the updated name.
-        CacheableTrueEntity entity2 = findCacheableTrueEntity_BYPASS_BYPASS(null, m_cacheableTrueEntity1Id);
-        assertTrue("CacheableTrueEntity should have been refreshed.", entity2.getName().equals(updatedName));
+            // Update the entity name in the shared cache through a different EM.
+            String updatedName = "testRetrieveBYPASSStoreBYPASS1";
+            updateCacheableTrueEntityNameInSharedCache(updatedName);
+            
+            // Execute find by pk query using Retrieve BYPASS, Store BYPASS on EM.
+            // It should return the same entity.
+            CacheableTrueEntity entity1 = findCacheableTrueEntity_BYPASS_BYPASS(em, m_cacheableTrueEntity1Id);
+            assertTrue("The entity instances must be the same", entity1 == cachedEntity);
+            assertTrue("The name should not of been refreshed", entity1.getName().equals(cachedEntity.getName()));
+                
+            // Issue a find using refresh on EM, should pick up the updated name.
+            HashMap properties = new HashMap();
+            properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
+            CacheableTrueEntity entity1b = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
+            assertTrue("CacheableTrueEntity should of been refreshed.", entity1b.getName().equals(updatedName));
+            closeEM(em);
+            
+            // On a different EM execute a find by pk using Retrieve BYPASS, 
+            // Store BYPASS, we should get the updated name.
+            CacheableTrueEntity entity2 = findCacheableTrueEntity_BYPASS_BYPASS(null, m_cacheableTrueEntity1Id);
+            assertTrue("CacheableTrueEntity should have been refreshed.", entity2.getName().equals(updatedName));
+        }
     }
     
     /**
@@ -609,143 +617,158 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      * CacheStoreMode = BYPASS
      */
     public void testRetrieveBYPASSStoreBYPASS2() {
-        // Put the entity in the EM UOW and shared cache.
-        EntityManager em = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
-        
-        // Update the entity name in the shared cache through a different EM.
-        String updatedName = "testRetrieveBYPASSStoreBYPASS2";
-        updateCacheableTrueEntityNameAndBypassStore(updatedName);
-        
-        // Execute find by pk query using Retrieve BYPASS, Store BYPASS on EM.
-        // It should return the same entity.
-        CacheableTrueEntity entity1a = findCacheableTrueEntity_BYPASS_BYPASS(em, m_cacheableTrueEntity1Id);
-        assertTrue("The entity returned should match the cached instance", entity1a == cachedEntity);
-        assertTrue("CacheableTrueEntity should have been refreshed.", entity1a.getName().equals(cachedEntity.getName()));
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // Put the entity in the EM UOW and shared cache.
+            EntityManager em = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
             
-        // On a different EM issue a find (using internal EclipseLink defaults)
-        CacheableTrueEntity entity2 = findCacheableTrueEntity(null, m_cacheableTrueEntity1Id);
-        assertTrue("CacheableTrueEntity should not of been refreshed.", entity2.getName().equals(entity1a.getName()));
+            // Update the entity name in the shared cache through a different EM.
+            String updatedName = "testRetrieveBYPASSStoreBYPASS2";
+            updateCacheableTrueEntityNameAndBypassStore(updatedName);
             
-        // Issue a find on EM1 using REFRESH.
-        HashMap properties = new HashMap();
-        properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
-        CacheableTrueEntity entity1b = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
-        assertTrue("CacheableTrueEntity should be from the shared cache.", entity1b.getName().equals(updatedName));
-        
-        closeEM(em);
+            // Execute find by pk query using Retrieve BYPASS, Store BYPASS on EM.
+            // It should return the same entity.
+            CacheableTrueEntity entity1a = findCacheableTrueEntity_BYPASS_BYPASS(em, m_cacheableTrueEntity1Id);
+            assertTrue("The entity returned should match the cached instance", entity1a == cachedEntity);
+            assertTrue("CacheableTrueEntity should have been refreshed.", entity1a.getName().equals(cachedEntity.getName()));
+                
+            // On a different EM issue a find (using internal EclipseLink defaults)
+            CacheableTrueEntity entity2 = findCacheableTrueEntity(null, m_cacheableTrueEntity1Id);
+            assertTrue("CacheableTrueEntity should not of been refreshed.", entity2.getName().equals(entity1a.getName()));
+                
+            // Issue a find on EM1 using REFRESH.
+            HashMap properties = new HashMap();
+            properties.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.REFRESH);
+            CacheableTrueEntity entity1b = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
+            assertTrue("CacheableTrueEntity should be from the shared cache.", entity1b.getName().equals(updatedName));
+            
+            closeEM(em);
+        }
     }
     
     /**
      * Test: Named query using retrieve BYPASS and store USE (when updated object in shared cache).
      */
     public void testRetrieveBYPASSStoreUSE1() {
-        // Put the entity in the EM UOW and shared cache.
-        EntityManager em = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
-        
-        // Update the entity name in the shared cache through a different EM.
-        String updatedName = "testRetrieveBYPASSStoreUSE1";
-        updateCacheableTrueEntityNameInSharedCache(updatedName);
-        
-        // Execute find by pk query using Retrieve BYPASS, Store USE on EM.
-        // It should return the same entity.
-        CacheableTrueEntity entity1 = findCacheableTrueEntity_BYPASS_USE(em, m_cacheableTrueEntity1Id);
-        assertTrue("The entity instances must be the same", entity1 == cachedEntity);
-        assertTrue("The name should not of been refreshed", entity1.getName().equals(cachedEntity.getName()));
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // Put the entity in the EM UOW and shared cache.
+            EntityManager em = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
             
-        // Execute find by pk query using Retrieve USE, Store BYPASS on a
-        // different EM. The entity returned should have been read from the 
-        // shared cache with the updated name.
-        CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(null, m_cacheableTrueEntity1Id);
-        assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(updatedName));
+            // Update the entity name in the shared cache through a different EM.
+            String updatedName = "testRetrieveBYPASSStoreUSE1";
+            updateCacheableTrueEntityNameInSharedCache(updatedName);
             
-        closeEM(em);
+            // Execute find by pk query using Retrieve BYPASS, Store USE on EM.
+            // It should return the same entity.
+            CacheableTrueEntity entity1 = findCacheableTrueEntity_BYPASS_USE(em, m_cacheableTrueEntity1Id);
+            assertTrue("The entity instances must be the same", entity1 == cachedEntity);
+            assertTrue("The name should not of been refreshed", entity1.getName().equals(cachedEntity.getName()));
+                
+            // Execute find by pk query using Retrieve USE, Store BYPASS on a
+            // different EM. The entity returned should have been read from the 
+            // shared cache with the updated name.
+            CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(null, m_cacheableTrueEntity1Id);
+            assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(updatedName));
+                
+            closeEM(em);
+        }
     }
     
     /**
      * Test: Using a named query with BYPASS and USE (when updated object not in shared cache)
      */
     public void testRetrieveBYPASSStoreUSE2() {
-        // Put the entity in the EM UOW and shared cache.
-        EntityManager em = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
-        
-        // Update the database manually through a different EM and bypass
-        // updating the shared cache.
-        String updatedName = "testRetrieveBYPASSStoreUSE2";
-        updateCacheableTrueEntityNameAndBypassStore(updatedName);
-        
-        // Execute find by pk query using Retrieve BYPASS, Store USE on EM.
-        // It should return the same entity. As an optimization in this case,
-        // the Store USE will update the shared cache.
-        CacheableTrueEntity entity1 = findCacheableTrueEntity_BYPASS_USE(em, m_cacheableTrueEntity1Id);
-        assertTrue("The entity instances must be the same", entity1 == cachedEntity);
-        assertTrue("The name should not of been refreshed", entity1.getName().equals(cachedEntity.getName()));
-        closeEM(em);
-        
-        // A find on a new EM should return the value from the shared cache 
-        // which should have been updated with the Store USE value above
-        CacheableTrueEntity entity2 = findCacheableTrueEntity(null, m_cacheableTrueEntity1Id);
-        assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(updatedName));
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // Put the entity in the EM UOW and shared cache.
+            EntityManager em = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
+            
+            // Update the database manually through a different EM and bypass
+            // updating the shared cache.
+            String updatedName = "testRetrieveBYPASSStoreUSE2";
+            updateCacheableTrueEntityNameAndBypassStore(updatedName);
+            
+            // Execute find by pk query using Retrieve BYPASS, Store USE on EM.
+            // It should return the same entity. As an optimization in this case,
+            // the Store USE will update the shared cache.
+            CacheableTrueEntity entity1 = findCacheableTrueEntity_BYPASS_USE(em, m_cacheableTrueEntity1Id);
+            assertTrue("The entity instances must be the same", entity1 == cachedEntity);
+            assertTrue("The name should not of been refreshed", entity1.getName().equals(cachedEntity.getName()));
+            closeEM(em);
+            
+            // A find on a new EM should return the value from the shared cache 
+            // which should have been updated with the Store USE value above
+            CacheableTrueEntity entity2 = findCacheableTrueEntity(null, m_cacheableTrueEntity1Id);
+            assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(updatedName));
+        }
     }
     
     /**
      * Test: Named query using retrieve USE and store BYPASS (when updated object in shared cache).
      */
     public void testRetrieveUSEStoreBYPASS1() {
-        // Put the entity in the UOW and shared cache for EM1
-        EntityManager em = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
-        
-        // Update the entity name in the shared cash through a different EM.
-        String updatedName = "testRetrieveUSEStoreBYPASS1";
-        updateCacheableTrueEntityNameInSharedCache(updatedName);
-        
-        // Execute find by pk query using Retrieve USE, Store BYPASS on EM.
-        // It should return the same entity.
-        CacheableTrueEntity entity1 = findCacheableTrueEntity_USE_BYPASS(em, m_cacheableTrueEntity1Id);
-        assertTrue("The entity returned should match the cached instance", entity1 == cachedEntity);
-        assertTrue("CacheableTrueEntity should not have been refreshed.", entity1.getName().equals(cachedEntity.getName()));
-        closeEM(em);
-        
-        // Execute a find by pk query using Retrieve USE, Store BYPASS on a 
-        // different EM. The entity returned should have been read from the 
-        // shared cache with the updated name.
-        CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(null, m_cacheableTrueEntity1Id);
-        assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(updatedName));
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // Put the entity in the UOW and shared cache for EM1
+            EntityManager em = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em, m_cacheableTrueEntity1Id);
+            
+            // Update the entity name in the shared cash through a different EM.
+            String updatedName = "testRetrieveUSEStoreBYPASS1";
+            updateCacheableTrueEntityNameInSharedCache(updatedName);
+            
+            // Execute find by pk query using Retrieve USE, Store BYPASS on EM.
+            // It should return the same entity.
+            CacheableTrueEntity entity1 = findCacheableTrueEntity_USE_BYPASS(em, m_cacheableTrueEntity1Id);
+            assertTrue("The entity returned should match the cached instance", entity1 == cachedEntity);
+            assertTrue("CacheableTrueEntity should not have been refreshed.", entity1.getName().equals(cachedEntity.getName()));
+            closeEM(em);
+            
+            // Execute a find by pk query using Retrieve USE, Store BYPASS on a 
+            // different EM. The entity returned should have been read from the 
+            // shared cache with the updated name.
+            CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(null, m_cacheableTrueEntity1Id);
+            assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(updatedName));
+        }
     }
     
     /**
      * Test: Named query using retrieve USE and store BYPASS (when updated object NOT in shared cache).
      */
     public void testRetrieveUSEStoreBYPASS2() {
-        // Put the entity in the UOW and shared cache for EM1
-        EntityManager em1 = createDSEntityManager();
-        CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em1, m_cacheableTrueEntity1Id);
-        
-        // Update the database manually through a different EM and bypass
-        // updating the shared cache.
-        String updatedName = "testRetrieveUSEStoreBYPASS2";
-        updateCacheableTrueEntityNameAndBypassStore(updatedName);
-        
-        // Execute find by pk query using Retrieve USE, Store BYPASS on EM.
-        // It should return the same entity.
-        CacheableTrueEntity entity1 = findCacheableTrueEntity_USE_BYPASS(em1, m_cacheableTrueEntity1Id);
-        assertTrue("The entity returned should match the cached instance", entity1 == cachedEntity);
-        assertTrue("CacheableTrueEntity should not have been refreshed.", entity1.getName().equals(cachedEntity.getName()));
-        closeEM(em1);
-        
-        // Issue a find on a different EM. The entity should come from the
-        // shared cache and have a stale name.
-        EntityManager em2 = createDSEntityManager();
-        CacheableTrueEntity entity2 = findCacheableTrueEntity(em2, m_cacheableTrueEntity1Id);
-        assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(entity1.getName()));
+        // Cannot create parallel entity managers in the server.
+        if (! isOnServer()) {
+            // Put the entity in the UOW and shared cache for EM1
+            EntityManager em1 = createDSEntityManager();
+            CacheableTrueEntity cachedEntity = findCacheableTrueEntity(em1, m_cacheableTrueEntity1Id);
             
-        // Now refresh the entity, should get the updated name.
-        em2.refresh(entity2);
-        assertTrue("CacheableTrueEntity should have the name from database.", entity2.getName().equals(updatedName));
-        closeEM(em2);
+            // Update the database manually through a different EM and bypass
+            // updating the shared cache.
+            String updatedName = "testRetrieveUSEStoreBYPASS2";
+            updateCacheableTrueEntityNameAndBypassStore(updatedName);
+            
+            // Execute find by pk query using Retrieve USE, Store BYPASS on EM.
+            // It should return the same entity.
+            CacheableTrueEntity entity1 = findCacheableTrueEntity_USE_BYPASS(em1, m_cacheableTrueEntity1Id);
+            assertTrue("The entity returned should match the cached instance", entity1 == cachedEntity);
+            assertTrue("CacheableTrueEntity should not have been refreshed.", entity1.getName().equals(cachedEntity.getName()));
+            closeEM(em1);
+            
+            // Issue a find on a different EM. The entity should come from the
+            // shared cache and have a stale name.
+            EntityManager em2 = createDSEntityManager();
+            CacheableTrueEntity entity2 = findCacheableTrueEntity(em2, m_cacheableTrueEntity1Id);
+            assertTrue("CacheableTrueEntity should have the name from the shared cache.", entity2.getName().equals(entity1.getName()));
+                
+            // Now refresh the entity, should get the updated name.
+            em2.refresh(entity2);
+            assertTrue("CacheableTrueEntity should have the name from database.", entity2.getName().equals(updatedName));
+            closeEM(em2);
+        }
     }
    
     /**
@@ -991,7 +1014,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         EntityManager em = null;
         
         try {
-            em = createEntityManager("DISABLE_SELECTIVE");
+            if (!isOnServer()) {
+                em = createEntityManager("DISABLE_SELECTIVE");
+            } else {
+                em = createEntityManager("MulitPU-4");                
+            }
             beginTransaction(em);
             
             CacheableTrueEntity cacheableTrueEntity = new CacheableTrueEntity();
@@ -1075,6 +1102,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      */
     void testDetailsOrder(boolean useSharedCache, boolean beginEarlyTransaction) {
         String puName = useSharedCache ? "ALL" : "NONE";
+        if (isOnServer()) {
+            puName = useSharedCache ? "MulitPU-1" : "MulitPU-2";
+        }
         int entityId;
         int nDetails = 2;
         
@@ -1225,8 +1255,15 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             CacheableFalseEntity cfe = cte.getCacheableFalse();
             CacheableProtectedEntity cpe = cfe.getProtectedEntity();
             ServerSession session = em.unwrap(ServerSession.class);
-            assertNull("An protected relationship was found in the shared cache", ((CacheableForceProtectedEntity)session.getIdentityMapAccessor().getFromIdentityMap(cte)).getCacheableFalse());
-            CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);            
+            assertNull("An protected relationshipwas found in the shared cache", ((CacheableForceProtectedEntity)session.getIdentityMapAccessor().getFromIdentityMap(cte)).getCacheableFalse());
+            CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
+            for (CacheableProtectedEntity cpe1 : ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableProtecteds()){
+                assertNotNull("An protected relationship in OneToMany was not found in the shared cache", cpe1);
+            }
+            assertNotNull("An protected relationship in ManyToOne was found in the shared cache", ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableFPE());
+            for (ProtectedEmbeddable cpe2 : ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getProtectedEmbeddables()){
+                assertNull("An protected relationship in ElementCollection was found in the shared cache", cpe2);
+            }
         }finally{
         rollbackTransaction(em);
         closeEM(em);
@@ -1267,7 +1304,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             beginTransaction(em);
             ForceProtectedEntityWithComposite managedCPE = em.find(ForceProtectedEntityWithComposite.class, cte.getId());
             CacheableRelationshipsEntity managedCRE = em.find(CacheableRelationshipsEntity.class, cre.getId());
-            //assertEquals("Cache was not used for Protected Isolation", cachedCPE.getProtectedEmbeddable().getName(),managedCPE.getProtectedEmbeddable().getName());
+            assertEquals("Cache was not used for Protected Isolation", cachedCPE.getProtectedEmbeddable().getName(),managedCPE.getProtectedEmbeddable().getName());
             //follwoing code is commented out due to bug 336651
             //assertEquals("Cache was not used for Protected Isolation", cachedCRE.getProtectedEmbeddables().get(0).getName(),managedCRE.getProtectedEmbeddables().get(0).getName());
         }finally{
@@ -1291,36 +1328,39 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     public void testProtectedCaching(){
-        EntityManager em = createDSEntityManager();
-        beginTransaction(em);
-        try{
-            CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
-            CacheableFalseEntity cfe = cte.getCacheableFalse();
-            CacheableProtectedEntity cpe = cfe.getProtectedEntity();
-            CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
-            List<CacheableProtectedEntity> cacheableProtects = cre.getCacheableProtecteds();
-            CacheableForceProtectedEntity cfpe = cre.getCacheableFPE();
-            ServerSession session = em.unwrap(ServerSession.class);
-            closeEM(em);
-            CacheableProtectedEntity cachedCPE = (CacheableProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cpe);
-            assertNotNull("CacheableProtectedEntity was not found in the cache", cachedCPE);
-            CacheableForceProtectedEntity cachedCFPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cfpe);
-            assertNotNull("CacheableForceProtectedEntity from ManyToOne relationship was not found in the cache", cachedCFPE);
-            for (CacheableProtectedEntity cpe1 : cacheableProtects){
-                CacheableProtectedEntity cachedCPE1 = (CacheableProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cpe1);
-                assertNotNull("CacheableProtectedEntity from OneToMany relationship was not found in the cache", cachedCPE1);
-            } 
-            cachedCPE.setName("NewName"+System.currentTimeMillis());
-            cachedCFPE.setName("NewName"+System.currentTimeMillis());
-            em = createDSEntityManager();
+        //Nested transaction not supported
+        if (! isOnServer()) {
+            EntityManager em = createDSEntityManager();
             beginTransaction(em);
-            CacheableProtectedEntity managedCPE = em.find(CacheableProtectedEntity.class, cpe.getId());
-            CacheableForceProtectedEntity managedCFPE = em.find(CacheableForceProtectedEntity.class, cfpe.getId());
-            assertEquals("Cache was not used for Protected Isolation", cachedCPE.getName(),managedCPE.getName());
-            assertEquals("Cache was not used for Protected Isolation", cachedCFPE.getName(),managedCFPE.getName());
-        }finally{
-        rollbackTransaction(em);
-        closeEM(em);
+            try{
+                CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
+                CacheableFalseEntity cfe = cte.getCacheableFalse();
+                CacheableProtectedEntity cpe = cfe.getProtectedEntity();
+                CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
+                List<CacheableProtectedEntity> cacheableProtects = cre.getCacheableProtecteds();
+                CacheableForceProtectedEntity cfpe = cre.getCacheableFPE();
+                ServerSession session = em.unwrap(ServerSession.class);
+                closeEM(em);
+                CacheableProtectedEntity cachedCPE = (CacheableProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cpe);
+                assertNotNull("CacheableProtectedEntity was not found in the cache", cachedCPE);
+                CacheableForceProtectedEntity cachedCFPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cfpe);
+                assertNotNull("CacheableForceProtectedEntity from ManyToOne relationship was not found in the cache", cachedCFPE);
+                for (CacheableProtectedEntity cpe1 : cacheableProtects){
+                    CacheableProtectedEntity cachedCPE1 = (CacheableProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cpe1);
+                    assertNotNull("CacheableProtectedEntity from OneToMany relationship was not found in the cache", cachedCPE1);
+                } 
+                cachedCPE.setName("NewName"+System.currentTimeMillis());
+                cachedCFPE.setName("NewName"+System.currentTimeMillis());
+                em = createDSEntityManager();
+                beginTransaction(em);
+                CacheableProtectedEntity managedCPE = em.find(CacheableProtectedEntity.class, cpe.getId());
+                CacheableForceProtectedEntity managedCFPE = em.find(CacheableForceProtectedEntity.class, cfpe.getId());
+                assertEquals("Cache was not used for Protected Isolation", cachedCPE.getName(),managedCPE.getName());
+                assertEquals("Cache was not used for Protected Isolation", cachedCFPE.getName(),managedCFPE.getName());
+            }finally{
+            rollbackTransaction(em);
+            closeEM(em);
+            }
         }
     }
     
@@ -1339,7 +1379,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
                 assertTrue("Relationship NONCacheable metadata was not processed correctly", !mapping.isCacheable());
             }
         }
-        em.close();
+        closeEM(em);
         
     }
     
@@ -1378,12 +1418,14 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testUpdateForceProtectedOneToOne(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
+        int cfeID = 0;
         try{
             CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             CacheableFalseEntity oldcfe = cte.getCacheableFalse();
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableFalseEntity cfe = new CacheableFalseEntity();
             em.persist(cfe);
+            cfeID = cfe.getId();
             cte.setCacheableFalse(cfe);
             commitTransaction(em);
             CacheableForceProtectedEntity cachedCPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cte);
@@ -1393,6 +1435,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertEquals("FK update not cached", cfe.getId(), cacheableFalsefk);
             beginTransaction(em);
             cte.setCacheableFalse(oldcfe);
+            cfe = em.find(CacheableFalseEntity.class, cfeID);
             em.remove(cfe);
             commitTransaction(em);
         }finally{
@@ -1444,20 +1487,23 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testUpdateProtectedOneToMany(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
+        int cfeID = 0;
         try{
             CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableProtectedEntity cfe = new CacheableProtectedEntity();
             em.persist(cfe);
+            cfeID = cfe.getId();
             cfe.setForcedProtected(cte);
             cte.getCacheableProtecteds().add(cfe);
             commitTransaction(em);
 
             CacheableForceProtectedEntity cachedCPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cte);
-            assertTrue("A protected OneToMany relationship was not merged into the shared cache", cachedCPE.getCacheableProtecteds() != null || !cachedCPE.getCacheableProtecteds().isEmpty());
+            assertFalse("A protected OneToMany relationship was not merged into the shared cache", cachedCPE.getCacheableProtecteds() == null || cachedCPE.getCacheableProtecteds().isEmpty());
             beginTransaction(em);
             cte.getCacheableProtecteds().clear();
             cfe.setForcedProtected(null);
+            cfe = em.find(CacheableProtectedEntity.class, cfeID);
             em.remove(cfe);
             commitTransaction(em);
         }finally{
@@ -1471,17 +1517,20 @@ public class CacheableModelJunitTest extends JUnitTestCase {
 	public void testUpdateProtectedManyToOne(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
+        int creID = 0;
         try{
             CacheableForceProtectedEntity cfpe = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableRelationshipsEntity cre = new CacheableRelationshipsEntity();
             em.persist(cre);
+            creID = cre.getId();
             cre.setCacheableFPE(cfpe);
             commitTransaction(em);
 
             CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
-            assertTrue("A protected ManyToOne relationship was not merged into the shared cache", cachedCRE.getCacheableFPE() != null);
+            assertFalse("A protected ManyToOne relationship was not merged into the shared cache", cachedCRE.getCacheableFPE() == null);
             beginTransaction(em);
+            cre = em.find(CacheableRelationshipsEntity.class, creID);
             em.remove(cre);
             commitTransaction(em);
         }finally{
@@ -1495,6 +1544,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testUpdateProtectedManyToMany(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
+        int cfdID1 = 0, cfdID2 = 0;
         try{
             CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
             ServerSession session = em.unwrap(ServerSession.class);
@@ -1502,6 +1552,8 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             CacheableFalseDetail cfd2 = new CacheableFalseDetail();
             em.persist(cfd1);
             em.persist(cfd2);
+            cfdID1 = cfd1.getId();
+            cfdID2 = cfd2.getId();
             cre.addCacheableFalseDetail(cfd1);
             cre.addCacheableFalseDetail(cfd2);
             commitTransaction(em);
@@ -1510,6 +1562,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertTrue("A protected ManyToMany relationship was merged into the shared cache", cachedCRE.getCacheableFalseDetails() == null || cachedCRE.getCacheableFalseDetails().isEmpty());
             beginTransaction(em);
             cre.getCacheableFalseDetails().clear();
+            cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
+            cfd1 = em.find(CacheableFalseDetail.class, cfdID1);
+            cfd2 = em.find(CacheableFalseDetail.class, cfdID2);
+            cre.removeCacheableFalseDetail(cfd1);
+            cre.removeCacheableFalseDetail(cfd2);
             em.remove(cfd1);
             em.remove(cfd2);
             commitTransaction(em);
@@ -1534,8 +1591,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             commitTransaction(em);
 
             CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
-            //cannot access relationships is protected shared instance
-            //assertTrue("A protected ElementCollection relationship was merged into the shared cache", cachedCRE.getProtectedEmbeddables() == null || cachedCRE.getProtectedEmbeddables().isEmpty());
+            assertTrue("A protected ElementCollection relationship was merged into the shared cache", cachedCRE.getProtectedEmbeddables() == null || cachedCRE.getProtectedEmbeddables().isEmpty());
             beginTransaction(em);
             cre.getProtectedEmbeddables().clear();
             commitTransaction(em);
@@ -1550,11 +1606,13 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testIsolationBeforeEarlyTxBegin(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
+        int cfeID = 0;
         try{
             CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableProtectedEntity cfe = new CacheableProtectedEntity();
             em.persist(cfe);
+            cfeID = cfe.getId();
             cfe.setForcedProtected(cte);
             cte.getCacheableProtecteds().add(cfe);
             em.flush();
@@ -1567,6 +1625,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             beginTransaction(em);
             cte.getCacheableProtecteds().clear();
             cfe.setForcedProtected(null);
+            cfe = em.find(CacheableProtectedEntity.class, cfeID);
             em.remove(cfe);
             commitTransaction(em);
         }finally{
@@ -1727,7 +1786,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     /**
      * Convenience method.
      */
-    private boolean usesNoCache(ClassDescriptor descriptor) {
+    protected boolean usesNoCache(ClassDescriptor descriptor) {
         return descriptor.isIsolated();
     }
 }

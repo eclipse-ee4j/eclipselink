@@ -19,7 +19,6 @@ package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
@@ -27,7 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreato
 /*
  * The test is testing against "MulitPU-5" persistence unit which has <shared-cache-mode> to be UNSPECIFIED
  */
-public class CacheableModelJunitTestUnspecified extends JUnitTestCase {
+public class CacheableModelJunitTestUnspecified extends CacheableModelJunitTest {
     
     public CacheableModelJunitTestUnspecified() {
         super();
@@ -39,7 +38,6 @@ public class CacheableModelJunitTestUnspecified extends JUnitTestCase {
     }
     
     public void setUp() {
-        super.setUp();
         clearCache("MulitPU-5");
     }
     
@@ -63,44 +61,10 @@ public class CacheableModelJunitTestUnspecified extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED.
-     */
-    public void testCachingOnUNSPECIFIED() {
-        ServerSession session = getServerSession("MulitPU-5");
-        ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
-        assertTrue("CacheableFalseEntity (UNSPECIFIED) from annotations has caching turned on", usesNoCache(falseEntityDescriptor));
-        
-        ClassDescriptor trueEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_TRUE");
-        assertFalse("CacheableTrueEntity (UNSPECIFIED) from annotations has caching turned off", usesNoCache(trueEntityDescriptor));
- 
-        ClassDescriptor childFalseEntityDescriptor = session.getDescriptorForAlias("JPA_CHILD_CACHEABLE_FALSE");
-        assertTrue("ChildCacheableFalseEntity (UNSPECIFIED) from annotations has caching turned on", usesNoCache(childFalseEntityDescriptor));
-        
-        ClassDescriptor falseSubEntityDescriptor = session.getDescriptorForAlias("JPA_SUB_CACHEABLE_FALSE");
-        assertTrue("SubCacheableFalseEntity (UNSPECIFIED) from annotations has caching turned on", usesNoCache(falseSubEntityDescriptor));
-    
-        // Should pick up true from the mapped superclass.
-        ClassDescriptor noneSubEntityDescriptor = session.getDescriptorForAlias("JPA_SUB_CACHEABLE_NONE");
-        assertFalse("SubCacheableNoneEntity (UNSPECIFIED) from annotations has caching turned off", usesNoCache(noneSubEntityDescriptor));
-
-        ClassDescriptor xmlFalseEntityDescriptor = session.getDescriptorForAlias("XML_CACHEABLE_FALSE");
-        assertTrue("CacheableFalseEntity (UNSPECIFIED) from XML has caching turned on", usesNoCache(xmlFalseEntityDescriptor));
-        
-        ClassDescriptor xmlTrueEntityDescriptor = session.getDescriptorForAlias("XML_CACHEABLE_TRUE");
-        assertFalse("CacheableTrueEntity (UNSPECIFIED) from XML has caching turned off", usesNoCache(xmlTrueEntityDescriptor));
-        
-        ClassDescriptor xmlFalseSubEntityDescriptor = session.getDescriptorForAlias("XML_SUB_CACHEABLE_FALSE");
-        assertTrue("SubCacheableFalseEntity (UNSPECIFIED) from XML has caching turned on", usesNoCache(xmlFalseSubEntityDescriptor));
-    
-        // Should pick up true from the mapped superclass.
-        ClassDescriptor xmlNoneSubEntityDescriptor = session.getDescriptorForAlias("XML_SUB_CACHEABLE_NONE");
-        assertFalse("SubCacheableNoneEntity (UNSPECIFIED) from XML has caching turned off", usesNoCache(xmlNoneSubEntityDescriptor));
-    }
-    
-    /**
      * Convenience method.
      */
-    private boolean usesNoCache(ClassDescriptor descriptor) {
-        return descriptor.isIsolated();
+    @Override
+    public ServerSession getPUServerSession(String puName) {
+        return JUnitTestCase.getServerSession("MulitPU-5");
     }
 }

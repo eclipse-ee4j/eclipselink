@@ -24,12 +24,14 @@ import junit.framework.Test;
 
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
+ * It is difficult to test with different persistence units of the server,
+ * so the original tests are split into a different test suite per persistence unit.
  */
 public class CacheableServerTestSuite extends TestSuite {
     public static Test suite() {
         JUnitTestCase.initializePlatform();
         TestSuite suite = new TestSuite();
-        suite.setName("Cacheable ServerTestSuite");
+        suite.setName("Cacheable TestRun");
         suite.addTest(CacheableModelJunitTestAll.suite());
         suite.addTest(CacheableModelJunitTestNone.suite());
         suite.addTest(CacheableModelJunitTestEnableSelective.suite());
