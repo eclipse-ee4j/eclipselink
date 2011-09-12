@@ -884,42 +884,61 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         }
     }
     
+    /**
+     * This test will try to DDL generate on deploy. Meaning once we try to 
+     * access the VPD PU we'll get an exception if we are not an oracle platform
+     * so check before throwing an exception.
+     * 
+     * VPD is currently supported only on Oracle.
+     */
     public void testVPDEMPerTenant() {
-        if (getPlatform(MULTI_TENANT_VPD_PU).isOracle()) {
-            EntityManager em1 = createEntityManager(MULTI_TENANT_VPD_PU);
+        EntityManager em1 = null;
+        EntityManager em2 = null;
+        
+        try {
+            em1 = createEntityManager(MULTI_TENANT_VPD_PU);
             em1.setProperty("tenant.id", "bsmith@here.com");
             
-            EntityManager em2 = createEntityManager(MULTI_TENANT_VPD_PU);
+            em2 = createEntityManager(MULTI_TENANT_VPD_PU);
             em2.setProperty("tenant.id", "gdune@there.ca");
             
-            try {
-                testInsert(em1, "blah", false);
-                testInsert(em2, "halb", false);
+            testInsert(em1, "blah", false);
+            testInsert(em2, "halb", false);
                 
-                assertTrue("Found more than one result", em1.createQuery("Select t from Task t").getResultList().size() == 1);
-                assertTrue("Found more than one result", em2.createQuery("Select t from Task t").getResultList().size() == 1);
+            assertTrue("Found more than one result", em1.createQuery("Select t from Task t").getResultList().size() == 1);
+            assertTrue("Found more than one result", em2.createQuery("Select t from Task t").getResultList().size() == 1);
                 
-                Task task1 = testInsertWithOneSubtask(em1, "Rock that Propsal", false, "Write Proposal", false);
+            Task task1 = testInsertWithOneSubtask(em1, "Rock that Propsal", false, "Write Proposal", false);
                 
-                assertNotNull(em1.find(Task.class, task1.getId()));
-                assertNull(em2.find(Task.class, task1.getId())); // negative test
+            assertNotNull(em1.find(Task.class, task1.getId()));
+            assertNull(em2.find(Task.class, task1.getId())); // negative test
                 
-                Task task3 = testInsert(em2, "mow lawn", true);
+            Task task3 = testInsert(em2, "mow lawn", true);
                 
-                assertNull(em1.find(Task.class, task3.getId())); // negative test
-                assertNotNull(em2.find(Task.class, task3.getId()));
-            } catch (RuntimeException e) {
-                if (isTransactionActive(em1)){
-                    rollbackTransaction(em1);
-                }
-                
+            assertNull(em1.find(Task.class, task3.getId())); // negative test
+            assertNotNull(em2.find(Task.class, task3.getId()));
+        } catch (RuntimeException e) {
+            if (em1 != null && isTransactionActive(em1)){
+                rollbackTransaction(em1);
+            }
+            
+            if (em2 != null && isTransactionActive(em2)){
+                rollbackTransaction(em2);
+            }
+            
+            if (! getPlatform(MULTI_TENANT_VPD_PU).isOracle()) {
+                warning("VPD tests currently run only on an Oracle platform");
+            } else {
                 throw e;
-            } finally {
+            }
+        } finally {
+            if (em1 != null) {
                 closeEntityManager(em1);
+            }
+            
+            if (em2 != null) {
                 closeEntityManager(em2);
             }
-        } else {
-            warning("VPD tests currently run only on an Oracle platform");
         }
     }
 
