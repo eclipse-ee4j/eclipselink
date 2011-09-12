@@ -689,7 +689,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     protected void validateMafiaFamily707(EntityManager em) {
         clearCache(MULTI_TENANT_PU);
         em.clear();
-        this.getServerSession(MULTI_TENANT_PU).setLogLevel(0);
         
         MafiaFamily family = em.find(MafiaFamily.class, family707);
         assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
