@@ -33,6 +33,7 @@ GRANT drop any context TO ${db.user};
 GRANT execute on dbms_flashback TO ${db.user};
 GRANT execute on dbms_rls TO ${db.user};
 GRANT execute on dbms_session TO ${db.user};
+GRANT change notification TO ${db.user};
         </sql>
     </target>
 
