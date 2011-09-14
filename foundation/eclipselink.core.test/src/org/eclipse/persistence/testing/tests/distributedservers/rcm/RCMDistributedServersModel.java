@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.tests.isolatedsession.IsolatedEmployee;
 import org.eclipse.persistence.testing.tests.isolatedsession.IsolatedSessionSystem;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+import org.eclipse.persistence.testing.models.optimisticlocking.OptimisticLockingSystem;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 
@@ -37,6 +38,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
     public void addRequiredSystems() {
         super.addRequiredSystems();
         addRequiredSystem(new IsolatedSessionSystem());
+        addRequiredSystem(new OptimisticLockingSystem());
     }
 
     /**
@@ -105,6 +107,8 @@ public class RCMDistributedServersModel extends DistributedServersModel {
         addTest(new InvalidateObjectWithMissingReferenceTest());
         addTest(new UpdateObjectInvalidationTest());
         addTest(new NativeUpdateObjectInvalidationTest());
+        addTest(new NewObjectWithOptimisticLockingTest());
+
     }
 
     public void startCacheSynchronization() {
