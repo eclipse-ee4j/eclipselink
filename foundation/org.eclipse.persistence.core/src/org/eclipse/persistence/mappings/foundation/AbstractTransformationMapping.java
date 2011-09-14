@@ -1047,7 +1047,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             transformationRow.add(field, value);
         }
         
-        if(changeSet != null) {
+        if(changeSet != null && (!changeSet.isNew() || (query.getDescriptor() != null && query.getDescriptor().shouldUseFullChangeSetsForNewObjects()))) {
             TransformationMappingChangeRecord record = (TransformationMappingChangeRecord)changeSet.getChangesForAttributeNamed(attributeName);
             if (record == null) {
                 record = new TransformationMappingChangeRecord(changeSet);
