@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="theNamespace" xmlns:ns0="theNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="emptyNamespaceTestObject">
+      <xsd:sequence>
+         <xsd:element form="unqualified" minOccurs="0" name="theElementTestString" type="xsd:string"/>
+      </xsd:sequence>
+      <xsd:attribute name="theTestString" type="xsd:string" form="unqualified"/>
+   </xsd:complexType>
+   <xsd:element name="root" type="ns0:emptyNamespaceTestObject"/>
+</xsd:schema>

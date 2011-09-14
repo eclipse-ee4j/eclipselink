@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="myns" targetNamespace="myns">
    <xsd:complexType name="address">
-      <xsd:sequence/>
+      <xsd:sequence>
+         <xsd:element name="street3" type="xsd:string" form="qualified" minOccurs="0"/>
+         <xsd:element name="street4" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
       <xsd:attribute ref="ns0:street"/>
+      <xsd:attribute name="street2" type="xsd:string"/>
       <xsd:attribute name="city" type="xsd:string"/>
    </xsd:complexType>
    <xsd:element name="address" type="ns0:address"/>
    <xsd:attribute name="street" type="xsd:string"/>
+
 </xsd:schema>

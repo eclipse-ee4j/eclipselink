@@ -52,6 +52,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.Occurs;
 import org.eclipse.persistence.internal.oxm.schema.model.Restriction;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleComponent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
@@ -1540,9 +1541,9 @@ public class SchemaGenerator {
         if (namespaceInfo != null) {
             isAttributeFormQualified = namespaceInfo.isAttributeFormQualified();
         }
-        if ((isAttributeFormQualified && !attributeName.getNamespaceURI().equals(lookupNamespace))
-                || !isAttributeFormQualified && !attributeName.getNamespaceURI().equals(EMPTY_STRING)) {
-                
+        
+        boolean addRef = shouldAddRefAndSetForm(attribute, attributeName.getNamespaceURI(), lookupNamespace, isAttributeFormQualified, false);
+        if(addRef){
             Schema attributeSchema = this.getSchemaForNamespace(attributeName.getNamespaceURI());
             if (attributeSchema != null && attributeSchema.getTopLevelAttributes().get(attribute.getName()) == null) {
                 //don't overwrite existing global elements and attributes.
@@ -1569,6 +1570,26 @@ public class SchemaGenerator {
                 type.getOrderedAttributes().add(attribute);
             }
         }
+    }
+    
+    private boolean shouldAddRefAndSetForm(SimpleComponent sc, String simpleComponentNamespace, String lookupNamespace, boolean formQualified, boolean isElement){    
+        boolean addRef = false;
+        boolean sameNamespace = simpleComponentNamespace.equals(lookupNamespace);
+
+        if (formQualified && !sameNamespace){
+       	    if(simpleComponentNamespace.equals(EMPTY_STRING)){
+    	        sc.setForm(XMLConstants.UNQUALIFIED);	
+        	}else{
+               addRef = true;
+    	    }
+        } else if(!formQualified  && !simpleComponentNamespace.equals(EMPTY_STRING)){
+    	    if(sameNamespace && isElement){
+    		    sc.setForm(XMLConstants.QUALIFIED);	
+    	    }else{
+    		    addRef = true;	
+    	    }        	        
+        }     
+        return addRef;
     }
     
     /**
@@ -1925,10 +1946,13 @@ public class SchemaGenerator {
             isElementFormQualified = namespaceInfo.isElementFormQualified();
         }
         // handle element reference
-        if ((isElementFormQualified && !elementNamespace.equals(lookupNamespace))
-                    || (!isElementFormQualified && !elementNamespace.equals(EMPTY_STRING))){
-            schema = this.getSchemaForNamespace(elementNamespace);
+        
+        boolean addRef = shouldAddRefAndSetForm(element, elementNamespace, lookupNamespace, isElementFormQualified, true);
+
+        if(addRef){
+        	schema = this.getSchemaForNamespace(elementNamespace);
         }
+        
         JavaClass javaType = property.getActualType();                    
         element.setName(elementName.getLocalPart());
         String typeName = getTypeNameForElement(property, schema, javaType, element);
@@ -1971,19 +1995,7 @@ public class SchemaGenerator {
         if (namespaceInfo != null) {
             isElementFormQualified = namespaceInfo.isElementFormQualified();
         }
-        boolean addRef = false;
-        boolean sameNamespace = elementURI.equals(lookupNamespace);
-        
-        // handle element reference
-        if (isElementFormQualified && !sameNamespace){
-            addRef = true;
-        } else if(!isElementFormQualified  && !elementURI.equals(EMPTY_STRING)){
-        	if(sameNamespace){
-        		element.setForm(XMLConstants.QUALIFIED);	
-        	}else{
-        		addRef = true;	
-        	}        	        
-        } 
+        boolean addRef = shouldAddRefAndSetForm(element, elementURI, lookupNamespace, isElementFormQualified, true);
         if(addRef){
             addElementRefToSchema(schema, compositor, element, elementURI);
         } else {
