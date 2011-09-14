@@ -1,0 +1,3 @@
+<ns0:root xmlns:ns0="theNamespace" ns0:theTestString="abc123">
+    <ns0:theElementTestString>def456</ns0:theElementTestString>
+</ns0:root>

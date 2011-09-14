@@ -12,21 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqualified;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.dom.DOMSource;
-
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Document;
 
 public class AttributeFormDefaultUnqualifiedTestCases extends JAXBTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/unqualifiedaddress.xml";
@@ -49,6 +39,9 @@ public class AttributeFormDefaultUnqualifiedTestCases extends JAXBTestCases{
 		Address addr = new Address();
 		addr.city = "Ottawa";
 		addr.street ="Main Street";
+		addr.street2 ="Street2";
+		addr.street3 ="Street3";
+		addr.street4 ="Street4";
 		return addr;
 	}
 	
