@@ -3,14 +3,14 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.dcn.DCNCustomizer"/>
+            <property name="eclipselink.cache.database-event-listener" value="org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="dcn2" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.dcn.DCNCustomizer"/>
+            <property name="eclipselink.cache.database-event-listener" value="org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"/>
         </properties>
     </persistence-unit>
 </persistence>
