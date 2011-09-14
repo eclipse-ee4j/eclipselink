@@ -1438,7 +1438,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (aggregate == null) {
             aggregate = readFromRowIntoObject(row, null, targetObject, null, query, query.getSession(), true);
         } else {
-            if(changeSet != null) {
+            if(changeSet != null && (!changeSet.isNew() || (query.getDescriptor() != null && query.getDescriptor().shouldUseFullChangeSetsForNewObjects()))) {
                 aggregateChangeSet = getReferenceDescriptor(aggregate, query.getSession()).getObjectBuilder().createObjectChangeSet(aggregate, (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet(), true, query.getSession());
             }
             AbstractRecord aggregateRow = new DatabaseRecord();
@@ -1492,7 +1492,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
         }
         
-        if(changeSet != null) {
+        if(changeSet != null && (!changeSet.isNew() || (query.getDescriptor() != null && query.getDescriptor().shouldUseFullChangeSetsForNewObjects()))) {
             AggregateChangeRecord record = (AggregateChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
             if(aggregate == null) {
                 if(record != null) {
