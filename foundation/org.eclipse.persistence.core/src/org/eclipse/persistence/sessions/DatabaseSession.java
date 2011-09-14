@@ -15,7 +15,7 @@ package org.eclipse.persistence.sessions;
 import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.platform.database.events.DatabaseEventNotificationListener;
+import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.SequencingControl;
@@ -375,11 +375,11 @@ public interface DatabaseSession extends Session {
     /**
      * Return the database event listener, this allows database events to invalidate the cache.
      */
-    public DatabaseEventNotificationListener getDatabaseEventListener();
+    public DatabaseEventListener getDatabaseEventListener();
     
     /**
      * PUBLIC:
      * Set the database event listener, this allows database events to invalidate the cache.
      */
-    public void setDatabaseEventListener(DatabaseEventNotificationListener databaseEventListener);
+    public void setDatabaseEventListener(DatabaseEventListener databaseEventListener);
 }

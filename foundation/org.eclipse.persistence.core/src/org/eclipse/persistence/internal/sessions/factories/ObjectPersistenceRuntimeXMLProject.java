@@ -2297,7 +2297,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         cacheSyncTypeConverter.addConversionValue("change-set-with-new-objects", Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
         cacheSyncTypeConverter.addConversionValue("change-set", Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
         cacheSyncTypeMapping.setConverter(cacheSyncTypeConverter);
-        cacheSyncTypeMapping.setNullValue(Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncTypeMapping.setNullValue(Integer.valueOf(ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR));
         descriptor.addMapping(cacheSyncTypeMapping);
 
         XMLCompositeObjectMapping historyPolicyMapping = new XMLCompositeObjectMapping();

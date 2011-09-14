@@ -297,7 +297,7 @@ public class ProjectClassGenerator {
             method.addLine("descriptor.setAmendmentMethodName(\"" + descriptor.getAmendmentMethodName() + "\");");
         }
 
-        if (descriptor.getCachePolicy().getCacheSynchronizationType() != CachePolicy.SEND_OBJECT_CHANGES) {
+        if (descriptor.getCachePolicy().getCacheSynchronizationType() != CachePolicy.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
             StringBuffer lineToAdd = new StringBuffer("descriptor.setCacheSynchronizationType(");
             if (descriptor.getCachePolicy().getCacheSynchronizationType() == CachePolicy.INVALIDATE_CHANGED_OBJECTS) {
                 lineToAdd.append("ClassDescriptor.INVALIDATE_CHANGED_OBJECTS");
@@ -305,6 +305,8 @@ public class ProjectClassGenerator {
                 lineToAdd.append("ClassDescriptor.DO_NOT_SEND_CHANGES");
             } else if (descriptor.getCachePolicy().getCacheSynchronizationType() == CachePolicy.SEND_NEW_OBJECTS_WITH_CHANGES) {
                 lineToAdd.append("ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES");
+            } else if (descriptor.getCachePolicy().getCacheSynchronizationType() == CachePolicy.SEND_OBJECT_CHANGES) {
+                lineToAdd.append("ClassDescriptor.SEND_OBJECT_CHANGES");
             }
             lineToAdd.append(");");
             method.addLine(lineToAdd.toString());

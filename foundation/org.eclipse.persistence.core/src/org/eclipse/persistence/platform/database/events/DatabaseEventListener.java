@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database.events;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -21,14 +23,27 @@ import org.eclipse.persistence.sessions.Session;
  * This is used to support Oracle DCN (Database Change event Notification),
  * but could also be used by triggers or other services.
  * 
- * @see org.eclipse.persistence.descriptors.invalidation.DatabaseEventNotificationPolicy
+ * @see org.eclipse.persistence.annotations.DatabaseChangeNotificationType
  * @author James Sutherland
  * @since EclipseLink 2.4
  */
-public interface DatabaseEventNotificationListener {
+public interface DatabaseEventListener {
 
+    /**
+     * Register for database change events and invalidate the session's cache.
+     * This is called on session login.
+     */
     void register(Session session);
 
+    /**
+     * Remove registration from database change events.
+     * This is called on session logout.
+     */
     void remove(Session session);
-        
+
+    /**
+     * Initialize the descriptor to receive database change events.
+     * This is called when the descriptor is initialized.
+     */
+    void initialize(ClassDescriptor descriptor, AbstractSession session);
 }

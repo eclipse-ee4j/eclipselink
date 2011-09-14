@@ -21,7 +21,9 @@ import java.io.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.CacheKeyType;
+import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -36,6 +38,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * <p><b>Purpose</b>:
@@ -64,7 +67,7 @@ public class CachePolicy implements Cloneable, Serializable {
     protected CacheIsolationType cacheIsolation;
 
     /** Configures how objects will be sent via cache synchronization, if synchronization is enabled. */
-    protected int cacheSynchronizationType = SEND_OBJECT_CHANGES;
+    protected int cacheSynchronizationType = UNDEFINED_OBJECT_CHANGE_BEHAVIOR;
     public static final int UNDEFINED_OBJECT_CHANGE_BEHAVIOR = 0;
     public static final int SEND_OBJECT_CHANGES = 1;
     public static final int INVALIDATE_CHANGED_OBJECTS = 2;
@@ -95,6 +98,9 @@ public class CachePolicy implements Cloneable, Serializable {
     
     protected Map<List<DatabaseField>, CacheIndex> cacheIndexes;
 
+    /** Allows configuration of database change event notification. */
+    protected DatabaseChangeNotificationType databaseChangeNotificationType;
+
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -103,6 +109,26 @@ public class CachePolicy implements Cloneable, Serializable {
         this.identityMapSize = -1;
         this.remoteIdentityMapSize = -1;
     }
+    
+    /**
+     * Returns what type of database change notification an entity/descriptor should use.
+     * This is only relevant if the persistence unit/session has been configured with a DatabaseEventListener,
+     * such as the OracleChangeNotificationListener that receives database change events.
+     * This allows for the EclipseLink cache to be invalidated or updated from database changes.
+     */
+    public DatabaseChangeNotificationType getDatabaseChangeNotificationType() {
+        return databaseChangeNotificationType;
+    }
+    
+    /**
+     * Configures what type of database change notification an entity/descriptor should use.
+     * This is only relevant if the persistence unit/session has been configured with a DatabaseEventListener,
+     * such as the OracleChangeNotificationListener that receives database change events.
+     * This allows for the EclipseLink cache to be invalidated or updated from database changes.
+     */
+    public void setDatabaseChangeNotificationType(DatabaseChangeNotificationType databaseChangeNotificationType) {
+        this.databaseChangeNotificationType = databaseChangeNotificationType;
+    }
 
     /**
      * INTERNAL:
@@ -110,16 +136,27 @@ public class CachePolicy implements Cloneable, Serializable {
      * The descriptor's parent must first be initialized.
      */
     public void initializeFromParent(CachePolicy parentPolicy, ClassDescriptor descriptor, ClassDescriptor descriptorDescriptor, AbstractSession session) throws DescriptorException {
+        // If the parent is isolated, then the child must also be isolated.
         if (!parentPolicy.isSharedIsolation()) {
-            if (!isIsolated() &&
-                    (getCacheIsolation() != parentPolicy.getCacheIsolation())) {
+            if (!isIsolated() && (getCacheIsolation() != parentPolicy.getCacheIsolation())) {
                 session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "overriding_cache_isolation",
                         new Object[]{descriptorDescriptor.getAlias(),
                                 parentPolicy.getCacheIsolation(), descriptor.getAlias(),
                                 getCacheIsolation()});
                 setCacheIsolation(parentPolicy.getCacheIsolation());                    
             }
-        }    
+        }
+        // Child must maintain the same indexes as the parent.
+        for (CacheIndex index : parentPolicy.getCacheIndexes().values()) {
+            addCacheIndex(index);
+        }
+        if ((getDatabaseChangeNotificationType() == null) && (parentPolicy.getDatabaseChangeNotificationType() != null)) {
+            setDatabaseChangeNotificationType(parentPolicy.getDatabaseChangeNotificationType());
+        }
+        if ((getCacheSynchronizationType() == UNDEFINED_OBJECT_CHANGE_BEHAVIOR)
+                && (parentPolicy.getCacheSynchronizationType() != UNDEFINED_OBJECT_CHANGE_BEHAVIOR)) {
+            setCacheSynchronizationType(parentPolicy.getCacheSynchronizationType());
+        }
     }
 
     /**
@@ -190,6 +227,17 @@ public class CachePolicy implements Cloneable, Serializable {
                     }
                 }
             }
+        }
+
+        if (this.databaseChangeNotificationType == null) {
+            this.databaseChangeNotificationType = DatabaseChangeNotificationType.INVALIDATE;
+        }
+        if (this.cacheSynchronizationType == UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
+            this.cacheSynchronizationType = SEND_OBJECT_CHANGES;
+        }
+        if ((this.databaseChangeNotificationType != DatabaseChangeNotificationType.NONE)
+                && session.isDatabaseSession() && ((DatabaseSession)session).getDatabaseEventListener() != null) {
+            ((DatabaseSession)session).getDatabaseEventListener().initialize(descriptor, session);
         }
     }
     
@@ -707,22 +755,42 @@ public class CachePolicy implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC:
-     * Set the type of cache synchronization that will be used on objects of this type.  Possible values
-     * are:
-     * SEND_OBJECT_CHANGES
-     * INVALIDATE_CHANGED_OBJECTS
-     * SEND_NEW_OBJECTS_WITH_CHANGES
-     * DO_NOT_SEND_CHANGES
+     * OBSOLETE:
+     * Set the type of cache coordination that will be used on objects of this type.  Possible values
+     * are:<ul>
+     * <li>SEND_OBJECT_CHANGES
+     * <li>INVALIDATE_CHANGED_OBJECTS
+     * <li>SEND_NEW_OBJECTS_WITH_CHANGES
+     * <li>DO_NOT_SEND_CHANGES</ul>
      * Note: Cache Synchronization type cannot be altered for descriptors that are set as isolated using
-     * the setIsIsolated method.
+     * the setIsIsolated method.<p>
+     * This has been replaced by setCacheCoordinationType().
+     * @see #setCacheCoordinationType(CacheCoordinationType)
      * @param type int  The synchronization type for this descriptor
-     *
      */
     public void setCacheSynchronizationType(int type) {
         // bug 3587273
         if (!isIsolated()) {
             cacheSynchronizationType = type;
+        }
+    }
+
+    /**
+     * PUBLIC:
+     * Set the type of cache coordination that will be used on objects of this type.
+     * Valid values defined in CacheCoordinationType.
+     */
+    public void setCacheCoordinationType(CacheCoordinationType type) {
+        if (type == null) {
+            setCacheSynchronizationType(UNDEFINED_OBJECT_CHANGE_BEHAVIOR);
+        } else if (type == CacheCoordinationType.SEND_OBJECT_CHANGES) {
+            setCacheSynchronizationType(SEND_OBJECT_CHANGES);
+        } else if (type == CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS) {
+            setCacheSynchronizationType(INVALIDATE_CHANGED_OBJECTS);
+        } else if (type == CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES) {
+            setCacheSynchronizationType(SEND_NEW_OBJECTS_WITH_CHANGES);
+        } else if (type == CacheCoordinationType.NONE) {
+            setCacheSynchronizationType(DO_NOT_SEND_CHANGES);
         }
     }
 

@@ -52,7 +52,10 @@ public class CacheIndex implements Cloneable, Serializable {
         for (String field : fields) {
             this.fields.add(new DatabaseField(field));
         }
-        this.cacheType = ClassConstants.WeakIdentityMap_Class;
+    }
+    
+    public CacheIndex(List<DatabaseField> fields) {
+        this.fields = fields;
     }
     
     /**
@@ -79,7 +82,7 @@ public class CacheIndex implements Cloneable, Serializable {
     
     /**
      * Set if the index field can be inserted.
-     * If insertable the object will be indexed after index.
+     * If insertable the object will be indexed after insert.
      */
     public void setIsInsertable(boolean isInsertable) {
         this.isInsertable = isInsertable;

@@ -51,6 +51,9 @@ public class DCNTestSuite extends JUnitTestCase {
         suite.addTest(new DCNTestSuite("testUpdate"));
         suite.addTest(new DCNTestSuite("testUpdateProject"));
         suite.addTest(new DCNTestSuite("testUpdateSecondaryTable"));
+        suite.addTest(new DCNTestSuite("testUpdateElementCollection"));
+        suite.addTest(new DCNTestSuite("testUpdateManyToMany"));
+        suite.addTest(new DCNTestSuite("testUpdateOneToMany"));
         suite.addTest(new DCNTestSuite("testNewUpdate"));
         suite.addTest(new DCNTestSuite("testRemove"));
         suite.addTest(new DCNTestSuite("testUpdateAll"));
@@ -200,7 +203,117 @@ public class DCNTestSuite extends JUnitTestCase {
                 Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(employee);
                 Employee employee2 = em.find(Employee.class, id);
                 if (employee.getSalary() != employee2.getSalary()) {
-                    fail("Salaries do not match: " + employee.getSalary() + " - " + employee2.getName());
+                    fail("Salaries do not match: " + employee.getSalary() + " - " + employee2.getSalary());
+                }
+            } finally {
+                em.close();
+            }
+        }
+    }
+    
+    /**
+     * Test that updates to existing objects are invalidated.
+     */
+    public void testUpdateElementCollection() {
+        if (this.supported) {
+            EntityManager em = createEntityManager(DCN2);
+            try {
+                em.createQuery("Select e from Employee e left join fetch e.responsiblities").getResultList();
+            } finally {
+                em.close();
+            }
+            em = createEntityManager();
+            beginTransaction(em);
+            Employee employee = null;
+            try {
+                employee = (Employee)em.createQuery("Select e from Employee e").getResultList().get(0);
+                employee.getResponsiblities().add("make coffee");
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+            sleep();
+            em = createEntityManager(DCN2);
+            try {
+                Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(employee);
+                Employee employee2 = em.find(Employee.class, id);
+                if (!employee.getResponsiblities().equals(employee2.getResponsiblities())) {
+                    fail("Responsiblities do not match: " + employee.getResponsiblities() + " - " + employee2.getResponsiblities());
+                }
+            } finally {
+                em.close();
+            }
+        }
+    }
+    
+    /**
+     * Test that updates to existing objects are invalidated.
+     */
+    public void testUpdateManyToMany() {
+        if (this.supported) {
+            EntityManager em = createEntityManager(DCN2);
+            try {
+                em.createQuery("Select e from Employee e left join fetch e.projects").getResultList();
+            } finally {
+                em.close();
+            }
+            em = createEntityManager();
+            beginTransaction(em);
+            Employee employee = null;
+            try {
+                employee = (Employee)em.createQuery("Select e from Employee e").getResultList().get(0);
+                SmallProject project = new SmallProject();
+                em.persist(project);
+                employee.getProjects().add(project);
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+            sleep();
+            em = createEntityManager(DCN2);
+            try {
+                Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(employee);
+                Employee employee2 = em.find(Employee.class, id);
+                if (!employee.getProjects().equals(employee2.getProjects())) {
+                    fail("Projects do not match: " + employee.getProjects() + " - " + employee2.getProjects());
+                }
+            } finally {
+                em.close();
+            }
+        }
+    }
+    
+    /**
+     * Test that updates to existing objects are invalidated.
+     */
+    public void testUpdateOneToMany() {
+        if (this.supported) {
+            EntityManager em = createEntityManager(DCN2);
+            try {
+                em.createQuery("Select e from Employee e left join fetch e.managedEmployees").getResultList();
+            } finally {
+                em.close();
+            }
+            em = createEntityManager();
+            beginTransaction(em);
+            Employee employee = null;
+            try {
+                employee = (Employee)em.createQuery("Select e from Employee e").getResultList().get(0);
+                Employee newEmployee = new Employee();
+                em.persist(newEmployee);
+                newEmployee.setManager(employee);
+                employee.getManagedEmployees().add(newEmployee);
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+            sleep();
+            em = createEntityManager(DCN2);
+            try {
+                Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(employee);
+                Employee employee2 = em.find(Employee.class, id);
+                if (!employee.getManagedEmployees().equals(employee2.getManagedEmployees())) {
+                    fail("managedEmployees do not match: " + employee.getManagedEmployees() + " - " + employee2.getManagedEmployees());
                 }
             } finally {
                 em.close();

@@ -235,6 +235,12 @@
            * (Optional) The cache coordination mode.
            */ 
           CacheCoordinationType coordinationType() default SEND_OBJECT_CHANGES;
+          
+          /**
+           * (Optional) The database change notification mode.
+           * Note that database event listener must also be configured for the persistence unit/session.
+           */ 
+          DatabaseChangeNotificationType databaseChangeNotificationType() default DatabaseChangeNotificationType.INVALIDATE;
         }
 
       </xsd:documentation>
@@ -251,6 +257,7 @@
     <xsd:attribute name="refresh-only-if-newer" type="xsd:boolean"/>
     <xsd:attribute name="disable-hits" type="xsd:boolean"/>
     <xsd:attribute name="coordination-type" type="orm:cache-coordination-type"/>
+    <xsd:attribute name="database-change-notification-type" type="orm:database-change-notification-type"/>
   </xsd:complexType>
 
   <!-- **************************************************** --> 
@@ -452,6 +459,47 @@
 
   <!-- **************************************************** -->
 
+  <xsd:simpleType name="database-change-notification-type">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /**
+         * Configures what type of database change notification an entity/descriptor should use.
+         * This is only relevant if the persistence unit/session has been configured with a DatabaseEventListener,
+         * such as the OracleChangeNotificationListener that receives database change events.
+         * This allows for the EclipseLink cache to be invalidated or updated from database changes.
+         * 
+         * @see Cache#databaseChangeNotificationType()
+         * @see org.eclipse.persistence.descriptors.CachePolicy#setDatabaseChangeNotificationType(DatabaseChangeNotificationType)
+         * @author James Sutherland
+         * @since EclipseLink 2.4
+         */
+        public enum DatabaseChangeNotificationType {
+            /**
+             * No database change events will be processed.
+             */
+            NONE,
+        
+            /**
+             * Invalidates the EclipseLink cache when a database change event is received for an object.
+             * This requires a DatabaseEventListener to be configured with the persistence unit or session.
+             * This requires that the database change can be determine to affect the object, some database change events,
+             * such as the OracleChangeNotificationListener (Oracle DCN/QCN) only give the ROWID, so changes to secondary
+             * table or relationships may not be able to be determined to affect and object unless its version is also changed.
+             */
+            INVALIDATE
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="NONE"/>
+      <xsd:enumeration value="INVALIDATE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->
+  
   <xsd:complexType name="change-tracking">
     <xsd:annotation>
       <xsd:documentation>

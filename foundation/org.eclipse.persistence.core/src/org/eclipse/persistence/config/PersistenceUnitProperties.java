@@ -951,6 +951,18 @@ public class PersistenceUnitProperties {
      */
     public static final String CACHE_SHARED_DEFAULT = CACHE_SHARED_ + DEFAULT;
 
+    /**
+     * Allows integration with a database event notification service.
+     * This allows the EclipseLink cache to be invalidated by database change events.
+     * This is used to support Oracle DCN (Database Change event Notification),
+     * but could also be used by triggers or other services, or other types of events.
+     * Must be set to the name of a class that implements DatabaseEventListener,
+     * such as the OracleChangeNotificationListener.
+     * 
+     * @see DatabaseEventListener
+     */
+    public static final String DATABASE_EVENT_LISTENER = "eclipselink.cache.database-event-listener";
+    
     // Customizations properties
 
     /**

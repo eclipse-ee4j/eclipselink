@@ -761,6 +761,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         coordinationTypeMapping.setSetMethodName("setCoordinationType");
         coordinationTypeMapping.setXPath("@coordination-type");
         descriptor.addMapping(coordinationTypeMapping);
+        
+        XMLDirectMapping databaseChangeNotificationTypeMapping = new XMLDirectMapping();
+        databaseChangeNotificationTypeMapping.setAttributeName("m_databaseChangeNotificationType");
+        databaseChangeNotificationTypeMapping.setGetMethodName("getDatabaseChangeNotificationType");
+        databaseChangeNotificationTypeMapping.setSetMethodName("setDatabaseChangeNotificationType");
+        databaseChangeNotificationTypeMapping.setXPath("@databaseChangeNotification-type");
+        descriptor.addMapping(databaseChangeNotificationTypeMapping);
       
         return descriptor;
     }

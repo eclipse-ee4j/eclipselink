@@ -332,6 +332,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "cannot_weave_virtual_one_to_one", "Class {0} has attribute {1} that uses a OneToOne or ManyToOne mapping on a virtual attribute.  Weaving of these types of mappings is not supported.  Weaving will be disabled for {0}."},
 
         { "overriding_cache_isolation", "Parent Entity {0} has an isolation level of: {1} which is more protective then the subclass {2} with isolation: {3} so the subclass has been set to the isolation level {1}."},
+        { "locking_required_for_database_change_notification", "Entity {0} is not using version locking, but has multiple tables or relationships, and is using Oracle database change notification, changes to relationships or secondary tables may not invalidate the cache."},
 
         { "field_type_set_to_java_lang_string", "The default table generator could not locate or convert a java type ({1}) into a database type for database field ({0}). The generator uses 'java.lang.String' as default java type for the field." },
         { "relational_descriptor_support_only", "The default table generator currently only supports generating default table schema from a relational project."},

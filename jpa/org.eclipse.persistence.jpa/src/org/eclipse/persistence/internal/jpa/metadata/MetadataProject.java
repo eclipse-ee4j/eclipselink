@@ -709,7 +709,7 @@ public class MetadataProject {
      */     
     public void addTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema) {
         // Process the default values.
-        processTable(tableGenerator, "", defaultCatalog, defaultSchema);
+        processTable(tableGenerator, "", defaultCatalog, defaultSchema, tableGenerator);
         
         String generatorName = tableGenerator.getGeneratorName();
         
@@ -1528,7 +1528,7 @@ public class MetadataProject {
                 Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
                 String defaultTableGeneratorName = (seq instanceof TableSequence) ? ((TableSequence) seq).getTableName() : DEFAULT_TABLE_GENERATOR;
                 // Process the default values.
-                processTable(tableGenerator, defaultTableGeneratorName, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema());
+                processTable(tableGenerator, defaultTableGeneratorName, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), tableGenerator);
                 
                 sequences.put(DEFAULT_TABLE_GENERATOR, tableGenerator.process(m_logger));
             }
@@ -1707,15 +1707,15 @@ public class MetadataProject {
      * Common table processing for table, secondary table, join table, 
      * collection table and table generators
      */
-    public void processTable(TableMetadata table, String defaultName, String defaultCatalog, String defaultSchema) {
+    public void processTable(TableMetadata table, String defaultName, String defaultCatalog, String defaultSchema, ORMetadata owner) {
         // Name could be "" or null, need to check against the default name.
-        String name = MetadataHelper.getName(table.getName(), defaultName, table.getNameContext(), m_logger, table.getLocation());
+        String name = MetadataHelper.getName(table.getName(), defaultName, table.getNameContext(), m_logger, owner.getAccessibleObject());
         
         // Catalog could be "" or null, need to check for an XML default.
-        String catalog = MetadataHelper.getName(table.getCatalog(), defaultCatalog, table.getCatalogContext(), m_logger, table.getLocation());
+        String catalog = MetadataHelper.getName(table.getCatalog(), defaultCatalog, table.getCatalogContext(), m_logger, owner.getAccessibleObject());
         
         // Schema could be "" or null, need to check for an XML default.
-        String schema = MetadataHelper.getName(table.getSchema(), defaultSchema, table.getSchemaContext(), m_logger, table.getLocation());
+        String schema = MetadataHelper.getName(table.getSchema(), defaultSchema, table.getSchemaContext(), m_logger, owner.getAccessibleObject());
         
         // Build a fully qualified name and set it on the table.
         // schema, attach it if specified

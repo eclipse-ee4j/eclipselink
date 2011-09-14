@@ -14,7 +14,9 @@ package org.eclipse.persistence.descriptors.invalidation;
 
 import java.util.Random;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * PUBLIC:
@@ -79,6 +81,14 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable {
             return remainingTime;
         }
         return 0;
+    }
+
+    /**
+     * INTERNAL:
+     * Allow initialization with the descriptor.
+     */
+    public void initialize(ClassDescriptor descriptor, AbstractSession session) {
+        
     }
 
     /**

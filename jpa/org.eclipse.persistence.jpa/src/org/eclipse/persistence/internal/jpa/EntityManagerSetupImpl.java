@@ -121,6 +121,7 @@ import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.jpa.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.metadata.XMLMetadataSource;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
+import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
@@ -691,9 +692,27 @@ public class EntityManagerSetupImpl {
                 Constructor constructor = cls.getConstructor();
                 callback = (DataPartitioningCallback)constructor.newInstance();
             } catch (Exception exception) {
-                throw EntityManagerSetupException.failedToInstantiateServerPlatform(callbackClassName, PersistenceUnitProperties.PARTITIONING_CALLBACK, exception);
+                throw EntityManagerSetupException.failedToInstantiateProperty(callbackClassName, PersistenceUnitProperties.PARTITIONING_CALLBACK, exception);
             }
             this.session.getLogin().setPartitioningCallback(callback);
+        }
+    }
+
+    /**
+     * Checks for database events listener properties.
+     */  
+    protected void updateDatabaseEventListener(Map m, ClassLoader loader) {
+        String listenerClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.DATABASE_EVENT_LISTENER, m, this.session);
+        if (listenerClassName != null) {
+            Class cls = findClassForProperty(listenerClassName, PersistenceUnitProperties.DATABASE_EVENT_LISTENER, loader);
+            DatabaseEventListener listener = null;
+            try {
+                Constructor constructor = cls.getConstructor();
+                listener = (DatabaseEventListener)constructor.newInstance();
+            } catch (Exception exception) {
+                throw EntityManagerSetupException.failedToInstantiateProperty(listenerClassName, PersistenceUnitProperties.DATABASE_EVENT_LISTENER, exception);
+            }
+            this.session.setDatabaseEventListener(listener);
         }
     }
     
@@ -1944,6 +1963,7 @@ public class EntityManagerSetupImpl {
                 updateCacheCoordination(m, loader);
             }
             updatePartitioning(m, loader);
+            updateDatabaseEventListener(m, loader);
             
             // Customizers should be processed last
             processDescriptorCustomizers(m, loader);
@@ -2058,6 +2078,7 @@ public class EntityManagerSetupImpl {
                     throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, ex);
                 }
             } else {
+                // TODO throw a better error, missing descriptor for property.
                 throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, null);                
             }
         }

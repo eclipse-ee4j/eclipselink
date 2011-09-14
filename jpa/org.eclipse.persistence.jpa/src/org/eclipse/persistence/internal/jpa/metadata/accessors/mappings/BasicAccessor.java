@@ -180,11 +180,6 @@ public class BasicAccessor extends DirectAccessor {
         if (isAnnotationPresent(CacheIndex.class)) {
             m_cacheIndex = new CacheIndexMetadata(getAnnotation(CacheIndex.class), this);
         }
-        
-        // Set the cache index annotation if one is present.
-        if (isAnnotationPresent(CacheIndex.class)) {
-            m_index = new IndexMetadata(getAnnotation(CacheIndex.class), this);
-        }
     }
     
     /**

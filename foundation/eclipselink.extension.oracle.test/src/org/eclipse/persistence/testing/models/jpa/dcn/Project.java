@@ -62,5 +62,14 @@ public class Project implements Serializable {
         this.version = version;
     }
     
+    public boolean equals(Object object) {
+        if (object instanceof Project) {
+            if (((Project)object).getId() != null && ((Project)object).getId().equals(this.id)) {
+                return true;
+            }
+        }
+        return super.equals(object);
+    }
+    
 }
 

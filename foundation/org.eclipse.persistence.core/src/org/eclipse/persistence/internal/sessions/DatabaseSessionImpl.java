@@ -32,7 +32,7 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.platform.database.events.DatabaseEventNotificationListener;
+import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
@@ -66,7 +66,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * Database event listener, this allows database events to invalidate the cache.
      */
-    protected DatabaseEventNotificationListener databaseEventListener;
+    protected DatabaseEventListener databaseEventListener;
 
     /**
      * INTERNAL:
@@ -125,7 +125,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * Return the database event listener, this allows database events to invalidate the cache.
      */
-    public DatabaseEventNotificationListener getDatabaseEventListener() {
+    public DatabaseEventListener getDatabaseEventListener() {
         return databaseEventListener;
     }
     
@@ -133,7 +133,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * PUBLIC:
      * Set the database event listener, this allows database events to invalidate the cache.
      */
-    public void setDatabaseEventListener(DatabaseEventNotificationListener databaseEventListener) {
+    public void setDatabaseEventListener(DatabaseEventListener databaseEventListener) {
         this.databaseEventListener = databaseEventListener;
     }
     

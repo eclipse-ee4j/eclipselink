@@ -20,6 +20,7 @@ package org.eclipse.persistence.internal.jpa.metadata.cache;
 
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
+import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
 
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -55,6 +56,7 @@ public class CacheMetadata extends ORMetadata {
     protected Boolean m_refreshOnlyIfNewer;
     
     protected String m_coordinationType;
+    protected String m_databaseChangeNotificationType;
     protected String m_type;
     
     protected Integer m_expiry;
@@ -80,6 +82,7 @@ public class CacheMetadata extends ORMetadata {
         m_alwaysRefresh = (Boolean) cache.getAttribute("alwaysRefresh");
         m_disableHits = (Boolean) cache.getAttribute("disableHits");
         m_coordinationType = (String) cache.getAttribute("coordinationType");
+        m_databaseChangeNotificationType = (String) cache.getAttribute("databaseChangeNotificationType");
         m_expiry = (Integer) cache.getAttribute("expiry");
 
         MetadataAnnotation expiryTimeOfDay = (MetadataAnnotation) cache.getAttribute("expiryTimeOfDay");
@@ -124,6 +127,10 @@ public class CacheMetadata extends ORMetadata {
             }
             
             if (! valuesMatch(m_coordinationType, cache.getCoordinationType())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_databaseChangeNotificationType, cache.getDatabaseChangeNotificationType())) {
                 return false;
             }
             
@@ -237,31 +244,31 @@ public class CacheMetadata extends ORMetadata {
         } else if (m_type.equals(CacheType.SOFT_WEAK.name())) {
             classDescriptor.useSoftCacheWeakIdentityMap();
         } else if (m_type.equals(CacheType.FULL.name())) {
-            classDescriptor.useFullIdentityMap();
+            classDescriptor.getCachePolicy().useFullIdentityMap();
         } else if (m_type.equals(CacheType.WEAK.name())) {
-            classDescriptor.useWeakIdentityMap();
+            classDescriptor.getCachePolicy().useWeakIdentityMap();
         }  else if (m_type.equals(CacheType.SOFT.name())) {
-            classDescriptor.useSoftIdentityMap();
+            classDescriptor.getCachePolicy().useSoftIdentityMap();
         } else if (m_type.equals(CacheType.HARD_WEAK.name())) {
-            classDescriptor.useHardCacheWeakIdentityMap();
+            classDescriptor.getCachePolicy().useHardCacheWeakIdentityMap();
         } else if (m_type.equals(CacheType.CACHE.name())) {
             classDescriptor.useCacheIdentityMap();
         } else if (m_type.equals(CacheType.NONE.name())) {
-            classDescriptor.useNoIdentityMap();
+            classDescriptor.getCachePolicy().useNoIdentityMap();
         }
         
         // Process size.
         if (m_size != null) {
-            classDescriptor.setIdentityMapSize(m_size);
+            classDescriptor.getCachePolicy().setIdentityMapSize(m_size);
         }
         
         // Process shared.
         if ( (m_shared !=null && !m_shared.booleanValue()) || (m_shared == null && descriptor.getProject().isSharedCacheModeEnableSelective())){
-            classDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
+            classDescriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.ISOLATED);
         }
         
         if (m_isolation != null){
-            classDescriptor.setCacheIsolation(CacheIsolationType.valueOf(m_isolation));
+            classDescriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.valueOf(m_isolation));
         }
         
         // Process expiry or expiry time of day.
@@ -282,30 +289,39 @@ public class CacheMetadata extends ORMetadata {
         
         // Process always refresh.
         if (m_alwaysRefresh != null) {
-            classDescriptor.setShouldAlwaysRefreshCache(m_alwaysRefresh);
+            classDescriptor.getCachePolicy().setShouldAlwaysRefreshCache(m_alwaysRefresh);
         }
         
         // Process refresh only if newer.
         if (m_refreshOnlyIfNewer != null) {
-            classDescriptor.setShouldOnlyRefreshCacheIfNewerVersion(m_refreshOnlyIfNewer);
+            classDescriptor.getCachePolicy().setShouldOnlyRefreshCacheIfNewerVersion(m_refreshOnlyIfNewer);
         }
         
         // Process disable hits.
         if (m_disableHits != null) {
-            classDescriptor.setShouldDisableCacheHits(m_disableHits);
+            classDescriptor.getCachePolicy().setShouldDisableCacheHits(m_disableHits);
         }
         
         // Process coordination type.
         if (m_coordinationType == null) {
             // Leave as default.
         } else if (m_coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
-            classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_OBJECT_CHANGES);
+            classDescriptor.getCachePolicy().setCacheSynchronizationType(ClassDescriptor.SEND_OBJECT_CHANGES);
         } else if (m_coordinationType.equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS.name())) {
-            classDescriptor.setCacheSynchronizationType(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+            classDescriptor.getCachePolicy().setCacheSynchronizationType(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
         } else if (m_coordinationType.equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES.name())) {
-            classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
+            classDescriptor.getCachePolicy().setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
         } else if (m_coordinationType.equals(CacheCoordinationType.NONE.name())) {
-            classDescriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
+            classDescriptor.getCachePolicy().setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
+        }
+        
+        // Process database change notification type.
+        if (m_databaseChangeNotificationType == null) {
+            // Leave as default.
+        } else if (m_databaseChangeNotificationType.equals(DatabaseChangeNotificationType.NONE.name())) {
+            classDescriptor.getCachePolicy().setDatabaseChangeNotificationType(DatabaseChangeNotificationType.NONE);
+        } else if (m_databaseChangeNotificationType.equals(DatabaseChangeNotificationType.INVALIDATE.name())) {
+            classDescriptor.getCachePolicy().setDatabaseChangeNotificationType(DatabaseChangeNotificationType.INVALIDATE);
         }
     }
     
@@ -323,6 +339,22 @@ public class CacheMetadata extends ORMetadata {
      */
     public void setCoordinationType(String coordinationType) {
         m_coordinationType = coordinationType; 
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDatabaseChangeNotificationType() {
+        return m_databaseChangeNotificationType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDatabaseChangeNotificationType(String databaseChangeNotificationType) {
+        m_databaseChangeNotificationType = databaseChangeNotificationType; 
     }
     
     /**

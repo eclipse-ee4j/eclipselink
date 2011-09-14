@@ -949,7 +949,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     protected void processTable(TableMetadata table, String defaultName) {
         // Process the default values.
-        getProject().processTable(table, defaultName, m_descriptor.getDefaultCatalog(), m_descriptor.getDefaultSchema());
+        getProject().processTable(table, defaultName, m_descriptor.getDefaultCatalog(), m_descriptor.getDefaultSchema(), this);
     }
     
     /**

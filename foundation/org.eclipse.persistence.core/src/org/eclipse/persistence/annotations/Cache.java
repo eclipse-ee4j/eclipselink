@@ -124,4 +124,10 @@ public @interface Cache {
      * Note that cache coordination must also be configured for the persistence unit/session.
      */ 
     CacheCoordinationType coordinationType() default SEND_OBJECT_CHANGES;
+    
+    /**
+     * (Optional) The database change notification mode.
+     * Note that database event listener must also be configured for the persistence unit/session.
+     */ 
+    DatabaseChangeNotificationType databaseChangeNotificationType() default DatabaseChangeNotificationType.INVALIDATE;
 }
