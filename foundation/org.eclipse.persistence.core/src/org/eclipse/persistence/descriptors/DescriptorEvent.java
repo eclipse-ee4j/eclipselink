@@ -333,7 +333,7 @@ public class DescriptorEvent extends EventObject {
             mapping.writeFromObjectIntoRow(clone, tempRow, getSession(), WriteType.UNDEFINED);
             ((AbstractRecord)getRecord()).mergeFrom(tempRow);
         }
-        if (eventChangeSet != null) {
+        if(eventChangeSet != null && (!eventChangeSet.isNew() || (query.getDescriptor() != null && query.getDescriptor().shouldUseFullChangeSetsForNewObjects()))) {
             eventChangeSet.removeChange(attributeName);
             // TODO: Can't see this working with attribute change tracking with no backup clone.
             eventChangeSet.addChange(mapping.compareForChange(clone, ((UnitOfWorkImpl)getSession()).getBackupClone(clone, getDescriptor()), eventChangeSet, getSession()));

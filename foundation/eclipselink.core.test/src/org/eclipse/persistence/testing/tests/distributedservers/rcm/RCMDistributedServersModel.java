@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.tests.isolatedsession.IsolatedEmployee;
 import org.eclipse.persistence.testing.tests.isolatedsession.IsolatedSessionSystem;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+import org.eclipse.persistence.testing.models.optimisticlocking.OptimisticLockingSystem;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 
@@ -37,6 +38,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
     public void addRequiredSystems() {
         super.addRequiredSystems();
         addRequiredSystem(new IsolatedSessionSystem());
+        addRequiredSystem(new OptimisticLockingSystem());
     }
 
     /**
@@ -105,6 +107,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
         addTest(new InvalidateObjectWithMissingReferenceTest());
         addTest(new UpdateObjectInvalidationTest());
         addTest(new NativeUpdateObjectInvalidationTest());
+        addTest(new NewObjectWithOptimisticLockingTest());
     }
 
     public void startCacheSynchronization() {
