@@ -231,7 +231,8 @@ public class RMITransportManager extends TransportManager {
 
     /**
      * ADVANCED:
-     * Remove the local connection from remote accesses.  The implementation removes the local connection from JNDI or RMI registry and set it to null.
+     * Remove the local connection from remote accesses. The implementation removes the local connection from JNDI or the
+     * RMI registry, un-exports it from the RMI runtime, and sets it to null.
      * This method is invoked internally by EclipseLink when the RCM is shutdown and should not be invoked by user's application.
      */
     public void removeLocalConnection() {
@@ -246,21 +247,23 @@ public class RMITransportManager extends TransportManager {
             } else {
                 return;
             }
-			// unexport the local connection from the RMI runtime 
-			if (getConnectionToLocalHost() != null) {
-				RMIRemoteCommandConnection commandConnection = ((RMIRemoteConnection)getConnectionToLocalHost()).getConnection();
-				if (commandConnection != null) {
-					try {
-						UnicastRemoteObject.unexportObject(commandConnection, true);
-					} catch (NoSuchObjectException nso) {
-						// if the object isn't exported, ignore this exception since cleanup is being performed 
-					}
-				}
-			}
         } catch (Exception exception) {
             rcm.handleException(RemoteCommandManagerException.errorUnbindingLocalConnection(unbindName, exception));
+        } finally {
+            // unexport the local connection from the RMI runtime
+            RMIRemoteConnection localConnection = (RMIRemoteConnection)getConnectionToLocalHost();
+            if (localConnection != null) {
+                RMIRemoteCommandConnection commandConnection = localConnection.getConnection();
+                if (commandConnection != null) {
+                    try {
+                        UnicastRemoteObject.unexportObject(commandConnection, true);
+                    } catch (NoSuchObjectException nso) {
+                        // if the object isn't exported, ignore this exception since cleanup is being performed 
+                    }
+                }
+                this.localConnection = null;
+            }
         }
-        localConnection = null;
     }
 
     /**
