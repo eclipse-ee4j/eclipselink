@@ -1234,20 +1234,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void executeNonSelectingSQL(String sqlString) throws DatabaseException {
         executeNonSelectingCall(new SQLCall(sqlString));
     }
-    
-    /**
-     * Used to execute connection queries on post acquire and pre release
-     * connection events (e.g. for VPD). 
-     */
-    private void executeQuery(Accessor accessor, DatabaseQuery query, String arg) {
-        query.setAccessor(accessor);
-        
-        List argValues = new ArrayList();
-        query.addArgument(arg);
-        argValues.add(getProperty(arg));
-            
-        executeQuery(query, argValues);
-    }
 
     /**
      * PUBLIC:
@@ -1511,7 +1497,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return this.executeQuery(query, row, 0);
     }
 
-        /**
+    /**
      * INTERNAL:
      * Return the results from executing the database query.
      * the arguments should be a database row with raw data values.
@@ -4497,7 +4483,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void postAcquireConnection(Accessor accessor) {
         if (getProject().hasVPDIdentifier(this)) {
             if (getPlatform().supportsVPD()) {
-                executeQuery(accessor, getPlatform().getVPDSetIdentifierQuery(getProject().getVPDIdentifier()), getProject().getVPDIdentifier());
+                DatabaseQuery query = getPlatform().getVPDSetIdentifierQuery(getProject().getVPDIdentifier());
+                List argValues = new ArrayList();
+                query.addArgument(getProject().getVPDIdentifier());
+                argValues.add(getProperty(getProject().getVPDIdentifier()));
+                executeQuery(query, argValues);
             } else {
                 throw ValidationException.vpdNotSupported(getPlatform().getClass().getName());
             }
@@ -4516,7 +4506,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void preReleaseConnection(Accessor accessor) {
         if (getProject().hasVPDIdentifier(this)) {
             if (getPlatform().supportsVPD()) {
-                executeQuery(accessor, getPlatform().getVPDClearIdentifierQuery(getProject().getVPDIdentifier()), getProject().getVPDIdentifier());
+                DatabaseQuery query = getPlatform().getVPDClearIdentifierQuery(getProject().getVPDIdentifier());
+                List argValues = new ArrayList();
+                query.addArgument(getProject().getVPDIdentifier());
+                argValues.add(getProperty(getProject().getVPDIdentifier()));
+                executeQuery(query, argValues);
             } else {
                 throw ValidationException.vpdNotSupported(getPlatform().getClass().getName());
             }
