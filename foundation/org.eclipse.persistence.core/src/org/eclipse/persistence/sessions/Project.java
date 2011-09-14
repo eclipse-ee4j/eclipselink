@@ -24,7 +24,9 @@
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries 
  *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType 
+ *       - 356197: Add new VPD type to MultitenantType
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -37,6 +39,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
@@ -911,8 +914,8 @@ public class Project implements Serializable, Cloneable {
      * Return true if there is a VPD identifier for this project. Will not be
      * set till after descriptor initialization.
      */
-    public boolean hasVPDIdentifier() {
-        return vpdIdentifier != null;
+    public boolean hasVPDIdentifier(AbstractSession session) {
+        return (vpdIdentifier != null && session.getProperty(vpdIdentifier) != null);
     }
     
     /**

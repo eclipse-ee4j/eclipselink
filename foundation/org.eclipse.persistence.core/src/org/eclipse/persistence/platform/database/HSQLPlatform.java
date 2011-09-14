@@ -12,6 +12,8 @@
  *     James Sutherland - Update to HSQL 1.8.1 and LRG
  *     11/04/2010-2.2 Michael O'Brien 
  *       - 319592: HSQL 2.0.0 requires VARCHAR length specified
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -351,6 +353,7 @@ public class HSQLPlatform extends DatabasePlatform {
         if (this.timestampQuery == null) {
             this.timestampQuery = new ValueReadQuery();
             this.timestampQuery.setSQLString("CALL CURRENT_TIMESTAMP");
+            this.timestampQuery.setAllowNativeSQLQuery(true);
         }
         return this.timestampQuery;
     }

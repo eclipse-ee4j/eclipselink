@@ -12,6 +12,8 @@
  *     07/25/2008-1.0   Michael OBrien 
  *       - 242120: Let the DB exception in alterOnDatabase() propagate so as not to
  *                         cause an infinite loop when ddl generation updates fail on a JTA DS
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -133,7 +135,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
         // Bug# 242120: Let the DatabaseException propagate and do not call 
         // createOnDatabase(session) which would cause an infinite loop on a JTA connection
-        session.executeNonSelectingCall(new SQLCall(buildAlterIncrementWriter(session, new StringWriter()).toString()));
+        session.priviledgedExecuteNonSelectingCall(new SQLCall(buildAlterIncrementWriter(session, new StringWriter()).toString()));
     }
 
     /**

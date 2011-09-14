@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Phillip Ross - LIMIT/OFFSET syntax support
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -148,6 +150,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         if (this.timestampQuery == null) {
             this.timestampQuery = new ValueReadQuery();
             this.timestampQuery.setSQLString("SELECT NOW()");
+            this.timestampQuery.setAllowNativeSQLQuery(true);
         }
         return this.timestampQuery;
 

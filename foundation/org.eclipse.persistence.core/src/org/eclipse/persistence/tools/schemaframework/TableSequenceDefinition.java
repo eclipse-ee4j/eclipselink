@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -80,7 +82,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * Assume that the sequence table exists.
      */
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
-        Vector results = session.executeSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getSequenceTableName() + " WHERE " + getSequenceNameFieldName() + " = '" + getName() + "'"));
+        Vector results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getSequenceTableName() + " WHERE " + getSequenceNameFieldName() + " = '" + getName() + "'"));
         return !results.isEmpty();
     }
 

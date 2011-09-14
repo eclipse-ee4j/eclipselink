@@ -10,6 +10,8 @@
  * Contributors:
  * Fujitsu Ltd. (Dies Koper) - based on TLE-based implementation in Fujitsu's
  *                             Interstage Application Server V9.2 (JPA 1.0)
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
@@ -1062,6 +1064,7 @@ public class SymfowarePlatform extends DatabasePlatform {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
             timestampQuery.setSQLString("SELECT CURRENT_TIMESTAMP FROM RDBII_SYSTEM.RDBII_ASSISTTABLE");
+            timestampQuery.setAllowNativeSQLQuery(true);
         }
         return timestampQuery;
     }

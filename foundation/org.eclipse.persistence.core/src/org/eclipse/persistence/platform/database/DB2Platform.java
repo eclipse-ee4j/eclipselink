@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -413,6 +415,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
             timestampQuery.setSQLString("SELECT DISTINCT CURRENT TIMESTAMP FROM SYSIBM.SYSTABLES");
+            timestampQuery.setAllowNativeSQLQuery(true);
         }
         return timestampQuery;
     }

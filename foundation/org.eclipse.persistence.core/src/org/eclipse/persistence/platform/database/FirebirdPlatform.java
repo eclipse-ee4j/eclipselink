@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     James Sutherland - initial impl
- * 
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -88,6 +89,7 @@ public class FirebirdPlatform extends DatabasePlatform {
     public ValueReadQuery getTimestampQuery() {
         if (this.timestampQuery == null) {
             this.timestampQuery = new ValueReadQuery("SELECT CURRENT_TIMESTAMP FROM RDB$DATABASE");
+            this.timestampQuery.setAllowNativeSQLQuery(true);
         }
         return this.timestampQuery;
     }

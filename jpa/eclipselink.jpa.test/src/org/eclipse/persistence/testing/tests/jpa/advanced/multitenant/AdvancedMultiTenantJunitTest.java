@@ -840,6 +840,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 // Try a delete all on multiple table (MafiaFamily)
                 try {
                     beginTransaction(em);
+                    this.getServerSession(MULTI_TENANT_PU).setLogLevel(0);
+                    
                     List<MafiaFamily> allFamilies = em.createNamedQuery("findAllMafiaFamilies").getResultList();
                     int families = allFamilies.size();
                     assertTrue("More than one family was found ["+ families +"]", families == 1);
