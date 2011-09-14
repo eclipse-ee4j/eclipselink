@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -112,11 +114,11 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Execute the DDL to create this object.
      */
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
-        session.executeNonSelectingCall(new SQLCall(buildCreationWriter(session, new StringWriter()).toString()));
+        session.priviledgedExecuteNonSelectingCall(new SQLCall(buildCreationWriter(session, new StringWriter()).toString()));
         
         if (shouldCreateVPDCalls(session)) {
-            session.executeNonSelectingCall(new SQLCall(buildVPDCreationPolicyWriter(session, new StringWriter()).toString()));
-            session.executeNonSelectingCall(new SQLCall(buildVPDCreationFunctionWriter(session, new StringWriter()).toString()));
+            session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDCreationPolicyWriter(session, new StringWriter()).toString()));
+            session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDCreationFunctionWriter(session, new StringWriter()).toString()));
         }
     }
     
@@ -133,10 +135,10 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Execute the DDL to drop the object.
      */
     public void dropFromDatabase(AbstractSession session) throws EclipseLinkException {
-        session.executeNonSelectingCall(new SQLCall(buildDeletionWriter(session, new StringWriter()).toString()));
+        session.priviledgedExecuteNonSelectingCall(new SQLCall(buildDeletionWriter(session, new StringWriter()).toString()));
         
         if (shouldCreateVPDCalls(session)) {
-            session.executeNonSelectingCall(new SQLCall(buildVPDDeletionWriter(session, new StringWriter()).toString()));
+            session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDDeletionWriter(session, new StringWriter()).toString()));
         }
     }
 

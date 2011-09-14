@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Zoltan NAGY & tware - added implementation of updateMaxRowsForQuery 
+ *     Zoltan NAGY & tware - added implementation of updateMaxRowsForQuery
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU 
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -268,6 +270,7 @@ public class MySQLPlatform extends DatabasePlatform {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
             timestampQuery.setSQLString("SELECT NOW()");
+            timestampQuery.setAllowNativeSQLQuery(true);
         }
         return timestampQuery;
     }

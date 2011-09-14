@@ -14,7 +14,9 @@
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries 
  *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType 
+ *       - 356197: Add new VPD type to MultitenantType
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -1201,7 +1203,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             }
         }
     }
-
+    
     /**
      * PUBLIC:
      * Execute the call on the database.
@@ -1223,7 +1225,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             return value.intValue();
         }
     }
-
+    
     /**
      * PUBLIC:
      * Execute the sql on the database.
@@ -4507,7 +4509,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * right after connection is acquired.
      */
     public void postAcquireConnection(Accessor accessor) {
-        if (getProject().hasVPDIdentifier()) {
+        if (getProject().hasVPDIdentifier(this)) {
             if (getPlatform().supportsVPD()) {
                 executeQuery(accessor, getPlatform().getVPDSetIdentifierQuery(getProject().getVPDIdentifier()), getProject().getVPDIdentifier());
             } else {
@@ -4526,7 +4528,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * right before the connection is released.
      */
     public void preReleaseConnection(Accessor accessor) {
-        if (getProject().hasVPDIdentifier()) {
+        if (getProject().hasVPDIdentifier(this)) {
             if (getPlatform().supportsVPD()) {
                 executeQuery(accessor, getPlatform().getVPDClearIdentifierQuery(getProject().getVPDIdentifier()), getProject().getVPDIdentifier());
             } else {
@@ -4539,6 +4541,61 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
     }
 
+    /**
+     * INTERNAL:
+     * Execute the call on the database. Calling this method will bypass a 
+     * global setting to disallow native SQL queries. (set by default when
+     * one Entity is marked as multitenant)
+     * 
+     * The row count is returned. 
+     * 
+     * The call can be a stored procedure call, SQL call or other type of call.
+     * 
+     * <p>Example:
+     * <p>session.executeNonSelectingCall(new SQLCall("Delete from Employee"), true);
+     *
+     * @see #priviledgedExecuteSelectingCall(Call)
+     */
+    public int priviledgedExecuteNonSelectingCall(Call call) throws DatabaseException {
+        DataModifyQuery query = new DataModifyQuery();
+        query.setAllowNativeSQLQuery(true);
+        query.setIsExecutionClone(true);
+        query.setCall(call);
+        Integer value = (Integer)executeQuery(query);
+        if (value == null) {
+            return 0;
+        } else {
+            return value.intValue();
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Execute the call on the database and return the result. Calling this
+     * method will bypass a global setting to disallow native SQL queries. (set 
+     * by default when one Entity is marked as multitenant)
+     *  
+     * The call must return a value, if no value is return executeNonSelectCall 
+     * must be used.
+     * 
+     * The call can be a stored procedure call, SQL call or other type of call.
+     * 
+     * A vector of database rows is returned, database row implements Java 2 Map 
+     * which should be used to access the data.
+     * 
+     * <p>Example:
+     * <p>session.executeSelectingCall(new SQLCall("Select * from Employee");
+     *
+     * @see #priviledgedExecuteNonSelectingCall(Call)
+     */
+    public Vector priviledgedExecuteSelectingCall(Call call) throws DatabaseException {
+        DataReadQuery query = new DataReadQuery();
+        query.setAllowNativeSQLQuery(true);
+        query.setCall(call);
+        query.setIsExecutionClone(true);
+        return (Vector)executeQuery(query);
+    }
+    
     /**
      * INTERNAL:
      * This method is called in case externalConnectionPooling is used.

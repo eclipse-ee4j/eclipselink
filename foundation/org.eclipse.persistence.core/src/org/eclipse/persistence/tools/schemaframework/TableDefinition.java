@@ -13,6 +13,8 @@
  *     Dies Koper - add support for creating indices on tables
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -779,7 +781,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
-            session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(buildUniqueConstraintCreationWriter(session, uniqueKey, new StringWriter()).toString()));
+            session.priviledgedExecuteNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(buildUniqueConstraintCreationWriter(session, uniqueKey, new StringWriter()).toString()));
         } 
     }
 
@@ -789,7 +791,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
-            session.executeNonSelectingCall(new SQLCall(buildConstraintCreationWriter(session, foreignKey, new StringWriter()).toString()));
+            session.priviledgedExecuteNonSelectingCall(new SQLCall(buildConstraintCreationWriter(session, foreignKey, new StringWriter()).toString()));
         }
     }
 
@@ -919,7 +921,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         
         for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
             try {
-                session.executeNonSelectingCall(new SQLCall(buildUniqueConstraintDeletionWriter(session, uniqueKey, new StringWriter()).toString()));
+                session.priviledgedExecuteNonSelectingCall(new SQLCall(buildUniqueConstraintDeletionWriter(session, uniqueKey, new StringWriter()).toString()));
             } catch (DatabaseException ex) {/* ignore */
             }
         }        
@@ -932,7 +934,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
             try {
-                session.executeNonSelectingCall(new SQLCall(buildConstraintDeletionWriter(session, foreignKey, new StringWriter()).toString()));
+                session.priviledgedExecuteNonSelectingCall(new SQLCall(buildConstraintDeletionWriter(session, foreignKey, new StringWriter()).toString()));
             } catch (DatabaseException ex) {/* ignore */
             }
         }

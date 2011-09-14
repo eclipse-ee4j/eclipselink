@@ -11,7 +11,10 @@
  *     Mike Keith
  * 
  * Patterned after:
- *   org.eclipse.persistence.platform.database.DB2MainframePlatform      
+ *   org.eclipse.persistence.platform.database.DB2MainframePlatform
+ *   
+ *     09/14/2011-2.3.1 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU      
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -207,6 +210,7 @@ public class H2Platform extends DatabasePlatform {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
             timestampQuery.setSQLString("SELECT CURRENT_TIMESTAMP()");
+            timestampQuery.setAllowNativeSQLQuery(true);
         }
         return timestampQuery;
     }
