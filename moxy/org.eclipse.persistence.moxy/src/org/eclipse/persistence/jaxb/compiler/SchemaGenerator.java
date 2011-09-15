@@ -101,7 +101,7 @@ public class SchemaGenerator {
     
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";    
-
+    private static final String SWA_REF_IMPORT = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
     private static final String BUILD_FIELD_VALUE_METHOD = "buildFieldValue";
 
     private static final String COLON = ":";
@@ -715,6 +715,13 @@ public class SchemaGenerator {
                 prefix = schema.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);
             } else if (URI.equals(XMLConstants.REF_URL)) {
                 prefix = schema.getNamespaceResolver().generatePrefix(XMLConstants.REF_PREFIX);
+                
+                if(!importExists(schema, SWA_REF_IMPORT)){
+                	 Import schemaImport = new Import();
+                     schemaImport.setSchemaLocation(SWA_REF_IMPORT);                     
+                     schemaImport.setNamespace(URI);                     
+                     schema.getImports().add(schemaImport);
+                }
             } else {
                 prefix = schema.getNamespaceResolver().generatePrefix();
             }
