@@ -798,11 +798,6 @@ public class AnnotationsProcessor {
                     }
                 }
 
-                // handle XmlElementRef(s) - validate and build the required
-                // ElementDeclaration object
-                if (property.isReference()) {
-                    processReferenceProperty(property, tInfo, jClass);
-                }
                 // handle XmlTransformation - validate transformer class/method
                 if (property.isXmlTransformation()) {
                     processXmlTransformationProperty(property);
@@ -861,6 +856,11 @@ public class AnnotationsProcessor {
                 for (Property property : info.getPropertyList()) {
                     if (property.isTransient()) {
                         continue;
+                    }
+                    // handle XmlElementRef(s) - validate and build the required
+                    // ElementDeclaration object
+                     if (property.isReference()) {
+                        processReferenceProperty(property, info, next);
                     }
                     JavaClass type = property.getActualType();
                     if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
@@ -2075,7 +2075,13 @@ public class AnnotationsProcessor {
                 typeName = nextRef.getType();
                 type = helper.getJavaClass(typeName);
             }
-
+            TypeInfo refTypeInfo = typeInfo.get(type.getQualifiedName());
+            if (refTypeInfo==null && shouldGenerateTypeInfo(type)) {
+                JavaClass[] jClassArray = new JavaClass[] { type };
+                buildNewTypeInfo(jClassArray);
+            }
+            
+            
             boolean missingReference = true;
             for (Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
                 ElementDeclaration entryValue = entry.getValue();
