@@ -1911,7 +1911,35 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
         commitTransaction(em);
     }
-
+    
+    // Bug 357670
+    public void testLazyBlob(){
+        EntityManager em = createEntityManager(DDL_TPC_PU);
+        beginTransaction(em);
+        LuxuryCar car = new LuxuryCar();
+        try {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            java.io.PrintWriter pw = new java.io.PrintWriter(baos);
+            pw.print("TestString1");
+            pw.close();
+            baos.close();
+            car.setPic( baos.toByteArray());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            fail("we failed!!!");
+        }
+        em.persist(car);
+        em.flush();
+        em.refresh(car);
+        commitTransaction(em);
+        em.clear();
+        
+        car = em.find(LuxuryCar.class, car.getRegNumber());
+        byte[] pic = car.getPic();
+        assertTrue("Blob was null after flush, refresh, commit.", pic != null);
+    }
+    
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
