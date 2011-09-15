@@ -1705,7 +1705,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     || (this.referenceDescriptor.hasInheritance() && this.referenceDescriptor.getInheritancePolicy().shouldReadSubclasses())
                     || this.referenceDescriptor.hasMultipleTables() || this.containerPolicy.propagatesEventsToCollection()
                     || this.referenceDescriptor.hasRelationshipsExceptBackpointer(descriptor);
-        } else {
+        } else if (this.mustDeleteReferenceObjectsOneByOne == null) {
             this.mustDeleteReferenceObjectsOneByOne = false;
         }
     }
@@ -2068,6 +2068,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * behavior
      */
     public void setMustDeleteReferenceObjectsOneByOne(Boolean deleteOneByOne) {
+        System.out.println("---***--- setMustDeleteReferenceObjectsOneByOne called for: " + getDescriptor().getJavaClassName() + " mapping "  + attributeName + " setting to: " + deleteOneByOne);
         this.mustDeleteReferenceObjectsOneByOne = deleteOneByOne;
     }
     
