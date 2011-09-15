@@ -472,7 +472,7 @@ public class MergeManager {
                 // to deferred locks for new objects in order to avoid the possibility of a deadlock.
                 cacheKey = session.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(primaryKey, original, descriptor, this, session);
             }
-            descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this, session, false);
+            descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this, session, false, false);
             if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
                 cacheKey.setWriteLockValue(changeSet.getWriteLockValue());
             }
@@ -524,7 +524,7 @@ public class MergeManager {
             
             // Merge into the clone from the original and use the clone as 
             // backup as anything different should be merged.
-            builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, this.session, cascadeOnly, false);  
+            builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, this.session, cascadeOnly, false, false);  
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
         }
@@ -726,7 +726,7 @@ public class MergeManager {
                     } else {
                         cacheKey.setObject(original);
                     }
-                    objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), originalWasNull);
 
                     if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
                         // mark the instance in the cache as invalid as we may have just merged a stub if
@@ -747,14 +747,14 @@ public class MergeManager {
                     }
                     if (!objectChangeSet.isNew()) {
                         // #5 read in uow, #9 grid
-                        objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                        objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), false);
                         if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
                             // mark the instance in the cache as invalid as we may have just merged a stub if
                             // a detached stub was referenced by a managed entity
                             cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
                         }
                     } else {
-                        objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, !descriptor.getCopyPolicy().buildsNewInstance());
+                        objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, !descriptor.getCopyPolicy().buildsNewInstance(), true);
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                         objectBuilder.clearPrimaryKey(original);
                     }
@@ -786,7 +786,7 @@ public class MergeManager {
                     }
                     // #1, 2, 3, merge from the change set into the existing cached object, or new original
                     // Note for new objects the change set may be empty, and object builder may merge from the clone into the original.
-                    objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, false);
+                    objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, false, objectChangeSet.isNew());
                     updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
                 } else {
                     // #6, 7 - reference object, but object was in shared cache, and had no changed, so just use the reference.
