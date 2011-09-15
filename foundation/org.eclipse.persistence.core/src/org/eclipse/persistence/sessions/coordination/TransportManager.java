@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -217,8 +217,8 @@ public abstract class TransportManager {
         try {
             return new javax.naming.InitialContext(contextProperties);
         } catch (NamingException exception) {
-            RemoteCommandManagerException rcmException = RemoteCommandManagerException.errorObtainingContext(contextProperties.toString(), exception);
-            rcm.handleException(RemoteCommandManagerException.errorObtainingContext(contextProperties.toString(), exception));
+            RemoteCommandManagerException rcmException = RemoteCommandManagerException.errorObtainingContext(exception);
+            rcm.handleException(RemoteCommandManagerException.errorObtainingContext(exception));
             throw rcmException;
         }
     }
