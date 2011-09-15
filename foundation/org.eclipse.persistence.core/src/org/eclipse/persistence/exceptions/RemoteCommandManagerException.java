@@ -13,7 +13,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
-import java.util.Hashtable;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 /**
@@ -62,9 +61,9 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         super(theMessage);
     }
 
-    public static RemoteCommandManagerException errorObtainingContext(String contextProperties, Exception internalEx) {
+    public static RemoteCommandManagerException errorObtainingContext(Exception internalEx) {
         RemoteCommandManagerException ex;
-        Object[] args = { contextProperties };
+        Object[] args = { };
         ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_OBTAINING_CONTEXT_FOR_JNDI, args));
         ex.setErrorCode(ERROR_OBTAINING_CONTEXT_FOR_JNDI);
         if (internalEx != null) {
@@ -127,8 +126,8 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         return ex;
     }
 
-    public static RemoteCommandManagerException errorCreatingJMSConnection(String topicName, String topicFactory, Hashtable contextProperties, Throwable internalEx) {
-        Object[] args = { topicName, topicFactory, contextProperties };
+    public static RemoteCommandManagerException errorCreatingJMSConnection(String topicName, String topicFactory, Throwable internalEx) {
+        Object[] args = { topicName, topicFactory };
         RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_CREATING_JMS_CONNECTION, args));
         ex.setErrorCode(ERROR_CREATING_JMS_CONNECTION);
         if (internalEx != null) {
@@ -175,8 +174,8 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         return ex;
     }
 
-    public static RemoteCommandManagerException errorCreatingLocalJMSConnection(String topicName, String topicFactory, Hashtable contextProperties, Throwable internalEx) {
-        Object[] args = { topicName, topicFactory, contextProperties };
+    public static RemoteCommandManagerException errorCreatingLocalJMSConnection(String topicName, String topicFactory, Throwable internalEx) {
+        Object[] args = { topicName, topicFactory };
         RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_CREATING_LOCAL_JMS_CONNECTION, args));
         ex.setErrorCode(ERROR_CREATING_LOCAL_JMS_CONNECTION);
         if (internalEx != null) {
@@ -185,8 +184,8 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         return ex;
     }
 
-    public static RemoteCommandManagerException errorCreatingOc4jJGroupsConnection(String serviceId, String topicName, String topicFactory, Hashtable contextProperties, Throwable internalEx) {
-        Object[] args = { serviceId, topicName, topicFactory, contextProperties };
+    public static RemoteCommandManagerException errorCreatingOc4jJGroupsConnection(String serviceId, String topicName, String topicFactory, Throwable internalEx) {
+        Object[] args = { serviceId, topicName, topicFactory };
         RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_CREATING_OC4J_JGROUPS_CONNECTION, args));
         ex.setErrorCode(ERROR_CREATING_OC4J_JGROUPS_CONNECTION);
         if (internalEx != null) {

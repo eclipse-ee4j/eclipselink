@@ -72,9 +72,9 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
         } catch (Exception ex) {
             RemoteCommandManagerException rcmException;
             if(isLocalConnectionBeingCreated) {
-                rcmException = RemoteCommandManagerException.errorCreatingLocalJMSConnection(topicName, connectionFactoryName, getRemoteContextProperties(), ex);
+                rcmException = RemoteCommandManagerException.errorCreatingLocalJMSConnection(topicName, connectionFactoryName, ex);
             } else {
-                rcmException = RemoteCommandManagerException.errorCreatingJMSConnection(topicName, connectionFactoryName, getRemoteContextProperties(), ex);
+                rcmException = RemoteCommandManagerException.errorCreatingJMSConnection(topicName, connectionFactoryName, ex);
             }
             throw rcmException;
         } finally {
