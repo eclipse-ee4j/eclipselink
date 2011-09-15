@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://jaxb.dev.java.net/array">
-   <xsd:complexType name="floatArray">
-      <xsd:sequence>
-         <xsd:element name="item" minOccurs="0">
-            <xsd:simpleType>
-               <xsd:list itemType="xsd:float"/>
-            </xsd:simpleType>
-         </xsd:element>
-      </xsd:sequence>
-   </xsd:complexType>
    <xsd:element name="FloatListType" type="ns0:floatArray"/>
+   <xsd:simpleType name="floatArray">
+      <xsd:list itemType="xsd:float"/>
+   </xsd:simpleType>
 </xsd:schema>

@@ -3686,18 +3686,18 @@ public class AnnotationsProcessor {
         mv.visitEnd();
 
         // Write: public List getAdaptedValue()
-        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/List;", null, null);
-        // @XmlElement(name, type)
-        AnnotationVisitor av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
-        av.visit("name", ITEM);
-        av.visit("nillable", true);
-        av.visit("type", Type.getType(L + getObjectType(nestedClass).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON));
-        av.visitEnd();
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/List;", "()Ljava/util/List<" + Type.getType(L + getObjectType(nestedClass).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON) + ">;", null);
+        AnnotationVisitor av;
         // Copy annotations
+        boolean hasXmlList = false;
         Annotation[] annotations;
         if (typeMappingInfo != null && ((annotations = getAnnotations(typeMappingInfo)) != null)) {
             for (Annotation annotation : annotations) {
-                av = mv.visitAnnotation(L + annotation.annotationType().getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
+                Class<? extends Annotation> annotationType = annotation.annotationType();
+                if(annotationType.equals(XmlList.class)) {
+                    hasXmlList = true;
+                }
+                av = mv.visitAnnotation(L + annotationType.getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                 for (Method next : annotation.annotationType().getDeclaredMethods()) {
                     try {
                         Object nextValue = next.invoke(annotation, new Object[] {});
@@ -3712,6 +3712,18 @@ public class AnnotationsProcessor {
                 av.visitEnd();
             }
         }
+        if(hasXmlList) {
+            // @XmlValue
+            av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlValue;", true);
+            av.visitEnd();
+        } else {
+            // @XmlElement(name, type)
+            av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
+            av.visit("name", ITEM);
+            av.visit("nillable", true);
+            av.visitEnd();
+        }
+
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "adaptedValue", "Ljava/util/List;");
         mv.visitInsn(Opcodes.ARETURN);
