@@ -472,7 +472,7 @@ public class MergeManager {
                 // to deferred locks for new objects in order to avoid the possibility of a deadlock.
                 cacheKey = session.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(primaryKey, original, descriptor, this, session);
             }
-            descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this, session, false);
+            descriptor.getObjectBuilder().mergeChangesIntoObject(original, changeSet, null, this, session, false, false);
             if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
                 cacheKey.setWriteLockValue(changeSet.getWriteLockValue());
             }
@@ -524,7 +524,7 @@ public class MergeManager {
             
             // Merge into the clone from the original and use the clone as 
             // backup as anything different should be merged.
-            builder.mergeIntoObject(registeredObject, false, rmiClone, this, this.session, cascadeOnly, false);  
+            builder.mergeIntoObject(registeredObject, false, rmiClone, this, this.session, cascadeOnly, false, false);  
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
         }
@@ -682,8 +682,10 @@ public class MergeManager {
         try {
             if (original == null || descriptor.getFullyMergeEntity()) {
                 // If original does not exist then we must merge the entire object.
+                boolean originalWasNull = false;
                 if (original == null){
                     original = unitOfWork.buildOriginal(clone);
+                    originalWasNull = true;
                 }
                 if (objectChangeSet == null) {
                     //no changeset so this would not have been locked as part of the 
@@ -693,7 +695,7 @@ public class MergeManager {
                     }else{
                         cacheKey.setObject(original);
                     }
-                    objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), originalWasNull);
                 } else{
                     cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getId(), original, descriptor, this, targetSession);
                     if (cacheKey.getObject() != null){
@@ -702,9 +704,9 @@ public class MergeManager {
                         cacheKey.setObject(original);
                     }
                     if (!objectChangeSet.isNew()) {
-                        objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                        objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), false);
                     } else {
-                        objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, !descriptor.getCopyPolicy().buildsNewInstance());
+                        objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, !descriptor.getCopyPolicy().buildsNewInstance(), true);
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                         objectBuilder.clearPrimaryKey(original);
                     }
@@ -715,7 +717,7 @@ public class MergeManager {
                 // If it is new, then merge the object (normally a new object would have a change set, so this is an odd case.
                 if (unitOfWork.isCloneNewObject(clone)) {
                     cacheKey = targetSession.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, targetSession), original, descriptor, this, targetSession);
-                    objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance());
+                    objectBuilder.mergeIntoObject(original, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), true);
                     updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
                 }
             } else {
@@ -739,7 +741,7 @@ public class MergeManager {
                     }
                     //if there are no changes then we just need a reference to the object so skip the merge
                     // saves trying to lock related objects after the fact producing deadlocks
-                    objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, false);
+                    objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, false, objectChangeSet.isNew());
                     updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
                 }
             }

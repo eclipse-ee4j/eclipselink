@@ -3387,17 +3387,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
      */
     public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        mergeChangesIntoObject(target, changeSet, source, mergeManager, targetSession, false);
+        mergeChangesIntoObject(target, changeSet, source, mergeManager, targetSession, false, false);
     }
     
     /**
      * INTERNAL:
      * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
      */
-    public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean isTargetCloneOfOriginal) {
+    public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean isTargetCloneOfOriginal, boolean shouldMergeFetchGroup) {
         // PERF: Just merge the object for new objects, as the change set is not populated.
         if ((source != null) && changeSet.isNew() && (!this.descriptor.shouldUseFullChangeSetsForNewObjects())) {
-            mergeIntoObject(target,  true, source, mergeManager, targetSession, false, isTargetCloneOfOriginal);
+            mergeIntoObject(target,  true, source, mergeManager, targetSession, false, isTargetCloneOfOriginal, shouldMergeFetchGroup);
         } else {
             List changes = changeSet.getChanges();
             int size = changes.size();
@@ -3427,7 +3427,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This merge also prevents the extra step of calculating the changes when it is not required.
      */
     public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        mergeIntoObject(target, isUnInitialized, source, mergeManager, targetSession, false, false);
+        mergeIntoObject(target, isUnInitialized, source, mergeManager, targetSession, false, false, false);
     }
     
     /**
@@ -3437,7 +3437,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * If 'cascadeOnly' is true, only foreign reference mappings are merged.
      * If 'isTargetCloneOfOriginal' then the target was create through a shallow clone of the source, so merge basics is not required.
      */
-    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean cascadeOnly, boolean isTargetCloneOfOriginal) {
+    public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession, boolean cascadeOnly, boolean isTargetCloneOfOriginal, boolean shouldMergeFetchGroup) {
         // cascadeOnly is introduced to optimize merge 
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
@@ -3450,7 +3450,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 if(!targetFetchGroup.isSupersetOf(sourceFetchGroup)) {
                     targetFetchGroup.onUnfetchedAttribute((FetchGroupTracker)target, null);
                 }
+            } else if (shouldMergeFetchGroup && sourceFetchGroup != null){
+                this.descriptor.getFetchGroupManager().setObjectFetchGroup(target, sourceFetchGroup, targetSession);
             }
+
         }
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = this.descriptor.getMappings();
