@@ -217,8 +217,8 @@ public abstract class TransportManager {
         try {
             return new javax.naming.InitialContext(contextProperties);
         } catch (NamingException exception) {
-            RemoteCommandManagerException rcmException = RemoteCommandManagerException.errorObtainingContext(contextProperties.toString(), exception);
-            rcm.handleException(RemoteCommandManagerException.errorObtainingContext(contextProperties.toString(), exception));
+            RemoteCommandManagerException rcmException = RemoteCommandManagerException.errorObtainingContext(exception);
+            rcm.handleException(RemoteCommandManagerException.errorObtainingContext(exception));
             throw rcmException;
         }
     }
