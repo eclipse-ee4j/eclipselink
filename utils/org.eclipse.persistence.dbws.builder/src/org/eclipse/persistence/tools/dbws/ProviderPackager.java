@@ -74,7 +74,7 @@ public class ProviderPackager extends XRPackager {
         "    }\n" +
         "}\n";
 
-    public static final String DBWS_PROVIDER_SOURCE_PREAMBLE =
+    public static final String DBWS_PROVIDER_SOURCE_PREAMBLE_START =
         "package _dbws;\n" +
         "\n//Java extension libraries\n" +
         "import javax.annotation.PostConstruct;\n" +
@@ -87,13 +87,18 @@ public class ProviderPackager extends XRPackager {
         "import javax.xml.ws.ServiceMode;\n" +
         "import javax.xml.ws.WebServiceContext;\n" +
         "import javax.xml.ws.WebServiceProvider;\n" +
-        "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n" +
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;\n" +
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING;\n" +
+        "import static javax.xml.ws.Service.Mode.MESSAGE;\n";
+    public static final String DBWS_PROVIDER_SOURCE_SOAP11HTTP_MTOM_BINDING =
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n";
+    public static final String DBWS_PROVIDER_SOURCE_SOAP12HTTP_BINDING =
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;\n";
+    public static final String DBWS_PROVIDER_SOURCE_SOAP12HTTP_MTOM_BINDING =
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING;\n";
+    public static final String DBWS_PROVIDER_SOURCE_PREAMBLE_END =
         "\n//EclipseLink imports\n" +
         "import " + ProviderHelper.class.getName() + ";\n" +
         "\n@WebServiceProvider(\n";
+    
     public static final String DBWS_PROVIDER_SOURCE_WSDL_LOCATION =
         "    wsdlLocation = \"WEB-INF/wsdl/eclipselink-dbws.wsdl\",\n";
     public static final String DBWS_PROVIDER_SOURCE_SERVICE_NAME =
@@ -191,7 +196,20 @@ public class ProviderPackager extends XRPackager {
         OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
         DBWSBuilder builder) {
 
-        StringBuilder source = new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE);
+        StringBuilder source = new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE_START);
+        if (builder.usesSOAP12()) {
+            if (builder.mtomEnabled()) {
+                source.append(DBWS_PROVIDER_SOURCE_SOAP12HTTP_MTOM_BINDING);
+            } else {
+                source.append(DBWS_PROVIDER_SOURCE_SOAP12HTTP_BINDING);
+            }
+        } else {
+            if (builder.mtomEnabled()) {
+                source.append(DBWS_PROVIDER_SOURCE_SOAP11HTTP_MTOM_BINDING);
+            }
+        }
+        source.append(new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE_END));
+        
         String wsdlPathPrevix = getWSDLPathPrefix();
         if (wsdlPathPrevix != null) {
             source.append(DBWS_PROVIDER_SOURCE_WSDL_LOCATION);

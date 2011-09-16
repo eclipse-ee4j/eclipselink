@@ -186,7 +186,7 @@
     <pathelement path="${junit.lib}"/>
     <fileset
       dir="${core.plugins.dir}"
-      includes="${core.plugins}"
+      includes="${core.plugins}, org.eclipse.persistence.dbws.builder_${version.string}.jar"
     />
     <fileset
       dir="${dbws.plugins.dir}"
@@ -379,6 +379,7 @@
     <RunTestsuite testsuite-name="F2testWebService"/>
     <RunTestsuite testsuite-name="F3testWebService"/>
     <RunTestsuite testsuite-name="F4testWebService"/>
+    <RunTestsuite testsuite-name="ProviderWebServiceTest"/>
     <TeardownDatabase filename="alltests"/>
     <junitreport
       todir="${run.dir}"
