@@ -885,7 +885,7 @@ public abstract class MetadataAccessor extends ORMetadata {
                 // Add a default one for each part of the composite primary
                 // key. Foreign and primary key to have the same name.
                 for (DatabaseField primaryKeyField : getDescriptor().getPrimaryKeyFields()) {
-                    PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata();
+                    PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata(this.m_project);
                     primaryKeyJoinColumn.setReferencedColumnName(primaryKeyField.getName());
                     primaryKeyJoinColumn.setName(primaryKeyField.getName());
                     primaryKeyJoinColumns.add(primaryKeyJoinColumn);
@@ -894,7 +894,7 @@ public abstract class MetadataAccessor extends ORMetadata {
                 // Add a default one for the single case, not setting any
                 // foreign and primary key names. They will default based
                 // on which accessor is using them.
-                primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata());
+                primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(this.m_project));
             }
         }
         

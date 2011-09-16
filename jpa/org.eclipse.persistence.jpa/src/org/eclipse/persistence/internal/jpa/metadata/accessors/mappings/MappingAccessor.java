@@ -540,13 +540,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
                     JoinColumnMetadata joinColumn = new JoinColumnMetadata();
                     joinColumn.setReferencedColumnName(primaryKeyField.getName());
                     joinColumn.setName(primaryKeyField.getName());
+                    joinColumn.setProject(descriptor.getProject());
                     joinColumns.add(joinColumn);
                 }
             } else {
                 // Add a default one for the single case, not setting any
                 // foreign and primary key names. They will default based
                 // on which accessor is using them.
-                joinColumns.add(new JoinColumnMetadata());
+                JoinColumnMetadata jcm = new JoinColumnMetadata();
+                jcm.setProject(descriptor.getProject());
+                joinColumns.add(jcm);
             }
         } else {
             // Need to update any join columns that use a foreign key name
@@ -563,7 +566,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 // query key name and not a column name so bypass any of this
                 // code.
                 if (referencedColumnName != null && !isVariableOneToOne()) {
-                    DatabaseField referencedField = new DatabaseField(referencedColumnName);
+                    DatabaseField referencedField = new DatabaseField();
+                    setFieldName(referencedField, referencedColumnName);
                     joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedField).getName());
                 }
             }

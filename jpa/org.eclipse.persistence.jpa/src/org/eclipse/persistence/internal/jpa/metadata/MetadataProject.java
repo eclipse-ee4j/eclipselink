@@ -593,7 +593,14 @@ public class MetadataProject {
              * The checks below will also avoid a performance hit on searching the accessor map directly on the descriptor. 
              */
             if (!metadataDescriptor.hasIdAccessor() && !metadataDescriptor.hasEmbeddedId()) {
-                metadataDescriptor.addPrimaryKeyField(new DatabaseField(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME));
+                DatabaseField pkField = new DatabaseField(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
+                if (this.useDelimitedIdentifier()) {
+                    pkField.setUseDelimiters(true);
+                } else if (this.getShouldForceFieldNamesToUpperCase()) {
+                    pkField.useUpperCaseForComparisons(true);
+                }
+
+                metadataDescriptor.addPrimaryKeyField(pkField);
             }
             
             /*

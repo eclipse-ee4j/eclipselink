@@ -17,8 +17,10 @@ package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 import org.eclipse.persistence.descriptors.partitioning.FieldPartitioningPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
@@ -104,6 +106,15 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
         return partitionColumn;
     }
 
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        initXMLObject(partitionColumn, accessibleObject);
+    }
+    
     public void setPartitionColumn(ColumnMetadata partitionColumn) {
         this.partitionColumn = partitionColumn;
     }

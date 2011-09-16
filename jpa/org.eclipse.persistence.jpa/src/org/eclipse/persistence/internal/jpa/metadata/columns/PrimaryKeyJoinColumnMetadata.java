@@ -20,6 +20,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
@@ -47,6 +48,15 @@ public class PrimaryKeyJoinColumnMetadata extends RelationalColumnMetadata {
         super("<primary-key-join-column>");
     }
     
+    /**
+     * INTERNAL:
+     * Used for annotation loading.
+     */
+    public PrimaryKeyJoinColumnMetadata(MetadataProject project) {
+        this();
+        this.m_project = project;
+    }
+
     /**
      * INTERNAL:
      * Used for annotation loading.

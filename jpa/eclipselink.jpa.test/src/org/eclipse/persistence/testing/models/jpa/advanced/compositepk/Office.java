@@ -39,8 +39,8 @@ public class Office {
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="LOCATION", referencedColumnName="LOCATION", insertable=false, updatable=false),
-        @JoinColumn(name="NAME", referencedColumnName="NAME"),
-        @JoinColumn(name="DROLE", referencedColumnName="DROLE")
+        @JoinColumn(name="NAME", referencedColumnName="name"), //<- this is testing case insensitivity
+        @JoinColumn(name="DROLE", referencedColumnName="drole") //<- this is testing case insensitivity
         })
     private Department department;
     
