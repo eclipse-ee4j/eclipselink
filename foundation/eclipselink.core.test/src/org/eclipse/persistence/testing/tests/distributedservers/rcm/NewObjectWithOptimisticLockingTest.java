@@ -47,6 +47,10 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
     }
     
     public void verify(){
+        // ensure the changes are propgated
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e){};
         holder = (ListHolder)getSession().readObject(ListHolder.class);
         if (holder.getItems().size() != 2){
             throw new TestErrorException("Incorrect number of items");
