@@ -14,4 +14,12 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue;
 
 public class CDNPriceNoAnnotation {
     public Object price;
+    
+    public boolean equals(Object obj){
+    	if(obj instanceof CDNPriceNoAnnotation){
+    		CDNPriceNoAnnotation priceObj = (CDNPriceNoAnnotation)obj;
+    		return price.equals(priceObj.price);
+    	}
+    	return false;
+    }
 }

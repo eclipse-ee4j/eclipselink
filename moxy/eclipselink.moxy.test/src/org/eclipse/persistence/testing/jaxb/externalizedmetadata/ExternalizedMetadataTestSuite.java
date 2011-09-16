@@ -67,6 +67,10 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.Xm
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.XmlTransientTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.splitpackage.SplitPackageTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPriceTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPricesTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPriceTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPricesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueTestCases;
 
 import junit.framework.Test;
@@ -105,6 +109,10 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlCustomizerTestCases.class);
         suite.addTestSuite(XmlElementWrapperTestCases.class);
         suite.addTestSuite(XmlValueTestCases.class);
+        suite.addTestSuite(XmlValueCdnPriceTestCases.class);
+        suite.addTestSuite(XmlValueInternationalPriceTestCases.class);
+        suite.addTestSuite(XmlValueInternationalPricesTestCases.class);
+        suite.addTestSuite(XmlValueCdnPricesTestCases.class);
         suite.addTestSuite(XmlListTestCases.class);
         suite.addTestSuite(XmlAnyElementTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);

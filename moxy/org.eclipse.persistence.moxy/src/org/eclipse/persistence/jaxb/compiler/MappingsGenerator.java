@@ -1797,10 +1797,7 @@ public class MappingsGenerator {
         	mapping.setAttributeElementClass(theClass);
         }
 
-        if (xmlField.getXPathFragment().isAttribute()){
-            mapping.setUsesSingleNode(true);
-        }
-        if (property.isXmlList()) {
+        if (xmlField.getXPathFragment().isAttribute() || property.isXmlList() || xmlField.getXPathFragment().nameIsText()){
             mapping.setUsesSingleNode(true);
         }
         // handle cdata set via metadata
