@@ -3,6 +3,8 @@ package org.eclipse.persistence.testing.tests.distributedservers.rcm;
 import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.optimisticlocking.ListHolder;
@@ -14,6 +16,7 @@ import org.eclipse.persistence.testing.tests.distributedservers.DistributedServe
 public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDistributedTest {
 
     protected ListHolder holder = null;
+    protected Expression listHolderExpression = null;
     
     public NewObjectWithOptimisticLockingTest(){
         super();
@@ -47,6 +50,10 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
     }
     
     public void verify(){
+        // ensure the changes are propgated
+        try{
+            Thread.sleep(1000);
+        } catch (InterruptedException e){};
         holder = (ListHolder)getSession().readObject(ListHolder.class);
         if (holder.getItems().size() != 2){
             throw new TestErrorException("Incorrect number of items");
