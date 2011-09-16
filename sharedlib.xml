@@ -1,0 +1,191 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     eric.gwin - initial API and implementation 
+#******************************************************************************/-->
+
+<!--/*******************************************************************************
+  This buildfile looks for a eclipselink.jar file in the current directory, and
+  generates an appropriate ear file for use as a WLS shared library. If the jar
+  does not exist, an attempt to generate one will be attempted (it is assumed 
+  that the this file resides at the same location as the primary buildfile for 
+  EclipseLink - not necessary, but assumed). 
+#******************************************************************************/-->
+<project name="wls-shared-lib" default="package-wls-shared-lib" basedir=".">
+
+    <scriptdef name="genImpVersion" language="javascript" manager="javax">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            // getting the value
+            input = attributes.get("input");
+            property = attributes.get("property");
+            if (input == null || property == null) {
+               self.fail("both 'input' and 'property' attributes must be set.");
+            }
+            if (input.startsWith("${") || input == "" ) {
+                // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
+                project.setProperty(attributes.get("property"), "NA");
+            }
+            else {
+                // Verstion String is displayed just before Qualifier in
+                //    "java -jar eclipselink.jar" output
+                // Get "endString" Index based on search for last instance of "Build Qualifier"
+                endLastRev = input.lastIndexOf("Build Qualifier");
+                // Get "beginString" index based upon the last space in the line above the endString index
+                beginLastRev = input.lastIndexOf(" ", endLastRev-5);
+                // Trim the string to not include the leading space, or the end-of-line
+                trimmedInput = input.substring(beginLastRev+1, endLastRev-5);
+                project.setProperty(attributes.get("property"), trimmedInput);
+            }
+        ]]>
+    </scriptdef>
+
+    <scriptdef name="genSpecVersion" language="javascript" manager="javax">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            // getting the value
+            input = attributes.get("input");
+            property = attributes.get("property");
+            if (input == null || property == null) {
+               self.fail("both 'input' and 'property' attributes must be set.");
+            }
+            if (input.startsWith("${") || input == "" ) {
+                // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
+                project.setProperty(attributes.get("property"), "NA");
+            }
+            else {
+                // Trim the string to not include the bugfix or qualifier tokens
+                endLastRev = input.lastIndexOf(".");
+                trimmedInput = input.substring(0, endLastRev);
+                endLastRev = trimmedInput.lastIndexOf(".");
+                trimmedInput = input.substring(0, endLastRev);
+                project.setProperty(attributes.get("property"), trimmedInput);
+            }
+        ]]>
+    </scriptdef>
+    
+    <scriptdef name="genEarnameVersion" language="javascript" manager="javax">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            // getting the value
+            input = attributes.get("input");
+            property = attributes.get("property");
+            if (input == null || property == null) {
+               self.fail("both 'input' and 'property' attributes must be set.");
+            }
+            if (input.startsWith("${") || input == "" ) {
+                // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
+                project.setProperty(attributes.get("property"), "NA");
+            }
+            else {
+                // replace "." in version string with "_"
+                project.setProperty(attributes.get("property"), input.replace('.', '_'));
+            }
+        ]]>
+    </scriptdef>
+
+<!-- ================================================================================= -->
+
+    <target name="test-4-eclipselink">
+        <property name="eclipselink.jar" value="eclipselink.jar"/>
+        <condition property="eclipselink.exist">
+            <available file="${eclipselink.jar}"/>
+        </condition>
+    </target>
+
+    <target name="generate-eclipselink" unless="eclipselink.exist" depends="test-4-eclipselink">
+        <echo message="EclipseLink jar not found! Building..."/>
+        <condition property="eclipselink.build.file"  value="build.xml"
+                                                       else="antbuild.xml">
+            <available file="build.xml"/>
+        </condition>
+        <ant antfile="${eclipselink.build.file}"    dir="."   target="build-eclipselink-jar"/>
+    </target>
+        
+    <target name="identify-eclipselink" depends="generate-eclipselink">
+        <!-- unzip src="${eclipselink.jar}" dest=".">
+           <patternset>
+               <include name="META-INF/MANIFEST.MF"/>
+           </patternset>
+        </unzip -->
+        <java jar="${eclipselink.jar}" outputproperty="implimentation.version" fork="true"/>
+        <!-- echo message="${implimentation.version}"/ -->
+        <genImpVersion input="${implimentation.version}" property="implimentation.version"/>
+        <genSpecVersion input="${implimentation.version}" property="specification.version"/>
+        <genEarnameVersion input="${implimentation.version}" property="earname.version"/>
+        <echo message="SpecV: '${specification.version}'"/>
+        <echo message="ImpV: '${implimentation.version}'"/>
+        <echo message="EarV: '${earname.version}'"/>
+    </target>
+        
+    <target name="prepare-wls-metadata" depends="identify-eclipselink">
+        <!-- artifact definitions -->
+        <property name="wls-shared-lib.base.name" value="org.eclipse.persistence"/>
+	    <property name="wls-shared-lib.name"      value="${wls-shared-lib.base.name}${earname.version}-shared-lib"/>
+	    
+        <!-- location to generate metadata artifacts -->
+        <property name="metadata.dir"             value="build/shared-lib/etc"/>
+        <mkdir dir="${metadata.dir}"/> 
+        
+        <!-- Create Metadata -->
+        <echo message="&lt;weblogic-application&gt;"                                           file="${metadata.dir}/weblogic-application.xml" append="false"/>
+        <echo message="  &lt;prefer-application-packages&gt;"                                  file="${metadata.dir}/weblogic-application.xml" append="true"/>
+        <echo message="    &lt;package-name&gt;org.eclipse.persistence.*&lt;/package-name&gt;" file="${metadata.dir}/weblogic-application.xml" append="true"/>
+        <echo message="    &lt;package-name&gt;commonj.sdo.*&lt;/package-name&gt;"             file="${metadata.dir}/weblogic-application.xml" append="true"/>
+        <echo message="  &lt;/prefer-application-packages&gt;"                                 file="${metadata.dir}/weblogic-application.xml" append="true"/>
+        <echo message="&lt;/weblogic-application&gt;"                                          file="${metadata.dir}/weblogic-application.xml" append="true"/>
+            
+        <echo message="&lt;application&gt;"                                                    file="${metadata.dir}/application.xml" append="false"/>
+        <echo message="  &lt;display-name&gt;${wls-shared-lib.name}&lt;/display-name&gt;"      file="${metadata.dir}/application.xml" append="true"/>
+        <echo message="  &lt;module&gt;"                                                       file="${metadata.dir}/application.xml" append="true"/>
+        <echo message="        &lt;java&gt;&lt;/java&gt;"                                      file="${metadata.dir}/application.xml" append="true"/>
+        <echo message="  &lt;/module&gt;"                                                      file="${metadata.dir}/application.xml" append="true"/>
+        <echo message="&lt;/application&gt;"                                                   file="${metadata.dir}/application.xml" append="true"/>
+    </target>   
+        
+    <target name="package-wls-shared-lib" depends="prepare-wls-metadata">
+        <!-- generate Ear file -->
+        <!-- if eclipselink.jar exists, generate ear with "o.e.p:spec version:imp version" -->
+        <jar destfile="${wls-shared-lib.name}.ear">
+            <metainf dir="${metadata.dir}" includes="*.xml"/>
+            <manifest>
+                <attribute name="Extension-Name"         value="${wls-shared-lib.base.name}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+            </manifest>
+            <fileset dir="." includes="${eclipselink.jar}"/>
+        </jar>
+        <delete dir="${metadata.dir}"/> 
+    </target>
+
+</project>
