@@ -605,7 +605,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             this.platform = null;
             String platformName = null;
             try {
-                platformName = DBPlatformHelper.getDBPlatform(conn.getMetaData().getDatabaseProductName(), getSessionLog());
+                String vendorNameAndVersion = conn.getMetaData().getDatabaseProductName() + conn.getMetaData().getDatabaseMajorVersion();
+                platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
                 getLogin().setPlatformClassName(platformName);
             } catch (EclipseLinkException classNotFound) {
                 if (platformName.indexOf("Oracle") != -1) {

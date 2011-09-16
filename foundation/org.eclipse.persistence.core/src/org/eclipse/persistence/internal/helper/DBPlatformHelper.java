@@ -15,10 +15,11 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.BufferedInputStream;
+import java.io.InputStreamReader;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.BufferedReader;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.security.AccessController;
@@ -43,7 +44,7 @@ public class DBPlatformHelper {
      * Holds mapping between possible vendor names to internal platforms defined above.
      * vendor names are treated as regular expressions.
      */
-    private static Properties _nameToVendorPlatform = null;
+    private static List<String[]> _nameToVendorPlatform = null;
 
     /** Get Database Platform from vendor name.
      * @param vendorName Input vendor name. Typically this is obtained by querying
@@ -76,10 +77,10 @@ public class DBPlatformHelper {
     /**
      * Allocate and initialize nameToVendorPlatform if not already done.
      */
-    private static Properties initializeNameToVendorPlatform(SessionLog logger) {
+    private static List<String[]> initializeNameToVendorPlatform(SessionLog logger) {
         synchronized(DBPlatformHelper.class) {
             if(_nameToVendorPlatform == null) {
-                _nameToVendorPlatform = new Properties();
+                _nameToVendorPlatform = new ArrayList<String[]>();
                 try {
                     loadFromResource(_nameToVendorPlatform, VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME,
                                             DBPlatformHelper.class.getClassLoader() );
@@ -95,14 +96,14 @@ public class DBPlatformHelper {
      * Match vendorName in properties specified by _nameToVendorPlatform.
      */
     private static String matchVendorNameInProperties(String vendorName,
-            Properties nameToVendorPlatform, SessionLog logger) {
+            List<String[]> nameToVendorPlatform, SessionLog logger) {
         String dbPlatform = null;
         //Iterate over all properties till we find match.
-        for( Iterator iterator = nameToVendorPlatform.entrySet().iterator();
+        for( Iterator<String[]> iterator = nameToVendorPlatform.iterator();
                 dbPlatform == null && iterator.hasNext();) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            String regExpr = (String) entry.getKey();
-            String value = (String) entry.getValue();
+            String[] entry = iterator.next();
+            String regExpr = (String) entry[0];
+            String value = (String) entry[1];
             if(logger.shouldLog(SessionLog.FINEST)) {
                 logger.log(SessionLog.FINEST, "dbPlatformHelper_regExprDbPlatform", regExpr, value); // NOI18N
             }
@@ -134,7 +135,7 @@ public class DBPlatformHelper {
     }
 
     //-----Property Loading helper methods ----/
-    private static void loadFromResource(Properties properties, String resourceName, ClassLoader classLoader)
+    private static void loadFromResource(List<String[]> properties, String resourceName, ClassLoader classLoader)
             throws IOException {
         load(properties, resourceName, classLoader);
     }
@@ -150,14 +151,19 @@ public class DBPlatformHelper {
      * @param classLoader   The class loader that should be used to load the resource. If null,primordial
      *                      class loader is used.
      */
-    private static void load(Properties properties, final String resourceName,
+    private static void load(List<String[]> properties, final String resourceName,
             final ClassLoader classLoader)
                             throws IOException {
 
-        InputStream bin = new BufferedInputStream(openResourceInputStream(resourceName,classLoader));
+        BufferedReader bin = new BufferedReader(new InputStreamReader(openResourceInputStream(resourceName,classLoader)));
 
         try {
-            properties.load(bin);
+            for (String line = bin.readLine(); line != null; line = bin.readLine()) {
+                String[] keyValue = validateLineForReturnAsKeyValueArray(line);
+                if (keyValue != null) {
+                    properties.add(keyValue);
+                }
+            }
         } finally {
             try {
                 bin.close();
@@ -182,6 +188,28 @@ public class DBPlatformHelper {
                 }
             }
         );
+    }
+    
+    private static String[] validateLineForReturnAsKeyValueArray(String line) {
+        if (line == null || line.isEmpty()) {
+            return null;
+        }
+        // trim leading AND trailing space
+        line = line.trim();
+        
+        // check for comment
+        if (line.isEmpty() || line.startsWith("#")) {
+            return null;
+        }
+        
+        // check line contains valid properties '=' separator        
+        int indexOfEquals = line.indexOf('=');
+        if (indexOfEquals == -1) {
+            return null;
+        }
+        String key = line.substring(0, indexOfEquals);
+        String value = line.substring(indexOfEquals + 1, line.length());
+        return new String[] { key, value };
     }
 
 }

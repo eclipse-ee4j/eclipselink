@@ -261,9 +261,9 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "cmp_init_initialize_from_main", "JavaSECMPInitializer - initializing from main."},
                                            { "cmp_init_initialize_from_agent", "JavaSECMPInitializer - initializing from agent."},
 
-                                           { "dbPlatformHelper_detectedVendorPlatform", "Detected Vendor platform: {0}"},
-                                           { "dbPlatformHelper_regExprDbPlatform", "DBPlatform: {1}, RegularExpression: {0}."},
-                                           { "dbPlatformHelper_patternSyntaxException", "Exception while using regExpr : {0}." },
+                                           { "dbPlatformHelper_detectedVendorPlatform", "Detected database platform: {0}"},
+                                           { "dbPlatformHelper_regExprDbPlatform", "Database platform: {1}, regular expression: {0}"},
+                                           { "dbPlatformHelper_patternSyntaxException", "Exception while using regular expression: {0}" },
                                            { "unknown_query_hint", "query {0}: unknown query hint {1} will be ignored"},
                                            { "query_hint", "query {0}: query hint {1}; value {2}"},
                                            { "property_value_specified", "property={0}; value={1}"},
