@@ -83,8 +83,13 @@ public class WebServiceTestSuite extends ProviderHelper {
     public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_PROVIDER_STREAM = new ByteArrayOutputStream();
 
-    public static void serviceSetup(String endPointAddress, WebServiceTestSuite endPoint)
+    public static void serviceSetup(String endPointAddress, WebServiceTestSuite endPoint) throws WSDLException {
+    	serviceSetup(endPointAddress, endPoint, false);
+    }
+    
+    public static void serviceSetup(String endPointAddress, WebServiceTestSuite endPoint, boolean writeProvider)
         throws WSDLException {
         builder.quiet = true;
         builder.setLogLevel(SessionLog.FINE_LABEL);
@@ -111,9 +116,15 @@ public class WebServiceTestSuite extends ProviderHelper {
             public void start() {
             }
         });
-        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
-            DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, __nullStream,
-            __nullStream, __nullStream, null);
+        if (writeProvider) {
+	        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+	            DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, DBWS_PROVIDER_STREAM,
+	            __nullStream, __nullStream, null);
+        } else {
+	        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+	            DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, __nullStream,
+	            __nullStream, __nullStream, null);
+        }
         endpoint = Endpoint.create(endPoint);
         endpoint.publish(endPointAddress);
         WebServiceProvider testProvider = endPoint.getClass().getAnnotation(WebServiceProvider.class);
