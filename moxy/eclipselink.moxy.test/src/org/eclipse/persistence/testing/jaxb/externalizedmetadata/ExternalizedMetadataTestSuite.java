@@ -146,9 +146,8 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlValueTestCases.class);
         suite.addTestSuite(XmlValueCdnPriceTestCases.class);
         suite.addTestSuite(XmlValueInternationalPriceTestCases.class);
-        //Commented out until bug 355719 is fixed
-        //suite.addTestSuite(XmlValueInternationalPricesTestCases.class);
-        //suite.addTestSuite(XmlValueCdnPricesTestCases.class);
+        suite.addTestSuite(XmlValueInternationalPricesTestCases.class);
+        suite.addTestSuite(XmlValueCdnPricesTestCases.class);
         suite.addTestSuite(XmlListTestCases.class);
         suite.addTestSuite(XmlListNoStringTestCases.class);
         suite.addTestSuite(XmlListOnXmlAttributeTestCases.class);
