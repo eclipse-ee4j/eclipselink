@@ -840,8 +840,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 // Try a delete all on multiple table (MafiaFamily)
                 try {
                     beginTransaction(em);
-                    this.getServerSession(MULTI_TENANT_PU).setLogLevel(0);
-                    
                     List<MafiaFamily> allFamilies = em.createNamedQuery("findAllMafiaFamilies").getResultList();
                     int families = allFamilies.size();
                     assertTrue("More than one family was found ["+ families +"]", families == 1);
@@ -857,10 +855,12 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 EntityManager em007 = createEntityManager(MULTI_TENANT_PU);
                 
                 try {
-                    beginTransaction(em);
                     List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
                     assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
-                    commitTransaction(em);
+                    
+                    // Clear out the shared cache with what we read through native SQL.
+                    clearCache(MULTI_TENANT_PU);
+                    em007.clear();
                     
                     beginTransaction(em007);
                     em007.setProperty("tenant.id", "007");
