@@ -106,8 +106,8 @@ public abstract class MetadataColumn extends ORMetadata {
     public DatabaseField getDatabaseField() {
         // Initialize the DatabaseField with values and defaults.
         DatabaseField databaseField = new DatabaseField();
-            
-        databaseField.setName(m_name == null ? "" : m_name, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+        //use the following method to manage delimited or case insensitive defaults
+        setFieldName(databaseField, m_name == null ? "" : m_name);
         databaseField.setColumnDefinition(m_columnDefinition == null ? "" : m_columnDefinition);
         
         return databaseField;

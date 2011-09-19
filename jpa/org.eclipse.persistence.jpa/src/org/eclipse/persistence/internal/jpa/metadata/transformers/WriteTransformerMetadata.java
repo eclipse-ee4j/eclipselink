@@ -21,8 +21,11 @@ package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
@@ -91,6 +94,16 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
         return m_column != null && m_column.getName() != null && m_column.getName().length() > 0;   
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+
+        initXMLObject(m_column, accessibleObject);
+    }
+
     /**
      * INTERNAL:
      */

@@ -25,8 +25,10 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * Object to hold onto an association override meta data.
@@ -112,6 +114,19 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
         return m_joinTable;
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+
+        for (JoinColumnMetadata jcm : m_joinColumns){
+            // Initialize single objects.
+            initXMLObject(jcm, accessibleObject);
+        }
+        initXMLObject(m_joinTable, accessibleObject);
+    }
     /**
      * INTERNAL:
      * Used for OX mapping.

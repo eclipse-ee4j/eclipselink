@@ -22,8 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
@@ -111,6 +114,16 @@ public class SecondaryTableMetadata extends TableMetadata {
         return MetadataLogger.SECONDARY_TABLE_SCHEMA;
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+
+        initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
+    }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

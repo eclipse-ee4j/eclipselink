@@ -2322,7 +2322,7 @@ public class EntityManagerSetupImpl {
      */
     public static void updateCaseSensitivitySettings(Map m, MetadataProject project, AbstractSession session){
         //Set Native SQL flag if it was specified.
-        String insensitiveString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES, m, "false", session);
+        String insensitiveString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES, m, session);
         if (insensitiveString != null) {
            if (insensitiveString.equalsIgnoreCase("true")) {
                project.setShouldForceFieldNamesToUpperCase(true);

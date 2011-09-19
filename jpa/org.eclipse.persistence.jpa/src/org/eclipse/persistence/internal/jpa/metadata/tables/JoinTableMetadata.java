@@ -23,8 +23,10 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
@@ -137,6 +139,24 @@ public class JoinTableMetadata extends TableMetadata {
         return MetadataLogger.JOIN_TABLE_SCHEMA;
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+
+        for (JoinColumnMetadata jcm : m_inverseJoinColumns){
+            // Initialize single objects.
+            initXMLObject(jcm, accessibleObject);
+        }
+
+        for (JoinColumnMetadata jcm : m_joinColumns){
+            // Initialize single objects.
+            initXMLObject(jcm, accessibleObject);
+        }
+}
+
     /**
      * INTERNAL:
      * Used for OX mapping.

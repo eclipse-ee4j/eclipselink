@@ -90,7 +90,7 @@ public abstract class ORMetadata {
     // The project this metadata belongs to. Having the project can facilitate 
     // individual metadata process methods since it contains the logger, 
     // persistence unit property metadata, the session etc. 
-    private MetadataProject m_project;
+    protected MetadataProject m_project;
     
     // If this metadata was loaded from XML the entity mappings will be set.
     private XMLEntityMappings m_entityMappings;

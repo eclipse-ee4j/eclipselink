@@ -111,7 +111,7 @@ public class PhoneNumber implements Serializable {
 	}
 
 	@ManyToOne
-	@JoinColumn(name="OWNER_ID", referencedColumnName="EMP_ID")
+	@JoinColumn(name="OWNER_ID", referencedColumnName="emp_id") // <- this is testing case insensitivity
 	public Employee getOwner() { 
         return owner; 
     }
