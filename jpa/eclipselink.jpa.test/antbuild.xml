@@ -1189,6 +1189,7 @@
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-dcn-model.jar"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
     </target>
@@ -1218,7 +1219,7 @@
     <!-- Runs LRG (AllCMP3TestRunModel) with agent. -->
     <target name="test-lrg" depends="clean-test, config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedXMLTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
@@ -1226,17 +1227,6 @@
             <param name="RUN_PATH" value="run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
-            <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
-            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
-            <param name="RUN_PATH" value="run.extended.classpath"/>
-            <param name="DB_URL" value="${db.url}"/>
-        </antcall>
-        <antcall target="run-bean-validation-tests" inheritRefs="true"/>
-        <antcall target="oracle-test" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
