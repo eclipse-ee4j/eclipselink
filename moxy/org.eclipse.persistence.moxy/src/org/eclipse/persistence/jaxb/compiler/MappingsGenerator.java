@@ -1824,14 +1824,16 @@ public class MappingsGenerator {
                 return next;
             }
         }
-        String prefix = null;
         if (XMLConstants.XML_NAMESPACE_URL.equals(URI)) {
         	return XMLConstants.XML_NAMESPACE_PREFIX;
         }           
-        if(suggestedPrefix != null){
-        	prefix = globalNamespaceResolver.generatePrefix(suggestedPrefix);
-        }else{
-        	prefix = globalNamespaceResolver.generatePrefix();
+        String prefix = globalNamespaceResolver.resolveNamespaceURI(URI);
+        if(prefix == null){
+            if(suggestedPrefix != null){
+        	    prefix = globalNamespaceResolver.generatePrefix(suggestedPrefix);
+            }else{
+        	    prefix = globalNamespaceResolver.generatePrefix();
+            }
         }
        
         String nrUri = namespaceResolver.resolveNamespacePrefix(prefix);
@@ -1841,6 +1843,7 @@ public class MappingsGenerator {
         }
         if(addPrefixToNR){
         	namespaceResolver.put(prefix, URI);
+        	globalNamespaceResolver.put(prefix, URI);
         }
         return prefix;
     }

@@ -1,0 +1,4 @@
+<ns0:response xmlns:ns0="someuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:employee">
+   <name>aaa</name>
+   <id>123</id>
+</ns0:response>

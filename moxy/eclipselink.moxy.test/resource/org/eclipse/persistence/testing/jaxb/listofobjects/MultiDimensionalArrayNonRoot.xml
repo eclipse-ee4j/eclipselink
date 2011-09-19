@@ -72,7 +72,7 @@
             <item>12</item>
         </item>
     </int3dArray>
-    <integer3dArray xmlns:ns2="http://jaxb.dev.java.net/array">
+    <integer3dArray xmlns:ns1="http://jaxb.dev.java.net/array">
         <item>
             <item>1</item>
             <item>2</item>
@@ -84,7 +84,7 @@
             <item>6</item>
         </item>
     </integer3dArray>
-    <integer3dArray xmlns:ns2="http://jaxb.dev.java.net/array">
+    <integer3dArray xmlns:ns1="http://jaxb.dev.java.net/array">
         <item>
             <item>7</item>
             <item>8</item>
@@ -96,7 +96,7 @@
             <item>12</item>
         </item>
     </integer3dArray>
-    <integer3dArray xmlns:ns2="http://jaxb.dev.java.net/array">
+    <integer3dArray xmlns:ns1="http://jaxb.dev.java.net/array">
         <item>
             <item>13</item>
             <item>14</item>
