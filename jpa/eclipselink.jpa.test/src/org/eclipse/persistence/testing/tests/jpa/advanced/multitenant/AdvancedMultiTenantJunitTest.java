@@ -21,7 +21,7 @@
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries
  *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType  
+ *       - 356197: Add new VPD type to MultitenantType 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -854,12 +854,14 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
               
                 // Some verification of what was deleted.
                 EntityManager em007 = createEntityManager(MULTI_TENANT_PU);
-              
+                
                 try {
-                    beginTransaction(em);
                     List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
                     assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
-                    commitTransaction(em);
+                    
+                    // Clear out the shared cache with what we read through native SQL.
+                    clearCache(MULTI_TENANT_PU);
+                    em007.clear();
                     
                     beginTransaction(em007);
                     em007.setProperty("tenant.id", "007");
