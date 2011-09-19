@@ -245,7 +245,9 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase.suite());
 
         // OSGi Deployment
-        fullSuite.addTestSuite(CompositeEnumerationTest.class);
+        try {
+            fullSuite.addTestSuite(CompositeEnumerationTest.class);
+        } catch (Throwable ignore) {} // OSgi may not be on classpath.
 
         // JPA 2.0 Metamodel model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelTestSuite.suite());

@@ -82,7 +82,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -477,12 +476,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     protected void processIndirection(ObjectReferenceMapping mapping) {
         boolean usesIndirection = usesIndirection();
         
-        // If weaving was disabled, and the class was not static weaved,
-        // then disable indirection.
-        if (usesIndirection && (!getProject().isWeavingLazyEnabled())
-                && (!getDescriptor().getJavaClass().extendsInterface(ClassConstants.PersistenceWeavedLazy_Class))) {
-            usesIndirection = false;
-        }
+        // Lazy is not disabled until descriptor initialization (OneToOneMapping preInitialize),
+        // as it cannot be known if weaving occurred until then.
         String actualAttributeType = getAttributeType();
         if (getAccessibleObject() != null){
             actualAttributeType = getAccessibleObject().getType();
