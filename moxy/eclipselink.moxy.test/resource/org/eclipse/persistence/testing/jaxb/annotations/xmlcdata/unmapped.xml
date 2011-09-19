@@ -1,0 +1,5 @@
+<employee>
+  <name>Jane Doe</name>
+  <IGNORE><![CDATA[IGNORE]]></IGNORE>
+  <xmlData><![CDATA[<root><child>A string wrapped in cdata</child></root>]]></xmlData>
+</employee>

@@ -1102,7 +1102,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startCDATA() {
-        if (xPathNode.getUnmarshalNodeValue() != null) {
+        if (null != xPathNode && xPathNode.getUnmarshalNodeValue() != null) {
             this.isBufferCDATA = true;
         }
     }
