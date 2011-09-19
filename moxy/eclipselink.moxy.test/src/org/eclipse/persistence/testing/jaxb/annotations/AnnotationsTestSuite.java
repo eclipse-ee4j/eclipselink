@@ -42,6 +42,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.attributecollection.XmlPathCollectionAttributeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.cdata.XmlCDATATestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.cdata.XmlCDATAOverrideTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.cdata.UnmappedCDATATestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly.XmlWriteOnlyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly.XmlWriteOnlyOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly.XmlReadOnlyOverrideTestCases.class);
