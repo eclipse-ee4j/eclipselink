@@ -740,7 +740,7 @@ public class MappingsGenerator {
 
     public DatabaseMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
         boolean isCollection = isCollectionType(property) || property.getType().isArray();
-        if ((property.isMixedContent() && isCollection) || property.isAny()) {
+        if (property.isAny()) {
             return generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
         }
         DatabaseMapping mapping;
@@ -807,31 +807,39 @@ public class MappingsGenerator {
             }
             mapping.setAttributeAccessor(accessor);
         }
+        String wrapperXPath = "";
+        // handle XmlElementWrapper
+        if (property.isSetXmlElementWrapper()) {
+            XmlElementWrapper wrapper = property.getXmlElementWrapper();
+            String namespace = wrapper.getNamespace();
+            if (namespace.equals("##default")) {
+                if (namespaceInfo.isElementFormQualified()) {
+                    namespace = namespaceInfo.getNamespace();
+                } else {
+                    namespace = "";
+                }
+            }
+            if (namespace.equals("")) {
+                wrapperXPath += (wrapper.getName() + "/");
+            } else {
+                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
+                wrapperXPath += getQualifiedString(prefix, wrapper.getName() + "/");
+            }
+        }        
+        if(property.isMixedContent() && isCollection) {
+            if(wrapperXPath.length() == 0) {
+                ((XMLChoiceCollectionMapping)mapping).setMixedContent(true);
+            } else {
+                ((XMLChoiceCollectionMapping)mapping).setMixedContent(wrapperXPath.substring(0, wrapperXPath.length() - 1));
+            }
+        }  
         for (ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
             JavaClass pType = element.getJavaType();
             boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, Image.class) || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));        
             boolean isText = !isBinaryType && !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
-            String xPath = "";
+            String xPath = wrapperXPath;
 
-            // handle XmlElementWrapper
-            if (property.isSetXmlElementWrapper()) {
-                XmlElementWrapper wrapper = property.getXmlElementWrapper();
-                String namespace = wrapper.getNamespace();
-                if (namespace.equals("##default")) {
-                    if (namespaceInfo.isElementFormQualified()) {
-                        namespace = namespaceInfo.getNamespace();
-                    } else {
-                        namespace = "";
-                    }
-                }
-                if (namespace.equals("")) {
-                    xPath += (wrapper.getName() + "/");
-                } else {
-                    String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
-                    xPath += getQualifiedString(prefix, wrapper.getName() + "/");
-                }
-            }
             XMLField xmlField = this.getXPathForElement(xPath, elementName, namespaceInfo, isText);
             //ensure byte[] goes to base64 instead of the default hex.
             if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {

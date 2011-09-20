@@ -252,5 +252,14 @@ public abstract class NodeValue {
     public boolean isAnyMappingNodeValue() {
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     * Return true if this is the node value representing mixed content.
+     * @return
+     */
+    public boolean isMixedContentNodeValue() {
+        return false;
+    }
 
 }

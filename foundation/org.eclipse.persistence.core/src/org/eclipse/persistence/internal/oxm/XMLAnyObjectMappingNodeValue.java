@@ -300,6 +300,11 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     public boolean isAnyMappingNodeValue() {
         return true;
     }
+    
+    @Override
+    public boolean isMixedContentNodeValue() {
+        return this.xmlAnyObjectMapping.isMixedContent();
+    }
 
     protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, DatabaseMapping mapping, UnmarshalKeepAsElementPolicy policy) {
         XMLDescriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);

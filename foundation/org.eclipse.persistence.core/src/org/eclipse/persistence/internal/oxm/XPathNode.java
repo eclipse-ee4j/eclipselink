@@ -183,7 +183,10 @@ public class XPathNode {
     public XPathNode addChild(XPathFragment anXPathFragment, NodeValue aNodeValue, NamespaceResolver namespaceResolver) {
         if (null != anXPathFragment && anXPathFragment.nameIsText()) {
             if (aNodeValue.isOwningNode(anXPathFragment)) {
-                XPathNode textXPathNode = new XPathNode();
+                XPathNode textXPathNode = this.getTextNode();
+                if(textXPathNode == null) {
+                    textXPathNode = new XPathNode();
+                }
                 textXPathNode.setParent(this);
                 textXPathNode.setXPathFragment(anXPathFragment);
                 if (aNodeValue.isMarshalNodeValue()) {
@@ -196,7 +199,9 @@ public class XPathNode {
                 if (null == nonAttributeChildren) {
                     nonAttributeChildren = new ArrayList();
                 }
-                nonAttributeChildren.add(textXPathNode);
+                if(!(nonAttributeChildren.contains(textXPathNode))) {
+                    nonAttributeChildren.add(textXPathNode);
+                }
                 return textXPathNode;
             }
         }

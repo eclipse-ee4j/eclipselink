@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customer id="1221">
+   <name>Dan Savage</name>
+   <p id="771">
+      <number>5552328828</number>
+   </p>
+   <p id="772">
+      <number>5552322112</number>
+   </p>
+   <p id="773">
+      <number>5552329919</number>
+   </p>Mixed Content 1<e id="552">
+      <address>dan@xpress.ca</address>
+   </e>Mixed Content 2<e id="553">
+      <address>d.savage@hotmail.com</address>
+   </e>
+</customer>

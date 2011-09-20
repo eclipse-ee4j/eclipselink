@@ -46,6 +46,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     private Map<XMLField, NodeValue> fieldToNodeValues;
     private XMLField xmlField;
     private ContainerValue containerNodeValue;
+    private boolean isMixedNodeValue;
     
     public XMLChoiceCollectionMappingUnmarshalNodeValue(XMLChoiceCollectionMapping mapping, XMLField xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
@@ -54,6 +55,13 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     }
     
     public boolean isOwningNode(XPathFragment xPathFragment) {
+        if(isMixedNodeValue) {
+            if(xPathFragment.nameIsText()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
         return choiceElementNodeValue.isOwningNode(xPathFragment);
     }
     
@@ -167,5 +175,21 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that this is the choice mapping node value that represents the mixed content.
+     */
+    public void setIsMixedNodeValue(boolean isMixed) {
+        this.isMixedNodeValue = isMixed;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if this is the node value representing mixed content.
+     */
+    public boolean isMixedContentNodeValue() {
+        return this.isMixedNodeValue;
     }
 }

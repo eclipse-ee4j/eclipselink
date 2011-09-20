@@ -352,5 +352,13 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
     }
+    
+    /**
+     * INTERNAL:
+     * Return true if this is the node value representing mixed content.
+     */     
+    public boolean isMixedContentNodeValue() {
+        return this.xmlAnyCollectionMapping.isMixedContent();
+    }
 
 }
