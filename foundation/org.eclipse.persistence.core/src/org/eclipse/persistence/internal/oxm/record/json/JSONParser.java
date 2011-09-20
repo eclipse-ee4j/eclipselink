@@ -314,7 +314,7 @@ class JSONParser extends Parser {
     };
 
     // $ANTLR start "array"
-    // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:1: array : '[' ( value ( ',' value )* )? ']' -> ^( ARRAY ( value )+ ) ;
+    // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:1: array : '[' ( value ( ',' value )* )? ']' -> ^( ARRAY ( value )* ) ;
     public final JSONParser.array_return array() throws RecognitionException {
         JSONParser.array_return retval = new JSONParser.array_return();
         retval.start = input.LT(1);
@@ -337,7 +337,7 @@ class JSONParser extends Parser {
         RewriteRuleTokenStream stream_27=new RewriteRuleTokenStream(adaptor,"token 27");
         RewriteRuleSubtreeStream stream_value=new RewriteRuleSubtreeStream(adaptor,"rule value");
         try {
-            // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:7: ( '[' ( value ( ',' value )* )? ']' -> ^( ARRAY ( value )+ ) )
+            // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:7: ( '[' ( value ( ',' value )* )? ']' -> ^( ARRAY ( value )* ) )
             // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:9: '[' ( value ( ',' value )* )? ']'
             {
             char_literal9=(Token)match(input,26,FOLLOW_26_in_array496);
@@ -415,16 +415,14 @@ class JSONParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 99:39: -> ^( ARRAY ( value )+ )
+            // 99:39: -> ^( ARRAY ( value )* )
             {
-                // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:42: ^( ARRAY ( value )+ )
+                // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:42: ^( ARRAY ( value )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(ARRAY, "ARRAY"), root_1);
 
-                if ( !(stream_value.hasNext()) ) {
-                    throw new RewriteEarlyExitException();
-                }
+                // <EclipeLink_Trunk>\\foundation\\org.eclipse.persistence.core\\resource\\org\\eclipse\\persistence\\internal\\oxm\\record\\json\\JSON.g:99:50: ( value )*
                 while ( stream_value.hasNext() ) {
                     adaptor.addChild(root_1, stream_value.nextTree());
 

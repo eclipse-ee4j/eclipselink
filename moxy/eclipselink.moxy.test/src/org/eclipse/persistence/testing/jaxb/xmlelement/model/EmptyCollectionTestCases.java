@@ -21,7 +21,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class EmptyCollectionTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/model/empty-collection.xml";
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/model/empty-collection.json";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/model/empty-collection.json";
 
     public EmptyCollectionTestCases(String name) throws Exception {
         super(name);

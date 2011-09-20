@@ -96,7 +96,7 @@ object : '{' (pair (',' pair)*)? '}' -> ^(OBJECT pair*);
 
 pair :String ':' value -> ^(PAIR String value);
 
-array : '[' (value (',' value)*)? ']' -> ^(ARRAY value+);
+array : '[' (value (',' value)*)? ']' -> ^(ARRAY value*);
 
 value : String -> ^(STRING String)
         |        Number -> ^(NUMBER Number)
