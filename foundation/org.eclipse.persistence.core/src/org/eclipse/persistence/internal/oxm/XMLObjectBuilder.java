@@ -771,7 +771,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                         }
                     }
                     if(writeTypeAttribute && xmlRef != null ){
-                        String typeValue = getTypeValueToWrite(record, xmlRef, addToNamespaceResolver);
+                        String typeValue = getTypeValueToWrite(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
                         writeXsiTypeAttribute(xmlDescriptor, record, typeValue, addToNamespaceResolver);
                         return true;
                     }
@@ -808,7 +808,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             	   if(leafType == null && xmlRef.getType() == XMLSchemaReference.ELEMENT ){
             		   return false;
             	   }
-                   String typeValue = getTypeValueToWrite(record, xmlRef, addToNamespaceResolver);
+                   String typeValue = getTypeValueToWrite(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
                    if(leafType == null && referenceDescriptor == null){
                        writeXsiTypeAttribute(xmlDescriptor, record, typeValue, addToNamespaceResolver);
                        return true;
@@ -857,9 +857,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
           return false;
     }
 
-    private String getTypeValueToWrite(XMLRecord record, XMLSchemaReference xmlRef, boolean addToNamespaceResolver){
-        String typeValue = xmlRef.getSchemaContext();
+    private String getTypeValueToWrite(XMLRecord record, XMLDescriptor descriptorToWrite, XMLSchemaReference xmlRef, boolean addToNamespaceResolver){
+        String typeValue = xmlRef.getSchemaContext(); 
 
+	    
         if (typeValue == null) {
             QName contextAsQName = xmlRef.getSchemaContextAsQName();
             if (contextAsQName != null) {
@@ -881,8 +882,49 @@ public class XMLObjectBuilder extends ObjectBuilder {
             }
             return null;
         }else {
-            return typeValue.substring(1);
+        	return updateTypeValue(typeValue, descriptorToWrite.getNonNullNamespaceResolver(), record, addToNamespaceResolver);
         }
     }
 
+    /** 
+     * Update the string value for the xsi:type attribute to use the prefix from the current record if possible
+     */
+    private String updateTypeValue(String schemaContext, NamespaceResolver oldNsResolver, XMLRecord record, boolean addToNamespaceResolver){
+    	 if (schemaContext == null) {
+             return null;
+         }
+    	 NamespaceResolver newNsResolver = record.getNamespaceResolver();
+         
+         int idx = schemaContext.lastIndexOf("/");
+         if(idx > -1){
+            schemaContext = schemaContext.substring(idx + 1);
+         }
+         idx = schemaContext.indexOf(XMLConstants.COLON);
+         String localPart = null;
+         if (idx != -1) {
+             String prefix = schemaContext.substring(0, idx);
+             localPart = schemaContext.substring(idx + 1);
+             String uri = oldNsResolver.resolveNamespacePrefix(prefix);
+             String newUri = newNsResolver.resolveNamespacePrefix(prefix);
+             //if we know the uri but the record has a different prefix or no prefix we need to update or generate a new one if necessary
+             if(uri != null && (newUri == null || !(newUri.equals(uri)))){
+            	 //get the prefix from the record for the given uri 
+            	 prefix = newNsResolver.resolveNamespaceURI(uri);
+            	 //if not then we need to generate one and write it out
+                 if(prefix == null){
+                	 String defaultUri = record.getNamespaceResolver().getDefaultNamespaceURI();
+                     if (defaultUri != null && defaultUri.equals(uri)) {
+                         return localPart;
+                     }
+                	 prefix = newNsResolver.generatePrefix();
+                     writeNamespace(record, prefix, uri, addToNamespaceResolver);
+                 }	 
+             }
+              //this means we don't know the corresponding uri or the record already uses the same prefix/uri pair          
+             return prefix + XMLConstants.COLON + localPart;
+         }else{
+        	 return schemaContext;
+         }
+
+     }
 }

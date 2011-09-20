@@ -17,6 +17,8 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.arraywithannotations
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.classloader.ClassLoaderTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.collisions.TypeMappingInfoCollisionsTestSuite;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.object.TypeMappingInfoObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.object.prefixes.TypeMappingInfoObjectNewPrefixTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.object.prefixes.TypeMappingInfoObjectPrefixTestsCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromAnnotationTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromJAXBElementTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromNothingTestCases;
@@ -80,7 +82,8 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(ArrayWithAnnotationsTestCases.class);
         suite.addTestSuite(NullStringTestCases.class);
         suite.addTestSuite(TypeMappingInfoObjectTestCases.class);
- 
+        suite.addTestSuite(TypeMappingInfoObjectPrefixTestsCases.class);
+        suite.addTestSuite(TypeMappingInfoObjectNewPrefixTestCases.class);
         return suite;
     }
 }
