@@ -108,6 +108,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
         addTest(new UpdateObjectInvalidationTest());
         addTest(new NativeUpdateObjectInvalidationTest());
         addTest(new NewObjectWithOptimisticLockingTest());
+        addTest(new OrderedListNewObjectTest());
 
     }
 
