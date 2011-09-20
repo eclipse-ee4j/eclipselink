@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -1928,6 +1929,16 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
         super.validateBeforeInitialization(session);
 
+        // If a lazy mapping required weaving for lazy, and weaving did not occur,
+        // then the mapping must be reverted to no use indirection.
+        if ((this.indirectionPolicy instanceof WeavedObjectBasicIndirectionPolicy) && !ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass())) {
+            Object[] args = new Object[2];
+            args[0] = getAttributeName();
+            args[1] = getDescriptor().getJavaClass();
+            session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_lazy", args);
+            setIndirectionPolicy(new NoIndirectionPolicy());
+        }
+        
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
