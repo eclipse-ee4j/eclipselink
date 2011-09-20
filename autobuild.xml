@@ -406,11 +406,15 @@
         <!-- New Publish Architecture -->
         <mkdir dir="${download.dir}"/>
         <copy file="${build.root.dir}/features/${p2.archive.presigned.zip}"                            tofile="${download.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
-        <copy file="${build.root.dir}/org.eclipse.persistence*.ear"                                    tofile="${download.dir}/." failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy todir="${download.dir}" failonerror="false">
+            <fileset  dir="${build.root.dir}">
+                <include name="org.eclipse.persistence*${version.qualifier}*.ear"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="publish-maven" depends="init">

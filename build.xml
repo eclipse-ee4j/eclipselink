@@ -208,6 +208,9 @@
         <delete failonerror="false">
             <fileset dir="${trunk.build.location}" includes="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}*"/>
         </delete>
+        <delete failonerror="false">
+            <fileset dir="${trunk.build.location}" includes="org.eclipse.persistence*.ear"/>
+        </delete>
          <delete failonerror="false">
             <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
         </delete>
