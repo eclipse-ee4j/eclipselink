@@ -39,16 +39,17 @@
   EclipseLink - not necessary, but assumed). 
 #******************************************************************************/-->
 <project name="wls-shared-lib" default="package-wls-shared-lib" basedir=".">
-
     <scriptdef name="genImpVersion" language="javascript" manager="javax">
         <attribute name="input"/>
         <attribute name="property"/>
+        <attribute name="newline"/>
         <![CDATA[
             // getting the value
             input = attributes.get("input");
             property = attributes.get("property");
-            if (input == null || property == null) {
-               self.fail("both 'input' and 'property' attributes must be set.");
+            newline = attributes.get("newline");
+            if (input == null || property == null || newline == null) {
+               self.fail("'input', 'property', and 'newline' attributes must be set.");
             }
             if (input.startsWith("${") || input == "" ) {
                 // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
@@ -57,12 +58,14 @@
             else {
                 // Verstion String is displayed just before Qualifier in
                 //    "java -jar eclipselink.jar" output
+                // Convert newlines to ','
+                trimmedInput = input.replace(newline, ',');
                 // Get "endString" Index based on search for last instance of "Build Qualifier"
-                endLastRev = input.lastIndexOf("Build Qualifier");
+                endLastRev = trimmedInput.lastIndexOf(",   Build Qualifier");
                 // Get "beginString" index based upon the last space in the line above the endString index
-                beginLastRev = input.lastIndexOf(" ", endLastRev-5);
+                beginLastRev = trimmedInput.lastIndexOf(" ", endLastRev);
                 // Trim the string to not include the leading space, or the end-of-line
-                trimmedInput = input.substring(beginLastRev+1, endLastRev-5);
+                trimmedInput = trimmedInput.substring(beginLastRev+1, endLastRev);
                 project.setProperty(attributes.get("property"), trimmedInput);
             }
         ]]>
@@ -140,7 +143,7 @@
         </unzip -->
         <java jar="${eclipselink.jar}" outputproperty="implimentation.version" fork="true"/>
         <!-- echo message="${implimentation.version}"/ -->
-        <genImpVersion input="${implimentation.version}" property="implimentation.version"/>
+        <genImpVersion input="${implimentation.version}" property="implimentation.version" newline="${line.separator}"/>
         <genSpecVersion input="${implimentation.version}" property="specification.version"/>
         <genEarnameVersion input="${implimentation.version}" property="earname.version"/>
         <echo message="SpecV: '${specification.version}'"/>
