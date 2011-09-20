@@ -279,13 +279,19 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     } else if(xmlMapping instanceof XMLChoiceCollectionMapping) {
                         XMLChoiceCollectionMapping xmlChoiceMapping = (XMLChoiceCollectionMapping)xmlMapping;
                         Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
-                        XMLField firstField = (XMLField)fields.next();
+                        XMLField firstField;
+                        firstField = (XMLField)fields.next();
                         XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
                         XMLChoiceCollectionMappingMarshalNodeValue marshalValue = new XMLChoiceCollectionMappingMarshalNodeValue(xmlChoiceMapping, firstField);
+
                         HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
                         unmarshalValue.setContainerNodeValue(unmarshalValue);
                         marshalValue.setFieldToNodeValues(fieldToNodeValues);
                         unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
+                        if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == xmlChoiceMapping.getChoiceElementMappings().get(firstField))) {
+                            unmarshalValue.setIsMixedNodeValue(true);
+                            marshalValue.setIsMixedNodeValue(true);
+                        }
                         this.addContainerValue(unmarshalValue);
                         fieldToNodeValues.put(firstField, unmarshalValue);
                         addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
@@ -296,6 +302,9 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             nodeValue.setContainerNodeValue(unmarshalValue);
                             addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
                             fieldToNodeValues.put(next, nodeValue);
+                            if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == xmlChoiceMapping.getChoiceElementMappings().get(next))) {
+                                nodeValue.setIsMixedNodeValue(true);
+                            }
                         }
                         continue;
                     }

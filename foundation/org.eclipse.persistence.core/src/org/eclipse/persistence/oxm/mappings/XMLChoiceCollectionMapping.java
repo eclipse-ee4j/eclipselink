@@ -48,6 +48,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -96,11 +97,13 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private Map<String, XMLField> classNameToFieldMappings;
     private Map<XMLField, Converter> fieldsToConverters;
     private ContainerPolicy containerPolicy;
+    private boolean isMixedContent;
     
     private boolean isWriteOnly;
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
     private boolean reuseContainer;
     private Converter converter;
+    private XMLCompositeDirectCollectionMapping mixedContentMapping;
     
     private static final String DATA_HANDLER = "javax.activation.DataHandler";
     private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
@@ -493,7 +496,6 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         if (this.converter != null) {
             this.converter.initialize(this, session);
         }
-        
         Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
@@ -746,6 +748,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
+        //Collection<XMLMapping> allMappings = new ArrayList<XMLMapping>();
         Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
@@ -820,5 +823,52 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
 
     public Map<String, XMLField> getClassNameToFieldMappings() {
         return classNameToFieldMappings;
-    }    
+    } 
+    
+    public boolean isMixedContent() {
+        return this.mixedContentMapping != null;
+    }
+    
+    /**
+     * PUBLIC:
+     * Allows the user to indicate that this mapping should also allow for mixed content in addition to 
+     * any of the elements in the choice. The grouping element parameter is used in the case that there is
+     * a common grouping element to all the other elements in this choice. If so, that grouping element can
+     * be specified here to allow the mixed content to be written/detected inside the wrapper element.
+     * @since EclipseLink 2.3.1
+     */
+    public void setMixedContent(String groupingElement) {
+        String xpath = groupingElement;
+        if(groupingElement.length() == 0) {
+            xpath = XMLConstants.TEXT;
+        } else {
+            xpath += "/" + XMLConstants.TEXT;
+        }
+        XMLField field = new XMLField(xpath);
+        XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();             
+        Class theClass = ClassConstants.STRING;
+        xmlMapping.setAttributeElementClass(theClass);             
+        xmlMapping.setField(field);             
+        xmlMapping.setAttributeAccessor(temporaryAccessor);
+        this.mixedContentMapping = xmlMapping;
+        this.choiceElementMappings.put(field, xmlMapping);
+    }
+    
+    /**
+     * PUBLIC:
+     * Allows the user to indicate that this mapping should also allow for mixed content in addition to 
+     * any of the elements in the choice. 
+     * @since EclipseLink 2.3.1
+     */
+    public void setMixedContent(boolean mixed) {
+        if(!mixed) {
+            this.mixedContentMapping = null;
+        } else {
+            setMixedContent("");
+        }
+    }
+    
+    public XMLCompositeDirectCollectionMapping getMixedContentMapping() {
+        return this.mixedContentMapping;
+    }
 }

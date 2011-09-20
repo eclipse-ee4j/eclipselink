@@ -920,14 +920,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                     if (0 == length) {
                         return;
                     }
+                }
+            }
+            if (null != textNode) {
+                if(textNode.getUnmarshalNodeValue().isMixedContentNodeValue()) {
                     String tmpString = new String(ch, start, length);
                     if (!textNode.isWhitespaceAware() && tmpString.trim().length() == 0) {
                         return;
                     }
                 }
-            }
-
-            if (null != textNode) {
                 xPathNode = textNode;
                 unmarshalContext.characters(this);
             }

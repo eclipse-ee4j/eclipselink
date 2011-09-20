@@ -37,10 +37,14 @@ import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MySchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Bar;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Customer;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Email;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Foo;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.FooImpl;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.FooImplNoAnnotations;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.ObjectFactory;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.ObjectFactory2;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.Phone;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -639,5 +643,30 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
         
         // validate marshalled document        
         assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+    }
+    
+    public void testAnyEltWithEltRefsNonGlobal() throws Exception {
+        Class<?>[] classes = new Class[] { Customer.class, ObjectFactory2.class };
+        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(classes, null);
+        Customer c = new Customer();
+        c.id = 1221;
+        c.name = "Dan Savage";
+        ObjectFactory2 factory = new ObjectFactory2();
+        c.contacts.add(factory.createPhone(new Phone(771, "5552328828")));
+        c.contacts.add(factory.createPhone(new Phone(772, "5552322112")));
+        c.contacts.add(factory.createPhone(new Phone(773, "5552329919")));
+        c.contacts.add("Mixed Content 1");
+        c.contacts.add(factory.createEmail(new Email(552, "dan@xpress.ca")));
+        c.contacts.add("Mixed Content 2");
+        c.contacts.add(factory.createEmail(new Email(553, "d.savage@hotmail.com")));
+        Marshaller m = ctx.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        m.marshal(c, marshalDoc);
+        m.marshal(c, System.out);
+        String xmlName = PATH + "xmlelementrefs/nonglobal.xml";
+        InputStream xml = ClassLoader.getSystemClassLoader().getResourceAsStream(xmlName); 
+        Customer cPrime = (Customer) ctx.createUnmarshaller().unmarshal(xml);
+        assertEquals(c, cPrime);
     }
 }
