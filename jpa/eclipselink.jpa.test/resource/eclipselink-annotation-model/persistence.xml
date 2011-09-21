@@ -296,6 +296,7 @@
         <properties>
             <property name="tenant.id" value="123"/>
             <property name="eclipselink.tenant-id" value="123"/>
+            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
             <property name="eclipselink.session-name" value="multi-tenant-123"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
         </properties>

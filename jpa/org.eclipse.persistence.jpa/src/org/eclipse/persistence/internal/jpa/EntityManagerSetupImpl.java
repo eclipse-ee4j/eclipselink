@@ -29,7 +29,9 @@
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     09/20/2011-2.3.1 Guy Pelletier 
+ *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF. 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -1318,10 +1320,11 @@ public class EntityManagerSetupImpl {
                     }
                     
                     if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
-                        boolean usesMultitenantSharedEmf = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, predeployProperties, "false", session));
+                        boolean usesMultitenantSharedEmf = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, predeployProperties, "true", session));
+                        boolean usesMultitenantSharedCache = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, predeployProperties, "false", session));
     
                         // Create an instance of MetadataProcessor for specified persistence unit info
-                        processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, predeployProperties, compositeProcessor);
+                        processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, usesMultitenantSharedCache, predeployProperties, compositeProcessor);
                         
                         //need to use the real classloader to create the repository class
                         updateMetadataRepository(predeployProperties, persistenceUnitInfo.getClassLoader()); 

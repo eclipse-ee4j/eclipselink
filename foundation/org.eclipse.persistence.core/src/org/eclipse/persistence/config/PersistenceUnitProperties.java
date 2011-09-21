@@ -15,6 +15,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries 
+ *     09/20/2011-2.3.1 Guy Pelletier 
+ *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1064,20 +1066,47 @@ public class PersistenceUnitProperties {
     public static final String MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id";
     
     /**
-     * Property <code>"eclipselink.multitenant.shared-emf</code> specifies
-     * that multitenant entities will be used within a shared emf. Setting this
-     * flag to true will force those multitenant entities to have a PROTECTED
-     * cache.
+     * Property <code>"eclipselink.multitenant.tenants-share-cache</code> 
+     * specifies that multitenant entities will share the L2 cache. By default 
+     * this property is false meaning multitenant entities will have an ISOLATED 
+     * setting. When setting it to true a PROTECTED cache setting will be used.
+     * 
+     * WARNING: Queries that use the cache may return data from other tenants 
+     * when using the PROTECTED setting.
+     * 
+     * @see eclipselink.multitenant.tenants-share-emf
+     * 
+     * <p>
+     * <b>Java example:</b> <code>
+     * props.put(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, true);</br>
+     * <p>
+     * <b>XML example:</b>
+     * <code>
+     * <property name="eclipselink.multitenant.tenants-share-cache" value="true" />;</br>
+     * </code>
+     */
+    public static final String MULTITENANT_SHARED_CACHE = "eclipselink.multitenant.tenants-share-cache";
+    
+    /**
+     * Property <code>"eclipselink.multitenant.shared-emf</code> is used to 
+     * indicate that multitenant entities will be used within a shared entity
+     * manager factory. This property defaults to true (and applies to
+     * multitenant entities only). When setting it to false, users are required 
+     * to provide a unique session name.
+     * 
+     * @see eclipselink.session-name
+     * @see eclipselink.multitenant.tenants-share-cache
+     * 
      * <p>
      * <b>Java example:</b> <code>
      * props.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, true);</br>
      * <p>
      * <b>XML example:</b>
      * <code>
-     * <property name="eclipselink.multitenant.shared-emf" value="true" />;</br>
+     * <property name="eclipselink.multitenant.tenants-share-emf" value="true" />;</br>
      * </code>
      */
-    public static final String MULTITENANT_SHARED_EMF = "eclipselink.multitenant.tenants-share-cache";
+    public static final String MULTITENANT_SHARED_EMF = "eclipselink.multitenant.tenants-share-emf";
     
     /**
      * Property <code>"eclipselink.logging.thread"</code> indicating if current

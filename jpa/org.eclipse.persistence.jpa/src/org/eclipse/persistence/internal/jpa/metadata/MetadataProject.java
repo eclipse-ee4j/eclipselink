@@ -78,7 +78,9 @@
  *     08/09/2011
  *       Masumi Ito, Fujitsu - Bug 351791 - NPE occurs on specifying two kinds of primary key generators on orm.xml
  *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType 
+ *       - 356197: Add new VPD type to MultitenantType
+ *     09/20/2011-2.3.1 Guy Pelletier 
+ *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -173,8 +175,12 @@ public class MetadataProject {
     private boolean m_isWeavingFetchGroupsEnabled;
     
     // Boolean to specify if the user intends for the related EMF of this 
-    // project to shared for multi-tenants.
+    // project to be shared for multitenants.
     private boolean m_multitenantSharedEmf;
+    
+    // Boolean to specify if the user intends for the related EMF cache of this 
+    // project to be shared for multitenants.
+    private boolean m_multitenantSharedCache;
     
     // Boolean to specify if we should weave eager relationships.
     private boolean m_isWeavingEagerEnabled;
@@ -290,7 +296,7 @@ public class MetadataProject {
      * @param session - the Session
      * @param weavingEnabled - flag for global dynamic weaving state
      */
-    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf) {
+    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, boolean multitenantSharedCache) {
         m_isSharedCacheModeInitialized = false;
         
         m_persistenceUnitInfo = puInfo;
@@ -300,6 +306,7 @@ public class MetadataProject {
         m_isWeavingLazyEnabled = weaveLazy;
         m_isWeavingFetchGroupsEnabled = weaveFetchGroups;
         m_multitenantSharedEmf = multitenantSharedEmf;
+        m_multitenantSharedCache = multitenantSharedCache;
         
         // Using linked collections since their ordering needs to be preserved.
         m_entityMappings = new LinkedHashMap<String, XMLEntityMappings>();
@@ -1834,12 +1841,21 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Return true if the entity manager factory cache for this project is 
+     * intended to be shared amongst multitenants.
+     */
+    public boolean usesMultitenantSharedCache() {
+        return m_multitenantSharedCache;
+    }  
+    
+    /**
+     * INTERNAL:
      * Return true if the entity manager factory for this project is intended
-     * to be shared amongst multi-tenants.
+     * to be shared amongst multitenants.
      */
     public boolean usesMultitenantSharedEmf() {
         return m_multitenantSharedEmf;
-    }
+    }    
  }
 
 
