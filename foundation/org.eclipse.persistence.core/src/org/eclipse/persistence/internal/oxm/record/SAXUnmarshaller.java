@@ -223,6 +223,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -242,6 +244,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -282,6 +286,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -341,6 +347,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
 
         // resolve mapping references
@@ -370,6 +378,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             return handler.getObject();
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
 
     }
@@ -423,6 +433,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             domReader.parse(node);
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
 
         // resolve mapping references
@@ -452,41 +464,45 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return unmarshal(inputSource, clazz);
     }
 
-    public Object unmarshal(Source source) {
-        if (source instanceof SAXSource) {
-            SAXSource saxSource = (SAXSource) source;
-            XMLReader xmlReader = null;
-            if (saxSource.getXMLReader() != null) {
-                if(saxSource.getXMLReader() instanceof XMLReader) {
-                    xmlReader = (XMLReader) saxSource.getXMLReader();
-                } else {
-                    xmlReader = new XMLReader(saxSource.getXMLReader());
-                }
-                setValidatorHandler(xmlReader);
-            }
-            if (null == xmlReader) {
-                return unmarshal(saxSource.getInputSource());
-            } else {
-                return unmarshal(saxSource.getInputSource(), xmlReader);
-            }
-        } else if (source instanceof DOMSource) {
-            DOMSource domSource = (DOMSource) source;
-            return unmarshal(domSource.getNode());
-        } else if (source instanceof StreamSource) {
-            StreamSource streamSource = (StreamSource) source;
-            if (null != streamSource.getReader()) {
-                return unmarshal(streamSource.getReader());
-            } else if (null != streamSource.getInputStream()) {
-                return unmarshal(streamSource.getInputStream());
-            } else {
-                return unmarshal(streamSource.getSystemId());
-            }
-        } else {
-        	XMLUnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
-        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-        	SAXResult result = new SAXResult(handler);
-        	transformer.transform(source, result);
-        	return handler.getResult();
+    public Object unmarshal(Source source) {    	
+    	try{
+	        if (source instanceof SAXSource) {
+	            SAXSource saxSource = (SAXSource) source;
+	            XMLReader xmlReader = null;
+	            if (saxSource.getXMLReader() != null) {
+	                if(saxSource.getXMLReader() instanceof XMLReader) {
+	                    xmlReader = (XMLReader) saxSource.getXMLReader();
+	                } else {
+	                    xmlReader = new XMLReader(saxSource.getXMLReader());
+	                }
+	                setValidatorHandler(xmlReader);
+	            }
+	            if (null == xmlReader) {
+	                return unmarshal(saxSource.getInputSource());
+	            } else {
+	                return unmarshal(saxSource.getInputSource(), xmlReader);
+	            }
+	        } else if (source instanceof DOMSource) {
+	            DOMSource domSource = (DOMSource) source;
+	            return unmarshal(domSource.getNode());
+	        } else if (source instanceof StreamSource) {
+	            StreamSource streamSource = (StreamSource) source;
+	            if (null != streamSource.getReader()) {
+	                return unmarshal(streamSource.getReader());
+	            } else if (null != streamSource.getInputStream()) {
+	                return unmarshal(streamSource.getInputStream());
+	            } else {
+	                return unmarshal(streamSource.getSystemId());
+	            }
+	        } else {
+	        	XMLUnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
+	        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+	        	SAXResult result = new SAXResult(handler);
+	        	transformer.transform(source, result);
+	        	return handler.getResult();        	
+	        }
+    	}finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -545,6 +561,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } finally {
             try {
                 inputStream.close();
+                xmlUnmarshaller.getStringBuffer().reset();                
             } catch (IOException e) {
                 if (!hasThrownException) {
                     throw XMLMarshalException.unmarshalException(e);
@@ -561,6 +578,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             return result;
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -579,6 +598,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -608,6 +629,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 throw XMLMarshalException.unmarshalException(e);
             } catch (SAXException e) {
                 throw convertSAXException(e);
+            } finally {
+            	xmlUnmarshaller.getStringBuffer().reset();
             }
             // resolve any mapping references
             saxUnmarshallerHandler.resolveReferences();
@@ -630,6 +653,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
 
         // resolve mapping references
@@ -669,6 +694,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -736,6 +763,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch (SAXException e) {
             throw convertSAXException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
