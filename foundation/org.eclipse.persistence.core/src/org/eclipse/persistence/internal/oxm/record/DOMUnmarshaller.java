@@ -138,6 +138,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -148,6 +150,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -158,6 +162,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -168,6 +174,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -178,6 +186,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -188,6 +198,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -232,6 +244,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -242,6 +256,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -252,6 +268,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -262,6 +280,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -272,6 +292,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -282,6 +304,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -295,6 +319,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch(SAXException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -308,6 +334,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         } catch(SAXException e) {
             throw XMLMarshalException.unmarshalException(e);
+        } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
         }
     }
 
@@ -358,85 +386,89 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * INTERNAL: Convert the Oracle XMLDocument to the reference-class.
      */
     public Object xmlToObject(DOMRecord xmlRow, Class referenceClass) throws XMLMarshalException {
-        //Try to get the Encoding and Version from DOM3 APIs if available
-        String xmlEncoding = "UTF-8";
-        String xmlVersion = "1.0";
+    	try{
+            //Try to get the Encoding and Version from DOM3 APIs if available
+            String xmlEncoding = "UTF-8";
+            String xmlVersion = "1.0";
 
-        try {
-            Method getEncoding = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlEncoding", new Class[] {}, true);
-            Method getVersion = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlVersion", new Class[] {}, true);
-            xmlEncoding = (String) PrivilegedAccessHelper.invokeMethod(getEncoding, xmlRow.getDocument(), new Object[] {});
-            xmlVersion = (String) PrivilegedAccessHelper.invokeMethod(getVersion, xmlRow.getDocument(), new Object[] {});
-        } catch (Exception ex) {
-            //if the methods aren't available, then just use the default values
-        }
-
-        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
-
-        // handle case where the reference class is a primitive wrapper - in
-        // this case, we need to use the conversion manager to convert the 
-        // node's value to the primitive wrapper class, then create, 
-        // populate and return an XMLRoot
-        if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
-        	    ||ClassConstants.DURATION.isAssignableFrom(referenceClass)){
-            // we're assuming that since we're unmarshalling to a primitive
-            // wrapper, the root element has a single text node
-            Object nodeVal;
             try {
-                Text rootTxt = (Text) xmlRow.getDOM().getFirstChild();
-                nodeVal = rootTxt.getNodeValue();
+                Method getEncoding = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlEncoding", new Class[] {}, true);
+                Method getVersion = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlVersion", new Class[] {}, true);
+                xmlEncoding = (String) PrivilegedAccessHelper.invokeMethod(getEncoding, xmlRow.getDocument(), new Object[] {});
+                xmlVersion = (String) PrivilegedAccessHelper.invokeMethod(getVersion, xmlRow.getDocument(), new Object[] {});
             } catch (Exception ex) {
-                // here, either the root element doesn't have a text node as a
-                // first child, or there is no first child at all - in any case,
-                // try converting null
-                nodeVal = null;
+                //if the methods aren't available, then just use the default values
+            }
+
+            XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+
+            // handle case where the reference class is a primitive wrapper - in
+            // this case, we need to use the conversion manager to convert the 
+            // node's value to the primitive wrapper class, then create, 
+            // populate and return an XMLRoot
+            if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
+         	    ||ClassConstants.DURATION.isAssignableFrom(referenceClass)){
+                // we're assuming that since we're unmarshalling to a primitive
+                // wrapper, the root element has a single text node
+                Object nodeVal;
+                try {
+                    Text rootTxt = (Text) xmlRow.getDOM().getFirstChild();
+                    nodeVal = rootTxt.getNodeValue();
+                } catch (Exception ex) {
+                    // here, either the root element doesn't have a text node as a
+                    // first child, or there is no first child at all - in any case,
+                    // try converting null
+                    nodeVal = null;
+                }
+  
+                Object obj = ((XMLConversionManager) xmlContext.getSession(0).getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
+                XMLRoot xmlRoot = new XMLRoot();
+                xmlRoot.setObject(obj);
+                String lName = xmlRow.getDOM().getLocalName();
+                if (lName == null) {
+                    lName = xmlRow.getDOM().getNodeName();
+                }
+                xmlRoot.setLocalName(lName);
+                xmlRoot.setNamespaceURI(xmlRow.getDOM().getNamespaceURI());
+                xmlRoot.setEncoding(xmlEncoding);
+                xmlRoot.setVersion(xmlVersion);
+                return xmlRoot;
+            }
+
+            // for XMLObjectReferenceMappings we need a non-shared cache, so
+            // try and get a Unit Of Work from the XMLContext
+            AbstractSession readSession = xmlContext.getReadSession(referenceClass);
+
+            XMLDescriptor descriptor = (XMLDescriptor) readSession.getDescriptor(referenceClass);
+            if (descriptor == null) {
+                throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
+            }
+
+            Object object = null;
+            if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+                xmlRow.setUnmarshaller(xmlUnmarshaller);
+                xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy(readSession));
+                XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
+
+                ReadObjectQuery query = new ReadObjectQuery();
+                query.setReferenceClass(referenceClass);
+                query.setSession(readSession);
+                object = objectBuilder.buildObject(query, xmlRow, null);
+
+                // resolve mapping references
+                xmlUnmarshaller.resolveReferences(readSession);
             }
   
-            Object obj = ((XMLConversionManager) xmlContext.getSession(0).getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
-            XMLRoot xmlRoot = new XMLRoot();
-            xmlRoot.setObject(obj);
-            String lName = xmlRow.getDOM().getLocalName();
-            if (lName == null) {
-                lName = xmlRow.getDOM().getNodeName();
+            String elementNamespaceUri = xmlRow.getDOM().getNamespaceURI();
+            String elementLocalName = xmlRow.getDOM().getLocalName();
+            if (elementLocalName == null) {
+                elementLocalName = xmlRow.getDOM().getNodeName();
             }
-            xmlRoot.setLocalName(lName);
-            xmlRoot.setNamespaceURI(xmlRow.getDOM().getNamespaceURI());
-            xmlRoot.setEncoding(xmlEncoding);
-            xmlRoot.setVersion(xmlVersion);
-            return xmlRoot;
-        }
-
-        // for XMLObjectReferenceMappings we need a non-shared cache, so
-        // try and get a Unit Of Work from the XMLContext
-        AbstractSession readSession = xmlContext.getReadSession(referenceClass);
-
-        XMLDescriptor descriptor = (XMLDescriptor) readSession.getDescriptor(referenceClass);
-        if (descriptor == null) {
-            throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
-        }
-
-        Object object = null;
-        if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
-            xmlRow.setUnmarshaller(xmlUnmarshaller);
-            xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy(readSession));
-            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
-
-            ReadObjectQuery query = new ReadObjectQuery();
-            query.setReferenceClass(referenceClass);
-            query.setSession(readSession);
-            object = objectBuilder.buildObject(query, xmlRow, null);
-
-            // resolve mapping references
-            xmlUnmarshaller.resolveReferences(readSession);
-        }
-
-        String elementNamespaceUri = xmlRow.getDOM().getNamespaceURI();
-        String elementLocalName = xmlRow.getDOM().getLocalName();
-        if (elementLocalName == null) {
-            elementLocalName = xmlRow.getDOM().getNodeName();
-        }
-        String elementPrefix = xmlRow.getDOM().getPrefix();
-        return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot);
+            String elementPrefix = xmlRow.getDOM().getPrefix();
+           return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot);
+    	}finally{    		
+            xmlUnmarshaller.getStringBuffer().reset();           
+    	}
     }
 
     public boolean isResultAlwaysXMLRoot() {
