@@ -174,14 +174,6 @@ public class TransformerFactory {
                     if (!unMappedAttributes.isEmpty()){
                         addClassDetailsForMappedSuperClasses(metaClass, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
                     }
-                    if (classDetails.getLazyMappings() != null){
-                        Iterator iterator = classDetails.getLazyMappings().iterator();
-                        while (iterator.hasNext()) {
-                            ForeignReferenceMapping mapping = (ForeignReferenceMapping)iterator.next();
-                            mapping.setGetMethodName(ClassWeaver.getWeavedValueHolderGetMethodName(mapping.getAttributeName()));
-                            mapping.setSetMethodName(ClassWeaver.getWeavedValueHolderSetMethodName(mapping.getAttributeName()));
-                        }
-                    }
                 }
             }
 
