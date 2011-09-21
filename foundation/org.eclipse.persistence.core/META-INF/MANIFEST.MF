@@ -1122,6 +1122,7 @@ Export-Package: org.eclipse.persistence;version="2.4.0.qualifier",
    org.eclipse.persistence.internal.helper,
    org.eclipse.persistence.sessions",
  org.eclipse.persistence.platform.database.converters;version="2.4.0.qualifier",
+ org.eclipse.persistence.platform.database.events,
  org.eclipse.persistence.platform.database.jdbc;version="2.4.0.qualifier";
   uses:="org.eclipse.persistence.internal.helper,
    org.eclipse.persistence.platform.database.oracle.plsql,
