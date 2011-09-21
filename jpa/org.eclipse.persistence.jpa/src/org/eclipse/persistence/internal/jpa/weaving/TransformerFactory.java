@@ -174,14 +174,6 @@ public class TransformerFactory {
                     if (!unMappedAttributes.isEmpty()){
                         addClassDetailsForMappedSuperClasses(metaClass, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
                     }
-                    if (classDetails.getLazyMappings() != null){
-                        Iterator iterator = classDetails.getLazyMappings().iterator();
-                        while (iterator.hasNext()) {
-                            ForeignReferenceMapping mapping = (ForeignReferenceMapping)iterator.next();
-                            mapping.setGetMethodName(ClassWeaver.getWeavedValueHolderGetMethodName(mapping.getAttributeName()));
-                            mapping.setSetMethodName(ClassWeaver.getWeavedValueHolderSetMethodName(mapping.getAttributeName()));
-                        }
-                    }
                 }
             }
 
@@ -350,7 +342,6 @@ public class TransformerFactory {
         Map<String, AttributeDetails> attributesMap = new HashMap<String, AttributeDetails>();
         Map<String, AttributeDetails> settersMap = new HashMap<String, AttributeDetails>();
         Map<String, AttributeDetails> gettersMap = new HashMap<String, AttributeDetails>();
-        List lazyMappings = new ArrayList();
 
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)iterator.next();
@@ -417,7 +408,6 @@ public class TransformerFactory {
                         classDetails.setShouldWeaveValueHolders(false);
                         log(SessionLog.WARNING, CANNOT_WEAVE_VIRTUAL_ONE_TO_ONE, new Object[]{classDetails.getClassName(), attributeDetails.getAttributeName()});
                     } else {
-                        lazyMappings.add(foreignReferenceMapping);
                         attributeDetails.weaveVH(weaveValueHolders, foreignReferenceMapping);
                     }
                 }
@@ -437,7 +427,6 @@ public class TransformerFactory {
         classDetails.setAttributesMap(attributesMap);
         classDetails.setGetterMethodToAttributeDetails(gettersMap);
         classDetails.setSetterMethodToAttributeDetails(settersMap);
-        classDetails.setLazyMappings(lazyMappings);
         return unMappedAttributes;
     }
 

@@ -1929,7 +1929,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         // If a lazy mapping required weaving for lazy, and weaving did not occur,
         // then the mapping must be reverted to no use indirection.
         if ((this.indirectionPolicy instanceof WeavedObjectBasicIndirectionPolicy) && !ClassConstants.PersistenceWeavedLazy_Class.isAssignableFrom(getDescriptor().getJavaClass())) {
-            WeavedObjectBasicIndirectionPolicy policy = (WeavedObjectBasicIndirectionPolicy)this.indirectionPolicy;
             Object[] args = new Object[2];
             args[0] = getAttributeName();
             args[1] = getDescriptor().getJavaClass();

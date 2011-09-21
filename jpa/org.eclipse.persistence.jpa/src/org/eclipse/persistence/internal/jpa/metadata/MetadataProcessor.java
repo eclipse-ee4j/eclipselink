@@ -224,10 +224,10 @@ public class MetadataProcessor {
             // to properly handle the exception. As a result we log an error. 
             // The same code will be called later in the bootstrapping code 
             // and the error will be handled then.
-            AbstractSessionLog.getLog().log(SessionLog.CONFIG, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
         } else if (!throwException) {
             // fail quietly
-            m_session.log(SessionLog.CONFIG, SessionLog.EJB_OR_METADATA, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
+            m_session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
         } else {
             // fail loudly
             m_session.handleException(e);

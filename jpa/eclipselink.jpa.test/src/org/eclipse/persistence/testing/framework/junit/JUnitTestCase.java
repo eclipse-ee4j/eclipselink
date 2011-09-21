@@ -208,9 +208,6 @@ public abstract class JUnitTestCase extends TestCase {
      * Return if the tests were run using weaving, agent or static.
      */
     public static boolean isWeavingEnabled(String persistenceUnitName) {
-        if("false".equals(JUnitTestCase.getDatabaseSession(persistenceUnitName).getProperty("eclipselink.weaving"))) {
-            return false;
-        }
         return System.getProperty("TEST_NO_WEAVING") == null;
     }
     

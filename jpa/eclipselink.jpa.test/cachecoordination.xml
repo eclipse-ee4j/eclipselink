@@ -36,7 +36,7 @@
     <property name="env" environment="env" value="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property name="eclipselink.jpa.test" value="."/>
-    <property file="${eclipselink.jpa.test}/build.properties"/>
+    <property file="${eclipselink.jpa.test}/antbuild.properties"/>
     <property file="${user.home}/${server.name}.properties"/>
     <property file="test.properties"/>
     <property file="./${server.name}.properties"/>
@@ -47,7 +47,7 @@
        <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
        <antcall target="build-deploy-cachecoordination-wls"/>
        <antcall target="runclient-cachecoordination-wls"/>
-       <ant antfile="${eclipselink.jpa.test}/build.xml" target="generate-report" inheritRefs="true"/>
+       <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="generate-report" inheritRefs="true"/>
        <antcall target="server-undeploy-cachecoordination-server2" inheritRefs="true">
             <param name="application.name" value="eclipselink-sessionbean-model-server2"/>
         </antcall>
@@ -116,7 +116,7 @@
             <delete file="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence.xml"/>
             <antcall target="config-persistence-xml"/>
             <antcall target="cachecoordination-build-and-deploy-server1" inheritRefs="true">
-                <param name="PERSISTENCE_UNIT_NAME" value="jpa-performance"/>
+                <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
                 <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_NAME" value="jpa-performance"/>
@@ -127,7 +127,7 @@
                 <param name="eclipselink.jpa.test.dir" value="."/>
             </antcall>
             <antcall target="cachecoordination-build-and-deploy-server2" inheritRefs="true">
-                <param name="PERSISTENCE_UNIT_NAME" value="jpa-performance"/>
+                <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
                 <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_NAME" value="jpa-performance"/>
@@ -138,7 +138,7 @@
                 <param name="eclipselink.jpa.test.dir" value="."/>
             </antcall>
             <antcall target="cachecoordination-build-and-deploy-server3" inheritRefs="true">
-                <param name="PERSISTENCE_UNIT_NAME" value="jpa-performance"/>
+                <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
                 <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_NAME" value="jpa-performance"/>
@@ -198,7 +198,7 @@
         <antcall target="session-customizer-rmi" inheritRefs="true">
              <param name="current.server.url" value="${rcm.wls.server1.url}"/>
         </antcall>
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="server-build" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="server-build" inheritRefs="true"/>
         <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
         <antcall target="server-deploy-cachecoordination-server1" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
@@ -210,7 +210,7 @@
         <antcall target="session-customizer-rmi" inheritRefs="true">
              <param name="current.server.url" value="${rcm.wls.server2.url}"/>
         </antcall>
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="server-build" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="server-build" inheritRefs="true"/>
         <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
         <antcall target="server-deploy-cachecoordination-server2" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
@@ -222,7 +222,7 @@
         <antcall target="session-customizer-rmi" inheritRefs="true">
              <param name="current.server.url" value="${rcm.wls.server3.url}"/>
         </antcall>
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="server-build" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="server-build" inheritRefs="true"/>
         <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
         <antcall target="server-deploy-cachecoordination-server3" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>

@@ -36,7 +36,7 @@
     <property name="env" environment="env" value="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property name="eclipselink.jpa.test" value="."/>
-    <property file="${eclipselink.jpa.test}/build.properties"/>
+    <property file="${eclipselink.jpa.test}/antbuild.properties"/>
     <property file="${user.home}/${server.name}.properties"/>
     <property file="test.properties"/>
     <property file="./${server.name}.properties"/>
@@ -47,7 +47,7 @@
         <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <antcall target="build-deploy-cachecoordination-wls"/>
         <antcall target="runclient-cachecoordination-wls"/>
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="generate-report" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="generate-report" inheritRefs="true"/>
         <antcall target="server-undeploy-cachecoordination-cluster" inheritRefs="true"/>
         <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-stop-cachecoordination" inheritRefs="true"/>
         <delete includeEmptyDirs="true" failonerror="false">
@@ -154,7 +154,7 @@
         <antcall target="session-customizer-rmi" inheritRefs="true">
              <param name="current.server.url" value="${rcm.wls.server1.url}"/>
         </antcall>
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="server-build" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="server-build" inheritRefs="true"/>
         <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
         <antcall target="server-deploy-cachecoordination-cluster" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>

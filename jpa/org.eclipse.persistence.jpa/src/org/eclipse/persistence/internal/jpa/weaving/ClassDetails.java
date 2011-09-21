@@ -16,7 +16,6 @@ import java.util.*;
 
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * Internal helper class that holds details of a persistent class.
@@ -46,8 +45,6 @@ public class ClassDetails {
     protected Map<String, AttributeDetails> getterMethodToAttributeDetails;
     /** Map of this class' persistent set methods where the key is the setMethod name. */    
     protected Map<String, AttributeDetails> setterMethodToAttributeDetails;
-    /** Set of mappings using value holder indirection. */
-    protected List<DatabaseMapping> lazyMappings;
     /** Determine if a JPA "mapped superclass". */
     protected boolean isMappedSuperClass = false;
     /** Determine if a JPA "embedable" (aggregate). */
@@ -146,10 +143,6 @@ public class ClassDetails {
         return getterMethodToAttributeDetails;
     }
     
-    public List<DatabaseMapping> getLazyMappings(){
-        return lazyMappings;
-    }
-    
     public Map<String, AttributeDetails> getSetterMethodToAttributeDetails(){
         return setterMethodToAttributeDetails;
     }
@@ -160,10 +153,6 @@ public class ClassDetails {
     
     public void setGetterMethodToAttributeDetails(Map<String, AttributeDetails> map){
         this.getterMethodToAttributeDetails = map;
-    }
-    
-    public void setLazyMappings(List<DatabaseMapping> lazyMappings){
-        this.lazyMappings = lazyMappings;
     }
     
     public boolean getImplementsCloneMethod(){

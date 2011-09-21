@@ -2,6 +2,7 @@
     <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <mapping-file>META-INF/static-ref-orm.xml</mapping-file>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <!--This property is added to test 'querytimeout' property and test is

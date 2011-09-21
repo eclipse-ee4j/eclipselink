@@ -53,6 +53,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -89,6 +90,7 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -4694,6 +4696,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             internalTestWeaving(new Equipment(), true, false);
             internalTestWeaving(new EquipmentCode(), true, false);
             internalTestWeaving(new PartnerLink(), true, false);
+        }
+        if (((OneToOneMapping)getDatabaseSession().getDescriptor(DatabaseField.class).getMappingForAttributeName("table")).usesIndirection()) {
+            fail("LAZY mapping should have been reverted as class was not weaved.");
         }
     }
     
