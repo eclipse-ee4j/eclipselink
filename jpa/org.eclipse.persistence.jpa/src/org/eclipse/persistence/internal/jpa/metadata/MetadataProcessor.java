@@ -25,6 +25,8 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     04/01/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 2)
+ *     09/20/2011-2.3.1 Guy Pelletier 
+ *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -99,10 +101,10 @@ public class MetadataProcessor {
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, Map predeployProperties, MetadataProcessor compositeProcessor) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, boolean multitenantSharedCache, Map predeployProperties, MetadataProcessor compositeProcessor) {
         m_loader = loader;
         m_session = session;
-        m_project = new MetadataProject(puInfo, session, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf);
+        m_project = new MetadataProject(puInfo, session, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf, multitenantSharedCache);
         m_predeployProperties = predeployProperties;
         m_compositeProcessor = compositeProcessor;
         if (m_compositeProcessor != null) {

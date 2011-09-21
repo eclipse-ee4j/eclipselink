@@ -65,7 +65,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.RoutingOrders</class>
         
         <properties>
-            <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
             <!-- property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>

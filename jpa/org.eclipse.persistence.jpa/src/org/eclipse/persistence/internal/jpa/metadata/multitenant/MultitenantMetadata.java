@@ -19,7 +19,9 @@
  *     08/18/2011-2.3.1 Guy Pelletier 
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType 
+ *       - 356197: Add new VPD type to MultitenantType
+ *     09/20/2011-2.3.1 Guy Pelletier 
+ *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.       
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
 
@@ -194,13 +196,21 @@ public class MultitenantMetadata extends ORMetadata {
             // Set the policy on the descriptor.
             classDescriptor.setMultitenantPolicy(policy);
             
-            // If the intention of the user is to use a shared emf with 
-            // multitenant entities, those must use a PROTECTED cache. Don't
-            // overwrite an isolated setting though. Caching details are 
-            // processed before multitenant and you don't want to overwrite a 
-            // user setting.
-            if (getProject().usesMultitenantSharedEmf() && classDescriptor.isSharedIsolation()) {                
-                classDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
+            // If the intention of the user is to use a shared emf, we must 
+            // set the cache isolation type based on the multitenant shared 
+            // cache property. If we are using a shared cache then clearly
+            // we are sharing an EMF.
+            if (getProject().usesMultitenantSharedEmf()) {
+                if (getProject().usesMultitenantSharedCache()) {
+                    // Even though it is a shared cache we don't want to
+                    // override an explicit ISOLATED setting from the user.
+                    // Caching details are processed before multitenant metadata.
+                    if (classDescriptor.isSharedIsolation()) {
+                        classDescriptor.setCacheIsolation(CacheIsolationType.PROTECTED);
+                    }
+                } else {
+                    classDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
+                }
             }
         } else { 
             // TODO: to be implemented at some point.
