@@ -37,9 +37,11 @@ import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -291,8 +293,9 @@ public class MetadataProcessor {
         }
 
         // Add all the classes off the classpath at the persistence unit root url.
+        Set<String> unlistedClasses = Collections.EMPTY_SET;
         if (! persistenceUnitInfo.excludeUnlistedClasses()) {
-            classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader, m_predeployProperties));
+            unlistedClasses = PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader, m_predeployProperties);
         }
         
         // 5 - Go through all the class names we found and add those classes 
@@ -302,21 +305,30 @@ public class MetadataProcessor {
         // in the XML case. Also, don't add an entity accessor if an embeddable
         // accessor to the same class exists (and vice versa). XML accessors
         // are loaded first, so preserve what we find there.
-        for (String className : classNames) {
-            MetadataClass candidateClass = m_factory.getMetadataClass(className);
-            // JBoss Bug 227630: Do not process a null class whether it was from a 
-            // NPE or a CNF, a warning or exception is thrown in loadClass() 
-            if (candidateClass != null) {
-                if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
-                    m_project.addEntityAccessor(new EntityAccessor(PersistenceUnitProcessor.getEntityAnnotation(candidateClass), candidateClass, m_project));
-                } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass) && ! m_project.hasEmbeddable(candidateClass) && ! m_project.hasEntity(candidateClass)) {
-                    m_project.addEmbeddableAccessor(new EmbeddableAccessor(PersistenceUnitProcessor.getEmbeddableAnnotation(candidateClass), candidateClass, m_project));
-                } else if (PersistenceUnitProcessor.isStaticMetamodelClass(candidateClass)) {
-                    m_project.addStaticMetamodelClass(PersistenceUnitProcessor.getStaticMetamodelAnnotation(candidateClass), candidateClass);
-                }
+        Iterator<String> iterator = classNames.iterator();
+        boolean unlisted = false;
+        while (iterator.hasNext() || !unlisted) {
+            if (!iterator.hasNext() && !unlisted) {
+                iterator = unlistedClasses.iterator();
+                unlisted = true;
             }
-            
-            // Mapped-superclasses will be discovered automatically.
+            if (iterator.hasNext()) {
+                String className = iterator.next();
+                MetadataClass candidateClass = m_factory.getMetadataClass(className, unlisted);
+                // JBoss Bug 227630: Do not process a null class whether it was from a 
+                // NPE or a CNF, a warning or exception is thrown in loadClass() 
+                if (candidateClass != null) {
+                    if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
+                        m_project.addEntityAccessor(new EntityAccessor(PersistenceUnitProcessor.getEntityAnnotation(candidateClass), candidateClass, m_project));
+                    } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass) && ! m_project.hasEmbeddable(candidateClass) && ! m_project.hasEntity(candidateClass)) {
+                        m_project.addEmbeddableAccessor(new EmbeddableAccessor(PersistenceUnitProcessor.getEmbeddableAnnotation(candidateClass), candidateClass, m_project));
+                    } else if (PersistenceUnitProcessor.isStaticMetamodelClass(candidateClass)) {
+                        m_project.addStaticMetamodelClass(PersistenceUnitProcessor.getStaticMetamodelAnnotation(candidateClass), candidateClass);
+                    }
+                }
+                
+                // Mapped-superclasses will be discovered automatically.
+            }
         }
     }
     
