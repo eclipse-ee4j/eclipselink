@@ -37,7 +37,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /** 
      * Contains the added values to the collection and their corresponding ChangeSets in order.
      */
-    protected transient Vector orderedAddObjects;
+    protected Vector orderedAddObjects;
     
     /**
      * Contains the added values index to the collection. 
