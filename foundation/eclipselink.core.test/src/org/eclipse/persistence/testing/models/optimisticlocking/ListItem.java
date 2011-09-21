@@ -109,6 +109,7 @@ public class ListItem {
         definition.addField("VERSION", Integer.class, 30);
         definition.addField("DESCR", java.lang.String.class);
         definition.addField("HOLDER_ID", java.math.BigDecimal.class, 15);
+        definition.addField("ITEM_ORDER", Integer.class, 15);
         
         return definition;
     }

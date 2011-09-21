@@ -97,6 +97,7 @@ public class ListHolder {
         onetomanymapping.setAttributeName("items");
         onetomanymapping.setIsReadOnly(false);
         onetomanymapping.useTransparentList();
+        onetomanymapping.setListOrderFieldName("OL_ITEM.ITEM_ORDER");
         onetomanymapping.setReferenceClass(ListItem.class);
         onetomanymapping.addTargetForeignKeyFieldName("OL_ITEM.HOLDER_ID", "OL_HOLDER.ID");
         descriptor.addMapping(onetomanymapping);
