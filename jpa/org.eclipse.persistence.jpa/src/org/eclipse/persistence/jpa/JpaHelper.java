@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa; 
 
-import java.util.Map;
-
 import javax.persistence.EntityManagerFactory; 
 import javax.persistence.Query; 
 import org.eclipse.persistence.internal.jpa.*; 
