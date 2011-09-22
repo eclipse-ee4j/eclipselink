@@ -136,6 +136,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(MultipleBindingsSimpleTestCases.class);
         suite.addTestSuite(MultipleBindingsFourFilesTestCases.class);
         suite.addTestSuite(SplitPackageTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.externalizedmetadata.namespace.NamespaceTestCases.class);
         return suite;
     }
     

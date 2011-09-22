@@ -494,7 +494,7 @@ public class XMLProcessor {
             return processXmlAnyElement((XmlAnyElement) javaAttribute, oldProperty, typeInfo, javaType);
         }
         if (javaAttribute instanceof XmlAttribute) {
-            return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, typeInfo, nsInfo);
+            return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, typeInfo, nsInfo, javaType);
         }
         if (javaAttribute instanceof XmlElement) {
             return processXmlElement((XmlElement) javaAttribute, oldProperty, typeInfo, nsInfo, javaType);
@@ -716,7 +716,7 @@ public class XMLProcessor {
      * @param nsInfo
      * @return
      */
-    private Property processXmlAttribute(XmlAttribute xmlAttribute, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
+    private Property processXmlAttribute(XmlAttribute xmlAttribute, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo, JavaType javaType) {
         // reset any existing values
         resetProperty(oldProperty, typeInfo);
 
@@ -760,13 +760,19 @@ public class XMLProcessor {
             namespace = xmlAttribute.getNamespace();
         }
 
+        if (javaType.getXmlType() != null && javaType.getXmlType().getNamespace() != null  &&
+                (xmlAttribute.getNamespace() != null && xmlAttribute.getNamespace().equals(DEFAULT))) {
+            // Inherit type-level namespace if there is one
+            namespace = javaType.getXmlType().getNamespace();
+        }
+
         // set schema name
         QName qName;
         if (name.equals(DEFAULT)) {
             name = oldProperty.getPropertyName();
         }
         if (namespace.equals(DEFAULT)) {
-            if (nsInfo.isElementFormQualified()) {
+            if (nsInfo.isAttributeFormQualified()) {
                 qName = new QName(nsInfo.getNamespace(), name);
             } else {
                 qName = new QName(name);
@@ -921,6 +927,12 @@ public class XMLProcessor {
             if (xmlElement.getXmlElementWrapper() != null) {
                 oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());
             }
+        }
+
+        if (javaType.getXmlType() != null && javaType.getXmlType().getNamespace() != null  &&
+                (xmlElement.getNamespace() != null && xmlElement.getNamespace().equals(DEFAULT))) {
+            // Inherit type-level namespace if there is one
+            namespace = javaType.getXmlType().getNamespace();
         }
 
         // set schema name
