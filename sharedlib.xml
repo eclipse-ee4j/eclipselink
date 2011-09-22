@@ -186,7 +186,7 @@
                 <attribute name="Specification-Version"  value="${release.version}"/>
                 <attribute name="Implementation-Version" value="${version.string}"/>
             </manifest>
-            <fileset dir="." includes="${eclipselink.jar}"/>
+            <zipfileset dir="." includes="${eclipselink.jar}" prefix="lib"/>
         </jar>
         <delete dir="${metadata.dir}"/> 
     </target>
