@@ -21,6 +21,7 @@ public class SubstitutionTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("JAXB Substitution Groups Test Suite");
         suite.addTestSuite(SubstitutionEnglishTestCases.class);
         suite.addTestSuite(SubstitutionFrenchTestCases.class);
+        suite.addTestSuite(SubstitutionBindingsTestCases.class);
         return suite;
     }
 

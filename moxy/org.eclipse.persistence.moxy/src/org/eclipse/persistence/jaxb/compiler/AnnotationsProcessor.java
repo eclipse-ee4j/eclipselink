@@ -3317,7 +3317,13 @@ public class AnnotationsProcessor {
             while (substitutionHead != null) {
                 ElementDeclaration rootDeclaration = this.getGlobalElements().get(substitutionHead);
                 rootDeclaration.addSubstitutableElement(nextDeclaration);
-                substitutionHead = rootDeclaration.getSubstitutionHead();
+                if (rootDeclaration.getSubstitutionHead() != null && rootDeclaration.getSubstitutionHead().equals(substitutionHead)) {
+                    // Break the loop if substitutionHead equals rootDeclaration's substitutionHead
+                    // (XmlElementDecl's substitutionHeadName == name)
+                    substitutionHead = null;
+                } else {
+                    substitutionHead = rootDeclaration.getSubstitutionHead();
+                }
             }
         }
     }
