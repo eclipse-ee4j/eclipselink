@@ -420,7 +420,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     if (!descriptor.isSharedIsolation()){
                         descriptor.notifyReferencingDescriptorsOfIsolation();
                     }
-                    descriptor.postInitializeCaching();
+                    descriptor.postInitializeCaching(this);
                     getCommitManager().initializeCommitOrder();
                 } catch (RuntimeException exception) {
                     getIntegrityChecker().handleError(exception);
@@ -546,7 +546,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             while (isolatedAndProtectedIterator.hasNext()){
                 ClassDescriptor descriptor = isolatedAndProtectedIterator.next();
                 descriptor.notifyReferencingDescriptorsOfIsolation();
-                descriptor.postInitializeCaching();
+                descriptor.postInitializeCaching(this);
             }
             clearIsolatedAndProtectedDescriptors();
             if (getIntegrityChecker().hasErrors()) {

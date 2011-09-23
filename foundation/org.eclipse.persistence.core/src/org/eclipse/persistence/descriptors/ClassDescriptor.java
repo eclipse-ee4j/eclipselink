@@ -3562,15 +3562,20 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Used to maintain caching settings at descriptor initialization time
      */
-    public void postInitializeCaching(){
+    public void postInitializeCaching(AbstractSession session){
         // PERF: If using isolated cache, then default uow isolation to always (avoids merge/double build).
         if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
             if (isIsolated()) {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
-            }else if (isProtectedIsolation()) {
-                setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
-            }else{
-                setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+            }else {
+                if (isProtectedIsolation()) {
+                    setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
+                }else{
+                    setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+                }
+                if (!shouldBeReadOnly()) {
+                    session.getProject().setHasNonIsolatedUOWClasses(true);
+                }
             }
         }
     }
@@ -3586,12 +3591,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 if (descriptor.unitOfWorkCacheIsolationLevel == UNDEFINED_ISOLATATION){
                     descriptor.unitOfWorkCacheIsolationLevel = ISOLATE_FROM_CLIENT_SESSION;
                 }
-                for (DatabaseMapping mapping: descriptor.getMappings()){
-                    if (mapping.isForeignReferenceMapping()){
-                        ForeignReferenceMapping frMapping = ((ForeignReferenceMapping)mapping);
-                        if (frMapping.getReferenceDescriptor() == this){
-                            frMapping.setIsCacheable(false);
-                            frMapping.collectQueryParameters(descriptor.getForeignKeyValuesForCaching());
+                if (isIsolated()){
+                    for (DatabaseMapping mapping: descriptor.getMappings()){
+                        if (mapping.isForeignReferenceMapping()){
+                            ForeignReferenceMapping frMapping = ((ForeignReferenceMapping)mapping);
+                            if (frMapping.getReferenceDescriptor() == this){
+                                frMapping.setIsCacheable(false);
+                                frMapping.collectQueryParameters(descriptor.getForeignKeyValuesForCaching());
+                            }
                         }
                     }
                 }
