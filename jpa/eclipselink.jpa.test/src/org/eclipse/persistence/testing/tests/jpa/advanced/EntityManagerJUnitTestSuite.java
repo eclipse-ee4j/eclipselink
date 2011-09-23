@@ -8483,9 +8483,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.persist(newEmployee);
         commitTransaction(em);
         
-        // If weaving for change tracking is turned off then first name will be
-        // fetch and is expected for a deferred change tracking policy.
-        if (employee instanceof FetchGroupTracker && isWeavingForChangeTrackingEnabled()) {
+        if (employee instanceof FetchGroupTracker) {
             if (((FetchGroupTracker)employee)._persistence_isAttributeFetched("firstName")) {
                 fail("commit fetched object.");
             }
