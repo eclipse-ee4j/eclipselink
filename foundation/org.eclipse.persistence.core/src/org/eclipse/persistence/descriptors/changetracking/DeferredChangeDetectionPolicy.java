@@ -146,8 +146,21 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         ObjectChangeSet changes = builder.createObjectChangeSet(clone, changeSet, isNew, true, session);
 
         // The following code deals with reads that force changes to the flag associated with optimistic locking.
+        FetchGroup fetchGroup = null;
+        // The flag indicates whether should get fetch group - to avoid doing 
+        // that twice. Useful because fetchGroup may be null.
+        boolean shouldGetFetchGroup = true;
         if ((descriptor.usesOptimisticLocking()) && (changes.getId() != null)) {
-            changes.setOptimisticLockingPolicyAndInitialWriteLockValue(descriptor.getOptimisticLockingPolicy(), session);
+            if (descriptor.hasFetchGroupManager()) {
+                fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(clone);
+            }
+            
+            if (fetchGroup == null || fetchGroup != descriptor.getFetchGroupManager().getIdEntityFetchGroup()) {
+                changes.setOptimisticLockingPolicyAndInitialWriteLockValue(descriptor.getOptimisticLockingPolicy(), session);
+            }
+            
+            // already tried to get the fetch group - no need to do that again.
+            shouldGetFetchGroup = false;            
         }
 
         // PERF: Do not create change records for new objects.
@@ -155,8 +168,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
             List mappings = descriptor.getMappings();
             int mappingsSize = mappings.size();
-            FetchGroup fetchGroup = null;
-            if(descriptor.hasFetchGroupManager()) {
+            if(shouldGetFetchGroup && descriptor.hasFetchGroupManager()) {
                 fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(clone);
             }
             for (int index = 0; index < mappingsSize; index++) {
