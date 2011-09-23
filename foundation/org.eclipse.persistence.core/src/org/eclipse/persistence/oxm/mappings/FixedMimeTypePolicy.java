@@ -12,6 +12,15 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.oxm.mappings;
 
+/**
+ * <p><b>Purpose:</b> Provides a default implementation of MimeTypePolicy to be used for java
+ * properties that have a single static mime type. 
+ * 
+ *  @see MimeTypePolicy
+ *  @see XMLBinaryDataMapping
+ *  @see XMLBinaryDataCollectionMapping
+ *
+ */
 public class FixedMimeTypePolicy implements MimeTypePolicy {
 	
 	private String aMimeType;

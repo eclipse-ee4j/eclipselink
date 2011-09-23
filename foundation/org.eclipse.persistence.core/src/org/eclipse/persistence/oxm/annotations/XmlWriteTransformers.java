@@ -18,7 +18,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
+/**
+ * <p><b>Purpose:</b> Annotation used to wrap multiple XmlWriteTransformer annotations. Used in conjunction with
+ * XmlWriteTransformer and XmlTransformation to specify multiple Field Transformers for a given 
+ * property.
+ * 
+ *  @see XmlReadTransformer
+ *  @see XmlWriteTransformer
+ *  @see XmlTransformation
+ *
+ */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlWriteTransformers {

@@ -23,6 +23,15 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.sessions.Session;
 
+/**
+ * <p><b>Purpose:</b> Provides an implementation of Converter that can be used to convert a 
+ * collection of Objects into a space separated list of Strings and back. Used with 
+ * XMLCompositeDirectCollectionMapping to implement the behaviour of the XmlList annotation  
+ *
+ * @see XMLCompositeDirectCollectionMapping
+ * @see XMLConverter
+ * @see Converter
+ */
 public class XMLListConverter implements Converter {
 
     private XMLConversionManager conversionManager;

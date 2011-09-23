@@ -21,6 +21,16 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.sessions.Session;
 
+/**
+ * <p><b>Purpose: </b> Provides an implementation of XMLConverter to wrap/unwrap objects in an 
+ * XMLRoot in order to capture element name information.
+ * <p><b>Responsibilities</b>
+ * <li>Wrap an object in an XMLRoot on unmarshal. Do any required conversions based on type for 
+ * simple mappings.
+ * <li>Unwrap an XMLRoot from the object and pass it along to be marshalled.
+ * @see XMLConverter
+ * @see Converter
+ */
 public class XMLRootConverter implements XMLConverter {
 	private XPathFragment rootFragment;
 	private XMLField associatedField;

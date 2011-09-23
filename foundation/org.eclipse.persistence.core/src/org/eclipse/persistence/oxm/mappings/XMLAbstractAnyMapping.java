@@ -36,6 +36,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+/**
+ * <p><b>Purpose:</b> An abstract superclass for XMLAnyObjectMapping and XMLAnyCollectionMapping.
+ * Maps an attribute of an object to an xs:any construct in the schema. 
+ * 
+ *  @see XMLAnyObjectMapping
+ *  @see XMLAnyCollectionMapping
+ *
+ */
 public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
 
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;  

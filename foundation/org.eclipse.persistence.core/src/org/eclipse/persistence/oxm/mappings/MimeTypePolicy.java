@@ -12,6 +12,16 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.oxm.mappings;
 
+/**
+ * <p>Purpose: </p> A MimeTypePolicy is used in conjunction with an XMLBinaryData/CollectionMapping
+ * in order to allow customisation of the mime type for a specific property at runtime rather than
+ * at design time. By default, a FixedMimeTypePolicy is used.
+ * 
+ * @see XMLBinaryDataMapping
+ * @see XMLBinaryCollectionMapping
+ * @see FixedMimeTypePolicy
+ *
+ */
 public interface MimeTypePolicy {
 	/**
 	 * return a MIME type string

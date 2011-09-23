@@ -32,9 +32,36 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 /**
- *  @version $Header: XMLFragmentCollectionMapping.java 21-aug-2007.11:06:40 bdoughan Exp $
- *  @author  mmacivor
- *  @since   release specific (what release of product did this appear in)
+ * <p><b>Purpose: </b>This mapping provides a means to keep a part of the xml tree as a collection
+ * of DOM elements. 
+ * 
+ * <p><b>Setting the XPath</b>: TopLink XML mappings make use of XPath statements to find the relevant
+ * data in an XML document.  The XPath statement is relative to the context node specified in the descriptor.
+ * The XPath may contain path and positional information;  the last node in the XPath forms the local
+ * root node for the fragment.  The XPath is specified on the mapping using the <code>setXPath</code>
+ * method.
+ * 
+ * <p><table border="1">
+ * <tr>
+ * <th id="c1" align="left">XPath</th>
+ * <th id="c2" align="left">Description</th>
+ * </tr>
+ * <tr>
+ * <td headers="c1">phone-number</td>
+ * <td headers="c2">The phone-number information is stored in the phone-number element.</td>
+ * </tr>
+ * <tr>
+ * <td headers="c1" nowrap="true">contact-info/phone-number</td>
+ * <td headers="c2">The XPath statement may be used to specify any valid path.</td>
+ * </tr>
+ * </table>
+ * <p><b>Sample Configuration:</b>
+ * <code><pre>
+ * XMLFragmentCollectionMapping mapping = new XMLFragmentCollectionMapping();
+ * mapping.setAttributeName("phoneNumbers");
+ * mapping.setXPath("contact-info/phone-number");
+ * </pre>
+ * </code>
  */
 public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
     private boolean isWriteOnly;

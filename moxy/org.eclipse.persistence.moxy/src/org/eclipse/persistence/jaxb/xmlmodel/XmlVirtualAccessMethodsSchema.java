@@ -16,19 +16,13 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * <p>Java class for xml-virtual-access-methods-schema.
+ * <p><b>Purpose: </b> XmlVirtualAccessMethodsSchema enumeration is used in conjunction with XmlVirtualAcessMethods
+ * to configure how virtual properties are generated into the schema. A value of NODES indicates that
+ * each virtual property should have an individual node generated for it into the schema, whereas
+ * a value of ANY indicates that a single <xs:any> value should be generated to encapsulate all of 
+ * the virtual properties on this class.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="xml-virtual-access-methods-schema">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="NODES"/>
- *     &lt;enumeration value="ANY"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
- * 
+ * @see XmlVirtualAccessMethods
  */
 @XmlType(name = "xml-virtual-access-methods-schema")
 @XmlEnum

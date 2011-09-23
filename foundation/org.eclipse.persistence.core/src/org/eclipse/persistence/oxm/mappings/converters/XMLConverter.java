@@ -19,9 +19,17 @@ import org.eclipse.persistence.sessions.Session;
 
 
 /**
- *  @version $Header: XMLConverter.java 09-aug-2007.15:24:25 dmccann Exp $
- *  @author  mmacivor
- *  @since   release specific (what release of product did this appear in)
+ * <p><b>Purpose</b>: Conversion interface to allow conversion between object and data types.
+ * This can be used in any mapping to convert between the object and data types without requiring code
+ * placed in the object model. This extension of the Converter interface allows for the XMLMarshaller
+ * and XMLUnmarshaller to be passed into the conversion methods.
+ * 
+ * @see Converter
+ * @see XMLDirectMapping
+ * @see XMLCompositeDirectCollectionMapping
+ * @see XMLCompositeObjectMapping
+ * @see XMLCompositeCollectionMapping
+ * 
  */
 
 public interface XMLConverter extends Converter {
