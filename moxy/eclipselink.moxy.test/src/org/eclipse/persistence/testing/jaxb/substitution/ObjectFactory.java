@@ -64,7 +64,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link Person }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "myNamespace", name = "person")
+    @XmlElementDecl(namespace = "myNamespace", name = "person", substitutionHeadNamespace = "myNamespace", substitutionHeadName = "person")
     public JAXBElement<Person> createPerson(Person value) {
         return new JAXBElement<Person>(_Person_QNAME, Person.class, null, value);
     }
