@@ -12,17 +12,19 @@
  ******************************************************************************/
 package dbws.testing.loglevelvalidation;
 
-import static org.junit.Assert.assertTrue;
-
+//javase imports
 import java.io.StringReader;
-
-import javax.wsdl.WSDLException;
-
-import org.eclipse.persistence.logging.SessionLog;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.w3c.dom.Document;
 
+//java eXtension imports
+import javax.wsdl.WSDLException;
+
+//JUnit4 imports
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+
+//testing imports
 import dbws.testing.DBWSTestProviderHelper;
 import dbws.testing.DBWSTestSuite;
 
