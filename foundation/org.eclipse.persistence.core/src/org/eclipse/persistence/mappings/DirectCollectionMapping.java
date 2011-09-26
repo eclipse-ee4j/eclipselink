@@ -1772,6 +1772,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public boolean isElementCollectionMapping() {
+        return true;
+    }
+
+    /**
+     * INTERNAL:
      * Return if this mapping support joining.
      */
     @Override

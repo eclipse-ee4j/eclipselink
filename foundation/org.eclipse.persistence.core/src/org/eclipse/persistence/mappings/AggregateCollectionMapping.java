@@ -1848,6 +1848,14 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public boolean isElementCollectionMapping() {
+        return true;
+    }
+
+    /**
+     * INTERNAL:
      * Return if this mapping support joining.
      */
     public boolean isJoiningSupported() {
