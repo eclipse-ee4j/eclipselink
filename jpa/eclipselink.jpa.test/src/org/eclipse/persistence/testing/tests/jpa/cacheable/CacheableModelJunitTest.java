@@ -289,11 +289,10 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         em1.persist(entityToDelete);
         int entityToDeleteId = entityToDelete.getId();
         commitTransaction(em1);
-        
+                
+        beginTransaction(em1);
         // No need to clear the EM, just set the new property to BYPASS.
         em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
-        
-        beginTransaction(em1);
         CacheableTrueEntity entity = findCacheableTrueEntity(em1, m_cacheableTrueEntity1Id);
         String updatedName = "testEMPropertiesOnCommit1";
         entity.setName(updatedName);
@@ -301,6 +300,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         CacheableTrueEntity deletedEntity1 = findCacheableTrueEntity(em1, entityToDeleteId);
         em1.remove(deletedEntity1);
         commitTransaction(em1);
+        closeEM(em1);
         
         EntityManager em2 = createDSEntityManager();
         CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity1Id);
@@ -318,7 +318,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         deletedEntity2 = em2.find(CacheableTrueEntity.class, entityToDeleteId);
         assertTrue("The deleted entity was removed from the database", deletedEntity2 == null);
         
-        closeEM(em1);
         closeEM(em2);
     }
     
@@ -333,11 +332,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         CacheableTrueEntity cachedEntity2 = findCacheableTrueEntity(em1, m_cacheableTrueEntity2Id);
         String staleName = cachedEntity2.getName();
         
-        // No need to clear the EM, just set the new property to BYPASS.
-        em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         String updatedName = "testEMPropertiesOnCommit2";
         
         beginTransaction(em1);
+        // No need to clear the EM, just set the new property to BYPASS.
+        em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         // Update entity1 through a query that uses cache store mode USE.
         Query query = em1.createQuery("UPDATE JPA_CACHEABLE_TRUE e SET e.name = :name " + "WHERE e.id = :id ").setParameter("name", updatedName).setParameter("id", m_cacheableTrueEntity1Id);
         query.setHint(QueryHints.CACHE_STORE_MODE, CacheStoreMode.USE);
@@ -1291,6 +1290,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             ProtectedEmbeddable pe = cte.getProtectedEmbeddable();
         
             ServerSession session = em.unwrap(ServerSession.class);
+            commitTransaction(em);
             closeEM(em);
             ForceProtectedEntityWithComposite cachedCPE = (ForceProtectedEntityWithComposite) session.getIdentityMapAccessor().getFromIdentityMap(cte);
             CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
@@ -1307,9 +1307,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertEquals("Cache was not used for Protected Isolation", cachedCPE.getProtectedEmbeddable().getName(),managedCPE.getProtectedEmbeddable().getName());
             //follwoing code is commented out due to bug 336651
             //assertEquals("Cache was not used for Protected Isolation", cachedCRE.getProtectedEmbeddables().get(0).getName(),managedCRE.getProtectedEmbeddables().get(0).getName());
-        }finally{
-        rollbackTransaction(em);
-        closeEM(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEM(em);
         }
     }
 
@@ -1703,7 +1703,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             details.add(detail);
             entity.setDetailsBackPointer(details);
             detail.setDescription("test");
-            em.getTransaction().begin();
+            beginTransaction(em);
             detail = em.merge(detail);
             commitTransaction(em);
             
@@ -1713,7 +1713,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertTrue("detail's entity does not have the backpointer.", detail.getEntity().getDetailsBackPointer().size() == 1);
         } finally {
             beginTransaction(em);
-            em.merge(detail);
+            detail = em.merge(detail);
             em.remove(detail.getEntity());
             em.remove(detail);
             commitTransaction(em);
@@ -1774,6 +1774,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             ctdid = em.find(CacheableTrueDerivedIDEntity.class, new CacheableTrueDerivedIDPK(ctdid.getPk().getDescription(), cf.getId()));
             assertNotNull("The protected cached relationship was not properly retrieved", ctdid.getCacheableFalse());
         } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
             beginTransaction(em);
             cf = em.find(CacheableFalseEntity.class, cf.getId());
             em.remove(cf);
