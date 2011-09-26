@@ -840,6 +840,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    public boolean isElementCollectionMapping() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Related mapping should implement this method to return true.
+     */
     public boolean isForeignReferenceMapping() {
         return false;
     }
