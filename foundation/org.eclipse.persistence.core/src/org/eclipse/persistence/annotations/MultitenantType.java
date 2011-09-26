@@ -44,6 +44,8 @@ public enum MultitenantType {
      * Specifies that the DB will handle the tenant filtering on all SELECT,
      * UPDATE and DELETE queries. Using this type assumes that the platform
      * used with your persistence unit does indeed support VPD.
+     * 
+     * @since 2.3.1
      */
     VPD
 }
