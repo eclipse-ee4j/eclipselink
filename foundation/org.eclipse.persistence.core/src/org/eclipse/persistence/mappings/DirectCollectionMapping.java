@@ -1398,6 +1398,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (getSelectionQuery().getPartitioningPolicy() == null) {
             getSelectionQuery().setPartitioningPolicy(getPartitioningPolicy());
         }
+        getSelectionQuery().setSourceMapping(this);
         if ((getValueConverter() != null) && (getSelectionQuery() instanceof DirectReadQuery)) {
             ((DirectReadQuery)getSelectionQuery()).setValueConverter(getValueConverter());
         }
