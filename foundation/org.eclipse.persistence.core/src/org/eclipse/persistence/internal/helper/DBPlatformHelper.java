@@ -191,14 +191,14 @@ public class DBPlatformHelper {
     }
     
     private static String[] validateLineForReturnAsKeyValueArray(String line) {
-        if (line == null || line.isEmpty()) {
+        if (line == null || line.length() == 0) {
             return null;
         }
         // trim leading AND trailing space
         line = line.trim();
         
-        // check for comment
-        if (line.isEmpty() || line.startsWith("#")) {
+        // check for comment and empty line
+        if (line.length() == 0 || line.startsWith("#")) {
             return null;
         }
         
