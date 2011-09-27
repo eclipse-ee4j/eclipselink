@@ -165,9 +165,15 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         }
         
         try {
-            beginTransaction(emToUse);
+            boolean commit = false;
+            if (!isTransactionActive(emToUse)) {
+                beginTransaction(emToUse);
+                commit = true;
+            }
             entity = (CacheableTrueEntity) emToUse.createNamedQuery(query).setParameter("id", id).getSingleResult();
-            commitTransaction(emToUse);
+            if (commit) {
+                commitTransaction(emToUse);
+            }
         }  catch (Exception e) {
             fail("Error executing query: " + e);
         } finally {
@@ -303,22 +309,25 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         closeEM(em1);
         
         EntityManager em2 = createDSEntityManager();
-        CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity1Id);
-        assertTrue("The shared cache was updated when the EM property CacheStoreMode = BYPASS", entity2.getName().equals(staleName));
-        
-        em2.refresh(entity2);
-        assertTrue("The entity was not refreshed with the updated name.", entity2.getName().equals(updatedName));
-        
-        HashMap props = new HashMap();
-        props.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
-        props.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
-        CacheableTrueEntity deletedEntity2 = (CacheableTrueEntity) em2.find(CacheableTrueEntity.class, entityToDeleteId, props);
-        assertTrue("The deleted entity was removed from the cache", deletedEntity2 == null);
-        
-        deletedEntity2 = em2.find(CacheableTrueEntity.class, entityToDeleteId);
-        assertTrue("The deleted entity was removed from the database", deletedEntity2 == null);
-        
-        closeEM(em2);
+        beginTransaction(em2);
+        try {
+            CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity1Id);
+            assertTrue("The shared cache was updated when the EM property CacheStoreMode = BYPASS", entity2.getName().equals(staleName));
+            
+            em2.refresh(entity2);
+            assertTrue("The entity was not refreshed with the updated name.", entity2.getName().equals(updatedName));
+            
+            HashMap props = new HashMap();
+            props.put(QueryHints.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
+            props.put(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
+            CacheableTrueEntity deletedEntity2 = (CacheableTrueEntity) em2.find(CacheableTrueEntity.class, entityToDeleteId, props);
+            assertTrue("The deleted entity was removed from the cache", deletedEntity2 == null);
+            
+            deletedEntity2 = em2.find(CacheableTrueEntity.class, entityToDeleteId);
+            assertTrue("The deleted entity was removed from the database", deletedEntity2 == null);
+        } finally {
+            closeEntityManagerAndTransaction(em2);
+        }
     }
     
     /**
@@ -350,16 +359,19 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         
         // Verify the cache in a separate entity manager.
         EntityManager em2 = createDSEntityManager();
-        CacheableTrueEntity entity21 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity1Id);
-        assertTrue("The shared cache should have been updated", entity21.getName().equals(updatedName));
-        
-        CacheableTrueEntity entity22 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity2Id);
-        assertTrue("The shared cache should NOT have been updated", entity22.getName().equals(staleName));
-        
-        em2.refresh(entity22);
-        assertTrue("The entity was not refreshed with the updated name.", entity22.getName().equals(updatedName));
-        
-        closeEM(em2);
+        beginTransaction(em2);
+        try {
+            CacheableTrueEntity entity21 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity1Id);
+            assertTrue("The shared cache should have been updated", entity21.getName().equals(updatedName));
+            
+            CacheableTrueEntity entity22 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity2Id);
+            assertTrue("The shared cache should NOT have been updated", entity22.getName().equals(staleName));
+            
+            em2.refresh(entity22);
+            assertTrue("The entity was not refreshed with the updated name.", entity22.getName().equals(updatedName));
+        } finally {
+            closeEntityManagerAndTransaction(em2);
+        }
     }
     
     /**
@@ -1706,8 +1718,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             beginTransaction(em);
             detail = em.merge(detail);
             commitTransaction(em);
-            
+
+            beginTransaction(em);
+            detail = em.find(detail.getClass(), detail.getId());
             em.refresh(detail);
+            commitTransaction(em);
             
             assertTrue("detail does not have it's entity.", detail.getEntity() != null);
             assertTrue("detail's entity does not have the backpointer.", detail.getEntity().getDetailsBackPointer().size() == 1);
@@ -1779,6 +1794,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             }
             beginTransaction(em);
             cf = em.find(CacheableFalseEntity.class, cf.getId());
+            ctdid = em.find(ctdid.getClass(), ctdid.getPk());
             em.remove(cf);
             em.remove(ctdid);
             commitTransaction(em);
