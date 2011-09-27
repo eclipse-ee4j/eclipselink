@@ -78,6 +78,7 @@ genContent() {
 
 unset genArtifact
 genArtifact() {
+    artifact_count=`expr $child_count - 1`
     # Generate the nightly build table
     echo "<?xml version='1.0' encoding='UTF-8'?>" > $tmp/artifact.xml
     echo "<?compositeArtifactRepository version='1.0.0'?>" >> $tmp/artifact.xml
@@ -85,8 +86,7 @@ genArtifact() {
     echo "  <properties size='1'>" >> $tmp/artifact.xml
     echo "    <property name='p2.timestamp' value='1267023743270'/>" >> $tmp/artifact.xml
     echo "  </properties>" >> $tmp/artifact.xml
-    echo "  <children size='${child_count}'>" >> $tmp/artifact.xml
-    echo "    <child location='categories'/>" >> $tmp/artifact.xml
+    echo "  <children size='${artifact_count}'>" >> $tmp/artifact.xml
     cat $tmp/children.xml >> $tmp/artifact.xml
     echo "  </children>" >> $tmp/artifact.xml
     echo "</repository>" >> $tmp/artifact.xml
@@ -110,8 +110,8 @@ echo "    Called: '${SITE_NAME}'"
 #  for the categories (which wo't be counted)
 child_count=1
 genChildren
-genArtifact
 genContent
+genArtifact
 
 # Copy the completed file to the server, and cleanup
 mv -f $tmp/content.xml  ${SITE_DIR}/compositeContent.xml
