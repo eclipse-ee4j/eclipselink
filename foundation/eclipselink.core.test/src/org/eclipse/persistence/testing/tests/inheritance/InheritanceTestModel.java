@@ -51,6 +51,7 @@ public class InheritanceTestModel extends TestModel {
         addTest(getSingleInheritanceTestSuite());
         addTest(new CursoredStreamInheritanceTestCase());
         addTest(new ReinitializeJoiningOnClassDescriptorWithInheritanceTest());
+        addTest(new UnitOfWorkIdentityMapAccessorTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

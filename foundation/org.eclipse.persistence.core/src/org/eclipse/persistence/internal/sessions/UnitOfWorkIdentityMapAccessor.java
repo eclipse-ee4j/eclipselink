@@ -157,9 +157,12 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
                     }
                 } catch (InterruptedException ex) {
                 }
-                if (objectFromCache == null) {
-                    return null;
-                }
+            }
+            
+            // check for inheritance.
+            objectFromCache = checkForInheritance(objectFromCache, theClass, descriptor);
+            if (objectFromCache == null) {
+                return null;
             }
         } else {
             return null;
@@ -222,5 +225,24 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
     public void initializeAllIdentityMaps() {
         super.initializeAllIdentityMaps();
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
+    }
+    
+    /**
+     * This method is used to resolve the inheritance issues arise while trying to get object from 
+     * identity map of parent session. Avoid reading the unintended subclass during in-memory query
+     * (e.g. when querying on large project, do not want to check small project, both are inherited 
+     * from the project, and stored in the same identity map).
+     */
+    protected Object checkForInheritance(Object domainObject, Class superClass, ClassDescriptor descriptor) {
+        if ((domainObject != null) && ((domainObject.getClass() != superClass) && (!superClass.isInstance(domainObject)))) {
+            if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().getUseDescriptorsToValidateInheritedObjects()) {
+                if (descriptor.getInheritancePolicy().getSubclassDescriptor(domainObject.getClass()) == null) {
+                    return null;
+                }
+                return domainObject;
+            }
+            return null;
+        }
+        return domainObject;
     }
 }
