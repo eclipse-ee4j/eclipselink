@@ -9658,6 +9658,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.refresh(emp);
             assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
         } finally{
+            emp = em.find(Employee.class, emp.getId());
             em.remove(emp);
             commitTransaction(em);
         }
