@@ -99,6 +99,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             SEED_SET.addAll(HANS_SET);
             SEED_SET.addAll(FRED_SET);
         } finally {
+            getEnvironment().evictAll(em);
             closeEntityManager(em);
         }
     }

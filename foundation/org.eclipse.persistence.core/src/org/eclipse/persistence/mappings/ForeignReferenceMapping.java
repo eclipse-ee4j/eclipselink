@@ -710,7 +710,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void postInitialize(AbstractSession session) {
         super.postInitialize(session);
-        if (this.referenceDescriptor != null && ! this.referenceDescriptor.isSharedIsolation()){
+        if (this.referenceDescriptor != null && this.referenceDescriptor.isIsolated()){
             this.isCacheable = false;
         }
     }
