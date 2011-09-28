@@ -81,19 +81,6 @@ public class DifferentNamespacesTestCases extends JSONMarshalUnmarshalTestCases{
 	public Map getProperties(){
 		Map props = new HashMap();
 		props.put(JAXBContext.ATTRIBUTE_PREFIX, "@");
-	/*	
-		Map<String, String> namespaceMap = new HashMap<String, String>();
-		
-		namespaceMap.put("ns0", "namespace0");
-		namespaceMap.put("ns1", "namespace1");
-		namespaceMap.put("ns2", "namespace2");
-		namespaceMap.put("ns3", "namespace3");
-		
-		
-		props.put(JAXBContext.NAMESPACES, namespaceMap);
-		
-		props.put(JAXBContext.NAMESPACES, namespaceMap);
-		*/
 		return props;
 	}
 

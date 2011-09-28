@@ -111,7 +111,7 @@ public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
         if (converter != null) {
             objectValue = converter.convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
         }
-        Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.getUnmarshaller().isNamespaceAware());
+        Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.isNamespaceAware());
         if (containerPolicy != null) {
             containerPolicy.addInto(updated, container, session);
         }

@@ -99,6 +99,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                         QName leafType = ((XMLField)xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();
                         if (leafType != null) {
                             XPathFragment frag = new XPathFragment();
+                            frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
+
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
                             if (uri != null && uri.length() > 0) {

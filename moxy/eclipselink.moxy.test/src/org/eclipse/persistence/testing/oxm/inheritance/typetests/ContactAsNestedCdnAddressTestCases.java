@@ -12,30 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.inheritance.typetests;
 
-import java.io.InputStream;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-
-public class ContactAsNestedCdnAddressTestCases extends XMLMappingTestCases {
+public class ContactAsNestedCdnAddressTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_as_cdnaddress_noxsi.xml";
     private static final String WRITE_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_noxsi.xml";
+    private static final String JSON_READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_as_cdnaddress_noxsi.json";
+    private static final String JSON_WRITE_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_noxsi.json";
     
     public ContactAsNestedCdnAddressTestCases(String name) throws Exception {
         super(name);
         setProject(new TypeProject());
         setControlDocument(READ_DOC);
-    }
-
-    public Document getWriteControlDocument() {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(WRITE_DOC);
-        Document controlDocument = null;
-        try {
-            controlDocument = parser.parse(inputStream);
-            removeEmptyTextNodes(controlDocument);
-            inputStream.close();
-        } catch (Exception ex) {}
-        return controlDocument;
+        setWriteControlDocument(WRITE_DOC);
+        setControlJSON(JSON_READ_DOC);
+        setControlJSONWrite(JSON_WRITE_DOC);
     }
     
     public Object getControlObject() {

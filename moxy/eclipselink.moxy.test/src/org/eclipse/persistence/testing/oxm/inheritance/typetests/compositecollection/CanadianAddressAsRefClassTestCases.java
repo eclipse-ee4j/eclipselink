@@ -14,16 +14,15 @@ package org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecolle
 
 import java.util.ArrayList;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.CanadianAddress;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class CanadianAddressAsRefClassTestCases extends XMLMappingTestCases {
+public class CanadianAddressAsRefClassTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/employee_with_address_cdnaddressnoxsi.xml";
+    private static final String JSON_READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/employee_with_address_cdnaddressnoxsi.json";
     
     public CanadianAddressAsRefClassTestCases(String name) throws Exception {
         super(name);
@@ -33,6 +32,8 @@ public class CanadianAddressAsRefClassTestCases extends XMLMappingTestCases {
             
         setProject(p);
         setControlDocument(READ_DOC);
+        setControlJSON(JSON_READ_DOC);
+
     }
 
     public Object getControlObject() {

@@ -15,21 +15,23 @@ package org.eclipse.persistence.testing.oxm.inheritance;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 /**
  * This test case is to verify the fix for the following bug:
  * Bug 298664 - XMLHelper.INSTANCE.load deserializes xml instance to a wrong 
  *              data object type
  */
-public class RootElementTestCases extends XMLMappingTestCases {
+public class RootElementTestCases extends XMLWithJSONMappingTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/inheritance/rootelement.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/inheritance/rootelement.json";
 
     public RootElementTestCases(String name) throws Exception {
         super(name);
         setProject(new RootElementProject());
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

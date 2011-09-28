@@ -718,7 +718,7 @@ public class XMLDescriptor extends ClassDescriptor {
     public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord, boolean forceWrap) {
         String elementLocalName = unmarshalRecord.getLocalName();
         String elementNamespaceUri = unmarshalRecord.getRootElementNamespaceUri();
-        if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, null, unmarshalRecord.getUnmarshaller().isNamespaceAware())) {
+        if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, null, unmarshalRecord.isNamespaceAware())) {
             XMLRoot xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);

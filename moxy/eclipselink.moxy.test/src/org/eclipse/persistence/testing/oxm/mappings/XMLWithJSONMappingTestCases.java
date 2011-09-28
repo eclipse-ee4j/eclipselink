@@ -21,6 +21,8 @@ import java.io.StringWriter;
 
 import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.xml.sax.InputSource;
 
 public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
@@ -47,24 +49,44 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
         return controlJSONLocation;
     }
     
+    protected boolean getNamespaceAware(){
+    	return false;
+    }
+    
+    protected String getAttributePrefix(){
+    	return null;
+    }
+    
+    protected NamespaceResolver getNamespaceResolver(){
+    	return null;
+    }
+    
     public void testJSONUnmarshalFromInputSource() throws Exception {
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES))){
+    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
             InputSource inputSource = new InputSource(inputStream);
             xmlUnmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-            
-            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(), inputSource);
+            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(getAttributePrefix(), getNamespaceResolver(), getNamespaceResolver() != null), inputSource);
             
     	    inputStream.close();
-    	    assertEquals(getReadControlObject(), testObject);
+    	    
+    	    if ((getReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
+                XMLRoot controlObj = (XMLRoot)getReadControlObject();
+                XMLRoot testObj = (XMLRoot)testObject;
+                compareXMLRootObjects(controlObj, testObj);
+            } else {
+                assertEquals(getReadControlObject(), testObject);
+            }
+    	    
     	}
     }
     
     public void testJSONMarshalToOutputStream() throws Exception{
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES))){
+    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
     	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	    xmlMarshaller.setNamespaceResolver(getNamespaceResolver());
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             xmlMarshaller.marshal(getWriteControlObject(), os);
             compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
@@ -73,8 +95,9 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     }
 
     public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{  
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES))){
+    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
     	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	    xmlMarshaller.setNamespaceResolver(getNamespaceResolver());
         	xmlMarshaller.setFormattedOutput(true);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             xmlMarshaller.marshal(getWriteControlObject(), os);
@@ -84,9 +107,10 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     }
 
     public void testJSONMarshalToStringWriter() throws Exception{
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES))){
+    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
     	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	    xmlMarshaller.setNamespaceResolver(getNamespaceResolver());
             StringWriter sw = new StringWriter();
             xmlMarshaller.marshal(getWriteControlObject(), sw);
             compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
@@ -94,9 +118,10 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     }
 
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES))){
+    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
     	    xmlMarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	    xmlMarshaller.setNamespaceResolver(getNamespaceResolver());
         	xmlMarshaller.setFormattedOutput(true);
 
             StringWriter sw = new StringWriter();

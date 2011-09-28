@@ -90,6 +90,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
         if (xmlAnyObjectMapping.usesXMLRoot() && (objectValue instanceof XMLRoot)) {
             xmlRootFragment = new XPathFragment();
+            xmlRootFragment.setNamespaceAware(marshalRecord.isNamespaceAware());            
             wasXMLRoot = true;
             objectValue = ((XMLRoot) objectValue).getObject();
         }
@@ -202,7 +203,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
                         prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
-                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.getUnmarshaller().isNamespaceAware());
+                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.isNamespaceAware());
                     workingDescriptor = null;
                 }
             }

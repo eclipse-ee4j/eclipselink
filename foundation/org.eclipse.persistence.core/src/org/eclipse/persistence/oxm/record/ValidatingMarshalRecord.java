@@ -27,6 +27,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -256,7 +257,8 @@ public class ValidatingMarshalRecord extends MarshalRecord {
 
     @Override
     public void setMarshaller(XMLMarshaller marshaller) {
-        this.marshaller = marshaller;
+    	super.setMarshaller(marshaller);
+
         validatingRecord.setMarshaller(marshaller);
         marshalRecord.setMarshaller(marshaller);
     }
@@ -306,7 +308,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     }
 
     @Override
-    public QName getLeafElementType() {
+    public XPathQName getLeafElementType() {
         return marshalRecord.getLeafElementType();
     }
 

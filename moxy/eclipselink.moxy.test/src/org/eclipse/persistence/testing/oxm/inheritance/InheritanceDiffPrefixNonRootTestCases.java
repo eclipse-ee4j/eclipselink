@@ -12,18 +12,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.inheritance;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class InheritanceDiffPrefixNonRootTestCases extends XMLMappingTestCases {
+public class InheritanceDiffPrefixNonRootTestCases extends XMLWithJSONMappingTestCases {
     public InheritanceDiffPrefixNonRootTestCases(String name) throws Exception {
         super(name);
         setProject(new InheritanceProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/inheritance/parkinglot_difference_prefix.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/parkinglot.json");
+        setWriteControlDocument("org/eclipse/persistence/testing/oxm/inheritance/parkinglot.xml");
+        setControlJSONWrite("org/eclipse/persistence/testing/oxm/inheritance/parkinglot_write.json");        
     }
 
     public static void main(String[] args) {
@@ -55,11 +56,4 @@ public class InheritanceDiffPrefixNonRootTestCases extends XMLMappingTestCases {
         return lot;
     }
 
-    public Document getWriteControlDocument() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/parkinglot.xml");
-        Document doc = parser.parse(inputStream);
-        removeEmptyTextNodes(doc);
-        inputStream.close();
-        return doc;
-    }
 }

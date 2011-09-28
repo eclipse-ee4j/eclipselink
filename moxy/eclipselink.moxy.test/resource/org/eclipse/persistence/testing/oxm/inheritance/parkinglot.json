@@ -1,0 +1,23 @@
+{"parking-lot":{
+      "unmapped":{
+         "nested":"text"
+       },
+       "vehicles":{
+		"vehicle":[
+		   {
+		   "type":"car-type",
+		   "model":"Grand Am",
+		   "manufacturer":"Pontiac",
+ 		   "top-speed":220,
+		   "number-of-doors":2,
+		   "miles-per-gallon":30
+		   },
+		      {
+     		      "model":"Blah Blah",
+     		      "manufacturer":"Some Place",
+   		      "top-speed":10000
+		      }
+		   ]
+		   }
+
+}}

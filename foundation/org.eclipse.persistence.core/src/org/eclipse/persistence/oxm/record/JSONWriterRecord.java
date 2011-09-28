@@ -66,9 +66,11 @@ public class JSONWriterRecord extends MarshalRecord {
     protected Stack<Level> levels = new Stack<Level>();
     protected static final String NULL="null";
     protected String attributePrefix;
-    protected NamespaceResolver namespaces;
-    protected String namespaceSeperator = ".";
-    protected boolean namespaceAware;
+    
+    public JSONWriterRecord(){
+    	super();
+    	namespaceSeparator = XMLConstants.DOT;
+    }
     
     /**
      * INTERNAL:
@@ -76,8 +78,6 @@ public class JSONWriterRecord extends MarshalRecord {
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
-        namespaces = marshaller.getNamespaceResolver();
-        namespaceAware = marshaller.isNamespaceAware();
     }
     
     /**
@@ -157,17 +157,17 @@ public class JSONWriterRecord extends MarshalRecord {
                 	writer.write(attributePrefix);
                 }
                            
-                if(namespaceAware){
+                if(isNamespaceAware()){
                     if(xPathFragment.getNamespaceURI() != null){
                         String prefix = null;
-                    	if(namespaces !=null){
-                	        prefix = namespaces.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                    	if(getNamespaceResolver() !=null){
+                	        prefix = getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
                     	} else if(namespaceResolver != null){
                 	    	prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
                 	    }
                     	if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
                     		writer.write(prefix);
-                    		writer.write(namespaceSeperator);
+                    		writer.write(getNamespaceSeparator());
                     	}
                     }
                 }

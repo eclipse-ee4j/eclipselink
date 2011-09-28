@@ -61,7 +61,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, unmarshalRecord.getSession());
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
-                QName leafElementType = unmarshalRecord.getLeafElementType();
+                XPathQName leafElementType = unmarshalRecord.getLeafElementType();
 
                 // if we have a user-set type, try to get the class from the inheritance policy
                 if (leafElementType != null) {
@@ -105,6 +105,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 schemaType = schemaType.trim();
                 if(schemaType.length() > 0) {
                     XPathFragment frag = new XPathFragment();
+                    frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
                     frag.setXPath(schemaType);
 
                     QName qname = null;

@@ -1,0 +1,19 @@
+{"customer":{
+  "contact-method":[
+     {
+       "type":"address-type",
+       "id":"123",
+       "street":"1 A Street"
+      },
+    {
+       "type":"address-type",
+        "id":"456",
+       "street":"2 A Street"
+    },
+    {
+       "type":"address-type",
+       "id":"789",
+       "street":"3 A Street"
+    }
+    ]
+}}

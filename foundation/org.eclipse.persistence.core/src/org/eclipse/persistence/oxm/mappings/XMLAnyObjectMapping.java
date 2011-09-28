@@ -353,7 +353,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                     // wrap the object in an XMLRoot
                     // if we know the descriptor use it to wrap the Element in an XMLRoot (if necessary)
                     if (referenceDescriptor != null) {
-                        return ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.getUnmarshaller().isNamespaceAware());
+                        return ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.isNamespaceAware());
                     }
                     // no descriptor, so manually build the XMLRoot
                     return buildXMLRoot(next, objVal);

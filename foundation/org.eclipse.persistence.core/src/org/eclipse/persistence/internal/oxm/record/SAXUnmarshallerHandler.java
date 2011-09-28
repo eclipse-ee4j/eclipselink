@@ -150,12 +150,16 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             XMLDescriptor xmlDescriptor = null;
             boolean isPrimitiveType = false;
             Class primitiveWrapperClass = null;
-            String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            String type = null;
+            if(xmlReader.isNamespaceAware()){
+                type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            }else{
+            	type = atts.getValue(XMLConstants.EMPTY_STRING, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            }
             if (null != type) {
-                XPathFragment typeFragment = new XPathFragment(type);
-
+                XPathFragment typeFragment = new XPathFragment(type, xmlReader.namespaceSeparator, xmlReader.isNamespaceAware());
                 // set the prefix using a reverse key lookup by uri value on namespaceMap 
-                if (null != unmarshalNamespaceResolver) {
+                if (xmlReader.isNamespaceAware() && null != unmarshalNamespaceResolver) {
                     typeFragment.setNamespaceURI(unmarshalNamespaceResolver.getNamespaceURI(typeFragment.getPrefix()));
                 }
                 xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
@@ -175,9 +179,9 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
 
                 XPathQName rootQName;
                 if (namespaceURI == null || namespaceURI.length() == 0) {
-                    rootQName = new XPathQName(name, unmarshaller.isNamespaceAware() );
+                    rootQName = new XPathQName(name, xmlReader.isNamespaceAware() );
                 } else {
-                    rootQName = new XPathQName(namespaceURI, name, unmarshaller.isNamespaceAware() );
+                    rootQName = new XPathQName(namespaceURI, name, xmlReader.isNamespaceAware() );
                 }
             	
             	xmlDescriptor = xmlContext.getDescriptor(rootQName);
@@ -242,11 +246,16 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             if (isPrimitiveType) {
                 unmarshalRecord = new XMLRootRecord(primitiveWrapperClass);
                 unmarshalRecord.setSession((AbstractSession) unmarshaller.getXMLContext().getSession(0));
+                unmarshalRecord.setXMLReader(this.getXMLReader());
             } else if (xmlDescriptor.hasInheritance()) {
                 unmarshalRecord = new UnmarshalRecord(null);
+                unmarshalRecord.setUnmarshaller(unmarshaller);
                 unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
+                unmarshalRecord.setXMLReader(this.getXMLReader());
                 unmarshalRecord.setAttributes(atts);
+                
                 Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
+                
                 if (classValue == null) {
                     // no xsi:type attribute - look for type indicator on the default root element
                     QName leafElementType = xmlDescriptor.getDefaultRootElementType();
@@ -273,6 +282,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord(session);
             } else {
                 unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord(session);
+                unmarshalRecord.setXMLReader(this.getXMLReader());
             }
             this.descriptor = xmlDescriptor;
             this.rootRecord = unmarshalRecord;

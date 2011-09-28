@@ -15,15 +15,18 @@ package org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecolle
 import java.util.ArrayList;
 
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.CanadianAddress;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AddressesAsNestedWithCdnAddressXsiTestCases extends XMLMappingTestCases {
+public class AddressesAsNestedWithCdnAddressXsiTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/ns_employee_with_addresses_cdnaddressxsi.xml";
+    private static final String JSON_READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/ns_employee_with_addresses_cdnaddressxsi.json";
     
     public AddressesAsNestedWithCdnAddressXsiTestCases(String name) throws Exception {
         super(name);
         setProject(new COMCollectionTypeProject());
         setControlDocument(READ_DOC);
+        setControlJSON(JSON_READ_DOC);
+        
     }
 
     public Object getControlObject() {

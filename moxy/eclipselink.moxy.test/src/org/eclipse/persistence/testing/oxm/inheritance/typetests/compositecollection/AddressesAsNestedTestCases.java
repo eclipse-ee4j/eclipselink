@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecolle
 
 import java.util.ArrayList;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.Address;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AddressesAsNestedTestCases extends XMLMappingTestCases {
+public class AddressesAsNestedTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/employee_with_addresses_noxsi.xml";
+    private static final String JSON_READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/employee_with_addresses_noxsi.json";
     
     public AddressesAsNestedTestCases(String name) throws Exception {
         super(name);
         setProject(new COMCollectionTypeProject());
         setControlDocument(READ_DOC);
+        setControlJSON(JSON_READ_DOC);
     }
 
     public Object getControlObject() {

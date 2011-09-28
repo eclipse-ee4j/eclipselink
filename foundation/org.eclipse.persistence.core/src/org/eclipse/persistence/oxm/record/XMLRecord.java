@@ -17,9 +17,12 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -38,11 +41,13 @@ public abstract class XMLRecord extends AbstractRecord {
     private DocumentPreservationPolicy docPresPolicy;
     private Object owningObject;
     protected Object currentObject;
-    private QName leafElementType;
-    private NamespaceResolver namespaceResolver;
+    private XPathQName leafElementType;
+    protected NamespaceResolver namespaceResolver;
     protected AbstractSession session;
     private boolean isXOPPackage;
-
+    protected char namespaceSeparator;
+    protected boolean namespaceAware;
+    
     /**
      * INTERNAL:
      * Nil: This is used to indicate that this field represents xsi:nil="true"
@@ -61,6 +66,8 @@ public abstract class XMLRecord extends AbstractRecord {
     public XMLRecord() {
         super(null, null);
         namespaceResolver = new NamespaceResolver();
+        namespaceSeparator = XMLConstants.COLON;
+        namespaceAware = true;
         // Required for subclasses.
     }
 
@@ -162,6 +169,13 @@ public abstract class XMLRecord extends AbstractRecord {
      */
     public void setMarshaller(XMLMarshaller marshaller) {
         this.marshaller = marshaller;
+        if(marshaller != null){
+            MediaType mediaType = marshaller.getMediaType();
+           if(marshaller.getNamespaceResolver() != null){
+               namespaceResolver = marshaller.getNamespaceResolver();
+            }
+            namespaceAware = (mediaType == MediaType.APPLICATION_XML || namespaceResolver.getPrefixesToNamespaces().size() > 0);
+        }
     }
 
     /**
@@ -215,16 +229,25 @@ public abstract class XMLRecord extends AbstractRecord {
     /**
      * INTERNAL:
      */
-    public QName getLeafElementType() {
+    public XPathQName getLeafElementType() {
         return leafElementType;
     }
     /**
      * INTERNAL:
      */
-    public void setLeafElementType(QName type) {
+    public void setLeafElementType(XPathQName type) {
         leafElementType = type;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public void setLeafElementType(QName type) {
+    	if(type != null){
+    	    setLeafElementType(new XPathQName(type, isNamespaceAware()));
+    	}
+    }
+    
     public void setNamespaceResolver(NamespaceResolver nr) {
         namespaceResolver = nr;
     }
@@ -248,5 +271,23 @@ public abstract class XMLRecord extends AbstractRecord {
     public void setXOPPackage(boolean isXOPPackage) {
         this.isXOPPackage = isXOPPackage;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Determine if namespaces will be considered during marshal/unmarshal operations.
+     * @since 2.4
+     */
+    public boolean isNamespaceAware() {
+    	return namespaceAware;
+    }
+    
+    /**
+     * INTERNAL:
+	 * The character used to separate the prefix and uri portions when namespaces are present 
+     * @since 2.4
+     */
+    public char getNamespaceSeparator(){
+    	return namespaceSeparator;
+    }
+	
 }

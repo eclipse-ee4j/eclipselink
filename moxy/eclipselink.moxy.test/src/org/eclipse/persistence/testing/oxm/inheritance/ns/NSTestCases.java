@@ -13,17 +13,33 @@
 package org.eclipse.persistence.testing.oxm.inheritance.ns;
 
 import org.eclipse.persistence.exceptions.IntegrityException;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class NSTestCases extends XMLMappingTestCases {
+public class NSTestCases extends XMLWithJSONMappingTestCases {
 
     public NSTestCases(String name) throws Exception {
         super(name);
         setProject(new NSProject("child"));
         setControlDocument("org/eclipse/persistence/testing/oxm/inheritance/ns.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/ns.json");
+    }
+    
+    protected boolean getNamespaceAware(){
+    	return true;
+    }
+    
+    protected NamespaceResolver getNamespaceResolver(){
+    	NamespaceResolver nr = new NamespaceResolver();
+    	nr.put("parent", "urn:parent");
+    	nr.put("child", "urn:child");
+    	nr.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+    	return nr;
     }
 
+    
     @Override
     protected NSChild getControlObject() {
         NSChild child = new NSChild();

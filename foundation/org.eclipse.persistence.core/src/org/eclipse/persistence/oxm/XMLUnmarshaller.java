@@ -103,8 +103,6 @@ public class XMLUnmarshaller implements Cloneable {
     private Class unmappedContentHandlerClass;
     private StrBuffer stringBuffer;
     private MediaType mediaType = MediaType.APPLICATION_XML;
-    private boolean namespaceAware;
-
     static {
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
@@ -137,19 +135,18 @@ public class XMLUnmarshaller implements Cloneable {
         setXMLContext(xmlContext);
         stringBuffer = new StrBuffer();
         initialize(parserFeatures);
-        namespaceAware = (mediaType == MediaType.APPLICATION_XML);
     }
 
     private void initialize(Map<String, Boolean> parserFeatures) {
-        DatabaseSession session = xmlContext.getSession(0);
-        XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
-        platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
-        platformUnmarshaller.setWhitespacePreserving(false);
-
-        // Waiting on XDK to fix bug #3697940 to enable this code
-        //initializeSchemas();
-        setValidationMode(NONVALIDATING);
-    }
+	    DatabaseSession session = xmlContext.getSession(0);
+	    XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
+	    platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
+	    platformUnmarshaller.setWhitespacePreserving(false);
+	
+	    // Waiting on XDK to fix bug #3697940 to enable this code
+	    //initializeSchemas();
+	    setValidationMode(NONVALIDATING);
+	}
 
     private void initializeSchemas() {
         if (!schemasAreInitialized) {
@@ -179,25 +176,9 @@ public class XMLUnmarshaller implements Cloneable {
     }
     
     /**
-     * INTERNAL:
-     * Namespaces will be ignored during unmarshal operations when this method returns false.
-     * @return if this unmarshaller should process namespace information
-     */
-    public boolean isNamespaceAware(){
-    	return namespaceAware;
-    }
-    
-   /**
-     * INTERNAL:
-     * Namespaces will be ignored during unmarshal operations when this is set to false;
-     */
-    public void setNamespaceAware(boolean isNamespaceAware){
-    	namespaceAware = isNamespaceAware;
-    }
-
-    /**
      * Set the MediaType for this xmlUnmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
+     * @since 2.4
      * @param mediaType
      */
     public void setMediaType(MediaType mediaType) {
@@ -208,6 +189,7 @@ public class XMLUnmarshaller implements Cloneable {
      * Get the MediaType for this xmlUnmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
      * If not set the default is MediaType.APPLICATION_XML
+     * @since 2.4
      * @return MediaType
      */
     public MediaType getMediaType(){

@@ -42,9 +42,11 @@ public abstract class XMLReaderAdapter extends XMLReader {
     protected LexicalHandler lexicalHandler;
 
     public XMLReaderAdapter() {
+    	super();
     }
 
     public XMLReaderAdapter(XMLUnmarshaller xmlUnmarshaller) {
+    	super();
         if(null != xmlUnmarshaller) {
             Schema schema = xmlUnmarshaller.getSchema();
             if(null != schema) {

@@ -12,13 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.inheritance;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class InheritanceCarTestCases extends XMLMappingTestCases {
+public class InheritanceCarTestCases extends XMLWithJSONMappingTestCases {
     public InheritanceCarTestCases(String name) throws Exception {
         super(name);
         setProject(new InheritanceProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/car.json");
     }
 
     public Object getControlObject() {

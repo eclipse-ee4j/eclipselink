@@ -12,36 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.inheritance;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.events.Address;
-import org.eclipse.persistence.testing.jaxb.events.Employee;
-import org.eclipse.persistence.testing.jaxb.events.PhoneNumber;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class JAXBInheritanceTestCases extends JAXBTestCases {
+public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
 	public JAXBInheritanceTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[] { A.class, B.class, C.class, D.class, E.class });
 		setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/inheritance.xml");
+		setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/inheritance.json");
 	}
 
 	public Object getControlObject() {

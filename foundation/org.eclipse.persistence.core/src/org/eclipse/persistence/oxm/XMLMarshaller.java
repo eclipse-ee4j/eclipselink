@@ -103,7 +103,6 @@ public class XMLMarshaller implements Cloneable {
     private MediaType mediaType = MediaType.APPLICATION_XML;
 	private String attributePrefix;
     private NamespaceResolver namespaceResolver;
-    private boolean namespaceAware;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -168,7 +167,6 @@ public class XMLMarshaller implements Cloneable {
         setEncoding(XMLConstants.DEFAULT_XML_ENCODING);
         setFormattedOutput(true);
         marshalProperties = new Properties();
-        namespaceAware = (mediaType == MediaType.APPLICATION_XML);
     }
 
     /**
@@ -237,7 +235,6 @@ public class XMLMarshaller implements Cloneable {
      */
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
-        namespaceAware = (mediaType == MediaType.APPLICATION_XML || namespaceResolver != null);       
     }    
     
     /**
@@ -879,8 +876,11 @@ public class XMLMarshaller implements Cloneable {
         if (getAttachmentMarshaller() != null) {
             marshalRecord.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
         }
-
-        addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
+        marshalRecord.setMarshaller(this);
+        
+        if(namespaceResolver == null){
+            addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
+        }
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         XMLRoot root = null;
         if(isXMLRoot) {
@@ -1506,17 +1506,6 @@ public class XMLMarshaller implements Cloneable {
      */
 	public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
 		this.namespaceResolver = namespaceResolver;
-		if(namespaceResolver != null){
-			namespaceAware = true;
-		}
-	}
-	
-	/**
-	 * INTERNAL
-	 * @since 2.4
-	 */
-	public boolean isNamespaceAware() {
-		return namespaceAware;
 	}
 
 }

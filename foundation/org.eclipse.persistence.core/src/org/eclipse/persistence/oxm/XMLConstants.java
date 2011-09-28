@@ -29,6 +29,7 @@ import javax.xml.namespace.QName;
  */
 public class XMLConstants {	
     public static final char COLON = ':';	    
+    public static final char DOT = '.';	
     public static final Character ATTRIBUTE = '@';
     public static final String TEXT = "text()";
     public static final String EMPTY_STRING = "";	

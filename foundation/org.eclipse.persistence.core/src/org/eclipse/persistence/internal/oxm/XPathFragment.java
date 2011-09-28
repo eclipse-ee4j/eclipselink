@@ -57,16 +57,23 @@ public class XPathFragment {
     private boolean generatedPrefix = false;   
     private XPathPredicate predicate; 
     
-    private boolean isNamespaceAware;
+    private boolean namespaceAware;
+    private char namespaceSeparator;
     
-    public XPathFragment(String xpathString) {
-    	this();
-        setXPath(xpathString);        
-    }
 
     public XPathFragment() {
-        super();
-        setNamespaceAware(true);        
+        setNamespaceAware(true);     
+        namespaceSeparator = XMLConstants.COLON;    	
+    }
+    
+    public XPathFragment(String xpathString) {
+    	this(xpathString, XMLConstants.COLON, true);
+    }
+    
+    public XPathFragment(String xpathString, char namespaceSeparator, boolean namespaceAware) {
+    	this.namespaceSeparator = namespaceSeparator;   
+    	setNamespaceAware(namespaceAware);     
+    	setXPath(xpathString); 
     }
 
     public void setPredicate(XPathPredicate condition) {
@@ -74,11 +81,11 @@ public class XPathFragment {
     }
     
     public boolean isNamespaceAware() {
-    	return isNamespaceAware;
+    	return namespaceAware;
     }
 
     public void setNamespaceAware(boolean isNamespaceAware) {
-        this.isNamespaceAware = isNamespaceAware;
+        this.namespaceAware = isNamespaceAware;
     }
 
     public XPathPredicate getPredicate() {
@@ -154,7 +161,8 @@ public class XPathFragment {
 
     }
     private void setupNamespaceInformation(String xpathString) {
-        int nsindex = xpathString.indexOf(XMLConstants.COLON);
+        //int nsindex = xpathString.indexOf(XMLConstants.COLON);
+    	int nsindex = xpathString.indexOf(namespaceSeparator);
         if (nsindex != -1) {
             hasNamespace = true;
             localName = xpathString.substring(nsindex + 1).intern();
@@ -310,7 +318,7 @@ public class XPathFragment {
                 return false;
             }
             
-           if(isNamespaceAware && xPathFragment.isNamespaceAware){
+           if(namespaceAware && xPathFragment.isNamespaceAware()){
 	            if(namespaceURI == null){
 	            	if(xPathFragment.getNamespaceURI() != null){
 	            		return false;

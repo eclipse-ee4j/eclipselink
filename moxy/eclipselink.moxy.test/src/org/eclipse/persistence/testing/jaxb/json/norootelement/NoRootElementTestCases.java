@@ -28,6 +28,7 @@ public class NoRootElementTestCases extends JSONWithUnmarshalToClassTestCases {
 	    setClasses(new Class[]{Address.class});
 	}
 
+	
 	public Object getControlObject() {
 		Address addr = new Address();
 		addr.setId(10);

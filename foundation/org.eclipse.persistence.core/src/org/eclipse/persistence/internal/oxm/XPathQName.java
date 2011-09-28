@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
@@ -63,6 +65,15 @@ public class XPathQName {
 		isNamespaceAware = namespaceAware;		
 	}
 
+	/**
+	 * Create a new XPathQName with the specified QName
+	 * @param QName The QName to build this XPathQName from 
+	 * @param namespaceAware set if namespaces should be processed or ignored
+	 */
+	public XPathQName(QName qname, boolean namespaceAware){
+		this(qname.getNamespaceURI(), qname.getLocalPart(), namespaceAware);
+	}		
+	
     public int hashCode() {
         if(null == localName) {
             return 1;

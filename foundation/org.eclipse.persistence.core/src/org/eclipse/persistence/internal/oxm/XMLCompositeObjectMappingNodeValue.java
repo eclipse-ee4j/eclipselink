@@ -211,6 +211,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         QName leafType = ((XMLField)xmlCompositeObjectMapping.getField()).getLastXPathFragment().getLeafElementType();
                         if (leafType != null) {
                             XPathFragment frag = new XPathFragment();
+                            frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
                             if (uri != null && uri.length() > 0) {
@@ -424,7 +425,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, unmarshalRecord.getSession());
 	                if (clazz == null) {
 	                    // no xsi:type attribute - look for type indicator on the default root element
-	                    QName leafElementType = unmarshalRecord.getLeafElementType();
+	                    XPathQName leafElementType = unmarshalRecord.getLeafElementType();
 
 	                    // if we have a user-set type, try to get the class from the inheritance policy
 	                    if (leafElementType != null) {

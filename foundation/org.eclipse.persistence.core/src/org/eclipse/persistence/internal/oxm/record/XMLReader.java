@@ -52,6 +52,8 @@ public class XMLReader implements org.xml.sax.XMLReader {
     private boolean supportsLexicalHandler;
     private LexicalHandlerWrapper lexicalHandlerWrapper;
     protected ValidatorHandler validatorHandler;   
+    protected boolean namespaceAware;
+    protected char namespaceSeparator;
 
     public XMLReader(org.xml.sax.XMLReader internalReader) {
         this();
@@ -60,6 +62,8 @@ public class XMLReader implements org.xml.sax.XMLReader {
 
     public XMLReader() {
         this.supportsLexicalHandler = true;
+        namespaceAware = true;
+        namespaceSeparator = XMLConstants.COLON;
     }
 
     public ContentHandler getContentHandler () {
@@ -72,6 +76,24 @@ public class XMLReader implements org.xml.sax.XMLReader {
         } else {
             reader.setContentHandler(handler);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Determine if namespaces will be considered during marshal/unmarshal operations.
+     * @since 2.4
+     */
+    public boolean isNamespaceAware() {
+    	return namespaceAware;
+    }
+    
+    /**
+     * INTERNAL:
+	 * The character used to separate the prefix and uri portions when namespaces are present 
+     * @since 2.4
+     */
+    public char getNamespaceSeparator(){
+    	return namespaceSeparator;
     }
 
     public DTDHandler getDTDHandler () {

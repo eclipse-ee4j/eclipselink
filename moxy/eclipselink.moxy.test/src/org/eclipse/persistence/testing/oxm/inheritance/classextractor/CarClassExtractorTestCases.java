@@ -15,21 +15,30 @@ package org.eclipse.persistence.testing.oxm.inheritance.classextractor;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
+
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.testing.oxm.inheritance.Car;
 import org.eclipse.persistence.testing.oxm.inheritance.ParkingLot;
 import org.eclipse.persistence.testing.oxm.inheritance.Vehicle;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class CarClassExtractorTestCases extends XMLMappingTestCases {
+public class CarClassExtractorTestCases extends XMLWithJSONMappingTestCases {
     public CarClassExtractorTestCases(String name) throws Exception {
         super(name);
         setProject(new InheritanceClassExtractorProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/inheritance/parkinglotextractor.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/parkinglotextractor.json");
     }
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.inheritance.classextractor.CarClassExtractorTestCases" };
         TestRunner.main(arguments);
+    }
+    
+    protected NamespaceResolver getNamespaceResolver(){
+    	NamespaceResolver nr = new NamespaceResolver();
+    	nr.put("prefix", "mynamespaceuri");
+    	return nr;
     }
 
     public Object getControlObject() {

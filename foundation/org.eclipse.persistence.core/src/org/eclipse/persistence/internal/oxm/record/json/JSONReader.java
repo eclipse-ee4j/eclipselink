@@ -17,8 +17,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRInputStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRReaderStream;
@@ -41,25 +45,23 @@ public class JSONReader extends XMLReaderAdapter {
     private Properties properties;
     private String attributePrefix = null;
     private NamespaceResolver namespaces = null;
-    private boolean namespaceAware;
-    private String namespaceSeperator = ".";
-    
-    public JSONReader(){
-    	this(null, null, false);
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware){
+        this(attrPrefix, nr, namespaceAware, XMLConstants.DOT);        
     }
     
-    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware){
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, char namespaceSeparator){
         this.attributePrefix = attrPrefix;
     	if(attributePrefix == XMLConstants.EMPTY_STRING){
     	    attributePrefix = null;    	    	
     	}
     	namespaces = nr;
     	this.namespaceAware = namespaceAware;
+    	this.namespaceSeparator = namespaceSeparator;
     }
     
-    private JSONAttributes attributes = new JSONAttributes(); 
+    private JSONAttributes attributes = new JSONAttributes();
 
-    @Override
+	@Override
     public void parse(InputSource input) throws IOException, SAXException {
         try {
             CharStream charStream;
@@ -89,12 +91,22 @@ public class JSONReader extends XMLReaderAdapter {
     }
 
     private void parseRoot(Tree tree) throws SAXException {
+    	
+    	if(namespaces != null){
+    		Map <String, String> namespacePairs = namespaces.getPrefixesToNamespaces();
+    		Iterator<String> keys = namespacePairs.keySet().iterator();
+    		while(keys.hasNext()){
+    			String nextKey = keys.next();
+    			contentHandler.startPrefixMapping(nextKey, namespacePairs.get(nextKey));	
+    		}
+    	}
+    		    	
     	if(tree.getType() == JSONLexer.OBJECT){
     		int children = tree.getChildCount();
     		if(children == 1){
     			parse((CommonTree) tree.getChild(0));
     		}else{
-    			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeperator, namespaceAware));
+    			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
     			for(int x=0, size=tree.getChildCount(); x<size; x++) {
     	           parse((CommonTree) tree.getChild(x));
     	        }
@@ -119,15 +131,15 @@ public class JSONReader extends XMLReaderAdapter {
                               
                 String uri = XMLConstants.EMPTY_STRING;
                 if(namespaceAware && namespaces != null){
-                	int nsIndex = localName.indexOf(namespaceSeperator);
+                	int nsIndex = localName.indexOf(namespaceSeparator);
                 	if(nsIndex > -1){
                 		String prefix = localName.substring(0, nsIndex);
-                		localName = localName.substring(nsIndex + namespaceSeperator.length());
+                		localName = localName.substring(nsIndex + 1);
                 		uri = namespaces.resolveNamespacePrefix(prefix);                		
                 	}
                 }
              
-                contentHandler.startElement(uri, localName, localName, attributes.setTree(valueTree, attributePrefix, namespaces, namespaceSeperator, namespaceAware));
+                contentHandler.startElement(uri, localName, localName, attributes.setTree(valueTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
                 parse(valueTree);
                 contentHandler.endElement(uri, localName, localName);                
             }
@@ -159,17 +171,17 @@ public class JSONReader extends XMLReaderAdapter {
             
             String uri = XMLConstants.EMPTY_STRING;
             if(namespaceAware && namespaces != null){
-            	int nsIndex = parentLocalName.indexOf(namespaceSeperator);
+            	int nsIndex = parentLocalName.indexOf(namespaceSeparator);
             	if(nsIndex > -1){
             		String prefix = parentLocalName.substring(0, nsIndex);
-            		parentLocalName = parentLocalName.substring(nsIndex + namespaceSeperator.length());
+            		parentLocalName = parentLocalName.substring(nsIndex + 1);
             		uri = namespaces.resolveNamespacePrefix(prefix);                		
             	}
             }
             
             for(int x=0, size=tree.getChildCount(); x<size; x++) {
             	CommonTree nextChildTree = (CommonTree) tree.getChild(x);                
-            	contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeperator, namespaceAware));
+            	contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
                 parse(nextChildTree);
                 contentHandler.endElement(uri, parentLocalName, parentLocalName);
             }
@@ -194,16 +206,16 @@ public class JSONReader extends XMLReaderAdapter {
 
         private Tree tree;
         private String attributePrefix;
-        private String namespaceSeperator;
+        private char namespaceSeparator;
         private NamespaceResolver namespaces;
         private boolean namespaceAware;
 
-        public JSONAttributes setTree(Tree tree, String attributePrefix, NamespaceResolver nr, String namespaceSeperator, boolean namespaceAware) {
+        public JSONAttributes setTree(Tree tree, String attributePrefix, NamespaceResolver nr, char namespaceSeparator, boolean namespaceAware) {
             reset();
             this.tree = tree;
             this.attributePrefix = attributePrefix;
             this.namespaces = nr;
-            this.namespaceSeperator = namespaceSeperator;
+            this.namespaceSeparator = namespaceSeparator;
             this.namespaceAware = namespaceAware;
             return this;
         }
@@ -235,7 +247,27 @@ public class JSONReader extends XMLReaderAdapter {
         	 }
         }
 
-        
+        public int getIndex(String uri, String localName) {
+            if(null == localName) {
+                return -1;
+            }
+            int index = 0;            
+            for(Attribute attribute : attributes()) {
+            	if(namespaceAware){
+	                QName testQName = new QName(uri, localName);
+	                if(attribute.getQName().equals(testQName)) {
+	                    return index;
+	                }
+            	}else{
+            		if(attribute.getName().equals(localName)) {
+	                    return index;
+	                }
+            	}
+                index++;
+            }
+            return -1;
+        }
+
         @Override
         protected List<Attribute> attributes() {
             if(null == attributes) {            	
@@ -262,10 +294,10 @@ public class JSONReader extends XMLReaderAdapter {
                         
                         String uri = XMLConstants.EMPTY_STRING;
                         if(namespaceAware && namespaces != null){
-                        	int nsIndex = attributeLocalName.indexOf(namespaceSeperator);
+                        	int nsIndex = attributeLocalName.indexOf(namespaceSeparator);
                         	if(nsIndex > -1){
                         		String prefix = attributeLocalName.substring(0, nsIndex);
-                        		attributeLocalName = attributeLocalName.substring(nsIndex + namespaceSeperator.length());
+                        		attributeLocalName = attributeLocalName.substring(nsIndex + 1);
                         		uri = namespaces.resolveNamespacePrefix(prefix);                        
                         	}
                         }

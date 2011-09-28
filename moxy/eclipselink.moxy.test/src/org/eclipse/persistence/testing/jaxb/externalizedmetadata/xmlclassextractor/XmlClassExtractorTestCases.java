@@ -27,14 +27,15 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlClassExtractor via eclipselink-oxm.xml
  * 
  */
-public class XmlClassExtractorTestCases extends JAXBTestCases {
+public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/parkinglot.xml";
-
+   private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/parkinglot.json";
     
     /**
      * This is the preferred (and only) constructor.
@@ -45,6 +46,7 @@ public class XmlClassExtractorTestCases extends JAXBTestCases {
         super(name);
         setClasses(new Class[]{Car.class, Vehicle.class, ParkingLot.class });
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     public Map getProperties(){

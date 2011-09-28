@@ -12,17 +12,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.inheritance;
 
-import java.io.InputStream;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class InheritanceCarDiffPrefixTestCases extends XMLMappingTestCases {
+public class InheritanceCarDiffPrefixTestCases extends XMLWithJSONMappingTestCases {
     public InheritanceCarDiffPrefixTestCases(String name) throws Exception {
         super(name);
         setProject(new InheritanceProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/inheritance/car_different_prefix.xml");
-    }
+        setControlJSON("org/eclipse/persistence/testing/oxm/inheritance/car.json");
+        setWriteControlDocument("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
+     }
 
     public Object getControlObject() {
         Car car = new Car();
@@ -35,11 +34,4 @@ public class InheritanceCarDiffPrefixTestCases extends XMLMappingTestCases {
         return car;
     }
 
-    public Document getWriteControlDocument() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
-        Document doc = parser.parse(inputStream);
-        removeEmptyTextNodes(doc);
-        inputStream.close();
-        return doc;
-    }
 }

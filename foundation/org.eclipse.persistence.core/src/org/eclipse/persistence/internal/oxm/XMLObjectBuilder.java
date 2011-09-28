@@ -87,7 +87,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 XMLRecord nestedRecord = (XMLRecord)cacheKey.getRecord();
                 nestedRecord.setMarshaller(parentRecord.getMarshaller());
                 nestedRecord.setLeafElementType(parentRecord.getLeafElementType());
-                parentRecord.setLeafElementType(null);
+                parentRecord.setLeafElementType((XPathQName)null);
                 return buildIntoNestedRow(nestedRecord, object, session);
             }
         }
@@ -96,7 +96,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         nestedRecord.setNamespaceResolver(parentRecord.getNamespaceResolver());
         nestedRecord.setMarshaller(parentRecord.getMarshaller());
         nestedRecord.setLeafElementType(parentRecord.getLeafElementType());
-        parentRecord.setLeafElementType(null);
+        parentRecord.setLeafElementType((XPathQName)null);
         return buildIntoNestedRow(nestedRecord, object, session);
 
     }
@@ -168,7 +168,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         XMLRecord nestedRecord = new DOMRecord(newNode);
         nestedRecord.setMarshaller(parentRecord.getMarshaller());
         nestedRecord.setLeafElementType(parentRecord.getLeafElementType());
-        parentRecord.setLeafElementType(null);
+        parentRecord.setLeafElementType((XPathQName)null);
         nestedRecord.setDocPresPolicy(policy);
         nestedRecord.setXOPPackage(parentRecord.isXOPPackage());
         return nestedRecord;
@@ -253,7 +253,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 // if we have a user-set type, try to get the class from the
                 // inheritance policy
                 if (leafElementType != null) {
-                    Object indicator = concreteDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+                	XPathQName xpathQName = new XPathQName(leafElementType, row.isNamespaceAware());
+                    Object indicator = concreteDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xpathQName);
                     if(indicator != null) {
                         classValue = (Class)indicator;
                     }
@@ -715,8 +716,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     return false;
                 }
 
-                QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
-
+                XPathQName qName = new XPathQName(xr.getNamespaceURI(),xr.getLocalName(), record.isNamespaceAware());
                 XMLDescriptor xdesc = record.getMarshaller().getXMLContext().getDescriptor(qName);
                 if (xdesc != null) {
                     boolean writeTypeAttribute = xdesc.getJavaClass() != descriptor.getJavaClass();
@@ -906,6 +906,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
              localPart = schemaContext.substring(idx + 1);
              String uri = oldNsResolver.resolveNamespacePrefix(prefix);
              String newUri = newNsResolver.resolveNamespacePrefix(prefix);
+             if(!record.isNamespaceAware()){
+            	 return localPart;
+             }
              //if we know the uri but the record has a different prefix or no prefix we need to update or generate a new one if necessary
              if(uri != null && (newUri == null || !(newUri.equals(uri)))){
             	 //get the prefix from the record for the given uri 
@@ -921,7 +924,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                  }	 
              }
               //this means we don't know the corresponding uri or the record already uses the same prefix/uri pair          
-             return prefix + XMLConstants.COLON + localPart;
+             return prefix + record.getNamespaceSeparator() + localPart;
          }else{
         	 return schemaContext;
          }

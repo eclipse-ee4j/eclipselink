@@ -12,15 +12,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.inheritance.typetests;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class ContactAsNestedWithCdnAddressXsiTestCases extends XMLMappingTestCases {
+public class ContactAsNestedWithCdnAddressXsiTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_cdnaddressxsi.xml";
+    private static final String JSON_READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_cdnaddressxsi.json";
     
     public ContactAsNestedWithCdnAddressXsiTestCases(String name) throws Exception {
         super(name);
         setProject(new TypeProject());
         setControlDocument(READ_DOC);
+        setControlJSON(JSON_READ_DOC);
     }
 
     public Object getControlObject() {

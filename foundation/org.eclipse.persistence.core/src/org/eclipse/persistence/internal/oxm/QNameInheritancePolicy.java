@@ -17,10 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -95,7 +95,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 Map.Entry entry = entries.next();
                 Object key = entry.getKey();
                 if (key instanceof String) {
-                    QName qname;
+                    XPathQName qname;
                     String indicatorValue = (String)key;
                     int index = indicatorValue.indexOf(XMLConstants.COLON);
                     if (index != -1) {
@@ -105,14 +105,14 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                         String prefix = indicatorValue.substring(0, index);
                         String localPart = indicatorValue.substring(index + 1);
                         String uri = namespaceResolver.resolveNamespacePrefix(prefix);
-                        qname = new QName(uri, localPart);
+                        qname = new XPathQName(uri, localPart, true);
                     } else {
                         // we always want to create/insert QNames into the map
                         if (namespaceResolver != null) {
-                            qname = new QName(namespaceResolver.getDefaultNamespaceURI(),indicatorValue);
+                            qname = new XPathQName(namespaceResolver.getDefaultNamespaceURI(),indicatorValue, true);
                         }
                         else {
-                            qname = new QName(indicatorValue);
+                            qname = new XPathQName(indicatorValue, true);
                         }
                     }
                     getClassIndicatorMapping().put(qname, entry.getValue());
@@ -144,11 +144,12 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      */
     public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
         ((XMLRecord) rowFromDatabase).setSession(session);
-        
+        boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
         if (hasClassExtractor() || shouldUseClassNameAsIndicator()) {
             return super.classFromRow(rowFromDatabase, session);
         }
-        Object indicator = rowFromDatabase.get(getClassIndicatorField());
+        Object indicator = rowFromDatabase.get(getClassIndicatorField());        
+        
         if (indicator == AbstractRecord.noEntry) {
             return null;
         }
@@ -161,21 +162,26 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         Class concreteClass;
         if (classFieldValue instanceof String) {
             String indicatorValue = (String)classFieldValue;
-            int index = indicatorValue.indexOf(XMLConstants.COLON);
+            int index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());
             if (index == -1) {
-                String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
-                if(uri == null) {
-                    concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
-                } else {
-                    QName qname = new QName(uri, indicatorValue);
-                    concreteClass = (Class)this.classIndicatorMapping.get(qname);
-                }
+            	if(namespaceAware){
+                    String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
+                    if(uri == null) {
+                        concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
+                    } else {
+                    	XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);
+                        concreteClass = (Class)this.classIndicatorMapping.get(qname);
+                    }
+            	}else{            		
+                    XPathQName qname = new XPathQName(indicatorValue, namespaceAware);
+            	    concreteClass = (Class)this.classIndicatorMapping.get(qname);
+            	}
             } else {
                 String prefix = indicatorValue.substring(0, index);
                 String localPart = indicatorValue.substring(index + 1);
                 String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(prefix);
                 if (uri != null) {
-                    QName qname = new QName(uri, localPart);
+                    XPathQName qname = new XPathQName(uri, localPart, namespaceAware);
                     concreteClass = (Class)this.classIndicatorMapping.get(qname);
                 } else {
                     concreteClass = (Class)this.classIndicatorMapping.get(indicatorValue);
@@ -205,5 +211,34 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         } else {
             setClassIndicatorField(new XMLField(fieldName));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add abstract class indicator information to the database row.  This is
+     * required when building a row for an insert or an update of a concrete child
+     * descriptor.
+     */
+    public void addClassIndicatorFieldToRow(AbstractRecord databaseRow) {
+        if (hasClassExtractor()) {
+            return;
+        }
+
+        DatabaseField field = getClassIndicatorField();
+        
+        Object value = getClassIndicatorValue();
+        boolean namespaceAware = ((XMLRecord)databaseRow).isNamespaceAware();
+        if(!namespaceAware && value instanceof String){
+            int colonIndex = ((String)value).indexOf(XMLConstants.COLON);
+            if(colonIndex > -1){
+                value = ((String)value).substring(colonIndex + 1);
+    	    }
+        }else if(namespaceAware && value instanceof String){
+        	if(((XMLRecord)databaseRow).getNamespaceSeparator() != XMLConstants.COLON){
+        	   value= ((String)value).replace(XMLConstants.COLON, ((XMLRecord)databaseRow).getNamespaceSeparator());
+        	}
+        }
+        
+        databaseRow.put(field, value);
     }
 }

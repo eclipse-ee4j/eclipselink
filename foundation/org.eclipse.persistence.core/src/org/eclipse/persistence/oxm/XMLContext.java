@@ -363,7 +363,7 @@ public class XMLContext {
      * the QName parameter.
      */
     public XMLDescriptor getDescriptor(QName qName) {
-    	XPathQName xpathQName = new XPathQName(qName.getNamespaceURI(), qName.getLocalPart(), true);
+    	XPathQName xpathQName = new XPathQName(qName, true);
     	return xmlContextState.getDescriptor(xpathQName);
     }
 
@@ -865,7 +865,7 @@ public class XMLContext {
         }
 
         private void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
-        	XPathQName xpathQName = new XPathQName(qName.getNamespaceURI(), qName.getLocalPart(), true);
+        	XPathQName xpathQName = new XPathQName(qName, true);
         	addDescriptorByQName(xpathQName, descriptor);
         }
         
@@ -939,7 +939,7 @@ public class XMLContext {
          * the QName parameter.
          */
         private XMLDescriptor getDescriptor(QName qName) {
-        	XPathQName xpathQName = new XPathQName(qName.getNamespaceURI(), qName.getLocalPart(), true);
+        	XPathQName xpathQName = new XPathQName(qName, true);
         	return (XMLDescriptor) descriptorsByQName.get(xpathQName);
         }
 

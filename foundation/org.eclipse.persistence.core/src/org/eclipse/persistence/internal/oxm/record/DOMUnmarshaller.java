@@ -465,7 +465,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	            elementLocalName = xmlRow.getDOM().getNodeName();
 	        }
 	        String elementPrefix = xmlRow.getDOM().getPrefix();
-	        return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot, xmlUnmarshaller.isNamespaceAware());
+	        return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot, true);
     	}finally{    		
             xmlUnmarshaller.getStringBuffer().reset();           
     	}

@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLChoiceCollectionMappingUnmarshalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.ObjectUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedUnmarshalContext;
@@ -120,12 +121,13 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
-
+    
     protected List<UnmarshalRecord> childRecordPool;
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
         this.xPathFragment = new XPathFragment();
+        xPathFragment.setNamespaceAware(isNamespaceAware());
         this.childRecordPool = new ArrayList<UnmarshalRecord>();
         this.prefixesForFragment = new HashMap<String, String>();
         initialize(treeObjectBuilder);
@@ -203,8 +205,13 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public void setXMLReader(XMLReader xmlReader) {
         this.xmlReader = xmlReader;
+        namespaceAware = xmlReader.isNamespaceAware();
+        namespaceSeparator = xmlReader.getNamespaceSeparator();
+        if(xPathFragment != null){
+            xPathFragment.setNamespaceAware(isNamespaceAware());
+        }
     }
-
+  
     public UnmarshalRecord getChildRecord() {
         return this.childRecord;
     }
@@ -376,7 +383,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 namespaceURI = XMLConstants.EMPTY_STRING;
             }
         }
-        return attributes.getValue(namespaceURI, lastFragment.getLocalName());
+        if(isNamespaceAware()){
+            return attributes.getValue(namespaceURI, lastFragment.getLocalName());
+        }
+        return attributes.getValue(lastFragment.getLocalName());
     }
 
     public XPathNode getXPathNode() {
@@ -421,7 +431,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
              // if we have a user-set type, try to get the class from the inheritance policy
              if (leafElementType != null) {
-                 Object indicator = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+               	 XPathQName xpathQName = new XPathQName(leafElementType, isNamespaceAware());
+                 Object indicator = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xpathQName);
                  if(indicator != null) {
                      classValue = (Class)indicator;
                  }
@@ -668,6 +679,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
                     XPathFragment parentFragment = new XPathFragment();
+                    parentFragment.setNamespaceAware(isNamespaceAware());
                     if(namespaceURI != null && namespaceURI.length() == 0){
                         parentFragment.setLocalName(qName);
                         parentFragment.setNamespaceURI(null);
@@ -993,6 +1005,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 }
                 indexMap.put(xPathFragment, newIndex);
                 XPathFragment predicateFragment = new XPathFragment();
+                predicateFragment.setNamespaceAware(isNamespaceAware());
                 predicateFragment.setNamespaceURI(xPathFragment.getNamespaceURI());
                 predicateFragment.setLocalName(xPathFragment.getLocalName());
                 predicateFragment.setIndexValue(newIndex);
@@ -1175,7 +1188,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             UnmarshalRecord childRecord = (UnmarshalRecord) treeObjectBuilder.createRecord(session);
             childRecord.setUnmarshaller(unmarshaller);
             childRecord.session = this.session;
-            childRecord.xmlReader = this.xmlReader;
+            childRecord.setXMLReader(this.xmlReader);
             childRecord.setFragmentBuilder(fragmentBuilder);
             childRecord.setUnmarshalNamespaceResolver(this.getUnmarshalNamespaceResolver());
             childRecord.childRecordPool = this.childRecordPool;
@@ -1189,9 +1202,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
      * INTERNAL:
      */
     public void setUnmarshaller(XMLUnmarshaller unmarshaller) {
-        super.setUnmarshaller(unmarshaller);
+        super.setUnmarshaller(unmarshaller);                
         if(xPathFragment != null){
-        	xPathFragment.setNamespaceAware(unmarshaller.isNamespaceAware());
+        	xPathFragment.setNamespaceAware(isNamespaceAware());
         }
     }
     
@@ -1204,5 +1217,5 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
      */
     public Map<String, String> getPrefixesForFragment() {
         return prefixesForFragment;
-    }
+    }	
 }

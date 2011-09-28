@@ -146,7 +146,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
                         prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
-                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.getUnmarshaller().isNamespaceAware());
+                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.isNamespaceAware());
                     if(xmlAnyCollectionMapping.getConverter() != null) {
                         childObject = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
                     }
@@ -242,6 +242,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
         if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof XMLRoot)) {
             xmlRootFragment = new XPathFragment();
+            xmlRootFragment.setNamespaceAware(marshalRecord.isNamespaceAware());
             wasXMLRoot = true;
             value = ((XMLRoot) value).getObject();
             if(null == value){
