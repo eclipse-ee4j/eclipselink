@@ -35,6 +35,7 @@ public class FullTestCases extends JAXBWithJSONTestCases{
         String[] comments = new String[]{"comment1","comment2","comment3", ""};
         o.setComments(comments);
         o.setId(1);
+        o.someClass = Integer.class;
 
         Customer customer = new Customer();
         customer.setFirstName("Jane");

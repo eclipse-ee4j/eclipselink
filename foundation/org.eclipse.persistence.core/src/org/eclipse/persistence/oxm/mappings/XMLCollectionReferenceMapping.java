@@ -39,7 +39,6 @@ import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ContainerMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -267,20 +266,6 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             }
         }
 
-        // iterate over each source & target XMLField and set the 
-        // appropriate namespace resolver
-        XMLDescriptor descriptor = (XMLDescriptor) this.getDescriptor();
-        XMLDescriptor targetDescriptor = (XMLDescriptor) getReferenceDescriptor();
-        for (int index = 0; index < sourceToTargetKeys.size(); index++) {
-            XMLField sourceField = (XMLField) sourceToTargetKeys.get(index);
-            XMLField targetField = (XMLField) sourceToTargetKeyFieldAssociations.remove(sourceField);
-            sourceField = (XMLField) descriptor.buildField(sourceField);
-            sourceToTargetKeys.set(index, sourceField);
-            if(null != targetField) {
-                targetField = (XMLField) targetDescriptor.buildField(targetField);
-            }
-            sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
-        }
     }
 
     /**

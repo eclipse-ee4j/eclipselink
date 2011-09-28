@@ -367,8 +367,14 @@ public class JSONWriterRecord extends MarshalRecord {
  	         }
         }else{
             String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
-            //if schemaType exists and is not boolean or number do write quotes
-            if(schemaType != null && !isNumericOrBooleanType(schemaType)){
+            if(schemaType == null){
+            	if(value.getClass() == ClassConstants.BOOLEAN || ClassConstants.NUMBER.isAssignableFrom(value.getClass())){
+            		characters(convertedValue);
+            	}else{
+            		writeStringValueCharacters(convertedValue);
+            	}
+            }else if(schemaType != null && !isNumericOrBooleanType(schemaType)){
+            	//if schemaType exists and is not boolean or number do write quotes
                 writeStringValueCharacters(convertedValue);
             } else if(isCDATA){
                 cdata(convertedValue);        	    

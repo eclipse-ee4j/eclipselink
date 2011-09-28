@@ -26,6 +26,7 @@
       <comments>comment3</comments>
       <comments></comments>
    </customerInput>
+   <someClass>java.lang.Integer</someClass>
    <customer id="0">
       <firstName>Jane</firstName>
       <lastName>Smith</lastName>

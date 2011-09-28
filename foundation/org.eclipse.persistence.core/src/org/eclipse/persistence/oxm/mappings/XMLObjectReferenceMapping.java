@@ -346,8 +346,18 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             if(null != targetField) {
                 if(null == targetDescriptor) {
                     throw DescriptorException.referenceClassNotSpecified(this);
-                }
-                targetField = (XMLField) targetDescriptor.buildField(targetField);
+                }               
+                //primary key field from ref desc
+                List<DatabaseField > pkFields  = targetDescriptor.getPrimaryKeyFields();
+                for(int i=0; i<pkFields.size(); i++){
+                	XMLField nextPKField = (XMLField)pkFields.get(i);
+                	if(targetField.equals(nextPKField)){
+                		targetField = (XMLField) targetDescriptor.buildField(nextPKField);
+                		sourceField.setSchemaType(targetField.getSchemaType());
+                		break;
+                	}
+                } 
+
             }
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }

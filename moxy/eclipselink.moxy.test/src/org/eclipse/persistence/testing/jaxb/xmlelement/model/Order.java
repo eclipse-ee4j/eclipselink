@@ -29,6 +29,7 @@ public class Order {
     private Customer customer;
     @XmlPath(value="customerInput/comments/text()")
     private String[] comments;
+    public Class someClass;
 
     public Order(){
         items = new ArrayList<Item>();

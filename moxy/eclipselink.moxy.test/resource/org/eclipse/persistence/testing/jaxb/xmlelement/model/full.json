@@ -27,6 +27,7 @@
 
    "customerInput":{
        "comments" : [ "comment1", "comment2", "comment3",""]} , 
+   "someClass":"java.lang.Integer",
    "customer" : { 
       "id":0,
       "firstName" : "Jane", 
