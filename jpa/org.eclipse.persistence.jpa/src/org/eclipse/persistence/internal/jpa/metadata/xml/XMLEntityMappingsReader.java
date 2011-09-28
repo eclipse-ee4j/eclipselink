@@ -72,11 +72,13 @@ public class XMLEntityMappingsReader {
      * Check the orm.xml to determine which project and schema to use.  
      * EclipseLink ORM is used if input Reader is null
      */
-    private static Object[] determineXMLContextAndSchema(String file, Reader input) throws Exception {
+    private static Object[] determineXMLContextAndSchema(String file, Reader input, boolean validateSchema) throws Exception {
         Object[] context = new Object[2];
         if (input == null) {
             context[0] = getEclipseLinkOrmProject();
-            context[1] = getEclipseLinkOrmSchema();
+            if (validateSchema) {
+                context[1] = getEclipseLinkOrmSchema();
+            }
             return context;
         }
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -95,13 +97,19 @@ public class XMLEntityMappingsReader {
         
         if (contentHandler.isEclipseLink()) {
             context[0] = getEclipseLinkOrmProject();
-            context[1] = getEclipseLinkOrmSchema();
+            if (validateSchema) {
+                context[1] = getEclipseLinkOrmSchema();
+            }
         } else if ((contentHandler.getVersion() == null) || (contentHandler.getVersion().indexOf("2") == -1)) {
             context[0] = getOrm1Project();
-            context[1] = getOrm1_0Schema();
+            if (validateSchema) {
+                context[1] = getOrm1_0Schema();
+            }
         } else {
             context[0] = getOrm2Project();
-            context[1] = getOrm2_0Schema();
+            if (validateSchema) {
+                context[1] = getOrm2_0Schema();
+            }
         }
         return context;
     }
@@ -117,7 +125,7 @@ public class XMLEntityMappingsReader {
         XMLEntityMappings xmlEntityMappings;
         try {
             // First need to determine which context/schema to use, JPA 1.0, 2.0 or EclipseLink orm (only latest supported)
-            Object[] context = determineXMLContextAndSchema(mappingFile, reader1);
+            Object[] context = determineXMLContextAndSchema(mappingFile, reader1, validateORMSchema);
             XMLUnmarshaller unmarshaller = ((XMLContext)context[0]).createUnmarshaller();
             if (validateORMSchema) {
                 useLocalSchemaForUnmarshaller(unmarshaller, ((Schema)context[1]));
