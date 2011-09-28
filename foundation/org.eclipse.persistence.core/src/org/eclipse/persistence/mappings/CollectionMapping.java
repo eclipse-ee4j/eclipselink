@@ -2068,7 +2068,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * behavior
      */
     public void setMustDeleteReferenceObjectsOneByOne(Boolean deleteOneByOne) {
-        System.out.println("---***--- setMustDeleteReferenceObjectsOneByOne called for: " + getDescriptor().getJavaClassName() + " mapping "  + attributeName + " setting to: " + deleteOneByOne);
         this.mustDeleteReferenceObjectsOneByOne = deleteOneByOne;
     }
     
