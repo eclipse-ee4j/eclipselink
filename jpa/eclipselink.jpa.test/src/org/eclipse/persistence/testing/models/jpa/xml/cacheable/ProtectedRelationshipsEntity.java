@@ -36,7 +36,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.QueryHint;
 import javax.persistence.TableGenerator;
 
-import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.config.QueryHints;
 

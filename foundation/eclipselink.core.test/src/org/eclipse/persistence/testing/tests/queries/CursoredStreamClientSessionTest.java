@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.tests.queries;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.server.*;
 

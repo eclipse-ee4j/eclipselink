@@ -16,7 +16,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.SQLException;
 
-import java.util.*;
 import org.eclipse.persistence.Version;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;

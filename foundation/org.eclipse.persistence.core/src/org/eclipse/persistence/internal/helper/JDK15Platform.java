@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.helper;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map;
 
 /**
  *  INTERNAL:
