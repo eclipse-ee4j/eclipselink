@@ -101,7 +101,8 @@ public class XMLMarshaller implements Cloneable {
     private Properties marshalProperties;
     private Schema schema;
     private MediaType mediaType = MediaType.APPLICATION_XML;
-	private String attributePrefix;
+    private String attributePrefix;
+    private boolean includeRoot;
     private NamespaceResolver namespaceResolver;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
@@ -167,6 +168,7 @@ public class XMLMarshaller implements Cloneable {
         setEncoding(XMLConstants.DEFAULT_XML_ENCODING);
         setFormattedOutput(true);
         marshalProperties = new Properties();
+        includeRoot = true;
     }
 
     /**
@@ -951,8 +953,9 @@ public class XMLMarshaller implements Cloneable {
                 throw XMLMarshalException.namespaceResolverNotSpecified(rootFragment.getShortName());
             }
             
-            marshalRecord.openStartElement(rootFragment, nr);
-            
+            if(isIncludeRoot()){
+                marshalRecord.openStartElement(rootFragment, nr);
+            }
             if (null != schemaLocation) {
                 marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_LOCATION, schemaLocation);
             }
@@ -970,7 +973,9 @@ public class XMLMarshaller implements Cloneable {
                 treeObjectBuilder.marshalAttributes(marshalRecord, object, session);
             }
             
-            marshalRecord.closeStartElement();
+            if(isIncludeRoot()){            	
+                marshalRecord.closeStartElement();
+            }
         }
         if (treeObjectBuilder != null && !isNil) {
             treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment, WriteType.UNDEFINED);
@@ -999,12 +1004,12 @@ public class XMLMarshaller implements Cloneable {
             }
         }
 
-        if (null != rootFragment && !(rootFragment.getLocalName().equals(XMLConstants.EMPTY_STRING))) {
+        if (null != rootFragment && !(rootFragment.getLocalName().equals(XMLConstants.EMPTY_STRING)) && isIncludeRoot()) {
             
             marshalRecord.endElement(rootFragment, nr);
             marshalRecord.endPrefixMappings(nr);
         }
-        if (!isFragment()) {
+        if (!isFragment() ) {
             marshalRecord.endDocument();
         }
         marshalRecord.afterContainmentMarshal(null, object);
@@ -1474,36 +1479,59 @@ public class XMLMarshaller implements Cloneable {
      * Value that will be used to prefix attributes.  
      * Ignored marshalling XML.   
      * @return
-	 * @since 2.4
+     * @since 2.4
      */
     public String getAttributePrefix() {
-		return attributePrefix;
-	}
+        return attributePrefix;
+    }
     
     /**
      * Value that will be used to prefix attributes.  
      * Ignored marshalling XML.
-	 * @since 2.4	 
+     * @since 2.4	 
      */
-	public void setAttributePrefix(String attributePrefix) {
-		this.attributePrefix = attributePrefix;
-	}
-
-	/**
-     * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
+    public void setAttributePrefix(String attributePrefix) {
+        this.attributePrefix = attributePrefix;
+    }
+		
+    /**
+     * Determine if the @XMLRootElement should be marshalled when present.  
      * Ignored marshalling XML.   
-	 * @since 2.4
      * @return
+     * @since 2.4
      */
+    public boolean isIncludeRoot() {
+        if(mediaType == MediaType.APPLICATION_JSON){
+            return includeRoot;
+        }
+        return true;
+    }
+
+    /**
+     * Determine if the @XMLRootElement should be marshalled when present.  
+     * Ignored marshalling XML.   
+     * @return
+     * @since 2.4
+     */
+    public void setIncludeRoot(boolean includeRoot) {
+         this.includeRoot = includeRoot;
+    }
+
+   /**
+    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
+    * Ignored marshalling XML.   
+    * @since 2.4
+    * @return
+    */
 	public NamespaceResolver getNamespaceResolver() {
 		return namespaceResolver;
 	}
 
-	/**
-     * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
-     * Ignored marshalling XML.  
-	 * @since 2.4	 
-     */
+   /**
+    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
+    * Ignored marshalling XML.  
+    * @since 2.4	 
+    */
 	public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
 		this.namespaceResolver = namespaceResolver;
 	}

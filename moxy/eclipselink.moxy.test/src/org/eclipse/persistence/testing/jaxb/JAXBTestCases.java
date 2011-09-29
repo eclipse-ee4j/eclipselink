@@ -195,6 +195,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     	
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
             Object testObject = jaxbUnmarshaller.unmarshal(instream);
             instream.close();
             xmlToObjectTest(testObject);
@@ -209,6 +210,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             }else{
                 instream = ClassLoader.getSystemResourceAsStream(resourceName);
             }
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
                 Object testObject = jaxbUnmarshaller.unmarshal(instream);
                 instream.close();
                 xmlToObjectTest(testObject);
@@ -228,7 +230,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
 
         int sizeBefore = getNamespaceResolverSize(desc);
-
+        jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
         jaxbMarshaller.marshal(objectToWrite, stream);
 
         int sizeAfter = getNamespaceResolverSize(desc);
@@ -252,6 +254,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         } else {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
         }
+        jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
 
         int sizeBefore = getNamespaceResolverSize(desc);
         String originalEncoding = (String)jaxbMarshaller.getProperty(Marshaller.JAXB_ENCODING);
@@ -290,6 +293,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
 
         int sizeBefore = getNamespaceResolverSize(desc);
+        jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
 
         jaxbMarshaller.marshal(objectToWrite, writer);
 
@@ -321,6 +325,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             } else {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
             }
+            jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
 
             int sizeBefore = getNamespaceResolverSize(desc);
             jaxbMarshaller.marshal(objectToWrite, streamWriter);
@@ -353,6 +358,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             } else {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
             }
+            jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
 
             int sizeBefore = getNamespaceResolverSize(desc);
             jaxbMarshaller.marshal(objectToWrite, eventWriter);
@@ -380,6 +386,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
         }
         int sizeBefore = getNamespaceResolverSize(desc);
+        jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
 
         jaxbMarshaller.marshal(objectToWrite, builder);
 
@@ -404,6 +411,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     public void testXMLToObjectFromURL() throws Exception {
         if(isUnmarshalTest()) {
             java.net.URL url = ClassLoader.getSystemResource(resourceName);
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
             Object testObject = jaxbUnmarshaller.unmarshal(url);
             xmlToObjectTest(testObject);
         }
@@ -413,6 +421,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
             Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
             instream.close();
             xmlToObjectTest(testObject);
@@ -422,6 +431,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
             Node node  = parser.parse(instream);
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
             Object testObject = jaxbUnmarshaller.unmarshal(node);
             instream.close();
             xmlToObjectTest(testObject);
@@ -437,7 +447,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             ExtendedXMLStreamReaderReader xmlStreamReaderReaderEx = new ExtendedXMLStreamReaderReader();
             XMLStreamReaderInputSource xmlStreamReaderInputSource = new XMLStreamReaderInputSource(xmlStreamReader);
             SAXSource saxSource = new SAXSource(xmlStreamReaderReaderEx, xmlStreamReaderInputSource);
-
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
             Object testObject = jaxbUnmarshaller.unmarshal(saxSource);
             instream.close();
             xmlToObjectTest(testObject);
@@ -448,6 +458,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
             Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader);
             instream.close();
             xmlToObjectTest(testObject);
@@ -462,6 +473,8 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         } else {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
         }
+        jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+
         int sizeBefore = getNamespaceResolverSize(desc);
         Document testDocument = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
         jaxbMarshaller.marshal(objectToWrite, testDocument);
@@ -493,10 +506,10 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             saxParserFactory.setNamespaceAware(true);
             SAXParser saxParser = saxParserFactory.newSAXParser();
             XMLReader xmlReader = saxParser.getXMLReader();
-    
+            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+
             JAXBUnmarshallerHandler jaxbUnmarshallerHandler = (JAXBUnmarshallerHandler)jaxbUnmarshaller.getUnmarshallerHandler();
             xmlReader.setContentHandler(jaxbUnmarshallerHandler);
-    
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(resourceName);
             InputSource inputSource = new InputSource(inputStream);
             xmlReader.parse(inputSource);

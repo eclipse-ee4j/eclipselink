@@ -53,7 +53,7 @@ public class DifferentNamespacesTestCases extends JSONMarshalUnmarshalTestCases{
 	}
 	
 
-	public void setUp(){
+	public void setUp() throws Exception{
 		super.setUp();
 		
         Map<String, String> marshalNamespaceMap = new HashMap<String, String>();		

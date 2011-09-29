@@ -25,7 +25,7 @@ public class JSONAttributePrefixOnMarshallerTestCases extends JSONAttributePrefi
 		super(name);
 
 	}
-	public void setUp(){
+	public void setUp() throws Exception{
 		super.setUp();
 		//this should override the properties set on the context in getProperties (called during inherited c-tor setClasses call)
 		try{

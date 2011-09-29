@@ -120,18 +120,28 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 	
     /** The Constant MEDIA_TYPE. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation*/
-    public static final String MEDIA_TYPE = "eclipselink.media.type";
+     * the properties supplied during JAXBContext creation to set the media type.  
+     * Supported values are "application/xml" and "application/json" */
+    public static final String MEDIA_TYPE = "eclipselink.media-type";
     
     /** The Constant ATTRIBUTE_PREFIX. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation*/ 
-    public static final String ATTRIBUTE_PREFIX = "attribute.prefix";    
+     * the properties supplied during JAXBContext creation to specify a prefix to prepend
+     * to attributes.  No effect when media type is "application/xml" */ 
+    public static final String ATTRIBUTE_PREFIX = "eclipselink.attribute-prefix";    
     
     /** The Constant NAMESPACES. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation*/
-    public static final String NAMESPACES = "namespaces";
+     * the properties supplied during JAXBContext creation to specify a map of 
+     * prefix, uri pairs to be used. */
+    public static final String NAMESPACES = "eclipselink.namespaces";
+    
+    /** The Constant INCLUDE_ROOT. This can be used as the property name with 
+     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
+     * the properties supplied during JAXBContext creation to specify if the 
+     * @XmlRootElement should be marshalled/unmarshaled.  Not applicable if 
+     * eclipselink.media-type is set to "application/xml" */
+    public static final String INCLUDE_ROOT = "eclipselink.include-root";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
@@ -1174,6 +1184,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             	setPropertyOnMarshaller(JAXBContext.MEDIA_TYPE, marshaller);
             	setPropertyOnMarshaller(JAXBContext.ATTRIBUTE_PREFIX, marshaller);
             	setPropertyOnMarshaller(JAXBContext.NAMESPACES, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.INCLUDE_ROOT, marshaller);
             }
         
             return marshaller;
@@ -1195,6 +1206,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             	setPropertyOnUnmarshaller(JAXBContext.MEDIA_TYPE, unmarshaller);
              	setPropertyOnUnmarshaller(JAXBContext.ATTRIBUTE_PREFIX, unmarshaller);
              	setPropertyOnUnmarshaller(JAXBContext.NAMESPACES, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.INCLUDE_ROOT, unmarshaller);
              }
              return unmarshaller;
         }

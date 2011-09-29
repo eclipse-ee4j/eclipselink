@@ -45,11 +45,13 @@ public class JSONReader extends XMLReaderAdapter {
     private Properties properties;
     private String attributePrefix = null;
     private NamespaceResolver namespaces = null;
-    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware){
-        this(attrPrefix, nr, namespaceAware, XMLConstants.DOT);        
+    protected boolean includeRoot;
+
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot){
+        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT);        
     }
     
-    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, char namespaceSeparator){
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator){
         this.attributePrefix = attrPrefix;
     	if(attributePrefix == XMLConstants.EMPTY_STRING){
     	    attributePrefix = null;    	    	
@@ -57,6 +59,7 @@ public class JSONReader extends XMLReaderAdapter {
     	namespaces = nr;
     	this.namespaceAware = namespaceAware;
     	this.namespaceSeparator = namespaceSeparator;
+    	this.includeRoot = includeRoot;
     }
     
     private JSONAttributes attributes = new JSONAttributes();
@@ -103,7 +106,7 @@ public class JSONReader extends XMLReaderAdapter {
     		    	
     	if(tree.getType() == JSONLexer.OBJECT){
     		int children = tree.getChildCount();
-    		if(children == 1){
+    		if(includeRoot){
     			parse((CommonTree) tree.getChild(0));
     		}else{
     			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));

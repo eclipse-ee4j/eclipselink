@@ -15,19 +15,19 @@ package org.eclipse.persistence.testing.jaxb.json.norootelement;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.json.JSONWithUnmarshalToClassTestCases;
 
 public class NoRootElementTestCases extends JSONWithUnmarshalToClassTestCases {    
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";    
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";    
     
 	public NoRootElementTestCases(String name) throws Exception {
 	    super(name);
 	    setControlJSON(JSON_RESOURCE);
 	    setClasses(new Class[]{Address.class});
 	}
-
 	
 	public Object getControlObject() {
 		Address addr = new Address();
@@ -35,8 +35,12 @@ public class NoRootElementTestCases extends JSONWithUnmarshalToClassTestCases {
 		addr.setCity("Ottawa");
 		addr.setStreet("Main street");
 		
+		return addr;
+	}
+	
+	public Object getReadControlObject(){
 		QName name = new QName("");
-		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, addr);
+		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
 		return jbe;
 	}
 
@@ -47,16 +51,7 @@ public class NoRootElementTestCases extends JSONWithUnmarshalToClassTestCases {
  
 	public void testJSONToObjectFromReaderWithClass() throws Exception{
 		testJSONToObjectFromReaderWithClass(Address.class);
-	}
-	
-	 public void testJAXBElementObjectToJSONStringWriter() throws Exception {    	
-	        
-		StringWriter sw = new StringWriter();
-		Object obj = ((JAXBElement)getReadControlObject()).getValue();
-		jsonMarshaller.marshal(obj, sw);
-		compareStrings("**testObjectToJSONStringWriter**", sw.toString());
-    }
-
-  
+	}	
+		
 }
 

@@ -26,10 +26,10 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public abstract class JSONTestCases extends OXTestCase{
-	protected JAXBContext jaxbContext;	  
-	protected Marshaller jsonMarshaller;
-	protected Unmarshaller jsonUnmarshaller;
-	protected ClassLoader classLoader;
+    protected JAXBContext jaxbContext;	  
+    protected Marshaller jsonMarshaller;
+    protected Unmarshaller jsonUnmarshaller;
+    protected ClassLoader classLoader;
     protected XMLContext xmlContext;
 	
     protected String controlJSONLocation;
@@ -39,16 +39,16 @@ public abstract class JSONTestCases extends OXTestCase{
 		super(name);
 	}
     
-    public void setUp(){
+    public void setUp() throws Exception{
     	try {
-			super.setUp();		
-            jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
-	        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+            super.setUp();		
+            jsonMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+            jsonUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
            
     	} catch (Exception e) {		
-			e.printStackTrace();
-			fail("An error occurred during setup");
-		}
+            e.printStackTrace();
+            fail("An error occurred during setup");
+        }
     }
     
     public void setControlJSON(String location) {
@@ -147,7 +147,6 @@ public abstract class JSONTestCases extends OXTestCase{
 	}
 
 	public void testJSONMarshalToStringWriter() throws Exception{
-	    jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
 		StringWriter sw = new StringWriter();
 		jsonMarshaller.marshal(getWriteControlObject(), sw);
 		compareStrings("**testJSONMarshalToStringWriter**", sw.toString());

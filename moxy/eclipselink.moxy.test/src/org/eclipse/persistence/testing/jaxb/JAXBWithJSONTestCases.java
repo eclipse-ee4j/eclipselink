@@ -23,6 +23,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
@@ -68,83 +69,75 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
     
     public void testJSONUnmarshalFromInputStream() throws Exception {
-        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
-        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+    	jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        Object testObject = jsonUnmarshaller.unmarshal(inputStream);
+        Object testObject = jaxbUnmarshaller.unmarshal(inputStream);
         inputStream.close();
         jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
-        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
-        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+        jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         InputSource inputSource = new InputSource(inputStream);
-        Object testObject = jsonUnmarshaller.unmarshal(inputSource);
+        Object testObject = jaxbUnmarshaller.unmarshal(inputSource);
         inputStream.close();
         jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromReader() throws Exception {
-        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
-        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+        jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Reader reader = new InputStreamReader(inputStream);
-        Object testObject = jsonUnmarshaller.unmarshal(reader);
+        Object testObject = jaxbUnmarshaller.unmarshal(reader);
         reader.close();
         inputStream.close();
         jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromURL() throws Exception {
-        Unmarshaller jsonUnmarshaller = getJAXBContext().createUnmarshaller();
-        jsonUnmarshaller.setProperty("eclipselink.media.type", "application/json");
+        jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         URL url = getJSONURL();
-        Object testObject = jsonUnmarshaller.unmarshal(url);
+        Object testObject = jaxbUnmarshaller.unmarshal(url);
         jsonToObjectTest(testObject);
     }
 
     public void testJSONMarshalToOutputStream() throws Exception{
-        Marshaller jsonMarshaller = getJAXBContext().createMarshaller();
-        jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
+    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        jsonMarshaller.marshal(getWriteControlObject(), os);
+        jaxbMarshaller.marshal(getWriteControlObject(), os);
         compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
         os.close();
     }
 
     public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
-        Marshaller jsonMarshaller = getJAXBContext().createMarshaller();
-        jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
-        jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        jsonMarshaller.marshal(getWriteControlObject(), os);
+        jaxbMarshaller.marshal(getWriteControlObject(), os);
         compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
         os.close();
     }
 
     public void testJSONMarshalToStringWriter() throws Exception{
-        Marshaller jsonMarshaller = getJAXBContext().createMarshaller();
-        jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
+    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         StringWriter sw = new StringWriter();
-        jsonMarshaller.marshal(getWriteControlObject(), sw);
+        jaxbMarshaller.marshal(getWriteControlObject(), sw);
         compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     }
 
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-        Marshaller jsonMarshaller = getJAXBContext().createMarshaller();
-        jsonMarshaller.setProperty("eclipselink.media.type", "application/json");
-        jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         StringWriter sw = new StringWriter();
-        jsonMarshaller.marshal(getWriteControlObject(), sw);
+        jaxbMarshaller.marshal(getWriteControlObject(), sw);
         compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     }
 

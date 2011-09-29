@@ -21,7 +21,7 @@ public class NamespacesOnUnmarshalOnlyTestCases extends JSONMarshalUnmarshalTest
 		setClasses(new Class[]{Person.class});
 	}
 
-	public void setUp(){
+	public void setUp() throws Exception{
 		super.setUp();
 		try {
 			Map<String, String> namespaceMap = new HashMap<String, String>();

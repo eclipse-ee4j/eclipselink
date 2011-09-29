@@ -557,6 +557,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	}
             } else if (JAXBContext.ATTRIBUTE_PREFIX.equals(key)) {            	
             	xmlMarshaller.setAttributePrefix((String)value);            	
+            } else if (JAXBContext.INCLUDE_ROOT.equals(key)) {            	
+            	xmlMarshaller.setIncludeRoot((Boolean)value);     
             } else if (JAXBContext.NAMESPACES.equals(key)) {    
             	if(value != null){
             	    Map<String, String> namespaces = (Map<String, String>)value;

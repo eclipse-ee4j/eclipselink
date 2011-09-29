@@ -36,8 +36,12 @@ public class NoRootElementNSTestCases extends JSONWithUnmarshalToClassTestCases 
 		addr.setCity("Ottawa");
 		addr.setStreet("Main street");
 		
+		return addr;
+	}
+	
+	public Object getReadControlObject(){
 		QName name = new QName("");
-		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, addr);
+		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
 		return jbe;
 	}
 
@@ -49,14 +53,7 @@ public class NoRootElementNSTestCases extends JSONWithUnmarshalToClassTestCases 
 	public void testJSONToObjectFromReaderWithClass() throws Exception{
 		testJSONToObjectFromReaderWithClass(Address.class);
 	}
-	
-	 public void testJAXBElementObjectToJSONStringWriter() throws Exception {    	
-	        
-		StringWriter sw = new StringWriter();
-		Object obj = ((JAXBElement)getReadControlObject()).getValue();
-		jsonMarshaller.marshal(obj, sw);
-		compareStrings("**testObjectToJSONStringWriter**", sw.toString());
-    }
+
 	 
 	 public Map getProperties(){
 			Map props = new HashMap();
