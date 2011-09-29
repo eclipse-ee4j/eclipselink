@@ -267,7 +267,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createMafia_ddlGeneration.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMafia_ddlGeneration.jdbc"/>

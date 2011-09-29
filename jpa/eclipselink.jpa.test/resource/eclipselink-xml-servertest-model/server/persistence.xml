@@ -33,7 +33,7 @@
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
-            <property name="eclipselink.multitenant.tenants-share-cache" value="true"/>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
@@ -54,6 +54,7 @@
             <property name="eclipselink.logging.level" value="FINEST"/>
             <property name="tenant.id" value="123"/>
             <property name="eclipselink.tenant-id" value="123"/>
+            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
             <property name="eclipselink.session-name" value="multi-tenant-123"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
         </properties>
