@@ -28,10 +28,13 @@ import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -64,8 +67,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class DynamicJAXBFromOXMTestCases extends TestCase {
-
-    private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/";
 
     private DynamicJAXBContext jaxbContext;
 
@@ -1273,6 +1274,35 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         assertEquals(hexStr, hexElem.getFirstChild().getNodeValue());
     }
 
+    /**
+     * Ensure that using unmarshal(XMLStreamReader, Class) works in a Dynamic context.
+     * Create a dummy Descriptor with a concrete Java class, add it to the session, and then
+     * try to unmarshal using that class.  An empty instance of that concrete class should be returned.
+     */
+    public void testUnmarshalWithClass() throws Exception {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        InputStream iStream = classLoader.getResourceAsStream(OXM_METADATA);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+
+        DynamicJAXBContext jc = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
+
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+
+        InputStream xmlStream = classLoader.getResourceAsStream(XML_RESOURCE_BEFORE);
+        XMLStreamReader xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(xmlStream);
+
+        XMLDescriptor dummy = new XMLDescriptor();
+        dummy.setJavaClass(javax.swing.JLabel.class);
+        jc.getXMLContext().getSession(0).addDescriptor(dummy);
+
+        Object o = unmarshaller.unmarshal(xmlStreamReader, javax.swing.JLabel.class);
+        JAXBElement jelem = (JAXBElement) o;
+
+        assertEquals(javax.swing.JLabel.class, jelem.getValue().getClass());
+    }
+
     // Utility methods
     // ====================================================================
 
@@ -1326,6 +1356,8 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
     // ====================================================================
 
+    private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/";
+
     // Schema files used to test each feature
     private static final String DATATYPES = RESOURCE_DIR + "datatypes-oxm.xml";
     private static final String XMLSCHEMA_QUALIFIED = RESOURCE_DIR + "xmlschema-qualified-oxm.xml";
@@ -1363,9 +1395,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
     private static final String SUBSTITUTION = RESOURCE_DIR + "substitution-oxm.xml";
     private static final String BINARY = RESOURCE_DIR + "binary-oxm.xml";
 
+    private static final String OXM_METADATA = RESOURCE_DIR + "metadata.xml";
+
+
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
     private static final String PERSONNE_XML = RESOURCE_DIR + "sub-personne-fr.xml";
+    private static final String XML_RESOURCE_BEFORE = RESOURCE_DIR + "before.xml";
 
     // Names of types used in test cases
     private static final String PACKAGE = "mynamespace";

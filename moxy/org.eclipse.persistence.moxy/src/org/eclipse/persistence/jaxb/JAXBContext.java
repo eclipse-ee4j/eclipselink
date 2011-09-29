@@ -363,7 +363,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map for which array class (by name) corresponds to which generated class
      */
-    public Map<String, Class>getArrayClassesToGeneratedClasses(){
+    public Map<String, Class> getArrayClassesToGeneratedClasses() {
+        if (contextState.getGenerator() == null) {
+            return null;
+        }
         return contextState.getGenerator().getAnnotationsProcessor().getArrayClassesToGeneratedClasses();
     }
 
@@ -371,7 +374,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map for which collection class (by Type) corresponds to which generated class
      */
-    public Map<Type, Class>getCollectionClassesToGeneratedClasses(){
+    public Map<Type, Class> getCollectionClassesToGeneratedClasses() {
+        if (contextState.getGenerator() == null) {
+            return null;
+        }
         return contextState.getGenerator().getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
     }
 
