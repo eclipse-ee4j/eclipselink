@@ -173,9 +173,9 @@
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"
-               fork="true">
+               fork="true"
                classpathref="jpaproto.compile.path"
-        </javac>
+        />
     </target>
 
     <!-- package -->

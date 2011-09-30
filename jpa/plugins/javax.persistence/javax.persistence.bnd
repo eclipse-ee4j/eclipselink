@@ -16,7 +16,8 @@ Include-Resource:\
  javax/persistence/orm_1_0.xsd=./${src.dir}/javax/persistence/orm_1_0.xsd,\
  javax/persistence/orm_2_0.xsd=./${src.dir}/javax/persistence/orm_2_0.xsd,\
  javax/persistence/persistence_1_0.xsd=./${src.dir}/javax/persistence/persistence_1_0.xsd,\
- javax/persistence/persistence_2_0.xsd=./${src.dir}/javax/persistence/persistence_2_0.xsd
+ javax/persistence/persistence_2_0.xsd=./${src.dir}/javax/persistence/persistence_2_0.xsd,\
+ META-INF/eclipse.inf=./META-INF/eclipse.inf
 Import-Package: *;resolution:=optional,org.osgi.service.jpa;version="1.0.0"
 Specification-Version: ${jpaproto.spec.version}
 Bundle-ClassPath: .
