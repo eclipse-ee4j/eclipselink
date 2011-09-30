@@ -1348,6 +1348,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 }
             }
         }
+        // Aggregate collections do not have a cache key when build, so cannot be cached if they have references to isolated classes.
+        if ((this.referenceDescriptor != null) && this.referenceDescriptor.hasNoncacheableMappings()) {
+            this.isCacheable = false;
+        }
     }
 
     /**

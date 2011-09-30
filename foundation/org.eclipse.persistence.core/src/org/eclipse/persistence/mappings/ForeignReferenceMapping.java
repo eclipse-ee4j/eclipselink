@@ -705,17 +705,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
-     * Ensure the container policy is post initialized
-     */
-    @Override
-    public void postInitialize(AbstractSession session) {
-        super.postInitialize(session);
-        if (this.referenceDescriptor != null && ! this.referenceDescriptor.isSharedIsolation()){
-            this.isCacheable = false;
-        }
-    }
-    /**
-     * INTERNAL:
      * Allow the mapping the do any further batch preparation.
      */
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
@@ -1170,6 +1159,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         initializeReferenceDescriptor(session);
         initializeSelectionQuery(session);
         this.indirectionPolicy.initialize();
+        
+        if ((this.referenceDescriptor != null) && this.referenceDescriptor.isIsolated()) {
+            this.isCacheable = false;
+        }
     }
 
     /**

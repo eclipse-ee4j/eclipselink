@@ -94,14 +94,18 @@ public abstract class DatasourceCall implements Call {
         }
         return parameterTypes;
     }
-
+    
     /**
      * The parameters are the values in order of occurrence in the SQL statement.
      */
     public void setParameters(List parameters) {
         this.parameters = parameters;
     }
-
+    
+    public void setParameterTypes(Vector<Integer> parameterTypes) {
+        setParameterTypes((List<Integer>)parameterTypes);
+    }
+    
     /**
      * The parameter types determine if the parameter is a modify, translation or literal type.
      */

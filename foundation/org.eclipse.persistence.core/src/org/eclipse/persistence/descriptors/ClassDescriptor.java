@@ -200,6 +200,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /** Configures how the unit of work uses the session cache. */
     protected int unitOfWorkCacheIsolationLevel = UNDEFINED_ISOLATATION;
+    protected boolean wasDefaultUnitOfWorkCacheIsolationLevel;
     public static final int UNDEFINED_ISOLATATION = -1; // UNDEFINED_ISOLATATION will be treated as USE_SESSION_CACHE_AFTER_TRANSACTION when set at runtime
     public static final int USE_SESSION_CACHE_AFTER_TRANSACTION = 0;
     public static final int ISOLATE_NEW_DATA_AFTER_TRANSACTION = 1; // this is the default behaviour even when undefined.
@@ -3431,14 +3432,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getHistoryPolicy() != null) {
             session.getProject().setHasGenericHistorySupport(true);
         }
-
-        // Record that there is an isolated class in the project.
-        if (!isSharedIsolation()) {
-            session.getProject().setHasIsolatedClasses(true);
-        }
-        if (!shouldIsolateObjectsInUnitOfWork() && !shouldBeReadOnly()) {
-            session.getProject().setHasNonIsolatedUOWClasses(true);
-        }
         
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(POST_INITIALIZED) || isInvalid()) {
@@ -3478,7 +3471,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if (isProtectedIsolation() &&
                     ((mapping.isForeignReferenceMapping() && !mapping.isCacheable())
                     || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings()))) {
-                ((ForeignReferenceMapping) mapping).collectQueryParameters(this.foreignKeyValuesForCaching);
+                        mapping.collectQueryParameters(this.foreignKeyValuesForCaching);
             }
             if (mapping.isLockableMapping()){
                 getLockableMappings().add(mapping);
@@ -3548,35 +3541,37 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (hasMultitenantPolicy()) {
             getMultitenantPolicy().postInitialize(session);
         }
-
-        if (!isSharedIsolation()){
-            session.getIsolatedAndProtectedDescriptors().add(this);
-        }
         
+        postInitializeCaching(session);
+
         validateAfterInitialization(session);
 
         checkDatabase(session);
     }
 
-    /**
-     * INTERNAL:
-     * Used to maintain caching settings at descriptor initialization time
-     */
-    public void postInitializeCaching(AbstractSession session){
+    protected void postInitializeCaching(AbstractSession session){
+        if (!isSharedIsolation()) {
+            this.notifyReferencingDescriptorsOfIsolation(session);
+        }
+        
         // PERF: If using isolated cache, then default uow isolation to always (avoids merge/double build).
-        if (getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) {
+        if ((getUnitOfWorkCacheIsolationLevel() == UNDEFINED_ISOLATATION) || this.wasDefaultUnitOfWorkCacheIsolationLevel) {
+            this.wasDefaultUnitOfWorkCacheIsolationLevel = true;
             if (isIsolated()) {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
-            }else {
-                if (isProtectedIsolation()) {
-                    setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
-                }else{
-                    setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
-                }
-                if (!shouldBeReadOnly()) {
-                    session.getProject().setHasNonIsolatedUOWClasses(true);
-                }
+            } else if (isProtectedIsolation()) {
+                setUnitOfWorkCacheIsolationLevel(ISOLATE_FROM_CLIENT_SESSION);
+            } else {
+                setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
             }
+        }
+
+        // Record that there is an isolated class in the project.
+        if (!isSharedIsolation()) {
+            session.getProject().setHasIsolatedClasses(true);
+        }
+        if (!shouldIsolateObjectsInUnitOfWork() && !this.shouldBeReadOnly()) {
+            session.getProject().setHasNonIsolatedUOWClasses(true);
         }
     }
     
@@ -3584,25 +3579,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Used to ensure cache settings for descriptors are properly set at initialization
      */
-    public void notifyReferencingDescriptorsOfIsolation() {
+    public void notifyReferencingDescriptorsOfIsolation(AbstractSession session) {
         for (ClassDescriptor descriptor : this.referencingClasses){
-            if (descriptor.cacheIsolation == null || descriptor.cacheIsolation == CacheIsolationType.SHARED){
-                descriptor.cacheIsolation = CacheIsolationType.PROTECTED;
-                if (descriptor.unitOfWorkCacheIsolationLevel == UNDEFINED_ISOLATATION){
-                    descriptor.unitOfWorkCacheIsolationLevel = ISOLATE_FROM_CLIENT_SESSION;
-                }
-                if (isIsolated()){
-                    for (DatabaseMapping mapping: descriptor.getMappings()){
-                        if (mapping.isForeignReferenceMapping()){
-                            ForeignReferenceMapping frMapping = ((ForeignReferenceMapping)mapping);
-                            if (frMapping.getReferenceDescriptor() == this){
-                                frMapping.setIsCacheable(false);
-                                frMapping.collectQueryParameters(descriptor.getForeignKeyValuesForCaching());
-                            }
-                        }
+            if (descriptor.getCacheIsolation() == null || descriptor.getCacheIsolation() == CacheIsolationType.SHARED) {
+                descriptor.setCacheIsolation(CacheIsolationType.PROTECTED);
+                descriptor.postInitializeCaching(session);
+                for (DatabaseMapping mapping : descriptor.getMappings()) {
+                    if (mapping.isAggregateMapping() && (mapping.getReferenceDescriptor() != null)) {
+                        mapping.getReferenceDescriptor().setCacheIsolation(CacheIsolationType.PROTECTED);
                     }
                 }
-                descriptor.notifyReferencingDescriptorsOfIsolation();
             }
         }
     }
