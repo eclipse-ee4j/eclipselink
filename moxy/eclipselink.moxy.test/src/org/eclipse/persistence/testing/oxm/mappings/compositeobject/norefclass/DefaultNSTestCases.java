@@ -16,16 +16,19 @@ import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfNoRefClassNSProject;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.Root;
 
-public class DefaultNSTestCases  extends XMLMappingTestCases {
+public class DefaultNSTestCases  extends XMLWithJSONMappingTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/norefclass/DefaultNS.xml";
-
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/norefclass/DefaultNS.json";
+    
     public DefaultNSTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setProject(new CustomerProject());
     }
 

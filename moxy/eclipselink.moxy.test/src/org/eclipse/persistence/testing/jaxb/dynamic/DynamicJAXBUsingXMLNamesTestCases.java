@@ -27,6 +27,8 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -74,6 +76,46 @@ public class DynamicJAXBUsingXMLNamesTestCases extends TestCase {
 
         assertEquals("Larry King", newName);
         assertEquals("CA34287", newId);
+    }
+    
+    public void testCreateEntityByXMLNameJSON() throws Exception {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        InputStream iStream = classLoader.getResourceAsStream(EXAMPLE_OXM);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + EXAMPLE_OXM + "]");
+        }
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.dynamic", new StreamSource(iStream));
+
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
+        DynamicEntity employee = (DynamicEntity) jaxbContext.createByQualifiedName(EMPLOYEE_NAMESPACE, EMPLOYEE_TYPE_NAME, false);
+        assertNotNull("Could not create Dynamic Entity.", employee);
+
+        NamespaceResolver nsResolver = new NamespaceResolver();
+        nsResolver.put("ns0", "mynamespace");
+
+        jaxbContext.setValueByXPath(employee, "name/text()", nsResolver, "Larry King");
+        jaxbContext.setValueByXPath(employee, "employee-id/text()", nsResolver, "CA34287");
+
+        JAXBMarshaller m = jaxbContext.createMarshaller();
+        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+
+        m.marshal(employee, marshalDoc);
+
+        JAXBUnmarshaller u = jaxbContext.createUnmarshaller();
+        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+        DynamicEntity employee2 = (DynamicEntity) u.unmarshal(marshalDoc);
+        String newName = jaxbContext.getValueByXPath(employee2, "name/text()", nsResolver, String.class);
+        String newId = jaxbContext.getValueByXPath(employee2, "employee-id/text()", nsResolver, String.class);
+
+        assertEquals("Larry King", newName);
+        assertEquals("CA34287", newId);
+        
     }
 
     public void testCreateEntityByXPathNameCollision1() throws Exception {
