@@ -353,7 +353,11 @@ public class XMLProcessor {
             // update TypeInfo objects based on the JavaTypes
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
-            	NamespaceInfo nsInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName).getNamespaceInfo();
+                PackageInfo packageInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName);
+                NamespaceInfo nsInfo = null;
+                if(null != packageInfo) {
+                    nsInfo = packageInfo.getNamespaceInfo();
+                }
                 for (JavaType javaType : jTypes.getJavaType()) {
                     processJavaType(javaType, typeInfosForPackage.get(javaType.getName()), nsInfo);
                 }
