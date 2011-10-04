@@ -19,6 +19,7 @@ package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
@@ -26,7 +27,7 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreato
 /*
  * The test is testing against "MulitPU-3" persistence unit which has <shared-cache-mode> to be ENABLE_SELECTIVE
  */
-public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitTest {
+public class CacheableModelJunitTestEnableSelective extends JUnitTestCase {
     
     public CacheableModelJunitTestEnableSelective() {
         super();
@@ -38,6 +39,7 @@ public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitT
     }
     
     public void setUp() {
+        super.setUp();
         clearCache("MulitPU-3");
     }
     
@@ -61,10 +63,44 @@ public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitT
     }
     
     /**
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE.
+     */
+    public void testCachingOnENABLE_SELECTIVE() {
+        ServerSession session = getServerSession("MulitPU-3");
+        ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
+        assertTrue("CacheableFalseEntity (ENABLE_SELECTIVE) from annotations has caching turned on", usesNoCache(falseEntityDescriptor));
+        
+        ClassDescriptor trueEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_TRUE");
+        assertFalse("CacheableTrueEntity (ENABLE_SELECTIVE) from annotations has caching turned off", usesNoCache(trueEntityDescriptor));
+
+        ClassDescriptor childFalseEntityDescriptor = session.getDescriptorForAlias("JPA_CHILD_CACHEABLE_FALSE");
+        assertTrue("ChildCacheableFalseEntity (ENABLE_SELECTIVE) from annotations has caching turned on", usesNoCache(childFalseEntityDescriptor));
+        
+        ClassDescriptor falseSubEntityDescriptor = session.getDescriptorForAlias("JPA_SUB_CACHEABLE_FALSE");
+        assertTrue("SubCacheableFalseEntity (ENABLE_SELECTIVE) from annotations has caching turned on", usesNoCache(falseSubEntityDescriptor));
+    
+        // Should pick up true from the mapped superclass.
+        ClassDescriptor noneSubEntityDescriptor = session.getDescriptorForAlias("JPA_SUB_CACHEABLE_NONE");
+        assertFalse("SubCacheableNoneEntity (ENABLE_SELECTIVE) from annotations has caching turned off", usesNoCache(noneSubEntityDescriptor));
+
+        ClassDescriptor xmlFalseEntityDescriptor = session.getDescriptorForAlias("XML_CACHEABLE_FALSE");
+        assertTrue("CacheableFalseEntity (ENABLE_SELECTIVE) from XML has caching turned on", usesNoCache(xmlFalseEntityDescriptor));
+        
+        ClassDescriptor xmlTrueEntityDescriptor = session.getDescriptorForAlias("XML_CACHEABLE_TRUE");
+        assertFalse("CacheableTrueEntity (ENABLE_SELECTIVE) from XML has caching turned off", usesNoCache(xmlTrueEntityDescriptor));
+        
+        ClassDescriptor xmlFalseSubEntityDescriptor = session.getDescriptorForAlias("XML_SUB_CACHEABLE_FALSE");
+        assertTrue("SubCacheableFalseEntity (ENABLE_SELECTIVE) from XML has caching turned on", usesNoCache(xmlFalseSubEntityDescriptor));
+    
+        // Should pick up true from the mapped superclass.
+        ClassDescriptor xmlNoneSubEntityDescriptor = session.getDescriptorForAlias("XML_SUB_CACHEABLE_NONE");
+        assertFalse("SubCacheableNoneEntity (ENABLE_SELECTIVE) from XML has caching turned off", usesNoCache(xmlNoneSubEntityDescriptor));
+    }
+    
+    /**
      * Convenience method.
      */
-    @Override
-    public ServerSession getPUServerSession(String puName) {
-        return JUnitTestCase.getServerSession("MulitPU-3");
+    private boolean usesNoCache(ClassDescriptor descriptor) {
+        return descriptor.isIsolated();
     }
 }

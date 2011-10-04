@@ -72,14 +72,14 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableRelationshi
  * "UNSPECIFIED"
  */
 public class CacheableModelJunitTest extends JUnitTestCase {
-    protected static int m_cacheableTrueEntity1Id;
-    protected static int m_cacheableForceProtectedEntity1Id;
-    protected static int m_cacheableTrueEntity2Id;
-    protected static int m_childCacheableFalseEntityId;
-    protected static int m_cacheableProtectedEntityId;
-    protected static int m_forcedProtectedEntityCompositId;    
-    protected static int m_cacheableRelationshipsEntityId;
+    private static int m_cacheableTrueEntity1Id;
+    private static int m_cacheableForceProtectedEntity1Id;
+    private static int m_cacheableTrueEntity2Id;
+    private static int m_childCacheableFalseEntityId;
+    private static int m_cacheableProtectedEntityId;
+    private static int m_forcedProtectedEntityCompositId;
     
+	private static int m_cacheableRelationshipsEntityId;
     public CacheableModelJunitTest() {
         super();
     }
@@ -196,6 +196,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     public void setUp() {
+        super.setUp();
         clearDSCache();
     }
     
@@ -291,10 +292,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         em1.persist(entityToDelete);
         int entityToDeleteId = entityToDelete.getId();
         commitTransaction(em1);
-                
-        beginTransaction(em1);
+        
         // No need to clear the EM, just set the new property to BYPASS.
         em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
+        
+        beginTransaction(em1);
         CacheableTrueEntity entity = findCacheableTrueEntity(em1, m_cacheableTrueEntity1Id);
         String updatedName = "testEMPropertiesOnCommit1";
         entity.setName(updatedName);
@@ -302,7 +304,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         CacheableTrueEntity deletedEntity1 = findCacheableTrueEntity(em1, entityToDeleteId);
         em1.remove(deletedEntity1);
         commitTransaction(em1);
-        closeEM(em1);
         
         EntityManager em2 = createDSEntityManager();
         CacheableTrueEntity entity2 = findCacheableTrueEntity_USE_BYPASS(em2, m_cacheableTrueEntity1Id);
@@ -320,6 +321,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         deletedEntity2 = em2.find(CacheableTrueEntity.class, entityToDeleteId);
         assertTrue("The deleted entity was removed from the database", deletedEntity2 == null);
         
+        closeEM(em1);
         closeEM(em2);
     }
     
@@ -334,11 +336,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         CacheableTrueEntity cachedEntity2 = findCacheableTrueEntity(em1, m_cacheableTrueEntity2Id);
         String staleName = cachedEntity2.getName();
         
+        // No need to clear the EM, just set the new property to BYPASS.
+        em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         String updatedName = "testEMPropertiesOnCommit2";
         
         beginTransaction(em1);
-        // No need to clear the EM, just set the new property to BYPASS.
-        em1.setProperty(QueryHints.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
         // Update entity1 through a query that uses cache store mode USE.
         Query query = em1.createQuery("UPDATE JPA_CACHEABLE_TRUE e SET e.name = :name " + "WHERE e.id = :id ").setParameter("name", updatedName).setParameter("id", m_cacheableTrueEntity1Id);
         query.setHint(QueryHints.CACHE_STORE_MODE, CacheStoreMode.USE);
@@ -1228,9 +1230,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             for (CacheableProtectedEntity cpe1 : ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableProtecteds()){
                 assertNotNull("An protected relationship in OneToMany was not found in the shared cache", cpe1);
             }
-            assertNotNull("An protected relationship in ManyToOne was found in the shared cache", ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableFPE());
+            assertNotNull("An protected relationship in ManyToOne was not found in the shared cache", ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableFPE());
             for (ProtectedEmbeddable cpe2 : ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getProtectedEmbeddables()){
-                assertNull("An protected relationship in ElementCollection was found in the shared cache", cpe2);
+                assertNotNull("An protected relationship in ElementCollection was not found in the shared cache", cpe2);
             }
         }finally{
         rollbackTransaction(em);
@@ -1259,7 +1261,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             ProtectedEmbeddable pe = cte.getProtectedEmbeddable();
         
             ServerSession session = em.unwrap(ServerSession.class);
-            commitTransaction(em);
             closeEM(em);
             ForceProtectedEntityWithComposite cachedCPE = (ForceProtectedEntityWithComposite) session.getIdentityMapAccessor().getFromIdentityMap(cte);
             CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
@@ -1345,7 +1346,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
                 assertTrue("Relationship NONCacheable metadata was not processed correctly", !mapping.isCacheable());
             }
         }
-        closeEM(em);
+        em.close();
         
     }
     
@@ -1384,14 +1385,12 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testUpdateForceProtectedOneToOne(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
-        int cfeID = 0;
         try{
             CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             CacheableFalseEntity oldcfe = cte.getCacheableFalse();
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableFalseEntity cfe = new CacheableFalseEntity();
             em.persist(cfe);
-            cfeID = cfe.getId();
             cte.setCacheableFalse(cfe);
             commitTransaction(em);
             CacheableForceProtectedEntity cachedCPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cte);
@@ -1401,7 +1400,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertEquals("FK update not cached", cfe.getId(), cacheableFalsefk);
             beginTransaction(em);
             cte.setCacheableFalse(oldcfe);
-            cfe = em.find(CacheableFalseEntity.class, cfeID);
             em.remove(cfe);
             commitTransaction(em);
         }finally{
@@ -1453,23 +1451,20 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testUpdateProtectedOneToMany(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
-        int cfeID = 0;
         try{
             CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableProtectedEntity cfe = new CacheableProtectedEntity();
             em.persist(cfe);
-            cfeID = cfe.getId();
             cfe.setForcedProtected(cte);
             cte.getCacheableProtecteds().add(cfe);
             commitTransaction(em);
 
             CacheableForceProtectedEntity cachedCPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cte);
-            assertFalse("A protected OneToMany relationship was not merged into the shared cache", cachedCPE.getCacheableProtecteds() == null || cachedCPE.getCacheableProtecteds().isEmpty());
+            assertTrue("A protected OneToMany relationship was not merged into the shared cache", cachedCPE.getCacheableProtecteds() != null && !cachedCPE.getCacheableProtecteds().isEmpty());
             beginTransaction(em);
             cte.getCacheableProtecteds().clear();
             cfe.setForcedProtected(null);
-            cfe = em.find(CacheableProtectedEntity.class, cfeID);
             em.remove(cfe);
             commitTransaction(em);
         }finally{
@@ -1483,20 +1478,17 @@ public class CacheableModelJunitTest extends JUnitTestCase {
 	public void testUpdateProtectedManyToOne(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
-        int creID = 0;
         try{
             CacheableForceProtectedEntity cfpe = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableRelationshipsEntity cre = new CacheableRelationshipsEntity();
             em.persist(cre);
-            creID = cre.getId();
             cre.setCacheableFPE(cfpe);
             commitTransaction(em);
 
             CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
-            assertFalse("A protected ManyToOne relationship was not merged into the shared cache", cachedCRE.getCacheableFPE() == null);
+            assertTrue("A protected ManyToOne relationship was not merged into the shared cache", cachedCRE.getCacheableFPE() != null);
             beginTransaction(em);
-            cre = em.find(CacheableRelationshipsEntity.class, creID);
             em.remove(cre);
             commitTransaction(em);
         }finally{
@@ -1510,7 +1502,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testUpdateProtectedManyToMany(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
-        int cfdID1 = 0, cfdID2 = 0;
         try{
             CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
             ServerSession session = em.unwrap(ServerSession.class);
@@ -1518,8 +1509,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             CacheableFalseDetail cfd2 = new CacheableFalseDetail();
             em.persist(cfd1);
             em.persist(cfd2);
-            cfdID1 = cfd1.getId();
-            cfdID2 = cfd2.getId();
             cre.addCacheableFalseDetail(cfd1);
             cre.addCacheableFalseDetail(cfd2);
             commitTransaction(em);
@@ -1528,11 +1517,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertTrue("A protected ManyToMany relationship was merged into the shared cache", cachedCRE.getCacheableFalseDetails() == null || cachedCRE.getCacheableFalseDetails().isEmpty());
             beginTransaction(em);
             cre.getCacheableFalseDetails().clear();
-            cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
-            cfd1 = em.find(CacheableFalseDetail.class, cfdID1);
-            cfd2 = em.find(CacheableFalseDetail.class, cfdID2);
-            cre.removeCacheableFalseDetail(cfd1);
-            cre.removeCacheableFalseDetail(cfd2);
             em.remove(cfd1);
             em.remove(cfd2);
             commitTransaction(em);
@@ -1572,13 +1556,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     public void testIsolationBeforeEarlyTxBegin(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
-        int cfeID = 0;
         try{
             CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableProtectedEntity cfe = new CacheableProtectedEntity();
             em.persist(cfe);
-            cfeID = cfe.getId();
             cfe.setForcedProtected(cte);
             cte.getCacheableProtecteds().add(cfe);
             em.flush();
@@ -1591,7 +1573,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             beginTransaction(em);
             cte.getCacheableProtecteds().clear();
             cfe.setForcedProtected(null);
-            cfe = em.find(CacheableProtectedEntity.class, cfeID);
             em.remove(cfe);
             commitTransaction(em);
         }finally{
@@ -1669,7 +1650,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             details.add(detail);
             entity.setDetailsBackPointer(details);
             detail.setDescription("test");
-            beginTransaction(em);
+            em.getTransaction().begin();
             detail = em.merge(detail);
             commitTransaction(em);
             
@@ -1679,7 +1660,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertTrue("detail's entity does not have the backpointer.", detail.getEntity().getDetailsBackPointer().size() == 1);
         } finally {
             beginTransaction(em);
-            detail = em.merge(detail);
+            em.merge(detail);
             em.remove(detail.getEntity());
             em.remove(detail);
             commitTransaction(em);
@@ -1740,9 +1721,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             ctdid = em.find(CacheableTrueDerivedIDEntity.class, new CacheableTrueDerivedIDPK(ctdid.getPk().getDescription(), cf.getId()));
             assertNotNull("The protected cached relationship was not properly retrieved", ctdid.getCacheableFalse());
         } finally {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
             beginTransaction(em);
             cf = em.find(CacheableFalseEntity.class, cf.getId());
             em.remove(cf);
@@ -1755,7 +1733,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     /**
      * Convenience method.
      */
-    protected boolean usesNoCache(ClassDescriptor descriptor) {
+    private boolean usesNoCache(ClassDescriptor descriptor) {
         return descriptor.isIsolated();
     }
 }
