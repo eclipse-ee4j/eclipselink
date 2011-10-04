@@ -164,8 +164,8 @@ runAnt() {
     touch ${DATED_LOG}
 
     echo ""
-    echo "${PROC} publish starting for ${BRANCH} build:${QUALIFIER}..."
-    echo "${PROC} publish started at: '`date`' for ${BRANCH} build:${QUALIFIER}" >> ${DATED_LOG}
+    echo "${PROC} publish starting for ${BRANCH} build:${QUALIFIER} from '`pwd`'..."
+    echo "${PROC} publish started at: '`date`' for ${BRANCH} build:${QUALIFIER} from '`pwd`'..." >> ${DATED_LOG}
     echo "   ant ${ANT_BASEARG} publish-${PROC}"
     echo "ant ${ANT_BASEARG} publish-${PROC}" >> ${DATED_LOG}
     ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
