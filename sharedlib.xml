@@ -38,7 +38,7 @@
   that the this file resides at the same location as the primary buildfile for 
   EclipseLink - not necessary, but assumed). 
 #******************************************************************************/-->
-<project name="wls-shared-lib" default="package-wls-shared-lib" basedir=".">
+<project name="wls-shared-lib" default="create-shared-lib-install" basedir=".">
     <scriptdef name="genImpVersion" language="javascript" manager="javax">
         <attribute name="input"/>
         <attribute name="property"/>
@@ -151,44 +151,87 @@
         <echo message="EarV: '${earname.version}'"/>
     </target>
         
+    <target name="package-wls-shared-lib" depends="prepare-wls-metadata">
+        <!-- generate Ear file -->
+        <!-- if eclipselink.jar exists, generate ear with "o.e.p:spec version:imp version" -->
+        <jar destfile="${shared-lib.dir}/${wls-shared-lib.name}.ear">
+            <metainf dir="${metadata.dir}" includes="*.xml"/>
+            <manifest>
+                <attribute name="Extension-Name"         value="${wls-shared-lib.base.name}"/>
+                <attribute name="Specification-Version"  value="${specification.version}"/>
+                <attribute name="Implementation-Version" value="${implimentation.version}"/>
+            </manifest>
+            <zipfileset dir="." includes="${eclipselink.jar}" prefix="lib"/>
+        </jar>
+    </target>
+    
+    <target name="create-shared-lib-install" depends="package-wls-shared-lib">
+        <delete file="eclipselink${earname.version}-shared-lib.zip"/>
+        <!-- generate Ear file -->
+        <!-- if eclipselink.jar exists, generate ear with "o.e.p:spec version:imp version" -->
+        <zip destfile="eclipselink${earname.version}-shared-lib.zip">
+            <zipfileset dir="${shared-lib.dir}" includes="${wls-shared-lib.name}.ear" prefix="shared-lib"/>
+            <zipfileset dir="${shared-lib.dir}" includes="weblogic-application.xml"   prefix="application"/>
+            <zipfileset dir="${shared-lib.dir}" includes="README"/>
+        </zip>
+    </target>
+
+<!-- ======================================================================================================================================= -->
+<!-- METADATA GENERATION -->
+<!-- Ugly so moved to bottom of file -->
+
     <target name="prepare-wls-metadata" depends="identify-eclipselink">
         <!-- artifact definitions -->
         <property name="wls-shared-lib.base.name" value="org.eclipse.persistence"/>
 	    <property name="wls-shared-lib.name"      value="${wls-shared-lib.base.name}${earname.version}-shared-lib"/>
 	    
         <!-- location to generate metadata artifacts -->
-        <property name="metadata.dir"             value="build/shared-lib/etc"/>
+        <property name="shared-lib.dir"           value="build/shared-lib"/>
+        <property name="metadata.dir"             value="${shared-lib.dir}/etc"/>
+        <delete dir="${shared-lib.dir}"/>
         <mkdir dir="${metadata.dir}"/> 
         
-        <!-- Create Metadata -->
-        <echo message="&lt;weblogic-application&gt;"                                           file="${metadata.dir}/weblogic-application.xml" append="false"/>
-        <echo message="  &lt;prefer-application-packages&gt;"                                  file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="    &lt;package-name&gt;org.eclipse.persistence.*&lt;/package-name&gt;" file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="    &lt;package-name&gt;commonj.sdo.*&lt;/package-name&gt;"             file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="  &lt;/prefer-application-packages&gt;"                                 file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="&lt;/weblogic-application&gt;"                                          file="${metadata.dir}/weblogic-application.xml" append="true"/>
+        <!-- Create Library Metadata -->
+        <echo file="${metadata.dir}/weblogic-application.xml" append="false">&lt;weblogic-application&gt;
+    &lt;prefer-application-packages&gt;
+        &lt;package-name&gt;org.eclipse.persistence.*&lt;/package-name&gt;
+        &lt;package-name&gt;commonj.sdo.*&lt;/package-name&gt;
+    &lt;/prefer-application-packages&gt;
+&lt;/weblogic-application&gt;
+</echo>
             
-        <echo message="&lt;application&gt;"                                                    file="${metadata.dir}/application.xml" append="false"/>
-        <echo message="  &lt;display-name&gt;${wls-shared-lib.name}&lt;/display-name&gt;"      file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="  &lt;module&gt;"                                                       file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="        &lt;java&gt;&lt;/java&gt;"                                      file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="  &lt;/module&gt;"                                                      file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="&lt;/application&gt;"                                                   file="${metadata.dir}/application.xml" append="true"/>
-    </target>   
+        <echo file="${metadata.dir}/application.xml" append="false">&lt;application&gt;
+    &lt;display-name&gt;${wls-shared-lib.name}&lt;/display-name&gt;
+    &lt;module&gt;
+        &lt;java&gt;&lt;/java&gt;
+    &lt;/module&gt;
+&lt;/application&gt;
+</echo>
+
+        <!-- Create "Application" Metadata -->
+        <echo file="${shared-lib.dir}/weblogic-application.xml" append="false">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;wls:weblogic-application xmlns:wls=&quot;http://xmlns.oracle.com/weblogic/weblogic-application&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd http://xmlns.oracle.com/weblogic/weblogic-application http://xmlns.oracle.com/weblogic/weblogic-application/1.2/weblogic-application.xsd&quot;&gt;
+    &lt;wls:application-param&gt;
+        &lt;wls:param-name&gt;webapp.encoding.default&lt;/wls:param-name&gt;
+        &lt;wls:param-value&gt;UTF-8&lt;/wls:param-value&gt;
+    &lt;/wls:application-param&gt;
+    &lt;wls:library-ref&gt;
+        &lt;wls:library-name&gt;${wls-shared-lib.base.name}&lt;/wls:library-name&gt;
+        &lt;wls:specification-version&gt;${specification.version}&lt;/wls:specification-version&gt;
+        &lt;wls:implementation-version&gt;${implimentation.version}&lt;/wls:implementation-version&gt;
+        &lt;wls:exact-match&gt;true&lt;/wls:exact-match&gt;
+    &lt;/wls:library-ref&gt;
+&lt;/wls:weblogic-application&gt;
+</echo>
         
-    <target name="package-wls-shared-lib" depends="prepare-wls-metadata">
-        <!-- generate Ear file -->
-        <!-- if eclipselink.jar exists, generate ear with "o.e.p:spec version:imp version" -->
-        <jar destfile="${wls-shared-lib.name}.ear">
-            <metainf dir="${metadata.dir}" includes="*.xml"/>
-            <manifest>
-                <attribute name="Extension-Name"         value="${wls-shared-lib.base.name}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-            </manifest>
-            <zipfileset dir="." includes="${eclipselink.jar}" prefix="lib"/>
-        </jar>
-        <delete dir="${metadata.dir}"/> 
-    </target>
+        <!-- Create Sharedlib "Install" readme -->
+        <echo file="${shared-lib.dir}/README" append="false">
+How to use a different version of EclipseLink than ships with Weblogic in your application
+------------------------------------------------------------------------------------------
+
+Put the shared library (the ear in the 'shared-lib' dir) in the ...
+Package the 'weblogoc-application.xml found in the 'app' dir with your application, and...
+        </echo>
+    </target>   
 
 </project>

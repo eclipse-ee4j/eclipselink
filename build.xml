@@ -551,7 +551,7 @@
     </target>
 
     <target name="gen-wls-shared-lib" description="call out to build a shared lib for WLS using the current build">
-        <ant antfile="sharedlib.xml"    dir="."   target="package-wls-shared-lib"/>
+        <ant antfile="sharedlib.xml"    dir="."   target="create-shared-lib-install"/>
     </target>
 
     <!-- Packages the eclipselink source jar. -->
