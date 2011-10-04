@@ -193,7 +193,7 @@ public class SessionLogEntry implements Serializable {
      * @return if the log entry has a message
      */
     public boolean hasMessage() {
-        return getMessage() != null && !getMessage().isEmpty();
+        return getMessage() != null && !(getMessage().length() == 0);
     }
 
     /**
