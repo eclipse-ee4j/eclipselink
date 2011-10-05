@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.jaxb.schemagen.inheritance.InherianceWith
 import org.eclipse.persistence.testing.jaxb.schemagen.inheritance.SchemaGenInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.scope.SchemaGenScopeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.typearray.TypeArraySchemaGenTestCases;
+import org.eclipse.persistence.testing.jaxb.schemagen.xmlpath.SchemaGenXmlPathTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype.AnonymousTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.classarray.ClassArraySchemaGenTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmltype.SchemaGenXMLTypeTestCases;

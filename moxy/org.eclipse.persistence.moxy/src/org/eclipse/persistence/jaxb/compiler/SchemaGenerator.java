@@ -220,6 +220,7 @@ public class SchemaGenerator {
         		hasMappedAttributes = true;
         	}
         }
+        hasMappedAttributes = hasMappedAttributes || info.hasPredicateProperties();
         
         if (info.isEnumerationType() || (xmlValueProperty != null && !hasMappedAttributes)) {
        
@@ -447,12 +448,14 @@ public class SchemaGenerator {
                     // create schema components based on the XmlPath
                     AddToSchemaResult xpr = addXPathToSchema(next, parentCompositor, currentSchema, isChoice, type);
                     // if the returned object or schema component is null there is nothing to do
-                    if (xpr == null || (parentCompositor = xpr.particle) == null) {
-                        continue;
+                    if (xpr == null || ((parentCompositor = xpr.particle) == null && xpr.simpleContentType == null)) {
+                        continue; 
                     }
                     // now process the property as per usual, adding to the created schema component
                     currentSchema = xpr.schema;
-                    if (parentCompositor.getOwner() instanceof ComplexType) {
+                    if(parentCompositor == null) {
+                        parentType = xpr.simpleContentType;
+                    } else if (parentCompositor.getOwner() instanceof ComplexType) {
                         parentType = ((ComplexType)parentCompositor.getOwner());
                     }
                 // deal with the XmlElementWrapper case
@@ -555,6 +558,9 @@ public class SchemaGenerator {
                         }
                     }
                     addToSchemaType(info, props, info.getCompositor(), info.getComplexType(), info.getSchema());
+                    if(info.hasPredicateProperties()) {
+                        addToSchemaType(info, info.getPredicateProperties(), info.getCompositor(), info.getComplexType(), info.getSchema());
+                    }
                 }
             }
         }
@@ -1022,7 +1028,10 @@ public class SchemaGenerator {
         Schema workingSchema = xpr.schema;
         
         // each nested choice on a collection will be unbounded
-        boolean isUnbounded = (currentParticle.getMaxOccurs() != null && currentParticle.getMaxOccurs()==Occurs.UNBOUNDED);
+        boolean isUnbounded = false;
+        if(currentParticle != null) {
+            isUnbounded = (currentParticle.getMaxOccurs() != null && currentParticle.getMaxOccurs()==Occurs.UNBOUNDED);
+        }
         
         // don't process the last frag; that will be handled by the calling method if necessary
         // note that we may need to process the last frag if it has a namespace or is an 'any'
@@ -1033,6 +1042,7 @@ public class SchemaGenerator {
             xpr.particle = null;
             return xpr;
         }
+
         
         // if the current element exists, use it; otherwise create a new one
         Element currentElement = elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle);
@@ -1138,7 +1148,43 @@ public class SchemaGenerator {
                 currentParticle.addElement(currentElement);
             }
             // set the correct particle to use/return
-            xpr.particle = currentElement.getComplexType().getTypeDefParticle();
+            if(currentElement.getComplexType() != null) {
+                if(currentElement.getComplexType().getTypeDefParticle() == null) {
+                    //complexType with simple-content
+                    xpr.simpleContentType = currentElement.getComplexType();
+                    xpr.particle = null;
+                } else {
+                    xpr.particle = currentElement.getComplexType().getTypeDefParticle();
+                }
+            } else {
+                //If there's no complex type, we're building the path through an element with
+                //a simple type. In order to build the path through this
+                //element, switch to a complex type with simple content.
+                SimpleType type = currentElement.getSimpleType();
+                if(type != null) {
+                    ComplexType cType = new ComplexType();
+                    cType.setSimpleContent(new SimpleContent());
+                    Extension extension = new Extension();
+                    extension.setBaseType(type.getRestriction().getBaseType());
+                    cType.getSimpleContent().setExtension(extension);
+                    currentElement.setSimpleType(null);
+                    currentElement.setComplexType(cType);
+                    xpr.particle = null;
+                    xpr.simpleContentType = cType;
+                } else {
+                    String eType = currentElement.getType();
+                    ComplexType cType = new ComplexType();
+                    SimpleContent sContent = new SimpleContent();
+                    Extension extension = new Extension();
+                    extension.setBaseType(eType);
+                    sContent.setExtension(extension);
+                    cType.setSimpleContent(sContent);
+                    currentElement.setType(null);
+                    currentElement.setComplexType(cType);
+                    xpr.particle = null;
+                    xpr.simpleContentType = cType;
+                }
+            }
         }
         // if we're on the last fragment, we're done
         if (lastFrag) {
@@ -1162,7 +1208,7 @@ public class SchemaGenerator {
      * @return
      */
     protected Element elementExistsInParticle(String elementName, String refString, TypeDefParticle particle) {
-        if (particle.getElements() == null || particle.getElements().size() == 0) { 
+        if (particle == null || particle.getElements() == null || particle.getElements().size() == 0) { 
             return null;
         }
         java.util.List existingElements = particle.getElements();
@@ -1309,6 +1355,7 @@ public class SchemaGenerator {
         ComplexType type;
         TypeDefParticle particle;
         Schema schema;
+        ComplexType simpleContentType;
 
         AddToSchemaResult(TypeDefParticle particle, Schema schema) {
             this.particle = particle;
@@ -1412,6 +1459,11 @@ public class SchemaGenerator {
         XMLField xfld = new XMLField(property.getXmlPath());
         xfld.setNamespaceResolver(schema.getNamespaceResolver());
         xfld.initialize();
+        AddToSchemaResult result = new AddToSchemaResult(compositor, schema);
+        if(compositor == null) {
+            //complex type with simple content
+            result.simpleContentType = type;
+        }
         // build the schema components for the xml-path
         return buildSchemaComponentsForXPath(xfld.getXPathFragment(), new AddToSchemaResult(compositor, schema), isChoice, property);
     }

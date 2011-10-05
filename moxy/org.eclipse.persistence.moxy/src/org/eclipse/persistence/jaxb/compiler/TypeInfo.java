@@ -85,6 +85,7 @@ public class TypeInfo {
     private String classExtractorName;
     private Map<Object, Object> userProperties;
     private List<Property> xmlKeyProperties;
+    private List<Property> predicateProperties;
 
     private boolean isMixed;
     private boolean isTransient;
@@ -1073,5 +1074,41 @@ public class TypeInfo {
             getXmlType().setName(newName);
         }
     }
-	
+
+    
+    /**
+     * INTERNAL:
+     * Return the list of predicate properties. Lazy initializes the list.
+     * @return
+     */
+    public List<Property> getPredicateProperties() {
+        if(predicateProperties == null) {
+            predicateProperties = new ArrayList<Property>();
+        }
+        return predicateProperties;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if the property handed in is a duplicate of any existing predicate property.
+     */
+    public boolean hasPredicateProperty(Property property) {
+        if(this.predicateProperties != null) {
+            for(Property next:this.predicateProperties) {
+                if(next.getXmlPath().equals(property.getXmlPath())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the list of predicate properties hasn't been initialized.
+     * @return
+     */
+    public boolean hasPredicateProperties() {
+        return this.predicateProperties != null && this.predicateProperties.size() > 0;
+    }
 }
