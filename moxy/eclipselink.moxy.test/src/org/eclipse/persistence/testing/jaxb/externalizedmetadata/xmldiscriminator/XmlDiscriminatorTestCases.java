@@ -25,17 +25,17 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests inheritance configuration via XmlDiscriminatorNode & XmlDiscriminatorValue. 
  *
  */
-public class XmlDiscriminatorTestCases extends JAXBTestCases {
+public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle.xml";
-
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-write.xml";
-
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle.json";
+    private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-write.json";
     /**
      * This is the preferred (and only) constructor.
      * 
@@ -45,6 +45,8 @@ public class XmlDiscriminatorTestCases extends JAXBTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
         setClasses(new Class[] { Car.class, Vehicle.class });
     }
    

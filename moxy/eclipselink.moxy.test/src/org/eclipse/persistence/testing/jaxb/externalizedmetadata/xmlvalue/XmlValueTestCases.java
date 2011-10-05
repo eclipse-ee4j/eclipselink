@@ -21,7 +21,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter.MyValueClass;
 
@@ -29,12 +29,13 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapte
  * Tests XmlValue via eclipselink-oxm.xml
  *
  */
-public class XmlValueTestCases extends JAXBTestCases {
+public class XmlValueTestCases extends JAXBWithJSONTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/";
     private static final String ADAPTER_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/adapter/";
     private static final String ADAPTER_OXM_DOC = ADAPTER_PATH + "oxm.xml";
     private static final String XML_RESOURCE = ADAPTER_PATH + "boolean.xml";
+    private static final String JSON_RESOURCE = ADAPTER_PATH + "boolean.json";
     
     /**
      * This is the preferred (and only) constructor.
@@ -44,6 +45,7 @@ public class XmlValueTestCases extends JAXBTestCases {
     public XmlValueTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { MyValueClass.class });
     }
 

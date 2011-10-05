@@ -14,19 +14,19 @@ package org.eclipse.persistence.testing.jaxb.xmlvalue;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlValueListTestCases extends JAXBTestCases {
+public class XmlValueListTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvalue/phone_number_list.xml";
-    private final static String CONTROL_NUMBER = "123-4567";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvalue/phone_number_list.json";
 
     public XmlValueListTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);      
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = PhoneNumberList.class;
         setClasses(classes);

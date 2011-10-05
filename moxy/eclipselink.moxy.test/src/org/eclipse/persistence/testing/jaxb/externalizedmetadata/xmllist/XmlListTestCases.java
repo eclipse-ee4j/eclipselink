@@ -23,15 +23,16 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlList via eclipselink-oxm.xml
  *
  */
-public class XmlListTestCases extends JAXBTestCases {
+public class XmlListTestCases extends JAXBWithJSONTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist";
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmllist/employee.json";
     
     /**
      * This is the preferred (and only) constructor.
@@ -41,6 +42,7 @@ public class XmlListTestCases extends JAXBTestCases {
     public XmlListTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setContextPath(CONTEXT_PATH);
     }
     

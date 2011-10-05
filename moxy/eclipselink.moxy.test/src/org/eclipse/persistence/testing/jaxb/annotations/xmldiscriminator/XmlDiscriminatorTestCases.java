@@ -12,23 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmldiscriminator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlDiscriminatorTestCases extends JAXBTestCases {
+public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/vehicle.xml";
     private static final String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/vehicle-write.xml";
-
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/vehicle.json";
+    private static final String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/vehicle-write.json";
     public XmlDiscriminatorTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{ Car.class, Vehicle.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_RESOURCE_WRITE);
     }
     
     public Object getControlObject() {

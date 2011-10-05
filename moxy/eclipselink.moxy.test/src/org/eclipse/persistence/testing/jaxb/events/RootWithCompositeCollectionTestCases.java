@@ -26,7 +26,7 @@ import org.xml.sax.InputSource;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
     
-public class RootWithCompositeCollectionTestCases extends JAXBTestCases {
+public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases {
     public JAXBMarshalListenerImpl listener;
     public JAXBUnmarshalListenerImpl unmarshalListener;
     public ArrayList expectedMarshalEvents;
@@ -41,7 +41,8 @@ public class RootWithCompositeCollectionTestCases extends JAXBTestCases {
         super(name);
         setClasses(new Class[] {Employee.class, Address.class, PhoneNumber.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/events/composite_collection.xml");
-
+        setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_collection.json");
+        
         expectedMarshalEvents = new ArrayList();
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.EMPLOYEE_BEFORE_MARSHAL);
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.PHONE_BEFORE_MARSHAL);

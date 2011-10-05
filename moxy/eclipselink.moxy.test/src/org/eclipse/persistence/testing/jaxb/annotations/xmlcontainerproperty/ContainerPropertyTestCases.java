@@ -16,14 +16,16 @@ import java.util.Vector;
 
 import org.eclipse.persistence.testing.jaxb.*;
 
-public class ContainerPropertyTestCases extends JAXBTestCases {
+public class ContainerPropertyTestCases extends JAXBWithJSONTestCases {
 
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlcontainerproperty/containeraccessor.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlcontainerproperty/containeraccessor.json";
 	
 	public ContainerPropertyTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[] {Employee.class, Address.class, PhoneNumber.class});
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 	}
 	
 	public Employee getControlObject() {

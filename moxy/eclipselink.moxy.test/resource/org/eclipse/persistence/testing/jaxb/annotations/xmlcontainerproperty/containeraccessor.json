@@ -1,0 +1,12 @@
+{"employee": {
+   "id":10,
+   "first-name":"Jane",
+   "last-name":"Doe",
+   "address":{
+      "street":"123 Fake Street",
+     "city":"Ottawa"
+   },
+   "phone-numbers":{
+       "number":["123-4567","234-5678"]
+   }
+}}  

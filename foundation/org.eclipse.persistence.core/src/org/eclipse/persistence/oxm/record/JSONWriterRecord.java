@@ -72,6 +72,10 @@ public class JSONWriterRecord extends MarshalRecord {
     	namespaceSeparator = XMLConstants.DOT;
     }
     
+    public boolean supportsSingleNode(){
+    	return false;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -102,7 +106,7 @@ public class JSONWriterRecord extends MarshalRecord {
     public void startDocument(String encoding, String version) {
         try {
              if(levels.isEmpty()) {            	
-                 levels.push(new Level(true));                
+                 levels.push(new Level(true, false));                
              } 
             writer.write('{');
         } catch (IOException e) {
@@ -137,10 +141,10 @@ public class JSONWriterRecord extends MarshalRecord {
         try {
             Level position = null;
             if(levels.isEmpty()) {
-                levels.push(new Level(true));
+                levels.push(new Level(true, true));
             } else {
                 position = levels.peek();
-                levels.push(new Level(true));
+                levels.push(new Level(true, true));
                 if(position.isFirst()) {
                     position.setFirst(false);
                 } else {
@@ -148,9 +152,24 @@ public class JSONWriterRecord extends MarshalRecord {
                     writer.write(' ');
                 }
             }
+         
+            if(xPathFragment.nameIsText()){
+                if(position != null && position.isCollection() && position.isEmptyCollection()) {
+                    writer.write('[');
+                   	position.setEmptyCollection(false);
+                   	position.setNeedToOpenComplex(false);
+                   	return;
+                }                      
+            }
+             
             if(position == null || !position.isCollection() || position.isEmptyCollection()){
-
-               super.openStartElement(xPathFragment, namespaceResolver);
+            	if(position.needToOpenComplex){
+            		writer.write('{');
+            		position.needToOpenComplex = false;
+            		position.needToCloseComplex = true;
+            	}
+            	            	
+                super.openStartElement(xPathFragment, namespaceResolver);         
                 isStartElementOpen = true;
                 writer.write('"');   
                 if(xPathFragment.isAttribute() && attributePrefix != null){
@@ -181,15 +200,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 if(position !=null && position.isEmptyCollection()){
                 	position.setEmptyCollection(false);
                 }
-            }
-           
-           if(addOpenBrace){
-        	  XPathFragment next = xPathFragment.getNextFragment();
-        	  if(!(xPathFragment.isAttribute() || xPathFragment.nameIsText() || (next != null && next.nameIsText()))){              
-            	    writer.write('{');
-              }
-           }
-
+             }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -269,9 +280,9 @@ public class JSONWriterRecord extends MarshalRecord {
             }
 
             if(wrapInQuotes){
-                writeStringValueCharacters(value);
+            	characters(value);
             }else{
-                characters(value);		    	
+            	nonStringCharacters(value);
             }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
@@ -294,20 +305,18 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     private void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean addCloseBrace) {
-        if(!levels.isEmpty()) {
-            levels.pop();
-        }
-        try {
-             if(addCloseBrace){
-                //if(!(xPathFragment.getHasText() || xPathFragment.isAttribute())) {
-            	  XPathFragment next = xPathFragment.getNextFragment();
-            	  if(!(xPathFragment.isAttribute() || xPathFragment.nameIsText() || (next != null && next.nameIsText()))){
-                
+        try{
+            if(!levels.isEmpty()) {
+            	Level position = levels.pop();            	
+            	if(position.needToOpenComplex){
+                    writer.write('{');
                     writer.write('}');
-                }             
+            	} else if(position.needToCloseComplex){
+                    writer.write('}');                
+            	}     
             }
         } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
+             throw XMLMarshalException.marshalException(e);
         }
     }
 
@@ -333,7 +342,15 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
      public void characters(String value) {
-           writeValue(value);
+    	   Level position = levels.peek();
+    	   position.setNeedToOpenComplex(false);
+    	   try {   
+               writer.write('"');
+               writeValue(value);
+               writer.write('"');
+           } catch (IOException e) {
+               throw XMLMarshalException.marshalException(e);
+           }
      }
 
      public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
@@ -351,35 +368,38 @@ public class JSONWriterRecord extends MarshalRecord {
      
      
      public void characters(QName schemaType, Object value, boolean isCDATA){      
-    	 
+    	 Level position = levels.peek();
+         position.setNeedToOpenComplex(false);
          if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);
-             writeStringValueCharacters((String)value);
+             characters((String)value);
          } else if(value.getClass() == String.class){
              //if schemaType is set and it's a numeric or boolean type don't treat as a string
              if(schemaType != null && isNumericOrBooleanType(schemaType)){
                  String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
-                 characters(convertedValue);
+                 nonStringCharacters(convertedValue);
              }else if(isCDATA){
                  cdata((String)value);        	    
              }else{
- 	             writeStringValueCharacters((String)value);
+                 characters((String)value);
+
  	         }
         }else{
             String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
             if(schemaType == null){
             	if(value.getClass() == ClassConstants.BOOLEAN || ClassConstants.NUMBER.isAssignableFrom(value.getClass())){
-            		characters(convertedValue);
+                    nonStringCharacters(convertedValue);
             	}else{
-            		writeStringValueCharacters(convertedValue);
+                    characters(convertedValue);
+
             	}
             }else if(schemaType != null && !isNumericOrBooleanType(schemaType)){
             	//if schemaType exists and is not boolean or number do write quotes
-                writeStringValueCharacters(convertedValue);
+            	characters(convertedValue);
             } else if(isCDATA){
                 cdata(convertedValue);        	    
             }else{
-                characters(convertedValue);
+            	nonStringCharacters(convertedValue);
             }
         }   
      }     
@@ -413,7 +433,7 @@ public class JSONWriterRecord extends MarshalRecord {
     	 XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
     	 closeStartGroupingElements(groupingFragment);
     	 openStartElement(xPathFragment, namespaceResolver, false);
-    	 characters(NULL);
+    	 nonStringCharacters(NULL);
     	 endElement(xPathFragment, namespaceResolver, false);
      }
 
@@ -422,7 +442,7 @@ public class JSONWriterRecord extends MarshalRecord {
      */
      public void nilSimple(NamespaceResolver namespaceResolver){
     	 XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
-    	 characters(NULL);
+    	 nonStringCharacters(NULL);
     	 closeStartGroupingElements(groupingFragment);
      }
      
@@ -444,24 +464,22 @@ public class JSONWriterRecord extends MarshalRecord {
     	 openStartElement(xPathFragment, namespaceResolver);
     	 endElement(xPathFragment, namespaceResolver);
      }
-     /**
-      * INTERNAL:
-      */
-     protected void writeStringValueCharacters(String value){
+     
+     protected void nonStringCharacters(String value){
+        Level position = levels.peek();
+   	    position.setNeedToOpenComplex(false);
         try {   
-            writer.write('"');
-            characters(value);
-            writer.write('"');
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
-     }
+            writer.write(value);     
+         } catch (IOException e) {
+             throw XMLMarshalException.marshalException(e);
+         }
+      }
    
     /**
      * INTERNAL:
      */
     public void cdata(String value) {
-    	writeStringValueCharacters(value);    	
+    	characters(value);
     }
 
     /**
@@ -514,7 +532,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
-            characters(node.getNodeValue());
+        	nonStringCharacters(node.getNodeValue());
         } else {
             try {
                 WriterRecordContentHandler wrcHandler = new WriterRecordContentHandler();
@@ -718,18 +736,37 @@ public class JSONWriterRecord extends MarshalRecord {
         private boolean first;
         private boolean collection;
         private boolean emptyCollection;
-      
-		public boolean isEmptyCollection() {
-			return emptyCollection;
-		}
-
-		public void setEmptyCollection(boolean emptyCollection) {
-			this.emptyCollection = emptyCollection;
-		}
-
-		public Level(boolean value) {
+        private boolean needToOpenComplex;
+        private boolean needToCloseComplex;
+        
+        public Level(boolean value, boolean needToOpen) {
             this.first = value;
+            needToOpenComplex = needToOpen;
         }
+     
+        public boolean isNeedToOpenComplex() {
+            return needToOpenComplex;
+        }
+
+        public void setNeedToOpenComplex(boolean needToOpenComplex) {
+            this.needToOpenComplex = needToOpenComplex;
+        }
+
+        public boolean isNeedToCloseComplex() {
+	        return needToCloseComplex;
+	    }
+
+        public void setNeedToCloseComplex(boolean needToCloseComplex) {
+	        this.needToCloseComplex = needToCloseComplex;
+        }
+		
+        public boolean isEmptyCollection() {
+            return emptyCollection;
+        }
+
+        public void setEmptyCollection(boolean emptyCollection) {
+            this.emptyCollection = emptyCollection;
+	    }
 
         public boolean isFirst() {
             return first;

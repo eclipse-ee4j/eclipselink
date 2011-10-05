@@ -70,7 +70,16 @@ public abstract class XMLRecord extends AbstractRecord {
         namespaceAware = true;
         // Required for subclasses.
     }
-
+    
+    /**
+     * Return true is this record can support the usesSingleNode option on 
+     * XMLCompositeDirectCollectionMapping
+     * @ since 2.4
+     */
+    public boolean supportsSingleNode(){
+    	return true;
+    }
+    
     /**
      * PUBLIC:
      * Get the local name of the context root element.
@@ -171,7 +180,7 @@ public abstract class XMLRecord extends AbstractRecord {
         this.marshaller = marshaller;
         if(marshaller != null){
             MediaType mediaType = marshaller.getMediaType();
-           if(marshaller.getNamespaceResolver() != null){
+            if(marshaller.getNamespaceResolver() != null){
                namespaceResolver = marshaller.getNamespaceResolver();
             }
             namespaceAware = (mediaType == MediaType.APPLICATION_XML || namespaceResolver.getPrefixesToNamespaces().size() > 0);

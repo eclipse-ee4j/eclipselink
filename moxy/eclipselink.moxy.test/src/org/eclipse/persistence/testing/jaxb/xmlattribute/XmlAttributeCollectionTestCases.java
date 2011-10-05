@@ -13,15 +13,12 @@
 package org.eclipse.persistence.testing.jaxb.xmlattribute;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAttributeCollectionTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/employee_collection.xml";
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/employee_collection.json";
-	private final static int CONTROL_ID = 10;
 
     public XmlAttributeCollectionTestCases(String name) throws Exception {
         super(name);
