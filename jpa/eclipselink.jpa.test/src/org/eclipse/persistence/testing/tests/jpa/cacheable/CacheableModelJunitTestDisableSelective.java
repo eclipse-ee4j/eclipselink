@@ -952,7 +952,7 @@ public class CacheableModelJunitTestDisableSelective extends JUnitTestCase {
             cre.setCacheableFPE(cfpe);
             commitTransaction(em);
             CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
-            assertTrue("A protected ManyToOne relationship was merged into the shared cache", cachedCRE.getCacheableFPE() == null);
+            assertTrue("A protected ManyToOne relationship was not merged into the shared cache", cachedCRE.getCacheableFPE() != null);
             beginTransaction(em);
             cre = em.find(CacheableRelationshipsEntity.class, creID);
             em.remove(cre);
@@ -1119,11 +1119,11 @@ public class CacheableModelJunitTestDisableSelective extends JUnitTestCase {
             assertNull("An protected relationshipwas found in the shared cache", ((CacheableForceProtectedEntity)session.getIdentityMapAccessor().getFromIdentityMap(cte)).getCacheableFalse());
             CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
             for (CacheableProtectedEntity cpe1 : ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableProtecteds()){
-                assertNull("An protected relationship in OneToMany was found in the shared cache", cpe1);
+                assertNotNull("An protected relationship in OneToMany was not found in the shared cache", cpe1);
             }
-            assertNull("An protected relationship in ManyToOne was found in the shared cache", ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableFPE());
+            assertNotNull("An protected relationship in ManyToOne was not found in the shared cache", ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getCacheableFPE());
             for (ProtectedEmbeddable cpe2 : ((CacheableRelationshipsEntity)session.getIdentityMapAccessor().getFromIdentityMap(cre)).getProtectedEmbeddables()){
-                assertNull("An protected relationship in ElementCollection was found in the shared cache", cpe2);
+                assertNotNull("An protected relationship in ElementCollection was not found in the shared cache", cpe2);
             }
         }finally{
         rollbackTransaction(em);
@@ -1285,7 +1285,7 @@ public class CacheableModelJunitTestDisableSelective extends JUnitTestCase {
             commitTransaction(em);
 
             CacheableForceProtectedEntity cachedCPE = (CacheableForceProtectedEntity) session.getIdentityMapAccessor().getFromIdentityMap(cte);
-            assertTrue("A protected OneToMany relationship was merged into the shared cache", cachedCPE.getCacheableProtecteds() == null || cachedCPE.getCacheableProtecteds().isEmpty());
+            assertTrue("A protected OneToMany relationship was not merged into the shared cache", cachedCPE.getCacheableProtecteds() != null && !cachedCPE.getCacheableProtecteds().isEmpty());
             beginTransaction(em);
             cte.getCacheableProtecteds().clear();
             cfe.setForcedProtected(null);
