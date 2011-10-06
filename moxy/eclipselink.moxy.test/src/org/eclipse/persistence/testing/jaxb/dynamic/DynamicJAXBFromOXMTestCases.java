@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import junit.framework.TestCase;
@@ -1291,13 +1292,16 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         Unmarshaller unmarshaller = jc.createUnmarshaller();
 
         InputStream xmlStream = classLoader.getResourceAsStream(XML_RESOURCE_BEFORE);
-        XMLStreamReader xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(xmlStream);
-
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
+        Document xsdDocument = docFactory.newDocumentBuilder().parse(xmlStream);
+        Source domSource = new DOMSource(xsdDocument);
+        
         XMLDescriptor dummy = new XMLDescriptor();
         dummy.setJavaClass(javax.swing.JLabel.class);
         jc.getXMLContext().getSession(0).addDescriptor(dummy);
 
-        Object o = unmarshaller.unmarshal(xmlStreamReader, javax.swing.JLabel.class);
+        Object o = unmarshaller.unmarshal(domSource, javax.swing.JLabel.class);
         JAXBElement jelem = (JAXBElement) o;
 
         assertEquals(javax.swing.JLabel.class, jelem.getValue().getClass());
