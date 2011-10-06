@@ -1671,9 +1671,13 @@ public class MetadataDescriptor {
 
     /**
      * INTERNAL:
+     * This method will throw a not supported exception and should not be called
+     * For Embeddable Collections, call setIsEmbeddable() instead.  The cloned descriptor
+     * will be fixed at initialize time
+     * @deprecated
      */
     public void setIsEmbeddableCollection() {
-        m_descriptor.descriptorIsAggregateCollection();
+        throw new RuntimeException("Not Supported");
     }
 
     /**

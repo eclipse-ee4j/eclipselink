@@ -1397,7 +1397,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         EmbeddableAccessor mapKeyAccessor = getProject().getEmbeddableAccessor(mapKeyClass);
         
         // Ensure the reference descriptor is marked as an embeddable collection.
-        mapKeyAccessor.getDescriptor().setIsEmbeddableCollection();
+        mapKeyAccessor.getDescriptor().setIsEmbeddable();
         
         // Process the attribute overrides for this may key embeddable.
         processAttributeOverrides(mappedKeyMapAccessor.getMapKeyAttributeOverrides(), keyMapping, mapKeyAccessor.getDescriptor());

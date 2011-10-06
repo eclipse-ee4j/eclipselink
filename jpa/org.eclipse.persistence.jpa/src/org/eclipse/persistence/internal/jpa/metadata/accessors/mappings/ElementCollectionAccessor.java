@@ -794,7 +794,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         processContainerPolicyAndIndirection(mapping);
         
         // Make sure to mark the descriptor as an embeddable collection descriptor.
-        referenceDescriptor.setIsEmbeddableCollection();
+        referenceDescriptor.setIsEmbeddable();
         
         // Process the mappings from the embeddable to setup the field name 
         // translations. Before we do that lets process the attribute and

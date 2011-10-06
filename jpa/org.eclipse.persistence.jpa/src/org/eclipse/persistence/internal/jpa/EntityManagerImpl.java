@@ -644,7 +644,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             AbstractSession session = this.databaseSession;
             ClassDescriptor descriptor = session.getDescriptor(entityClass);
             // PERF: Avoid uow creation for read-only.
-            if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
             }
             if (!descriptor.shouldBeReadOnly() || !descriptor.isSharedIsolation()) {
@@ -678,7 +678,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             AbstractSession session = (AbstractSession) getActiveSession();
             ClassDescriptor descriptor = session.getDescriptorForAlias(entityName);
-            if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_entitybean_name", new Object[] { entityName }));
             }
             return findInternal(descriptor, session, primaryKey, null, null);
@@ -985,7 +985,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             ClassDescriptor descriptor = this.databaseSession.getDescriptors().get(entity.getClass());
-            if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
 
@@ -2258,7 +2258,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             ClassDescriptor descriptor = this.databaseSession.getDescriptors().get(entity.getClass());
-            if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             UnitOfWorkImpl uowImpl = (UnitOfWorkImpl) getUnitOfWork();

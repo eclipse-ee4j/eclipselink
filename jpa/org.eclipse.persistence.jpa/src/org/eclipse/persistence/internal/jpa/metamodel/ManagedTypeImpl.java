@@ -425,15 +425,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 // Default to Entity
                 managedType = new EntityTypeImpl(metamodel, descriptor);
             } else if (descriptor.isDescriptorTypeAggregate()) {
-                
                 // AGGREGATE:2 or AGGREGATE_COLLECTION:3
-                if (descriptor.isAggregateDescriptor()) {                    
-                    // AGGREGATE:2 == EMBEDDABLE
-                    managedType = new EmbeddableTypeImpl(metamodel, descriptor);                
-                } else if (descriptor.isAggregateCollectionDescriptor()) {
-                    // AGGREGATE_COLLECTION:3 can be an embeddable or entity type depending on ?
-                    managedType = new EmbeddableTypeImpl(metamodel, descriptor);
-                }
+                managedType = new EmbeddableTypeImpl(metamodel, descriptor);                
             } else if(descriptor.isDescriptorTypeNormal()) {
                 
                 // NORMAL:0 = ENTITY | MAPPEDSUPERCLASS                

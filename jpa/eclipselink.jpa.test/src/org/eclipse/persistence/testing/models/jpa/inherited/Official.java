@@ -18,6 +18,8 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.TABLE;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -37,6 +39,37 @@ import javax.persistence.TableGenerator;
 )
 @SecondaryTable(name="JPA_OFFICIAL_COMPENSATION")
 public class Official {
+
+    private int id;
+    
+    private String name;
+    
+    private Integer age;
+    
+    private ServiceTime serviceTime;
+    
+    private Integer salary;
+    
+    private Integer bonus;
+    
+    private OfficialEntry officialEntry;
+
+    private Integer officialEntryId;
+    
+    private RedStripe lastRedStripeConsumed;
+
+    public Official() {}
+    
+    @Column(insertable=false, updatable=true)
+    public Integer getAge() {
+        return age;
+    }
+    
+    @Column(table="JPA_OFFICIAL_COMPENSATION", insertable=false, updatable=true)
+    public Integer getBonus() {
+        return bonus;
+    }
+    
     @Id
     @GeneratedValue(strategy=TABLE, generator="OFFICIAL_TABLE_GENERATOR")
     @TableGenerator(
@@ -45,65 +78,42 @@ public class Official {
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",
         pkColumnValue="OFFICIAL_SEQ")
-    private int id;
-    
-    @Column(name="NAME", updatable=false)
-    private String name;
-    
-    @Column(insertable=false, updatable=true)
-    private Integer age;
-    
-    @Embedded
-    private ServiceTime serviceTime;
-    
-    @Column(table="JPA_OFFICIAL_COMPENSATION", insertable=true, updatable=false)
-    private Integer salary;
-    
-    @Column(table="JPA_OFFICIAL_COMPENSATION", insertable=false, updatable=true)
-    private Integer bonus;
-    
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "OFFICIAL_ENTRYID", insertable = false, updatable = false)
-    private OfficialEntry officialEntry;
-
-    @Basic
-    @Column(name = "OFFICIAL_ENTRYID")
-    private Integer officialEntryId;
-
-    public Official() {}
-    
-    public Integer getAge() {
-        return age;
-    }
-    
-    public Integer getBonus() {
-        return bonus;
-    }
-    
     public int getId() {
         return id;
     }
     
+    @Embedded
+    public RedStripe getLastRedStripeConsumed() {
+        return lastRedStripeConsumed;
+    }
+    
+    @Column(name="NAME", updatable=false)
     public String getName() {
         return name;
     }
     
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "OFFICIAL_ENTRYID", insertable = false, updatable = false)
     public OfficialEntry getOfficialEntry() {
         return officialEntry;
     }
     
+    @Basic
+    @Column(name = "OFFICIAL_ENTRYID")
     public Integer getOfficialEntryId() {
         return officialEntryId;
     }
 
+    @Column(table="JPA_OFFICIAL_COMPENSATION", insertable=true, updatable=false)
     public Integer getSalary() { 
         return salary; 
     }
     
+    @Embedded
     public ServiceTime getServiceTime() {
         return serviceTime;
     }
-
+    
     public void setAge(Integer age) {
         this.age = age;
     }
@@ -114,6 +124,10 @@ public class Official {
     
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setLastRedStripeConsumed(RedStripe lastRedStripeConsumed) {
+        this.lastRedStripeConsumed = lastRedStripeConsumed;
     }
     
     public void setName(String name) {
@@ -135,7 +149,7 @@ public class Official {
     public void setServiceTime(ServiceTime serviceTime) {
         this.serviceTime = serviceTime;
     }
-    
+
     public String toString() {
         return this.name;
     }

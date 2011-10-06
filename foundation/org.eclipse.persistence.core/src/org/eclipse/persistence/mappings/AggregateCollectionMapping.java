@@ -1365,6 +1365,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         ClassDescriptor referenceDescriptor = getReferenceDescriptor();
         ClassDescriptor clonedDescriptor = (ClassDescriptor) referenceDescriptor.clone();
+        if (clonedDescriptor.isAggregateDescriptor()) {
+            clonedDescriptor.descriptorIsAggregateCollection();
+        }
         
         int nAggregateTables = 0;
         if (referenceDescriptor.getTables() != null) {

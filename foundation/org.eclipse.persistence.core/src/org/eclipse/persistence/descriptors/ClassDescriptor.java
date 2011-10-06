@@ -3852,7 +3852,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * initialized by each mapping.
      */
     public boolean requiresInitialization() {
-        return !(isAggregateDescriptor() || isDescriptorForInterface() || isAggregateCollectionDescriptor());
+        return !(isDescriptorTypeAggregate() || isDescriptorForInterface());
     }
 
     /**
@@ -3893,7 +3893,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
         }
 
-        if (!isChildDescriptor() && !isAggregateDescriptor() && !isAggregateCollectionDescriptor()) {
+        if (!isChildDescriptor() && !isDescriptorTypeAggregate()) {
             if (getPrimaryKeyFieldNames().isEmpty()) {
                 session.getIntegrityChecker().handleError(DescriptorException.primaryKeyFieldsNotSepcified(this));
             }

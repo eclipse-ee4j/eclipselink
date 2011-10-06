@@ -501,7 +501,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             session.getIntegrityChecker().handleError(DescriptorException.descriptorIsMissing(getReferenceClass().getName(), this));
             return;
         }
-        if (refDescriptor.isAggregateDescriptor() || refDescriptor.isAggregateCollectionDescriptor()) {
+        if (refDescriptor.isDescriptorTypeAggregate()) {
             refDescriptor.checkInheritanceTreeAggregateSettings(session, this);
         } else {
             session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregate(getReferenceClass().getName(), this));

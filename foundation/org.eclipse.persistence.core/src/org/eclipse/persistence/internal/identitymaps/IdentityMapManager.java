@@ -1103,7 +1103,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         ClassDescriptor descriptor = this.session.getDescriptor(businessClass);
         int cacheCounter = 0;
         StringWriter writer = new StringWriter();
-        if (descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if (descriptor.isDescriptorTypeAggregate()) {
             return; //do nothing if descriptor is aggregate
         }
 

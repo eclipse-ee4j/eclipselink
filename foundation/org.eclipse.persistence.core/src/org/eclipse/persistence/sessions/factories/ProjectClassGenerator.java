@@ -180,7 +180,7 @@ public class ProjectClassGenerator {
         method.addLine("// ClassDescriptor Properties.");
 
         // Identity map
-        if ((!descriptor.isChildDescriptor()) && (!descriptor.isAggregateDescriptor()) && (!descriptor.isAggregateCollectionDescriptor()) && (!descriptor.isDescriptorForInterface())) {
+        if ((!descriptor.isChildDescriptor()) && !descriptor.isDescriptorTypeAggregate() && (!descriptor.isDescriptorForInterface())) {
             if (descriptor.shouldUseFullIdentityMap()) {
                 method.addLine("descriptor.useFullIdentityMap();");
             } else if (descriptor.shouldUseCacheIdentityMap()) {
@@ -817,7 +817,7 @@ public class ProjectClassGenerator {
     protected void addQueryManagerPropertyLines(NonreflectiveMethodDefinition method, ClassDescriptor descriptor) {
         method.addLine("// Query Manager.");
         // Existence check.
-        if ((!descriptor.isAggregateDescriptor()) && (!descriptor.isAggregateCollectionDescriptor()) && (!descriptor.isDescriptorForInterface())) {
+        if (!descriptor.isDescriptorTypeAggregate() && (!descriptor.isDescriptorForInterface())) {
             if (descriptor.getQueryManager().getDoesExistQuery().shouldAssumeExistenceForDoesExist()) {
                 method.addLine("descriptor.getQueryManager().assumeExistenceForDoesExist();");
             } else if (descriptor.getQueryManager().getDoesExistQuery().shouldAssumeNonExistenceForDoesExist()) {

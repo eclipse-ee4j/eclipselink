@@ -1883,6 +1883,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         NBC_ID_field.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(NBC_ID_field);
         
+        FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
+        ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
+        ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
+        ALCOHOL_CONTENT_field.setSize(15);
+        ALCOHOL_CONTENT_field.setIsPrimaryKey(false);
+        ALCOHOL_CONTENT_field.setUnique(false);
+        ALCOHOL_CONTENT_field.setIsIdentity(false);
+        ALCOHOL_CONTENT_field.setShouldAllowNull(true);
+        table.addField(ALCOHOL_CONTENT_field);
+        
         return table;
     }
     

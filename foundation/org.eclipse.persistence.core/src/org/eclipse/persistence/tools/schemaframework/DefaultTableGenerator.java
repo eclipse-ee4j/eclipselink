@@ -173,7 +173,7 @@ public class DefaultTableGenerator {
             // Aggregate descriptors do not contain table/field data and are 
             // processed through their owning entities. Aggregate descriptors
             // can not exist on their own.
-            if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor()) {
+            if (!descriptor.isDescriptorTypeAggregate()) {
                 initTableSchema(descriptor);
             }
         }

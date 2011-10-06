@@ -148,6 +148,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testMultipleIdButNonIdClassEntity"));
         suite.addTest(new InheritedModelJunitTest("testRelatedBylawWrite"));
         suite.addTest(new InheritedModelJunitTest("testInterfaceBylawWrite"));
+        suite.addTest(new InheritedModelJunitTest("testEmbeddableAggregateCollectionAndAggregate"));
         
         return suite;
     }
@@ -1784,6 +1785,41 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
+    }
+    
+    // Bug 334175
+    public void testEmbeddableAggregateCollectionAndAggregate(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Lionel");
+        RedStripe rs = new RedStripe();
+        rs.setAlcoholContent(4.5);
+        consumer.addRedStripeByAlcoholContent(rs);
+        em.persist(consumer);
+        
+        Official official = new Official();
+        official.setName("George");
+        rs = new RedStripe();
+        rs.setAlcoholContent(4.6);
+        official.setLastRedStripeConsumed(rs);
+        em.persist(official);
+        
+        em.flush();
+        em.clear();
+        clearCache();
+        
+        consumer = em.find(BeerConsumer.class, consumer.getId());
+        assertNotNull("BeerConsumer had null red stripes.", consumer.getRedStripes());
+        assertTrue("BeerConsumer had wrong number of red stripes.", consumer.getRedStripesByAlcoholContent().size() == 1);
+        assertTrue("BeerConsumer had wrong red stripe.", consumer.getRedStripesByAlcoholContent().get(4.5) != null);
+
+        official = em.find(Official.class, official.getId());
+        assertNotNull("Official had null red stripe.", official.getLastRedStripeConsumed());
+        assertTrue("Official had the wrong red stripe", official.getLastRedStripeConsumed().getAlcoholContent() == 4.6);
+        
+        rollbackTransaction(em);
+        
     }
 
 }

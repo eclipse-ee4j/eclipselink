@@ -3089,7 +3089,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
     
     public void recordPrivateOwnedRemovals(Object object, UnitOfWorkImpl uow, boolean initialPass) {
-        if (!this.descriptor.isAggregateCollectionDescriptor() && !this.descriptor.isAggregateDescriptor()){
+        if (!this.descriptor.isDescriptorTypeAggregate()){
             if (!initialPass && uow.getDeletedObjects().containsKey(object)){
                 return;
             }
