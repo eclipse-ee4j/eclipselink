@@ -89,8 +89,7 @@ public class CacheImpl implements JpaCache {
         for(ClassDescriptor candidateAssignableDescriptor : getSession().getDescriptors().values()) {
             // In EclipseLink we need only remove the root descriptor that is assignable from this possibleSubclass because the recurse flag defaults to true in invalidateClass()
             // what if we have 2 roots (don't check for !candidateAssignableDescriptor.isChildDescriptor())
-            if(!candidateAssignableDescriptor.isAggregateDescriptor() && // a !Embeddable check
-               !candidateAssignableDescriptor.isAggregateCollectionDescriptor() && // a !EmbeddableCollection check
+            if(!candidateAssignableDescriptor.isDescriptorTypeAggregate() && // a !Embeddable check and !EmbeddableCollection check
                possibleSuperclass.isAssignableFrom(candidateAssignableDescriptor.getJavaClass())) { 
                 // id will be null if this private function was called from evict(class)
                 if(null == id) {

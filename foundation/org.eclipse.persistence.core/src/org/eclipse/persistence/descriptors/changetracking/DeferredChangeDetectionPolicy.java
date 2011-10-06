@@ -165,7 +165,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         }
 
         // PERF: Do not create change records for new objects.
-        if (!isNew || descriptor.shouldUseFullChangeSetsForNewObjects() || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+        if (!isNew || descriptor.shouldUseFullChangeSetsForNewObjects() || descriptor.isDescriptorTypeAggregate()) {
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
             List mappings = descriptor.getMappings();
             int mappingsSize = mappings.size();

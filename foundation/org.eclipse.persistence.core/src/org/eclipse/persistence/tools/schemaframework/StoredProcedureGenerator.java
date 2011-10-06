@@ -576,7 +576,7 @@ public class StoredProcedureGenerator {
         this.generateSequenceStoredProcedures(getSession().getProject());
         while (iterator.hasNext()) {
             desc = (ClassDescriptor)descriptors.get(iterator.next());
-            if (desc.isDescriptorForInterface() || desc.isAggregateDescriptor() || desc.isAggregateCollectionDescriptor()) {
+            if (desc.isDescriptorForInterface() || desc.isDescriptorTypeAggregate()) {
                 continue;
             }
             definition = this.generateInsertStoredProcedure(desc);

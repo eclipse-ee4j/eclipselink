@@ -1139,6 +1139,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         super.initialize(session);
 
         ClassDescriptor clonedDescriptor = (ClassDescriptor)getReferenceDescriptor().clone();
+        if (isMapKeyMapping() && clonedDescriptor.isAggregateDescriptor()){
+            clonedDescriptor.descriptorIsAggregateCollection();
+        }
         if (clonedDescriptor.isChildDescriptor()) {
             ClassDescriptor parentDescriptor = session.getDescriptor(clonedDescriptor.getInheritancePolicy().getParentClass());
             initializeParentInheritance(parentDescriptor, clonedDescriptor, session);

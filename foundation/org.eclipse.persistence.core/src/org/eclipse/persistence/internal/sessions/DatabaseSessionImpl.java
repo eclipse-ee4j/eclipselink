@@ -515,7 +515,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     }
 
                     //check if inheritance is involved in aggregate relationship, and let the parent know the child descriptor
-                    if ((descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) && descriptor.isChildDescriptor()) {
+                    if (descriptor.isDescriptorTypeAggregate() && descriptor.isChildDescriptor()) {
                         descriptor.initializeAggregateInheritancePolicy(session);
                     }
                 } catch (RuntimeException exception) {
