@@ -296,7 +296,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             //   DELETE FROM PROJECT WHERE (PROJ_NAME = ?)
             // instead of the wrong one:
             //   DELETE FROM PROJECT WHERE EXISTS(SELECT PROJ_ID FROM PROJECT WHERE (PROJ_NAME = ?) AND PROJECT.PROJ_ID = PROJECT.PROJ_ID)
-            deleteAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().firstElement()));
+            deleteAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().get(0)));
             deleteAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getExecutionSession().getPlatform()));
         } else {
             // inheritanceExpression is irrelevant in case selectCallForExist != null
@@ -721,7 +721,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         updateAllStatement.setDatabaseFieldsToTableAliases(databaseFieldsToTableAliases);
         
         updateAllStatement.setSelectCallForExist(selectCallForExist);
-        updateAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().firstElement()));
+        updateAllStatement.setShouldExtractWhereClauseFromSelectCallForExist(!selectStatementForExist.requiresAliases() && table.equals(selectStatementForExist.getTables().get(0)));
         updateAllStatement.setTableAliasInSelectCallForExist(getAliasTableName(selectStatementForExist, table, getExecutionSession().getPlatform()));
         updateAllStatement.setPrimaryKeyFieldsForAutoJoin(primaryKeyFields);
 
@@ -2071,7 +2071,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         // It should be SQLSelectStatement with a single field
                         SQLSelectStatement selStatement = (SQLSelectStatement)value;
                         // first one is the normalized value to be assigned
-                        expIterator.iterateOn((Expression)selStatement.getFields().elementAt(0));
+                        expIterator.iterateOn((Expression)selStatement.getFields().get(0));
                         // whereClause - generated during normalization
                         expIterator.iterateOn(selStatement.getWhereClause());
                     }

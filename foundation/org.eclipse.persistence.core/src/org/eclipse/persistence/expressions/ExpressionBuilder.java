@@ -48,7 +48,7 @@ public class ExpressionBuilder extends ObjectExpression {
     protected SQLSelectStatement statement;
     protected DatabaseTable viewTable;
     protected DatabaseTable aliasedViewTable;
-    
+
     protected boolean wasQueryClassSetInternally = true;
     
     protected boolean wasAdditionJoinCriteriaUsed = false;
@@ -96,9 +96,8 @@ public class ExpressionBuilder extends ObjectExpression {
         }
 
         if (doesNotRepresentAnObjectInTheQuery()) {
-            for (Enumeration e = derivedTables.elements(); e.hasMoreElements();) {
-                TableExpression t = (TableExpression)e.nextElement();
-                DatabaseTable result = t.aliasForTable(table);
+            for (Expression expression : this.derivedTables) {
+                DatabaseTable result = expression.aliasForTable(table);
                 if (result != null) {
                     return result;
                 }
@@ -106,7 +105,7 @@ public class ExpressionBuilder extends ObjectExpression {
         } else {
             return super.aliasForTable(table);
         }
-        return null;// No alias found in the derived tables
+        return null; // No alias found in the derived tables
     }
 
     /**
@@ -251,6 +250,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * Normalize the expression into a printable structure.
      * Any joins must be added to form a new root.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         if (hasBeenNormalized()) {
             return this;
@@ -258,8 +258,27 @@ public class ExpressionBuilder extends ObjectExpression {
             setHasBeenNormalized(true);
         }
 
-        // This is required for parralel selects,
-        // the session must be set and the addtional join expression added.
+        // Normalize the ON clause if present.  Need to use rebuild, not twist as parameters are real parameters.
+        if (this.onClause != null) {
+            this.onClause = this.onClause.normalize(normalizer);
+            if (shouldUseOuterJoin()) {
+                normalizer.getStatement().getOuterJoinExpressions().add(this);
+                normalizer.getStatement().getOuterJoinedMappingCriteria().add(null);
+                normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(null);
+                normalizer.getStatement().getDescriptorsForMultitableInheritanceOnly().add(null);
+                if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
+                    Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this);
+                    if (historyCriteria != null) {
+                        normalizer.addAdditionalExpression(historyCriteria);
+                    }
+                }
+            } else {
+                normalizer.addAdditionalExpression(this.onClause);                
+            }
+        }
+
+        // This is required for parallel selects,
+        // the session must be set and the additional join expression added.
         if (this.queryClass != null) {
             Expression criteria = null;
 
@@ -277,7 +296,7 @@ public class ExpressionBuilder extends ObjectExpression {
 
             if (isUsingOuterJoinForMultitableInheritance() && getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
                 Expression childrenCriteria = getDescriptor().getInheritancePolicy().getChildrenJoinExpression();
-                childrenCriteria = this.twist(childrenCriteria, this);
+                childrenCriteria = twist(childrenCriteria, this);
                 childrenCriteria.convertToUseOuterJoin();
                 if(criteria == null) {
                     criteria = childrenCriteria;
@@ -286,9 +305,9 @@ public class ExpressionBuilder extends ObjectExpression {
                 }
             }
             if (isUsingOuterJoinForMultitableInheritance() && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause())) {
-                normalizer.getStatement().getOuterJoinExpressions().addElement(null);
-                normalizer.getStatement().getOuterJoinedMappingCriteria().addElement(null);
-                normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().addElement(additionalExpressionCriteriaMap());
+                normalizer.getStatement().getOuterJoinExpressions().add(null);
+                normalizer.getStatement().getOuterJoinedMappingCriteria().add(null);
+                normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
                 normalizer.getStatement().getDescriptorsForMultitableInheritanceOnly().add(this.getDescriptor());
                 // fall through to the main case
             }
@@ -335,6 +354,7 @@ public class ExpressionBuilder extends ObjectExpression {
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         return;
     }
+    
     /**
      * INTERNAL:
      * Override Expression.registerIn to check if the new base expression

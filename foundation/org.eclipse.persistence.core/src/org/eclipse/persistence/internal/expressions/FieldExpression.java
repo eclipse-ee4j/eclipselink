@@ -313,6 +313,7 @@ public class FieldExpression extends DataExpression {
     /**
      * INTERNAL: called from SQLSelectStatement.writeFieldsFromExpression(...)
      */
+    @Override
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
         DatabaseField field = getField();
 

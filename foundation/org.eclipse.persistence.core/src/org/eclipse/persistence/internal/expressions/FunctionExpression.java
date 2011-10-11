@@ -571,6 +571,7 @@ public class FunctionExpression extends BaseExpression {
     /**
      * INTERNAL: called from SQLSelectStatement.writeFieldsFromExpression(...)
      */
+    @Override
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
         //print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {

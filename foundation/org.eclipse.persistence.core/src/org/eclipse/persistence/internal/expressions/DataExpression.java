@@ -28,8 +28,8 @@ import org.eclipse.persistence.mappings.querykeys.*;
  * i.e. a base expression.
  */
 public abstract class DataExpression extends BaseExpression {
-    protected Vector derivedTables;
-    protected Vector derivedFields;
+    protected List<Expression> derivedTables;
+    protected List<Expression> derivedFields;
     protected boolean hasBeenNormalized = false;
     protected TableAliasLookup tableAliases;
     protected AsOfClause asOfClause;
@@ -60,16 +60,16 @@ public abstract class DataExpression extends BaseExpression {
     
     public void addDerivedField(Expression addThis) {
         if (derivedFields == null) {
-            derivedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
+            derivedFields = new ArrayList();
         }
-        derivedFields.addElement(addThis);
+        derivedFields.add(addThis);
     }
 
     public void addDerivedTable(Expression addThis) {
         if (derivedTables == null) {
-            derivedTables = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
+            derivedTables = new ArrayList();
         }
-        derivedTables.addElement(addThis);
+        derivedTables.add(addThis);
     }
 
     public Expression asOf(AsOfClause clause) {
@@ -122,14 +122,13 @@ public abstract class DataExpression extends BaseExpression {
         tableAliases = null;
     }
 
-    public Vector copyCollection(Vector in, Map alreadyDone) {
+    public List<Expression> copyCollection(List<Expression> in, Map alreadyDone) {
         if (in == null) {
             return null;
         }
-        Vector result = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(in.size());
-        for (Enumeration e = in.elements(); e.hasMoreElements();) {
-            Expression exp = (Expression)e.nextElement();
-            result.addElement(exp.copiedVersionFrom(alreadyDone));
+        List<Expression> result = new ArrayList(in.size());
+        for (Expression exp : in) {
+            result.add(exp.copiedVersionFrom(alreadyDone));
         }
         return result;
     }
@@ -138,12 +137,11 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      */
     public Expression existingDerivedField(DatabaseField field) {
-        if (derivedFields == null) {
+        if (this.derivedFields == null) {
             return null;
         }
-        for (Enumeration e = derivedFields.elements(); e.hasMoreElements();) {
-            FieldExpression exp = (FieldExpression)e.nextElement();
-            if (exp.getField().equals(field)) {
+        for (Expression exp : this.derivedFields) {
+            if (((FieldExpression)exp).getField().equals(field)) {
                 return exp;
             }
         }
@@ -155,12 +153,11 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      */
     public Expression existingDerivedTable(DatabaseTable table) {
-        if (derivedTables == null) {
+        if (this.derivedTables == null) {
             return null;
         }
-        for (Enumeration e = derivedTables.elements(); e.hasMoreElements();) {
-            TableExpression exp = (TableExpression)e.nextElement();
-            if (exp.getTable().equals(table)) {
+        for (Expression exp : this.derivedTables) {
+            if (((TableExpression)exp).getTable().equals(table)) {
                 return exp;
             }
         }
@@ -349,8 +346,8 @@ public abstract class DataExpression extends BaseExpression {
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         clearAliases();
-        derivedFields = copyCollection(derivedFields, alreadyDone);
-        derivedTables = copyCollection(derivedTables, alreadyDone);
+        this.derivedFields = copyCollection(this.derivedFields, alreadyDone);
+        this.derivedTables = copyCollection(this.derivedTables, alreadyDone);
     }
 
     /**

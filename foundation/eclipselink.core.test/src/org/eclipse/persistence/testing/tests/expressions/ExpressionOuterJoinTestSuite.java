@@ -191,6 +191,96 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
         addTest(test);
     }
 
+    private void addOuterJoinGetOnClauseTest() {
+        // This one does not really make sense, however its simple and tests that the syntax works.
+        ExpressionBuilder emp = new ExpressionBuilder();
+        Expression address = emp.getAllowingNull("address");
+        emp.join(address, address.get("city").notEqual("Ottawa"));
+        Expression expression = address.get("city").equal("Ottawa");
+        
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 0);
+        test.setName("OuterJoinGetOnClauseTest");
+        test.setDescription("Test expression with outer joins and on clause");
+        test.setExpression(expression);
+
+        addTest(test);
+    }
+
+    private void addOuterJoinAnyOfOnClauseTest() {
+        // This one does not really make sense, however its simple and tests that the syntax works.
+        ExpressionBuilder emp = new ExpressionBuilder();
+        Expression phone = emp.anyOfAllowingNone("phoneNumbers");
+        emp.join(phone, phone.get("areaCode").notEqual("613"));
+        Expression expression = phone.get("areaCode").equal("613");
+        
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 0);
+        test.setName("OuterJoinAnyOfOnClauseTest");
+        test.setDescription("Test expression with outer joins and on clause");
+        test.setExpression(expression);
+
+        addTest(test);
+    }
+
+    private void addJoinAnyOfOnClauseTest() {
+        // This one does not really make sense, however its simple and tests that the syntax works.
+        ExpressionBuilder emp = new ExpressionBuilder();
+        Expression phone = emp.anyOf("phoneNumbers");
+        emp.join(phone, phone.get("areaCode").notEqual("613"));
+        Expression expression = phone.get("areaCode").equal("613");
+
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 0);
+        test.setName("JoinAnyOfOnClauseTest");
+        test.setDescription("Test expression with outer joins and on clause");
+        test.setExpression(expression);
+
+        addTest(test);
+    }
+
+    private void addJoinGetOnClauseTest() {
+        // This one does not really make sense, however its simple and tests that the syntax works.
+        ExpressionBuilder emp = new ExpressionBuilder();
+        Expression address = emp.get("address");
+        emp.join(address, address.get("city").notEqual("Ottawa"));
+        Expression expression = address.get("city").equal("Ottawa");
+
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 0);
+        test.setName("JoinGetOnClauseTest");
+        test.setDescription("Test expression with outer joins and on clause");
+        test.setExpression(expression);
+
+        addTest(test);
+    }
+
+    private void addJoinOnClauseTest() {
+        ExpressionBuilder emp = new ExpressionBuilder(Employee.class);
+        ExpressionBuilder project = new ExpressionBuilder(Project.class);
+        emp.join(project, project.get("teamLeader").equal(emp));
+
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 3);
+        test.setName("JoinOnClauseTest");
+        test.setDescription("Test expression with parrallel joins and on clause");
+        test.setExpression(null);
+        test.getQuery(true).setExpressionBuilder(emp);
+        test.getQuery(true).addNonFetchJoin(project);
+
+        addTest(test);
+    }
+
+    private void addOuterJoinOnClauseTest() {
+        ExpressionBuilder emp = new ExpressionBuilder(Employee.class);
+        ExpressionBuilder project = new ExpressionBuilder(Project.class);
+        emp.leftJoin(project, project.get("teamLeader").equal(emp));
+
+        ReadAllExpressionTest test = new ReadAllOuterJoinExpressionTest(Employee.class, 12);
+        test.setName("OuterJoinOnClauseTest");
+        test.setDescription("Test expression with parrallel joins and on clause");
+        test.setExpression(null);
+        test.getQuery(true).setExpressionBuilder(emp);
+        test.getQuery(true).addNonFetchJoin(project);
+
+        addTest(test);
+    }
+
     private void addOuterJoinDirectCollectionTest() {
         ExpressionBuilder emp = new ExpressionBuilder();
         Expression expression = emp.get("firstName").equal("Nancy").or(emp.anyOfAllowingNone("responsibilitiesList").equal("Write lots of Java code."));
@@ -234,11 +324,8 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
 		
 	}
 
-
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());
-
-        //org.eclipse.persistence.internal.helper.Helper.toDo("these fail because we need to right outer join the multiple tables");
         addOuterJoinSimpleTest();
         addOuterJoinOrWhereClauseTest1();
         addOuterJoinOrWhereClauseTest2();
@@ -255,8 +342,12 @@ public class ExpressionOuterJoinTestSuite extends TestSuite {
         addOuterJoinDirectCollectionTest();
         addOuterJoinParallelExpressionTest();
         addOuterJoinIsNullTest();
-
-
+        addOuterJoinGetOnClauseTest();
+        addJoinGetOnClauseTest();
+        addOuterJoinAnyOfOnClauseTest();
+        addJoinAnyOfOnClauseTest();
+        addOuterJoinOnClauseTest();
+        addJoinOnClauseTest();
     }
 
     protected PopulationManager getManager() {

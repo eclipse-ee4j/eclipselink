@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
+import java.util.Map;
+
 import org.eclipse.persistence.internal.helper.*;
 
 /**
@@ -50,10 +52,10 @@ public class TableAliasLookup implements Serializable {// CR#3718, implements Se
         lastUsed = 0;
     }
 
-    // Add all of our values to the hashtable
-    public void addToHashtable(java.util.Hashtable aHashTable) {
+    // Add all of our values to the map
+    public void addToMap(Map<DatabaseTable, DatabaseTable> map) {
         for (int i = 0; i < lastUsed; i++) {
-            aHashTable.put(keys[i], values[i]);
+            map.put(keys[i], values[i]);
         }
     }
 

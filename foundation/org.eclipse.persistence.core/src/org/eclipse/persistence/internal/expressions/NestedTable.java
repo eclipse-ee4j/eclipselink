@@ -51,7 +51,6 @@ public class NestedTable extends DatabaseTable {
             DatabaseMapping mapping = queryKeyExpression.getMapping();
             DatabaseTable nestedTable = mapping.getDescriptor().getTables().firstElement();
             DatabaseTable tableAlias = queryKeyExpression.getBaseExpression().aliasForTable(nestedTable);
-            DatabaseTable nestedTableAlias = queryKeyExpression.aliasForTable(this);
 
             StringBuffer name = new StringBuffer();
             name.append("TABLE(");

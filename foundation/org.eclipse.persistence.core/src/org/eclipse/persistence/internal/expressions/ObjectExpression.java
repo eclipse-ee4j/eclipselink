@@ -26,8 +26,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * Superclass for any object type expressions.
  */
 public abstract class ObjectExpression extends DataExpression {
-    transient public ClassDescriptor descriptor;
-    public Vector derivedExpressions;
+    protected transient ClassDescriptor descriptor;
+    public List<Expression> derivedExpressions;
 
     /** indicates whether subclasses should be joined */
     protected boolean shouldUseOuterJoinForMultitableInheritance;
@@ -35,7 +35,14 @@ public abstract class ObjectExpression extends DataExpression {
     /** Is this query key to be resolved using an outer join or not. Does not apply to attributes. */
     protected boolean shouldUseOuterJoin;
 
-    protected Class castClass = null;
+    /** Allow an expression node to be cast to a subclass or implementation class. */
+    protected Class castClass;
+
+    /** Defines that this expression has been joined to the source expression. */
+    protected Expression joinSource;
+
+    /** Allow for an ON clause to be specified on a join condition. */
+    protected Expression onClause;
 
     public ObjectExpression() {
         this.shouldUseOuterJoin = false;
@@ -51,11 +58,12 @@ public abstract class ObjectExpression extends DataExpression {
      * with a Expression.type()
      * <p>Example:
      * <pre><blockquote>
-     *     TopLink: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
+     *     Expression: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
      *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
      * </blockquote></pre>
      */
+    @Override
     public Expression as(Class castClass){
         setCastClass(castClass);
         return this;
@@ -66,6 +74,7 @@ public abstract class ObjectExpression extends DataExpression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object expression) {
         if (this == expression) {
             return true;
@@ -73,11 +82,16 @@ public abstract class ObjectExpression extends DataExpression {
         return super.equals(expression) && (shouldUseOuterJoin() == ((ObjectExpression)expression).shouldUseOuterJoin());
     }
 
+    /**
+     * INTERNAL:
+     * Add the expression as a derived child of this expression.
+     * i.e. e.get("name"), "name" is a derived child of "e".
+     */
     public void addDerivedExpression(Expression addThis) {
-        if (derivedExpressions == null) {
-            derivedExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        if (this.derivedExpressions == null) {
+            this.derivedExpressions = new ArrayList();
         }
-        derivedExpressions.addElement(addThis);
+        this.derivedExpressions.add(addThis);
     }
 
     /**
@@ -141,17 +155,16 @@ public abstract class ObjectExpression extends DataExpression {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * <pre><blockquote>
-     *     TopLink: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
+     *     Expression: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID = t1.ID) AND (t2.F_NAME = 'Bob')
      * </pre></blockquote>
      */
+    @Override
     public Expression anyOf(String attributeName) {
         QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
-
         queryKey.doQueryToManyRelationship();
         return queryKey;
-
     }
     
     /**
@@ -160,25 +173,23 @@ public abstract class ObjectExpression extends DataExpression {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * <pre><blockquote>
-     *     TopLink: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
+     *     Expression: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')
      * </pre></blockquote>
      */
+    @Override
     public Expression anyOfAllowingNone(String attributeName) {
         QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
         queryKey.doUseOuterJoin();
         queryKey.doQueryToManyRelationship();
         return queryKey;
-
     }
     
     /**
      * INTERNAL
      * Return the descriptor which contains this query key, look in the inheritance hierarchy 
-     * of rootDescriptor for the descriptor
-     * @param rootDescriptor
-     * @return
+     * of rootDescriptor for the descriptor.
      */
     public ClassDescriptor convertToCastDescriptor(ClassDescriptor rootDescriptor, AbstractSession session) {
         if (castClass == null){
@@ -237,20 +248,20 @@ public abstract class ObjectExpression extends DataExpression {
 
     }
 
-    protected void doNotUseOuterJoin() {
+    public void doNotUseOuterJoin() {
         shouldUseOuterJoin = false;
     }
 
-    protected void doUseOuterJoin() {
+    public void doUseOuterJoin() {
         shouldUseOuterJoin = true;
     }
 
     public QueryKeyExpression existingDerivedExpressionNamed(String attributeName) {
-        if (derivedExpressions == null) {
+        if (this.derivedExpressions == null) {
             return null;
         }
-        for (Enumeration e = derivedExpressions.elements(); e.hasMoreElements();) {
-            QueryKeyExpression exp = (QueryKeyExpression)e.nextElement();
+        for (Expression derivedExpression : this.derivedExpressions) {
+            QueryKeyExpression exp = (QueryKeyExpression)derivedExpression;
             if (exp.getName().equals(attributeName)) {
                 return exp;
             }
@@ -258,19 +269,42 @@ public abstract class ObjectExpression extends DataExpression {
         return null;
     }
 
-    public Expression get(String attributeName, Vector arguments) {
-        Expression operatorExpression = super.get(attributeName, arguments);
-        if (operatorExpression != null) {
-            return operatorExpression;
-        }
-
-        QueryKeyExpression result = derivedExpressionNamed(attributeName);
+    /**
+     * Return the expression from the attribute dervied from this expression.
+     */
+    @Override
+    public Expression get(String attributeName) {
+        ObjectExpression result = derivedExpressionNamed(attributeName);
         result.doNotUseOuterJoin();
         return result;
-
     }
 
-    public Expression getAllowingNull(String attributeName, Vector arguments) {
+    /**
+     * Defines a join between this expression and the target expression based on the ON clause.
+     */
+    @Override
+    public Expression leftJoin(Expression target, Expression onClause) {
+        join(target, onClause);
+        ((ObjectExpression)target).doUseOuterJoin();
+        return this;
+    }
+
+    /**
+     * Defines a join between this expression and the target expression based on the ON clause.
+     */
+    @Override
+    public Expression join(Expression target, Expression onClause) {
+        if (target instanceof ObjectExpression) {
+            ((ObjectExpression)target).setJoinSource(this);
+            ((ObjectExpression)target).setOnClause(onClause);
+        } else {
+            throw new IllegalArgumentException();
+        }
+        return this;
+    }
+
+    @Override
+    public Expression getAllowingNull(String attributeName) {
         ObjectExpression exp = existingDerivedExpressionNamed(attributeName);
 
         // The same (aliased) table cannot participate in a normal join and an outer join.
@@ -278,10 +312,9 @@ public abstract class ObjectExpression extends DataExpression {
         if (exp != null) {
             return exp;
         }
-        exp = derivedExpressionNamed(attributeName);
-        exp.doUseOuterJoin();
-        return exp;
-
+        ObjectExpression result = derivedExpressionNamed(attributeName);
+        result.doUseOuterJoin();
+        return result;
     }
     
     public Class getCastClass() {
@@ -296,10 +329,12 @@ public abstract class ObjectExpression extends DataExpression {
      *  builder.getClassForInheritance().equal(SmallProject.class);
      * </blockquote></pre>
      */
+    @Override
     public Expression type() {
         return new ClassTypeExpression(this);
     }
 
+    @Override
     public ClassDescriptor getDescriptor() {
         if (isAttribute()) {
             return null;
@@ -332,6 +367,7 @@ public abstract class ObjectExpression extends DataExpression {
      * This returns a collection of all fields associated with this object. Really
      * only applies to query keys representing an object or to expression builders.
      */
+    @Override
     public Vector getFields() {
         if (getDescriptor() == null) {
             DatabaseMapping mapping = getMapping();
@@ -400,6 +436,7 @@ public abstract class ObjectExpression extends DataExpression {
     /**
      * Return any tables that are defined by this expression (and not its base).
      */
+    @Override
     public Vector getOwnedTables() {
         ClassDescriptor descriptor = getDescriptor();
         Vector tables = null;
@@ -432,6 +469,7 @@ public abstract class ObjectExpression extends DataExpression {
         return derivedExpressions != null;
     }
 
+    @Override
     public boolean isObjectExpression() {
         return true;
     }
@@ -465,9 +503,30 @@ public abstract class ObjectExpression extends DataExpression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        derivedExpressions = copyCollection(derivedExpressions, alreadyDone);
+        this.derivedExpressions = copyCollection(this.derivedExpressions, alreadyDone);
+        if (this.onClause != null) {
+            this.onClause = this.onClause.copiedVersionFrom(alreadyDone);
+        }
+        if (this.joinSource != null) {
+            this.joinSource = this.joinSource.copiedVersionFrom(alreadyDone);
+        }
+    }
+
+    /**
+     * Return null by default, only QueryKeyExpression can have a relation table.
+     */
+    public DatabaseTable getRelationTable() {
+        return null;
+    }
+
+    /**
+     * Return false by default, only possible for QueryKeyExpression.
+     */
+    public boolean isDirectCollection() {
+        return false;
     }
 
     /**
@@ -477,24 +536,30 @@ public abstract class ObjectExpression extends DataExpression {
      * @see org.eclipse.persistence.expressions.ExpressionBuilder#registerIn(Map alreadyDone)
      * @bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
      */
-    public void postCopyIn(Map alreadyDone, Vector oldDerivedFields, Vector oldDerivedTables) {
+    public void postCopyIn(Map alreadyDone, List<Expression> oldDerivedFields, List<Expression> oldDerivedTables) {
         if (oldDerivedFields != null) {
-            if (derivedFields == null) {
-                derivedFields = copyCollection(oldDerivedFields, alreadyDone);
+            if (this.derivedFields == null) {
+                this.derivedFields = copyCollection(oldDerivedFields, alreadyDone);
             } else {
-                derivedFields.addAll(copyCollection(oldDerivedFields, alreadyDone));
+                this.derivedFields.addAll(copyCollection(oldDerivedFields, alreadyDone));
             }
         }
         if (oldDerivedTables != null) {
-            if (derivedTables == null) {
-                derivedTables = copyCollection(oldDerivedTables, alreadyDone);
+            if (this.derivedTables == null) {
+                this.derivedTables = copyCollection(oldDerivedTables, alreadyDone);
             } else {
-                derivedTables.addAll(copyCollection(oldDerivedTables, alreadyDone));
+                this.derivedTables.addAll(copyCollection(oldDerivedTables, alreadyDone));
             }
         }
     }
-
     
+    public Expression getOnClause() {
+        return onClause;
+    }
+
+    public void setOnClause(Expression onClause) {
+        this.onClause = onClause;
+    }
     
     public void setCastClass(Class castClass) {
         this.castClass = castClass;
@@ -531,4 +596,13 @@ public abstract class ObjectExpression extends DataExpression {
             }
         }
     }
+
+    public Expression getJoinSource() {
+        return joinSource;
+    }
+
+    public void setJoinSource(Expression joinSource) {
+        this.joinSource = joinSource;
+    }
+
 }

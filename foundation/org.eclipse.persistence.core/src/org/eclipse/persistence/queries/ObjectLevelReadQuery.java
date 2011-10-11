@@ -476,15 +476,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * PUBLIC:
-     * Specify the one-to-one mapped attribute to be join fetched in this query.
-     * The query will join the object(s) being read with the one-to-one attribute,
+     * Specify the relationship attribute to be join fetched in this query.
+     * The query will join the object(s) being read with the attribute,
      * this allows all of the data required for the object(s) to be read in a single query instead of (n) queries.
      * This should be used when the application knows that it requires the part for all of the objects being read.
      *
      * <p>Note: This cannot be used for objects where it is possible not to have a part,
      * as these objects will be omitted from the result set,
      * unless an outer join is used through passing and expression using "getAllowingNull".
-     * To join fetch collection relationships use the addJoinedAttribute(Expression) using "anyOf" ot "anyOfAllowingNone".
+     * To join fetch collection relationships use the addJoinedAttribute(Expression) using "anyOf" to "anyOfAllowingNone".
      *
      * <p>Example: query.addJoinedAttribute("address")
      *
@@ -538,54 +538,55 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * PUBLIC:
-     * Specify the one-to-one mapped attribute to be optimized in this query.
-     * The query will join the object(s) being read with the one-to-one 
-     * attribute. The difference between this and a joined attribute is that
-     * it allows data to be retrieved based on a join, but will not populate
-     * the joined attribute. It also allows all of the data required for the 
-     * object(s) to be read in a single query instead of (n) queries. This 
-     * should be used when the application knows that it requires the part for 
-     * all of the objects being read. This can be used only for one-to-one 
-     * mappings where the target is not the same class as the source, either 
-     * directly or through inheritance.  Also two joins cannot be done to the 
-     * same class.
-     *
-     * <p>Note: This cannot be used for objects where it is possible not to have 
-     * a part, as these objects will be omitted from the result set, unless an 
-     * outer join is used through passing and expression using "getAllowingNull".
+     * Specify the relationship attribute to be join in this query.
+     * This allows the query results to be filtered based on the relationship join.
+     * The query will join the object(s) being read with the attribute.
+     * The difference between this and a joined fetched attribute is that
+     * it does not select the joined data nor populate the joined attribute,
+     * it is only used to filter the query results.
      *
      * <p>Example: query.addNonFetchJoinedAttribute("address")
      *
      * @see #addNonFetchJoinedAttribute(Expression)
      */
     public void addNonFetchJoinedAttribute(String attributeName) {
-        addNonFetchJoinedAttribute(getExpressionBuilder().get(attributeName));
+        addNonFetchJoin(getExpressionBuilder().get(attributeName));
     }
 
     /**
      * PUBLIC:
-     * Specify the one-to-one mapped attribute to be optimized in this query.
-     * The query will join the object(s) being read with the one-to-one 
-     * attribute. The difference between this and a joined attribute is that
-     * it allows data to be retrieved based on a join, but will not populate
-     * the joined attribute. It also allows all of the data required for the 
-     * object(s) to be read in a single query instead of (n) queries. This 
-     * should be used when the application knows that it requires the part for 
-     * all of the objects being read. This can be used only for one-to-one 
-     * mappings where the target is not the same class as the source, either 
-     * directly or through inheritance.  Also two joins cannot be done to the 
-     * same class.
-     *
-     * <p>Note: This cannot be used for objects where it is possible not to have 
-     * a part, as these objects will be omitted from the result set, unless an 
-     * outer join is used through passing and expression using "getAllowingNull".
+     * Specify the relationship attribute to be join in this query.
+     * This allows the query results to be filtered based on the relationship join.
+     * The query will join the object(s) being read with the attribute.
+     * The difference between this and a joined fetched attribute is that
+     * it does not select the joined data nor populate the joined attribute,
+     * it is only used to filter the query results.
      *
      * <p>Example: query.addNonFetchJoinedAttribute(query.getExpressionBuilder().get("teamLeader").get("address"))
      *
      * @see #addNonFetchJoinedAttribute(Expression)
      */
     public void addNonFetchJoinedAttribute(Expression attributeExpression) {
-        getNonFetchJoinAttributeExpressions().add(attributeExpression);
+        addNonFetchJoin(attributeExpression);
+    }
+
+    /**
+     * PUBLIC:
+     * Specify the object expression to be joined in this query.
+     * This allows the query results to be filtered based on the join to the object.
+     * The object should define an on clause that defines the join condition.
+     * This allows for two non-related objects to be joined.
+     *
+     * <p>Example: (select all employees that are a team leader)<p>
+     * <pre>
+     * ExpressionBuilder project = new ExpressionBuilder(Project.class);
+     * ExpressionBuilder employee = new ExpressionBuilder(Employee.class);
+     * ReadAllQuery query = new ReadAllQuery(Employee.class, employee);
+     * query.addJoin(project.on(project.get("teamLeader").equal(employee)))
+     * </pre>
+     */
+    public void addNonFetchJoin(Expression target) {
+        getNonFetchJoinAttributeExpressions().add(target);
         
         // Bug 2804042 Must un-prepare if prepared as the SQL may change.
         // Joined attributes are now calculated in prePrepare.

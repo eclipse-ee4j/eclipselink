@@ -248,11 +248,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </table>
      */
     public Expression anyOf(String attributeName) {
-        QueryKeyExpression queryKey = (QueryKeyExpression)get(attributeName);
-
-        queryKey.doQueryToManyRelationship();
-        return queryKey;
-
+        throw new UnsupportedOperationException("anyOfAllowingNone");
     }
 
     /**
@@ -291,11 +287,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </table>
      */
     public Expression anyOfAllowingNone(String attributeName) {
-        QueryKeyExpression queryKey = (QueryKeyExpression)getAllowingNull(attributeName);
-
-        queryKey.doQueryToManyRelationship();
-        return queryKey;
-
+        throw new UnsupportedOperationException("anyOfAllowingNone");
     }
     
     /**
@@ -450,7 +442,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setAsOfClause(org.eclipse.persistence.history.AsOfClause))
      */
     public Expression asOf(AsOfClause pastTime) {
-        return this;
+        throw new UnsupportedOperationException("anyOfAllowingNone");
     }
 
     /**
@@ -472,10 +464,10 @@ public abstract class Expression implements Serializable, Cloneable {
             return initialValue;
         }
         int counter = initialValue;
-        Vector ownedTables = getOwnedTables();
+        List<DatabaseTable> ownedTables = getOwnedTables();
         if (ownedTables != null) {
-            for (Enumeration e = ownedTables.elements(); e.hasMoreElements();) {
-                assignAlias("t" + counter, (DatabaseTable)e.nextElement());
+            for (DatabaseTable table : ownedTables) {
+                assignAlias("t" + counter, table);
                 counter++;
             }
         }
@@ -1536,14 +1528,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression get(String attributeName) {
-        return get(attributeName, null);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public Expression get(String attributeName, Vector arguments) {
-        return null;
+        throw new UnsupportedOperationException("anyOfAllowingNone");
     }
 
     /**
@@ -1558,16 +1543,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression getAllowingNull(String attributeName) {
-        return getAllowingNull(attributeName, null);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public Expression getAllowingNull(String attributeName, Vector arguments) {
-
-        /* this is meaningless for expressions in general */
-        return get(attributeName, arguments);
+        throw new UnsupportedOperationException("anyOfAllowingNone");
     }
 
     /**
@@ -1657,6 +1633,38 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * ADVANCED:
+     * Defines a join between the two objects based on the specified ON clause.
+     * This can be used to define a join condition on two unrelated objects,
+     * or to qualify a relationship join with additional criteria.
+     * <p> Example:
+     * <pre><blockquote>
+     *  Expression address = employee.getAllowingNull("address");
+     *  address.join(address, address.get("city").equal("Ottawa"));
+     *  query.addNonFetchJoin(address);
+     * </blockquote></pre>
+     */
+    public Expression join(Expression target, Expression onClause) {
+        throw new UnsupportedOperationException("anyOfAllowingNone");
+    }
+
+    /**
+     * ADVANCED:
+     * Defines an outer join between the two objects based on the specified ON clause.
+     * This can be used to define a join condition on two unrelated objects,
+     * or to qualify a relationship join with additional criteria.
+     * <p> Example:
+     * <pre><blockquote>
+     *  Expression address = employee.getAllowingNull("address");
+     *  address.leftJoin(address, address.get("city").equal("Ottawa"));
+     *  query.addNonFetchJoin(address);
+     * </blockquote></pre>
+     */
+    public Expression leftJoin(Expression target, Expression onClause) {
+        throw new UnsupportedOperationException("anyOfAllowingNone");
+    }
+    
+    /**
+     * ADVANCED:
      * This can be used for accessing user defined functions.
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
@@ -1677,14 +1685,14 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ExpressionOperator
      * <p> Example:
      * <pre><blockquote>
-     *    Vector arguments = new Vector();
-     *    arguments.addElement("blee");
+     *    List arguments = new ArrayList();
+     *    arguments.add("blee");
      *  builder.get("name").getFunction(MyFunctions.FOO_BAR, arguments).greaterThan(100);
      * </blockquote></pre>
      */
-    public Expression getFunction(int selector, Vector arguments) {
+    public Expression getFunction(int selector, List arguments) {
         ExpressionOperator anOperator = getOperator(selector);
-        return anOperator.expressionForArguments(this, arguments);
+        return anOperator.expressionForArguments(this, new Vector(arguments));
     }
 
     /**
@@ -4423,7 +4431,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
         for (Enumeration fieldsEnum = getFields().elements(); fieldsEnum.hasMoreElements();) {
             DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
-            newFields.addElement(field);
+            newFields.add(field);
             writeField(printer, field, statement);
         }
     }

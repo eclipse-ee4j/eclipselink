@@ -241,10 +241,11 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        if(index != null) {
-            index = (IndexExpression)index.copiedVersionFrom(alreadyDone);
+        if (this.index != null) {
+            this.index = (IndexExpression)this.index.copiedVersionFrom(alreadyDone);
         }
     }
 
@@ -252,6 +253,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Query Key";
     }
@@ -595,6 +597,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Normalize the expression into a printable structure.
      * Any joins must be added to form a new root.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         return normalize(normalizer, null);
     }
@@ -605,7 +608,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * additional expressions to normalizer both times, and the foreign key join
      * replaces the equal expression.
      */
-    public Expression normalize(ExpressionNormalizer normalizer, Vector foreignKeyJoinPointer) {
+    public Expression normalize(ExpressionNormalizer normalizer, List<Expression> foreignKeyJoinPointer) {
         if (hasBeenNormalized()) {
             return this;
         }
@@ -641,6 +644,11 @@ public class QueryKeyExpression extends ObjectExpression {
             normalizer.getStatement().dontUseDistinct();
         }
 
+        // Normalize the ON clause if present.  Need to use rebuild, not twist as parameters are real parameters.
+        if (this.onClause != null) {
+            this.onClause = this.onClause.normalize(normalizer);
+        }
+        
         Expression mappingExpression = mappingCriteria();
         if (mappingExpression != null) {
             mappingExpression = mappingExpression.normalize(normalizer);
@@ -649,15 +657,15 @@ public class QueryKeyExpression extends ObjectExpression {
             // If the join was an outer join we must not add the join criteria to the where clause,
             // if the platform prints the join in the from clause.
             if (shouldUseOuterJoin() && (getSession().getPlatform().isInformixOuterJoin())) {
-                normalizer.getStatement().getOuterJoinExpressions().addElement(this);
-                normalizer.getStatement().getOuterJoinedMappingCriteria().addElement(mappingExpression);
+                normalizer.getStatement().getOuterJoinExpressions().add(this);
+                normalizer.getStatement().getOuterJoinedMappingCriteria().add(mappingExpression);
                 normalizer.addAdditionalExpression(mappingExpression.and(additionalExpressionCriteria()));
                 return this;
             } else if ((shouldUseOuterJoin() || isUsingOuterJoinForMultitableInheritance()) && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause())) {
                 if(shouldUseOuterJoin()) {
-                    normalizer.getStatement().getOuterJoinExpressions().addElement(this);
-                    normalizer.getStatement().getOuterJoinedMappingCriteria().addElement(mappingExpression);
-                    normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().addElement(additionalExpressionCriteriaMap());
+                    normalizer.getStatement().getOuterJoinExpressions().add(this);
+                    normalizer.getStatement().getOuterJoinedMappingCriteria().add(mappingExpression);
+                    normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
                     normalizer.getStatement().getDescriptorsForMultitableInheritanceOnly().add(null);
                     if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
                         Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this);
@@ -668,9 +676,9 @@ public class QueryKeyExpression extends ObjectExpression {
                     return this;
                 } else {
                     if (isUsingOuterJoinForMultitableInheritance()) {
-                        normalizer.getStatement().getOuterJoinExpressions().addElement(null);
-                        normalizer.getStatement().getOuterJoinedMappingCriteria().addElement(null);
-                        normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().addElement(additionalExpressionCriteriaMap());
+                        normalizer.getStatement().getOuterJoinExpressions().add(null);
+                        normalizer.getStatement().getOuterJoinedMappingCriteria().add(null);
+                        normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
                         normalizer.getStatement().getDescriptorsForMultitableInheritanceOnly().add(getMapping().getReferenceDescriptor());
                         // fall through to the main case
                     }
@@ -684,12 +692,11 @@ public class QueryKeyExpression extends ObjectExpression {
                 // need not add additionalExpressionCriteria twice.
                 // Also the join will replace the original objExp.equal(objExp).
                 // For CR#2456.
-                foreignKeyJoinPointer.add(mappingExpression);
+                foreignKeyJoinPointer.add(mappingExpression.and(this.onClause));
             } else {
-                normalizer.addAdditionalExpression(mappingExpression.and(additionalExpressionCriteria()));
+                normalizer.addAdditionalExpression(mappingExpression.and(additionalExpressionCriteria()).and(this.onClause));
             }
         }
-
         // For bug 2900974 special code for DirectCollectionMappings moved to printSQL.
         return this;
     }

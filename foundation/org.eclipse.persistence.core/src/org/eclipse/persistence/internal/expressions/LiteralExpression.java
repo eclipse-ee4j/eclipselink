@@ -175,6 +175,7 @@ public class LiteralExpression extends Expression {
      * INTERNAL:
      * Append the literal value into the printer, accounting for the first element
      */
+    @Override
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
         // print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {

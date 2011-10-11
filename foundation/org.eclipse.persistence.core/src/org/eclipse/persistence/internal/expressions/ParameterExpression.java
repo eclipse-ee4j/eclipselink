@@ -478,6 +478,7 @@ public class ParameterExpression extends BaseExpression {
      * may be a ParameterExpression. The call created by "helper" ReportQuery is never executed - 
      * it's used during construction of insert call into temporary storage.
      */
+    @Override
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
             printer.getCall().setUsesBinding(false);

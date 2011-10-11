@@ -229,6 +229,7 @@ public class ConstantExpression extends Expression {
      * INTERNAL:
      * Append the constant value into the printer
      */
+    @Override
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
             printer.getCall().setUsesBinding(false);
