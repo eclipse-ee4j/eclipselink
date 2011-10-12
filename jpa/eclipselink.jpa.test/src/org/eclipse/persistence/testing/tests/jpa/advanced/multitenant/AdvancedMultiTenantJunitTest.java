@@ -120,12 +120,12 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testCreateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "707");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
-        
         try {
             beginTransaction(em);
-            
+            //on server side, you have to set the em properties after transaction begins
+            em.setProperty("tenant.id", "707");
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
+        
             MafiaFamily family = new MafiaFamily();
             family.setName("Gonzo");
             family.setRevenue(10000000.00);
@@ -258,11 +258,11 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testCreateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "007");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
-
         try {
             beginTransaction(em);
+            //on server side, you have to set the em properties after transaction begins
+            em.setProperty("tenant.id", "007");
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
             
             MafiaFamily family = new MafiaFamily();
             family.setName("Bond");
@@ -412,7 +412,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testCreateMafiaFamily123() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU_123);
-
         try {
             beginTransaction(em);
             
@@ -521,8 +520,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testValidateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "707");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
 
         try {
             validateMafiaFamily707(em);
@@ -530,7 +527,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
             throw e;
         } finally {
             closeEntityManager(em);
@@ -539,8 +535,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testValidateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "007");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
 
         try {
             validateMafiaFamily007(em);
@@ -548,7 +542,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
             throw e;
         } finally {
             closeEntityManager(em);
@@ -557,22 +550,14 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testValidateMafiaFamily707and007WithSameEM() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "707");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
 
         try {
             validateMafiaFamily707(em);
-            
-            // Change the properties on the same EM and validate the next family.
-            em.setProperty("tenant.id", "007");
-            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
-
             validateMafiaFamily007(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
             throw e;
         } finally {
             closeEntityManager(em);
@@ -637,7 +622,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
             throw e;
         } finally {
             closeEntityManager(em);
@@ -647,6 +631,10 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     protected void validateMafiaFamily007(EntityManager em) {
         clearCache(MULTI_TENANT_PU);
         em.clear();
+        beginTransaction(em);
+
+        em.setProperty("tenant.id", "007");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
         
         MafiaFamily family =  em.find(MafiaFamily.class, family007);
         assertNotNull("The Mafia Family with id: " + family007 + ", was not found", family);
@@ -684,12 +672,17 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         // Find our boss and make sure his name has not been compromised from the 707 family.
         Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
         assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+        commitTransaction(em);
     }
     
     protected void validateMafiaFamily707(EntityManager em) {
         clearCache(MULTI_TENANT_PU);
         em.clear();
         
+        beginTransaction(em);
+
+        em.setProperty("tenant.id", "707");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
         MafiaFamily family = em.find(MafiaFamily.class, family707);
         assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
         assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", family.getTags().size() == 3);
@@ -712,20 +705,16 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         }
         
         // Try deleting a contract from the 007 family.
-        beginTransaction(em);
         Query deleteQuery = em.createNamedQuery("DeleteContractByPrimaryKey");
         deleteQuery.setParameter("id", family007Contracts.get(0));
         int result = deleteQuery.executeUpdate();
         assertTrue("Was able to delete a contract from the 007 family", result == 0);
-        commitTransaction(em);
         
         // Update all our contract descriptions to be 'voided'
-        beginTransaction(em);
         Query updateAllQuery = em.createNamedQuery("UpdateAllContractDescriptions");
         updateAllQuery.executeUpdate();
         // Need to check that tenant id column is present
         assertTrue("Tenant discriminator column not found in update all query", ((EJBQueryImpl) updateAllQuery).getDatabaseQuery().getCall().getSQLString().contains("TENANT_ID"));
-        commitTransaction(em);
         
         // Read and validate the contracts
         List<Contract> contracts = em.createNamedQuery("FindAllContracts").getResultList();
@@ -749,7 +738,6 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
 
         // We know what the boss's id is for the 007 family to try to update him from the 707 pu.
         // The 007 family is validated after this test.
-        beginTransaction(em);
         Query query = em.createNamedQuery("UpdateBossName");
         query.setParameter("name", "Compromised");
         query.setParameter("id", family007Mafiosos.get(0));

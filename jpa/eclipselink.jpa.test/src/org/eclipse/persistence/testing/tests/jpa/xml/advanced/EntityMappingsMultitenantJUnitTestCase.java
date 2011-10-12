@@ -95,11 +95,12 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     
     public void testCreateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "707");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
 
         try {
             beginTransaction(em);
+            //on server side, you have to set the em properties after transaction begins
+            em.setProperty("tenant.id", "707");
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
             
             MafiaFamily family = new MafiaFamily();
             family.setName("Gonzo");
@@ -233,11 +234,12 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     
     public void testCreateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        try {
+            beginTransaction(em);
+            //on server side, you have to set the em properties after transaction begins
         em.setProperty("tenant.id", "007");
         em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
 
-        try {
-            beginTransaction(em);
             
             MafiaFamily family = new MafiaFamily();
             family.setName("Bond");
@@ -465,8 +467,6 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     
     public void testValidateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "707");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
 
         try {
             validateMafiaFamily707(em);
@@ -483,8 +483,6 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     
     public void testValidateMafiaFamily007() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "007");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
 
         try {
             validateMafiaFamily007(em);
@@ -501,15 +499,10 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     
     public void testValidateMafiaFamily707and007WithSameEM() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
-        em.setProperty("tenant.id", "707");
-        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
 
         try {
             validateMafiaFamily707(em);
             
-            // Change the properties on the same EM and validate the next family.
-            em.setProperty("tenant.id", "007");
-            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
 
             validateMafiaFamily007(em);
         } catch (RuntimeException e) {
@@ -581,6 +574,10 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
     protected void validateMafiaFamily007(EntityManager em) {
         clearCache(MULTI_TENANT_PU);
         em.clear();
+        beginTransaction(em);
+
+        em.setProperty("tenant.id", "007");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
         
         MafiaFamily family =  em.find(MafiaFamily.class, family007);
         assertNotNull("The Mafia Family with id: " + family007 + ", was not found", family);
@@ -618,12 +615,17 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         // Find our boss and make sure his name has not been compromised from the 707 family.
         Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
         assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+        commitTransaction(em);
     }
     
     protected void validateMafiaFamily707(EntityManager em) {
         clearCache(MULTI_TENANT_PU);
         em.clear();
         
+        beginTransaction(em);
+
+        em.setProperty("tenant.id", "707");
+        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
         MafiaFamily family = em.find(MafiaFamily.class, family707);
         assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
         assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", family.getTags().size() == 3);
@@ -646,9 +648,7 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         }
         
         // Update all our contract descriptions to be 'voided'
-        beginTransaction(em);
         em.createNamedQuery("UpdateAllXmlContractDescriptions").executeUpdate();
-        commitTransaction(em);
         
         // Read and validate the contracts
         List<Contract> contracts = em.createNamedQuery("FindAllXmlContracts").getResultList();
@@ -666,7 +666,6 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         }
         // We know what the boss's id is for the 007 family to try to update him from the 707 pu.
         // The 007 family is validated after this test.
-        beginTransaction(em);
         Query query = em.createNamedQuery("UpdateXMLBossName");
         query.setParameter("name", "Compromised");
         query.setParameter("id", family007Mafiosos.get(0));
