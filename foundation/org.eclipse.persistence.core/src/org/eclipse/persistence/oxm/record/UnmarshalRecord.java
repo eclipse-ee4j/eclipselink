@@ -121,8 +121,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
-    
+    private boolean skipNextTextNode;
     protected List<UnmarshalRecord> childRecordPool;
+    protected XPathFragment textWrapperFragment;
+
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
@@ -674,7 +676,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 return;
             }
 
-            XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);
+            XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);            
+
+            if(null == node && xPathNode.getTextNode() != null){            	
+            	if(textWrapperFragment != null && localName.equals(textWrapperFragment.getLocalName())){
+            	   node = xPathNode.getTextNode();
+            	   skipNextTextNode = true;
+            	}
+            }
+       
             if (null == node) {
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
@@ -828,9 +838,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             if (null != xPathNode.getUnmarshalNodeValue()) {
                 xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
-            } else {
+            } else if(!skipNextTextNode){
                 XPathNode textNode = xPathNode.getTextNode();
-
                 if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
                     NodeValue textNodeUnmarshalNodeValue = textNode.getUnmarshalNodeValue();
                     if (!isXsiNil) {
@@ -851,7 +860,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         }
                     }
                 }
-            }
+            }else{
+            	skipNextTextNode = false;
+            }           
             XPathFragment xPathFragment = xPathNode.getXPathFragment();
             if(null != xPathFragment && xPathFragment.nameIsText()) {
                 xPathNode = xPathNode.getParent();
@@ -1206,6 +1217,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         if(xPathFragment != null){
         	xPathFragment.setNamespaceAware(isNamespaceAware());
         }
+        if(unmarshaller.getValueWrapper() != null){
+        	textWrapperFragment = new XPathFragment(unmarshaller.getValueWrapper());
+        }
     }
     
     /**
@@ -1217,5 +1231,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
      */
     public Map<String, String> getPrefixesForFragment() {
         return prefixesForFragment;
-    }	
+    }
+       
 }

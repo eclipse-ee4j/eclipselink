@@ -163,7 +163,7 @@ public class JSONWriterRecord extends MarshalRecord {
             }
              
             if(position == null || !position.isCollection() || position.isEmptyCollection()){
-            	if(position.needToOpenComplex){
+            	if(position !=null && position.needToOpenComplex){
             		writer.write('{');
             		position.needToOpenComplex = false;
             		position.needToCloseComplex = true;
@@ -482,6 +482,15 @@ public class JSONWriterRecord extends MarshalRecord {
     	characters(value);
     }
 
+    /**
+     * INTERNAL:
+     * The optional fragment used to wrap the text() mappings
+     * @since 2.4
+     */
+    public XPathFragment getTextWrapperFragment() {
+        return textWrapperFragment;
+    }
+    
     /**
      * INTERNAL:
      */

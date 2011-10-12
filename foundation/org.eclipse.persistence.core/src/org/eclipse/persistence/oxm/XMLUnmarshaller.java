@@ -103,6 +103,8 @@ public class XMLUnmarshaller implements Cloneable {
     private Class unmappedContentHandlerClass;
     private StrBuffer stringBuffer;
     private MediaType mediaType = MediaType.APPLICATION_XML;
+    private String valueWrapper;
+
     static {
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(STAX_SOURCE_CLASS_NAME);
@@ -653,7 +655,25 @@ public class XMLUnmarshaller implements Cloneable {
     public Schema getSchema() {
         return this.platformUnmarshaller.getSchema();
     }
+    
+    /**
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
+     * Ignored marshalling XML.  
+     * @since 2.4	 
+     */	
+    public String getValueWrapper() {
+        return valueWrapper;
+    }
 
+    /**
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
+     * Ignored marshalling XML.  
+     * @since 2.4	 
+     */
+    public void setValueWrapper(String valueWrapper) {
+        this.valueWrapper = valueWrapper;
+    }
+    
     @Override
     public XMLUnmarshaller clone() {
         XMLUnmarshaller clone = new XMLUnmarshaller(xmlContext);

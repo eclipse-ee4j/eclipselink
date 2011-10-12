@@ -104,6 +104,7 @@ public class XMLMarshaller implements Cloneable {
     private String attributePrefix;
     private boolean includeRoot;
     private NamespaceResolver namespaceResolver;
+    private String valueWrapper;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -1493,7 +1494,25 @@ public class XMLMarshaller implements Cloneable {
     public void setAttributePrefix(String attributePrefix) {
         this.attributePrefix = attributePrefix;
     }
-		
+    
+    /**
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
+     * Ignored marshalling XML.  
+     * @since 2.4	 
+     */	
+    public String getValueWrapper() {
+        return valueWrapper;
+    }
+
+    /**
+     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
+     * Ignored marshalling XML.  
+     * @since 2.4	 
+     */
+    public void setValueWrapper(String valueWrapper) {
+        this.valueWrapper = valueWrapper;
+    }
+    
     /**
      * Determine if the @XMLRootElement should be marshalled when present.  
      * Ignored marshalling XML.   

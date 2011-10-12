@@ -48,7 +48,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     	 if(nextFragment == null ){
     		 return xPathFragment.isAttribute() || xPathFragment.nameIsText();
     	 }else{
-         return  (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());
+             return  (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());
     	 }       
     }
 
@@ -60,8 +60,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         if (xmlCompositeDirectCollectionMapping.isReadOnly()) {
             return false;
         }
-
-    
+   
         ContainerPolicy cp = getContainerPolicy();
         Object collection = xmlCompositeDirectCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
@@ -117,12 +116,24 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
             }
         } else {
+            XPathFragment textXPathFragment = null; 
+            if(xPathFragment.nameIsText() && marshalRecord.getTextWrapperFragment() != null && xPathFragment.getXMLField().getXPathFragment() == xPathFragment){
+              	textXPathFragment = marshalRecord.getTextWrapperFragment();   
+            }   
+            if(textXPathFragment !=null){
+            	marshalRecord.openStartElement(textXPathFragment, namespaceResolver);
+            }
+                                     
             marshalRecord.startCollection();
          
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
          	    marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
             }
+            if(textXPathFragment!=null){
+            	marshalRecord.endElement(textXPathFragment, namespaceResolver);
+            }
+        	
             marshalRecord.endCollection();
         }
         return true;
@@ -274,7 +285,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             } else {
                 value = xmlCompositeDirectCollectionMapping.getValueConverter().convertObjectValueToDataValue(value, session);
             }
-        }
+        }        
+        
         XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
         if (null != value) {
             QName schemaType = getSchemaType(xmlField, value, session);
@@ -310,9 +322,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     updateNamespaces(schemaType, marshalRecord, xmlField);
                 }
                 marshalRecord.closeStartElement();
-                marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);                
+                marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                 marshalRecord.characters(schemaType, value, xmlCompositeDirectCollectionMapping.isCDATA());                
-            
             }
             marshalRecord.endElement(xPathFragment, namespaceResolver);
             return true;

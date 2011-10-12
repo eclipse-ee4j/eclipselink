@@ -28,6 +28,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,6 +50,8 @@ public abstract class MarshalRecord extends XMLRecord {
     private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 
+    protected XPathFragment textWrapperFragment;
+    
     protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
     protected static final String TRUE = "true";
     
@@ -560,6 +563,27 @@ public abstract class MarshalRecord extends XMLRecord {
             }
         }
         return xsiPrefix;
+    }
+    
+    /**
+     * INTERNAL:
+     * The optional fragment used to wrap the text() mappings
+     * @since 2.4
+     */
+    public XPathFragment getTextWrapperFragment() {
+    	//return null as this is not supported by default
+    	//subclass records can return the fragment if supported.
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setMarshaller(XMLMarshaller marshaller) {
+    	super.setMarshaller(marshaller);
+        if(marshaller.getValueWrapper() != null){
+        	textWrapperFragment = new XPathFragment(marshaller.getValueWrapper());
+        }
     }
 
 }

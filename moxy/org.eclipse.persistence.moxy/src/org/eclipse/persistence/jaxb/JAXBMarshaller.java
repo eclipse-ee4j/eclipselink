@@ -566,6 +566,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	    nr.getPrefixesToNamespaces().putAll(namespaces);            
                     xmlMarshaller.setNamespaceResolver(nr);
             	}
+            } else if(JAXBContext.VALUE_WRAPPER.equals(key)){
+            	xmlMarshaller.setValueWrapper((String)value); 
             } else {
                 throw new PropertyException(key, value);
             }

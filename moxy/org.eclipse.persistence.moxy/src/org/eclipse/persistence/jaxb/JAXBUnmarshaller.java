@@ -737,6 +737,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
         	    nr.getPrefixesToNamespaces().putAll(namespaces);            
         	    setNamespaceResolver(nr);
         	}
+        } else if(JAXBContext.VALUE_WRAPPER.equals(key)){
+        	xmlUnmarshaller.setValueWrapper((String)value); 
         } else {
             throw new PropertyException(key, value);
         }

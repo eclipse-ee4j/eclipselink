@@ -1,0 +1,11 @@
+{"person":{
+   "address":{
+      "unmarshalWrapper":["someStreet","someCity","somePostalCode"]
+    },
+   "firstName":"Sally",
+   "lastName":"Smith",
+   "phoneNumber":{
+      "unmarshalWrapper":"1234567"  
+      }
+ }
+}

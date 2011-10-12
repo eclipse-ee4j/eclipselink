@@ -62,6 +62,12 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
+        XPathFragment textXPathFragment = null; 
+
+        if(xPathFragment.nameIsText() && marshalRecord.getTextWrapperFragment() != null && xPathFragment.getXMLField().getXPathFragment() == xPathFragment){
+        	textXPathFragment = marshalRecord.getTextWrapperFragment();   
+        }
+        
         // Check for a null value 
         if (null == fieldValue) {
             // Perform marshal operations based on the null policy
@@ -83,8 +89,15 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             	marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
-                marshalRecord.closeStartGroupingElements(groupingFragment);          
+                marshalRecord.closeStartGroupingElements(groupingFragment); 
+                
+                if(textXPathFragment !=null){
+                	marshalRecord.openStartElement(textXPathFragment, namespaceResolver);
+                }
                 marshalRecord.characters(schemaType, fieldValue, xmlDirectMapping.isCDATA());
+                if(textXPathFragment!=null){
+                	marshalRecord.endElement(textXPathFragment, namespaceResolver);
+                }
             }
             if(isQName) {
                 //check to see if the last grouping fragment was swapped

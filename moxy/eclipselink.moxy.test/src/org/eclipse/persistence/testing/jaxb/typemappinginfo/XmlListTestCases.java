@@ -16,6 +16,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -34,7 +36,8 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 public class XmlListTestCases extends OXTestCase {
 
     private static String XML = "<root xmlns:ns0=\"http://jaxb.dev.java.net/array\">1 2</root>";
-
+    private static String JSON = "\"root\":[\"1\",\"2\"]";
+    private static String JSON_INT = "\"root\":[1,2]";
     public XmlListTestCases(String name) {
         super(name);
     }
@@ -77,5 +80,43 @@ public class XmlListTestCases extends OXTestCase {
         marshaller.marshal(o, streamResult, t);
         assertEquals(XML, stringWriter.toString());
     }
+    
+    public void testJSONStringArray() throws Exception{
+    	_testJSONArray(new String[] {"1", "2"}, JSON, "application/json");
+    }
+    
+    public void testJSONIntArray() throws Exception{
+    	_testJSONArray(new int[] {1, 2}, JSON_INT, "application/json");
+    }
 
+
+    
+    public void _testJSONArray(Object controlArray, String controlString, String mediaType) throws Exception{
+        XmlList xmlList = new XmlList() {
+            public Class<? extends Annotation> annotationType() {
+                return XmlList.class;
+            }
+        };
+
+        Annotation[] a = { xmlList };
+        TypeMappingInfo t = new TypeMappingInfo();
+        t.setType(controlArray.getClass());
+        t.setXmlTagName(new QName("root"));
+        t.setAnnotations(a);
+        TypeMappingInfo[] types = { t };
+        
+        Map props = new HashMap();
+        props.put(JAXBContext.MEDIA_TYPE, mediaType);
+        
+        JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory .createContext(types, props, Thread.currentThread().getContextClassLoader());
+       
+        StringWriter stringWriter = new StringWriter();
+        StreamResult streamResult = new StreamResult(stringWriter);
+        
+        JAXBMarshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        marshaller.marshal(controlArray, streamResult, t);
+ 
+        assertEquals(removeWhiteSpaceFromString(controlString), removeWhiteSpaceFromString(stringWriter.toString()));
+    }
 }

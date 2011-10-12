@@ -142,6 +142,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @XmlRootElement should be marshalled/unmarshaled.  Not applicable if 
      * eclipselink.media-type is set to "application/xml" */
     public static final String INCLUDE_ROOT = "eclipselink.include-root";
+    
+    /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
+     *  that will be used around things mapped with @XmlValue.  Not application if the
+     *  eclipselink.media.type is set to "application/xml" 
+     */
+    public static final String VALUE_WRAPPER = "eclipselink.value-wrapper";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
@@ -1185,6 +1191,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             	setPropertyOnMarshaller(JAXBContext.ATTRIBUTE_PREFIX, marshaller);
             	setPropertyOnMarshaller(JAXBContext.NAMESPACES, marshaller);
             	setPropertyOnMarshaller(JAXBContext.INCLUDE_ROOT, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.VALUE_WRAPPER, marshaller);
+
             }
         
             return marshaller;
@@ -1207,6 +1215,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
              	setPropertyOnUnmarshaller(JAXBContext.ATTRIBUTE_PREFIX, unmarshaller);
              	setPropertyOnUnmarshaller(JAXBContext.NAMESPACES, unmarshaller);
              	setPropertyOnUnmarshaller(JAXBContext.INCLUDE_ROOT, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.VALUE_WRAPPER, unmarshaller);
              }
              return unmarshaller;
         }
