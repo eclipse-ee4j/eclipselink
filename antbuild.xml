@@ -123,7 +123,7 @@
                                   else="C:/apache-maven-3.0.3">
         <isset property="env.M2_HOME"/>
     </condition>
-    <echo message="Maven install set to: '${M2_HOME}'"/>
+    <echo message="'M2_HOME' set to: '${M2_HOME}'"/>
     <condition property="use.maven" value="true">
         <available file="${M2_HOME}/bin/mvn"/>
     </condition>
