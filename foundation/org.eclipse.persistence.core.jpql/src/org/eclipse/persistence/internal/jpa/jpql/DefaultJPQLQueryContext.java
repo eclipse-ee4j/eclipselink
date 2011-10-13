@@ -386,7 +386,7 @@ final class DefaultJPQLQueryContext extends JPQLQueryContext {
 		return getJavaType(getType(typeName));
 	}
 
-	private DefaultJPQLQueryContext getParent() {
+	public DefaultJPQLQueryContext getParent() {
 		return (DefaultJPQLQueryContext) parent;
 	}
 
