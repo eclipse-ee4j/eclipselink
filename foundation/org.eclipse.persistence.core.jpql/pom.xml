@@ -6,7 +6,7 @@
     <name>EclipseLink JPQL Extension for Hermes</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.core.jpql</artifactId>
-    <version>${release.version}-SNAPSHOT</version>
+    <version>2.4.0-SNAPSHOT</version>
     <packaging>eclipse-plugin</packaging>
     
     <parent>

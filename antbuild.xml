@@ -236,7 +236,7 @@
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
     <target name="clean-core-mavenbuilt" if="use.maven" description="Clean the maven built runtime projects">
-        <java dir="${eclipselink.mvn.parent}" fork="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+        <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <arg value="clean"/>
@@ -273,8 +273,7 @@
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core-maven" if="use.maven">
-        <property name="M2_HOME" value="C:/apache-maven-3.0.3"/>
-        <java dir="${eclipselink.mvn.parent}" fork="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+        <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <arg value="install"/>
