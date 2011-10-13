@@ -418,15 +418,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getVPDCreationPolicyString(String tableName, AbstractSession session) {
-        try {
-            String functionName = tableName + "_ident_func";
-            String schemaName = session.getAccessor().getConnection().getMetaData().getUserName();
-            String policyName = tableName + "_todo_list_policy";
-                
-            return "\nCALL DBMS_RLS.ADD_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "', '" + schemaName + "', '" + functionName +"', 'select, update, delete')\n";
-        } catch (SQLException sqlException) {
-            throw new RuntimeException("could not extract user name from getMetadata");
-        }
+        String functionName = tableName + "_ident_func";
+        String schemaName = session.getDatasourceLogin().getUserName();
+        String policyName = tableName + "_todo_list_policy";
+        return "\nCALL DBMS_RLS.ADD_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "', '" + schemaName + "', '" + functionName +"', 'select, update, delete')\n";
     }
     
     /**
@@ -435,13 +430,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getVPDDeletionString(String tableName, AbstractSession session) {
-        try {
-            String schemaName = session.getAccessor().getConnection().getMetaData().getUserName();
-            String policyName = tableName + "_todo_list_policy";
-            return "\nCALL DBMS_RLS.DROP_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "')";
-        } catch (SQLException sqlException) {
-            throw new RuntimeException("could not extract user name from getMetadata");
-        }
+        String schemaName = session.getDatasourceLogin().getUserName();
+        String policyName = tableName + "_todo_list_policy";
+        return "\nCALL DBMS_RLS.DROP_POLICY ('" + schemaName + "', '" + tableName + "', '" + policyName + "')";
     }
     
     /**
