@@ -843,6 +843,54 @@ public final class SemanticValidatorTest extends AbstractValidatorTest {
 	}
 
 	@Test
+	public void test_EnumConstant_InvalidEnumConstant_1() throws Exception {
+
+		String query = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.FIRST_NAME";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_InvalidEnumConstant
+		);
+
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_EnumConstant_InvalidEnumConstant_2() throws Exception {
+
+		String query = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.INVALID";
+		int startPosition = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.".length();
+		int endPosition   = query.length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_InvalidEnumConstant,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_EnumConstant_ValidEnumConstant() throws Exception {
+
+		String query = "SELECT w " +
+		               "FROM Product w " +
+		               "WHERE     w.id       = :projId" +
+		               "      AND w.enumType = jpql.query.EnumType.FIRST_NAME " +
+		               "      AND w.quantity = :count";
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariable_Invalid_NotDeclared
+		);
+	}
+
+	@Test
 	public void test_IdentificationVariable_EntityName() throws Exception {
 
 		String query = "SELECT Employee FROM Address Employee";
@@ -1590,35 +1638,6 @@ public final class SemanticValidatorTest extends AbstractValidatorTest {
 		testHasProblem(
 			problems,
 			JPQLQueryProblemMessages.StateFieldPathExpression_CollectionType,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_StateFieldPathExpression_InvalidEnumConstant_1() throws Exception {
-
-		String query = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.FIRST_NAME";
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.StateFieldPathExpression_InvalidEnumConstant
-		);
-	}
-
-	@Test
-	public void test_StateFieldPathExpression_InvalidEnumConstant_2() throws Exception {
-
-		String query = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.INVALID";
-		int startPosition = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.".length();
-		int endPosition   = query.length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.StateFieldPathExpression_InvalidEnumConstant,
 			startPosition,
 			endPosition
 		);

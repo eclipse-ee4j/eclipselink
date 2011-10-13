@@ -732,6 +732,10 @@ public final class SemanticValidator extends AbstractValidator {
 					int endIndex   = startIndex + enumConstant.length();
 					addProblem(expression, startIndex, endIndex, StateFieldPathExpression_InvalidEnumConstant, enumConstant);
 				}
+
+				// Remove the used identification variable since it's is the first
+				// package name of the fully qualified enum constant
+				usedIdentificationVariables.remove(expression.getIdentificationVariable());
 			}
 			else {
 				// No mapping can be found for that path, it could be a transient mapping
@@ -1819,8 +1823,8 @@ public final class SemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(StateFieldPathExpression expression) {
-		validateStateFieldPathExpression(expression, true);
 		super.visit(expression);
+		validateStateFieldPathExpression(expression, true);
 	}
 
 	/**
