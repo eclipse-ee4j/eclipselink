@@ -1,57 +1,25 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.libraries.asm.signatu
- re;version="2.4.0.qualifier",org.eclipse.persistence.internal.librari
- es.asm.commons;uses:="org.eclipse.persistence.internal.libraries.asm,
- org.eclipse.persistence.internal.libraries.asm.tree,org.eclipse.persi
- stence.internal.libraries.asm.signature";version="2.4.0.qualifier",or
- g.eclipse.persistence.internal.libraries.asm.tree;uses:="org.eclipse.
- persistence.internal.libraries.asm";version="2.4.0.qualifier",org.ecl
- ipse.persistence.internal.libraries.asm.tree.analysis;uses:="org.ecli
- pse.persistence.internal.libraries.asm.tree,org.eclipse.persistence.i
- nternal.libraries.asm";version="2.4.0.qualifier",org.eclipse.persiste
- nce.internal.libraries.asm.xml;uses:="org.eclipse.persistence.interna
- l.libraries.asm,org.xml.sax,org.xml.sax.helpers,org.xml.sax.ext,javax
- .xml.transform,javax.xml.transform.sax,javax.xml.transform.stream,org
- .eclipse.persistence.internal.libraries.asm.util";version="2.4.0.qual
- ifier",org.eclipse.persistence.internal.libraries.asm;version="2.4.0.
- qualifier",org.eclipse.persistence.internal.libraries.asm.util;uses:=
- "org.eclipse.persistence.internal.libraries.asm,org.eclipse.persisten
- ce.internal.libraries.asm.tree.analysis,org.eclipse.persistence.inter
- nal.libraries.asm.tree,org.eclipse.persistence.internal.libraries.asm
- .signature";version="2.4.0.qualifier"
-Private-Package: .
-Implementation-Version: 2.4.0.qualifier
-Tool: Bnd-0.0.384
-DSTAMP: 20110629
-TODAY: June 29 2011
+Export-Package: org.eclipse.persistence.internal.libraries.asm;version="3.3.1.v201107111215",
+ org.eclipse.persistence.internal.libraries.asm.commons;version="3.3.1.v201107111215",
+ org.eclipse.persistence.internal.libraries.asm.signature;version="3.3.1.v201107111215",
+ org.eclipse.persistence.internal.libraries.asm.tree;version="3.3.1.v201107111215",
+ org.eclipse.persistence.internal.libraries.asm.tree.analysis;version="3.3.1.v201107111215",
+ org.eclipse.persistence.internal.libraries.asm.util;version="3.3.1.v201107111215",
+ org.eclipse.persistence.internal.libraries.asm.xml;version="3.3.1.v201107111215"
+Implementation-Version: 3.3.1.v201107111215
 Bundle-Name: EclipseLink ASM
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-TSTAMP: 1352
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.4.0.qualifier
-Bnd-LastModified: 1309369969263
+Bundle-Version: 3.3.1.v201107111215
 Bundle-ManifestVersion: 2
-Include-Resource: ../../about.html,../../readme.html,../../license.htm
- l,org/eclipse/persistence/internal/libraries/asm/package.html=src/org
- /eclipse/persistence/internal/libraries/asm/package.html,org/eclipse/
- persistence/internal/libraries/asm/commons/package.html=src/org/eclip
- se/persistence/internal/libraries/asm/commons/package.html,org/eclips
- e/persistence/internal/libraries/asm/signature/package.html=src/org/e
- clipse/persistence/internal/libraries/asm/signature/package.html,org/
- eclipse/persistence/internal/libraries/asm/tree/package.html=src/org/
- eclipse/persistence/internal/libraries/asm/tree/package.html,org/ecli
- pse/persistence/internal/libraries/asm/tree/analysis/package.html=src
- /org/eclipse/persistence/internal/libraries/asm/tree/analysis/package
- .html,org/eclipse/persistence/internal/libraries/asm/util/package.htm
- l=src/org/eclipse/persistence/internal/libraries/asm/util/package.htm
- l,org/eclipse/persistence/internal/libraries/asm/xml/package.html=src
- /org/eclipse/persistence/internal/libraries/asm/xml/package.html,org/
- eclipse/persistence/internal/libraries/asm/xml/asm-xml.dtd=src/org/ec
- lipse/persistence/internal/libraries/asm/xml/asm-xml.dtd
-Import-Package: javax.xml.transform,javax.xml.transform.sax,javax.xml.
- transform.stream,org.xml.sax,org.xml.sax.ext,org.xml.sax.helpers
+Import-Package: javax.xml.transform,
+ javax.xml.transform.sax,
+ javax.xml.transform.stream,
+ org.xml.sax,
+ org.xml.sax.ext,
+ org.xml.sax.helpers
 Bundle-SymbolicName: org.eclipse.persistence.asm
 

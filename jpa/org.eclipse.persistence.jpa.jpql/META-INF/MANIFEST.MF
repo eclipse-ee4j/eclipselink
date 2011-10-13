@@ -1,36 +1,20 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.jpa.jpql;uses:="org.eclipse.pe
- rsistence.jpa.jpql.spi,org.eclipse.persistence.jpa.internal.jpql,org.
- eclipse.persistence.jpa.internal.jpql.parser";version="1.0.0.qualifie
- r",org.eclipse.persistence.jpa.internal.jpql.util;version="1.0.0.qual
- ifier",org.eclipse.persistence.jpa.jpql.spi;uses:="org.eclipse.persis
- tence.jpa.jpql";version="1.0.0.qualifier",org.eclipse.persistence.jpa
- .internal.jpql.parser;uses:="org.eclipse.persistence.jpa.internal.jpq
- l,org.eclipse.persistence.jpa.jpql.spi,org.eclipse.persistence.jpa.jp
- ql,org.eclipse.persistence.jpa.internal.jpql.util";version="1.0.0.qua
- lifier",org.eclipse.persistence.jpa.internal.jpql;uses:="org.eclipse.
- persistence.jpa.jpql,org.eclipse.persistence.jpa.jpql.spi,org.eclipse
- .persistence.jpa.internal.jpql.parser,org.eclipse.persistence.jpa.int
- ernal.jpql.util";version="1.0.0.qualifier"
-Private-Package: .
-Implementation-Version: 1.0.0.qualifier
+Export-Package: org.eclipse.persistence.jpa.internal.jpql;version="1.1.0.qualifier",
+ org.eclipse.persistence.jpa.internal.jpql.parser;version="1.1.0.qualifier",
+ org.eclipse.persistence.jpa.internal.jpql.util;version="1.1.0.qualifier",
+ org.eclipse.persistence.jpa.jpql;version="1.1.0.qualifier",
+ org.eclipse.persistence.jpa.jpql.spi;version="1.1.0.qualifier"
+Implementation-Version: 1.1.0.qualifier
 Specification-Vendor: Eclipse.org - EclipseLink Project
-Tool: Bnd-0.0.384
-DSTAMP: 20110629
-TODAY: June 29 2011
 Bundle-Name: EclipseLink Hermes Parser
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-TSTAMP: 1352
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.j
  pql
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 1.0.0.qualifier
-Bnd-LastModified: 1309369985843
+Bundle-Version: 1.1.0.qualifier
 Bundle-ManifestVersion: 2
-Include-Resource: ../../about.html,../../readme.html,../../license.htm
- l
-Specification-Version: 1.0.0
+Specification-Version: 1.1.0
 Bundle-SymbolicName: org.eclipse.persistence.jpa.jpql
 

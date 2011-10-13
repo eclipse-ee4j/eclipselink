@@ -1,35 +1,24 @@
 Manifest-Version: 1.0
 Private-Package: org.eclipse.persistence.internal.jpa.deployment.osgi.
  equinox,.
-Implementation-Version: 2.2.0.qualifier
+Implementation-Version: 2.4.0.qualifier
 JPA-Initializer: org.eclipse.persistence.internal.jpa.deployment.osgi.
  equinox.EquinoxInitializer
 Specification-Vendor: Eclipse.org - EclipseLink Project
-Tool: Bnd-0.0.366
-DSTAMP: 20091021
 Bundle-Name: EclipseLink Dynamic Weaving Fragment for Equinox
-TODAY: October 21 2009
-Created-By: 1.6.0_06 (Sun Microsystems Inc.)
-TSTAMP: 1018
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Created-By: 1.6.0_26 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.e
  quinox
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Fragment-Host: org.eclipse.persistence.jpa.osgi;bundle-version="2.1.0.qualifier"
-Bundle-Version: 2.1.0.qualifier
-Bnd-LastModified: 1256134735762
+Fragment-Host: org.eclipse.persistence.jpa.osgi;bundle-version="2.4.0"
+Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2
-Include-Resource: ../../about.html,../../readme.html,../../license.htm
- l
-Import-Package: javax.persistence.spi;version="1.1.0";jpa="2.0",
- org.eclipse.persistence.internal.jpa,
- org.eclipse.persistence.internal.jpa.deployment,
- org.eclipse.persistence.internal.jpa.deployment.osgi,
- org.eclipse.persistence.jpa.equinox.weaving,
- org.eclipse.persistence.jpa.osgi,
- org.eclipse.persistence.logging,
- org.osgi.framework
-Specification-Version: 2.0.0
+Import-Package: javax.persistence.spi;jpa="2.0",org.eclipse.persistenc
+ e.internal.jpa,org.eclipse.persistence.internal.jpa.deployment,org.ec
+ lipse.persistence.jpa.equinox.weaving,org.eclipse.persistence.jpa.osg
+ i,org.eclipse.persistence.logging,org.osgi.framework
+Specification-Version: 2.4.0
 Bundle-SymbolicName: org.eclipse.persistence.jpa.equinox
 

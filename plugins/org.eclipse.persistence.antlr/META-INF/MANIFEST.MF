@@ -1,33 +1,17 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.libraries.antlr.runti
- me;uses:="org.eclipse.persistence.internal.libraries.antlr.runtime.tr
- ee";version="2.4.0.qualifier",org.eclipse.persistence.internal.librar
- ies.antlr.runtime.debug;uses:="org.eclipse.persistence.internal.libra
- ries.antlr.runtime,org.eclipse.persistence.internal.libraries.antlr.r
- untime.tree,org.eclipse.persistence.internal.libraries.antlr.runtime.
- misc";version="2.4.0.qualifier",org.eclipse.persistence.internal.libr
- aries.antlr.runtime.misc;version="2.4.0.qualifier",org.eclipse.persis
- tence.internal.libraries.antlr.runtime.tree;uses:="org.eclipse.persis
- tence.internal.libraries.antlr.runtime,org.eclipse.persistence.intern
- al.libraries.antlr.runtime.misc,org.antlr.stringtemplate";version="2.
- 4.0.qualifier"
-Private-Package: .
-Implementation-Version: 2.4.0.qualifier
-Tool: Bnd-0.0.384
-DSTAMP: 20110629
-TODAY: June 29 2011
+Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="3.2.0.v201107111232",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.debug;version="3.2.0.v201107111232",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.misc;version="3.2.0.v201107111232",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version="3.2.0.v201107111232"
+Implementation-Version: 3.2.0.v201107111232
 Bundle-Name: EclipseLink ANTLR
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-TSTAMP: 1352
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.4.0.qualifier
-Bnd-LastModified: 1309369972904
+Bundle-Version: 3.2.0.v201107111232
 Bundle-ManifestVersion: 2
-Include-Resource: ../../about.html,../../readme.html,../../license.htm
- l
 Import-Package: org.antlr.stringtemplate;resolution:=optional
 Bundle-SymbolicName: org.eclipse.persistence.antlr
 

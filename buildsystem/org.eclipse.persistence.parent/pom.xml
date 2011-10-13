@@ -145,6 +145,10 @@
             <id>sonatype-staging</id>
             <url>https://repository.sonatype.org/content/repositories/sonatype_org-031/</url>
         </pluginRepository>
+        <!-- pluginRepository>
+            <id>maven-eclipse</id>
+            <url>http://maven.eclipse.org</url>
+        </pluginRepository -->
     </pluginRepositories>
     
     <repositories>

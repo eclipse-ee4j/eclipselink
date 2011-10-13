@@ -124,6 +124,9 @@
         <isset property="env.M2_HOME"/>
     </condition>
     <echo message="Maven install set to: '${M2_HOME}'"/>
+    <condition property="use.maven" value="true">
+        <available file="${M2_HOME}/bin/mvn"/>
+    </condition>
 
     <!-- Needed because some buildfiles depend upon JDK6 -->
     <condition property="java_is_v5" value="true">
