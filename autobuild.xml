@@ -53,7 +53,7 @@
         </path>
     </pathconvert>
     <echo message="build.location = '${build.location}'"/>
-
+M2_HOME
     <!-- Define custom task to "cleanup" the revision information -->
     <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
     <property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/>
@@ -111,8 +111,12 @@
         <!-- #                       the db properties for automated testing       -->
         <property name="coretest.prop.file" value="${log.dir}/mysql.jpa.test.properties"/>
         <property name="test.properties.run" value="${coretest.prop.file}"/>
-
-        <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"  -->
+        
+        <!-- M2_HOME defaults the value maven 3.0.3 install location on the build  -->
+        <!--   server, this is brittle, but easier for now                         -->
+        <property name="M2_HOME" value="/shared/common/apache-maven-3.0.3"/>
+        
+        <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"    -->
         <!--   or "RELEASE" on the command-line for milestone or release builds  -->
         <property name="build.type" value="SNAPSHOT"/>
 
