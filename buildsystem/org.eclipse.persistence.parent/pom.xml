@@ -17,7 +17,7 @@
         <!-- maven.test.version>1.8</maven.test.version -->
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format -->
     	<release.version>2.4.0</release.version>
-        <build.qualifier>qualifier</build.qualifier>
+        <!-- build.qualifier>qualifier</build.qualifier -->
     	<build.type>SNAPSHOT</build.type>
 	    <svn.revision>NA</svn.revision>
     	<src>./src</src>
@@ -148,7 +148,7 @@
         </pluginRepository>
         <!-- pluginRepository>
             <id>maven-eclipse</id>
-            <url>http://maven.eclipse.org</url>
+            <url>https://maven.eclipse.org</url>
         </pluginRepository -->
     </pluginRepositories>
     
