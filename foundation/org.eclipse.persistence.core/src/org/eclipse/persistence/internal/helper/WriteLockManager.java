@@ -389,7 +389,11 @@ public class WriteLockManager {
             lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, descriptor.getJavaClass(), descriptor);
             Object cachedObject = lockedCacheKey.getObject();
             if (cachedObject == null) {
-                cachedObject = lockedCacheKey.waitForObject();
+                if (lockedCacheKey.getMutex().getActiveThread() == Thread.currentThread()) {
+                    lockedCacheKey.setObject(objectToLock);
+                } else {
+                    cachedObject = lockedCacheKey.waitForObject();
+                }
             }
             lockedCacheKey.releaseDeferredLock();
             return lockedCacheKey;
