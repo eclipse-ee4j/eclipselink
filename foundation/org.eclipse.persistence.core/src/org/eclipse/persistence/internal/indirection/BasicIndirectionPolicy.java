@@ -235,10 +235,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             }
         }
         if (unitOfWorkIndirectionObject instanceof WrappingValueHolder) {
-            ValueHolderInterface valueHolder = null;
-            if (session.isIsolatedClientSession()){
-                valueHolder =  ((WrappingValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
-            }
+            ValueHolderInterface valueHolder =  ((WrappingValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
             if (!session.isProtectedSession()){
                 valueHolder = ((WrappingValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
                 while (valueHolder instanceof WrappingValueHolder && ((WrappingValueHolder)valueHolder).getWrappedValueHolder() != null){
