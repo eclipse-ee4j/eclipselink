@@ -841,10 +841,10 @@ public class MappingsGenerator {
         JavaClass propertyType = property.getType();
         if (propertyType.isArray()) {
             JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
-            accessor.setComponentClassName(property.getType().getComponentType().getName());
+            accessor.setComponentClassName(property.getType().getComponentType().getQualifiedName());
             JavaClass componentType = propertyType.getComponentType();
             if(componentType.isArray()) {
-                Class adaptedClass = classToGeneratedClasses.get(componentType.getName());
+                Class adaptedClass = classToGeneratedClasses.get(componentType.getQualifiedName());
                 accessor.setAdaptedClassName(adaptedClass.getName());
             }
             mapping.setAttributeAccessor(accessor);
@@ -1002,10 +1002,10 @@ public class MappingsGenerator {
                     Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
                     accessor.setComponentClass(primitiveClass);
                 } else {
-                    accessor.setComponentClassName(baseComponentType.getName());
+                    accessor.setComponentClassName(baseComponentType.getQualifiedName());
                 }
             } else {
-                accessor.setComponentClassName(componentType.getName());
+                accessor.setComponentClassName(componentType.getQualifiedName());
             }
             mapping.setAttributeAccessor(accessor);
             collectionType = jotArrayList;
@@ -1713,10 +1713,10 @@ public class MappingsGenerator {
                     Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
                     accessor.setComponentClass(primitiveClass);
                 } else {
-                    accessor.setComponentClassName(baseComponentType.getName());
+                    accessor.setComponentClassName(baseComponentType.getQualifiedName());
                 }
             } else {
-                accessor.setComponentClassName(componentType.getName());
+                accessor.setComponentClassName(componentType.getQualifiedName());
             }
             mapping.setAttributeAccessor(accessor);
             collectionType = jotArrayList;
@@ -1798,7 +1798,7 @@ public class MappingsGenerator {
 
         if (collectionType.isArray()){
             JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
-            String componentClassName = collectionType.getComponentType().getRawName();
+            String componentClassName = collectionType.getComponentType().getQualifiedName();
             if (collectionType.getComponentType().isPrimitive()){
                 Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(componentClassName);
                 accessor.setComponentClass(primitiveClass);
