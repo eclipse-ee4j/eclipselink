@@ -34,32 +34,17 @@
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import javax.persistence.EntityManager;
 
 /**
  * JUnit test case(s) for DDL generation.
  */
-public class DDLTableSuffixTestSuite extends JUnitTestCase {
+public class DDLTableSuffixTestSuite extends DDLGenerationJUnitTestSuite {
     // This is the persistence unit name on server as for persistence unit name "ddlTableSuffix" in J2SE
     private static final String DDL_TABLE_CREATION_SUFFIX_PU = "MulitPU-3";
-    private static final String DDL_TABLE_CREATION_SUFFIX_DDL_FILENAME = "createDDL_ddlTableSuffix.jdbc";
 
     public DDLTableSuffixTestSuite() {
         super();
@@ -71,8 +56,10 @@ public class DDLTableSuffixTestSuite extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite(DDLTableSuffixTestSuite.class);
-        
+        TestSuite suite = new TestSuite();
+        suite.setName("DDLTableSuffixTestSuite");
+        suite.addTest(new DDLTableSuffixTestSuite("testSetup"));
+        suite.addTest(new DDLTableSuffixTestSuite("testDDLTableCreationWithSuffix"));
         return suite;
     }
 
@@ -84,115 +71,6 @@ public class DDLTableSuffixTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager(DDL_TABLE_CREATION_SUFFIX_PU);
         closeEntityManager(em);
         clearCache(DDL_TABLE_CREATION_SUFFIX_PU);
-    }
-
-    /**
-     * 214519 - Allow appending strings to CREATE TABLE statements 
-     * This test uses PU ddlTableSuffix to create file  DDL_TABLE_CREATION_SUFFIX_DDL_FILENAME, which it then
-     * reads back in to verify the CREATE TABLE statements have the correct strings appended to them
-     */
-    public void testDDLTableCreationWithSuffix(){
-      //strings searched for:
-        String property_suffix = " propertyCreationSuffix";
-        String xml_suffix = "creationSuffixString";
-        final String CREATE_TABLE = "CREATE TABLE ";
-
-      //results:
-        //used for checking eclipselink-orm.xml settings:
-        ArrayList<String> statements = new ArrayList();//used to output the create statement should it not have the suffix set in the orm.xml
-        ArrayList<Boolean> results = new ArrayList();
-
-        //used for checking settings from properties:
-        boolean has_property_suffix = true; //set to false when we find one create table statement missing the value
-        String property_statement = "";//used to output the create statement should it not have the suffix set through properties
-
-        EntityManager em = createEntityManager(DDL_TABLE_CREATION_SUFFIX_PU);
-
-        List<String> strings = getDDLFile(DDL_TABLE_CREATION_SUFFIX_DDL_FILENAME);
-        for (String statement: strings){
-            if (statement.startsWith(CREATE_TABLE)) {
-                if( !statement.endsWith(property_suffix)){
-                    has_property_suffix = false;
-                    property_statement = statement;
-                }
-                if (statement.startsWith(CREATE_TABLE+"DDL_SALARY")){
-                    statements.add(statement);
-                    //xml_suffix will be right before property_suffix in the statement.  Should be enough to check that its there
-                    results.add(statement.contains(xml_suffix+"1"));
-                } else if (statement.startsWith(CREATE_TABLE+"DDL_RESPONS")) {
-                    statements.add(statement);
-                    results.add(statement.contains(xml_suffix+"2"));
-                } else if (statement.startsWith(CREATE_TABLE+"DDL_COMMENT")) {
-                    statements.add(statement);
-                    results.add(statement.contains(xml_suffix+"3"));
-                } else if (statement.startsWith(CREATE_TABLE+"DDL_MANY_MANY")) {
-                    statements.add(statement);
-                    results.add(statement.contains(xml_suffix+"4"));
-                }
-            }
-        }
-
-        assertTrue("missing creation suffix from properties on statement: "+property_statement, has_property_suffix);
-        
-        int size = statements.size();
-        assertTrue("Missing some create Table statements, only got "+size+" of the 4 expected", size==4);
-        for(int i=0;i<size; i++) {
-            assertTrue("missing creation suffix "+i+" from eclipselink-orm.xml on statement: "+statements.get(i), results.get(i));
-        }
-    }
-
-    /**
-     * Returns a List of strings representing the lines within the fileName. 
-     * @param fileName
-     * @return List<String>
-     */
-    public List<String> getDDLFile(String fileName){
-        ArrayList<String> array = new ArrayList();
-        InputStream fileStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
-        if (fileStream == null) {
-            File file = new File(fileName);
-            try {
-                fileStream = new FileInputStream(file);
-            } catch (FileNotFoundException exception) {
-                this.warning("cannot load file "+fileName+ " due to error: "+exception);
-                throw ValidationException.fatalErrorOccurred(exception);
-            }
-        }
-        InputStreamReader reader = null;
-        BufferedReader buffReader = null;
-        try {
-            try {
-                // Bug2631348  Only UTF-8 is supported
-                reader = new InputStreamReader(fileStream, "UTF-8");
-            } catch (UnsupportedEncodingException exception) {
-                throw ValidationException.fatalErrorOccurred(exception);
-            }
-            buffReader = new BufferedReader(reader);
-            boolean go = true;
-            while (go){
-                String line = buffReader.readLine();
-                if (line==null) {
-                    go=false;
-                } else {
-                    array.add(line);
-                }
-            }
-
-        }catch (Exception e) {
-            //ignore exception
-        } finally {
-            try {
-                if (buffReader != null) {
-                    buffReader.close();
-                }
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException exception) {
-                throw ValidationException.fileError(exception);
-            }
-        }
-        return array;
     }
 
     public static void main(String[] args) {
