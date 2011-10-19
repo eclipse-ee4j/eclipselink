@@ -472,6 +472,13 @@
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
             </zipgroupfileset>
+            <!-- zipgroupfileset dir="${target dir}">
+                <include name="org.eclipse.persistence*.jar"/>
+                <exclude name="*source*.jar"/>
+                <exclude name="*jpa.jpql*.jar"/>
+                <exclude name="*equinox*.jar"/>
+                <exclude name="*builder*.jar"/>
+            </zipgroupfileset -->
             <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
             <fileset
                 dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
