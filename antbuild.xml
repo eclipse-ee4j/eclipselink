@@ -247,6 +247,13 @@
                 </fileset>
              </classpath>
         </java>
+        <delete>
+            <fileset dir="${plugins.dir}">
+                <include name="**/org.eclipse.persistence*.jar"/>
+                <include name="**/eclipselink*.jar"/>
+                <exclude name="**/org.eclipse.persistence.a*.jar"/>
+            </fileset>
+        </delete>
     </target>
     <target name="clean-core-antbuilt" unless="use.maven" description="Clean the runtime projects" >
         <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="clean"/>
@@ -466,7 +473,9 @@
                 <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
             </manifest>
             <zipgroupfileset dir="${eclipselink.plugins}">
-                <include name="org.eclipse.persistence*.jar"/>
+                <include name="org.eclipse.persistence*${version.string}.jar"/>
+                <include name="org.eclipse.persistence.asm*.jar"/>
+                <include name="org.eclipse.persistence.antlr*.jar"/>
                 <exclude name="*source*.jar"/>
                 <exclude name="*jpa.jpql*.jar"/>
                 <exclude name="*equinox*.jar"/>
