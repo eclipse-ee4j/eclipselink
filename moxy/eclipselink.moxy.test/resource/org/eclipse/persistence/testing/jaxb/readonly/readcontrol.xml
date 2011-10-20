@@ -1,0 +1,6 @@
+<root>
+   <readOnlyString>readOnlyString</readOnlyString>
+   <readOnlyStringArray>string1</readOnlyStringArray>
+   <readOnlyStringArray>string2</readOnlyStringArray>
+   <readOnlyStringArray>string3</readOnlyStringArray>
+</root>

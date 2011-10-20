@@ -212,6 +212,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlPathToAttributeTestCases.class);
         suite.addTestSuite(XmlPathWithXmlAttributeTestCases.class);
         suite.addTestSuite(RepeatedUnmarshalTestCases.class);
+        suite.addTestSuite(ReadAndWriteOnlyTestCases.class);
         return suite;
     }
 
