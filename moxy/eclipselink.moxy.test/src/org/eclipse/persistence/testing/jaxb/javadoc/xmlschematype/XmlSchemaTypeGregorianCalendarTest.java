@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlschematype;
 
-//Example 1: Customize mapping of XMLGregorianCalendar at package level 
+//Example 1: Customize mapping of XMLGregorianCalendar at field level 
 
 import java.util.Calendar; 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;

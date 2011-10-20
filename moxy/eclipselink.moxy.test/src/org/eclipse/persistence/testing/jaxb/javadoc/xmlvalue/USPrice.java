@@ -8,24 +8,35 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Praba Vijayaratnam - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso;
+import javax.xml.bind.annotation.*;
 
-import javax.xml.bind.annotation.XmlElement;
+/*
+ * Example 1: Map a class to XML Schema simpleType
+ */
+@XmlRootElement(name = "us-price")
+public class USPrice {
 
-public class Cat extends Animal {
+	@XmlValue
+	public double price;
 
-	@XmlElement
-	public int sleephours;
+	public double getPrice() {
+		return price;
+	}
 
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Cat)) {
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof USPrice) || o == null) {
 			return false;
+		} else {
+			return ((USPrice) o).price == this.price;
 		}
-		Cat cat = (Cat) obj;
-		return (cat.name.equals(name) && cat.owner.equals(owner) && cat.sleephours == sleephours);
 	}
 
 }

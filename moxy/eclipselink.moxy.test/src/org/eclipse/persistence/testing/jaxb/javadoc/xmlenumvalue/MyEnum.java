@@ -8,24 +8,18 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Praba Vijayaratnam - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.javadoc.xmlenumvalue;
 
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlEnumValue;
 
-import javax.xml.bind.annotation.XmlElement;
-
-public class Cat extends Animal {
-
-	@XmlElement
-	public int sleephours;
-
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Cat)) {
-			return false;
-		}
-		Cat cat = (Cat) obj;
-		return (cat.name.equals(name) && cat.owner.equals(owner) && cat.sleephours == sleephours);
-	}
-
+@XmlType
+@XmlEnum(Integer.class)
+public enum MyEnum {
+	@XmlEnumValue("1")
+	ONE, @XmlEnumValue("2")
+	TWO
 }

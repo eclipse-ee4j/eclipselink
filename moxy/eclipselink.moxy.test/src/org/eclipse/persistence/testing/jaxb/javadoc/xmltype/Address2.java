@@ -10,26 +10,51 @@
  * Contributors:
  *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement;
+package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
 import javax.xml.bind.annotation.*;
 
+@XmlType(propOrder = {})
 @XmlRootElement
-public class Point2D {
-	public int x;
-	public int y;
+public class Address2 {
 
-	public Point2D() {
-		;
+	public String name, street, city, state;
+
+	String getName() {
+		return name;
 	}
 
-	public Point2D(int _x, int _y) {
-		x = _x;
-		y = _y;
+	void setName(String n) {
+		this.name = n;
 	}
 
-	public boolean equals(Object object) {
-		Point2D point = ((Point2D) object);
-		return (point.x == this.x) && (point.y == this.y);
+	String getStreet() {
+		return street;
+	}
+
+	void setStreet(String str) {
+		this.street = str;
+	}
+
+	String getCity() {
+		return city;
+	}
+
+	void setCity(String c) {
+		this.city = c;
+	}
+
+	String getState() {
+		return state;
+	}
+
+	void setState(String s) {
+		this.state = s;
+	}
+
+	public boolean equals(Object obj) {
+		Address2 addr = (Address2) obj;
+		return name.equals(addr.name) && city.equals(addr.city)
+				&& street.equals(addr.street) && state.equals(addr.state);
 	}
 }

@@ -8,32 +8,35 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Praba Vijayaratnam - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlelement;
+package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
-import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+// Example 2
 
-public class XmlElementNillableRequiredTest extends JAXBWithJSONTestCases {
+import java.io.IOException;
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelement/xmlelementnillrequired.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelement/xmlelementnillrequired.json";	
-	
-	public XmlElementNillableRequiredTest(String name) throws Exception {
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+
+public class XmlTypeUnspecifiedOrderTest extends JAXBTestCases {
+
+	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltype/xmltypeexample2.xml";
+
+	public XmlTypeUnspecifiedOrderTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
-		classes[0] = USPriceRequired.class;
+		classes[0] = Address2.class;
 		setClasses(classes);
 	}
 
 	protected Object getControlObject() {
-	    USPriceRequired p = new USPriceRequired();
-		p.setPrice(123.99);
-
-		return p;
+		Address2 addr = new Address2();
+		addr.setName("JOE");
+		addr.setCity("OTTAWA");
+		addr.setState("ON");
+		addr.setStreet("123 ONE WAY STREET NORTH");
+		return addr;
 	}
-
 
 }

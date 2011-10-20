@@ -8,32 +8,41 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Praba Vijayaratnam - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlelement;
 
-import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import junit.framework.TestCase;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.math.BigDecimal;
 
-public class XmlElementNillableRequiredTest extends JAXBWithJSONTestCases {
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelement/xmlelementnillrequired.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelement/xmlelementnillrequired.json";	
-	
-	public XmlElementNillableRequiredTest(String name) throws Exception {
+import java.io.IOException;
+
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+
+public class XmlElementNonStaticTest extends JAXBTestCases {
+
+	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelement/xmlelementnonstatic.xml";
+
+	public XmlElementNonStaticTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
-		classes[0] = USPriceRequired.class;
+		classes[0] = USPrice.class;
 		setClasses(classes);
 	}
 
 	protected Object getControlObject() {
-	    USPriceRequired p = new USPriceRequired();
+		USPrice p = new USPrice();
 		p.setPrice(123.99);
 
 		return p;
 	}
-
 
 }

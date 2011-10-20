@@ -8,24 +8,47 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Praba Vijayaratnam - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso;
+import javax.xml.bind.annotation.*;
 
-import javax.xml.bind.annotation.XmlElement;
+@XmlType(name = "")
+public class Address4 {
 
-public class Cat extends Animal {
+	public String name, street, city, state;
 
-	@XmlElement
-	public int sleephours;
+	String getName() {
+		return name;
+	}
 
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Cat)) {
-			return false;
-		}
-		Cat cat = (Cat) obj;
-		return (cat.name.equals(name) && cat.owner.equals(owner) && cat.sleephours == sleephours);
+	void setName(String n) {
+		this.name = n;
+	}
+
+	String getStreet() {
+		return street;
+	}
+
+	void setStreet(String str) {
+		this.street = str;
+	}
+
+	String getCity() {
+		return city;
+	}
+
+	void setCity(String c) {
+		this.city = c;
+	}
+
+	String getState() {
+		return state;
+	}
+
+	void setState(String s) {
+		this.state = s;
 	}
 
 }

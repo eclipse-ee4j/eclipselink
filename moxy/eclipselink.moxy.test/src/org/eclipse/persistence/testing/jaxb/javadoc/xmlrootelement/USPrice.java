@@ -8,24 +8,28 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Praba Vijayaratnam - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement;
 
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso;
-
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
 
-public class Cat extends Animal {
-
+@XmlRootElement(name = "PriceElement")
+public class USPrice {
 	@XmlElement
-	public int sleephours;
+	double price;
 
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Cat)) {
-			return false;
-		}
-		Cat cat = (Cat) obj;
-		return (cat.name.equals(name) && cat.owner.equals(owner) && cat.sleephours == sleephours);
+	public double getPrice() {
+		return price;
 	}
 
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public boolean equals(Object object) {
+		USPrice p = ((USPrice) object);
+		return p.price == this.price;
+	}
 }

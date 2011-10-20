@@ -10,26 +10,25 @@
  * Contributors:
  *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement;
+package org.eclipse.persistence.testing.jaxb.javadoc.xmlelements;
 
-import javax.xml.bind.annotation.*;
+import java.util.List;
 
-@XmlRootElement
-public class Point2D {
-	public int x;
-	public int y;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
-	public Point2D() {
-		;
-	}
-
-	public Point2D(int _x, int _y) {
-		x = _x;
-		y = _y;
-	}
+@XmlRootElement(name = "employee-data")
+public class XmlElementsListOfElementWrapped {
+	@XmlElementWrapper(name = "my_wrapper")
+	@XmlElements({ @XmlElement(name = "A", type = Integer.class),
+			@XmlElement(name = "B", type = Float.class) })
+	public List items;
 
 	public boolean equals(Object object) {
-		Point2D point = ((Point2D) object);
-		return (point.x == this.x) && (point.y == this.y);
+		XmlElementsListOfElementWrapped example = ((XmlElementsListOfElementWrapped) object);
+		return example.items.size() == this.items.size()
+				&& example.items.get(0).equals(this.items.get(0));
 	}
 }

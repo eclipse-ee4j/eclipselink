@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Praba Vijayaratnam - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlelement;
 
@@ -16,18 +16,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlRootElement
-     public class USPrice { 
-         @XmlElement  (nillable=true, required=true)
-         double price;
+public class USPrice {
+	@XmlElement(name = "itemprice")
+	double price;
 
-         public double getPrice() {
-              return price;
-          }
-         public void setPrice(double price) {
-              this.price = price;
-         }
-     	public boolean equals(Object object) {
-    		USPrice p = ((USPrice)object);
-    		return p.price == this.price;
-    	}
-     }
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public boolean equals(Object object) {
+		USPrice p = ((USPrice) object);
+		return p.price == this.price;
+	}
+}

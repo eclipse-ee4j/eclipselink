@@ -10,22 +10,24 @@
  * Contributors:
  *     Praba Vijayaratnam - 2.3 - initial implementation
  ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso;
+import javax.xml.bind.annotation.*;
 
-import javax.xml.bind.annotation.XmlElement;
 
-public class Cat extends Animal {
+public class USAddressFactory {
+    
+    public static USAddress getUSAddress(){
+        return new USAddress("Mark Baker", "23 Elm St", 
+           "Dayton", "OH", 90952);
 
-	@XmlElement
-	public int sleephours;
-
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Cat)) {
-			return false;
-		}
-		Cat cat = (Cat) obj;
-		return (cat.name.equals(name) && cat.owner.equals(owner) && cat.sleephours == sleephours);
-	}
-
+    
+    
+ /*   public boolean equals(Object obj) {
+        USAddress addr = (USAddress)obj;
+        return name.equals(addr.name) && city.equals(addr.city) && street.equals(addr.street) && state.equals(addr.state);
+    }
+    */
 }
+}
+

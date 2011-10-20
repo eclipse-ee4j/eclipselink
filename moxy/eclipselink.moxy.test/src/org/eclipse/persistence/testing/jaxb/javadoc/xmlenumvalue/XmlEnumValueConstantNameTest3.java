@@ -10,26 +10,27 @@
  * Contributors:
  *     Praba Vijayaratnam - 2.4 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement;
+package org.eclipse.persistence.testing.jaxb.javadoc.xmlenumvalue;
 
-import javax.xml.bind.annotation.*;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
-@XmlRootElement
-public class Point2D {
-	public int x;
-	public int y;
+public class XmlEnumValueConstantNameTest3 extends JAXBTestCases {
 
-	public Point2D() {
-		;
+	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlenumvalue/xmlenumvalueconstanttest3.xml";
+
+	public XmlEnumValueConstantNameTest3(String name) throws Exception {
+		super(name);
+		setControlDocument(XML_RESOURCE);
+		Class[] classes = new Class[2];
+		classes[0] = MyEnum.class;
+		classes[1] = MyEnumModel.class;
+		setClasses(classes);
 	}
 
-	public Point2D(int _x, int _y) {
-		x = _x;
-		y = _y;
+	protected Object getControlObject() {
+		MyEnumModel example = new MyEnumModel();
+		example.setMyEnum(MyEnum.TWO);
+		return example;
 	}
 
-	public boolean equals(Object object) {
-		Point2D point = ((Point2D) object);
-		return (point.x == this.x) && (point.y == this.y);
-	}
 }
