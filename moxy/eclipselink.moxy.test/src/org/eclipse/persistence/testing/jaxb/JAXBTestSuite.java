@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHa
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.JAXBElementEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.xml.XMLNamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
