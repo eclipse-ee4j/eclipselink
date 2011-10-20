@@ -1,0 +1,6 @@
+<root>
+   <writeOnlyString>writeOnlyString</writeOnlyString>
+   <writeOnlyStringArray>string1</writeOnlyStringArray>
+   <writeOnlyStringArray>string2</writeOnlyStringArray>
+   <writeOnlyStringArray>string3</writeOnlyStringArray>
+</root>

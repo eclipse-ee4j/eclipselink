@@ -480,7 +480,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 for (int x = 0, containerValuesSize = containerValues.size(); x < containerValuesSize; x++) {
                     ContainerValue containerValue = (ContainerValue)containerValues.get(x);
                     Object containerInstance = null;
-                    if(containerValue.getReuseContainer()) {
+                    //don't attempt to do a get on a readOnly property.
+                    if(containerValue.getReuseContainer() && !(containerValue.getMapping().getAttributeAccessor().isReadOnly())) {
                         containerInstance = containerValue.getMapping().getAttributeAccessor().getAttributeValueFromObject(object);
                     }
                     if(null == containerInstance) {

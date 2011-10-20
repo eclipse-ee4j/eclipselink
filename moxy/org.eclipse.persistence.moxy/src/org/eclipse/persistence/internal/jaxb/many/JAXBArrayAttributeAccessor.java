@@ -149,5 +149,15 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
     public void setNestedAccessor(AttributeAccessor a) {
         this.nestedAccessor = a;
     }
+    
+    public void setIsWriteOnly(boolean aBoolean) {
+        super.setIsWriteOnly(aBoolean);
+        this.nestedAccessor.setIsWriteOnly(aBoolean);
+    }
+    
+    public void setIsReadOnly(boolean aBoolean) {
+        super.setIsReadOnly(aBoolean);
+        this.nestedAccessor.setIsReadOnly(aBoolean);
+    }    
 
 }
