@@ -96,6 +96,17 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             marshalRecord.closeStartGroupingElements(groupingFragment);
             return true;
         }
+        if(!xPathFragment.isAttribute()) {
+            marshalRecord.closeStartGroupingElements(groupingFragment);
+            XPathFragment elementFragment = xPathFragment;
+            if(xmlRootFrag != null) {
+                elementFragment = xmlRootFrag;
+            }
+            if(!xPathFragment.isSelfFragment){
+                marshalRecord.openStartElement(elementFragment, namespaceResolver);
+                marshalRecord.closeStartElement();
+            }
+        }
 
         // figure out CID or bytes 
         String c_id = null;
@@ -159,14 +170,6 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             return true;
         }
         
-        marshalRecord.closeStartGroupingElements(groupingFragment);
-        if(xmlRootFrag != null) {
-            xPathFragment = xmlRootFrag;
-        }
-        if(!xPathFragment.isSelfFragment){
-            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-            marshalRecord.closeStartElement();
-        }
         if (xmlBinaryDataMapping.isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             if(c_id != null) {
                 marshalRecord.characters(c_id);
