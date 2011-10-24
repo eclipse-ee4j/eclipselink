@@ -85,6 +85,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private XMLParser xmlParser;
     private boolean isResultAlwaysXMLRoot;
     private SAXParserFactory saxParserFactory;
+    private String systemId = null;
 
     static {
         SHARED_PARSER_FACTORY = createSAXParserFactory();        
@@ -213,6 +214,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 Node domElement = xmlParser.parse(file).getDocumentElement();
                 return unmarshal(domElement);
             }
+
+            this.systemId = file.toURI().toURL().toExternalForm();
+
             FileInputStream inputStream = new FileInputStream(file);
             try {
                 return unmarshal(inputStream);
@@ -234,6 +238,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 Node domElement = xmlParser.parse(file).getDocumentElement();
                 return unmarshal(domElement, clazz);
             }
+
+            this.systemId = file.toURI().toURL().toExternalForm();
+
             FileInputStream inputStream = new FileInputStream(file);
             try {
                 return unmarshal(inputStream, clazz);
@@ -268,11 +275,18 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource) {
+        if (inputSource != null) {
+            inputSource.setSystemId(this.systemId);
+        }
         return unmarshal(xmlReader, inputSource);
     }
 
     public Object unmarshal(InputSource inputSource, XMLReader xmlReader) {
         try {
+            if (inputSource != null) {
+                inputSource.setSystemId(this.systemId);
+            }
+
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             saxUnmarshallerHandler.setXMLReader(xmlReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
@@ -292,11 +306,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz) {
+        if (inputSource != null) {
+            inputSource.setSystemId(this.systemId);
+        }
         return unmarshal(xmlReader, inputSource, clazz);
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz, XMLReader xmlReader) {
-        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz); 
+        if (inputSource != null) {
+            inputSource.setSystemId(this.systemId);
+        }
+        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
         
         UnmarshalRecord unmarshalRecord;
         XMLDescriptor xmlDescriptor = null;
@@ -552,6 +572,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.unmarshalException(e);
         }
 
+        this.systemId = url.toExternalForm();
+
         boolean hasThrownException = false;
         try {
             return unmarshal(inputStream);
@@ -573,6 +595,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     public Object unmarshal(URL url, Class clazz) {
         try {
             InputStream inputStream = url.openStream();
+            this.systemId = url.toExternalForm();
             Object result = unmarshal(inputStream, clazz);
             inputStream.close();
             return result;

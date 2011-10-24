@@ -40,6 +40,8 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
     protected Map namespaceDeclarations;
     protected StrBuffer stringBuffer;
 
+    protected Locator locator;
+
     public SAXDocumentBuilder() {
         super();
         nodes = new ArrayList<Node>();
@@ -65,6 +67,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
     }
 
     public void setDocumentLocator(Locator locator) {
+        this.locator = locator;
     }
 
     public void startDocument() throws SAXException {

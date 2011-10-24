@@ -56,6 +56,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="cdata" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="xml-location" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -127,6 +128,8 @@ public class XmlElement
     protected Boolean cdata;
     @XmlAttribute(name = "xml-path")
     protected String xmlPath;
+    @XmlAttribute(name = "xml-location")
+    protected Boolean xmlLocation;
 
     /**
      * Gets the value of the xmlAbstractNullPolicy property.
@@ -831,4 +834,32 @@ public class XmlElement
         this.xmlPath = value;
     }
 
+    /**
+     * Gets the value of the xmlLocation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlLocation() {
+        if (xmlLocation == null) {
+            return false;
+        } else {
+            return xmlLocation;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlLocation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlLocation(Boolean value) {
+        this.xmlLocation = value;
+    }
+    
 }

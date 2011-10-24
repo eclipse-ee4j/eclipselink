@@ -1,0 +1,35 @@
+<?xml version="1.0" 
+
+
+
+
+
+encoding="UTF-8"?>
+
+
+
+
+
+
+
+                            <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<key>dat325</key>
+   <data1>sdjfhdsaoiufhosaidufh</data1>
+   <data2>kjdfgkjdsfg8374934874</data2>
+   <data3>84376328476324XXXXXXX</data3>
+   <subData xsi:type="detailData">
+      <info>name|rbarkhouse</info>
+   </subData>
+   
+   
+   
+   
+   
+   
+   
+                <subData>
+      <info>phone|6132832684</info></subData>
+   <subData xsi:type="leafData">
+      <info>id|8827</info>
+   </subData>	
+</data>

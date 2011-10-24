@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -26,6 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
+ *       &lt;attribute name="xml-location" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -39,5 +41,35 @@ public class XmlTransient
     extends JavaAttribute
 {
 
+    @XmlAttribute(name = "xml-location")
+    protected Boolean xmlLocation;
+
+    /**
+     * Gets the value of the xmlLocation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlLocation() {
+        if (xmlLocation == null) {
+            return false;
+        } else {
+            return xmlLocation;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlLocation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlLocation(Boolean value) {
+        this.xmlLocation = value;
+    }
 
 }

@@ -24,6 +24,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.Locator2;
 
 /**
  * Convert an XMLStreamReader into SAX events.
@@ -34,6 +35,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     private UnmarshalNamespaceContext unmarshalNamespaceContext;
     private XMLStreamReaderAttributes indexedAttributeList;
     private boolean qNameAware;
+    private StreamReaderLocator locator;
 
     public XMLStreamReaderReader() {
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
@@ -75,6 +77,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     }
 
     private void parse(XMLStreamReader xmlStreamReader) throws SAXException {
+        locator = new StreamReaderLocator(xmlStreamReader);
         try {
             contentHandler.startDocument();
             parseEvent(xmlStreamReader);
@@ -93,6 +96,10 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     private void parseEvent(XMLStreamReader xmlStreamReader) throws SAXException {
         switch (xmlStreamReader.getEventType()) {
             case XMLStreamReader.START_ELEMENT: {
+                // Capture the Location so that we can keep it's -current-
+                // line and column number, for use with @XmlLocation
+                contentHandler.setDocumentLocator(locator);
+
                 depth++;
                 String localName = xmlStreamReader.getLocalName();
                 String namespaceURI = xmlStreamReader.getNamespaceURI();
@@ -181,8 +188,8 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
 
     /**
      * Subclasses of this class can override this method to provide alternate
-     * mechanisms for processing the characters event.  One possibility is 
-     * obtaining a CharSequence and calling the corresponding characters method 
+     * mechanisms for processing the characters event.  One possibility is
+     * obtaining a CharSequence and calling the corresponding characters method
      * on the extended content handler.
      */
     protected void parseCharactersEvent(XMLStreamReader xmlStreamReader) throws SAXException {
@@ -238,4 +245,61 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
 
     }
 
+    /**
+     * <p>An implementation of Locator, created from an existing XMLStreamReader.</p>
+     *
+     * @see org.xml.sax.Locator
+     * @see javax.xml.stream.XMLStreamReader
+     */
+    private class StreamReaderLocator implements Locator2 {
+
+        private XMLStreamReader reader;
+
+        /**
+         * Instantiates a new StreamReaderLocator.
+         *
+         * @param r the XMLStreamReader object from which to copy location information.
+         */
+        public StreamReaderLocator(XMLStreamReader r) {
+            this.reader = r;
+        }
+
+        /**
+         * Returns the public ID of this Locator.
+         */
+        public String getPublicId() {
+            return this.reader.getLocation().getPublicId();
+        }
+
+        /**
+         * Returns the system ID of this Locator.
+         */
+        public String getSystemId() {
+            return this.reader.getLocation().getSystemId();
+        }
+
+        /**
+         * Returns the line number of this Locator.
+         */
+        public int getLineNumber() {
+            return this.reader.getLocation().getLineNumber();
+        }
+
+        /**
+         * Returns the column number of this Locator.
+         */
+        public int getColumnNumber() {
+            return this.reader.getLocation().getColumnNumber();
+        }
+
+        public String getXMLVersion() {
+            return null;
+        }
+
+        public String getEncoding() {
+            return null;
+        }
+
+    }
+    
 }

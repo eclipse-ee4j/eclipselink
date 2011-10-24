@@ -112,6 +112,7 @@ import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
+import org.eclipse.persistence.oxm.annotations.XmlLocation;
 import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
@@ -855,6 +856,9 @@ public class AnnotationsProcessor {
             TypeInfo info = getTypeInfo().get(next.getQualifiedName());
             if (info != null) {
                 for (Property property : info.getPropertyList()) {
+                    if (property.isXmlLocation()) {
+                        info.setLocationAware(true);
+                    }
                     if (property.isTransient()) {
                         continue;
                     }
@@ -2313,6 +2317,14 @@ public class AnnotationsProcessor {
         // handle XmlJoinNode(s)
         processXmlJoinNodes(property);
         processXmlNullPolicy(property);
+
+        // Handle XmlLocation
+        if (helper.isAnnotationPresent(property.getElement(), XmlLocation.class)) {
+            if (!helper.getJavaClass(XMLConstants.LOCATOR_CLASS).isAssignableFrom(property.getType())) {
+                throw JAXBException.invalidXmlLocation(property.getPropertyName(), property.getType().getName());
+            }
+            property.setXmlLocation(true);
+        }
     }
 
     /**
@@ -2530,16 +2542,30 @@ public class AnnotationsProcessor {
 
                 if (setMethod != null && hasJAXBAnnotations(setMethod)) {
                     // use the set method if it exists and is annotated
-                    if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
+                    boolean isTransient = helper.isAnnotationPresent(setMethod, XmlTransient.class);
+                    boolean isLocation = helper.isAnnotationPresent(setMethod, XmlLocation.class);
+                    if (!isTransient) {
                         propertyMethod = setMethod;
                     } else {
                         isPropertyTransient = true;
+                        // XmlLocation can also be transient
+                        if (isLocation) {
+                            propertyMethod = setMethod;
+                            info.setLocationAware(true);
+                        }
                     }
                 } else if ((onlyExplicit && hasJAXBAnnotations(getMethod)) || !onlyExplicit) {
-                    if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
+                    boolean isTransient = helper.isAnnotationPresent(getMethod, XmlTransient.class);
+                    boolean isLocation = helper.isAnnotationPresent(getMethod, XmlLocation.class);
+                    if (!isTransient) {
                         propertyMethod = getMethod;
                     } else {
                         isPropertyTransient = true;
+                        // XmlLocation can also be transient
+                        if (isLocation) {
+                            propertyMethod = getMethod;
+                            info.setLocationAware(true);
+                        }
                     }
                 } else if (onlyExplicit) {
                     continue;
@@ -2558,16 +2584,30 @@ public class AnnotationsProcessor {
                 }
                 if (getMethod != null && hasJAXBAnnotations(getMethod)) {
                     // use the set method if it exists and is annotated
-                    if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
+                    boolean isTransient = helper.isAnnotationPresent(getMethod, XmlTransient.class);
+                    boolean isLocation = helper.isAnnotationPresent(getMethod, XmlLocation.class);
+                    if (!isTransient) {
                         propertyMethod = getMethod;
                     } else {
                         isPropertyTransient = true;
+                        // XmlLocation can also be transient
+                        if (isLocation) {
+                            propertyMethod = getMethod;
+                            info.setLocationAware(true);
+                        }
                     }
                 } else if ((onlyExplicit && hasJAXBAnnotations(setMethod)) || !onlyExplicit) {
-                    if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
+                    boolean isTransient = helper.isAnnotationPresent(setMethod, XmlTransient.class);
+                    boolean isLocation = helper.isAnnotationPresent(setMethod, XmlLocation.class);
+                    if (!isTransient) {
                         propertyMethod = setMethod;
                     } else {
                         isPropertyTransient = true;
+                        // XmlLocation can also be transient
+                        if (isLocation) {
+                            propertyMethod = setMethod;
+                            info.setLocationAware(true);
+                        }
                     }
                 } else if (onlyExplicit) {
                     continue;
@@ -2605,7 +2645,9 @@ public class AnnotationsProcessor {
                 }
                 property.setMethodProperty(true);
 
-                if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
+                boolean isTransient = helper.isAnnotationPresent(property.getElement(), XmlTransient.class);
+                boolean isLocation = helper.isAnnotationPresent(property.getElement(), XmlLocation.class);
+                if (!isTransient || (isTransient && isLocation)) {
                     properties.add(property);
                 } else {
                     // If a property is marked transient ensure it doesn't exist
@@ -3398,7 +3440,7 @@ public class AnnotationsProcessor {
      * annotations.
      */
     private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {
-        return (helper.isAnnotationPresent(elem, XmlAttachmentRef.class)) || (helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlValue.class) || helper.isAnnotationPresent(elem, XmlElements.class) || helper.isAnnotationPresent(elem, XmlElementRef.class) || helper.isAnnotationPresent(elem, XmlElementRefs.class) || helper.isAnnotationPresent(elem, XmlID.class) || helper.isAnnotationPresent(elem, XmlInlineBinaryData.class) || helper.isAnnotationPresent(elem, XmlSchemaType.class) || helper.isAnnotationPresent(elem, XmlElementWrapper.class) || helper.isAnnotationPresent(elem, XmlList.class) || helper.isAnnotationPresent(elem, XmlMimeType.class) || helper.isAnnotationPresent(elem, XmlIDREF.class) || helper.isAnnotationPresent(elem, XmlTransient.class) || helper.isAnnotationPresent(elem, XmlPath.class) || helper.isAnnotationPresent(elem, XmlPaths.class) || helper.isAnnotationPresent(elem, XmlInverseReference.class) || helper.isAnnotationPresent(elem, XmlJoinNode.class) || helper.isAnnotationPresent(elem, XmlJoinNodes.class) || helper.isAnnotationPresent(elem, XmlReadOnly.class) || helper.isAnnotationPresent(elem, XmlWriteOnly.class) || helper.isAnnotationPresent(elem, XmlCDATA.class) || helper.isAnnotationPresent(elem, XmlAccessMethods.class) || helper.isAnnotationPresent(elem, XmlNullPolicy.class) || helper.isAnnotationPresent(elem, XmlJavaTypeAdapter.class) || helper.isAnnotationPresent(elem,  XmlMixed.class));
+        return (helper.isAnnotationPresent(elem, XmlAttachmentRef.class)) || (helper.isAnnotationPresent(elem, XmlLocation.class) || helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlValue.class) || helper.isAnnotationPresent(elem, XmlElements.class) || helper.isAnnotationPresent(elem, XmlElementRef.class) || helper.isAnnotationPresent(elem, XmlElementRefs.class) || helper.isAnnotationPresent(elem, XmlID.class) || helper.isAnnotationPresent(elem, XmlInlineBinaryData.class) || helper.isAnnotationPresent(elem, XmlSchemaType.class) || helper.isAnnotationPresent(elem, XmlElementWrapper.class) || helper.isAnnotationPresent(elem, XmlList.class) || helper.isAnnotationPresent(elem, XmlMimeType.class) || helper.isAnnotationPresent(elem, XmlIDREF.class) || helper.isAnnotationPresent(elem, XmlTransient.class) || helper.isAnnotationPresent(elem, XmlPath.class) || helper.isAnnotationPresent(elem, XmlPaths.class) || helper.isAnnotationPresent(elem, XmlInverseReference.class) || helper.isAnnotationPresent(elem, XmlJoinNode.class) || helper.isAnnotationPresent(elem, XmlJoinNodes.class) || helper.isAnnotationPresent(elem, XmlReadOnly.class) || helper.isAnnotationPresent(elem, XmlWriteOnly.class) || helper.isAnnotationPresent(elem, XmlCDATA.class) || helper.isAnnotationPresent(elem, XmlAccessMethods.class) || helper.isAnnotationPresent(elem, XmlNullPolicy.class) || helper.isAnnotationPresent(elem, XmlJavaTypeAdapter.class) || helper.isAnnotationPresent(elem,  XmlMixed.class));
     }
 
     private void validateElementIsInPropOrder(TypeInfo info, String name) {

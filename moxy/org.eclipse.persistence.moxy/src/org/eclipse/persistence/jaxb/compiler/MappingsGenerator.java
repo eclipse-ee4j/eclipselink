@@ -35,7 +35,10 @@ import javax.xml.transform.Source;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -298,6 +301,34 @@ public class MappingsGenerator {
         if (info.getUserProperties() != null) {
             descriptor.setProperties(info.getUserProperties());
         }
+
+        if (info.isLocationAware()) {
+            Property locProp = null;
+            Iterator<Property> i = info.getPropertyList().iterator();
+            while (i.hasNext()) {
+                Property p = i.next();
+                if (p.getType().getName().equals(XMLConstants.LOCATOR_CLASS_NAME)) {
+                    locProp = p;
+                }
+            }
+            if (locProp != null && locProp.isTransient()) {
+                // build accessor
+                // don't make a mapping
+                if (locProp.isMethodProperty()) {
+                    MethodAttributeAccessor aa = new MethodAttributeAccessor();
+                    aa.setAttributeName(locProp.getPropertyName());
+                    aa.setSetMethodName(locProp.getSetMethodName());
+                    aa.setGetMethodName(locProp.getGetMethodName());
+                    descriptor.setLocationAccessor(aa);
+                } else {
+                    // instance variable property
+                    InstanceVariableAttributeAccessor aa = new InstanceVariableAttributeAccessor();
+                    aa.setAttributeName(locProp.getPropertyName());
+                    descriptor.setLocationAccessor(aa);
+                }
+            }
+        }
+
         project.addDescriptor(descriptor);
         info.setDescriptor(descriptor);
     }
@@ -494,7 +525,14 @@ public class MappingsGenerator {
             if (reference.isEnumerationType()) {
                 return generateDirectEnumerationMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
             }
-            return generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
+            if (property.isXmlLocation()) {
+                XMLCompositeObjectMapping locationMapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
+                reference.getDescriptor().setInstantiationPolicy(new NullInstantiationPolicy());
+                descriptor.setLocationAccessor(locationMapping.getAttributeAccessor());
+                return locationMapping;
+            } else {
+                return generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
+            }
         }
         if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
             return generateBinaryMapping(property, descriptor, namespaceInfo);
@@ -503,6 +541,9 @@ public class MappingsGenerator {
             XMLCompositeObjectMapping coMapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, null);
             coMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             return coMapping;
+        }
+        if (property.isXmlLocation()) {
+            return null;
         }
         return generateDirectMapping(property, descriptor, namespaceInfo);
     }
@@ -1040,7 +1081,9 @@ public class MappingsGenerator {
                 mapping.setSetMethodName(property.getSetMethodName());
             } else if (property.getSetMethodName() == null) {
                 mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
+                if (!property.isXmlLocation()) {
+                    mapping.setIsWriteOnly(true);
+                }
             } else {
                 mapping.setSetMethodName(property.getSetMethodName());
                 mapping.setGetMethodName(property.getGetMethodName());
@@ -2076,7 +2119,7 @@ public class MappingsGenerator {
         List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
         for (int i = 0; i < propertiesInOrder.size(); i++) {
             Property next = propertiesInOrder.get(i);
-            if (next != null && !next.isTransient()){
+            if (next != null && (!next.isTransient() || (next.isTransient() && next.isXmlLocation()))) {
                 DatabaseMapping mapping = generateMapping(next, descriptor, namespaceInfo);
                 if (next.isVirtual()) {
                     VirtualAttributeAccessor accessor = new VirtualAttributeAccessor();
@@ -2102,7 +2145,9 @@ public class MappingsGenerator {
                         mapping.setAttributeAccessor(accessor);
                     }
                 }
-                descriptor.addMapping(mapping);
+                if (mapping != null) {
+                    descriptor.addMapping(mapping);
+                }
                 // set user-defined properties if necessary
                 if (next.isSetUserProperties()) {
                     mapping.setProperties(next.getUserProperties());
@@ -2910,5 +2955,30 @@ public class MappingsGenerator {
     private boolean isBinaryData(JavaClass type){
     	return areEquals(type, ClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "javax.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
     }
-    
+
+    /**
+     * <p>An InstantiationPolicy that does not construct any objects (and therefore
+     * will not throw validation errors caused by a lack of a no-arg constructor).</p>
+     *
+     * <p>This is used by @XmlLocation, where we want to have a real mapping created
+     * (so we can later set its value through the mapping), but where we will never
+     * instantiate a Locator from XML (the Locator will be built internally during parsing).</p>
+     *
+     * @see org.eclipse.persistence.internal.descriptors.InstantiationPolicy
+     * @see org.xml.sax.Locator
+     */
+    private class NullInstantiationPolicy extends InstantiationPolicy {
+
+        /**
+         * Returns a new instance of this InstantiationPolicy's Descriptor's class.
+         *
+         * In this case, do nothing and return null.
+         */
+        @Override
+        public Object buildNewInstance() throws DescriptorException {
+            return null;
+        }
+
+    }
+
 }

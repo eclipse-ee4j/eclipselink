@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -63,6 +64,7 @@ public class XMLDescriptor extends ClassDescriptor {
     private boolean isWrapper = false;
     private boolean resultAlwaysXMLRoot = false;
     private boolean lazilyInitialized = false;
+    private AttributeAccessor locationAccessor = null;
 
     /**
      * PUBLIC:
@@ -675,15 +677,23 @@ public class XMLDescriptor extends ClassDescriptor {
         if (hasReturningPolicy()) {
             getReturningPolicy().initialize(session);
         }
-        if(eventManager != null) {
+        if (eventManager != null) {
             eventManager.initialize(session);
         }
-        if(copyPolicy != null) {
+        if (copyPolicy != null) {
             copyPolicy.initialize(session);
         }
         getInstantiationPolicy().initialize(session);
         if (getSchemaReference() != null) {
             getSchemaReference().initialize(session);
+        }
+        // If a Location Accessor is set on a superclass, inherit it
+        if (getInheritancePolicyOrNull() != null && getInheritancePolicy().getParentDescriptor() != null) {
+            XMLDescriptor d = (XMLDescriptor) getInheritancePolicy().getParentDescriptor();
+            locationAccessor = d.getLocationAccessor();
+        }
+        if (locationAccessor != null) {
+            locationAccessor.initializeAttributes(getJavaClass());
         }
     }
 
@@ -944,6 +954,22 @@ public class XMLDescriptor extends ClassDescriptor {
             xPath = xPath + nextToken + "/"; 
         }
         return null; 
+    }
+
+    /**
+     * INTERNAL:
+     * Returns this Descriptor's location accessor, if one is defined.
+     */
+    public AttributeAccessor getLocationAccessor() {
+        return locationAccessor;
+    }
+
+    /**
+     * INTERNAL:
+     * Set this Descriptor's location accessor.
+     */
+    public void setLocationAccessor(AttributeAccessor value) {
+        this.locationAccessor = value;
     }
 
 }

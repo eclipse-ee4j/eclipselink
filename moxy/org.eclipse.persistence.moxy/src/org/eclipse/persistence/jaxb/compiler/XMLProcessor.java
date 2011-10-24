@@ -64,6 +64,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.annotations.XmlLocation;
 
 /**
  * INTERNAL:
@@ -895,6 +896,13 @@ public class XMLProcessor {
             processXmlMap(xmlElement.getXmlMap(), oldProperty);
         }
 
+        if (xmlElement.isXmlLocation()) {
+            if (!aProcessor.getHelper().getJavaClass(XMLConstants.LOCATOR_CLASS).isAssignableFrom(oldProperty.getType())) {
+                throw JAXBException.invalidXmlLocation(oldProperty.getPropertyName(), oldProperty.getType().getName());
+            }
+            oldProperty.setXmlLocation(true);
+        }
+
         // handle xml-id
         if (xmlElement.isXmlId()) {
             oldProperty.setIsXmlId(true);
@@ -1249,6 +1257,12 @@ public class XMLProcessor {
     }
 
     private Property processXmlTransient(XmlTransient xmlTransient, Property oldProperty) {
+        if (xmlTransient.isXmlLocation()) {
+            if (!aProcessor.getHelper().getJavaClass(XMLConstants.LOCATOR_CLASS).isAssignableFrom(oldProperty.getType())) {
+                throw JAXBException.invalidXmlLocation(oldProperty.getPropertyName(), oldProperty.getType().getName());
+            }
+            oldProperty.setXmlLocation(true);
+        }
         oldProperty.setTransient(true);
         return oldProperty;
     }

@@ -109,6 +109,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int CANNOT_REFRESH_METADATA = 50077;
     public static final int XJB_NOT_SOURCE = 50078;
     public static final int XSD_IMPORT_NOT_SOURCE = 50079;
+    public static final int INVALID_XMLLOCATION = 50080;
     
     protected JAXBException(String message) {
         super(message);
@@ -1004,6 +1005,16 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XSD_IMPORT_NOT_SOURCE, args));
         validationException.setErrorCode(XSD_IMPORT_NOT_SOURCE);
+        return validationException;
+    }
+
+    /**
+     * Cause: @XmlLocation is set on a non-Locator property.
+     */
+    public static JAXBException invalidXmlLocation(String propertyName, String propertyType) {
+        Object[] args = { propertyName, propertyType };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XMLLOCATION, args));
+        validationException.setErrorCode(INVALID_XMLLOCATION);
         return validationException;
     }
 

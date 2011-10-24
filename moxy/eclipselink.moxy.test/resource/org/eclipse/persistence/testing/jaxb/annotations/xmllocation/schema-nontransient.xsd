@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="locator" abstract="true">
+      <xsd:sequence>
+         <xsd:element name="columnNumber" type="xsd:int"/>
+         <xsd:element name="lineNumber" type="xsd:int"/>
+         <xsd:element name="publicId" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="systemId" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="subDataNT">
+      <xsd:sequence>
+         <xsd:element name="info" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="locator" type="locator" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="leafDataNT">
+      <xsd:complexContent>
+         <xsd:extension base="detailDataNT">
+            <xsd:sequence/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="detailDataNT">
+      <xsd:complexContent>
+         <xsd:extension base="subDataNT">
+            <xsd:sequence/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="dataNT">
+      <xsd:sequence>
+         <xsd:element name="key" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="data1" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="data2" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="data3" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="subData" type="subDataNT" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="locator" type="locator" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="data" type="dataNT"/>
+</xsd:schema>

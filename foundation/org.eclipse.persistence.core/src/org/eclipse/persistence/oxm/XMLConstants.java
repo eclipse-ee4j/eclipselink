@@ -1,38 +1,42 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
 import javax.xml.namespace.QName;
 
 /**
- * <p>XMLConstants maintains a list of useful XMLConstants.
+ * <p>XMLConstants maintains a list of useful XML constants.</p>
  *
  * <p>This includes constants for built-in schema types as well as QNames
  * which represent those built-in schema types.  These QName constants can be used,
  * for example, when adding conversion pairs to XMLFields and when adding
- * schema types to XMLUnionField.
- * <p><em>Code Sample</em><br>
- *  <code>
- * XMLUnionField unionField = new XMLUnionField("myElement"); <br>
- * unionField.addSchemaType()
- *</code>
+ * schema types to an XMLUnionField.</p>
+ *
+ * <p><em>Code Sample</em></p>
+ *
+ * <p><code>
+ * XMLUnionField unionField = new XMLUnionField("myElement");<br>
+ * unionField.addSchemaType(XMLConstants.INTEGER_QNAME);<br>
+ * unionField.addSchemaType(XMLConstants.DATE_QNAME);
+ * </code></p>
  */
-public class XMLConstants {	
-    public static final char COLON = ':';	    
+public class XMLConstants {
+
+    public static final char COLON = ':';
     public static final char DOT = '.';	
     public static final Character ATTRIBUTE = '@';
     public static final String TEXT = "text()";
-    public static final String EMPTY_STRING = "";	
+    public static final String EMPTY_STRING = "";
     public static final String CDATA= "CDATA";
     public static final String SCHEMA_PREFIX = "xsd";
     public static final String SCHEMA_URL = "http://www.w3.org/2001/XMLSchema";
@@ -45,7 +49,7 @@ public class XMLConstants {
     public static final String XMLNS_URL = "http://www.w3.org/2000/xmlns/";
     public static final String XML_NAMESPACE_PREFIX = "xml";
     public static final String XML_NAMESPACE_URL = "http://www.w3.org/XML/1998/namespace";
-    public static final String XML_NAMESPACE_SCHEMA_LOCATION = "http://www.w3.org/XML/1998/xml.xsd";    
+    public static final String XML_NAMESPACE_SCHEMA_LOCATION = "http://www.w3.org/XML/1998/xml.xsd";
     public static final String SCHEMA_TYPE_ATTRIBUTE = "type";
     public static final String SCHEMA_NIL_ATTRIBUTE = "nil";
     public static final String REF_URL = "http://ws-i.org/profiles/basic/1.1/xsd";
@@ -54,12 +58,12 @@ public class XMLConstants {
     public static final String XOP_URL = "http://www.w3.org/2004/08/xop/include";
     public static final String XOP_PREFIX = "xop";
     public static final Class QNAME_CLASS = QName.class;
-    public final static String DEFAULT_XML_ENCODING = "UTF-8";
-    public final static String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
+    public static final String DEFAULT_XML_ENCODING = "UTF-8";
+    public static final String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
     public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
     public static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
-    													   
-    // Built-in Schema Types    
+
+    // Built-in Schema Types
     public static final String ANY = "any";
     public static final String BASE_64_BINARY = "base64Binary";
     public static final String BOOLEAN = "boolean";
@@ -74,7 +78,7 @@ public class XMLConstants {
     public static final String G_MONTH = "gMonth";
     public static final String G_MONTH_DAY = "gMonthDay";
     public static final String G_YEAR = "gYear";
-    public static final String G_YEAR_MONTH = "gYearMonth";    
+    public static final String G_YEAR_MONTH = "gYearMonth";
     public static final String HEX_BINARY = "hexBinary";
     public static final String INT = "int";
     public static final String INTEGER = "integer";
@@ -130,13 +134,13 @@ public class XMLConstants {
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
     public static final String JAXB_FRAGMENT = "jaxb.fragment";
     public static final QName EXPECTED_CONTENT_TYPES_QNAME = new QName(XML_MIME_URL, EXPECTED_CONTENT_TYPES);
-          
+
     public static final char[] EMPTY_CHAR_ARRAY = new char[0];
-    
+
     // Schema Special values for Double and Float
     public static final String POSITIVE_INFINITY = "INF";
     public static final String NEGATIVE_INFINITY = "-INF";
-    
+
     public static final String BOOLEAN_STRING_TRUE = "true";
     public static final String BOOLEAN_STRING_FALSE = "false";
 
@@ -145,5 +149,8 @@ public class XMLConstants {
     public static final String ANY_NAMESPACE_OTHER = "##other";
     public static final String ANY_NAMESPACE_TARGETNS = "##targetNamespace";
 
-    public final static Class UUID = java.util.UUID.class;
+    public static final Class UUID = java.util.UUID.class;
+    public static final Class LOCATOR_CLASS = org.xml.sax.Locator.class;
+    public static final String LOCATOR_CLASS_NAME = "org.xml.sax.Locator";
+
 }

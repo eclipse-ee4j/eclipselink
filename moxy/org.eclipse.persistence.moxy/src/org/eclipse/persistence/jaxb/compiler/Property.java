@@ -98,7 +98,8 @@ public class Property implements Cloneable {
     private boolean isXmlId = false;
     private boolean isXmlIdRef = false;
     private boolean isXmlTransformation = false;
-    
+    private boolean isXmlLocation = false;
+
     private String inverseReferencePropertyName;
     private String inverseReferencePropertyGetMethodName;
     private String inverseReferencePropertySetMethodName;
@@ -1230,6 +1231,14 @@ public class Property implements Cloneable {
 
     public void setExtension(boolean value) {
         this.isVirtual = value;
+    }
+
+    public boolean isXmlLocation() {
+        return isXmlLocation;
+    }
+
+    public void setXmlLocation(boolean isXmlLocation) {
+        this.isXmlLocation = isXmlLocation;
     }
 
 }

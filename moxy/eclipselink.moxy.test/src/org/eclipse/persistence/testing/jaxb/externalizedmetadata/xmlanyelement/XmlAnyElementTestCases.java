@@ -663,7 +663,6 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         m.marshal(c, marshalDoc);
-        m.marshal(c, System.out);
         String xmlName = PATH + "xmlelementrefs/nonglobal.xml";
         InputStream xml = ClassLoader.getSystemClassLoader().getResourceAsStream(xmlName); 
         Customer cPrime = (Customer) ctx.createUnmarshaller().unmarshal(xml);

@@ -73,6 +73,7 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalName
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.ext.Locator2;
+import org.xml.sax.ext.Locator2Impl;
 
 /**
  * <p><b>Purpose:</b>Provide an implementation of ContentHandler that is used by TopLink OXM to
@@ -121,10 +122,17 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
+
+    // The Locator that is updated throughout the unmarshal process
+    private Locator documentLocator;
+
+    // The "snapshot" location of this object, for @XmlLocation
+    private Locator xmlLocation;
+
     private boolean skipNextTextNode;
+
     protected List<UnmarshalRecord> childRecordPool;
     protected XPathFragment textWrapperFragment;
-
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
@@ -367,11 +375,16 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void setDocumentLocator(Locator locator) {
+        this.documentLocator = locator;
         if ((this.getParentRecord() == null) && locator instanceof Locator2) {
             Locator2 loc = (Locator2)locator;
             this.setEncoding(loc.getEncoding());
             this.setVersion(loc.getXMLVersion());
         }
+    }
+
+    public Locator getDocumentLocator() {
+        return this.documentLocator;
     }
 
     public Object get(DatabaseField key) {
@@ -461,6 +474,19 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 object = treeObjectBuilder.buildNewInstance();
             }
             this.setCurrentObject(object);
+
+            if (getParentRecord() != null && getParentRecord().getDocumentLocator() != null) {
+                this.documentLocator = getParentRecord().getDocumentLocator();
+            }
+
+            if (documentLocator != null) {
+                // Check to see if this Descriptor isLocationAware
+                if (xmlDescriptor.getLocationAccessor() != null) {
+                    // Store the snapshot of the current documentLocator
+                    setXmlLocation(new Locator2Impl(documentLocator));
+                }
+            }
+
             XMLUnmarshalListener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
             if (null != xmlUnmarshalListener) {
                 if (null == this.parentRecord) {
@@ -538,6 +564,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
         }
 
+        ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
+
         try {
             // PROCESS COLLECTION MAPPINGS
             if (null != containersMap) {
@@ -575,7 +603,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
 
             // HANDLE POST BUILD EVENTS
-            ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
             if(xmlDescriptor.hasEventManager()) {
                 DescriptorEventManager eventManager = xmlDescriptor.getEventManager();
                 if (null != eventManager && eventManager.hasAnyEventListeners()) {
@@ -597,7 +624,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
         // if the object has any primary key fields set, add it to the cache
         if (session.isUnitOfWork()) {
-            ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
             if(null != xmlDescriptor) {
                 List primaryKeyFields = xmlDescriptor.getPrimaryKeyFields();
                 if(null != primaryKeyFields) {
@@ -622,6 +648,11 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
         if(null != parentRecord) {
             reset();
+        }
+
+        // Set XML Location if applicable
+        if (getXmlLocation() != null && ((XMLDescriptor) xmlDescriptor).getLocationAccessor() != null) {
+            ((XMLDescriptor) xmlDescriptor).getLocationAccessor().setAttributeValueInObject(getCurrentObject(), getXmlLocation());
         }
     }
 
@@ -1234,4 +1265,23 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         return prefixesForFragment;
     }
        
+
+    /**
+     * INTERNAL
+     * Returns this UnmarshalRecord's XML Location, indicating where in the XML document
+     * this object was unmarshalled from.
+     */
+    public Locator getXmlLocation() {
+        return xmlLocation;
+    }
+
+    /**
+     * INTERNAL
+     * Sets this UnmarshalRecord's XML Location, indicating where in the XML document
+     * this object was unmarshalled from.
+     */
+    public void setXmlLocation(Locator xmlLocation) {
+        this.xmlLocation = xmlLocation;
+    }
+
 }

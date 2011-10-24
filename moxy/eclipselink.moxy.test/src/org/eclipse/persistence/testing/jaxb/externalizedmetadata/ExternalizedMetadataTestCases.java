@@ -560,12 +560,12 @@ public class ExternalizedMetadataTestCases extends TestCase {
         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         Schema theSchema;
         try {
-            InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_3.xsd");
+            InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_4.xsd");
             if (bindingsFileXSDInputStream == null){
-                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/eclipselink_oxm_2_3.xsd");
+                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/jaxb/eclipselink_oxm_2_4.xsd");
             }
             if (bindingsFileXSDInputStream == null){
-                fail("ERROR LOADING eclipselink_oxm_2_3.xsd");
+                fail("ERROR LOADING eclipselink_oxm_2_4.xsd");
             }
             Source bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
             theSchema = sFact.newSchema(bindingsFileXSDSource);

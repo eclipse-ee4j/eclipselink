@@ -114,6 +114,8 @@ public class TypeInfo {
     
     private XMLNameTransformer xmlNameTransformer;
     
+    private boolean isLocationAware = false;
+
     public static XMLNameTransformer DEFAULT_NAME_TRANSFORMER = new DefaultXMLNameTransformer();
  
 	/**
@@ -1111,4 +1113,13 @@ public class TypeInfo {
     public boolean hasPredicateProperties() {
         return this.predicateProperties != null && this.predicateProperties.size() > 0;
     }
+
+    public boolean isLocationAware() {
+        return this.isLocationAware;
+    }
+
+    public void setLocationAware(boolean value) {
+        this.isLocationAware = value;
+    }
+
 }

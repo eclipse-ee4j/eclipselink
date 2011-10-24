@@ -33,9 +33,10 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.Locator2;
 
 /**
- * Convert and XMLEventReader into SAX events. 
+ * Convert and XMLEventReader into SAX events.
  */
 public class XMLEventReaderReader extends XMLReaderAdapter {
 
@@ -44,7 +45,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     //scope in some STAX implementations
     private Map<Integer, List<Namespace>> namespaces;
     private XMLEventReaderAttributes indexedAttributeList;
-
+    private EventReaderLocator locator;
 
     public XMLEventReaderReader() {
         this.namespaces = new HashMap<Integer, List<Namespace>>();
@@ -69,6 +70,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     }
 
     private void parse(XMLEventReader xmlEventReader) throws SAXException {
+        locator = new EventReaderLocator();
         try {
             contentHandler.startDocument();
             parseEvent(xmlEventReader.nextEvent());
@@ -153,7 +155,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 break;
             }
             case XMLEvent.SPACE: {
-                char[] characters = xmlEvent.asCharacters().getData().toCharArray(); 
+                char[] characters = xmlEvent.asCharacters().getData().toCharArray();
                 contentHandler.characters(characters, 0, characters.length);
                 break;
             }
@@ -162,6 +164,11 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 break;
             }
             case XMLEvent.START_ELEMENT: {
+                // Capture the Location so that we can keep it's -current-
+                // line and column number, for use with @XmlLocation
+                locator.setEvent(xmlEvent);
+                contentHandler.setDocumentLocator(locator);
+
                 depth++;
                 StartElement startElement = xmlEvent.asStartElement();
                 Iterator namespaces = startElement.getNamespaces();
@@ -204,22 +211,22 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         @Override
         protected List<Attribute> attributes() {
             if(null == attributes) {
-                this.attributes = new ArrayList<Attribute>(); 
-                
+                this.attributes = new ArrayList<Attribute>();
+
                 while(namespaces.hasNext()) {
                     Namespace next = (Namespace)namespaces.next();
-                    String uri = XMLConstants.XMLNS_URL; 
-                    String localName = next.getPrefix(); 
-                    String qName; 
-                    if(null == localName || localName.length() == 0) { 
-                        localName = XMLConstants.XMLNS; 
-                        qName = XMLConstants.XMLNS; 
-                    } else { 
-                        qName = XMLConstants.XMLNS + XMLConstants.COLON + localName; 
-                    } 
-                    String value = next.getNamespaceURI(); 
-                    attributes.add(new Attribute(uri, localName, qName, value)); 
-                } 
+                    String uri = XMLConstants.XMLNS_URL;
+                    String localName = next.getPrefix();
+                    String qName;
+                    if(null == localName || localName.length() == 0) {
+                        localName = XMLConstants.XMLNS;
+                        qName = XMLConstants.XMLNS;
+                    } else {
+                        qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
+                    }
+                    String value = next.getNamespaceURI();
+                    attributes.add(new Attribute(uri, localName, qName, value));
+                }
 
                 while(attrs.hasNext()) {
                     javax.xml.stream.events.Attribute next = (javax.xml.stream.events.Attribute)attrs.next();
@@ -241,4 +248,79 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
 
     }
 
+    /**
+     * <p>An implementation of Locator, with location data provided by an existing XMLEvent.</p>
+     *
+     * @see org.xml.sax.Locator
+     * @see javax.xml.stream.events.XMLEvent
+     */
+    private class EventReaderLocator implements Locator2 {
+
+        private XMLEvent event;
+
+        /**
+         * Instantiates a new EventReaderLocator.
+         */
+        public EventReaderLocator() {
+        }
+
+        /**
+         * Set the XMLEvent for this EventReaderLocator.
+         *
+         * @param e the XMLEvent object from which to copy location information.
+         */
+        public void setEvent(XMLEvent e) {
+            this.event = e;
+        }
+
+        /**
+         * Returns the public ID of this Locator.
+         */
+        public String getPublicId() {
+            if (this.event == null) {
+                return null;
+            }
+            return this.event.getLocation().getPublicId();
+        }
+
+        /**
+         * Returns the system ID of this Locator.
+         */
+        public String getSystemId() {
+            if (this.event == null) {
+                return null;
+            }
+            return this.event.getLocation().getSystemId();
+        }
+
+        /**
+         * Returns the line number of this Locator.
+         */
+        public int getLineNumber() {
+            if (this.event == null) {
+                return -1;
+            }
+            return this.event.getLocation().getLineNumber();
+        }
+
+        /**
+         * Returns the column number of this Locator.
+         */
+        public int getColumnNumber() {
+            if (this.event == null) {
+                return -1;
+            }
+            return this.event.getLocation().getColumnNumber();
+        }
+
+        public String getXMLVersion() {
+            return null;
+        }
+
+        public String getEncoding() {
+            return null;
+        }
+
+    }
+    
 }
