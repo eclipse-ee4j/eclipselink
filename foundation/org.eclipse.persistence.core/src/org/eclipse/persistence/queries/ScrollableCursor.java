@@ -550,6 +550,12 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 row = this.nextRow;
                 this.nextRow = null;
             }
+            
+            this.position = currentPosition + 1;  // bug 309142
+            if (row == null) {
+                return null;
+            }
+            
             // If using 1-m joining need to fetch 1-m rows as well.
             if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
                 JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
@@ -558,12 +564,6 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 }
             }
             
-            this.position = currentPosition + 1;  // bug 309142
-            
-            if (row == null) { 
-                return null;
-            }
-
             Object object = buildAndRegisterObject(row);
             if (object == InvalidObject.instance) {
                 continue;
