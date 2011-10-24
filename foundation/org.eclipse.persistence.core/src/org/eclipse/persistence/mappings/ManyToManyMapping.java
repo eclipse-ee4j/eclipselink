@@ -242,7 +242,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             } else if (builder.getAsOfClause() == null) {
                 builder.asOf(AsOfClause.NO_CLAUSE);
             }
-            twisted = twisted.and(this.historyPolicy.additionalHistoryExpression(builder));
+            twisted = twisted.and(this.historyPolicy.additionalHistoryExpression(builder, builder));
             mappingBatchQuery.setSelectionCriteria(twisted);
         }
     }
@@ -295,10 +295,10 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * is used to read reference objects across the tables from the database.
      */
     @Override
-    public Expression getJoinCriteria(QueryKeyExpression exp) {
+    public Expression getJoinCriteria(ObjectExpression context, Expression base) {
         if (getHistoryPolicy() != null) {
-            Expression result = super.getJoinCriteria(exp);
-            Expression historyCriteria = getHistoryPolicy().additionalHistoryExpression(exp);
+            Expression result = super.getJoinCriteria(context, base);
+            Expression historyCriteria = getHistoryPolicy().additionalHistoryExpression(context, base);
             if (result != null) {
                 return result.and(historyCriteria);
             } else if (historyCriteria != null) {
@@ -307,7 +307,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 return null;
             }
         } else {
-            return super.getJoinCriteria(exp);
+            return super.getJoinCriteria(context, base);
         }
     }
 
@@ -1217,7 +1217,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             } else if (((ObjectLevelReadQuery)targetQuery).getAsOfClause() == null) {
                 ((ObjectLevelReadQuery)targetQuery).setAsOfClause(AsOfClause.NO_CLAUSE);
             }
-            Expression temporalExpression = (this).getHistoryPolicy().additionalHistoryExpression(targetQuery.getSelectionCriteria().getBuilder());
+            Expression temporalExpression = (this).getHistoryPolicy().additionalHistoryExpression(targetQuery.getSelectionCriteria().getBuilder(), targetQuery.getSelectionCriteria().getBuilder());
             targetQuery.setSelectionCriteria(targetQuery.getSelectionCriteria().and(temporalExpression));
         }
         return targetQuery;

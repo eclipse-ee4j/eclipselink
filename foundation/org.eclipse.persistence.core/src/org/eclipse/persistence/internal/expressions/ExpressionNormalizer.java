@@ -28,13 +28,24 @@ public class ExpressionNormalizer {
     protected SQLSelectStatement statement;
 
     /** Subselect expressions found in the course of normalization. */
-    protected Vector subSelectExpressions;
+    protected List<SubSelectExpression> subSelectExpressions;
 
     /** The session being normalized in. */
     protected AbstractSession session;
+    
+    /** Used to maintain identity of cloned expressions. */
+    protected Map<Expression, Expression> clonedExpressions;
 
     public ExpressionNormalizer(SQLSelectStatement statement) {
         this.statement = statement;
+    }
+
+    public Map<Expression, Expression> getClonedExpressions() {
+        return clonedExpressions;
+    }
+
+    public void setClonedExpressions(Map<Expression, Expression> clonedExpressions) {
+        this.clonedExpressions = clonedExpressions;
     }
 
     public void addAdditionalExpression(Expression theExpression) {
@@ -49,10 +60,12 @@ public class ExpressionNormalizer {
      * select statement is.
      */
     public void addSubSelectExpression(SubSelectExpression subSelectExpression) {
-        if (subSelectExpressions == null) {
-            subSelectExpressions = new Vector(1);
+        if (this.subSelectExpressions == null) {
+            this.subSelectExpressions = new ArrayList(4);
         }
-        subSelectExpressions.add(subSelectExpression);
+        if (!this.subSelectExpressions.contains(subSelectExpression)) {
+            this.subSelectExpressions.add(subSelectExpression);
+        }
     }
 
     public Expression getAdditionalExpression() {
@@ -88,8 +101,7 @@ public class ExpressionNormalizer {
      * For CR#4223.
      */
     public void normalizeSubSelects(Map clonedExpressions) {
-        for (Enumeration enumtr = subSelectExpressions.elements(); enumtr.hasMoreElements();) {
-            SubSelectExpression next = (SubSelectExpression)enumtr.nextElement();
+        for (SubSelectExpression next : this.subSelectExpressions) {
             next.normalizeSubSelect(this, clonedExpressions);
         }
     }

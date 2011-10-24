@@ -109,9 +109,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
     }
     
     /**
-     * TODO:
-     * This test was remove because it fails, should be fixed and added back.
-     * @bug 3381830
+     * Test that outer expressions are normalized inside sub-selects correctly.
      */
     private void addParallelCorrelatedSubSelectsTest() {
         ExpressionBuilder manager = new ExpressionBuilder(Employee.class);
@@ -121,7 +119,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         Expression expression = null;
         String[] cities = new String[] { "Ottawa", "Vancouver" };
         for (int i = 0; i < cities.length; i++) {
-            ReportQuery subQuery = new ReportQuery(Address.class, new ExpressionBuilder());
+            ReportQuery subQuery = new ReportQuery(Address.class, new ExpressionBuilder(Address.class));
 
             ExpressionBuilder address = subQuery.getExpressionBuilder();
             subQuery.addAttribute("fish", address.value(1));
@@ -132,8 +130,9 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
 
             expression = manager.exists(subQuery).or(expression);
         }
-        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 2);
         test.setExpression(expression);
+        test.getQuery(true).addNonFetchJoin(employee);
         test.setName("Parallel Correlated SubSelect Test");
         test.setDescription("Finds managers with an employee in Ottawa or an employee in Vancouver.  For bug 3381830.");
         addTest(test);
@@ -680,7 +679,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addAggregateObjectComparisonTest();
         addCorrelatedSubSelectTest();
         addCorrelatedSubSelectExpressionsReorderedTest();
-        //addParallelCorrelatedSubSelectsTest();
+        addParallelCorrelatedSubSelectsTest();
         addExistsWithBatchAttributeTest();
         addManagersOfWealthyMarriedAtWorkEmployeesTest();
         addNotInTest();
@@ -713,6 +712,10 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addUpperCaseTest();
         addVehicleViewTest1();
         addSameManagerTest();
+        addSubSelectSelectClauseTest();
+        addSubSelectSelectClauseTest2();
+        addSubSelectFromClauseTest();
+        addSubSelectObjectEqualsTest();
     }
 
     private void addSubSelectEmployeeTest() {
@@ -730,25 +733,8 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
         test.setExpression(expression);
-        test.setName("addSubSelectEmployeeTest");
+        test.setName("SubSelectEmployeeTest");
         test.setDescription("Test subselects with employees and PhoneNumbers");
-        addTest(test);
-    }
-
-    /**
-     * TODO:
-     * This test was removed?  Probably because transformation query keys not supported,
-     * should be added back when transformation query keys are added. 
-     */
-    private void addTransformationTest() {
-        ExpressionBuilder builder = new ExpressionBuilder();
-        Expression expression = builder.get("gender").equal("Male");
-
-        SearchTest test = new SearchTest();
-        test.setExpression(expression);
-        test.setErrorMessage("Failed to read objects from database (due to transformation failure)");
-        test.setName("TransformationTest");
-        test.setDescription("Test for correct transformation within a query (e.g. 'M' => 'Male')");
         addTest(test);
     }
 
@@ -778,6 +764,80 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         test.setExpression(expression);
         test.setName("VehicleViewTest1");
         test.setDescription("Test expression against view, or multiple table subclass read.");
+        addTest(test);
+    }
+
+    private void addSubSelectObjectEqualsTest() {
+        ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
+        ReportQuery subQuery = new ReportQuery(Project.class, new ExpressionBuilder(Project.class));
+        subQuery.addCount("id");
+        subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(builder.anyOf("projects")));
+        
+        ReportQuery query = new ReportQuery(Employee.class, builder);
+        query.addAttribute("id");
+        query.addAttribute("firstName");
+        query.setSelectionCriteria(builder.exists(subQuery));
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
+        test.setQuery(query);
+        test.setName("SubSelectObjectEqualsTest");
+        test.setDescription("Test subselects that uses an object eqauls");
+        addTest(test);
+    }
+    
+    private void addSubSelectSelectClauseTest() {
+        ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
+        ReportQuery subQuery = new ReportQuery(Project.class, new ExpressionBuilder(Project.class));
+        subQuery.addCount("id");
+        subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().equal(builder.anyOf("projects")));
+        
+        ReportQuery query = new ReportQuery(Employee.class, builder);
+        query.addAttribute("id");
+        query.addAttribute("firstName");
+        query.addItem("count", builder.subQuery(subQuery));
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
+        test.setQuery(query);
+        test.setName("SubSelectSelectClauseTest");
+        test.setDescription("Test subselects in the select clause");
+        addTest(test);
+    }
+
+    private void addSubSelectSelectClauseTest2() {
+        ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
+        ReportQuery subQuery = new ReportQuery(Project.class, new ExpressionBuilder(Project.class));
+        subQuery.addCount("id");
+        subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().get("id").equal(builder.anyOf("projects").get("id")));
+        
+        ReportQuery query = new ReportQuery(Employee.class, builder);
+        query.addAttribute("id");
+        query.addAttribute("firstName");
+        query.addItem("count", builder.subQuery(subQuery));
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
+        test.setQuery(query);
+        test.setName("SubSelectSelectClauseTest2");
+        test.setDescription("Test subselects in the select clause");
+        addTest(test);
+    }
+
+    private void addSubSelectFromClauseTest() {
+        ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
+        ReportQuery subQuery = new ReportQuery(LargeProject.class, new ExpressionBuilder(LargeProject.class));
+        subQuery.addAttribute("id");
+        
+        ReportQuery query = new ReportQuery(Employee.class, builder);
+        query.addAttribute("id");
+        query.addAttribute("firstName");
+        Expression alias = builder.getTable(builder.subQuery(subQuery));
+        query.addNonFetchJoin(alias);
+        query.setSelectionCriteria(builder.get("id").equal(alias.get("id")));
+
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
+        test.setQuery(query);
+        test.setName("SubSelectFromClauseTest");
+        test.setDescription("Test subselects in the from clause");
         addTest(test);
     }
 

@@ -135,7 +135,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
 
         synchronized (this) {
             try {
-                printPrefixString(entry.getLevel());
+                printPrefixString(entry.getLevel(), entry.getNameSpace());
                 this.getWriter().write(getSupplementDetailString(entry));
 
                 if (entry.hasMessage()) {

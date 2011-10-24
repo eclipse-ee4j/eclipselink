@@ -268,7 +268,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * Mapping criteria will be provided by the base expression
      */
     @Override
-    public Expression mappingCriteria() {
+    public Expression mappingCriteria(Expression base) {
         return null;
     }
 

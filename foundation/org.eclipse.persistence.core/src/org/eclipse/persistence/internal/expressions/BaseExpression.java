@@ -71,8 +71,8 @@ public abstract class BaseExpression extends Expression {
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
-        if (getBaseExpression() != null){
-            getBaseExpression().resetPlaceHolderBuilder(queryBuilder);
+        if (this.baseExpression != null){
+            this.baseExpression.resetPlaceHolderBuilder(queryBuilder);
         }
         
     }

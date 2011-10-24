@@ -267,7 +267,7 @@ public class ExpressionBuilder extends ObjectExpression {
                 normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(null);
                 normalizer.getStatement().getDescriptorsForMultitableInheritanceOnly().add(null);
                 if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
-                    Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this);
+                    Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this);
                     if (historyCriteria != null) {
                         normalizer.addAdditionalExpression(historyCriteria);
                     }
@@ -320,7 +320,7 @@ public class ExpressionBuilder extends ObjectExpression {
             asOf(AsOfClause.NO_CLAUSE);
         }
         if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
-            Expression temporalCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this);
+            Expression temporalCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this);
             normalizer.addAdditionalExpression(temporalCriteria);
         }
 
@@ -454,6 +454,8 @@ public class ExpressionBuilder extends ObjectExpression {
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
+        // TODO: this is wrong, it should only return the newBase if equal to the old base
+        // since twist needs to copy as it twists it needs a map to keep track of new bases
         return newBase;
     }
 

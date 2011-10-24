@@ -909,7 +909,7 @@ public class SchemaManager {
     }
     
     /**
-    * Create the default table schema for the TopLink project this session associated with.
+    * Create the default table schema for the project this session associated with.
     */
     public void createDefaultTables(boolean generateFKConstraints) {
         //Create each table w/o throwing exception and/or exit if some of them are already existed in the db. 
@@ -920,45 +920,52 @@ public class SchemaManager {
 
         try {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
-            tableCreator.createTables(session, this);
+            tableCreator.createTables(this.session, this);
         } catch (DatabaseException ex) {
             // Ignore error
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
+        // Reset database change events to new tables.
+        if (this.session.getDatabaseEventListener() != null) {
+            this.session.getDatabaseEventListener().remove(this.session);
+            this.session.getDatabaseEventListener().register(this.session);
+        }
     }
 
     /**
-     * Drop and recreate the default table schema for the TopLink project this session associated with.
+     * Drop and recreate the default table schema for the project this session associated with.
      */
     public void replaceDefaultTables() throws EclipseLinkException {
-        boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
-        getSession().getSessionLog().setShouldLogExceptionStackTrace(false);
+        replaceDefaultTables(true, true, true);
+    }
 
-        try {
-            TableCreator tableCreator = getDefaultTableCreator(true);
-            tableCreator.replaceTables(session, this);
-        } catch (DatabaseException exception) {
-            // Ignore error
-        } finally {
-            getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
-        }
+    /**
+     * Drop and recreate the default table schema for the project this session associated with.
+     */
+    public void replaceDefaultTables(boolean dontReplaceSequenceTable, boolean generateFKConstraints) throws EclipseLinkException {
+        replaceDefaultTables(dontReplaceSequenceTable, false, generateFKConstraints);
     }
     
     /**
-     * Drop and recreate the default table schema for the TopLink project this session associated with.
+     * Drop and recreate the default table schema for the project this session associated with.
      */
-    public void replaceDefaultTables(boolean keepSequenceTables, boolean generateFKConstraints) throws EclipseLinkException {
+    public void replaceDefaultTables(boolean dontReplaceSequenceTable, boolean dontReplaceSequences, boolean generateFKConstraints) throws EclipseLinkException {
         boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
-        getSession().getSessionLog().setShouldLogExceptionStackTrace(false);
+        this.session.getSessionLog().setShouldLogExceptionStackTrace(false);
 
         try {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
-            tableCreator.replaceTables(session, this, keepSequenceTables);
+            tableCreator.replaceTables(this.session, this, dontReplaceSequenceTable, dontReplaceSequences);
         } catch (DatabaseException exception) {
             // Ignore error
         } finally {
-            getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
+            this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
+        }
+        // Reset database change events to new tables.
+        if (this.session.getDatabaseEventListener() != null) {
+            this.session.getDatabaseEventListener().remove(this.session);
+            this.session.getDatabaseEventListener().register(this.session);
         }
     }
 

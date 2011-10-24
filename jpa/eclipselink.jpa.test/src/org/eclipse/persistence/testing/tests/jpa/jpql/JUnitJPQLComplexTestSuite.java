@@ -39,7 +39,6 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
@@ -240,6 +239,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testEnumNullNotNull"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testPessimisticLock"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testAliasedFunction"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInGroupBy"));
+        
         return suite;
     }
     
@@ -3211,6 +3212,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("SELECT e FROM Employee e JOIN e.phoneNumbers p GROUP BY e");
         query.getResultList();
         query = em.createQuery("SELECT e, COUNT(p) FROM Employee e JOIN e.projects p GROUP BY e HAVING COUNT(p) >= 2");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testSubselectInGroupBy() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e.firstName, COUNT(e) from Employee e group by e.firstName having count(e) > (Select count(e2) from Employee e2)");
         query.getResultList();
         closeEntityManager(em);
     }

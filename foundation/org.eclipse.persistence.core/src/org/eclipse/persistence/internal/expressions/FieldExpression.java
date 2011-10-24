@@ -202,6 +202,9 @@ public class FieldExpression extends DataExpression {
      * Normalize the expression into a printable structure.
      */
     public Expression normalize(ExpressionNormalizer normalizer) {
+        if (this.hasBeenNormalized) {
+            return this;
+        }
         Expression expression = super.normalize(normalizer);
         // to support custom types, print expressions derived from field expressions, table expressions and direct query keys with their aliases
         if (getBaseExpression() != null && getBaseExpression().isFieldExpression() || getBaseExpression().isTableExpression() ||

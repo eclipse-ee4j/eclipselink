@@ -57,9 +57,9 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Add any temporal querying conditions to this object expression.
      */
-    public Expression additionalHistoryExpression(ObjectExpression expression) {
+    public Expression additionalHistoryExpression(Expression context, Expression base) {
         //
-        AsOfClause clause = expression.getAsOfClause();
+        AsOfClause clause = base.getAsOfClause();
         Object value = clause.getValue();
         Expression join = null;
         Expression subJoin = null;
@@ -83,12 +83,12 @@ public class HistoryPolicy implements Cloneable, Serializable {
             if (getMapping() != null) {
                 TableExpression tableExp = null;
                 DatabaseTable historicalTable = (DatabaseTable)getHistoricalTables().elementAt(0);
-                tableExp = (TableExpression)expression.existingDerivedTable(historicalTable);
+                tableExp = (TableExpression)((ObjectExpression)base).existingDerivedTable(historicalTable);
 
                 start = tableExp.getField(getStart());
                 end = tableExp.getField(getEnd());
 
-                if (expression.shouldUseOuterJoin()) {
+                if (((ObjectExpression)base).shouldUseOuterJoin()) {
                     join = start.isNull().or(start.lessThanEqual(value));
                 } else {
                     join = start.lessThanEqual(value);
@@ -101,10 +101,10 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 return join;
             }
             for (int i = 0; i < getHistoricalTables().size(); i++) {
-                start = expression.getField(getStart(i));
-                end = expression.getField(getEnd(i));
+                start = base.getField(getStart(i));
+                end = base.getField(getEnd(i));
 
-                if (expression.shouldUseOuterJoin()) {
+                if (((ObjectExpression)base).shouldUseOuterJoin()) {
                     subJoin = start.isNull().or(start.lessThanEqual(value));
                 } else {
                     subJoin = start.lessThanEqual(value);

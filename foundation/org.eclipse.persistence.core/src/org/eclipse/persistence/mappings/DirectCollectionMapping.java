@@ -270,7 +270,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 } else if (builder.getAsOfClause() == null) {
                     builder.asOf(AsOfClause.NO_CLAUSE);
                 }
-                batchSelectionCriteria = batchSelectionCriteria.and(this.historyPolicy.additionalHistoryExpression(builder));
+                batchSelectionCriteria = batchSelectionCriteria.and(this.historyPolicy.additionalHistoryExpression(builder, builder));
             }
         }
 
@@ -1174,10 +1174,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * is used to read reference objects across the tables from the database.
      */
     @Override
-    public Expression getJoinCriteria(QueryKeyExpression exp) {
+    public Expression getJoinCriteria(ObjectExpression context, Expression base) {
         if (getHistoryPolicy() != null) {
-            Expression result = super.getJoinCriteria(exp);
-            Expression historyCriteria = getHistoryPolicy().additionalHistoryExpression(exp);
+            Expression result = super.getJoinCriteria(context, base);
+            Expression historyCriteria = getHistoryPolicy().additionalHistoryExpression(context, base);
             if (result != null) {
                 return result.and(historyCriteria);
             } else if (historyCriteria != null) {
@@ -1186,7 +1186,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 return null;
             }
         } else {
-            return super.getJoinCriteria(exp);
+            return super.getJoinCriteria(context, base);
         }
     }
 
@@ -3074,7 +3074,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 } else if (builder.getAsOfClause() == null) {
                     builder.asOf(AsOfClause.NO_CLAUSE);
                 }
-                Expression temporalExpression = getHistoryPolicy().additionalHistoryExpression(builder);
+                Expression temporalExpression = getHistoryPolicy().additionalHistoryExpression(builder, builder);
                 statement.setWhereClause(statement.getWhereClause().and(temporalExpression));
                 if (builder.hasAsOfClause()) {
                     statement.getTables().set(0, (DatabaseTable)getHistoryPolicy().getHistoricalTables().elementAt(0));

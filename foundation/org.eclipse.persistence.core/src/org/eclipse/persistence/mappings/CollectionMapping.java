@@ -986,13 +986,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Returns the join criteria stored in the mapping selection query. This criteria
      * is used to read reference objects across the tables from the database.
      */
-    public Expression getJoinCriteria(QueryKeyExpression exp) {
+    @Override
+    public Expression getJoinCriteria(ObjectExpression context, Expression base) {
         Expression selectionCriteria = getSelectionCriteria();
-        Expression keySelectionCriteria = containerPolicy.getKeySelectionCriteria();
-        if (keySelectionCriteria != null){
+        Expression keySelectionCriteria = this.containerPolicy.getKeySelectionCriteria();
+        if (keySelectionCriteria != null) {
             selectionCriteria = selectionCriteria.and(keySelectionCriteria);
         }
-        return exp.getBaseExpression().twist(selectionCriteria, exp);
+        return context.getBaseExpression().twist(selectionCriteria, base);
     }
 
     /**

@@ -248,7 +248,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </table>
      */
     public Expression anyOf(String attributeName) {
-        throw new UnsupportedOperationException("anyOfAllowingNone");
+        throw new UnsupportedOperationException("anyOf");
     }
 
     /**
@@ -1528,7 +1528,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression get(String attributeName) {
-        throw new UnsupportedOperationException("anyOfAllowingNone");
+        throw new UnsupportedOperationException("get");
     }
 
     /**
@@ -1543,7 +1543,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression getAllowingNull(String attributeName) {
-        throw new UnsupportedOperationException("anyOfAllowingNone");
+        throw new UnsupportedOperationException("getAllowingNull");
     }
 
     /**
@@ -1864,6 +1864,17 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression getTable(DatabaseTable table) {
         throw QueryException.illegalUseOfGetTable(table);
+    }
+
+    /**
+     * ADVANCED: Return an expression representing a sub-select in the from clause.
+     * <p> Example:
+     * <pre><blockquote>
+     *  builder.getTable(builder.subQuery(reportQuery)).getField("TYPE").equal("S");
+     * </blockquote></pre>
+     */
+    public Expression getTable(Expression subSelect) {
+        throw QueryException.illegalUseOfGetTable(subSelect);
     }
 
     /**

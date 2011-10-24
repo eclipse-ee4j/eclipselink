@@ -734,6 +734,9 @@ public class ReportQuery extends ReadAllQuery {
                 }
             }
         }
+        if (this.havingExpression != null) {
+            this.havingExpression = this.havingExpression.copiedVersionFrom(alreadyDone);
+        }
         if (this.orderByExpressions != null) {
             for (int i = this.orderByExpressions.size() - 1; i >= 0; i--) {
                 Expression item = this.orderByExpressions.get(i);

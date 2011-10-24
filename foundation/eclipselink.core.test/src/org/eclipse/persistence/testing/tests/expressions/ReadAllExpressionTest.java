@@ -116,7 +116,8 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
 
         // Setup the query if not given.
-        getQuery(true);
+        // Revert the query prepare to allow re-running of the test to debug.
+        getQuery(true).setIsPrepared(false);
 
         try {
             if (getName().equals("MultiPlatformTest") && getSession().getLogin().getPlatform().isOracle() && (getAbstractSession().getAccessor().getConnection().getMetaData().getDriverVersion().indexOf("8.1.7") != -1)) {

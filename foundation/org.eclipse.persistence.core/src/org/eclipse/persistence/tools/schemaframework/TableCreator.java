@@ -271,17 +271,24 @@ public class TableCreator {
      * This will drop the tables if they exist and recreate them.
      */
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
-        replaceTablesAndConstraints(schemaManager, session);
-        schemaManager.createSequences();
+        replaceTables(session, schemaManager, true, true);
     }
     
     /**
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
      */
-    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean keepSequenceTable) {
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean dontReplaceSequenceTable) {
+        replaceTables(session, schemaManager, dontReplaceSequenceTable, false);
+    }
+    
+    /**
+     * Recreate the tables on the database.
+     * This will drop the tables if they exist and recreate them.
+     */
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean dontReplaceSequenceTable, boolean dontReplaceSequences) {
         replaceTablesAndConstraints(schemaManager, session);
-        schemaManager.createOrReplaceSequences(keepSequenceTable, false);
+        schemaManager.createOrReplaceSequences(dontReplaceSequenceTable, dontReplaceSequences);
     }
     
     protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {

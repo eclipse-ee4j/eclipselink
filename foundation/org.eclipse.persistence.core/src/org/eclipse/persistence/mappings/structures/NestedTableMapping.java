@@ -16,11 +16,11 @@ import java.util.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.queries.*;
 
 /**
@@ -90,11 +90,9 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Join criteria is created to read target records (nested table) from the table.
      */
-    public Expression getJoinCriteria(QueryKeyExpression exp) {
-        ExpressionBuilder builder = new ExpressionBuilder();
-
-        Expression selectionCriteria = builder.ref().equal(builder.value());
-        return exp.getBaseExpression().twist(selectionCriteria, exp);
+    @Override
+    public Expression getJoinCriteria(ObjectExpression context, Expression base) {
+        return context.getBaseExpression().ref().equal(base.value());
     }
 
     /**
@@ -110,6 +108,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * The returns if the mapping has any constraint dependencies, such as foreign keys and join tables.
      */
+    @Override
     public boolean hasConstraintDependency() {
         return true;
     }
@@ -118,6 +117,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (getField() == null) {
@@ -135,7 +135,7 @@ public class NestedTableMapping extends CollectionMapping {
     /**
      * INTERNAL:
      * Selection criteria is created to read target records (nested table) from the table.
-     **/
+     */
     protected void initializeSelectionCriteria(AbstractSession session) {
         Expression exp1;
         Expression exp2;
@@ -151,6 +151,7 @@ public class NestedTableMapping extends CollectionMapping {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isNestedTableMapping() {
         return true;
     }
@@ -159,6 +160,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Post Initialize the mapping.
      */
+    @Override
     public void postInitialize(AbstractSession session) throws DescriptorException {
         initializeSelectionCriteria(session);
     }
@@ -167,6 +169,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Delete privately owned parts
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!shouldObjectModifyCascadeToParts(query)) {
             return;
@@ -197,6 +200,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Insert privately owned parts
      */
+    @Override
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!shouldObjectModifyCascadeToParts(query)) {
             return;
@@ -240,6 +244,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Update the privately owned parts
      */
+    @Override
     public void preUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {        
         if (!shouldObjectModifyCascadeToParts(query)) {
             return;
@@ -376,6 +381,7 @@ public class NestedTableMapping extends CollectionMapping {
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;
@@ -389,6 +395,7 @@ public class NestedTableMapping extends CollectionMapping {
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;
@@ -402,6 +409,7 @@ public class NestedTableMapping extends CollectionMapping {
      * Write the entire structure into the row as a special type that prints as the constructor.
      * If any part of the structure has changed the whole thing is written.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery writeQuery, AbstractRecord record) throws DescriptorException {
         if (!isAttributeValueInstantiatedOrChanged(writeQuery.getObject())) {
             return;
@@ -420,6 +428,7 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;

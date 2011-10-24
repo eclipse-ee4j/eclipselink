@@ -90,7 +90,8 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
         return false;
     }
 
-    public Expression mappingCriteria() {
+    @Override
+    public Expression mappingCriteria(Expression base) {
         return null;
     }
 

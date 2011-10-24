@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
@@ -199,7 +200,13 @@ public class DatabaseTable implements Cloneable, Serializable {
             }
         }
     }
-
+    
+    /**
+     * Print the table's SQL from clause.
+     */
+    public void printSQL(ExpressionSQLPrinter printer) throws IOException {
+        printer.getWriter().write(getQualifiedNameDelimited(printer.getPlatform()));
+    }
     
     public String getTableQualifierDelimited(DatasourcePlatform platform) {
         if (useDelimiters && tableQualifier != null && !tableQualifier.equals("")){

@@ -14,35 +14,36 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.expressions.*;
 
+/**
+ * A TableExpression allows for a raw database table to be referenced in a query.
+ * This is used for ManyToMany and DirectCollection mappings to define their selection criteria.
+ * It can also be used directly to mix SQL artifacts with Expressions.
+ */
 public class TableExpression extends DataExpression {
     protected DatabaseTable table;
 
-    /**
-     * TableExpression constructor comment.
-     */
     public TableExpression() {
         super();
     }
 
-    /**
-     * TableExpression constructor comment.
-     */
-    public TableExpression(DatabaseTable aTable) {
+    public TableExpression(DatabaseTable table) {
         super();
-        table = aTable;
+        this.table = table;
     }
     
     /**
      * INTERNAL:
      * Alias a particular table within this node
      */
+    @Override
     protected void assignAlias(DatabaseTable alias, DatabaseTable table) {
-        if (baseExpression.isQueryKeyExpression()){
-            QueryKeyExpression qkExpression = ((QueryKeyExpression)baseExpression);
-            if (qkExpression.getTableAliases() != null && qkExpression.getTableAliases().keyAtValue(table) != null ){
+        if (this.baseExpression.isQueryKeyExpression()){
+            QueryKeyExpression qkExpression = ((QueryKeyExpression)this.baseExpression);
+            if (qkExpression.getTableAliases() != null && qkExpression.getTableAliases().keyAtValue(table) != null ) {
                 return;
             }
         }
@@ -54,6 +55,7 @@ public class TableExpression extends DataExpression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -62,7 +64,7 @@ public class TableExpression extends DataExpression {
             return false;
         }
         TableExpression expression = (TableExpression) object;
-        return ((getTable() == expression.getTable()) || ((getTable() != null) && getTable().equals(expression.getTable())));
+        return ((this.table == expression.table) || ((this.table != null) && this.table.equals(expression.table)));
     }
         
     /**
@@ -70,6 +72,7 @@ public class TableExpression extends DataExpression {
      * Compute a consistent hash-code for the expression.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
         if (getTable() != null) {
@@ -82,6 +85,7 @@ public class TableExpression extends DataExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "Table";
     }
@@ -91,6 +95,7 @@ public class TableExpression extends DataExpression {
      * Fully-qualify the databaseField if the table is known.
      * CR 3791
      */
+    @Override
     public Expression getField(String fieldName) {
         // we need to check for full table qualification
         DatabaseField field = new DatabaseField(fieldName);
@@ -103,9 +108,10 @@ public class TableExpression extends DataExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public Vector getOwnedTables() {
         Vector result = new Vector(1);
-        result.addElement(getTable());
+        result.add(getTable());
         return result;
     }
 
@@ -113,6 +119,7 @@ public class TableExpression extends DataExpression {
         return table;
     }
 
+    @Override
     public boolean isTableExpression() {
         return true;
     }
@@ -122,9 +129,13 @@ public class TableExpression extends DataExpression {
      * Normalize the expression into a printable structure.
      * Any joins must be added to form a new root.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
-		//Bug4736461  Only setTableQualifier if getDatasourceLogin().getTableQualifier() is an empty string to make the window much smaller when
-		//DatabaseTable.qualifiedName is reset
+        if (this.hasBeenNormalized) {
+            return this;
+        }
+        // Bug4736461  Only setTableQualifier if getDatasourceLogin().getTableQualifier() is an empty string to make the window much smaller when
+        // DatabaseTable.qualifiedName is reset
         if (getTable().getTableQualifier().length() == 0 && (normalizer.getSession().getDatasourceLogin().getTableQualifier().length() != 0)) {
             getTable().setTableQualifier(normalizer.getSession().getDatasourceLogin().getTableQualifier());
         }
@@ -136,10 +147,10 @@ public class TableExpression extends DataExpression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
         return newLocalBase.getTable(getTable());
-
     }
 
     /**
@@ -161,13 +172,13 @@ public class TableExpression extends DataExpression {
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         Expression twistedBase = getBaseExpression().twistedForBaseAndContext(newBase, context, oldBase);
         return twistedBase.getTable(getTable());
-
     }
 
     /**
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(getTable().toString());
         writer.write(tableAliasesDescription());

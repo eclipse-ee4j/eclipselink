@@ -18,6 +18,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -69,7 +70,8 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Join criteria is created to read target records (nested table) from the table.
      */
-    public Expression getJoinCriteria(org.eclipse.persistence.internal.expressions.QueryKeyExpression exp) {
+    @Override
+    public Expression getJoinCriteria(ObjectExpression context, Expression base) {
         return null;
     }
 
@@ -77,6 +79,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * The returns if the mapping has any constraint dependencies, such as foreign keys and join tables.
      */
+    @Override
     public boolean hasConstraintDependency() {
         return true;
     }
@@ -85,6 +88,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         setReferenceDescriptor(session.getDescriptor(getReferenceClass()));
 
@@ -109,6 +113,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isReferenceMapping() {
         return true;
     }
@@ -117,6 +122,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Insert privately owned parts
      */
+    @Override
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         // Checks if privately owned parts should be inserted or not.
         if (!shouldObjectModifyCascadeToParts(query)) {
@@ -157,6 +163,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Update privately owned parts
      */
+    @Override
     public void preUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isAttributeValueInstantiated(query.getObject())) {
             return;
@@ -195,6 +202,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Insert privately owned parts
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         return;
     }
@@ -203,6 +211,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Delete privately owned parts
      */
+    @Override
     public void postDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         return;
     }
@@ -211,6 +220,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Update privately owned parts
      */
+    @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         return;
     }
@@ -219,6 +229,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Delete privately owned parts
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         return;
     }
@@ -242,6 +253,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * PUBLIC:
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
+    @Override
     public void setReferenceClass(Class referenceClass) {
         this.referenceClass = referenceClass;
     }
@@ -251,6 +263,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
             if (this.isCacheable && isTargetProtected && cacheKey != null) {
@@ -339,6 +352,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;
@@ -352,6 +366,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;
@@ -364,6 +379,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;

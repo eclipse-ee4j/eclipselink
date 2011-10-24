@@ -603,7 +603,7 @@ public class RelationExpression extends CompoundExpression {
             if (second.hasBeenNormalized()) {
                 second.setHasBeenNormalized(false);
             }
-            second = (QueryKeyExpression)second.normalize(normalizer, foreignKeyJoinPointer);
+            second = (QueryKeyExpression)second.normalize(normalizer, first, foreignKeyJoinPointer);
             if (!foreignKeyJoinPointer.isEmpty()) {
                 foreignKeyJoin = (Expression)foreignKeyJoinPointer.firstElement();
                 // Will make left and right identical in the SQL.

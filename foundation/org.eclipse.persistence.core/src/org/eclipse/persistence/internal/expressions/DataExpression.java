@@ -30,7 +30,7 @@ import org.eclipse.persistence.mappings.querykeys.*;
 public abstract class DataExpression extends BaseExpression {
     protected List<Expression> derivedTables;
     protected List<Expression> derivedFields;
-    protected boolean hasBeenNormalized = false;
+    protected boolean hasBeenNormalized;
     protected TableAliasLookup tableAliases;
     protected AsOfClause asOfClause;
 
@@ -46,6 +46,7 @@ public abstract class DataExpression extends BaseExpression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -54,7 +55,7 @@ public abstract class DataExpression extends BaseExpression {
             return false;
         }
         DataExpression expression = (DataExpression) object;
-        return ((getBaseExpression() == expression.getBaseExpression()) || ((getBaseExpression() != null) && getBaseExpression().equals(expression.getBaseExpression())))
+        return ((this.baseExpression == expression.getBaseExpression()) || ((this.baseExpression != null) && this.baseExpression.equals(expression.getBaseExpression())))
             && ((getAsOfClause() == expression.getAsOfClause()) || ((getAsOfClause() != null) && getAsOfClause().equals(expression.getAsOfClause())));
     }
     
@@ -81,12 +82,13 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      * Find the alias for a given table
      */
+    @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
         if (tableAliases == null) {
-            if (getBaseExpression() == null) {
+            if (this.baseExpression == null) {
                 return null;
             }
-            return getBaseExpression().aliasForTable(table);
+            return this.baseExpression.aliasForTable(table);
         }
 
         return tableAliases.keyAtValue(table);
@@ -96,6 +98,7 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      * Alias a particular table within this node
      */
+    @Override
     protected void assignAlias(String name, DatabaseTable table) {
         if (!getBuilder().getSession().getProject().hasGenericHistorySupport()) {
             assignAlias(new DecoratedDatabaseTable(name, getAsOfClause()), table);
@@ -171,7 +174,6 @@ public abstract class DataExpression extends BaseExpression {
      */
     public DatabaseField getAliasedField() {
         return null;
-
     }
 
     public AsOfClause getAsOfClause() {
@@ -189,41 +191,51 @@ public abstract class DataExpression extends BaseExpression {
         return null;
     }
 
+    @Override
     public Expression getField(String fieldName) {
         DatabaseField field = new DatabaseField(fieldName);
         return getField(field);
-
     }
 
+    @Override
     public Expression getField(DatabaseField field) {
         Expression existing = existingDerivedField(field);
         if (existing != null) {
             return existing;
         }
         return newDerivedField(field);
+    }
 
+    /**
+     * INTERNAL:
+     * Return the descriptor which contains this query key.
+     */
+    public ClassDescriptor getContainingDescriptor() {
+        return ((DataExpression)this.baseExpression).getDescriptor();
     }
 
     public DatabaseMapping getMapping() {
-        if (getBaseExpression() == null) {
+        if (this.baseExpression == null) {
             return null;
         }
-        ClassDescriptor aDescriptor = ((DataExpression)getBaseExpression()).getDescriptor();
-        if (aDescriptor == null) {
+        ClassDescriptor descriptor = getContainingDescriptor();
+        if (descriptor == null) {
             return null;
         }
-        return aDescriptor.getObjectBuilder().getMappingForAttributeName(getName());
+        return descriptor.getObjectBuilder().getMappingForAttributeName(getName());
     }
     
     public QueryKey getQueryKeyOrNull() {
         return null;
     }
 
+    @Override
     public Expression getTable(String tableName) {
         DatabaseTable table = new DatabaseTable(tableName);
         return getTable(table);
     }
 
+    @Override
     public Expression getTable(DatabaseTable table) {
         Expression existing = existingDerivedTable(table);
         if (existing != null) {
@@ -237,6 +249,7 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      * Return the aliases used.  For CR#2456 must never lazily initialize as also used for Expression identity.
      */
+    @Override
     public TableAliasLookup getTableAliases() {
         return tableAliases;
 
@@ -258,10 +271,12 @@ public abstract class DataExpression extends BaseExpression {
         return hasBeenNormalized;
     }
 
+    @Override
     public boolean hasAsOfClause() {
         return ((getAsOfClause() != null) && (getAsOfClause().getValue() != null));
     }
 
+    @Override
     public boolean hasBeenAliased() {
         return ((tableAliases != null) && (tableAliases.size() != 0));
 
@@ -282,6 +297,7 @@ public abstract class DataExpression extends BaseExpression {
         return false;
     }
 
+    @Override
     public boolean isDataExpression() {
         return true;
     }
@@ -290,15 +306,12 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      * For iterating using an inner class
      */
+    @Override
     public void iterateOn(ExpressionIterator iterator) {
         super.iterateOn(iterator);
         if (baseExpression != null) {
             baseExpression.iterateOn(iterator);
         }
-    }
-
-    public Expression mappingCriteria() {
-        return null;
     }
 
     /**
@@ -308,7 +321,6 @@ public abstract class DataExpression extends BaseExpression {
         FieldExpression result = new FieldExpression(field, this);
         addDerivedField(result);
         return result;
-
     }
 
     /**
@@ -319,7 +331,20 @@ public abstract class DataExpression extends BaseExpression {
         result.setBaseExpression(this);
         addDerivedTable(result);
         return result;
+    }
 
+    /**
+     * ADVANCED: Return an expression representing a sub-select in the from clause.
+     * <p> Example:
+     * <pre><blockquote>
+     *  builder.getTable(builder.subQuery(reportQuery)).getField("TYPE").equal("S");
+     * </blockquote></pre>
+     */
+    @Override
+    public Expression getTable(Expression subSelect) {
+        TableExpression result = new FromSubSelectExpression((SubSelectExpression)subSelect);
+        result.setBaseExpression(this);
+        return result;
     }
 
     /**
@@ -327,12 +352,17 @@ public abstract class DataExpression extends BaseExpression {
      * Normalize the expression into a printable structure.
      * Any joins must be added to form a new root.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
-        if (getBaseExpression() != null) {
+        if (this.hasBeenNormalized) {
+            return this;
+        }
+        this.hasBeenNormalized = true;
+        if (this.baseExpression != null) {
             // First normalize the base.
-            setBaseExpression(getBaseExpression().normalize(normalizer));
+            setBaseExpression(this.baseExpression.normalize(normalizer));
             if (getAsOfClause() == null) {
-                asOf(getBaseExpression().getAsOfClause());
+                asOf(this.baseExpression.getAsOfClause());
             }
         }
 
@@ -343,6 +373,7 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      * Used for cloning.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         clearAliases();
@@ -354,6 +385,7 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      * Print SQL onto the stream, using the ExpressionPrinter for context
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         printer.printField(getAliasedField());
     }
@@ -383,9 +415,10 @@ public abstract class DataExpression extends BaseExpression {
     /**
      * Print the base for debuggin purposes.
      */
+    @Override
     public void writeSubexpressionsTo(BufferedWriter writer, int indent) throws IOException {
-        if (getBaseExpression() != null) {
-            getBaseExpression().toString(writer, indent);
+        if (this.baseExpression != null) {
+            this.baseExpression.toString(writer, indent);
         }
     }
 }

@@ -33,6 +33,7 @@ public class IndexExpression extends FieldExpression {
      * INTERNAL:
      * Normalize the expression into a printable structure.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         // IndexExpression always has base QueryKeyExpression.
         // Base expression should be normalized first: it sets the field, 
@@ -41,5 +42,5 @@ public class IndexExpression extends FieldExpression {
         // That's why the base expression may be normalized again in super.normalize.
         getBaseExpression().normalize(normalizer);
         return super.normalize(normalizer);
-    }    
+    }
 }

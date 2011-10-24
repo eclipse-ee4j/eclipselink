@@ -768,7 +768,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
 
     //Bug3135111  Prefix strings are not translated until the first time they are used.
-    protected void printPrefixString(int level) {
+    protected void printPrefixString(int level, String category) {
         try {
             switch (level) {
             case SEVERE:
@@ -818,6 +818,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
                     TOPLINK_PREFIX = LoggingLocalization.buildMessage("toplink");
                 }
                 this.getWriter().write(TOPLINK_PREFIX);
+            }
+            if (category != null) {
+                this.getWriter().write(category);
+                this.getWriter().write(": ");
             }
         } catch (IOException exception) {
             throw ValidationException.logIOError(exception);

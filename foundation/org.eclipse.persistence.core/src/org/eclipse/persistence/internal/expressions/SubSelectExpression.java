@@ -19,6 +19,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.queries.*;
 
 /**
@@ -27,6 +28,8 @@ import org.eclipse.persistence.internal.queries.*;
  * Subselects can be used for, in (single column), exists (empty or non-empty), comparisons (single value).
  */
 public class SubSelectExpression extends BaseExpression {
+    protected boolean hasBeenNormalized;
+    
     protected ReportQuery subQuery;
 
     protected String attribute;
@@ -45,17 +48,10 @@ public class SubSelectExpression extends BaseExpression {
     
     /**
      * INTERNAL:
-     */
-    @Override
-    public Expression copiedVersionFrom(Map alreadyDone) {
-        return super.copiedVersionFrom(alreadyDone);
-    }
-    
-    /**
-     * INTERNAL:
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -68,6 +64,7 @@ public class SubSelectExpression extends BaseExpression {
      * INTERNAL:
      * Used in debug printing of this node.
      */
+    @Override
     public String descriptionOfNodeType() {
         return "SubSelect";
     }
@@ -114,6 +111,7 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isSubSelectExpression() {
         return true;
     }
@@ -122,6 +120,7 @@ public class SubSelectExpression extends BaseExpression {
      * INTERNAL:
      * For iterating using an inner class
      */
+    @Override
     public void iterateOn(ExpressionIterator iterator) {
         super.iterateOn(iterator);
         if (baseExpression != null) {
@@ -145,7 +144,11 @@ public class SubSelectExpression extends BaseExpression {
      * For CR#4223 it will now be normalized after the outer statement is, rather than
      * somewhere in the middle of the outer statement's normalize.
      */
+    @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
+        if (this.hasBeenNormalized) {
+            return this;
+        }
         //has no effect but validateNode is here for consistency
         validateNode();
         // Defer normalization of this expression until later.
@@ -160,6 +163,11 @@ public class SubSelectExpression extends BaseExpression {
      * For CR#4223
      */
     public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Map clonedExpressions) {
+        if (this.hasBeenNormalized) {
+            return this;
+        }
+        this.hasBeenNormalized = true;
+        normalizer.getStatement().setRequiresAliases(true);
         // Anonymous subqueries: The following is to support sub-queries created
         // on the fly by OSQL Expressions isEmpty(), isNotEmpty(), size().
         if (!getSubQuery().isCallQuery() && (getSubQuery().getReferenceClass() == null)) {
@@ -202,6 +210,7 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * The query must be cloned, and the sub-expression must be cloned using the same outer expression identity.
      */
+    @Override
     protected void postCopyIn(Map alreadyDone) {
         initializeCountSubQuery();
         super.postCopyIn(alreadyDone);
@@ -220,7 +229,7 @@ public class SubSelectExpression extends BaseExpression {
                 // Must clone the expression builder.
                 clonedQuery.setExpressionBuilder((ExpressionBuilder)clonedQuery.getExpressionBuilder().copiedVersionFrom(alreadyDone));
             }
-            // Must also clone report items.
+            // Must also clone report items, group by, having, order by.
             clonedQuery.copyReportItems(alreadyDone);
         }
         setSubQuery(clonedQuery);
@@ -244,6 +253,7 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * Print the sub query to the printer.
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         ReportQuery query = getSubQuery();
         printer.printString("(");
@@ -264,7 +274,13 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * Should not rebuild as has its on expression builder.
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
+        // TODO: This should be using rebuildOn not twist, but needs to pass the oldBase to rebuildOn
+        // and only the oldBase should be replaced with the new base.
+        // Further the twist, rebuildOn, and copy are doing essentially the same thing
+        // and should be merged into a single method instead of having three methods doing the same thing 3 different ways
+        // and all having various different bugs in them.
         SubSelectExpression subSelect = (SubSelectExpression) shallowClone();
         
         // Rebuild base expression
@@ -319,6 +335,7 @@ public class SubSelectExpression extends BaseExpression {
      * built using a builder that is not attached to the query.  This happens in case of an Exists
      * call using a new ExpressionBuilder().  This builder needs to be replaced with one from the query.
      */
+    @Override
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         if(this.baseExpression.isExpressionBuilder() && ((ExpressionBuilder)this.baseExpression).wasQueryClassSetInternally()){
             this.baseExpression = queryBuilder;
@@ -388,6 +405,7 @@ public class SubSelectExpression extends BaseExpression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(String.valueOf(getSubQuery()));
     }
@@ -396,22 +414,38 @@ public class SubSelectExpression extends BaseExpression {
      * INTERNAL:
      * Used in SQL printing.
      */
+    @Override
     public void writeSubexpressionsTo(BufferedWriter writer, int indent) throws IOException {        
         if (getSubQuery().getSelectionCriteria() != null) {
             getSubQuery().getSelectionCriteria().toString(writer, indent);
         }
     }
+
+    /**
+     * INTERNAL: called from SQLSelectStatement.writeFieldsFromExpression(...)
+     * This allows a sub query in the select clause.
+     */
+    @Override
+    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+        //print ", " before each selected field except the first one
+        if (printer.isFirstElementPrinted()) {
+            printer.printString(", ");
+        } else {
+            printer.setIsFirstElementPrinted(true);
+        }
+
+        // This field is complex so any name can be used.
+        DatabaseField field = new DatabaseField("*");
+        field.setSqlType(DatabaseField.NULL_SQL_TYPE);
+        newFields.add(field);
+
+        printSQL(printer);
+    }
     
     /**
      * INTERNAL:
      * This factory method is used to build a subselect that will do a count.
-     * 
      * It will count the number of items in baseExpression.anyOf(attribute).
-     * @param outerQueryBaseExpression
-     * @param outerQueryCriteria
-     * @param attribute
-     * @param returnType
-     * @return
      */
     public static SubSelectExpression createSubSelectExpressionForCount(Expression outerQueryBaseExpression, Expression outerQueryCriteria, String attribute, Class returnType){
         SubSelectExpression expression = new SubSelectExpression();

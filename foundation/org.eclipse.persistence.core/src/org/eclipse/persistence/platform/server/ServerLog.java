@@ -71,7 +71,7 @@ public class ServerLog extends AbstractSessionLog {
             message += formatMessage(entry);
         }
 
-        basicLog(entry.getLevel(), message);
+        basicLog(entry.getLevel(), entry.getNameSpace(), message);
     }
 
     /**
@@ -84,9 +84,9 @@ public class ServerLog extends AbstractSessionLog {
      * @param message the formatted string message
      * </p>
      */
-    protected void basicLog(int level, String message) {
+    protected void basicLog(int level, String category, String message) {
         try {
-            printPrefixString(level);
+            printPrefixString(level, null);
             getWriter().write(message);
             getWriter().write(Helper.cr());
             getWriter().flush();

@@ -824,7 +824,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 } else {
                     backRef.asOf(batchQuery.getAsOfClause());
                 }
-                batchSelectionCriteria = batchSelectionCriteria.and(descriptorToUse.getHistoryPolicy().additionalHistoryExpression((ObjectExpression)backRef));
+                batchSelectionCriteria = batchSelectionCriteria.and(descriptorToUse.getHistoryPolicy().additionalHistoryExpression(backRef, backRef));
             }
         }
         batchQuery.setSelectionCriteria(batchSelectionCriteria);
@@ -947,9 +947,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Returns the join criteria stored in the mapping selection query. This criteria
      * is used to read reference objects across the tables from the database.
      */
-    public Expression getJoinCriteria(QueryKeyExpression exp) {
+    public Expression getJoinCriteria(ObjectExpression context, Expression base) {
         Expression selectionCriteria = getSelectionCriteria();
-        return exp.getBaseExpression().twist(selectionCriteria, exp);
+        return context.getBaseExpression().twist(selectionCriteria, base);
     }
 
     /**

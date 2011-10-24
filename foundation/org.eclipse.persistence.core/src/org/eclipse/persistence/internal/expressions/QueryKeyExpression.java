@@ -77,6 +77,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Return if the expression is equal to the other.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
@@ -97,6 +98,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Compute a consistent hash-code for the expression.
      * This is used to allow dynamic expression's SQL to be cached.
      */
+    @Override
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
         if (getName() != null) {
@@ -109,6 +111,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Return the expression to join the main table of this node to any auxiliary tables.
      */
+    @Override
     public Expression additionalExpressionCriteria() {
         if (getDescriptor() == null) {
             return null;
@@ -116,7 +119,7 @@ public class QueryKeyExpression extends ObjectExpression {
 
         Expression criteria = getDescriptor().getQueryManager().getAdditionalJoinExpression();
         if (criteria != null) {
-            criteria = getBaseExpression().twist(criteria, this);
+            criteria = this.baseExpression.twist(criteria, this);
             if (shouldUseOuterJoin() && getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
                 criteria.convertToUseOuterJoin();
             }
@@ -124,7 +127,7 @@ public class QueryKeyExpression extends ObjectExpression {
         if(getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
             if(isUsingOuterJoinForMultitableInheritance()) {
                 Expression childrenCriteria = getDescriptor().getInheritancePolicy().getChildrenJoinExpression();
-                childrenCriteria = getBaseExpression().twist(childrenCriteria, this);
+                childrenCriteria = this.baseExpression.twist(childrenCriteria, this);
                 childrenCriteria.convertToUseOuterJoin();
                 if(criteria == null) {
                     criteria = childrenCriteria;
@@ -134,7 +137,7 @@ public class QueryKeyExpression extends ObjectExpression {
             }
         }
         if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
-            Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this);
+            Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this);
             if (criteria != null) {
                 criteria = criteria.and(historyCriteria);
             } else {
@@ -149,6 +152,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Used in case outer joins should be printed in FROM clause.
      * Each of the additional tables mapped to expressions that joins it.
      */
+    @Override
     public Map additionalExpressionCriteriaMap() {
         if (getDescriptor() == null) {
             return null;
@@ -162,7 +166,7 @@ public class QueryKeyExpression extends ObjectExpression {
             for (int i=1; i < tablesSize; i++) {
                 DatabaseTable table = (DatabaseTable)tables.elementAt(i);
                 Expression joinExpression = (Expression)getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
-                joinExpression = getBaseExpression().twist(joinExpression, this);
+                joinExpression = this.baseExpression.twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
             }
         }
@@ -172,7 +176,7 @@ public class QueryKeyExpression extends ObjectExpression {
             for (int i=0; i < tablesSize; i++) {
                 DatabaseTable table = (DatabaseTable)childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
-                joinExpression = getBaseExpression().twist(joinExpression, this);
+                joinExpression = this.baseExpression.twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
             }
         }
@@ -184,15 +188,16 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Find the alias for a given table
      */
+    @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
         DatabaseMapping mapping = getMapping();
         if (isAttribute() || ((mapping != null) && (mapping.isAggregateObjectMapping() || mapping.isTransformationMapping()))) {
-            return ((DataExpression)getBaseExpression()).aliasForTable(table);
+            return ((DataExpression)this.baseExpression).aliasForTable(table);
         }
 
         //"ref" and "structure" mappings, no table printed in the FROM clause, need to get the table alias form the parent table
         if ((mapping != null) && (mapping.isReferenceMapping() || mapping.isStructureMapping())) {
-            DatabaseTable alias = getBaseExpression().aliasForTable(mapping.getDescriptor().getTables().firstElement());
+            DatabaseTable alias = this.baseExpression.aliasForTable(mapping.getDescriptor().getTables().firstElement());
             alias.setName(alias.getName() + "." + mapping.getField().getName());
             return alias;
         }
@@ -226,8 +231,9 @@ public class QueryKeyExpression extends ObjectExpression {
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
      * </blockquote></pre>
      */
+    @Override
     public Expression as(Class castClass){
-        QueryKeyExpression clonedExpression = new QueryKeyExpression(getName(), getBaseExpression());
+        QueryKeyExpression clonedExpression = new QueryKeyExpression(getName(), this.baseExpression);
         clonedExpression.shouldQueryToManyRelationship = this.shouldQueryToManyRelationship;
         clonedExpression.shouldUseOuterJoin = this.shouldUseOuterJoin;
         clonedExpression.hasQueryKey = this.hasQueryKey;
@@ -271,7 +277,8 @@ public class QueryKeyExpression extends ObjectExpression {
      * An example of how this method is used is to return any tables that belong to the map key
      * when this expression traverses a mapping that uses a Map
      */
-    public List<DatabaseTable> getAdditionalTables(){
+    @Override
+    public List<DatabaseTable> getAdditionalTables() {
         if (mapping != null && mapping.isCollectionMapping()){
             return ((CollectionMapping)mapping).getContainerPolicy().getAdditionalTablesForJoinQuery();
         }
@@ -282,6 +289,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Return the field appropriately aliased
      */
+    @Override
     public DatabaseField getAliasedField() {
         if (aliasedField == null) {
             initializeAliasedField();
@@ -294,7 +302,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Return the alias for our table
      */
     protected DatabaseTable getAliasedTable() {
-        DataExpression base = (DataExpression)getBaseExpression();
+        DataExpression base = (DataExpression)this.baseExpression;
 
         DatabaseTable alias = base.aliasForTable(getField().getTable());
         if (alias == null) {
@@ -306,15 +314,8 @@ public class QueryKeyExpression extends ObjectExpression {
 
     /**
      * INTERNAL:
-     * Return the descriptor which contains this query key.
      */
-    public ClassDescriptor getContainingDescriptor() {
-        return ((DataExpression)getBaseExpression()).getDescriptor();
-    }
-
-    /**
-     * INTERNAL:
-     */
+    @Override
     public DatabaseField getField() {
         if (!isAttribute()) {
             return null;
@@ -327,6 +328,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Return all the fields
      */
+    @Override
     public Vector getFields() {
         if (isAttribute()) {
             Vector result = new Vector(1);
@@ -352,6 +354,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Transform the object-level value into a database-level value
      */
+    @Override
     public Object getFieldValue(Object objectValue, AbstractSession session) {
         DatabaseMapping mapping = getMapping();
         Object fieldValue = objectValue;
@@ -381,6 +384,7 @@ public class QueryKeyExpression extends ObjectExpression {
         return fieldValue;
     }
 
+    @Override
     public DatabaseMapping getMapping() {
         if (!hasMapping) {
             return null;
@@ -407,6 +411,7 @@ public class QueryKeyExpression extends ObjectExpression {
         return mapping;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -418,10 +423,10 @@ public class QueryKeyExpression extends ObjectExpression {
     public String getNestedAttributeName() {
         if(getMapping() != null) {
             String attributeName = getMapping().getAttributeName();
-            if(getBaseExpression().isExpressionBuilder()) {
+            if(this.baseExpression.isExpressionBuilder()) {
                 return attributeName;
-            } else if (getBaseExpression().isQueryKeyExpression()) {
-                String nestedAttributeName = ((QueryKeyExpression)getBaseExpression()).getNestedAttributeName();
+            } else if (this.baseExpression.isQueryKeyExpression()) {
+                String nestedAttributeName = ((QueryKeyExpression)this.baseExpression).getNestedAttributeName();
                 if(nestedAttributeName == null) {
                     return null;
                 } else {
@@ -438,6 +443,7 @@ public class QueryKeyExpression extends ObjectExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public Vector getOwnedTables() {
         if ((getMapping() != null) && getMapping().isNestedTableMapping()) {
             Vector nestedTable = null;
@@ -458,6 +464,7 @@ public class QueryKeyExpression extends ObjectExpression {
 
     }
 
+    @Override
     public QueryKey getQueryKeyOrNull() {
         if (!hasQueryKey) {
             return null;
@@ -501,6 +508,7 @@ public class QueryKeyExpression extends ObjectExpression {
      *    (((t4.EMP_ID = t2.EMP_ID) AND (t0.PROJ_ID = t4.PROJ_ID)) AND (t1.PROJ_ID (+) = t0.PROJ_ID)))
      * </blockquote></pre>
      */
+    @Override
     public Expression index() {
         if(index == null) {
             index = new IndexExpression(this);
@@ -531,6 +539,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Return if the expression is for a direct mapped attribute.
      */
+    @Override
     public boolean isAttribute() {
         if (isAttributeExpression == null) {
             if (getSession() == null) {
@@ -556,6 +565,7 @@ public class QueryKeyExpression extends ObjectExpression {
         return isAttributeExpression.booleanValue();
     }
 
+    @Override
     public boolean isQueryKeyExpression() {
         return true;
     }
@@ -565,7 +575,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * If this query key represents a foreign reference answer the
      * base expression -> foreign reference join criteria.
      */
-    public Expression mappingCriteria() {
+    public Expression mappingCriteria(Expression base) {
         Expression selectionCriteria;
 
         // First look for a query key, then a mapping
@@ -574,14 +584,14 @@ public class QueryKeyExpression extends ObjectExpression {
                 return null;
             } else {
                 // The join criteria is now twisted by the mappings.
-                selectionCriteria = ((ForeignReferenceMapping)getMapping()).getJoinCriteria(this);
+                selectionCriteria = ((ForeignReferenceMapping)getMapping()).getJoinCriteria(this, base);
             }
         } else {
             if (!getQueryKeyOrNull().isForeignReferenceQueryKey()) {
                 return null;
             } else {
                 selectionCriteria = ((ForeignReferenceQueryKey)getQueryKeyOrNull()).getJoinCriteria();
-                selectionCriteria = getBaseExpression().twist(selectionCriteria, this);
+                selectionCriteria = this.baseExpression.twist(selectionCriteria, base);
             }
         }
 
@@ -599,7 +609,7 @@ public class QueryKeyExpression extends ObjectExpression {
      */
     @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
-        return normalize(normalizer, null);
+        return normalize(normalizer, this, null);
     }
 
     /**
@@ -608,15 +618,15 @@ public class QueryKeyExpression extends ObjectExpression {
      * additional expressions to normalizer both times, and the foreign key join
      * replaces the equal expression.
      */
-    public Expression normalize(ExpressionNormalizer normalizer, List<Expression> foreignKeyJoinPointer) {
-        if (hasBeenNormalized()) {
+    public Expression normalize(ExpressionNormalizer normalizer, Expression base, List<Expression> foreignKeyJoinPointer) {
+        if (this.hasBeenNormalized) {
             return this;
         }
         super.normalize(normalizer);
-
-        setHasBeenNormalized(true);
-        if ((getMapping() != null) && getMapping().isDirectToXMLTypeMapping()) {
-            normalizer.getStatement().setRequiresAliases(true);
+        DatabaseMapping mapping = getMapping();
+        SQLSelectStatement statement = normalizer.getStatement();
+        if ((mapping != null) && mapping.isDirectToXMLTypeMapping()) {
+            statement.setRequiresAliases(true);
         }
 
         // Check if any joins need to be added.
@@ -625,23 +635,23 @@ public class QueryKeyExpression extends ObjectExpression {
         }
 
         // If the mapping is 'ref' or 'structure', no join needed.
-        if ((getMapping() != null) && (getMapping().isReferenceMapping() || getMapping().isStructureMapping())) {
-            normalizer.getStatement().setRequiresAliases(true);
+        if ((mapping != null) && (mapping.isReferenceMapping() || mapping.isStructureMapping())) {
+            statement.setRequiresAliases(true);
             return this;
         }
 
         // Compute if a distinct is required during normalization.
-        if (shouldQueryToManyRelationship() && (!normalizer.getStatement().isDistinctComputed()) && (!normalizer.getStatement().isAggregateSelect())) {
-            normalizer.getStatement().useDistinct();
+        if (shouldQueryToManyRelationship() && (!statement.isDistinctComputed()) && (!statement.isAggregateSelect())) {
+            statement.useDistinct();
         }
 
         // Turn off DISTINCT if nestedTableMapping is used (not supported by Oracle 8.1.5).
-        if ((getMapping() != null) && getMapping().isNestedTableMapping()) {
+        if ((mapping != null) && mapping.isNestedTableMapping()) {
             // There are two types of nested tables, one used by clients, one used by mappings, do nothing in the mapping case.
             if (!shouldQueryToManyRelationship()) {
                 return this;
             }
-            normalizer.getStatement().dontUseDistinct();
+            statement.dontUseDistinct();
         }
 
         // Normalize the ON clause if present.  Need to use rebuild, not twist as parameters are real parameters.
@@ -649,7 +659,7 @@ public class QueryKeyExpression extends ObjectExpression {
             this.onClause = this.onClause.normalize(normalizer);
         }
         
-        Expression mappingExpression = mappingCriteria();
+        Expression mappingExpression = mappingCriteria(base);
         if (mappingExpression != null) {
             mappingExpression = mappingExpression.normalize(normalizer);
         }
@@ -657,18 +667,18 @@ public class QueryKeyExpression extends ObjectExpression {
             // If the join was an outer join we must not add the join criteria to the where clause,
             // if the platform prints the join in the from clause.
             if (shouldUseOuterJoin() && (getSession().getPlatform().isInformixOuterJoin())) {
-                normalizer.getStatement().getOuterJoinExpressions().add(this);
-                normalizer.getStatement().getOuterJoinedMappingCriteria().add(mappingExpression);
+                statement.getOuterJoinExpressions().add(this);
+                statement.getOuterJoinedMappingCriteria().add(mappingExpression);
                 normalizer.addAdditionalExpression(mappingExpression.and(additionalExpressionCriteria()));
                 return this;
             } else if ((shouldUseOuterJoin() || isUsingOuterJoinForMultitableInheritance()) && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause())) {
                 if(shouldUseOuterJoin()) {
-                    normalizer.getStatement().getOuterJoinExpressions().add(this);
-                    normalizer.getStatement().getOuterJoinedMappingCriteria().add(mappingExpression);
-                    normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
-                    normalizer.getStatement().getDescriptorsForMultitableInheritanceOnly().add(null);
+                    statement.getOuterJoinExpressions().add(this);
+                    statement.getOuterJoinedMappingCriteria().add(mappingExpression);
+                    statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
+                    statement.getDescriptorsForMultitableInheritanceOnly().add(null);
                     if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
-                        Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this);
+                        Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, base);
                         if (historyCriteria != null) {
                             normalizer.addAdditionalExpression(historyCriteria);
                         }
@@ -676,10 +686,10 @@ public class QueryKeyExpression extends ObjectExpression {
                     return this;
                 } else {
                     if (isUsingOuterJoinForMultitableInheritance()) {
-                        normalizer.getStatement().getOuterJoinExpressions().add(null);
-                        normalizer.getStatement().getOuterJoinedMappingCriteria().add(null);
-                        normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
-                        normalizer.getStatement().getDescriptorsForMultitableInheritanceOnly().add(getMapping().getReferenceDescriptor());
+                        statement.getOuterJoinExpressions().add(null);
+                        statement.getOuterJoinedMappingCriteria().add(null);
+                        statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
+                        statement.getDescriptorsForMultitableInheritanceOnly().add(mapping.getReferenceDescriptor());
                         // fall through to the main case
                     }
                 }
@@ -705,6 +715,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Print SQL onto the stream, using the ExpressionPrinter for context
      */
+    @Override
     public void printSQL(ExpressionSQLPrinter printer) {
         if (isAttribute()) {
             printer.printField(getAliasedField());
@@ -738,8 +749,9 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Print java for project class generation
      */
+    @Override
     public void printJava(ExpressionJavaPrinter printer) {
-        getBaseExpression().printJava(printer);
+        this.baseExpression.printJava(printer);
         if (!shouldUseOuterJoin()) {
             if (!shouldQueryToManyRelationship()) {
                 printer.printString(".get(");
@@ -764,8 +776,9 @@ public class QueryKeyExpression extends ObjectExpression {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
-        Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
+        Expression newLocalBase = this.baseExpression.rebuildOn(newBase);
         QueryKeyExpression result = null;
 
         // For bug 3096634 rebuild outer joins correctly from the start.
@@ -796,7 +809,7 @@ public class QueryKeyExpression extends ObjectExpression {
         if (this == oldBase) {
             return newBase;
         }
-        Expression newLocalBase = ((QueryKeyExpression)getBaseExpression()).rebuildOn(oldBase, newBase);
+        Expression newLocalBase = ((QueryKeyExpression)this.baseExpression).rebuildOn(oldBase, newBase);
         QueryKeyExpression result = null;
 
         // For bug 3096634 rebuild outer joins correctly from the start.
@@ -815,6 +828,7 @@ public class QueryKeyExpression extends ObjectExpression {
     /**
      * Reset cached information here so that we can be sure we're accurate.
      */
+    @Override
     protected void resetCache() {
         hasMapping = true;
         mapping = null;
@@ -835,8 +849,8 @@ public class QueryKeyExpression extends ObjectExpression {
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
-        if (oldBase == null || getBaseExpression() == oldBase) {
-            Expression twistedBase = getBaseExpression().twistedForBaseAndContext(newBase, context, oldBase);
+        if (oldBase == null || this.baseExpression == oldBase) {
+            Expression twistedBase = this.baseExpression.twistedForBaseAndContext(newBase, context, oldBase);
             QueryKeyExpression result = (QueryKeyExpression)twistedBase.get(getName());
             if (shouldUseOuterJoin) {
                 result.doUseOuterJoin();
@@ -853,13 +867,15 @@ public class QueryKeyExpression extends ObjectExpression {
     /**
      * Do any required validation for this node. Throw an exception if it's incorrect.
      */
+    @Override
     public void validateNode() {
-        if ((getQueryKeyOrNull() == null) && (getMapping() == null)) {
+        QueryKey queryKey = getQueryKeyOrNull();
+        DatabaseMapping mapping = getMapping();
+        
+        if ((queryKey == null) && (mapping == null)) {
             throw QueryException.invalidQueryKeyInExpression(getName());
         }
 
-        QueryKey queryKey = getQueryKeyOrNull();
-        DatabaseMapping mapping = getMapping();
 
         Object theOneThatsNotNull = null;
         boolean qkIsToMany = false;
@@ -870,16 +886,16 @@ public class QueryKeyExpression extends ObjectExpression {
         boolean isNestedMapping = false;
         if (mapping != null) {
             // Bug 2847621 - Add Aggregate Collection to the list of valid items for outer join.
-            if (shouldUseOuterJoin && (!(mapping.isOneToOneMapping() || mapping.isOneToManyMapping() || mapping.isManyToManyMapping() || mapping.isAggregateCollectionMapping() || mapping.isDirectCollectionMapping()))) {
-                throw QueryException.outerJoinIsOnlyValidForOneToOneMappings(getMapping());
+            if (this.shouldUseOuterJoin && (!(mapping.isOneToOneMapping() || mapping.isOneToManyMapping() || mapping.isManyToManyMapping() || mapping.isAggregateCollectionMapping() || mapping.isDirectCollectionMapping()))) {
+                throw QueryException.outerJoinIsOnlyValidForOneToOneMappings(mapping);
             }
             qkIsToMany = mapping.isCollectionMapping();
-            if(index != null) {
-                if(qkIsToMany) {
-                    CollectionMapping collectionMapping = (CollectionMapping)getMapping();
+            if (this.index != null) {
+                if (qkIsToMany) {
+                    CollectionMapping collectionMapping = (CollectionMapping)mapping;
                     if(collectionMapping.getListOrderField() != null) {
-                        index.setField(collectionMapping.getListOrderField());
-                        addDerivedField(index);
+                        this.index.setField(collectionMapping.getListOrderField());
+                        addDerivedField(this.index);
                     } else {
                         throw QueryException.indexRequiresCollectionMappingWithListOrderField(this, collectionMapping);
                     }
@@ -890,7 +906,7 @@ public class QueryKeyExpression extends ObjectExpression {
             isNestedMapping = mapping.isNestedTableMapping();
             theOneThatsNotNull = mapping;
         } else {
-            if(index != null) {
+            if (this.index != null) {
                 throw QueryException.indexRequiresCollectionMappingWithListOrderField(this, null);
             }
         }
@@ -907,10 +923,11 @@ public class QueryKeyExpression extends ObjectExpression {
      * Return the value for in memory comparison.
      * This is only valid for valueable expressions.
      */
+    @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         // The expression may be across a relationship, in which case it must be traversed.
-        if ((!getBaseExpression().isExpressionBuilder()) && getBaseExpression().isQueryKeyExpression()) {
-            object = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
+        if ((!this.baseExpression.isExpressionBuilder()) && this.baseExpression.isQueryKeyExpression()) {
+            object = this.baseExpression.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
             // toDo: Null means the join filters out the row, returning null is not correct if an inner join,
             // outer/inner joins need to be fixed to filter correctly.
@@ -950,7 +967,6 @@ public class QueryKeyExpression extends ObjectExpression {
     /**
      * INTERNAL
      * This method iterates through a collection and gets the values from the objects to conform in an in-memory query.
-     * Creation date: (1/19/01 1:18:27 PM)
      */
     public Object valuesFromCollection(Object object, AbstractSession session, int valueHolderPolicy, boolean isObjectUnregistered) {
         // in case the mapping is null - this can happen if a query key is being used
@@ -1051,6 +1067,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(getName());
         if (castClass != null){
@@ -1058,32 +1075,12 @@ public class QueryKeyExpression extends ObjectExpression {
         }
         writer.write(tableAliasesDescription());
     }
-
-    /**
-     * INTERNAL:
-     * Indicates that RelationExpression.normalize method shouldn't attempt
-     * optimize normalization by not normalizing this.
-     */
-    public boolean isNormalizationRequired() {
-        return shouldQueryToManyRelationship() ||
-            
-            // For bug 2718460, some QueryKeyExpressions have a query key but no mapping.
-            // An example is the "back-ref" query key for batch reads.  Must not
-            // attempt the optimization for these.
-            getMapping() == null ||
-            
-            // For bug 5234283: WRONG =* SQL FOR LEFT JOIN ON DERBY AND DB2 PLATFORMS
-            // Caused by QueryKeyExpression never been normilized.
-            // The condition should be kept in sync with condtions in normalize method
-            // that trigger adding to normalizer.getStatement().getOuterJoin...
-            ((shouldUseOuterJoin() || isUsingOuterJoinForMultitableInheritance()) && !getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) ||
-            (shouldUseOuterJoin() && getSession().getPlatform().isInformixOuterJoin());
-    }
     
     /**
      * INTERNAL:
      * Indicates whether this expression corresponds to DirectCollection.
      */
+    @Override
     public boolean isDirectCollection() {
         if(getMapping() != null) {
             return getMapping().isDirectCollectionMapping();
@@ -1202,7 +1199,7 @@ public class QueryKeyExpression extends ObjectExpression {
             if (getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) getMapping()).isForeignKeyRelationship()) {
                  return getMapping().getFields().firstElement().getTable();
             } else {
-                return ((ObjectExpression)getBaseExpression()).getDescriptor().getTables().firstElement();    
+                return ((ObjectExpression)this.baseExpression).getDescriptor().getTables().firstElement();    
             }
         } else {
             return ((ForeignReferenceQueryKey)getQueryKeyOrNull()).getSourceTable();
