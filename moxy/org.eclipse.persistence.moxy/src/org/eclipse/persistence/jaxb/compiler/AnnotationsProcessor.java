@@ -193,6 +193,7 @@ public class AnnotationsProcessor {
     private HashMap<String, JavaMethod> factoryMethods;
     private Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry> xmlRegistries;
     private List<String> objectFactoryClassNames;
+    private List<JavaClass> classesToProcessPropertyTypes;
 
     private Map<String, Class> arrayClassesToGeneratedClasses;
     private Map<Class, JavaClass> generatedClassesToArrayClasses;
@@ -326,7 +327,7 @@ public class AnnotationsProcessor {
                         if (nextInfo.getElementScope() == TypeMappingInfo.ElementScope.Global) {
                             ElementDeclaration currentElement = this.getGlobalElements().get(element.getElementName());
                             if (currentElement == null) {
-                                this.getGlobalElements().put(element.getElementName(), element);
+                            	addGlobalElement(element.getElementName(), element);
                             } else {
                                 //if(currentElement.getTypeMappingInfo() == null) {
                                     //the global element that exists came from an annotation
@@ -419,6 +420,7 @@ public class AnnotationsProcessor {
         referencedByTransformer = new ArrayList<String>();
         typeInfo = new HashMap<String, TypeInfo>();
         typeQNames = new ArrayList<QName>();
+        classesToProcessPropertyTypes = new ArrayList<JavaClass>();
         objectFactoryClassNames = new ArrayList<String>();
         userDefinedSchemaTypes = new HashMap<String, QName>();
         if (packageToPackageInfoMappings == null) {
@@ -701,6 +703,7 @@ public class AnnotationsProcessor {
         TypeInfo superClassInfo = this.typeInfo.get(superClass.getQualifiedName());
         if(superClassInfo != null) {
         	processPropertiesSuperClass(superClass, superClassInfo);
+        	classesToProcessPropertyTypes.add(superClass);
             if(superClassInfo.getXmlVirtualAccessMethods() != null && info.getXmlVirtualAccessMethods() == null) {
                 info.setXmlVirtualAccessMethods(superClassInfo.getXmlVirtualAccessMethods());
             }
@@ -850,38 +853,66 @@ public class AnnotationsProcessor {
     }
 
     void processPropertyTypes(JavaClass[] classes) {
-        for (JavaClass next : classes) {
-            TypeInfo info = getTypeInfo().get(next.getQualifiedName());
-            if (info != null) {
-                for (Property property : info.getPropertyList()) {
-                    if (property.isTransient()) {
-                        continue;
-                    }
-                    // handle XmlElementRef(s) - validate and build the required
-                    // ElementDeclaration object
-                     if (property.isReference()) {
-                        processReferenceProperty(property, info, next);
-                    }
-                    JavaClass type = property.getActualType();
-                    if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
-                        CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
-                        JavaClass[] jClassArray = new JavaClass[] { type };
-                        buildNewTypeInfo(jClassArray);
-                    }
-                    if (property.isChoice()) {
-                        processChoiceProperty(property, info, next, type);
-                        for (Property choiceProp : property.getChoiceProperties()) {
-                            type = choiceProp.getActualType();
-                            if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
-                                CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
-                                JavaClass[] jClassArray = new JavaClass[] { type };
-                                buildNewTypeInfo(jClassArray);
-                            }
+        for (JavaClass next : classes) {        	
+        	processPropertyTypes(next);  
+        	classesToProcessPropertyTypes.remove(next);
+        }
+        for (int i =0; i< classesToProcessPropertyTypes.size(); i++){
+        	JavaClass next = classesToProcessPropertyTypes.get(i);        	
+        	processPropertyTypes(next);
+        }
+    }
+    	
+    private void processPropertyTypes(JavaClass next){
+    
+        TypeInfo info = getTypeInfo().get(next.getQualifiedName());
+        if (info != null) {
+        	
+            for (Property property : info.getPropertyList()) {
+            	
+            	if (property.isTransient()) {
+                    continue;
+                }
+                
+                // handle XmlElementRef(s) - validate and build the required
+                // ElementDeclaration object               
+                 if (property.isReference()) {
+                    processReferenceProperty(property, info, next);
+                }
+                 
+                JavaClass type = property.getActualType();
+                
+                if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
+                	PackageInfo pInfo = getPackageInfoForPackage(next);                	
+                	JavaClass adapterClass = pInfo.getPackageLevelAdaptersByClass().get(type);
+                	
+                	if(adapterClass != null){
+                		continue;
+                	}
+                	
+                    CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
+                    JavaClass[] jClassArray = new JavaClass[] { type };
+                    
+                    buildNewTypeInfo(jClassArray);
+                    
+                }               
+            	
+                if (property.isChoice()) {
+                	
+                    processChoiceProperty(property, info, next, type);
+                    for (Property choiceProp : property.getChoiceProperties()) {
+                        type = choiceProp.getActualType();
+                        if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
+                            CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
+                            JavaClass[] jClassArray = new JavaClass[] { type };
+                            buildNewTypeInfo(jClassArray);
                         }
                     }
                 }
+                
             }
         }
+        
     }
 
     /**
@@ -951,7 +982,7 @@ public class AnnotationsProcessor {
                 if (tmi == null || tmi.getXmlTagName() == null) {
                     ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
                     declaration.setTypeMappingInfo(tmi);
-                    getGlobalElements().put(null, declaration);
+                    addGlobalElement(null, declaration);
                 }
             } else if (javaClass.isArray()) {
                 if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
@@ -2066,6 +2097,11 @@ public class AnnotationsProcessor {
                     type = property.getGenericType();
                     typeName = type.getQualifiedName();
                 }
+            }
+            
+            if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName) && type.getActualTypeArguments().size() >0){
+            	JavaClass theType = (JavaClass) type.getActualTypeArguments().iterator().next();
+            	processPropertyTypes(theType);
             }
 
             // for DEFAULT, if from XML the type will be
@@ -3241,6 +3277,7 @@ public class AnnotationsProcessor {
         }
 
         if (classes.size() > 0) {
+        	classesToProcessPropertyTypes.addAll(classes);
             return classes.toArray(new JavaClass[classes.size()]);
         } else {
             return new JavaClass[0];
@@ -3304,7 +3341,7 @@ public class AnnotationsProcessor {
                 }
                 ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getQualifiedName(), false);
                 declaration.setIsXmlRootElement(true);
-                this.getGlobalElements().put(rootElemName, declaration);
+                addGlobalElement(rootElemName, declaration);
                 this.xmlRootElements.put(javaClass.getQualifiedName(), declaration);
             }
         }
@@ -4083,7 +4120,7 @@ public class AnnotationsProcessor {
             }
             schemaInfo.getGlobalElementDeclarations().add(rootElemName);
             ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
-            this.getGlobalElements().put(rootElemName, declaration);
+            addGlobalElement(rootElemName, declaration);
         }
 
         return schemaInfo;
@@ -4098,7 +4135,6 @@ public class AnnotationsProcessor {
     public void buildNewTypeInfo(JavaClass[] javaClasses) {
         preBuildTypeInfo(javaClasses);
         postBuildTypeInfo(javaClasses);
-        processPropertyTypes(javaClasses);
     }
 
     /**
@@ -4203,6 +4239,11 @@ public class AnnotationsProcessor {
         return this.elementDeclarations.get(scopeClassName);
     }
 
+    private void addGlobalElement(QName key, ElementDeclaration declaration){
+        getGlobalElements().put(key, declaration);
+        classesToProcessPropertyTypes.add(declaration.getJavaType());
+    }
+    
     private Map<Object, Object> createUserPropertiesMap(XmlProperty[] properties) {
         Map<Object, Object> propMap = new HashMap<Object, Object>();
         for (XmlProperty prop : properties) {

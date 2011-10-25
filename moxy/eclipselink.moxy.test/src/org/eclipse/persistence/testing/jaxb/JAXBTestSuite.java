@@ -37,6 +37,8 @@ import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespace
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.RepeatedUnmarshalTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
+import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsWithExternalMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
@@ -53,6 +55,7 @@ import org.eclipse.persistence.testing.jaxb.xmlmixed.XmlMixedTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToElementWithXmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathWithXmlAttributeTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlschema.XMLSchemaModelTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueByteArrayTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
@@ -214,6 +217,9 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlPathWithXmlAttributeTestCases.class);
         suite.addTestSuite(RepeatedUnmarshalTestCases.class);
         suite.addTestSuite(ReadAndWriteOnlyTestCases.class);
+        suite.addTestSuite(XMLBindingsTestCases.class);
+        suite.addTestSuite(XMLBindingsWithExternalMetadataTestCases.class);
+        suite.addTestSuite(XMLSchemaModelTestCases.class);
         return suite;
     }
 
