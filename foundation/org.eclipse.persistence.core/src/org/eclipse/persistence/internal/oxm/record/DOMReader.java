@@ -140,9 +140,13 @@ public class DOMReader extends XMLReaderAdapter {
         } else {
             qname = getQName(elem);
         }
-        contentHandler.startElement(elem.getNamespaceURI(), lname, qname, attributes);
+        String namespaceUri = elem.getNamespaceURI();
+        if(namespaceUri == null) {
+            namespaceUri = "";
+        }
+        contentHandler.startElement(namespaceUri, lname, qname, attributes);
         handleChildNodes(elem.getChildNodes());
-        contentHandler.endElement(elem.getNamespaceURI(), lname, qname);
+        contentHandler.endElement(namespaceUri, lname, qname);
         endPrefixMappings(elem);
     }
  

@@ -20,6 +20,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.util.Iterator;
 import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
@@ -347,14 +349,26 @@ public class XMLBinaryDataHelper {
     }
 
     public Object convertObjectToSource(Object obj) {
+        if(obj == null) {
+            return null;
+        }
         if (obj instanceof Source) {
             return obj;
         }
+        if(obj.getClass() == ClassConstants.STRING) {
+            return new StreamSource(new StringReader((String)obj));
+        }        
         if (obj instanceof DataHandler) {
             try {
-                Source source = (Source) ((DataHandler) obj).getContent();
-                return source;
+                InputStream object = ((DataHandler)obj).getInputStream();
+                return new StreamSource(object);
             } catch (Exception ex) {
+                try {
+                    Object object = ((DataHandler)obj).getContent();
+                    convertObjectToSource(object);
+                } catch(Exception ioException) {
+                    throw ConversionException.couldNotBeConverted(obj, Source.class);
+                }
             }
         } else if (obj instanceof byte[]) {
             ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) obj);
@@ -367,6 +381,8 @@ public class XMLBinaryDataHelper {
             }
             ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
             return new StreamSource(stream);
+        } else if(obj instanceof InputStream) {
+            return new StreamSource((InputStream)obj);
         }
         return null;
     }
