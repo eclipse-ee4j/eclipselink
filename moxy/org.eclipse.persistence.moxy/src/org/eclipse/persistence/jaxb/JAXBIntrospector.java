@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sessions.Session;
@@ -73,16 +74,8 @@ public class JAXBIntrospector extends javax.xml.bind.JAXBIntrospector {
         }
         try {
             XMLDescriptor descriptor = (XMLDescriptor)context.getSession(obj).getDescriptor(obj);
-            String rootElem = descriptor.getDefaultRootElement();
-            int prefixIndex = rootElem.indexOf(":");
-            if(prefixIndex == -1) {
-                return new QName(rootElem);
-            } else {
-                String prefix = rootElem.substring(0, prefixIndex);
-                String localPart = rootElem.substring(prefixIndex + 1);
-                String URI = descriptor.getNamespaceResolver().resolveNamespacePrefix(prefix);
-                return new QName(URI, localPart);
-            }
+            XPathFragment rootFragment = descriptor.getDefaultRootElementField().getXPathFragment(); 
+            return new QName(rootFragment.getNamespaceURI(), rootFragment.getLocalName()); 
         } catch(XMLMarshalException e) {
             return null;
         }

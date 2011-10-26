@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.JAXBElementEnumTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBIntrospectorGetElementNameTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.xml.XMLNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
@@ -222,6 +223,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XMLBindingsTestCases.class);
         suite.addTestSuite(XMLBindingsWithExternalMetadataTestCases.class);
         suite.addTestSuite(XMLSchemaModelTestCases.class);
+        suite.addTestSuite(JAXBIntrospectorGetElementNameTestCases.class);
         return suite;
     }
 
