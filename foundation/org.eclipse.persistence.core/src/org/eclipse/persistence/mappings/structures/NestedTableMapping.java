@@ -92,7 +92,7 @@ public class NestedTableMapping extends CollectionMapping {
      */
     @Override
     public Expression getJoinCriteria(ObjectExpression context, Expression base) {
-        return context.getBaseExpression().ref().equal(base.value());
+        return context.ref().equal(base.value());
     }
 
     /**
