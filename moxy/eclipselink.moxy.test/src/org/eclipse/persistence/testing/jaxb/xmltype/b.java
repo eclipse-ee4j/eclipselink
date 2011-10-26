@@ -8,13 +8,13 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - 2.2 - Initial implementation
+ * Denise Smith 2.3
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmltype;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class A2BCDESomeTest {
+public class b {
 
 }
