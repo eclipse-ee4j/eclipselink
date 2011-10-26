@@ -26,9 +26,21 @@ public class XmlTypeNameTestCases extends JAXBTestCases {
     public XmlTypeNameTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);        
-        Class[] classes = new Class[2];
+        Class[] classes = new Class[13];
         classes[0] = GetPageResponse.class;
         classes[1] = A2BCDESomeTest.class; //complex type for this should be "a2BCDESomeTest"
+        classes[2] = b.class;  //complex type should be "b"
+        classes[3] = C.class;  //complex type should be "c"
+        classes[4] = CLASS2.class;  //complex type should be "class2"
+        classes[5] = ABC.class;  //complex type should be "abc"
+        classes[6] = AbbbCD.class;  //complex type should be "abbbCD"
+        classes[7] = USPrice.class;  //complex type should be "usPrice"
+        classes[8] = BooleanTest.class;  //complex type should be "booleanTest"
+        classes[9] = ABCDEfgh.class;  //complex type should be "abcdEfgh"
+        classes[10] = QNameTest.class;  //complex type should be "qNameTest"
+        classes[11] = CDNPriceNoAnnotation.class;  //complex type should be "cdnPriceNoAnnotation"
+        classes[12] = AB2cd3fg4HI.class;  //complex type should be "ab2Cd3Fg4HI"
+
         setClasses(classes);
     }
 
