@@ -331,8 +331,8 @@ public class ProcedureOperationModel extends OperationModel {
                         ProcedureOutputArgument pao = (ProcedureOutputArgument)pa;
                         pao.setName(argName);
                         pao.setParameterName(argName);
-                        if (arg.getJdbcTypeName().contains("CURSOR") &&
-                            returnType == null) { // if user overrides returnType, assume they're right
+                        boolean isCursor = arg.getJdbcTypeName().contains("CURSOR");
+                        if (isCursor && returnType == null) { // if user overrides returnType, assume they're right
                             pao.setResultType(SXF_QNAME_CURSOR);
                             if (result == null) {
                                 result = new CollectionResult();
@@ -343,10 +343,16 @@ public class ProcedureOperationModel extends OperationModel {
                             // if user overrides returnType, assume they're right
                             // Hmm, multiple OUT's gonna be a problem - later!
                             if (returnType != null && sxf == null) {
-                                xmlType = qNameFromString("{" + builder.getTargetNamespace() + "}" +
+                                xmlType = qNameFromString("{" + 
+                                    builder.getTargetNamespace() + "}" +
                                     returnType, builder.schema);
                             }
-                            pao.setResultType(xmlType);
+                            if (isCursor) {
+                                pao.setResultType(new QName("", "cursor of " + returnType));
+                            }
+                            else {
+                                pao.setResultType(xmlType);
+                            }
                             if (result == null) {
                                 if (isCollection) {
                                     result = new CollectionResult();

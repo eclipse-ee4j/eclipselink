@@ -75,8 +75,14 @@
     <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
 
     <!-- Primary Targets: "jar" separate for dev use -->
+
+<!--
+11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
     <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
+-->
+    <target name="build"/>
+    <target name="jar"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -190,7 +196,8 @@
         <fail message="Missing BND library!"/>
     </target>
 
-    <!-- compile -->
+<!--
+11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
     <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
@@ -208,8 +215,12 @@
                classpathref="dbwsbldr.compile.path"
         />
     </target>
+-->
+    <!-- compile -->
+    <target name="compile"/>
 
-    <!-- package -->
+<!--
+11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
     <target name="package-src" depends="init" description="jar OSGI Source bundle">
         <jar jarfile="${dbwsbldr.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
@@ -237,6 +248,9 @@
             </fileset>
         </jar>
     </target>
+-->
+    <!-- package -->
+    <target name="package-src"/>
 
     <target name="package" if="nobnd" depends="init, package-src" description="jar OSGI bundle">
         <jar jarfile="${dbwsbldr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">

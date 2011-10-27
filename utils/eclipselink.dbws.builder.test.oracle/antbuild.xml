@@ -162,18 +162,6 @@
   <!-- Test dependencies -->
   <available file="${junit.lib}" property="junit.jar.exist"/>
   <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
-  <condition property="support.test">
-    <and>
-      <isset property="junit.jar.exist"/>
-      <isset property="jdbc.jar.exist"/>
-      <isset property="db.platform"/>
-        <!-- bit too lenient, but means we don't have to change for Oracle12, Oracle13 .. -->
-        <matches
-          pattern="org.eclipse.persistence.platform.database.oracle.Oracle[0-9]{1,2}Platform"
-          string="${db.platform}"
-        />
-    </and>
-  </condition>
 
   <!--
     compile path is complex, not just eclipselink.jar
@@ -309,7 +297,23 @@
     </sequential>
   </macrodef>
 
-  <target name="build" depends="clean, compile, package" if="support.test"/>
+<!--
+11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
+  <condition property="support.test">
+    <and>
+      <isset property="junit.jar.exist"/>
+      <isset property="jdbc.jar.exist"/>
+      <isset property="db.platform"/>
+        <matches
+          pattern="org.eclipse.persistence.platform.database.oracle.Oracle[0-9]{1,2}Platform"
+          string="${db.platform}"
+        />
+    </and>
+  </condition>
+    <target name="build" depends="clean, compile, package" if="support.test"/>
+-->
+    <target name="build"/>
+    <target name="test"/>
 
   <target
     name="clean"
@@ -322,6 +326,8 @@
     <DeleteFileQuietly file="${eclipselink.dbws.oracle.test.jar}"/>
   </target>
 
+<!--
+11/10/27 MWN
   <target
     name="compile"
     if="support.test"
@@ -332,7 +338,11 @@
       classpathref="dbwsbldr.test.oracle.compile.path"
     />
   </target>
+ -->
+  <target name="compile"/>
 
+<!--
+11/10/27 MWN
   <target
     name="package"
     if="support.test"
@@ -344,6 +354,8 @@
       </fileset>
     </jar>
   </target>
+ -->
+  <target name="package"/>
 
   <target
     name="run-tests"
