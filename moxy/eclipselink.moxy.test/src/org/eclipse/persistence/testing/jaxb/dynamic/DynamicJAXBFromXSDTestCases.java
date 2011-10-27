@@ -13,13 +13,13 @@
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -41,9 +41,6 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.NoExtensionEntityResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
@@ -679,6 +676,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     }
 
     public void testSubstitutionGroupsUnmarshal() throws Exception {
+        System.out.println(System.getProperty("java.version"));
         try {
             InputStream xsdStream = ClassLoader.getSystemResourceAsStream(SUBSTITUTION);
             jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(xsdStream, null, null, null);
@@ -847,6 +845,43 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
     }
 
+    public void testXMLSchemaSchema() throws Exception {
+        try {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMASCHEMA);
+            jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+    
+            DynamicEntity schema = jaxbContext.newDynamicEntity("org.w3._2001.xmlschema.Schema");
+            schema.set("targetNamespace", "myNamespace");
+            Object QUALIFIED = jaxbContext.getEnumConstant("org.w3._2001.xmlschema.FormChoice", "QUALIFIED");
+            schema.set("attributeFormDefault", QUALIFIED);
+    
+            DynamicEntity complexType = jaxbContext.newDynamicEntity("org.w3._2001.xmlschema.TopLevelComplexType");
+            complexType.set("name", "myComplexType");
+    
+            List<DynamicEntity> complexTypes = new ArrayList<DynamicEntity>(1);
+            complexTypes.add(complexType);
+    
+            schema.set("simpleTypeOrComplexTypeOrGroup", complexTypes);
+    
+            List<Object> blocks = new ArrayList<Object>();
+            blocks.add("FOOBAR");
+            schema.set("blockDefault", blocks);
+    
+            File f = new File("myschema.xsd");
+            jaxbContext.createMarshaller().marshal(schema, f);
+        } catch (JAXBException e) {
+            // If running in a non-JAXB 2.2 environment, we will get this error because the required() method
+            // on @XmlElementRef is missing.  Just ignore this and pass the test.
+            if (e.getLinkedException() instanceof UndeclaredThrowableException) {
+                return;
+            }
+        } catch (Exception e) {
+            if (e instanceof UndeclaredThrowableException) {
+                return;
+            }
+        }
+    }
+
     // ====================================================================
 
     private void print(Object o) throws Exception {
@@ -888,6 +923,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String NESTEDINNERCLASSES = RESOURCE_DIR + "nestedinnerclasses.xsd";
     private static final String BINARY = RESOURCE_DIR + "binary.xsd";
     private static final String BINARY2 = RESOURCE_DIR + "binary2.xsd";
+    private static final String XMLSCHEMASCHEMA = RESOURCE_DIR + "XMLSchema.xsd";
 
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";

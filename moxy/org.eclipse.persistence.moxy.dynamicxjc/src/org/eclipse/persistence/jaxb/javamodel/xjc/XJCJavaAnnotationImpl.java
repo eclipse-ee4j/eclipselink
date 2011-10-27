@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlEnum;
+
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -164,7 +166,11 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                             // Attempt to look up the class normally
                             tempDynClass = Class.forName(wrappedValue.fullName());
                         } catch (Exception e) {
-                            tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
+                            if (annotationClass.equals(XmlEnum.class)) {
+                                tempDynClass = String.class;
+                            } else {
+                                tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
+                            }
                         }
                         components.put(key.toString(), tempDynClass);
                     }
