@@ -64,7 +64,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.annotations.XmlLocation;
 
 /**
  * INTERNAL:

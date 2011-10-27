@@ -192,14 +192,12 @@ public class Generator {
         XMLDescriptor schemaDescriptor = (XMLDescriptor)proj.getDescriptor(Schema.class);
 
         java.util.Collection<Schema> schemas = schemaGenerator.getAllSchemas();
-        int schemaCount = 0;
         for(Schema schema : schemas) {
             File file = new File(schemaPath + "/" + schema.getName());
             NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
             schemaNamespaces.put(XMLConstants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
             schemaDescriptor.setNamespaceResolver(schemaNamespaces);
             marshaller.marshal(schema, new FileOutputStream(file));
-            schemaCount++;
         }
         return schemaGenerator.getSchemaTypeInfo();
     }
@@ -216,7 +214,6 @@ public class Generator {
         XMLDescriptor schemaDescriptor = (XMLDescriptor)proj.getDescriptor(Schema.class);
 
         java.util.Collection<Schema> schemas = schemaGenerator.getAllSchemas();
-        int schemaCount = 0;
         for(Schema schema : schemas) {
             try {
                 NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
@@ -230,7 +227,6 @@ public class Generator {
                     target = outputResolver.createOutput(schema.getTargetNamespace(), schema.getName());
                 }
                 marshaller.marshal(schema, target);
-                schemaCount++;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
