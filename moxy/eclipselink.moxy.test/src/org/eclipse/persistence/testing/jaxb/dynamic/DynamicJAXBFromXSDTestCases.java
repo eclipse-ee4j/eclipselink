@@ -466,11 +466,19 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         try {
             jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
-        } catch(JAXBException e) {
+        } catch (JAXBException e) {
             // If running in a non-JAXB 2.2 environment, we will get this error because the required() method
             // on @XmlElementRef is missing.  Just ignore this and pass the test.
-            if(e.getLinkedException() instanceof UndeclaredThrowableException) {
+            if (e.getLinkedException() instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
+            }
+        } catch (Exception e) {
+            if (e instanceof UndeclaredThrowableException) {
+                return;
+            } else {
+                throw e;
             }
         }
 
@@ -692,17 +700,19 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "personne"), person2.getName());
             JAXBElement name2 = (JAXBElement) ((DynamicEntity) person2.getValue()).get("name");
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "nom"), name2.getName());
-        } catch(JAXBException e) {
-            try {
-                throw e.getLinkedException();
-            } catch (UndeclaredThrowableException e2) {
-                if (e2.getUndeclaredThrowable() instanceof NoSuchMethodException) {
-                    // We will get NoSuchMethod: XmlElementRef.required() if not running JAXB 2.2
-                    // or greater, so just pass in this case.
-                    assertTrue(true);
-                }
-            } catch(Throwable e2) {
-                fail();
+        } catch (JAXBException e) {
+            // If running in a non-JAXB 2.2 environment, we will get this error because the required() method
+            // on @XmlElementRef is missing.  Just ignore this and pass the test.
+            if (e.getLinkedException() instanceof UndeclaredThrowableException) {
+                return;
+            } else {
+                throw e;
+            }
+        } catch (Exception e) {
+            if (e instanceof UndeclaredThrowableException) {
+                return;
+            } else {
+                throw e;
             }
         }
     }
@@ -751,17 +761,19 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
             Node node4 = node3.getFirstChild();
             assertEquals("Incorrect element name: ", "nom", node4.getLocalName());
-        } catch(JAXBException e) {
-            try {
-                throw e.getLinkedException();
-            } catch (UndeclaredThrowableException e2) {
-                if (e2.getUndeclaredThrowable() instanceof NoSuchMethodException) {
-                    // We will get NoSuchMethod: XmlElementRef.required() if not running JAXB 2.2
-                    // or greater, so just pass in this case.
-                    assertTrue(true);
-                }
-            } catch(Throwable e2) {
-                fail();
+        } catch (JAXBException e) {
+            // If running in a non-JAXB 2.2 environment, we will get this error because the required() method
+            // on @XmlElementRef is missing.  Just ignore this and pass the test.
+            if (e.getLinkedException() instanceof UndeclaredThrowableException) {
+                return;
+            } else {
+                throw e;
+            }
+        } catch (Exception e) {
+            if (e instanceof UndeclaredThrowableException) {
+                return;
+            } else {
+                throw e;
             }
         }
     }
