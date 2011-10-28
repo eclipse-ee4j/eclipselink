@@ -90,27 +90,6 @@ public class MultiDimensionalArrayNonRootTestCases extends JAXBListOfObjectsTest
         char2dArray[1][3] = 'h';
         root.setChar2dArray(char2dArray);
 
-        Integer[][][] integer3dArray = new Integer[3][2][3];
-        integer3dArray[0][0][0] = 1;
-        integer3dArray[0][0][1] = 2;
-        integer3dArray[0][0][2] = 3;
-        integer3dArray[0][1][0] = 4;
-        integer3dArray[0][1][1] = 5;
-        integer3dArray[0][1][2] = 6;
-        integer3dArray[1][0][0] = 7;
-        integer3dArray[1][0][1] = 8;
-        integer3dArray[1][0][2] = 9;
-        integer3dArray[1][1][0] = 10;
-        integer3dArray[1][1][1] = 11;
-        integer3dArray[1][1][2] = 12;
-        integer3dArray[2][0][0] = 13;
-        integer3dArray[2][0][1] = 14;
-        integer3dArray[2][0][2] = 15;
-        integer3dArray[2][1][0] = 16;
-        integer3dArray[2][1][1] = 17;
-        integer3dArray[2][1][2] = 18;
-        root.setInteger3dArray(integer3dArray);
-
         Employee[][] employee2dArray = new Employee[1][2];
         employee2dArray[0][0] = new Employee();
         employee2dArray[0][0].id = 1;

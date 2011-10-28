@@ -2,12 +2,11 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:x="listOfObjectsNamespace" targetNamespace="listOfObjectsNamespace">
    <xsd:complexType name="multiDimensionalArrayRoot">
       <xsd:sequence>
-         <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="char2dArray" type="ns0:charArray"/>
+         <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="char2dArray" type="ns0:stringArray"/>
          <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="employee2dArray" type="x:employeeArray"/>
          <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="innerClass2dArray" type="x:myInnerArray"/>
          <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="int2dArray" type="ns0:intArray"/>
          <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="int3dArray" type="ns0:intArrayArray"/>
-         <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="integer3dArray" type="ns0:integerArrayArray"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="myInner">
