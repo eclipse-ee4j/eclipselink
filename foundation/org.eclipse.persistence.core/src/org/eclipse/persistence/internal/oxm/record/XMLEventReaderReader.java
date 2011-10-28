@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -191,37 +192,42 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         private List<Attribute> attributes;
 
         public IndexedAttributeList(Iterator attrs, Iterator namespaces) {
-            this.attributes = new ArrayList<Attribute>(); 
- 
-            while(namespaces.hasNext()) {
-                Namespace next = (Namespace)namespaces.next();
-                String uri = XMLConstants.XMLNS_URL; 
-                String localName = next.getPrefix(); 
-                String qName; 
-                if(null == localName || localName.length() == 0) { 
-                    localName = XMLConstants.XMLNS; 
-                    qName = XMLConstants.XMLNS; 
-                } else { 
-                    qName = XMLConstants.XMLNS + XMLConstants.COLON + localName; 
-                } 
-                String value = next.getNamespaceURI(); 
-                attributes.add(new Attribute(uri, localName, qName, value)); 
-            } 
+            if(attrs.hasNext() || namespaces.hasNext()) {
+                this.attributes = new ArrayList<Attribute>();
 
-            while(attrs.hasNext()) {
-                javax.xml.stream.events.Attribute next = (javax.xml.stream.events.Attribute)attrs.next();
-                String uri = next.getName().getNamespaceURI();
-                String localName = next.getName().getLocalPart();
-                String prefix = next.getName().getPrefix();
-                String qName;
-                if(null == prefix || prefix.length() == 0) {
-                    qName = localName;
-                } else {
-                    qName = prefix + XMLConstants.COLON + localName;
+                while(namespaces.hasNext()) {
+                    Namespace next = (Namespace)namespaces.next();
+                    String uri = XMLConstants.XMLNS_URL; 
+                    String localName = next.getPrefix(); 
+                    String qName; 
+                    if(null == localName || localName.length() == 0) { 
+                        localName = XMLConstants.XMLNS; 
+                        qName = XMLConstants.XMLNS; 
+                    } else { 
+                        qName = XMLConstants.XMLNS + XMLConstants.COLON + localName; 
+                    } 
+                    String value = next.getNamespaceURI(); 
+                    attributes.add(new Attribute(uri, localName, qName, value)); 
+                } 
+
+                while(attrs.hasNext()) {
+                    javax.xml.stream.events.Attribute next = (javax.xml.stream.events.Attribute)attrs.next();
+                    String uri = next.getName().getNamespaceURI();
+                    String localName = next.getName().getLocalPart();
+                    String prefix = next.getName().getPrefix();
+                    String qName;
+                    if(null == prefix || prefix.length() == 0) {
+                        qName = localName;
+                    } else {
+                        qName = prefix + XMLConstants.COLON + localName;
+                    }
+                    String value = next.getValue();
+                    attributes.add(new Attribute(uri, localName, qName, value));
                 }
-                String value = next.getValue();
-                attributes.add(new Attribute(uri, localName, qName, value));
+            } else {
+                attributes = Collections.EMPTY_LIST;
             }
+
         }
 
         public int getIndex(String qName) {

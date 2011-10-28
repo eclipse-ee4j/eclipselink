@@ -16,6 +16,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
@@ -541,9 +542,14 @@ public class XMLObjectBuilder extends ObjectBuilder {
             return null;
         }
 
+
+        Map<String, String> prefixesToNamespaces = desc.getNonNullNamespaceResolver().getPrefixesToNamespaces();
+        if(prefixesToNamespaces.size() == 0) {
+            return null;
+        }
         List returnList = new ArrayList();
 
-        for(Entry<String, String> entry: desc.getNonNullNamespaceResolver().getPrefixesToNamespaces().entrySet()) {
+        for(Entry<String, String> entry: prefixesToNamespaces.entrySet()) {
 
             //if isn't already on a parentadd namespace to this element
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(entry.getValue());

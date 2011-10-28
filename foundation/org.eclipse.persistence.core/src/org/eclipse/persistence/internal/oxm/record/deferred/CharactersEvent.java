@@ -25,25 +25,24 @@ public class CharactersEvent extends SAXEvent {
 
     private CharSequence charSequence;
     private char[] characters;
-    private int start;
-    private int end;
+    private int length;
 
     public CharactersEvent(CharSequence charSequence) {
         super();
         this.charSequence = charSequence;
     }
 
-    public CharactersEvent(char[] theCharacters, int theStart, int theEnd) {
+    public CharactersEvent(char[] theCharacters, int theStart, int theLength) {
         super();
         //clone the character array. The one passed in from the original SAX event may change.
-        characters = theCharacters.clone();
-        start = theStart;
-        end = theEnd;
+        length = theLength;
+        characters = new char[length];
+        System.arraycopy( theCharacters, theStart, characters, 0, length);
     }
 
     public void processEvent(UnmarshalRecord unmarshalRecord) throws SAXException {
         if(null == charSequence) {
-            unmarshalRecord.characters(characters, start, end);
+            unmarshalRecord.characters(characters, 0, length);
         } else {
             unmarshalRecord.characters(charSequence);
         }
