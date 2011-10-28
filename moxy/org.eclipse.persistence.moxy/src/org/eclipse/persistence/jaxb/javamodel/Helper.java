@@ -59,6 +59,7 @@ public class Helper {
     public final static String CALENDAR = "java.util.Calendar";
     public final static String CHARACTER = "java.lang.Character";
     public final static String CHAR = "char";
+    public final static String OBJECT = "java.lang.Object";
     public final static String CLASS = "java.lang.Class";
     public final static String PDOUBLE = "double";
     public final static String PFLOAT = "float";
@@ -136,6 +137,7 @@ public class Helper {
         javaTypes.put(FLOAT, XMLConstants.FLOAT_QNAME);
         javaTypes.put(INTEGER, XMLConstants.INT_QNAME);
         javaTypes.put(LONG, XMLConstants.LONG_QNAME);
+        javaTypes.put(OBJECT, XMLConstants.ANY_TYPE_QNAME);
         javaTypes.put(SHORT, XMLConstants.SHORT_QNAME);
         javaTypes.put(UTIL_DATE, XMLConstants.DATE_TIME_QNAME);
         javaTypes.put(SQL_DATE, XMLConstants.DATE_QNAME);

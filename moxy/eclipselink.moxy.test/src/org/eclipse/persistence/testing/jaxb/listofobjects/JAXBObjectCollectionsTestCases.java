@@ -47,8 +47,6 @@ public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsTestCases {
 		setWriteControlDocument(XML_WRITE_RESOURCE);
 		Type[] types = new Type[3];
 		types[0] = Object[].class;
-						
-		types[0] = Object[].class;
 		types[1] = getClass().getField("objectMap").getType();
 		types[2] = getClass().getField("objectArrayList").getType();
 		

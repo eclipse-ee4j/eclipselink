@@ -22,7 +22,6 @@ public class MultiDimensionalArrayRoot {
     private int[][] int2dArray;
     private char[][] char2dArray;
     private int[][][] int3dArray;
-    private Integer[][][] integer3dArray;
     private Employee[][] employee2dArray;
     private ClassWithInnerClass.MyInner[][] innerClass2dArray;
 
@@ -48,14 +47,6 @@ public class MultiDimensionalArrayRoot {
 
     public void setChar2dArray(char[][] char2dArray) {
         this.char2dArray = char2dArray;
-    }
-
-    public Integer[][][] getInteger3dArray() {
-        return integer3dArray;
-    }
-
-    public void setInteger3dArray(Integer[][][] integer3dArray) {
-        this.integer3dArray = integer3dArray;
     }
 
     public Employee[][] getEmployee2dArray() {
@@ -93,9 +84,6 @@ public class MultiDimensionalArrayRoot {
                 return false;
             }
             if(!equals(int3dArray, test.getInt3dArray())) {
-                return false;
-            }
-            if(!equals(integer3dArray, test.getInteger3dArray())) {
                 return false;
             }
             return true;

@@ -6,6 +6,6 @@
          <xsd:element name="id" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="response"/>
+   <xsd:element name="response" type="xsd:anyType"/>
    <xsd:element name="employee" type="ns0:employee"/>
 </xsd:schema>

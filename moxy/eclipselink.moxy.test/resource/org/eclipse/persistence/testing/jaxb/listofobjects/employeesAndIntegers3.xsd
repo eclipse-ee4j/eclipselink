@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="http://jaxb.dev.java.net/array" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://jaxb.dev.java.net/array">
-   <xsd:complexType name="integerArray">
+   <xsd:complexType name="intArray">
       <xsd:sequence>
          <xsd:element name="item" nillable="true" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>

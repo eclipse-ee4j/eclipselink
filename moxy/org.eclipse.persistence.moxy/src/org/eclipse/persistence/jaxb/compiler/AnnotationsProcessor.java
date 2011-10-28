@@ -3761,6 +3761,7 @@ public class AnnotationsProcessor {
     private Class generateArrayValue(JavaClass arrayClass, JavaClass componentClass, JavaClass nestedClass, TypeMappingInfo typeMappingInfo) {
         String packageName;
         String qualifiedClassName;
+        QName qName = null;
         if (componentClass.isArray()) {
             packageName = componentClass.getPackageName();
             qualifiedClassName = nestedClass.getQualifiedName() + ARRAY_CLASS_NAME_SUFFIX;
@@ -3780,6 +3781,11 @@ public class AnnotationsProcessor {
             }
 
             if (componentClass.isPrimitive() || helper.isBuiltInJavaType(componentClass)) {
+                qName = (QName) helper.getXMLToJavaTypeMap().get(componentClass.getQualifiedName());
+                if(null != qName) {
+                    packageName = ARRAY_PACKAGE_NAME;
+                    qualifiedClassName = ARRAY_PACKAGE_NAME + DOT_CHR + qName.getLocalPart() + ARRAY_CLASS_NAME_SUFFIX;
+                }
                 PackageInfo namespaceInfo = getPackageToPackageInfoMappings().get(packageName);
                 if (namespaceInfo == null) {
                     namespaceInfo = new PackageInfo();
@@ -3806,6 +3812,12 @@ public class AnnotationsProcessor {
 
         // Write public class ???
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, null, superClassName, null);
+
+        if(qualifiedClassName.startsWith(ARRAY_PACKAGE_NAME) && qualifiedClassName.contains("QName") ) {
+            AnnotationVisitor xmlTypeAV = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
+            xmlTypeAV.visit("name", qualifiedClassName.substring(qualifiedClassName.lastIndexOf(DOT_CHR) + 1));
+            xmlTypeAV.visitEnd();
+        }
 
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -3878,7 +3890,14 @@ public class AnnotationsProcessor {
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        return generateClassFromBytes(qualifiedClassName, cw.toByteArray());
+        try {
+            return generateClassFromBytes(qualifiedClassName, cw.toByteArray());
+        } catch(LinkageError e) {
+            if(null != qName) {
+                throw JAXBException.nameCollision(qName.getNamespaceURI(), qName.getLocalPart());
+            }
+            throw e;
+        }
     }
 
     private JavaClass getBaseComponentType(JavaClass javaClass) {
