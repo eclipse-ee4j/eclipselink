@@ -1,9 +1,5 @@
 Manifest-Version: 1.0
 Export-Package: _dbws;version="2.4.0.qualifier",
- org.eclipse.persistence.platform.database.oracle.publisher;version="2.4.0.qualifier",
- org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl;version="2.4.0.qualifier",
- org.eclipse.persistence.platform.database.oracle.publisher.viewcache;version="2.4.0.qualifier",
- org.eclipse.persistence.platform.database.oracle.publisher.visit;version="2.4.0.qualifier",
  org.eclipse.persistence.tools.dbws;version="2.4.0.qualifier",
  org.eclipse.persistence.tools.dbws.jdbc;version="2.4.0.qualifier",
  org.eclipse.persistence.tools.dbws.oracle;version="2.4.0.qualifier"

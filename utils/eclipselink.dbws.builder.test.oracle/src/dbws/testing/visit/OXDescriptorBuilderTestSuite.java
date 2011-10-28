@@ -11,7 +11,7 @@
  *     Mike Norman - May 2008, created DBWS Oracle test package
  ******************************************************************************/
 package dbws.testing.visit;
-
+/*
 //javase imports
 import java.math.BigDecimal;
 import java.util.List;
@@ -52,8 +52,10 @@ import static dbws.testing.visit.DBWSTestHelper.TBL3_DESCRIPTOR_ALIAS;
 import static dbws.testing.visit.DBWSTestHelper.TBL3_DESCRIPTOR_JAVACLASSNAME;
 import static dbws.testing.visit.DBWSTestHelper.TBL4_DESCRIPTOR_ALIAS;
 import static dbws.testing.visit.DBWSTestHelper.TBL4_DESCRIPTOR_JAVACLASSNAME;
-
+*/
 public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
+
+/*
 
     @Test
     public void p1test() {
@@ -251,7 +253,7 @@ public class OXDescriptorBuilderTestSuite extends BuilderTestSuite {
         assertTrue("mapping is not isAbstractCompositeCollection mapping",
             mapping.isAbstractCompositeCollectionMapping());
     }
-/*
+
     @Test
     public void p7test() {
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,

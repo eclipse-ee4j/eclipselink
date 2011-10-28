@@ -13,13 +13,6 @@
 
 package org.eclipse.persistence.tools.dbws;
 
-// javase imports
-
-// EclipseLink imports
-import org.eclipse.persistence.internal.xr.Operation;
-import org.eclipse.persistence.internal.xr.QueryOperation;
-import org.eclipse.persistence.internal.xr.XRServiceModel;
-
 public class OperationModel {
 
     protected String name;
@@ -122,19 +115,5 @@ public class OperationModel {
 
     public void buildOperation(DBWSBuilder builder) {
         return;
-    }
-
-    public static boolean requiresSimpleXMLFormat(XRServiceModel serviceModel) {
-        boolean requiresSimpleXMLFormat = false;
-        for (Operation operation : serviceModel.getOperationsList()) {
-            if (operation instanceof QueryOperation) {
-                QueryOperation qo = (QueryOperation)operation;
-                if (qo.getResult().isSimpleXMLFormat()) {
-                    requiresSimpleXMLFormat = true;
-                    break;
-                }
-            }
-        }
-        return requiresSimpleXMLFormat;
     }
 }

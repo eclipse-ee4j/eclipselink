@@ -21,7 +21,6 @@ import java.util.Set;
 
 //EclipseLink imports
 
-@SuppressWarnings("unchecked")
 public class XRDynamicEntity_CollectionWrapper extends XRDynamicEntity implements Collection<Object> {
 
     static final String ITEMS_PROPERTY = "items";

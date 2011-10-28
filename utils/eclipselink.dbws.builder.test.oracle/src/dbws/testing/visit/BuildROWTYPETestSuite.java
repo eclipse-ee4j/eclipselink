@@ -1,5 +1,6 @@
 package dbws.testing.visit;
 
+/*
 //JUnit4 imports
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,11 @@ import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.VARCHAR_T
 import static dbws.testing.visit.DBWSTestHelper.F17_PACKAGE_NAME;
 import static dbws.testing.visit.DBWSTestHelper.PROCF17;
 import static dbws.testing.visit.DBWSTestHelper.PROCF17_NAME;
+*/
 
 public class BuildROWTYPETestSuite extends BuilderTestSuite {
+
+/*
 
     @Test
     public void Tesmanproc17() {
@@ -48,7 +52,7 @@ public class BuildROWTYPETestSuite extends BuilderTestSuite {
             PROCF17_NAME + "b".toUpperCase());
         testAssertsFor17b(typesForMethod, helperObjectsBuilder);
     }
-    
+
     protected void testAssertsFor17(DatabaseType[] types, PLSQLHelperObjectsBuilder helperObjectsBuilder) {
         assertTrue("incorrect number of types returned for procedure " + PROCF17_NAME,
             types.length == 2);
@@ -78,7 +82,7 @@ public class BuildROWTYPETestSuite extends BuilderTestSuite {
     }
 
     protected void testAssertsForTYPE2(OracleObjectType oot, PLSQLHelperObjectsBuilder helperObjectsBuilder) {
-        assertEquals("wrong type name for oot", "TESMAN_TYPE2", 
+        assertEquals("wrong type name for oot", "TESMAN_TYPE2",
             helperObjectsBuilder.trimOffSchemaName(oot.getTypeName()));
         Map<String, DatabaseType> ootFields = oot.getFields();
         assertTrue("wrong number of fields for Object type " + oot.getTypeName(),
@@ -130,15 +134,16 @@ public class BuildROWTYPETestSuite extends BuilderTestSuite {
             "TT3", secondField.name);
         DatabaseType secondFieldType = secondField.databaseType;
         assertTrue("wrong databaseType for second field of TESMAN_TABLE3%ROWTYPE",
-            secondFieldType.isComplexDatabaseType() && 
+            secondFieldType.isComplexDatabaseType() &&
             ((ComplexDatabaseType)secondFieldType).isJDBCType() &&
             ((ComplexDatabaseType)secondFieldType).isCollection() );
         OracleArrayType oat = (OracleArrayType)secondFieldType;
         DatabaseType nestedType = oat.getNestedType();
         assertTrue("wrong databaseType for nested type of " + oat.getTypeName(),
-            nestedType.isComplexDatabaseType() && 
+            nestedType.isComplexDatabaseType() &&
             ((ComplexDatabaseType)nestedType).isJDBCType() );
         OracleObjectType oot = (OracleObjectType)nestedType;
         testAssertsForTYPE2(oot, helperObjectsBuilder);
     }
+*/
 }

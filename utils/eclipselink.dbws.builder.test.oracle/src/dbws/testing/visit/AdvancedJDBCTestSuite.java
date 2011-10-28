@@ -12,6 +12,7 @@
  ******************************************************************************/
 package dbws.testing.visit;
 
+/*
 //javase imports
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -66,8 +67,10 @@ import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorPr
 //domain (testing) imports
 import static dbws.testing.visit.WebServiceTestSuite.DEFAULT_DATABASE_DRIVER;
 
+*/
 public class AdvancedJDBCTestSuite extends BuilderTestSuite {
 
+/*
     static final String REGION_OR_PROJECT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
@@ -774,7 +777,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             DBWSTestHelper.documentToString(empObjectEntityDoc).replaceAll("[\r\n]", "");
         empObjectEntityString = empObjectEntityString.replaceAll(">( *)<", "><");
         if (empObjectEntityString.startsWith(STANDALONE_XML_HEADER)) {
-            empObjectEntityString = 
+            empObjectEntityString =
                 empObjectEntityString.replace(STANDALONE_XML_HEADER, REGULAR_XML_HEADER);
         }
         String anEmpObject = ANEMPOBJECT + today.toString() + ANEMPOBJECT_SUFFIX;
@@ -2501,4 +2504,5 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         ds.login();
         return ds;
     }
+*/
 }

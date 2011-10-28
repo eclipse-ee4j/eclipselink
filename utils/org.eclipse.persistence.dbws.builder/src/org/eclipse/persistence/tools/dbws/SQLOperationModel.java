@@ -31,6 +31,7 @@ import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.tools.dbws.BindingModel.convertJDBCParameterBindingMarkers;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 
 public class SQLOperationModel extends OperationModel {
 

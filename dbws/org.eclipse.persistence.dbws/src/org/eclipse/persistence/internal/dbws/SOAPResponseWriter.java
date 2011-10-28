@@ -62,7 +62,6 @@ public class SOAPResponseWriter {
         this.dbwsAdapter = dbwsAdapter;
     }
 
-    @SuppressWarnings("unchecked")
     public void initialize() {
         SOAPResponseClassLoader loader =
             new SOAPResponseClassLoader(Thread.currentThread().getContextClassLoader());

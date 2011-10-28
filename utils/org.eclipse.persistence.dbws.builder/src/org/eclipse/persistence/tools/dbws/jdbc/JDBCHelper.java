@@ -13,38 +13,79 @@
 
 package org.eclipse.persistence.tools.dbws.jdbc;
 
-// Javase imports
+//javase imports
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import static java.sql.DatabaseMetaData.columnNullable;
 import static java.sql.DatabaseMetaData.procedureReturnsResult;
 import static java.sql.DatabaseMetaData.tableIndexStatistic;
-import static java.sql.DatabaseMetaData.procedureNullable;
 import static java.sql.DatabaseMetaData.procedureColumnInOut;
 import static java.sql.DatabaseMetaData.procedureColumnOut;
 import static java.sql.DatabaseMetaData.procedureColumnReturn;
+import static java.sql.Types.ARRAY;
+import static java.sql.Types.OTHER;
+import static java.sql.Types.STRUCT;
+import static java.util.logging.Level.FINEST;
+//import static java.util.logging.Level.SEVERE;
 
-// Java extension imports
+//java eXtension imports
+import javax.xml.namespace.QName;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.xr.Attachment;
+import org.eclipse.persistence.internal.xr.CollectionResult;
+import org.eclipse.persistence.internal.xr.NamedQueryHandler;
+import org.eclipse.persistence.internal.xr.Parameter;
+import org.eclipse.persistence.internal.xr.ProcedureArgument;
+import org.eclipse.persistence.internal.xr.ProcedureOutputArgument;
+import org.eclipse.persistence.internal.xr.QueryHandler;
+import org.eclipse.persistence.internal.xr.QueryOperation;
+import org.eclipse.persistence.internal.xr.Result;
+import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
+import org.eclipse.persistence.internal.xr.StoredProcedureQueryHandler;
+import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
+import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.tools.dbws.BaseDBWSBuilderHelper;
+import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.DBWSBuilderHelper;
 import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
-import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
-import static org.eclipse.persistence.tools.dbws.Util.InOut.OUT;
-import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
+import org.eclipse.persistence.tools.dbws.Util;
+
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
+import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
+import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
+import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
+import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
+
+//DDL parser imports
+import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection;
+import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
+import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
+import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.RETURN;
 
 /*
  * Known Problems/Limitations: Oracle
@@ -123,7 +164,7 @@ import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
  *    (Oracle returns metadata for storedFunctions via databaseMetaData.getProcedures())
  *
  */
-public class JDBCHelper {
+public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelper {
 
     // useful fields in databaseMetaData.getTables() ResultSet
     public static final int TABLESINFO_CATALOG = 1; // String ==> table catalog (may be null)
@@ -213,15 +254,263 @@ public class JDBCHelper {
                                                               //  procedure name. This field indicates
                                                               //  the 'overload level' - i.e. which
                                                               //  procedure we are dealing with
+    //protected List<DbStoredProcedure> dbStoredProcedures = new ArrayList<DbStoredProcedure>();
+    //protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+    //    new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
 
-    public static List<DbTable> buildDbTable(Connection connection, DatabasePlatform platform,
-        String originalCatalogPattern, String originalSchemaPattern, String originalTablePattern) {
+    public JDBCHelper(DBWSBuilder dbwsBuilder) {
+        super(dbwsBuilder);
+    }
 
-        List<DbTable> dbTables = null;
-        boolean isOracle = platform.getClass().getName().contains("Oracle") ? true : false;
-        String schemaPattern = escapePunctuation(originalSchemaPattern, isOracle);
-        String tablePattern = escapePunctuation(originalTablePattern, isOracle);
-        DatabaseMetaData databaseMetaData = getDatabaseMetaData(connection);
+    public boolean hasTables() {
+        if (dbTables.size() == 0) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean hasComplexProcedureArgs() {
+        return false;
+    }
+
+    public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
+        String name = procedureOperationModel.getName();
+        boolean isMySQL = dbwsBuilder.getDatabasePlatform().getClass().getName().contains("MySQL");
+        List<ProcedureType> procs = new ArrayList<ProcedureType>();
+        for (Map.Entry<ProcedureType, DbStoredProcedureNameAndModel> me : dbStoredProcedure2QueryName.entrySet()) {
+            ProcedureType key = me.getKey();
+            DbStoredProcedureNameAndModel value = me.getValue();
+            if (value.name.equals(procedureOperationModel.getName())) {
+                procs.add(key);
+            }
+        }
+        for (ProcedureType storedProcedure : procs) {
+            StringBuilder sb = new StringBuilder();
+            if (name == null || name.length() == 0) {
+                if (storedProcedure.getOverload() > 0) {
+                    sb.append(storedProcedure.getOverload());
+                    sb.append('_');
+                }
+                if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+                    sb.append(storedProcedure.getCatalogName());
+                    sb.append('_');
+                }
+                if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
+                    sb.append(storedProcedure.getSchema());
+                    sb.append('_');
+                }
+                sb.append(storedProcedure.getProcedureName());
+            }
+            else {
+                sb.append(name);
+            }
+            QueryOperation qo = new QueryOperation();
+            qo.setName(sb.toString());
+            QueryHandler qh;
+            if (storedProcedure.isFunction()) {
+                qh = new StoredFunctionQueryHandler();
+            }
+            else {
+              qh = new StoredProcedureQueryHandler();
+            }
+            sb = new StringBuilder();
+            if (!isMySQL) {
+                if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+                    sb.append(storedProcedure.getCatalogName());
+                    sb.append('.');
+                }
+            }
+            if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
+                sb.append(storedProcedure.getSchema());
+                sb.append('.');
+            }
+            sb.append(storedProcedure.getProcedureName());
+            ((StoredProcedureQueryHandler)qh).setName(sb.toString());
+            dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + sb.toString());
+            // before assigning queryHandler, check for named query in OR project
+            List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
+            if (queries.size() > 0) {
+                for (DatabaseQuery q : queries) {
+                    if (q.getName().equals(qo.getName())) {
+                        qh = new NamedQueryHandler();
+                        ((NamedQueryHandler)qh).setName(qo.getName());
+                    }
+                }
+            }
+            qo.setQueryHandler(qh);
+            SimpleXMLFormat sxf = null;
+            String returnType = procedureOperationModel.getReturnType();
+            boolean isCollection = procedureOperationModel.isCollection();
+            boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
+            if (isSimpleXMLFormat || returnType == null) {
+                sxf = new SimpleXMLFormat();
+            }
+            String simpleXMLFormatTag = procedureOperationModel.getSimpleXMLFormatTag();
+            if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
+                sxf.setSimpleXMLFormatTag(simpleXMLFormatTag);
+            }
+            String xmlTag = procedureOperationModel.getXmlTag();
+            if (xmlTag != null && xmlTag.length() > 0) {
+                if (sxf == null) {
+                    sxf = new SimpleXMLFormat();
+                }
+                sxf.setXMLTag(xmlTag);
+            }
+            Result result = null;
+            if (storedProcedure.isFunction()) {
+                FunctionType storedFunction = (FunctionType) storedProcedure;
+                DatabaseType rarg = storedFunction.getReturnArgument();
+                if (rarg.getTypeName().contains("CURSOR")) {
+                    result = new CollectionResult();
+                    result.setType(SXF_QNAME_CURSOR);
+                }
+                else {
+                    result = new Result();
+                    int rargJdbcType = Util.getJDBCTypeFromTypeName(rarg.getTypeName());
+                    switch (rargJdbcType) {
+                        case STRUCT:
+                        case ARRAY:
+                        case OTHER:
+                            if (returnType != null) {
+                                result.setType(buildCustomQName(returnType, dbwsBuilder));
+                            }
+                            else {
+                                result.setType(ANY_QNAME);
+                            }
+                            break;
+                        default :
+                            result.setType(getXMLTypeFromJDBCType(rargJdbcType));
+                            break;
+                    }
+                }
+            }
+            else {
+                // if user overrides returnType, assume they're right
+                if (returnType != null) {
+                    result = new Result();
+                    result.setType(buildCustomQName(returnType, dbwsBuilder));
+                }
+                else {
+                    if (isCollection) {
+                        result = new CollectionResult();
+                        if (isSimpleXMLFormat) {
+                            result.setType(SXF_QNAME_CURSOR);
+                        }
+                    }
+                    else {
+                        result = new Result();
+                        result.setType(SXF_QNAME);
+                    }
+                }
+            }
+            if (procedureOperationModel.getBinaryAttachment()) {
+                Attachment attachment = new Attachment();
+                attachment.setMimeType("application/octet-stream");
+                result.setAttachment(attachment);
+            }
+            for (ArgumentType arg : storedProcedure.getArguments()) {
+                String argName = arg.getArgumentName();
+                if (argName != null) {
+                    ProcedureArgument pa = null;
+                    Parameter parm = null;
+                    ArgumentTypeDirection direction = arg.getDirection();
+                    QName xmlType = null;
+                    switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
+                        case STRUCT:
+                        case ARRAY:
+                        case OTHER:
+                            String typeString = nct.generateSchemaAlias(arg.getTypeName());
+                            xmlType = buildCustomQName(typeString, dbwsBuilder);
+                            break;
+                        default :
+                            xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+                            break;
+                    }
+                    if (direction == IN) {
+                        parm = new Parameter();
+                        parm.setName(argName);
+                        parm.setType(xmlType);
+                        pa = new ProcedureArgument();
+                        pa.setName(argName);
+                        pa.setParameterName(argName);
+                        if (qh instanceof StoredProcedureQueryHandler) {
+                            ((StoredProcedureQueryHandler)qh).getInArguments().add(pa);
+                        }
+                    }
+                    else {
+                        // the first OUT/INOUT arg determines singleResult vs. collectionResult
+                        pa = new ProcedureOutputArgument();
+                        ProcedureOutputArgument pao = (ProcedureOutputArgument)pa;
+                        pao.setName(argName);
+                        pao.setParameterName(argName);
+                        if (arg.getTypeName().contains("CURSOR") &&
+                            returnType == null) { // if user overrides returnType, assume they're right
+                            pao.setResultType(SXF_QNAME_CURSOR);
+                            if (result == null) {
+                                result = new CollectionResult();
+                                result.setType(SXF_QNAME_CURSOR);
+                            }
+                        }
+                        else {
+                            // if user overrides returnType, assume they're right
+                            // Hmm, multiple OUT's gonna be a problem - later!
+                            if (returnType != null && sxf == null) {
+                                xmlType = qNameFromString("{" + dbwsBuilder.getTargetNamespace() + "}" +
+                                    returnType, dbwsBuilder.getSchema());
+                            }
+                            pao.setResultType(xmlType);
+                            if (result == null) {
+                                if (isCollection) {
+                                    result = new CollectionResult();
+                                }
+                                else {
+                                    result = new Result();
+                                }
+                                result.setType(xmlType);
+                            }
+                        }
+                        if (direction == INOUT) {
+                            if (qh instanceof StoredProcedureQueryHandler) {
+                                ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
+                            }
+                        }
+                        else {
+                            if (qh instanceof StoredProcedureQueryHandler) {
+                                ((StoredProcedureQueryHandler)qh).getOutArguments().add(pao);
+                            }
+                        }
+                    }
+                    if (parm != null) {
+                        qo.getParameters().add(parm);
+                    }
+                }
+            }
+            if (sxf != null) {
+                result.setSimpleXMLFormat(sxf);
+                // check to see if the O-X project needs descriptor for SimpleXMLFormat
+                if (dbwsBuilder.getOxProject().getDescriptorForAlias(DEFAULT_SIMPLE_XML_FORMAT_TAG) == null) {
+                    SimpleXMLFormatProject sxfProject = new SimpleXMLFormatProject();
+                    dbwsBuilder.getOxProject().addDescriptor(sxfProject.buildXRRowSetModelDescriptor());
+                }
+            }
+            qo.setResult(result);
+            dbwsBuilder.getXrServiceModel().getOperations().put(qo.getName(), qo);
+        }
+
+        // check to see if the schema requires sxfType to be added
+        if (requiresSimpleXMLFormat(dbwsBuilder.getXrServiceModel()) && 
+            dbwsBuilder.getSchema().getTopLevelElements().get("simple-xml-format") == null) {
+            addSimpleXMLFormat(dbwsBuilder.getSchema());
+        }
+    }
+    
+    protected List<TableType> loadTables(String originalCatalogPattern, String originalSchemaPattern,
+        String originalTablePattern) {
+
+        List<TableType> dbTables = null;
+        String schemaPattern = escapePunctuation(originalSchemaPattern);
+        String tablePattern = escapePunctuation(originalTablePattern);
+        DatabaseMetaData databaseMetaData = getDatabaseMetaData(dbwsBuilder.getConnection());
         boolean supportsCatalogsInTableDefinitions = true;
         try {
             supportsCatalogsInTableDefinitions =
@@ -229,7 +518,7 @@ public class JDBCHelper {
         }
         catch (SQLException sqlException) { /* ignore*/ }
         String catalogPattern = escapePunctuation(
-            supportsCatalogsInTableDefinitions ? originalCatalogPattern : "", isOracle);
+            supportsCatalogsInTableDefinitions ? originalCatalogPattern : "");
         // Make sure table(s) is/are available
         ResultSet tablesInfo = null;
         try {
@@ -240,7 +529,7 @@ public class JDBCHelper {
         }
         // did we get a hit?
         if (tablesInfo != null) {
-            dbTables = new ArrayList<DbTable>();
+            dbTables = new ArrayList<TableType>();
             try {
                 while (tablesInfo.next()) {
                     String actualTableCatalog = null;
@@ -250,21 +539,12 @@ public class JDBCHelper {
                     catch (SQLException sqlException) {
                         // we can live without catalog info
                     }
-                    if (actualTableCatalog != null && actualTableCatalog.length() == 0) {
-                        if (isOracle) { // Oracle requires NULL, not "" empty string
-                            actualTableCatalog = null;
-                        }
-                    }
                     String actualTableSchema = null;
                     try {
                         actualTableSchema = tablesInfo.getString(TABLESINFO_SCHEMA);
-                    } catch (SQLException sqlException) {
-                        // we can live without schema info
                     }
-                    if (actualTableSchema != null && actualTableSchema.length() == 0) {
-                        if (isOracle) { // Oracle requires NULL, not "" empty string
-                            actualTableSchema = null;
-                        }
+                    catch (SQLException sqlException) {
+                        // we can live without schema info
                     }
                     String actualTableName = tablesInfo.getString(TABLESINFO_NAME);
                     String tableType = null;
@@ -277,7 +557,7 @@ public class JDBCHelper {
                     DbTable dbTable = new DbTable();
                     dbTable.setCatalog(actualTableCatalog);
                     dbTable.setSchema(actualTableSchema);
-                    dbTable.setName(actualTableName);
+                    dbTable.setTableName(actualTableName);
                     if (tableType != null) {
                         dbTable.setType(tableType);
                     }
@@ -285,22 +565,29 @@ public class JDBCHelper {
                     ResultSet columnInfo = databaseMetaData.getColumns(actualTableCatalog,
                         actualTableSchema, actualTableName, "%");
                     while (columnInfo.next()) {
-                        DbColumn dbColumn = new DbColumn();
-                        dbColumn.setName(columnInfo.getString(COLUMNSINFO_COLUMN_NAME));
-                        dbColumn.setOrdinalPosition(columnInfo.getInt(COLUMNSINFO_ORDINAL_POSITION));
+                        String columnName = columnInfo.getString(COLUMNSINFO_COLUMN_NAME);
+                        DbColumn dbColumn = new DbColumn(columnName);
+                        int dbPrecision = -1;
                         try {
-                            dbColumn.setPrecision(columnInfo.getInt(COLUMNSINFO_COLUMN_SIZE));
+                            dbPrecision = columnInfo.getInt(COLUMNSINFO_COLUMN_SIZE);
                         }
                         catch (NumberFormatException nfe) {
-                            // set precision to be -1 to indicate 'too big'
-                            dbColumn.setPrecision(-1);
+                            // ignore
                         }
-                        dbColumn.setScale(columnInfo.getInt(COLUMNSINFO_DECIMAL_DIGITS));
-                        dbColumn.setNullable(
-                          columnInfo.getInt(COLUMNSINFO_NULLABLE) == columnNullable ? true : false);
+                        int dbScale = columnInfo.getInt(COLUMNSINFO_DECIMAL_DIGITS);
+                        if (columnInfo.getInt(COLUMNSINFO_NULLABLE) == columnNullable) {
+                            dbColumn.unSetNotNull();
+                        }
+                        else {
+                            dbColumn.setNotNull();
+                        }
                         dbColumn.setJDBCType(columnInfo.getInt(COLUMNSINFO_DATA_TYPE));
                         dbColumn.setJDBCTypeName(columnInfo.getString(COLUMNSINFO_TYPE_NAME));
-                        dbTable.getColumns().add(dbColumn.getOrdinalPosition() - 1, dbColumn);
+                        dbColumn.setDataType(buildTypeForJDBCType(dbColumn.getJDBCType(),
+                            dbPrecision, dbScale));
+                        //TODO - just put into dbTable in order that columnInfo reports
+                        //       if backward-compat problems, put back 'ordinal' logic
+                        dbTable.getColumns().add(dbColumn);
                     }
                     columnInfo.close();
                     ResultSet pksInfo = databaseMetaData.getPrimaryKeys(actualTableCatalog,
@@ -309,8 +596,8 @@ public class JDBCHelper {
                         while (pksInfo.next()) {
                             short keySeq = pksInfo.getShort(PKSINFO_KEY_SEQ);
                             String pkConstraintName = pksInfo.getString(PKSINFO_PK_NAME);
-                            DbColumn dbColumn = dbTable.getColumns().get(keySeq - 1);
-                            dbColumn.setPK(true);
+                            DbColumn dbColumn = (DbColumn)dbTable.getColumns().get(keySeq - 1);
+                            dbColumn.setPk();
                             dbColumn.setPkConstraintName(pkConstraintName);
                         }
                     }
@@ -325,8 +612,8 @@ public class JDBCHelper {
                                     short type = indexInfo.getShort(INDEXINFO_TYPE);
                                     if (type != tableIndexStatistic) {
                                         short pos = indexInfo.getShort(INDEXINFO_ORDINAL_POSITION);
-                                        DbColumn dbColumn = dbTable.getColumns().get(pos - 1);
-                                        if (!dbColumn.isPK()) {
+                                        DbColumn dbColumn = (DbColumn)dbTable.getColumns().get(pos - 1);
+                                        if (!dbColumn.pk()) {
                                             dbColumn.setUnique(true);
                                         }
                                     }
@@ -335,6 +622,7 @@ public class JDBCHelper {
                         }
                         indexInfo.close();
                     } catch (SQLException sqlException) {
+                        //TODO - do we still need this if we (JDBCHelper) isn't handling Oracle?
                         // sqlException.printStackTrace();
                         // ORA-01702: a view is not appropriate here: can't retrieve indexInfo
                         // for views on Oracle, it blows up (other platforms just ignore)
@@ -350,47 +638,45 @@ public class JDBCHelper {
         return dbTables;
     }
 
-    public static List<DbStoredProcedure> buildStoredProcedure(Connection connection,
-        DatabasePlatform platform, ProcedureOperationModel procedureModel ) {
+    protected List<ProcedureType> loadProcedures(ProcedureOperationModel procedureModel ) {
 
-        List<DbStoredProcedure> dbStoredProcedures = null;
+        List<ProcedureType> dbStoredProcedures = null;
         boolean catalogMatchDontCare = false;
-        if (platform instanceof MySQLPlatform || platform instanceof DerbyPlatform ||
+        DatabasePlatform platform = dbwsBuilder.getDatabasePlatform();
+        if (platform instanceof MySQLPlatform || 
+            platform instanceof DerbyPlatform ||
             platform instanceof PostgreSQLPlatform ) {
             // TODO - get info on other platforms that also require catalogMatchDontCare = true
             catalogMatchDontCare = true;
         }
-        // Oracle is 'special' - the catalogMatchDontCare logic only applies if the catalogPattern
-        // is NULL vs. the empty "" string
-        boolean isOracle = platform.getClass().getName().contains("Oracle") ? true : false;
         String originalCatalogPattern = procedureModel.getCatalogPattern();
         String originalSchemaPattern = procedureModel.getSchemaPattern();
         String originalProcedurePattern = procedureModel.getProcedurePattern();
-        String catalogPattern = escapePunctuation(originalCatalogPattern, isOracle);
-        String schemaPattern = escapePunctuation(originalSchemaPattern, isOracle);
-        String procedurePattern = escapePunctuation(originalProcedurePattern, isOracle);
+        String catalogPattern = escapePunctuation(originalCatalogPattern);
+        String schemaPattern = escapePunctuation(originalSchemaPattern);
+        String procedurePattern = escapePunctuation(originalProcedurePattern);
         // Make sure procedure(s) is/are available
         ResultSet procsInfo = null;
         try {
-            DatabaseMetaData databaseMetaData = getDatabaseMetaData(connection);
+            DatabaseMetaData databaseMetaData = getDatabaseMetaData(dbwsBuilder.getConnection());
             procsInfo = databaseMetaData.getProcedures(catalogPattern, schemaPattern, procedurePattern);
             // did we get a hit?
             if (procsInfo != null) {
-                List<DbStoredProcedure> tmpProcs = new ArrayList<DbStoredProcedure>();
+                List<ProcedureType> tmpProcs = new ArrayList<ProcedureType>();
                 while (procsInfo.next()) {
                     String actualCatalogName = procsInfo.getString(PROCS_INFO_CATALOG);
                     String actualSchemaName = procsInfo.getString(PROCS_INFO_SCHEMA);
                     String actualProcedureName = procsInfo.getString(PROCS_INFO_NAME);
                     short procedureType = procsInfo.getShort(PROCS_INFO_TYPE);
-                    DbStoredProcedure dbStoredProcedure;
+                    ProcedureType dbStoredProcedure;
                     if (procedureType == procedureReturnsResult) {
-                        dbStoredProcedure = new DbStoredFunction(actualProcedureName);
+                        dbStoredProcedure = new FunctionType(actualProcedureName);
                     }
                     else {
-                        dbStoredProcedure = new DbStoredProcedure(actualProcedureName);
+                        dbStoredProcedure = new ProcedureType(actualProcedureName);
                     }
                     if (actualCatalogName != null && actualCatalogName.length() > 0) {
-                        dbStoredProcedure.setCatalog(actualCatalogName);
+                        dbStoredProcedure.setCatalogName(actualCatalogName);
                     }
                     if (actualSchemaName != null && actualSchemaName.length() > 0) {
                         dbStoredProcedure.setSchema(actualSchemaName);
@@ -404,8 +690,7 @@ public class JDBCHelper {
                  */
                 int numProcs = tmpProcs.size();
                 if (numProcs > 0) {
-                    dbStoredProcedures = new ArrayList<DbStoredProcedure>(numProcs);
-                    List<OverloadHolder> overloadHolderList = new ArrayList<OverloadHolder>();
+                    dbStoredProcedures = new ArrayList<ProcedureType>(numProcs);
                     ResultSet procedureColumnsInfo = null;
                     procedureColumnsInfo = databaseMetaData.getProcedureColumns(catalogPattern,
                         schemaPattern, procedurePattern, "%");
@@ -418,136 +703,62 @@ public class JDBCHelper {
                         if (argName == null) {
                             argName = "";
                         }
-                        DbStoredArgument dbStoredArgument = new DbStoredArgument(argName);
+                        ArgumentType dbStoredArgument = new ArgumentType(argName);
                         short inOut = procedureColumnsInfo.getShort(PROC_COLS_INFO_TYPE);
                         if (inOut == procedureColumnInOut) {
-                            dbStoredArgument.setInOut(INOUT);
+                            dbStoredArgument.setDirection(INOUT);
                         }
                         else if (inOut == procedureColumnOut) {
-                            dbStoredArgument.setInOut(OUT);
+                            dbStoredArgument.setDirection(OUT);
                         }
                         else if (inOut == procedureColumnReturn) {
-                            dbStoredArgument.setInOut(RETURN);
+                            dbStoredArgument.setDirection(RETURN);
+                        } else {
+                            // default to ArgumentTypeDirection.IN
+                            dbStoredArgument.setDirection(IN);
                         }
-                        dbStoredArgument.setJdbcType(procedureColumnsInfo.getInt(
-                            PROC_COLS_INFO_DATA_TYPE));
-                        dbStoredArgument.setJdbcTypeName(procedureColumnsInfo.getString(
-                            PROC_COLS_INFO_TYPE_NAME));
-                        dbStoredArgument.setPrecision(procedureColumnsInfo.getInt(
-                            PROC_COLS_INFO_PRECISION));
-                        dbStoredArgument.setScale(procedureColumnsInfo.getInt(
-                            PROC_COLS_INFO_SCALE));
-                        dbStoredArgument.setRadix(procedureColumnsInfo.getShort(
-                            PROC_COLS_INFO_RADIX));
-                        dbStoredArgument.setNullable(procedureColumnsInfo.getShort(
-                            PROC_COLS_INFO_NULLABLE) == procedureNullable ? true
-                            : false);
-                        if (isOracle) {
-                            dbStoredArgument.setSeq(procedureColumnsInfo.getShort(
-                                PROC_COLS_INFO_ORA_SEQUENCE));
-                        }
-                        short overload = isOracle ?
-                            procedureColumnsInfo.getShort(PROC_COLS_INFO_ORA_OVERLOAD) : 0;
+                        
+                        int jdbcType = procedureColumnsInfo.getInt(PROC_COLS_INFO_DATA_TYPE);
+                        int precision = procedureColumnsInfo.getInt(PROC_COLS_INFO_PRECISION);
+                        int scale = procedureColumnsInfo.getInt(PROC_COLS_INFO_SCALE);
+
+                        dbStoredArgument.setDataType(buildTypeForJDBCType(jdbcType, precision, scale));
+                        
                         // find matching DbStoredProcedure
-                        if (overload == 0) {
-                            // this dbStoredArgument belongs to a 'regular' procedure
-                            DbStoredProcedure matchingProc = null;
-                            for (int i = 0; i < tmpProcs.size();) {
-                                DbStoredProcedure tmpProc = tmpProcs.get(i);
-                                if (tmpProc.matches(actualCatalogName, actualSchemaName,
-                                    actualProcedureName, isOracle, catalogMatchDontCare)) {
-                                    matchingProc = tmpProc;
-                                    dbStoredProcedures.add(matchingProc);
-                                    break;
-                                }
-                                i++;
+                        // this dbStoredArgument belongs to a 'regular' procedure
+                        ProcedureType matchingProc = null;
+                        for (int i = 0; i < tmpProcs.size();) {
+                            ProcedureType tmpProc = tmpProcs.get(i);
+                            if (matches(tmpProc, actualCatalogName, actualSchemaName,
+                                actualProcedureName, false, catalogMatchDontCare)) {
+                                matchingProc = tmpProc;
+                                dbStoredProcedures.add(matchingProc);
+                                break;
                             }
-                            if (matchingProc == null) {
-                                // look in dbStoredProcedures - matching proc already moved over ?
-                                for (DbStoredProcedure dbStoredProcedure: dbStoredProcedures) {
-                                    if (dbStoredProcedure.matches(actualCatalogName, actualSchemaName,
-                                        actualProcedureName, isOracle, catalogMatchDontCare)) {
-                                        matchingProc = dbStoredProcedure;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (matchingProc != null) {
-                                if (matchingProc.isFunction() &&
-                                   (isOracle ? (dbStoredArgument.getName() == null) :
-                                    (dbStoredArgument.getName().equalsIgnoreCase(""))) &&
-                                    dbStoredArgument.getSeq() == (isOracle ? 1 : 0)) {
-                                    ((DbStoredFunction)matchingProc).setReturnArg(dbStoredArgument);
-                                }
-                                else {
-                                    matchingProc.getArguments().add(dbStoredArgument);
-                                }
-                                tmpProcs.remove(matchingProc);
-                            }
-                            // else some argument that doesn't have a matching proc? ignore for now
+                            i++;
                         }
-                        else {
-                            // this dbStoredArgument belongs to an overloaded procedure
-                            OverloadHolder overloadHolder = null;
-                            for (Iterator<OverloadHolder> i = overloadHolderList.iterator(); i.hasNext();) {
-                                OverloadHolder ovrldhldr = i.next();
-                                if (ovrldhldr.overload == overload &&
-                                    ovrldhldr.packageName.equals(actualCatalogName) &&
-                                    ovrldhldr.procedureSchema.equals(actualSchemaName) &&
-                                    ovrldhldr.procedureName.equals(actualProcedureName)) {
-                                    overloadHolder = ovrldhldr;
+                        if (matchingProc == null) {
+                            // look in dbStoredProcedures - matching proc already moved over ?
+                            for (ProcedureType dbStoredProcedure: dbStoredProcedures) {
+                                if (matches(dbStoredProcedure, actualCatalogName, actualSchemaName,
+                                    actualProcedureName, false, catalogMatchDontCare)) {
+                                    matchingProc = dbStoredProcedure;
                                     break;
                                 }
                             }
-                            if (overloadHolder == null) {
-                                // need to create a new one
-                                overloadHolder = new OverloadHolder(actualCatalogName, actualSchemaName,
-                                    actualProcedureName, overload);
-                                overloadHolderList.add(overloadHolder);
-                            }
-                            overloadHolder.getArgs().add(dbStoredArgument);
-                        }
-                    }
-                    procedureColumnsInfo.close();
-                    for (Iterator<OverloadHolder> i = overloadHolderList.iterator(); i.hasNext();) {
-                        OverloadHolder ovrldhldr = i.next();
-                        Collections.sort(ovrldhldr.getArgs(), new Comparator<DbStoredArgument>() {
-                            public int compare(DbStoredArgument o1, DbStoredArgument o2) {
-                                return o1.getSeq() - o2.getSeq();
-                            }
-                        });
-                        DbStoredProcedure matchingProc = null;
-                        // find a matching proc from dbStoredProcedures
-                        for (int j = 0; j < tmpProcs.size();) {
-                            DbStoredProcedure dbStoredProcedure = tmpProcs.get(j);
-                            if (dbStoredProcedure.matches(ovrldhldr.packageName,
-                                ovrldhldr.procedureSchema, ovrldhldr.procedureName, true, false)) {
-                                // check for function/procedures with same names
-                                DbStoredArgument firstArg = ovrldhldr.getArgs().get(0);
-                                if (firstArg.getName() == null && firstArg.getSeq() == 1) {
-                                    // need a DbStoredFunction
-                                    if (dbStoredProcedure.isFunction()) {
-                                        matchingProc = tmpProcs.remove(j);
-                                        break;
-                                    }
-                                }
-                                else {
-                                    matchingProc = tmpProcs.remove(j);
-                                    break;
-                                }
-                            }
-                            j++;
                         }
                         if (matchingProc != null) {
-                            if (matchingProc.isFunction()) {
-                                DbStoredArgument returnArg = ovrldhldr.getArgs().remove(0);
-                                ((DbStoredFunction)matchingProc).setReturnArg(returnArg);
+                            if (matchingProc.isFunction() && dbStoredArgument.getArgumentName().equalsIgnoreCase("")) {
+                                ((FunctionType)matchingProc).setReturnArgument(dbStoredArgument);
                             }
-                            matchingProc.setOverload(ovrldhldr.overload);
-                            matchingProc.getArguments().addAll(ovrldhldr.getArgs());
-                            dbStoredProcedures.add(matchingProc);
+                            else {
+                                matchingProc.getArguments().add(dbStoredArgument);
+                            }
+                            tmpProcs.remove(matchingProc);
                         }
+                        // else some argument that doesn't have a matching proc? ignore for now
                     }
+                    procedureColumnsInfo.close();
                     if (!tmpProcs.isEmpty()) {
                         // leftovers are the no-arg procedures
                         dbStoredProcedures.addAll(tmpProcs);
@@ -560,10 +771,10 @@ public class JDBCHelper {
                 sqlException);
         }
         if (dbStoredProcedures != null && !dbStoredProcedures.isEmpty()) {
-            Collections.sort(dbStoredProcedures, new Comparator<DbStoredProcedure>() {
-                public int compare(DbStoredProcedure o1, DbStoredProcedure o2) {
-                    String name1 = o1.getName();
-                    String name2 = o2.getName();
+            Collections.sort(dbStoredProcedures, new Comparator<ProcedureType>() {
+                public int compare(ProcedureType o1, ProcedureType o2) {
+                    String name1 = o1.getProcedureName();
+                    String name2 = o2.getProcedureName();
                     if (!name1.equals(name2)) {
                         return name1.compareTo(name2);
                     }
@@ -576,7 +787,7 @@ public class JDBCHelper {
         return dbStoredProcedures;
     }
 
-    public static DatabaseMetaData getDatabaseMetaData(Connection connection) {
+    static DatabaseMetaData getDatabaseMetaData(Connection connection) {
 
         DatabaseMetaData databaseMetaData = null;
         try {
@@ -587,90 +798,40 @@ public class JDBCHelper {
         }
         return databaseMetaData;
     }
+    
+    public static boolean matches(ProcedureType proc, String catalog, String schema, String name, boolean isOracle,
+            boolean catalogMatchDontCare) {
 
-    public static class OverloadHolder {
-        String packageName;
-        String procedureSchema;
-        String procedureName;
-        short overload;
-        List<DbStoredArgument> overloadedArgs;
-        public OverloadHolder(String packageName, String procedureSchema,
-            String procedureName, short overload) {
-            this.packageName = packageName;
-            this.procedureSchema = procedureSchema;
-            this.procedureName = procedureName;
-            this.overload = overload;
-            overloadedArgs= new ArrayList<DbStoredArgument>();
-        }
-        public List<DbStoredArgument> getArgs() {
-            return overloadedArgs;
-        }
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(overload);
-            sb.append(' ');
-            sb.append(packageName);
-            sb.append('-');
-            sb.append(procedureSchema);
-            sb.append('-');
-            sb.append(procedureName);
-            sb.append(' ');
-            sb.append(overloadedArgs);
-            return sb.toString();
-        }
-     }
+        // return true if all 3 match, sorta
 
-    public static List<DbColumn> buildDbColumns(Connection connection, String secondarySql) {
-        List<DbColumn> columns = null;
-        ResultSet resultSet = null;
-        try {
-            Statement statement = connection.createStatement();
-            resultSet = statement.executeQuery(secondarySql);
+        boolean catalogMatch =
+                proc.getCatalogName() == null ?
+                // for Oracle, catalog matching is 'dont-care' only if null
+                (isOracle ? true :
+                // other platforms: null has to match null
+               (catalog == null))
+                : proc.getCatalogName().equals(catalog);
+        // but catalogDontCare trumps!
+        if (catalogMatchDontCare) {
+            catalogMatch = true;
         }
-        catch (SQLException sqlException) {
-            throw new IllegalStateException("failure executing secondary SQL: " +
-                secondarySql, sqlException);
-        }
-        if (resultSet != null) {
-            ResultSetMetaData rsMetaData = null;
-            try {
-                rsMetaData = resultSet.getMetaData();
-            }
-            catch (SQLException sqlException) {
-                throw new IllegalStateException("failure retrieving resultSet metadata", sqlException);
-            }
-            if (rsMetaData != null) {
-                int columnCount = 0;
-                try {
-                    columnCount = rsMetaData.getColumnCount();
-                }
-                catch (SQLException sqlException) {
-                    throw new IllegalStateException("failure retrieving columnCount", sqlException);
-                }
-                if (columnCount > 0) {
-                    columns = new ArrayList<DbColumn>(columnCount);
-                    try {
-                        for (int i = 1; i <= columnCount; i++) {
-                            DbColumn dbColumn = new DbColumn();
-                            dbColumn.setOrdinalPosition(i);
-                            dbColumn.setName(rsMetaData.getColumnLabel(i));
-                            dbColumn.setJDBCType(rsMetaData.getColumnType(i));
-                            dbColumn.setJDBCTypeName(rsMetaData.getColumnTypeName(i));
-                            dbColumn.setPrecision(rsMetaData.getPrecision(i));
-                            dbColumn.setScale(rsMetaData.getScale(i));
-                            dbColumn.setNullable(
-                                rsMetaData.isNullable(i)==ResultSetMetaData.columnNullable);
-                            columns.add(dbColumn);
-                        }
-                    }
-                    catch (SQLException sqlException) {
-                        throw new IllegalStateException("failure retrieving column information",
-                            sqlException);
-                    }
-                }
-            }
-        }
-        return columns;
+        boolean schemaMatch =
+            // either they are both null or they match
+            proc.getSchema() == null ? (schema == null)
+                : proc.getSchema().equals(schema);
+        boolean nameMatch =
+            // either they are both null or they match
+            proc.getProcedureName() == null ? (name == null)
+                : proc.getProcedureName().equals(name);
+        return catalogMatch && schemaMatch && nameMatch;
+    }
+
+    @Override
+    protected void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
+        // TODO - handle complex arguments
+    }
+    @Override
+    protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName) {
+        // TODO - handle queries
     }
 }

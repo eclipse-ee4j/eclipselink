@@ -11,7 +11,7 @@
  *     Mike Norman - May 2008, created DBWS Oracle test package
  ******************************************************************************/
 package dbws.testing.visit;
-
+/*
 //javase imports
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,14 +28,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+*/
 
 //java eXtension imports
+/*
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.wsdl.WSDLException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
+*/
 import javax.xml.soap.SOAPMessage;
+/*
 import javax.xml.soap.SOAPPart;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -46,13 +50,17 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Dispatch;
+*/
 import javax.xml.ws.Provider;
+/*
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
 import static javax.xml.ws.Service.Mode.MESSAGE;
+*/
 
+/*
 //JUnit4 imports
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -115,8 +123,9 @@ import static dbws.testing.visit.DBWSTestHelper.LTBL_PROJECT_TEST;
     portName = LTBL_PROJECT_PORT
 )
 @ServiceMode(MESSAGE)
+*/
 public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Provider<SOAPMessage> {
-
+/*
     static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + LTBL_PROJECT;
 
     @BeforeClass
@@ -209,12 +218,11 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                 Invocation invocation = (Invocation)object;
                 Vector values = (Vector)value;
                 for (Iterator i = values.iterator(); i.hasNext();) {
-                  /* scan through values:
-                   *  if XML conforms to something mapped, it an object; else it is a DOM Element
-                   *  (probably a scalar). Walk through operations for the types, converting
-                   *   as required. The 'key' is the local name of the element - for mapped objects,
-                   *   have to get the element name from the schema context for the object
-                   */
+                  // scan through values:
+                  //  if XML conforms to something mapped, it an object; else it is a DOM Element
+                  //  (probably a scalar). Walk through operations for the types, converting
+                  //   as required. The 'key' is the local name of the element - for mapped objects,
+                  //   have to get the element name from the schema context for the object
                   Object o = i.next();
                   if (o instanceof Element) {
                     Element e = (Element)o;
@@ -438,4 +446,5 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
         assertTrue("control document not same as instance document",
             new XMLComparer().isNodeEqual(controlDoc, resultDoc));
     }
+*/
 }

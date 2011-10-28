@@ -11,7 +11,7 @@
  *     Mike Norman - May 2008, created DBWS Oracle test package
  ******************************************************************************/
 package dbws.testing.visit;
-
+/*
 //javase imports
 import java.util.List;
 
@@ -51,8 +51,10 @@ import static dbws.testing.visit.DBWSTestHelper.TBL2_DATABASETYPE;
 import static dbws.testing.visit.DBWSTestHelper.TBL3_COMPATIBLETYPE;
 import static dbws.testing.visit.DBWSTestHelper.TBL3_DATABASETYPE;
 import static dbws.testing.visit.DBWSTestHelper.TBL4_DATABASETYPE;
-
+*/
 public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
+
+/*
 
     @Test
     public void p1Test() {
@@ -223,7 +225,6 @@ public class PLSQLHelperObjectsBuilderTestSuite extends BuilderTestSuite {
         tbl2Asserts(nestedType);
     }
 
-/*
     @Test
     public void p7Test() {
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,

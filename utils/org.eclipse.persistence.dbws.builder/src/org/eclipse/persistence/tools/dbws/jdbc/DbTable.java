@@ -13,20 +13,17 @@
 
 package org.eclipse.persistence.tools.dbws.jdbc;
 
-// Javase imports
+//javase imports
 
-// Java extension imports
+//java eXtension imports
 
-import java.util.ArrayList;
-import java.util.List;
+//DDL parser imports
+import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 
-public class DbTable {
+public class DbTable extends TableType {
 
     protected String catalog;
-    protected String schema;
-    protected String name;
-    protected String type = "TABLE";
-    protected List<DbColumn> columns = new ArrayList<DbColumn>();
+    protected String type; // TABLE or VIEW or whatever ...
 
     public DbTable() {
     }
@@ -38,56 +35,18 @@ public class DbTable {
       this.catalog = catalog;
     }
 
-    public String getSchema() {
-      return schema;
-    }
-    public void setSchema(String schema) {
-      this.schema = schema;
-    }
-
-    public String getName() {
-      return name;
-    }
-    public void setName(String name) {
-      this.name = name;
-    }
-
+    
     public String getType() {
-      return type;
+        return type;
     }
     public void setType(String type) {
-      this.type = type;
-    }
-
-    public List<DbColumn> getColumns() {
-      return columns;
-    }
-    public void setColumns(ArrayList<DbColumn> columns) {
-        this.columns = columns;
+        this.type = type;
     }
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append(type);
-      sb.append(' ');
-      if (catalog != null && catalog.length() > 0) {
-          sb.append(catalog);
-          sb.append('.');
-      }
-      if (schema != null && schema.length() > 0) {
-        sb.append(schema);
-        sb.append('.');
-      }
-      sb.append(name);
-      if (columns.size() > 0) {
-        sb.append(" (");
-        for (DbColumn dbColumn : columns) {
-            sb.append("\n\t");
-            sb.append(dbColumn);
-        }
-        sb.append("\n)");
-      }
+      //TODO - catalog should be displayed somehow
+      StringBuilder sb = new StringBuilder(super.toString());
       return sb.toString();
     }
 }

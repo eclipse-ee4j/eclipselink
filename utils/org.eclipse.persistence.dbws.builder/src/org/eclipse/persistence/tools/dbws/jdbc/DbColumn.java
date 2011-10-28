@@ -13,38 +13,22 @@
 
 package org.eclipse.persistence.tools.dbws.jdbc;
 
-// Javase imports
+//javase imports
 
-// Java extension imports
+//java eXtension imports
 
-public class DbColumn {
+//DDL parser imports
+import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
 
-    protected String name;
-    protected int ordinalPosition;
+public class DbColumn extends FieldType {
+
     protected int jdbcType;
     protected String jdbcTypeName;
-    protected int precision;
-    protected int scale;
-    protected boolean nullable;
-    protected boolean pk = false;
     protected String pkConstraintName;
     protected boolean unique = false;
 
-    public DbColumn() {
-    }
-
-    public String getName() {
-      return name;
-    }
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public int getOrdinalPosition() {
-      return ordinalPosition;
-    }
-    public void setOrdinalPosition(int ordinalPosition) {
-      this.ordinalPosition = ordinalPosition;
+    public DbColumn(String columnName) {
+        super(columnName);
     }
 
     public int getJDBCType() {
@@ -59,34 +43,6 @@ public class DbColumn {
     }
     public void setJDBCTypeName(String jdbcTypeName) {
       this.jdbcTypeName = jdbcTypeName;
-    }
-
-    public int getPrecision() {
-      return precision;
-    }
-    public void setPrecision(int size) {
-      this.precision = size;
-    }
-
-    public int getScale() {
-      return scale;
-    }
-    public void setScale(int scale) {
-      this.scale = scale;
-    }
-
-    public boolean isNullable() {
-      return nullable;
-    }
-    public void setNullable(boolean nullable) {
-      this.nullable = nullable;
-    }
-
-    public boolean isPK() {
-      return pk;
-    }
-    public void setPK(boolean pk) {
-      this.pk = pk;
     }
 
     public String getPkConstraintName() {
@@ -105,31 +61,8 @@ public class DbColumn {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(getName());
-        sb.append(" ");
-        sb.append(jdbcTypeName);
-        if (precision > 0) {
-          sb.append('(');
-          sb.append(precision);
-          if (scale > 0) {
-            sb.append(',');
-            sb.append(scale);
-          }
-          sb.append(')');
-        }
-        if (!nullable) {
-            sb.append(" NOT NULL");
-        }
-        if (unique) {
-          sb.append(" (UNIQUE)");
-        }
-        if (pkConstraintName != null && pkConstraintName.length() > 0) {
-          sb.append(" CONSTRAINT ");
-          sb.append(pkConstraintName);
-        }
-        if (pk) {
-          sb.append(" PRIMARY KEY");
-        }
-        return sb.toString();
+      //TODO - additional JDBC info should be displayed somehow
+      StringBuilder sb = new StringBuilder(super.toString());
+      return sb.toString();
     }
 }

@@ -11,7 +11,7 @@
  *     Mike Norman - May 2008, created DBWS Oracle test package
  ******************************************************************************/
 package dbws.testing.visit;
-
+/*
 //javase imports
 import java.util.List;
 import java.util.Vector;
@@ -54,9 +54,9 @@ import static dbws.testing.visit.DBWSTestHelper.TBL3_DESCRIPTOR_JAVACLASSNAME;
 import static dbws.testing.visit.DBWSTestHelper.TBL4_COMPATIBLETYPE;
 import static dbws.testing.visit.DBWSTestHelper.TBL4_DESCRIPTOR_ALIAS;
 import static dbws.testing.visit.DBWSTestHelper.TBL4_DESCRIPTOR_JAVACLASSNAME;
-
+*/
 public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
-
+/*
     @Test
     public void p1test() {
         PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
@@ -268,7 +268,7 @@ public class ORDescriptorBuilderTestSuite extends BuilderTestSuite {
         assertTrue("mapping incorrent structure name",
             arrayMapping2.getStructureName().equals(TBL4_COMPATIBLETYPE));
     }
-/*
+
     @Test
     public void p7test() {
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, PACKAGE_NAME,

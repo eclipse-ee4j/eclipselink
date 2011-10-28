@@ -222,9 +222,6 @@
           type="xml"
         />
         <classpath>
-          <pathelement
-            path="./jaxb-ri_override.jar"
-          />
           <path
             refid="dbwsbldrtest.run.path"
           />

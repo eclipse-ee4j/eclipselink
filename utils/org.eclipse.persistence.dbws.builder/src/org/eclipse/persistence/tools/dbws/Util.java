@@ -14,10 +14,15 @@
 package org.eclipse.persistence.tools.dbws;
 
 //javase imports
+import java.io.OutputStream;
+import java.sql.Types;
+import java.util.List;
 import java.util.regex.Pattern;
 import static java.sql.Types.BIGINT;
+import static java.sql.Types.NCHAR;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.CLOB;
+import static java.sql.Types.NCLOB;
 import static java.sql.Types.DATE;
 import static java.sql.Types.DECIMAL;
 import static java.sql.Types.DOUBLE;
@@ -39,13 +44,19 @@ import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
+import org.eclipse.persistence.internal.xr.Operation;
+import org.eclipse.persistence.internal.xr.QueryOperation;
+import org.eclipse.persistence.internal.xr.XRServiceModel;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
-import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
@@ -55,8 +66,22 @@ import static org.eclipse.persistence.oxm.XMLConstants.DECIMAL_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DOUBLE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.INTEGER_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+
+//DDL parser imports
+import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
+import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
+import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
+
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
 public class Util {
 
@@ -65,6 +90,8 @@ public class Util {
         IN, OUT, INOUT, RETURN
     }
 
+    public static final String TOPLEVEL =
+        "TOPLEVEL";
     public static final String CLASSES =
         "classes";
     public static final String DEFAULT_WSDL_LOCATION_URI =
@@ -86,8 +113,13 @@ public class Util {
         XMLConstants.REF_PREFIX;
     public static final String WSI_SWAREF_URI =
         XMLConstants.REF_URL;
-    public static final String PK_QUERYNAME =
-        "findByPrimaryKey";
+    public static final String WSI_SWAREF_XSD =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
+        "<xsd:schema targetNamespace=\"" + WSI_SWAREF_URI + "\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"> \n" +
+        "  <xsd:simpleType name=\"" + WSI_SWAREF + "\"> \n" +
+        "    <xsd:restriction base=\"xsd:anyURI\"/> \n" +
+        "  </xsd:simpleType> \n" +
+        "</xsd:schema>";
     public static final String THE_INSTANCE_NAME =
         "theInstance";
     public static final String FINDALL_QUERYNAME =
@@ -107,18 +139,173 @@ public class Util {
     static final String PROVIDER_LISTENER = "ProviderListener";
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
-
+    
+    //TODO - verify this
+    public static int getJDBCTypeFromTypeName(String typeName) {
+        int jdbcType = Types.OTHER;
+        if (typeName.equals("NUMERIC")) {
+            jdbcType = Types.NUMERIC;
+        }
+        else if (typeName.equals("VARCHAR")) {
+            jdbcType = Types.VARCHAR;
+        }
+        else if (typeName.equals("VARCHAR2")) {
+            jdbcType = Types.VARCHAR;
+        }
+        else if (typeName.equals("DATE")) {
+            jdbcType = Types.DATE;
+        }
+        else if (typeName.equals("TIME")) {
+            jdbcType = Types.TIME;
+        }
+        else if (typeName.equals("TIMESTAMP")) {
+            jdbcType = Types.TIMESTAMP;
+        }
+        else if (typeName.equals("DECIMAL")) {
+            jdbcType = Types.DECIMAL;
+        }
+        else if (typeName.equals("CHAR")) {
+            jdbcType = Types.CHAR;
+        }
+        else if (typeName.equals("NCHAR")) {
+            jdbcType = Types.NCHAR;
+        }
+        else if (typeName.equals("FLOAT")) {
+            jdbcType = Types.FLOAT;
+        }
+        else if (typeName.equals("REAL")) {
+            jdbcType = Types.REAL;
+        }
+        else if (typeName.equals("DOUBLE")) {
+            jdbcType = Types.DOUBLE;
+        }
+        else if (typeName.equals("BINARY")) {
+            jdbcType = Types.BINARY;
+        }
+        else if (typeName.equals("BLOB")) {
+            jdbcType = Types.BLOB;
+        }
+        else if (typeName.equals("CLOB")) {
+            jdbcType = Types.CLOB;
+        }
+        else if (typeName.equals("NCLOB")) {
+            jdbcType = Types.NCLOB;
+        }
+        else if (typeName.equals("RAW")) {
+            jdbcType = Types.VARBINARY;
+        }
+        else if (typeName.equals("LONG RAW")) {
+            jdbcType = Types.LONGVARBINARY;
+        }
+        else if (typeName.equals("UROWID")) {
+            jdbcType = Types.VARCHAR;
+        }
+        else if (typeName.equals("BIGINT")) {
+            jdbcType = Types.BIGINT;
+        }
+        else if (typeName.equals("STRUCT")) {
+            jdbcType = Types.STRUCT;
+        }
+        else if (typeName.equals("ARRAY")) {
+            jdbcType = Types.ARRAY;
+        }
+        return jdbcType;
+    }
+    //TODO - verify this
+    public static String getJDBCTypeNameFromType(int jdbcType) {
+        String typeName = "OTHER";
+        switch (jdbcType) {
+            case Types.NUMERIC:
+                typeName = "NUMERIC";
+                break;
+            case Types.VARCHAR:
+                typeName = "VARCHAR";
+                break;
+            case Types.DECIMAL:
+                typeName = "DECIMAL";
+                break;
+            case Types.CHAR:
+                typeName = "CHAR";
+                break;
+            case Types.NCHAR:
+                typeName = "NCHAR";
+                break;
+            case Types.FLOAT:
+                typeName = "FLOAT";
+                break;
+            case Types.REAL:
+                typeName = "REAL";
+                break;
+            case Types.DOUBLE:
+                typeName = "DOUBLE";
+                break;
+            case Types.BINARY:
+                typeName = "BINARY";
+                break;
+            case Types.BLOB:
+                typeName = "BLOB";
+                break;
+            case Types.CLOB:
+                typeName = "CLOB";
+                break;
+            case Types.NCLOB:
+                typeName = "NCLOB";
+                break;
+            case Types.VARBINARY:
+                typeName = "VARBINARY";
+                break;
+            case Types.LONGVARBINARY:
+                typeName = "LONGVARBINARY";
+                break;
+            case Types.DATE:
+                typeName = "DATE";
+                break;
+            case Types.TIME:
+                typeName = "TIME";
+                break;
+            case Types.TIMESTAMP:
+                typeName = "TIMESTAMP";
+                break;
+            case Types.BIGINT:
+                typeName = "BIGINT";
+                break;
+            case Types.ARRAY:
+                typeName = "ARRAY";
+                break;
+            case Types.STRUCT:
+                typeName = "STRUCT";
+                break;
+        }
+        return typeName;
+    }
+    
     public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + DEFAULT_SIMPLE_XML_FORMAT_TAG);
-    // TODO - expand to cover more cases
+    /**
+     * Return the XML type (as a QName) associated with the 
+     * given JDBC type name.
+     */
+    public static QName getXMLTypeFromJDBCTypeName(String jdbcTypeName) {
+        return getXMLTypeFromJDBCType(getJDBCTypeFromTypeName(jdbcTypeName));
+    }
+    /**
+     * Return the XML type (as a QName) associated with the 
+     * given JDBC type.
+     */
     public static QName getXMLTypeFromJDBCType(Short jdbcType) {
         return getXMLTypeFromJDBCType(jdbcType.intValue());
     }
+    /**
+     * Return the XML type (as a QName) associated with the 
+     * given JDBC type.
+     */
     public static QName getXMLTypeFromJDBCType(int jdbcType) {
         switch (jdbcType) {
             case CHAR:
+            case NCHAR:
             case LONGVARCHAR:
             case VARCHAR:
             case CLOB:
+            case NCLOB:
                 return STRING_QNAME;
             case BIGINT:
                 return INTEGER_QNAME;
@@ -126,11 +313,11 @@ public class Util {
             case SMALLINT:
             case TINYINT:
                 return INT_QNAME;
+            case NUMERIC:
             case DECIMAL:
                 return DECIMAL_QNAME;
             case DOUBLE:
             case FLOAT:
-            case NUMERIC:
             case REAL:
                 return DOUBLE_QNAME;
             case DATE:
@@ -165,10 +352,14 @@ public class Util {
                 if (colonIdx > 0) {
                     prefix = qNameAsString.substring(0, colonIdx);
                     localPart = qNameAsString.substring(colonIdx+1);
-                    nsURI =
-                        schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
+                    nsURI = schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
                     if (nsURI == null) {
-                        nsURI = DEFAULT_NS_PREFIX;
+                        if (prefix.equalsIgnoreCase(SCHEMA_PREFIX)) {
+                            nsURI = W3C_XML_SCHEMA_NS_URI;
+                        }
+                        else {
+                            nsURI = DEFAULT_NS_PREFIX;
+                        } 
                     }
                 }
                 else {
@@ -214,13 +405,13 @@ public class Util {
         schema.addTopLevelComplexTypes(anyType);
     }
 
-    public static boolean noOutArguments(DbStoredProcedure storedProcedure) {
+    public static boolean noOutArguments(ProcedureType storedProcedure) {
 
         boolean noOutArguments = true;
         if (storedProcedure.getArguments() != null &&
              storedProcedure.getArguments().size() > 0) {
-            for (DbStoredArgument arg : storedProcedure.getArguments()) {
-                if (arg.getInOut() ==  InOut.INOUT || arg.getInOut() == InOut.OUT) {
+            for (ArgumentType arg : storedProcedure.getArguments()) {
+                if (arg.getDirection() ==  INOUT || arg.getDirection() == OUT) {
                     noOutArguments = false;
                     break;
                 }
@@ -229,19 +420,110 @@ public class Util {
         return noOutArguments;
     }
 
-    public static String escapePunctuation(String originalName, boolean isOracle) {
+    public static String escapePunctuation(String originalName) {
         if (originalName == null || originalName.length() == 0) {
-            if (isOracle) {
-                return null;
-            }
-            else {
-                return originalName;
-            }
+            return originalName;
         }
         // escape all punctuation except SQL 'LIKE' meta-characters:
         // '_' (underscore) - matches any one character) and
         // '%' (percent ) - matches a string of zero or more characters
         return originalName.trim().replaceAll("[\\p{Punct}&&[^_%]]", "\\\\$0");
+    }
+
+    public static boolean isNullStream(OutputStream outputStream) {
+        if (outputStream == null | outputStream == __nullStream) {
+            return true;
+        }
+        return false;
+    }
+
+    public static String getGeneratedJavaClassName(String tableName, String projectName) {
+        String first = tableName.substring(0, 1).toUpperCase();
+        String rest = tableName.toLowerCase().substring(1);
+        return projectName.toLowerCase() + "." + first + rest;
+    }
+
+    public static RelationalDescriptor buildORDescriptor(String tableName, String projectName,
+        List<String> requireCRUDOperations, NamingConventionTransformer nct) {
+        RelationalDescriptor desc = new RelationalDescriptor();
+        String tablenameAlias = nct.generateSchemaAlias(tableName);
+        desc.addTableName(tableName);
+        desc.setAlias(tablenameAlias);
+        String generatedJavaClassName = getGeneratedJavaClassName(tableName, projectName);
+        desc.setJavaClassName(generatedJavaClassName);
+        desc.useWeakIdentityMap();
+        // keep track of which tables require CRUD operations
+        if (requireCRUDOperations != null && nct.generateSchemaAlias(tableName).equals(tablenameAlias)) {
+            requireCRUDOperations.add(tablenameAlias);
+        }
+        return desc;
+    }
+
+    public static XMLDescriptor buildOXDescriptor(String tableName,  String projectName,
+        String targetNamespace, NamingConventionTransformer nct) {
+        XMLDescriptor xdesc = new XMLDescriptor();
+        String generatedJavaClassName = getGeneratedJavaClassName(tableName, projectName);
+        xdesc.setJavaClassName(generatedJavaClassName);
+        String tablenameAlias = nct.generateSchemaAlias(tableName);
+        xdesc.setAlias(tablenameAlias);
+        NamespaceResolver nr = new NamespaceResolver();
+        nr.setDefaultNamespaceURI(targetNamespace);
+        xdesc.setNamespaceResolver(nr);
+        xdesc.setDefaultRootElement(tablenameAlias);
+        XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
+        schemaReference.setSchemaContext("/" + tablenameAlias);
+        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        xdesc.setSchemaReference(schemaReference);
+        return xdesc;
+    }
+
+    public static QName buildCustomQName(String typeString, DBWSBuilder builder) {
+        QName qName = null;
+        String nsURI = null;
+        String prefix = null;
+        String localPart = null;
+        int colonIdx = typeString.indexOf(':');
+        if (colonIdx > 0) {
+            prefix = typeString.substring(0, colonIdx);
+            nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
+            if (prefix.equalsIgnoreCase(SCHEMA_PREFIX)) {
+                nsURI = W3C_XML_SCHEMA_NS_URI;
+            }
+            else {
+                nsURI = DEFAULT_NS_PREFIX;
+            }
+            localPart = typeString.substring(colonIdx+1);
+            if (W3C_XML_SCHEMA_NS_URI.equals(nsURI)) {
+                qName = SCHEMA_QNAMES.get(localPart);
+                if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
+                    qName = new QName(W3C_XML_SCHEMA_NS_URI, localPart,
+                        prefix == null ? DEFAULT_NS_PREFIX : prefix);
+                }
+            }
+            else {
+                qName = new QName(nsURI == null ? NULL_NS_URI : nsURI,
+                    localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
+            }
+        }
+        else {
+            qName = qNameFromString("{" + builder.getTargetNamespace() +
+                "}" + typeString, builder.schema);
+        }
+        return qName;
+    }
+
+    public static boolean requiresSimpleXMLFormat(XRServiceModel serviceModel) {
+        boolean requiresSimpleXMLFormat = false;
+        for (Operation operation : serviceModel.getOperationsList()) {
+            if (operation instanceof QueryOperation) {
+                QueryOperation qo = (QueryOperation)operation;
+                if (qo.getResult().isSimpleXMLFormat()) {
+                    requiresSimpleXMLFormat = true;
+                    break;
+                }
+            }
+        }
+        return requiresSimpleXMLFormat;
     }
 
     public static boolean sqlMatch(String pattern, String input) {
@@ -250,8 +532,24 @@ public class Util {
             Pattern p = Pattern.compile(tmp, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
             return p.matcher(input).matches();
         }
-        else {
-            return false;
+        return false;
+    }
+    
+    /**
+     * Indicates if a given List<DatabaseType> contains one or more arguments that
+     * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,
+     * VArrayType, ObjectType, or NestedTableType
+     */
+    public static boolean hasComplexArgs(List<ArgumentType> arguments) {
+        for (ArgumentType arg : arguments) {
+            DatabaseType argType = arg.getDataType();
+            if (argType instanceof PLSQLType
+                    || argType instanceof VArrayType
+                    || argType instanceof ObjectType
+                    || argType instanceof ObjectTableType) {
+                return true;
+            }
         }
+        return false;
     }
 }
