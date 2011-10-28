@@ -140,7 +140,7 @@ public class XJCJavaClassImpl implements JavaClass {
         JTypeVar[] typeParams = xjcClass.typeParams();
 
         if (null == typeParams || 0 == typeParams.length) {
-            return null;
+            return new ArrayList<JavaClass>(0);
         }
 
         try {
@@ -166,13 +166,14 @@ public class XJCJavaClassImpl implements JavaClass {
             } else if (javaModel != null) {
                 boundClass = this.javaModel.getClass(xjcBoundClass.fullName());
             } else {
-                boundClass = new XJCJavaClassImpl((JDefinedClass) xjcBoundClass, jCodeModel, dynamicClassLoader);
+                JDefinedClass c = jCodeModel._getClass(xjcBoundClass.fullName());
+                boundClass = new XJCJavaClassImpl(c, jCodeModel, dynamicClassLoader);
             }
 
             typeArguments.add(boundClass);
             return typeArguments;
         } catch (Exception e) {
-            return null;
+            return new ArrayList<JavaClass>(0);
         }
     }
 

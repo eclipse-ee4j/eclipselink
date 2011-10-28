@@ -468,10 +468,14 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             // on @XmlElementRef is missing.  Just ignore this and pass the test.
             if (e.getLinkedException() instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         } catch (Exception e) {
             if (e instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         }
 
@@ -676,7 +680,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     }
 
     public void testSubstitutionGroupsUnmarshal() throws Exception {
-        System.out.println(System.getProperty("java.version"));
         try {
             InputStream xsdStream = ClassLoader.getSystemResourceAsStream(SUBSTITUTION);
             jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(xsdStream, null, null, null);
@@ -699,10 +702,14 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             // on @XmlElementRef is missing.  Just ignore this and pass the test.
             if (e.getLinkedException() instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         } catch (Exception e) {
             if (e instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         }
     }
@@ -756,10 +763,14 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             // on @XmlElementRef is missing.  Just ignore this and pass the test.
             if (e.getLinkedException() instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         } catch (Exception e) {
             if (e instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         }
     }
@@ -874,10 +885,14 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             // on @XmlElementRef is missing.  Just ignore this and pass the test.
             if (e.getLinkedException() instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         } catch (Exception e) {
             if (e instanceof UndeclaredThrowableException) {
                 return;
+            } else {
+                throw e;
             }
         }
     }
