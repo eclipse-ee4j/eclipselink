@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
@@ -80,10 +81,10 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         locator = new StreamReaderLocator(xmlStreamReader);
         try {
             contentHandler.startDocument();
-            parseEvent(xmlStreamReader);
+            parseEvent(xmlStreamReader, xmlStreamReader.getEventType());
             while(depth > 0) {
-                xmlStreamReader.next();
-                parseEvent(xmlStreamReader);
+                int eventType = xmlStreamReader.next();
+                parseEvent(xmlStreamReader, eventType);
             }
             contentHandler.endDocument();
         } catch(SAXException e ) {
@@ -93,8 +94,8 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         }
     }
 
-    private void parseEvent(XMLStreamReader xmlStreamReader) throws SAXException {
-        switch (xmlStreamReader.getEventType()) {
+    private void parseEvent(XMLStreamReader xmlStreamReader, int eventType) throws SAXException {
+        switch (eventType) {
             case XMLStreamReader.START_ELEMENT: {
                 // Capture the Location so that we can keep it's -current-
                 // line and column number, for use with @XmlLocation
@@ -209,35 +210,38 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
             if(null == attributes) {
                 int namespaceCount = xmlStreamReader.getNamespaceCount();
                 int attributeCount = xmlStreamReader.getAttributeCount();
+                if(namespaceCount + attributeCount == 0) {
+                    attributes = Collections.EMPTY_LIST;
+                } else {
+                    attributes = new ArrayList<Attribute>(attributeCount + namespaceCount);
 
-                attributes = new ArrayList<Attribute>(attributeCount + namespaceCount);
-
-                for(int x=0; x<namespaceCount; x++) {
-                    String uri = XMLConstants.XMLNS_URL;
-                    String localName = xmlStreamReader.getNamespacePrefix(x);
-                    String qName;
-                    if(null == localName || localName.length() == 0) {
-                        localName = XMLConstants.XMLNS;
-                        qName = XMLConstants.XMLNS;
-                    } else {
-                        qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
+                    for(int x=0; x<namespaceCount; x++) {
+                        String uri = XMLConstants.XMLNS_URL;
+                        String localName = xmlStreamReader.getNamespacePrefix(x);
+                        String qName;
+                        if(null == localName || localName.length() == 0) {
+                            localName = XMLConstants.XMLNS;
+                            qName = XMLConstants.XMLNS;
+                        } else {
+                            qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
+                        }
+                        String value = xmlStreamReader.getNamespaceURI(x);
+                        attributes.add(new Attribute(uri, localName, qName, value));
                     }
-                    String value = xmlStreamReader.getNamespaceURI(x);
-                    attributes.add(new Attribute(uri, localName, qName, value));
-                }
 
-                for(int x=0; x<attributeCount; x++) {
-                    String uri = xmlStreamReader.getAttributeNamespace(x);
-                    String localName = xmlStreamReader.getAttributeLocalName(x);
-                    String prefix = xmlStreamReader.getAttributePrefix(x);
-                    String qName;
-                    if(null == prefix || prefix.length() == 0) {
-                        qName = localName;
-                    } else {
-                        qName = prefix + XMLConstants.COLON + localName;
+                    for(int x=0; x<attributeCount; x++) {
+                        String uri = xmlStreamReader.getAttributeNamespace(x);
+                        String localName = xmlStreamReader.getAttributeLocalName(x);
+                        String prefix = xmlStreamReader.getAttributePrefix(x);
+                        String qName;
+                        if(null == prefix || prefix.length() == 0) {
+                            qName = localName;
+                        } else {
+                            qName = prefix + XMLConstants.COLON + localName;
+                        }
+                        String value = xmlStreamReader.getAttributeValue(x);
+                        attributes.add(new Attribute(uri, localName, qName, value));
                     }
-                    String value = xmlStreamReader.getAttributeValue(x);
-                    attributes.add(new Attribute(uri, localName, qName, value));
                 }
             }
             return attributes;

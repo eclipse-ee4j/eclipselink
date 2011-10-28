@@ -235,8 +235,8 @@ public abstract class XMLReaderAdapter extends XMLReader {
                 return -1;
             }
             int index = 0;
-            for(Attribute attribute : attributes()) {
-                QName testQName = new QName(uri, localName);
+            QName testQName = new QName(uri, localName);
+            for(Attribute attribute : attributes()) {                
                 if(attribute.getQName().equals(testQName)) {
                     return index;
                 }
