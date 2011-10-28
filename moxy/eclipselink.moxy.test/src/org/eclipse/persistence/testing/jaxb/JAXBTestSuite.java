@@ -34,11 +34,8 @@ import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBInt
 import org.eclipse.persistence.testing.jaxb.namespaceuri.xml.XMLNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
-import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestSuite;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.RepeatedUnmarshalTestCases;
-import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsWithExternalMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
@@ -148,8 +145,6 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(JAXBElementEnumTestCases.class);
         suite.addTestSuite(JAXBInheritanceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
-        suite.addTest(XmlAdapterTestSuite.suite());
-        suite.addTest(SchemaGenTestSuite.suite());
         suite.addTest(JAXBDOMTestSuite.suite());
         suite.addTest(JAXBSAXTestSuite.suite());
 
@@ -173,7 +168,6 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nullpolicy.BinderWithNullPolicyCompositeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.hashcode.BinderWithHashCodeTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsSuite.suite());
-        suite.addTest(TypeMappingInfoTestSuite.suite());
 
         suite.addTest(org.eclipse.persistence.testing.jaxb.singleobject.JAXBSingleObjectTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.classloader.DifferentClassLoaderTestCases.class);
@@ -182,7 +176,6 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.helper.JAXBHelperTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.any.AnyWithJAXBElementTestCases.class);
         
-        suite.addTest(org.eclipse.persistence.testing.jaxb.dynamic.DynamicJAXBTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.substitution.SubstitutionTestSuite.suite());
 
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.InterfaceTestCases.class);
