@@ -124,7 +124,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Indicates if this helper instance contains one or more 
+     * Indicates if this helper instance contains one or more
      * TableType instances in TableType List "dbTables".
      */
     public boolean hasTables() {
@@ -133,7 +133,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         return true;
     }
-    
+
     public boolean hasComplexProcedureArgs() {
         return hasComplexProcedureArgs;
     }
@@ -154,23 +154,23 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         // nested under a <table> operation
         if (procs.isEmpty()) {
             List<ProcedureType> additionalProcs = loadProcedures(procedureOperationModel);
-            if (!additionalProcs.isEmpty()) {
+            if (additionalProcs != null && !additionalProcs.isEmpty()) {
                 procs.addAll(additionalProcs);
             }
             //TODO - add to dbStoredProcedure2QueryName map
         }
-        
-        // handle PL/SQL 
+
+        // handle PL/SQL
         if (procedureOperationModel.isPLSQLProcedureOperation() && procedureOperationModel.hasComplexArguments()) {
             buildPLSQLProcedureOperation(procedureOperationModel, procs);
             return;
         }
-        
-        // handle non-PL/SQL 
+
+        // handle non-PL/SQL
         for (ProcedureType storedProcedure : procs) {
             QueryOperation qo = new QueryOperation();
             qo.setName(getNameForQueryOperation(name, storedProcedure));
-            
+
             String qualifiedProcName = getQualifiedProcedureName(procedureOperationModel, storedProcedure);
             dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + qualifiedProcName);
 
@@ -193,12 +193,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     }
                 }
             }
-            
+
             qo.setQueryHandler(qh);
             String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
-            
+
             Result result = null;
             if (storedProcedure.isFunction()) {
                 result = buildResultForStoredFunction(storedProcedure, returnType);
@@ -349,7 +349,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
-            
+
             Result result = null;
             if (storedProcedure.isFunction()) {
                 result = buildResultForStoredFunction(storedProcedure, returnType);
@@ -463,7 +463,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
             // the user may want simpleXMLFormat
             handleSimpleXMLFormat(isSimpleXMLFormat, result, procedureOperationModel);
-            
+
             qo.setResult(result);
             dbwsBuilder.getXrServiceModel().getOperations().put(qo.getName(), qo);
         }
@@ -492,7 +492,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         returnType = rarg.getTypeName();
                     }
                     String packageName = storedProcedure.getCatalogName();
-                    String returnTypeName = (packageName != null && packageName.length() > 0) ? 
+                    String returnTypeName = (packageName != null && packageName.length() > 0) ?
                             packageName + "_" + returnType : returnType;
                     result.setType(buildCustomQName(returnTypeName, dbwsBuilder));
                     break;
@@ -513,13 +513,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         return result;
     }
-    
+
     /**
-     * Returns the name to be used for a QueryOperation based on a given 
+     * Returns the name to be used for a QueryOperation based on a given
      * ProcedureType and ProcedureOperationModel name.
-     * 
-     * The returned string will either be the provided 'modelName' if 
-     * non-null & non-empty string, or in the format: 
+     *
+     * The returned string will either be the provided 'modelName' if
+     * non-null & non-empty string, or in the format:
      * 'overload_catalog_schema_procedureName'
      */
     protected String getNameForQueryOperation(String modelName, ProcedureType storedProcedure) {
@@ -542,13 +542,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         sb.append(storedProcedure.getProcedureName());
         return sb.toString();
     }
-    
+
     /**
-     * Returns the qualified stored procedure name based on a given ProcedureType 
-     * and ProcedureOperationModel.  
-     * 
+     * Returns the qualified stored procedure name based on a given ProcedureType
+     * and ProcedureOperationModel.
+     *
      * The returned string will be in the format: 'catalog.schema.procedureName'
-     * 
+     *
      */
     protected String getQualifiedProcedureName(ProcedureOperationModel procedureOperationModel, ProcedureType storedProcedure) {
         StringBuilder sb = new StringBuilder();
@@ -558,7 +558,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         if (procedureOperationModel.getSchemaPattern() != null &&
             procedureOperationModel.getSchemaPattern().length() > 0 &&
-            storedProcedure.getSchema() != null && 
+            storedProcedure.getSchema() != null &&
             storedProcedure.getSchema().length() > 0) {
             sb.append(storedProcedure.getSchema());
             sb.append('.');
@@ -566,12 +566,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         sb.append(storedProcedure.getProcedureName());
         return sb.toString();
     }
-    
+
     /**
      * Apply SimpleXMLFormat if 'isSimpleXMLFormat' is true.  The SimpleXMLFormat is
-     * configured based on the given ProcedureOperationModel's simpleXMLFormatTag 
+     * configured based on the given ProcedureOperationModel's simpleXMLFormatTag
      * and xmlTag (if set) and set on the given Result.  A descriptor is also added
-     * to the OXProject if none exists. 
+     * to the OXProject if none exists.
      */
     protected void handleSimpleXMLFormat(boolean isSimpleXMLFormat, Result result, ProcedureOperationModel procedureOperationModel) {
         if (isSimpleXMLFormat) {
@@ -593,19 +593,19 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-    
+
     /**
      * Perform any additional actions required for operation creation
      * for both PL/SQL and non-PL/SQL operation models.
      */
     protected void finishProcedureOperation() {
         // check to see if the schema requires sxfType to be added
-        if (requiresSimpleXMLFormat(dbwsBuilder.getXrServiceModel()) && 
+        if (requiresSimpleXMLFormat(dbwsBuilder.getXrServiceModel()) &&
             dbwsBuilder.getSchema().getTopLevelElements().get("simple-xml-format") == null) {
             addSimpleXMLFormat(dbwsBuilder.getSchema());
         }
     }
-    
+
     /**
      * Generates a List<TableType> based on a given originalCatalogPattern, schemaPattern,
      * and tableNamePattern.
@@ -621,7 +621,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         return null;
     }
- 
+
     /**
      * Generates a List<ProcedureType> based on a given ProcedureOperationModel.
      */
@@ -661,9 +661,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         return allProcsAndFuncs.isEmpty() ? null : allProcsAndFuncs;
     }
-    
+
     /**
-     * Create descriptors for complex arguments.  The newly created 
+     * Create descriptors for complex arguments.  The newly created
      * descriptors will be added to the given OR/OX projects.
      */
     protected void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
@@ -672,7 +672,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String name;
             String targetTypeName;
             String alias;
-            
+
             if (dbType instanceof PLSQLType) {
                 name = opModel.getCatalogPattern() + "." + dbType.getTypeName();
                 targetTypeName = opModel.getCatalogPattern() + "_" + dbType.getTypeName();
@@ -705,13 +705,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build descriptor and mappings for a PL/SQL record argument.  The newly 
-     * created descriptor will be added to the given OX project. 
+     * Build descriptor and mappings for a PL/SQL record argument.  The newly
+     * created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForPLSQLRecordArg(DatabaseType dbType, Project oxProject, String recordName, String recordAlias, String targetTypeName, String catalogPattern) {
         QName xmlType = buildCustomQName(targetTypeName, dbwsBuilder);
         String targetNamespace = xmlType.getNamespaceURI();
-        
+
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(recordAlias);
         if (xdesc == null) {
             xdesc = new XMLDescriptor();
@@ -721,7 +721,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xdesc.getQueryManager();
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
             schemaReference.setSchemaContext("/" + targetTypeName);
-            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+            schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
             xdesc.setSchemaReference(schemaReference);
             NamespaceResolver nr = new NamespaceResolver();
             nr.setDefaultNamespaceURI(targetNamespace);
@@ -788,10 +788,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-    
+
     /**
-     * Build descriptor and mappings for a PL/SQL record argument.  The newly 
-     * created descriptor will be added to the given OR project. 
+     * Build descriptor and mappings for a PL/SQL record argument.  The newly
+     * created descriptor will be added to the given OR project.
      */
     @SuppressWarnings("rawtypes")
     protected void addToORProjectForPLSQLRecordArg(DatabaseType dbType, Project orProject, String recordName, String recordAlias, String targetTypeName, String catalogPattern) {
@@ -855,13 +855,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 } else {
                     ordtDesc.addDirectMapping(lFieldName, lFieldName);
                 }
-            }            
+            }
         }
     }
 
     /**
-     * Build descriptor and mappings for a PL/SQL collection argument.  The newly 
-     * created descriptor will be added to the given OX project. 
+     * Build descriptor and mappings for a PL/SQL collection argument.  The newly
+     * created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForPLSQLTableArg(DatabaseType dbType, Project oxProject, String tableName, String tableAlias, String targetTypeName, String catalogPattern) {
         QName xmlType = buildCustomQName(targetTypeName, dbwsBuilder);
@@ -876,14 +876,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xdesc.setDefaultRootElement(targetTypeName);
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
             schemaReference.setSchemaContext("/" + targetTypeName);
-            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+            schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
             xdesc.setSchemaReference(schemaReference);
             NamespaceResolver nr = new NamespaceResolver();
             nr.setDefaultNamespaceURI(targetNamespace);
             xdesc.setNamespaceResolver(nr);
             oxProject.addDescriptor(xdesc);
         }
-        
+
         boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((PLSQLCollectionType) dbType).getNestedType();
@@ -929,8 +929,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build descriptor and mappings for a PL/SQL collection argument.  The newly 
-     * created descriptor will be added to the given OR project. 
+     * Build descriptor and mappings for a PL/SQL collection argument.  The newly
+     * created descriptor will be added to the given OR project.
      */
     protected void addToORProjectForPLSQLTableArg(DatabaseType dbType, Project orProject, String tableName, String tableAlias, String targetTypeName, String catalogPattern) {
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor) orProject.getDescriptorForAlias(tableAlias);
@@ -962,16 +962,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-    
+
     /**
-     * Build descriptor and mappings for a VArray argument.  The newly 
-     * created descriptor will be added to the given OX project. 
+     * Build descriptor and mappings for a VArray argument.  The newly
+     * created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForVArrayArg(DatabaseType dbType, Project oxProject, String arrayName, String arrayAlias, String targetTypeName) {
         QName xmlType = buildCustomQName(targetTypeName, dbwsBuilder);
         String targetNamespace = xmlType.getNamespaceURI();
         String userType = nct.generateSchemaAlias(arrayAlias);
-        
+
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(arrayAlias);
         if (xdesc == null) {
             xdesc = new XMLDescriptor();
@@ -980,7 +980,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xdesc.getQueryManager();
             XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
             schemaReference.setSchemaContext("/" + userType);
-            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+            schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
             xdesc.setSchemaReference(schemaReference);
             NamespaceResolver nr = new NamespaceResolver();
             nr.setDefaultNamespaceURI(targetNamespace);
@@ -988,7 +988,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xdesc.setDefaultRootElement(userType);
             oxProject.addDescriptor(xdesc);
         }
-        
+
         boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((VArrayType) dbType).getEnclosedType();
@@ -1021,10 +1021,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-    
+
     /**
-     * Build descriptor and mappings for a VArray argument.  The newly 
-     * created descriptor will be added to the given OX project. 
+     * Build descriptor and mappings for a VArray argument.  The newly
+     * created descriptor will be added to the given OX project.
      */
     protected void addToORProjectForVArrayArg(DatabaseType dbType, Project orProject, String arrayName, String arrayAlias, String targetTypeName) {
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(arrayAlias);
@@ -1037,7 +1037,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             ordt.getQueryManager();
             orProject.addDescriptor(ordt);
         }
-        
+
         boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((VArrayType) dbType).getEnclosedType();
@@ -1058,22 +1058,22 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-    
+
     /**
-     * Build descriptor and mappings for an Object type argument.  The 
-     * newly created descriptor will be added to the given OX project. 
+     * Build descriptor and mappings for an Object type argument.  The
+     * newly created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForObjectTypeArg(DatabaseType dbType, Project oxProject, String objectAlias, String targetTypeName) {
         QName xmlType = buildCustomQName(targetTypeName, dbwsBuilder);
         String targetNamespace = xmlType.getNamespaceURI();
         String userType = nct.generateSchemaAlias(objectAlias);
-        
+
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(objectAlias);
         if (xdesc == null) {
             xdesc = buildNewXMLDescriptor(objectAlias, userType, targetNamespace);
             oxProject.addDescriptor(xdesc);
         }
-        
+
         ObjectType oType = (ObjectType) dbType;
         for (FieldType field : oType.getFields()) {
             String fieldName = field.getFieldName();
@@ -1111,8 +1111,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build descriptor and mappings for an Object type argument.  The 
-     * newly created descriptor will be added to the given OX project. 
+     * Build descriptor and mappings for an Object type argument.  The
+     * newly created descriptor will be added to the given OX project.
      */
     @SuppressWarnings("rawtypes")
     protected void addToORProjectForObjectTypeArg(DatabaseType dbType, Project orProject, String objectAlias) {
@@ -1120,12 +1120,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         if (ordt == null) {
             ordt = buildNewObjectRelationalDataTypeDescriptor(objectAlias);
             orProject.addDescriptor(ordt);
-        }        
+        }
         ObjectType oType = (ObjectType) dbType;
         for (FieldType fType : oType.getFields()) {
             String fieldName = fType.getFieldName();
             String lFieldName = fieldName.toLowerCase();
-            
+
             // handle field ordering
             boolean found = false;
             Vector orderedFields = ordt.getOrderedFields();
@@ -1142,7 +1142,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             if (!found) {
                 ordt.addFieldOrdering(lFieldName);
             }
-            
+
             if (ordt.getMappingForAttributeName(lFieldName) == null) {
                 if (fType.isComposite()) {
                     // handle ObjectType field
@@ -1172,9 +1172,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-    
+
     /**
-     * Build a Query for the given ProcedureType instance and add 
+     * Build a Query for the given ProcedureType instance and add
      * it to the given OR project's list of queries.
      */
     protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName) {
@@ -1185,7 +1185,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
     }
     /**
-     * Build a Query for the given ProcedureType instance and add 
+     * Build a Query for the given ProcedureType instance and add
      * it to the given OR project's list of queries.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1200,7 +1200,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         } else {
             call = new PLSQLStoredProcedureCall();
         }
-        
+
         String cat = procType.getCatalogName();
         String catalogPrefix = (cat == null || cat.length() == 0) ? "" : cat + ".";
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
@@ -1266,7 +1266,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         orProject.getQueries().add(dq);
     }
     /**
-     * Build a Query for the given ProcedureType instance and add 
+     * Build a Query for the given ProcedureType instance and add
      * it to the given OR project's list of queries.
      */
     @SuppressWarnings("rawtypes")
@@ -1298,7 +1298,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         String cat = procType.getCatalogName();
         String catalogPrefix = (cat == null || cat.length() == 0) ? "" : cat + ".";
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
-        
+
         String returnType = opModel.getReturnType();
         boolean hasResponse = returnType != null;
         DatabaseQuery dq = null;
@@ -1319,7 +1319,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             if (desc != null) {
                 javaTypeName = desc.getJavaClassName();
             }
-                    
+
             if (direction == ArgumentTypeDirection.IN) {
                 dq.addArgument(arg.getArgumentName());
                 if (argType instanceof VArrayType) {
@@ -1347,7 +1347,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                                     dbf.setTypeName(javaTypeName);
                                 }
                             }
-                        }                            
+                        }
                     } else {
                         // assumes ObjectType
                         try {
@@ -1374,13 +1374,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 call.addNamedInOutputArgument(arg.getArgumentName());
             }
         }
-        
+
         orProject.getQueries().add(dq);
     }
-    
+
     /**
-     * Build an OR database field for a given type's nested type.  
-     * This method assumes that owningType is an VArrayType. 
+     * Build an OR database field for a given type's nested type.
+     * This method assumes that owningType is an VArrayType.
      */
     protected ObjectRelationalDatabaseField buildFieldForNestedType(DatabaseType owningType) {
         ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField("");
@@ -1390,9 +1390,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         nestedField.setTypeName(nestedType.getTypeName());
         return nestedField;
     }
-    
+
     /**
-     * Create an XMLDirectMapping for a given FieldType instance, and add the 
+     * Create an XMLDirectMapping for a given FieldType instance, and add the
      * newly created mapping to the given XMLDescriptor.
      */
     protected void addDirectMappingForFieldType(XMLDescriptor xdesc, String attributeName, FieldType fType) {
@@ -1426,7 +1426,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build an XMLDescriptor based on a given descriptor alias, 
+     * Build an XMLDescriptor based on a given descriptor alias,
      * schema alias, and target namespace.
      */
     protected XMLDescriptor buildNewXMLDescriptor(String objectAlias, String userType, String targetNamespace) {
@@ -1436,7 +1436,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         xdesc.getQueryManager();
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
         schemaReference.setSchemaContext("/" + userType);
-        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
         xdesc.setSchemaReference(schemaReference);
         NamespaceResolver nr = new NamespaceResolver();
         nr.setDefaultNamespaceURI(targetNamespace);
@@ -1446,7 +1446,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build an ObjectRelationalDataTypeDescriptor based on a given 
+     * Build an ObjectRelationalDataTypeDescriptor based on a given
      * descriptor alias.
      */
     protected ObjectRelationalDataTypeDescriptor buildNewObjectRelationalDataTypeDescriptor(String alias) {
