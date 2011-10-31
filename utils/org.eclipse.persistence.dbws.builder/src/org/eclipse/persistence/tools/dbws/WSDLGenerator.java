@@ -385,7 +385,6 @@ public class WSDLGenerator {
         binding.addBindingOperation(bop);
     }
 
-    @SuppressWarnings("unchecked")
     private org.w3c.dom.Element createInlineSchema() {
 
         SchemaModelProject project = new SchemaModelProject();

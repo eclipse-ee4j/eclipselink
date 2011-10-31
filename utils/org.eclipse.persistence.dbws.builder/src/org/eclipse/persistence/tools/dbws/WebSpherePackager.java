@@ -35,7 +35,6 @@ public class WebSpherePackager extends WarPackager {
         super(archiver, packagerLabel, useJavaArchive);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
         SessionConfigs ts = super.buildSessionsXML(dbwsSessionsStream, builder);
