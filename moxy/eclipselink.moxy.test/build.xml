@@ -354,6 +354,9 @@
                         <include name="org/eclipse/persistence/testing/jaxb/annotations/AnnotationsTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/externalizedmetadata/ExternalizedMetadataTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/javadoc/JavadocAnnotationExamplesTestSuite.java"/>
+						<include name="org/eclipse/persistence/testing/jaxb/typemappinginfo/TypeMappingInfoTestSuite.java"/>
+						<include name="org/eclipse/persistence/testing/jaxb/schemagen/SchemaGenTestSuite.java"/>
+   					    <include name="org/eclipse/persistence/testing/jaxb/xmladapter/XmlAdapterTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
