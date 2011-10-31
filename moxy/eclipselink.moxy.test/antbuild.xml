@@ -351,6 +351,9 @@
                 <batchtest todir="${report.dir}/jaxb">
                     <fileset dir="${src.dir}">
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite2.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite3.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/listofobjects/JAXBListOfObjectsSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/annotations/AnnotationsTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/externalizedmetadata/ExternalizedMetadataTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/javadoc/JavadocAnnotationExamplesTestSuite.java"/>
