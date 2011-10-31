@@ -79,10 +79,13 @@ public abstract class ObjectExpression extends DataExpression {
         if (this == expression) {
             return true;
         }
-        if (this.onClause != null) {
+        if (!super.equals(expression)) {
             return false;
         }
-        return super.equals(expression) && (shouldUseOuterJoin() == ((ObjectExpression)expression).shouldUseOuterJoin());
+        if ((this.onClause != null) || (((ObjectExpression)expression).onClause != null)) {
+            return false;
+        }
+        return this.shouldUseOuterJoin == ((ObjectExpression)expression).shouldUseOuterJoin;
     }
 
     /**

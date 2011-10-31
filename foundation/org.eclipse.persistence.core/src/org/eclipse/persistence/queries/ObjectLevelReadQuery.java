@@ -259,11 +259,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if ((object == null) || (!getClass().equals(object.getClass())))  {
             return false;
         }
-        // Only check expression queries for now.
-        if ((!isExpressionQuery()) || (!isDefaultPropertiesQuery())) {
-            return super.equals(object);
-        }
         ObjectLevelReadQuery query = (ObjectLevelReadQuery) object;
+        // Only check expression queries for now.
+        if ((!isExpressionQuery()) || (!isDefaultPropertiesQuery()) || (!query.isDefaultPropertiesQuery())) {
+            return this == object;
+        }
         if (!getExpressionBuilder().equals(query.getExpressionBuilder())) {
             return false;
         }
