@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
@@ -73,6 +74,20 @@ public class ObjectTypeTestSuite extends TestHelper {
                   "name=\"GetEmpTypeByIdTest2\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"GET_EMP_TYPE_BY_ID_2\" " +
+                  "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"emp_typeType\" " +
+              "/>" +
+              "<procedure " +
+                  "name=\"AddEmpTypeTest\" " +
+                  "catalogPattern=\"TOPLEVEL\" " +
+                  "procedurePattern=\"ADD_EMP_TYPE\" " +
+                  "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"emp_typeType\" " +
+              "/>" +
+              "<procedure " +
+                  "name=\"AddEmpTypeTest2\" " +
+                  "catalogPattern=\"TOPLEVEL\" " +
+                  "procedurePattern=\"ADD_EMP_TYPE2\" " +
                   "isAdvancedJDBC=\"true\" " +
                   "returnType=\"emp_typeType\" " +
               "/>" +
@@ -128,6 +143,49 @@ public class ObjectTypeTestSuite extends TestHelper {
         "<phone>" +
         "<home>(613) 344-1232</home>" +
         "<cell>(613) 823-2323</cell>" +
+        "</phone>" +
+        "</emp_typeType>";
+    
+    @Test
+    public void addEmpTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object eType = unmarshaller.unmarshal(new StringReader(ETYPE_XML));
+        Invocation invocation = new Invocation("AddEmpTypeTest");
+        invocation.setParameter("ETYPE", eType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        //marshaller.marshal(result, System.out);
+        Document controlDoc = xmlParser.parse(new StringReader(ETYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    @Test
+    public void addEmpTypeTest2() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object eType = unmarshaller.unmarshal(new StringReader(ETYPE_XML));
+        Invocation invocation = new Invocation("AddEmpTypeTest2");
+        invocation.setParameter("ETYPE", eType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        //marshaller.marshal(result, System.out);
+        Document controlDoc = xmlParser.parse(new StringReader(ETYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String ETYPE_XML = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<id>9</id>" +
+        "<name>LAHEY</name>" +
+        "<phone>" +
+        "<home>(902) 987-0011</home>" +
+        "<cell>(902) 789-1100</cell>" +
         "</phone>" +
         "</emp_typeType>";
 }

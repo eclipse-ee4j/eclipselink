@@ -21,6 +21,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //testing imports
 import dbws.testing.customsql.CustomSQLTestSuite;
 import dbws.testing.iottype.IOTTypeTestSuite;
+import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
 import dbws.testing.objecttype.ObjectTypeTestSuite;
 import dbws.testing.plsqlcollection.PLSQLCollectionTestSuite;
 import dbws.testing.plsqlrecord.PLSQLRecordTestSuite;
@@ -47,7 +48,8 @@ import dbws.testing.varray.VArrayTestSuite;
     PLSQLRecordTestSuite.class,
     PLSQLCollectionTestSuite.class,
     VArrayTestSuite.class,
-    ObjectTypeTestSuite.class
+    ObjectTypeTestSuite.class,
+    ObjectTableTypeTestSuite.class
   }
 )
 public class AllTests {
