@@ -80,13 +80,13 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
+import org.eclipse.persistence.platform.xml.XMLSchemaReference;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.StoredFunctionCall;
@@ -1177,14 +1177,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build descriptor and mappings for an OracleTableType argument.  The 
-     * newly created descriptor will be added to the given OX project. 
+     * Build descriptor and mappings for an OracleTableType argument.  The
+     * newly created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForObjectTableTypeArg(DatabaseType dbType, Project oxProject, String objectTableName, String objectTableAlias) {
         QName xmlType = buildCustomQName(objectTableName, dbwsBuilder);
         String targetNamespace = xmlType.getNamespaceURI();
         String userType = nct.generateSchemaAlias(objectTableAlias);
-        
+
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(objectTableAlias);
         if (xdesc == null) {
             xdesc = new XMLDescriptor();
@@ -1201,7 +1201,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xdesc.setDefaultRootElement(userType);
             oxProject.addDescriptor(xdesc);
         }
-        
+
         boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             // assumes ObjectTableType has an enclosed ObjectType type
@@ -1210,7 +1210,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
             addToOXProjectForObjectTypeArg(nestedType, oxProject, nestedType.getTypeName(), nestedTypeAlias);
             XMLDescriptor nestedTypeDesc = (XMLDescriptor) oxProject.getDescriptorForAlias(nestedTypeAlias);
-            
+
             // ObjectType is composite
             XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
             itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
@@ -1221,10 +1221,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             xdesc.addMapping(itemsMapping);
         }
     }
-    
+
     /**
-     * Build descriptor and mappings for an OracleTableType argument.  The 
-     * newly created descriptor will be added to the given OR project. 
+     * Build descriptor and mappings for an OracleTableType argument.  The
+     * newly created descriptor will be added to the given OR project.
      */
     protected void addToORProjectForObjectTableTypeArg(DatabaseType dbType, Project orProject, String objectTableName, String objectTableAlias) {
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(objectTableAlias);
@@ -1232,7 +1232,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             ordt = buildNewObjectRelationalDataTypeDescriptor(objectTableAlias, objectTableAlias + COLLECTION_WRAPPER_SUFFIX);
             orProject.addDescriptor(ordt);
         }
-        
+
         boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             // assumes ObjectTableType has an enclosed ObjectType type
@@ -1241,7 +1241,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
             addToORProjectForObjectTypeArg(nestedType, orProject, nestedTypeAlias);
             ObjectRelationalDataTypeDescriptor nestedTypeDesc = (ObjectRelationalDataTypeDescriptor) orProject.getDescriptorForAlias(nestedTypeAlias);
-            
+
             // ObjectType is composite
             ObjectArrayMapping itemsMapping = new ObjectArrayMapping();
             itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
@@ -1254,7 +1254,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build a Query for the given ProcedureType instance and add 
+     * Build a Query for the given ProcedureType instance and add
      * it to the given OR project's list of queries.
      */
     protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName) {
@@ -1543,7 +1543,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      */
     protected ObjectRelationalDataTypeDescriptor buildNewObjectRelationalDataTypeDescriptor(String alias) {
         return buildNewObjectRelationalDataTypeDescriptor(alias, alias);
-    }   
+    }
     protected ObjectRelationalDataTypeDescriptor buildNewObjectRelationalDataTypeDescriptor(String alias, String javaClassName) {
         ObjectRelationalDataTypeDescriptor ordt = new ObjectRelationalDataTypeDescriptor();
         ordt.setStructureName(alias.toUpperCase());

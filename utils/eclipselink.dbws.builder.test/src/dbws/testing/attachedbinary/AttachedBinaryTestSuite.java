@@ -97,15 +97,9 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             marshaller.marshal(r, ec);
         }
         Document controlDoc = xmlParser.parse(new StringReader(ATTACHED_BINARY_COLLECTION_XML));
-        /*
-        String resultString = DBWSTestProviderHelper.documentToString(doc);
-        System.out.println(resultString);
-        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
-        System.out.println(controlString);
-        */        
         assertTrue("control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
-        
+
         // validate WSDL
         Document controlWSDL = xmlParser.parse(new StringReader(WSDL));
         removeEmptyTextNodes(controlWSDL);
@@ -183,8 +177,8 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             assertTrue("wrong byte value returned", 1 == ref[i]);
         }
     }
-    
-    static final String WSDL = 
+
+    static final String WSDL =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     	"<wsdl:definitions name=\"attachedbinaryService\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ns1=\"urn:attachedbinary\" xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\">" +
     	"<wsdl:types>" +
@@ -351,7 +345,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
       "</wsdl:service>" +
     "</wsdl:definitions>";
 
-    static final String XSD = 
+    static final String XSD =
     	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     	"<xsd:schema xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:attachedbinary\" xmlns=\"urn:attachedbinary\" elementFormDefault=\"qualified\">" +
     		"<xsd:import schemaLocation=\"swaref.xsd\" namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\"/>" +
