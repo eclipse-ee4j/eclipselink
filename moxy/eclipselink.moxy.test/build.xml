@@ -357,6 +357,7 @@
 						<include name="org/eclipse/persistence/testing/jaxb/typemappinginfo/TypeMappingInfoTestSuite.java"/>
 						<include name="org/eclipse/persistence/testing/jaxb/schemagen/SchemaGenTestSuite.java"/>
    					    <include name="org/eclipse/persistence/testing/jaxb/xmladapter/XmlAdapterTestSuite.java"/>
+   					    <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
