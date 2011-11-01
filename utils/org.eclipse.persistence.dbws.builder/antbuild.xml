@@ -76,13 +76,8 @@
 
     <!-- Primary Targets: "jar" separate for dev use -->
 
-<!--
-11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
     <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
--->
-    <target name="build"/>
-    <target name="jar"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -125,11 +120,12 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="asm.lib"     value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.asm_${version.string}.jar"/>
-        <property name="core.lib"    value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <property name="dbws.lib"    value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
-        <property name="servlet.lib" value="${dbwsbldr.2.common.plugins.dir}/${servlet.jar}"/>
-        <property name="wsdl.lib"    value="${dbwsbldr.2.plugins.dir}/${wsdl.jar}"/>
+        <property name="core.lib"         value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="dbws.lib"         value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
+        <property name="servlet.lib"      value="${dbwsbldr.2.common.plugins.dir}/${servlet.jar}"/>
+        <property name="asm.lib"          value="${dbwsbldr.2.common.plugins.dir}/${asm.jar}"/>
+        <property name="wsdl.lib"         value="${dbwsbldr.2.plugins.dir}/${wsdl.jar}"/>
+        <property name="ddlparser.lib"    value="${dbwsbldr.2.plugins.dir}/${ddlparser.jar}"/>
 
         <!-- dependency tests -->
         <available file="${dbwsbldr.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
@@ -137,11 +133,13 @@
         <available file="${dbws.lib}"               property="dbws.bundle.exist"/>
         <available file="${servlet.lib}"            property="servlet.lib.exist"/>
         <available file="${wsdl.lib}"               property="wsdl.lib.exist"/>
-        <fail message="Cannot find: '${asm}'"         unless="asm.exist"/>
-        <fail message="Cannot find: '${core.lib}'"    unless="core.bundle.exist"/>
-        <fail message="Cannot find: '${dbws.lib}'"    unless="dbws.bundle.exist"/>
-        <fail message="Cannot find: '${servlet.lib}'" unless="servlet.lib.exist"/>
-        <fail message="Cannot find: '${wsdl.lib}'"    unless="wsdl.lib.exist"/>
+        <available file="${ddlparser.lib}"          property="ddlparser.lib.exist"/>
+        <fail message="Cannot find: '${asm}'"           unless="asm.exist"/>
+        <fail message="Cannot find: '${core.lib}'"      unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${dbws.lib}'"      unless="dbws.bundle.exist"/>
+        <fail message="Cannot find: '${servlet.lib}'"   unless="servlet.lib.exist"/>
+        <fail message="Cannot find: '${wsdl.lib}'"      unless="wsdl.lib.exist"/>
+        <fail message="Cannot find: '${ddlparser.lib}'" unless="ddlparser.lib.exist"/>
 
         <!-- Set Compile Path-->
         <path id="dbwsbldr.compile.path">
@@ -150,6 +148,7 @@
             <pathelement path="${core.lib}"/>
             <pathelement path="${dbws.lib}"/>
             <pathelement path="${wsdl.lib}"/>
+            <pathelement path="${ddlparser.lib}"/>
         </path>
 
         <!-- Check for BND library -->
@@ -196,8 +195,6 @@
         <fail message="Missing BND library!"/>
     </target>
 
-<!--
-11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
     <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
@@ -215,12 +212,7 @@
                classpathref="dbwsbldr.compile.path"
         />
     </target>
--->
-    <!-- compile -->
-    <target name="compile"/>
 
-<!--
-11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
     <target name="package-src" depends="init" description="jar OSGI Source bundle">
         <jar jarfile="${dbwsbldr.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
@@ -248,9 +240,6 @@
             </fileset>
         </jar>
     </target>
--->
-    <!-- package -->
-    <target name="package-src"/>
 
     <target name="package" if="nobnd" depends="init, package-src" description="jar OSGI bundle">
         <jar jarfile="${dbwsbldr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">

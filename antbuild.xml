@@ -228,6 +228,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="clean"/>
@@ -311,21 +312,18 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
-		<!-- 11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="build"/>
-		-->
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.osgi}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.weaving}"          target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.equinox}"          target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="build"/>
-		<!-- 11/10/27 MWN
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
-		-->
     </target>
 
     <target name="build-core" depends="clean-runtime-checkedin, build-core-maven, build-core-ant">
+        <!-- temporarily force dbws.builder build from ant -->
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
