@@ -988,7 +988,7 @@ public class AnnotationsProcessor {
                 if (tmi == null || tmi.getXmlTagName() == null) {
                     ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
                     declaration.setTypeMappingInfo(tmi);
-                    addGlobalElement(null, declaration);
+                    this.localElements.add(declaration);
                 }
             } else if (javaClass.isArray()) {
                 if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
