@@ -1870,10 +1870,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * ADVANCED: Return an expression representing a sub-select in the from clause.
      * <p> Example:
      * <pre><blockquote>
-     *  builder.getTable(builder.subQuery(reportQuery)).getField("TYPE").equal("S");
+     *  builder.getAlias(builder.subQuery(reportQuery)).get("type").equal("S");
      * </blockquote></pre>
      */
-    public Expression getTable(Expression subSelect) {
+    public Expression getAlias(Expression subSelect) {
         throw QueryException.illegalUseOfGetTable(subSelect);
     }
 

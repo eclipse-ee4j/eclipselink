@@ -120,7 +120,7 @@ public class FromSubSelectExpression extends TableExpression {
     @Override
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
-        return newLocalBase.getTable(this.subSelect.rebuildOn(newBase));
+        return newLocalBase.getAlias(this.subSelect.rebuildOn(newBase));
     }
 
     /**
@@ -133,7 +133,7 @@ public class FromSubSelectExpression extends TableExpression {
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         Expression twistedBase = getBaseExpression().twistedForBaseAndContext(newBase, context, oldBase);
-        return twistedBase.getTable(this.subSelect.twistedForBaseAndContext(newBase, context, oldBase));
+        return twistedBase.getAlias(this.subSelect.twistedForBaseAndContext(newBase, context, oldBase));
     }
 
     /**

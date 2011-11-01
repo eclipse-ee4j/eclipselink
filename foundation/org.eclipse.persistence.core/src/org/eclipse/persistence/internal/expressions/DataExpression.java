@@ -337,11 +337,11 @@ public abstract class DataExpression extends BaseExpression {
      * ADVANCED: Return an expression representing a sub-select in the from clause.
      * <p> Example:
      * <pre><blockquote>
-     *  builder.getTable(builder.subQuery(reportQuery)).getField("TYPE").equal("S");
+     *  builder.getAlias(builder.subQuery(reportQuery)).get("type").equal("S");
      * </blockquote></pre>
      */
     @Override
-    public Expression getTable(Expression subSelect) {
+    public Expression getAlias(Expression subSelect) {
         TableExpression result = new FromSubSelectExpression((SubSelectExpression)subSelect);
         result.setBaseExpression(this);
         return result;
