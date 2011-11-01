@@ -839,24 +839,26 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (mappingQuery.isReadAllQuery()) {
             // CR#3238 clone these vectors so they will not grow with each call to the query. -TW
             batchQuery.setOrderByExpressions(new ArrayList<Expression>(((ReadAllQuery)mappingQuery).getOrderByExpressions()));
-            for (Expression expression : ((ReadAllQuery)mappingQuery).getBatchReadAttributeExpressions()) {
-                batchQuery.addBatchReadAttribute(expression);
+            if (((ReadAllQuery)mappingQuery).hasBatchReadAttributes()) {
+                for (Expression expression : ((ReadAllQuery)mappingQuery).getBatchReadAttributeExpressions()) {
+                    batchQuery.addBatchReadAttribute(expression);
+                }
             }
         }
 
         // Computed nested batch attribute expressions.
         List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder(), false);
         batchQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
-        batchQuery.setBatchFetchType(query.getBatchFetchPolicy().getType());
+        batchQuery.setBatchFetchType(batchType);
         batchQuery.setBatchFetchSize(query.getBatchFetchPolicy().getSize());
         // Allow subclasses to further prepare.
         postPrepareNestedBatchQuery(batchQuery, query);
         
         // Set nested fetch group.
-        if(batchQuery.getDescriptor().hasFetchGroupManager()) {
-            FetchGroup sourceFG = query.getExecutionFetchGroup();
-            if (sourceFG != null) {                    
-                FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+        if (batchQuery.getDescriptor().hasFetchGroupManager()) {
+            FetchGroup sourceFetchGruop = query.getExecutionFetchGroup();
+            if (sourceFetchGruop != null) {                    
+                FetchGroup targetFetchGroup = sourceFetchGruop.getGroup(getAttributeName());
                 if (targetFetchGroup != null) {
                     ((ObjectLevelReadQuery)batchQuery).setFetchGroup(targetFetchGroup);
                 }

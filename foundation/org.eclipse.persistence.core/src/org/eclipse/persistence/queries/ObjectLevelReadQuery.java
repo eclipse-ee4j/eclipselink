@@ -2942,6 +2942,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set all attributes specified for batch reading.
      */
     public void setBatchReadAttributeExpressions(List<Expression> attributeExpressions) {
+        if ((this.batchFetchPolicy == null) && (attributeExpressions.isEmpty())) {
+            return;
+        }
         getBatchFetchPolicy().setAttributeExpressions(attributeExpressions);
     }
 
