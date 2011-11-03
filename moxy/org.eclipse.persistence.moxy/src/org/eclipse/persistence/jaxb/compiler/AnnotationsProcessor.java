@@ -318,6 +318,7 @@ public class AnnotationsProcessor {
                         element.setTypeMappingInfo(nextInfo);
                         element.setXmlMimeType(xmlMimeType);
                         element.setXmlAttachmentRef(xmlAttachmentRef);
+                        element.setNillable(nextInfo.isNillable());
 
                         if (declJavaType != null) {
                             element.setJavaType(helper.getJavaClass(declJavaType));
