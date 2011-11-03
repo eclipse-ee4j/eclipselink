@@ -69,18 +69,12 @@ public class SubData {
         }
 
         if (this.loc != null && d.loc != null) {
-            boolean lines = this.loc.getLineNumber() == d.loc.getLineNumber();
-            boolean columns = this.loc.getColumnNumber() == d.loc.getColumnNumber();
-
-            String sysId1 = this.loc.getSystemId() == null ? "" : this.loc.getSystemId();
-            String sysId2 = d.loc.getSystemId() == null ? "" : d.loc.getSystemId();
-
-            boolean sysIds = sysId1.equals(sysId2);
-
-            return (lines && columns && sysIds);
+            if (!(this.loc.equals(d.loc))) {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
 }

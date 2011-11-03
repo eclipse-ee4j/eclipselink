@@ -39,7 +39,7 @@ public class Data {
 
     @XmlElement
     public List<SubData> subData = new ArrayList<SubData>();
-    
+
     @XmlLocation
     @XmlTransient
     public Locator locator;
@@ -80,15 +80,7 @@ public class Data {
         }
 
         if (this.locator != null && d.locator != null) {
-            boolean lines = this.locator.getLineNumber() == d.locator.getLineNumber();
-            boolean columns = this.locator.getColumnNumber() == d.locator.getColumnNumber();
-
-            String sysId1 = this.locator.getSystemId() == null ? "" : this.locator.getSystemId();
-            String sysId2 = d.locator.getSystemId() == null ? "" : d.locator.getSystemId();
-
-            boolean sysIds = sysId1.equals(sysId2);
-
-            if (!(lines && columns && sysIds)) {
+            if (!(this.locator.equals(d.locator))) {
                 return false;
             }
         }

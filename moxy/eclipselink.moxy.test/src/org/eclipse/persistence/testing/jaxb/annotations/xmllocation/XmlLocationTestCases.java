@@ -44,21 +44,21 @@ public class XmlLocationTestCases extends JAXBTestCases {
         d.data1 = "sdjfhdsaoiufhosaidufh";
         d.data2 = "kjdfgkjdsfg8374934874";
         d.data3 = "84376328476324XXXXXXX";
-        d.locator = new TestLocator(15, 89, includeSysId);
+        d.locator = new TestLocator(15, 89, 29, includeSysId);
 
-        SubData sd1 = new DetailData(); sd1.info = "name|rbarkhouse"; sd1.setLoc(new TestLocator(20, 35, includeSysId)); d.subData.add(sd1);
-        SubData sd2 = new SubData(); sd2.info = "phone|6132832684";  sd2.setLoc(new TestLocator(30, 26, includeSysId)); d.subData.add(sd2);
-        SubData sd3 = new LeafData(); sd3.info = "id|8827"; sd3.setLoc(new TestLocator(32, 33, includeSysId)); d.subData.add(sd3);
+        SubData sd1 = new DetailData(); sd1.info = "name|rbarkhouse"; sd1.setLoc(new TestLocator(20, 35, 4, includeSysId)); d.subData.add(sd1);
+        SubData sd2 = new SubData(); sd2.info = "phone|6132832684";  sd2.setLoc(new TestLocator(30, 26, 17, includeSysId)); d.subData.add(sd2);
+        SubData sd3 = new LeafData(); sd3.info = "id|8827"; sd3.setLoc(new TestLocator(32, 33, 4, includeSysId)); d.subData.add(sd3);
 
         if (this.getName().endsWith("Node") || this.getName().endsWith("UnmarshallerHandler")) {
-            TestLocator noLoc = new TestLocator(0, 0, false);
+            TestLocator noLoc = new TestLocator(0, 0, 0, false);
 
             d.locator = noLoc;
             sd1.setLoc(noLoc);
             sd2.setLoc(noLoc);
             sd3.setLoc(noLoc);
         }
-        
+
         return d;
     }
 
@@ -66,9 +66,9 @@ public class XmlLocationTestCases extends JAXBTestCases {
         private boolean includeSysId = false;
         private String controlSysId = null;
 
-        int line, column;
+        int line, column, alternateColumn;
 
-        public TestLocator(int l, int c, boolean sysId) {
+        public TestLocator(int l, int c, int alt, boolean sysId) {
             this.includeSysId = sysId;
 
             URL url = ClassLoader.getSystemClassLoader().getResource(XML_RESOURCE);
@@ -76,6 +76,7 @@ public class XmlLocationTestCases extends JAXBTestCases {
 
             this.line = l;
             this.column = c;
+            this.alternateColumn = alt;
         }
 
         public String getPublicId() {
@@ -96,6 +97,22 @@ public class XmlLocationTestCases extends JAXBTestCases {
 
         public int getColumnNumber() {
             return column;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (obj instanceof Locator) {
+                Locator aLocator = (Locator) obj;
+                if (includeSysId) {
+                    if (!(this.getSystemId().equals(aLocator.getSystemId()))) return false;
+                }
+                if (this.line != aLocator.getLineNumber()) return false;
+                if ((this.column != aLocator.getColumnNumber()) && (this.alternateColumn != aLocator.getColumnNumber())) return false;
+
+                return true;
+            }
+            return false;
         }
     }
 
