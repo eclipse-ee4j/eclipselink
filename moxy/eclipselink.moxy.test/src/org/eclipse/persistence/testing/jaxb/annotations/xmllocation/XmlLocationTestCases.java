@@ -66,6 +66,13 @@ public class XmlLocationTestCases extends JAXBTestCases {
         private boolean includeSysId = false;
         private String controlSysId = null;
 
+        /**
+         * Different parsers return take different approaches when
+         * returning the XML Location of a given element.  The default XML parser
+         * considers the end of the opening tag as the beginning of the element
+         * (eg L15 C89), whereas Woodstox and XDK use the beginning of the opening
+         * tag (eg. L15 C29).
+         */
         int line, column, alternateColumn;
 
         public TestLocator(int l, int c, int alt, boolean sysId) {
