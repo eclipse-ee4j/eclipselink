@@ -79,7 +79,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
               "</sql>" +
             "</table>" +
           "</dbws-builder>";
-        DBWSTestSuite.setUp();
+        builder = null;
+        DBWSTestSuite.setUp(".");
     }
 
     @Test

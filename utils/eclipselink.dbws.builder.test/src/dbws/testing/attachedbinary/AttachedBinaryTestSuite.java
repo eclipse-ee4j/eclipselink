@@ -76,6 +76,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
                 "/>" +
               "</table>" +
             "</dbws-builder>";
+        builder = null;
         DBWSTestSuite.setUp(".");
     }
 
@@ -97,21 +98,19 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             marshaller.marshal(r, ec);
         }
         Document controlDoc = xmlParser.parse(new StringReader(ATTACHED_BINARY_COLLECTION_XML));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(controlDoc, doc));
-
+        assertTrue("Control document not same as instance document.\n Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
         // validate WSDL
         Document controlWSDL = xmlParser.parse(new StringReader(WSDL));
         removeEmptyTextNodes(controlWSDL);
         Document testWSDL = xmlParser.parse(new StringReader(DBWS_WSDL_STREAM.toString()));
         removeEmptyTextNodes(testWSDL);
-        assertTrue("control WSDL not same as instance document", comparer.isNodeEqual(controlWSDL, testWSDL));
+        assertTrue("Control WSDL not same as instance document.\n Expected:\n" + documentToString(controlWSDL) + "\nActual:\n" + documentToString(testWSDL), comparer.isNodeEqual(controlWSDL, testWSDL));
         // validate XSD
         Document controlXSD = xmlParser.parse(new StringReader(XSD));
         removeEmptyTextNodes(controlXSD);
         Document testXSD = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
         removeEmptyTextNodes(testXSD);
-        assertTrue("control XSD not same as instance document", comparer.isNodeEqual(controlXSD, testXSD));
+        assertTrue("Control XSD not same as instance document.\n Expected:\n" + documentToString(controlXSD) + "\nActual:\n" + documentToString(testXSD), comparer.isNodeEqual(controlXSD, testXSD));
     }
     public static final String ATTACHED_BINARY_COLLECTION_XML =
         "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +

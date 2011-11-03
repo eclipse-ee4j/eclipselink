@@ -85,20 +85,21 @@ public class BatchSQLTestSuite extends DBWSTestSuite {
               "</batch-statement> " +
             "</batch-sql>" +
           "</dbws-builder>";
-        DBWSTestSuite.setUp();
+        builder = null;
+        DBWSTestSuite.setUp(".");
     }
-    
-    static String CONTROL_DOC = 
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + 
+
+    static String CONTROL_DOC =
+    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<avg-salary xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
           "<simple-xml>" +
-            "<clerk-avg>1037.50</clerk-avg>" + 
+            "<clerk-avg>1037.50</clerk-avg>" +
           "</simple-xml>" +
         "</avg-salary>";
-    
+
     /**
      * Tests executing batch SQL statements.
-     * 
+     *
      * Positive test.
      */
     @Test
@@ -129,9 +130,9 @@ public class BatchSQLTestSuite extends DBWSTestSuite {
     /**
      * Tests executing batch SQL statements, on of which is not
      * valid.
-     * 
+     *
      * Negative test.
-     */    
+     */
     @Test
     public void testBadSQL() throws Exception {
         Invocation invocation = new Invocation("invalidSQL");

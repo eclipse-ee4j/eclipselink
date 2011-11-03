@@ -14,6 +14,8 @@ package dbws.testing.loglevelvalidation;
 
 //javase imports
 import java.io.StringReader;
+import java.lang.reflect.Field;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -24,6 +26,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
+//EclipseLink imports
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverterAdapter;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.tools.dbws.BaseDBWSBuilderHelper;
+import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.jdbc.JDBCHelper;
+
 //testing imports
 import dbws.testing.DBWSTestProviderHelper;
 import dbws.testing.DBWSTestSuite;
@@ -33,12 +48,20 @@ import dbws.testing.DBWSTestSuite;
  * log level and set the default (info).
  */
 public class LogLevelValidationTestSuite extends DBWSTestSuite {
-    final static String username = System.getProperty(DBWSTestProviderHelper.DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-    final static String password = System.getProperty(DBWSTestProviderHelper.DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-    final static String url = System.getProperty(DBWSTestProviderHelper.DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-    final static String driver = System.getProperty(DBWSTestProviderHelper.DATABASE_DRIVER_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER);
-    final static String platform = System.getProperty(DBWSTestProviderHelper.DATABASE_PLATFORM_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM);
-    final static String version = System.getProperty("release.version", "2.4.0");
+
+    final static String username =
+        System.getProperty(DBWSTestProviderHelper.DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+    final static String password =
+        System.getProperty(DBWSTestProviderHelper.DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+    final static String url =
+        System.getProperty(DBWSTestProviderHelper.DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+    final static String driver =
+        System.getProperty(DBWSTestProviderHelper.DATABASE_DRIVER_KEY,
+            DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER);
+    final static String platform =
+        System.getProperty(DBWSTestProviderHelper.DATABASE_PLATFORM_KEY,
+            DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM);
+    final static String VERSION = "SOME_VERSION";
     final static String info_level = "info";
     final static String off_level = "off";
     final static String stageDir = "./";
@@ -68,13 +91,51 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
               "tableNamePattern=\"simpletable\" " +
             "/>" +
           "</dbws-builder>";
-        
-        setUp(stageDir);
+        builder = new DBWSBuilder();
+        JDBCHelper builderHelper = new JDBCHelper(builder);
+        builder.setBuilderHelper(builderHelper);
+        Field sessConfigProj_field = null;
+        try {
+            sessConfigProj_field =
+                BaseDBWSBuilderHelper.class.getDeclaredField("sessionConfigProject");
+            sessConfigProj_field.setAccessible(true);
+        }
+        catch (Exception e) {
+            // should never happen
+            e.printStackTrace();
+        }
+        XMLSessionConfigProject_11_1_1 sessionConfigProject = null;
+        try {
+            sessionConfigProject = (XMLSessionConfigProject_11_1_1)sessConfigProj_field.get(builderHelper);
+        }
+        catch (Exception e) {
+            // should never happen
+            e.printStackTrace();
+        }
+        XMLDirectMapping versionMapping =
+            (XMLDirectMapping)sessionConfigProject.getDescriptor(SessionConfigs.class).
+                getMappings().firstElement();
+        versionMapping.setConverter(new XMLConverterAdapter() {
+            public Object convertObjectValueToDataValue(Object objectValue, Session session,
+                XMLMarshaller marshaller) {
+                return VERSION;
+            }
+            public Object convertDataValueToObjectValue(Object dataValue, Session session,
+                XMLUnmarshaller unmarshaller) {
+                return dataValue;
+            }
+            public boolean isMutable() {
+                return false;
+            }
+            public void initialize(DatabaseMapping mapping, Session session) {
+            }
+        });
+        DBWSTestSuite.setUp(stageDir);
     }
 
-    static String SESSIONS_XML = 
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + 
-    	"<sessions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\""+version+"\">" +
+    static String SESSIONS_XML =
+    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    	"<sessions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\""+VERSION+"\">" +
     		"<session xsi:type=\"database-session\">" +
     			"<name>logLevelValidation-dbws-or-session</name>" +
     			"<logging xsi:type=\"eclipselink-log\" />" +
@@ -99,12 +160,12 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     			"<primary-project xsi:type=\"xml\">eclipselink-dbws-ox.xml</primary-project>" +
     		"</session>" +
     	"</sessions>";
-    
+
     @Test
     /**
-     * Validate that the invalid session log level "finist" is set to the default
+     * Validate that the invalid session log level "finest" is set to the default
      * "info" by the builder.
-     * 
+     *
      * Positive test.
      */
     public void testInvalidLogLevel() {
@@ -112,6 +173,6 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         removeEmptyTextNodes(testDoc);
         Document controlDoc = xmlParser.parse(new StringReader(SESSIONS_XML));
         removeEmptyTextNodes(controlDoc);
-        assertTrue("control document not same as instance document", comparer.isNodeEqual(controlDoc, testDoc));
+        assertTrue("Control document not same as instance document.\n Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
 }

@@ -74,7 +74,8 @@ public class CRUDTestSuite extends DBWSTestSuite {
             "</sql>" +
           "</table>" +
         "</dbws-builder>";
-      DBWSTestSuite.setUp();
+      builder = null;
+      DBWSTestSuite.setUp(".");
     }
 
     // hokey naming convention for test methods to assure order-of-operations

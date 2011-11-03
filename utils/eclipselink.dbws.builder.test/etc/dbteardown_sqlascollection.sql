@@ -1,1 +1,1 @@
-DROP TABLE simpletable|
+DROP TABLE sqlascollection|

@@ -509,6 +509,17 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             if (op.getBinaryAttachment()) {
                 return true;
             }
+            // check nested operations
+            if (op.isTableOperation()) {
+            	TableOperationModel top = (TableOperationModel)op;
+            	if (top.additionalOperations != null) {
+                	for (OperationModel addOp : top.additionalOperations) {
+                		if (addOp.binaryAttachment) {
+                			return true;
+                		}
+                	}
+            	}
+            }
         }
         return false;
     }

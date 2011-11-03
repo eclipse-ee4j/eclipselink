@@ -14,17 +14,23 @@
 package dbws.testing;
 
 //javase imports
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
+import java.io.StringWriter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+//java eXtension imports
 import javax.wsdl.WSDLException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+//EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -47,17 +53,18 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
+import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import org.eclipse.persistence.tools.dbws.XRPackager;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-// domain-specific (testing) imports
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 public class DBWSTestSuite {
-    public final static String DEFAULT_DATABASE_USERNAME = "MNORMAN";
-    public final static String DEFAULT_DATABASE_PASSWORD = "password";
-    public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://tlsvrdb4.ca.oracle.com/" +
-        DEFAULT_DATABASE_USERNAME;
+
+    public static final String DEFAULT_DATABASE_USERNAME = "user";
+    public static final String DEFAULT_DATABASE_PASSWORD = "password";
+    public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://localhost:3306/test";
 
     public static final String SFAULT = "sfault_table";
     public static final String SFAULT_TEST = SFAULT + "Test";
@@ -101,9 +108,7 @@ public class DBWSTestSuite {
         "select * from secondary";
     public static final String SECONDARY_ALL_SCHEMA_TYPE = "secondaryType";
 
-
     // JUnit test fixtures
-
     public static String DBWS_BUILDER_XML_USERNAME;
     public static String DBWS_BUILDER_XML_PASSWORD;
     public static String DBWS_BUILDER_XML_URL;
@@ -113,18 +118,18 @@ public class DBWSTestSuite {
     public static XMLComparer comparer = new XMLComparer();
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
     public static XMLParser xmlParser = xmlPlatform.newXMLParser();
-    public static DBWSBuilder builder = new DBWSBuilder();
+    public static DBWSBuilder builder = null;
     public static XRServiceAdapter xrService = null;
-    public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_SESSION_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
+    public static ByteArrayOutputStream DBWS_SERVICE_STREAM = null;
+    public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = null;
+    public static ByteArrayOutputStream DBWS_SESSION_STREAM = null;
+    public static ByteArrayOutputStream DBWS_OR_STREAM = null;
+    public static ByteArrayOutputStream DBWS_OX_STREAM = null;
+    public static ByteArrayOutputStream DBWS_WSDL_STREAM = null;
 
     /**
      * This method is to be used when sessions xml should not be generated.
-     * 
+     *
      * @throws WSDLException
      */
     public static void setUp() throws WSDLException {
@@ -134,11 +139,20 @@ public class DBWSTestSuite {
     /**
      * This method should be used when sessions xml is to be generated and written out
      * to DBWS_SESSION_STREAM.
-     * 
+     *
      * @param stageDir sessions xml will be generated and written out if non-null
      * @throws WSDLException
      */
     public static void setUp(String stageDir) throws WSDLException {
+        if (builder == null) {
+            builder = new DBWSBuilder();
+        }
+        DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
+        DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
+        DBWS_SESSION_STREAM = new ByteArrayOutputStream();
+        DBWS_OR_STREAM = new ByteArrayOutputStream();
+        DBWS_OX_STREAM = new ByteArrayOutputStream();
+        DBWS_WSDL_STREAM = new ByteArrayOutputStream();
         final String username = System.getProperty(DBWSTestProviderHelper.DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         final String password = System.getProperty(DBWSTestProviderHelper.DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         final String url = System.getProperty(DBWSTestProviderHelper.DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
@@ -155,13 +169,15 @@ public class DBWSTestSuite {
         builder.setPlatformClassname(platform);
         builder.properties = builderModel.properties;
         builder.operations = builderModel.operations;
-        XRPackager xrPackager = new XRPackager() {
+        XRPackager xrPackager = new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
             @Override
-            public void start() {// do nothing
+            public void start() {
+                // do nothing - don't have to verify existence of 'stageDir' when
+                // all the streams are in-memory
             }
         };
-        xrPackager.setSessionsFileName(builder.getSessionsFileName());
         xrPackager.setDBWSBuilder(builder);
+        builder.setPackager(xrPackager);
         builder.setPackager(xrPackager);
         if (stageDir == null) {
         	builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
@@ -243,7 +259,7 @@ public class DBWSTestSuite {
      * Helper method that removes empty text nodes from a Document.
      * This is typically called prior to comparing two documents
      * for equality.
-     * 
+     *
      */
     public static void removeEmptyTextNodes(Node node) {
         NodeList nodeList = node.getChildNodes();
@@ -257,6 +273,24 @@ public class DBWSTestSuite {
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 removeEmptyTextNodes(childNode);
             }
+        }
+    }
+
+    /**
+     * Returns the given org.w3c.dom.Document as a String.
+     */
+    public static String documentToString(Document doc) {
+        DOMSource domSource = new DOMSource(doc);
+        StringWriter stringWriter = new StringWriter();
+        StreamResult result = new StreamResult(stringWriter);
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty("indent", "yes");
+            transformer.transform(domSource, result);
+            return stringWriter.toString();
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return "<empty/>";
         }
     }
 }

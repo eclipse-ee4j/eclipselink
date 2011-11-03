@@ -88,7 +88,8 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 "isSimpleXMLFormat=\"true\" " +
             "/>" +
           "</dbws-builder>";
-        DBWSTestSuite.setUp();
+        builder = null;
+        DBWSTestSuite.setUp(".");
     }
 
     @Test

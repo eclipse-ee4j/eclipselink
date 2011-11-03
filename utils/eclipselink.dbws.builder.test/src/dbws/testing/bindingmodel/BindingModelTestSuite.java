@@ -68,7 +68,8 @@ public class BindingModelTestSuite extends DBWSTestSuite {
                   "<binding name=\"tipo\" type=\"xsd:string\"/>" +
               "</sql>" +
             "</dbws-builder>";
-        DBWSTestSuite.setUp();
+        builder = null;
+        DBWSTestSuite.setUp(".");
     }
 
     @Test

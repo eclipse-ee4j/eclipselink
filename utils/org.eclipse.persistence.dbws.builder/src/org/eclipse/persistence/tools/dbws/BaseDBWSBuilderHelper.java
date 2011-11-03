@@ -1072,6 +1072,13 @@ public abstract class BaseDBWSBuilderHelper {
         }
     }
 
+    /**
+     * Return the type name to be used for a given database type.  The given
+     * DatabaseType's typeName attribute is typically returned, however, in
+     * some cases special handling may be required.  For example, in the 
+     * case of a NumericType instance, "DECIMAL" should be used for the
+     * type name.
+     */
     protected static String getTypeNameForDatabaseType(DatabaseType dataType) {
         String typeName = dataType.getTypeName();
         if (dataType instanceof NumericType) {

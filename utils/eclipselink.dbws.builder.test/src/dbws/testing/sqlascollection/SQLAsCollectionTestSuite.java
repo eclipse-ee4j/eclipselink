@@ -129,7 +129,7 @@ public class SQLAsCollectionTestSuite extends DBWSTestProviderHelper implements 
             Document controlDoc = xmlParser.parse(new StringReader(GETDATA_RESPONSE));
             String controlString = documentToString(controlDoc);
             //System.out.println(controlString);
-            assertTrue("control document not same as instance document", controlString.equals(resultString));
+            assertTrue("Control document not same as instance document.\n Expected:\n" + controlString + "\nActual:\n" + resultString, controlString.equals(resultString));
         }
     }
 
@@ -155,8 +155,8 @@ public class SQLAsCollectionTestSuite extends DBWSTestProviderHelper implements 
               "name=\""+SERVICE_NAME+"\" " +
               "returnType=\"sRecord\" " +
               "isCollection=\"true\">" +
-              "<statement><![CDATA[select * from simpletable]]></statement>" +
-              "<build-statement><![CDATA[select * from simpletable where 0=1]]></build-statement>" +
+              "<statement><![CDATA[select * from sqlascollection]]></statement>" +
+              "<build-statement><![CDATA[select * from sqlascollection where 0=1]]></build-statement>" +
           "</sql>" +
         "</dbws-builder>";
     static final String GETDATA_RESPONSE =

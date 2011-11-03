@@ -62,7 +62,8 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
                "tableNamePattern=\"inlinebinary\" " +
               "/>" +
            "</dbws-builder>";
-        DBWSTestSuite.setUp();
+        builder = null;
+        DBWSTestSuite.setUp(".");
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -60,7 +60,8 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
               "tableNamePattern=\"simpletable\" " +
             "/>" +
           "</dbws-builder>";
-        DBWSTestSuite.setUp();
+        builder = null;
+        DBWSTestSuite.setUp(".");
     }
 
     @Test

@@ -284,6 +284,14 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                 procs.add(key);
             }
         }
+        // nested under a <table> operation
+        if (procs.isEmpty()) {
+            List<ProcedureType> additionalProcs = loadProcedures(procedureOperationModel);
+            if (additionalProcs != null && !additionalProcs.isEmpty()) {
+                procs.addAll(additionalProcs);
+            }
+            //TODO - add to dbStoredProcedure2QueryName map
+        }
         for (ProcedureType storedProcedure : procs) {
             StringBuilder sb = new StringBuilder();
             if (name == null || name.length() == 0) {
