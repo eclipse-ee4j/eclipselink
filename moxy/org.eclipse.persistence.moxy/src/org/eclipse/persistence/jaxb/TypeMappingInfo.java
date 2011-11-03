@@ -32,8 +32,9 @@ public class TypeMappingInfo {
     private Type type;
     private Annotation[] annotations;
     private Element xmlElement;
-
-    /**
+    private boolean nillable;
+  
+	/**
      * Indicates if a global element should be generated for this type.
      */
     public ElementScope getElementScope() {
@@ -44,6 +45,22 @@ public class TypeMappingInfo {
         this.elementScope = scope;
     }
 
+    /**
+     * Return if the global element will be marked as nillable
+     * @return
+     */
+    public boolean isNillable() {
+		return nillable;
+	}
+
+    /**
+     * Set if the global element should be marked as nillable
+     * @param nillable
+     */
+	public void setNillable(boolean nillable) {
+		this.nillable = nillable;
+	}
+    
     /**
      * Root element name associated with this type;
      */

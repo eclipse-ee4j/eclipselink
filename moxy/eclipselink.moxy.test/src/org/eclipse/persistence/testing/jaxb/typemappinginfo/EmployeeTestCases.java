@@ -48,7 +48,8 @@ public class EmployeeTestCases extends TypeMappingInfoTestCases{
 	    	typeMappingInfos = new TypeMappingInfo[1];
 	        TypeMappingInfo tmi = new TypeMappingInfo();
 	        tmi.setXmlTagName(new QName("someUri","testTagName"));		
-	        tmi.setElementScope(ElementScope.Global);		
+	        tmi.setElementScope(ElementScope.Global);
+	        tmi.setNillable(true);
 	        tmi.setType(Employee.class);	        
 	        typeMappingInfos[0] = tmi;	        
 	    }

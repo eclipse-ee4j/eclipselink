@@ -53,6 +53,7 @@ public class MultipleMapTestCases extends TypeMappingInfoTestCases{
 		TypeMappingInfo tmi = new TypeMappingInfo();
 		tmi.setXmlTagName(new QName("","root1"));		
 		tmi.setElementScope(ElementScope.Local);
+		tmi.setNillable(true);
 		Type t = getClass().getField("myMap").getGenericType();
 		tmi.setType(t);		
 				
@@ -64,6 +65,8 @@ public class MultipleMapTestCases extends TypeMappingInfoTestCases{
 		TypeMappingInfo tmi = new TypeMappingInfo();
 		tmi.setXmlTagName(new QName("","root2"));		
 		tmi.setElementScope(ElementScope.Local);
+		tmi.setNillable(true);
+
 		Type t = getClass().getField("myMap").getGenericType();
 		tmi.setType(t);		
 				

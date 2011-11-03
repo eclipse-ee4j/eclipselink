@@ -37,6 +37,7 @@ public class ElementDeclaration {
     private TypeMappingInfo typeMappingInfo;
     private boolean xmlAttachmentRef;
     private String xmlMimeType;
+    private boolean nillable;
     
     public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList) {
         this.elementName = name;
@@ -83,6 +84,22 @@ public class ElementDeclaration {
     public void setIsXmlRootElement(boolean isXmlRoot) {
         this.isXmlRootElement = isXmlRoot;
     }
+    
+    /**
+     * Return if the global element will be marked as nillable
+     * @return
+     */
+    public boolean isNillable() {
+		return nillable;
+	}
+
+    /**
+     * Set if the global element should be marked as nillable
+     * @param nillable
+     */
+	public void setNillable(boolean nillable) {
+		this.nillable = nillable;
+	}
     
     public JavaClass getJavaType() {
         return this.javaType;

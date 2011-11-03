@@ -746,7 +746,7 @@ public class SchemaGenerator {
                     if (targetSchema.getTopLevelElements().get(next.getLocalPart()) == null) {
                         Element element = new Element();
                         element.setName(next.getLocalPart());
-
+                        element.setNillable(nextElement.isNillable());
                         JavaClass javaClass = nextElement.getJavaType();
 
                         //First check for built in type
