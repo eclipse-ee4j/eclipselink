@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
+ *       &lt;attribute name="value-type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -42,10 +43,12 @@ public class XmlJavaTypeAdapter
     extends JavaAttribute
 {
 
-    @XmlAttribute(name = "value", required = true)
+    @XmlAttribute(required = true)
     protected String value;
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     protected String type;
+    @XmlAttribute(name = "value-type")
+    protected String valueType;
 
     /**
      * Gets the value of the value property.
@@ -97,6 +100,34 @@ public class XmlJavaTypeAdapter
      */
     public void setType(String value) {
         this.type = value;
+    }
+
+    /**
+     * Gets the value of the valueType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValueType() {
+        if (valueType == null) {
+            return "javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT";
+        } else {
+            return valueType;
+        }
+    }
+
+    /**
+     * Sets the value of the valueType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValueType(String value) {
+        this.valueType = value;
     }
 
 }

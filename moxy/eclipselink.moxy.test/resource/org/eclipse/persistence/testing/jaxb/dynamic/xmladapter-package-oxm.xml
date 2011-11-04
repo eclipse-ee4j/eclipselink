@@ -10,6 +10,8 @@
     <xml-java-type-adapters>
         <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.dynamic.util.ComputerAdapter"
             type="org.eclipse.persistence.testing.jaxb.dynamic.util.Computer"/>
+        <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.dynamic.util.LinkAdapter"
+            type="mynamespace.Address" value-type="mynamespace.Link"/>
     </xml-java-type-adapters>
 
     <java-types>
@@ -18,6 +20,23 @@
             <java-attributes>
                 <xml-element java-attribute="name" type="java.lang.String"/>
                 <xml-element java-attribute="computer" type="org.eclipse.persistence.testing.jaxb.dynamic.util.Computer"/>
+                <xml-element java-attribute="address" type="mynamespace.Address"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="mynamespace.Address">
+            <xml-root-element name="address"/>
+            <java-attributes>
+                <xml-element java-attribute="street" type="java.lang.String"/>
+                <xml-element java-attribute="city" type="java.lang.String"/>
+                <xml-element java-attribute="state" type="java.lang.String"/>
+                <xml-element java-attribute="zip" type="java.lang.String"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="mynamespace.Link">
+            <xml-root-element name="link"/>
+            <java-attributes>
+                <xml-element java-attribute="rel" type="java.lang.String"/>
+                <xml-element java-attribute="href" type="java.lang.String"/>
             </java-attributes>
         </java-type>
     </java-types>

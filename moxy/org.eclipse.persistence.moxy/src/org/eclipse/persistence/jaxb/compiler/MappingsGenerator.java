@@ -412,7 +412,15 @@ public class MappingsGenerator {
             
             XmlJavaTypeAdapter xja = property.getXmlJavaTypeAdapter();
             JavaClass adapterClass = helper.getJavaClass(xja.getValue());
-            JavaClass valueType = property.getActualType();
+
+            JavaClass valueType = null;
+            String sValType = xja.getValueType();
+            if (sValType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+                valueType = property.getActualType();
+            } else {
+                valueType = helper.getJavaClass(xja.getValueType());
+            }
+
             DatabaseMapping mapping;
             boolean isArray = property.getType().isArray() && !property.getType().getRawName().equals("byte[]");
 

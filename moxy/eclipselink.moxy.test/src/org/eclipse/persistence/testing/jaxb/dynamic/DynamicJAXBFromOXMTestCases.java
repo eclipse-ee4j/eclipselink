@@ -59,6 +59,7 @@ import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.Computer;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.ComputerAdapter;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.LinkAdapter;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1099,13 +1100,34 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         computer.macCode = 48261593;
         computer.workgroup = 'C';
 
+        String STREET = "33 Mason St.";
+        String CITY = "Buffalo";
+        String STATE = "NY";
+        String ZIP = "33333";
+
+        DynamicEntity address = jaxbContext.newDynamicEntity(PACKAGE + "." + ADDRESS);
+        assertNotNull("Could not create Dynamic Entity.", address);
+        address.set("street", STREET);
+        address.set("city", CITY);
+        address.set("state", STATE);
+        address.set("zip", ZIP);
+
         person.set("name", "Jim Watson");
         person.set("computer", computer);
+        person.set("address", address);
+
+        LinkAdapter.jc = jaxbContext;
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
 
         DynamicEntity readPerson = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(marshalDoc);
+        DynamicEntity readAddress = readPerson.get("address");
+
+        assertEquals("Error adapting Link to Address", STREET, readAddress.get("street"));
+        assertEquals("Error adapting Link to Address", CITY, readAddress.get("city"));
+        assertEquals("Error adapting Link to Address", STATE, readAddress.get("state"));
+        assertEquals("Error adapting Link to Address", ZIP, readAddress.get("zip"));
     }
 
     public void testXmlDiscriminatorNode() throws Exception {
