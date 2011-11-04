@@ -12,15 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.direct.objectlist;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class ObjectListTestCases extends JAXBTestCases {
+public class ObjectListTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/objectlist.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/objectlist.json";
 
     public ObjectListTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Customer.class;
         setClasses(classes);

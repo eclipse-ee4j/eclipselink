@@ -20,13 +20,14 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class SubstitutionBindingsTestCases extends JAXBTestCases {
+public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance.json";
     private final static String XML_BINDINGS = "org/eclipse/persistence/testing/jaxb/substitution/xml-bindings.xml";
-
+    
     public SubstitutionBindingsTestCases(String name) throws Exception {
         super(name);
         Class[] classes = new Class[2];
@@ -34,6 +35,7 @@ public class SubstitutionBindingsTestCases extends JAXBTestCases {
         classes[1] = ObjectFactory2.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

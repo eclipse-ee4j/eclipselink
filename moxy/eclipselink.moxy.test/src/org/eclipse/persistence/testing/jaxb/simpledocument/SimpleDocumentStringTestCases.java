@@ -12,7 +12,12 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
 import javax.xml.bind.JAXBElement;
 
 /**
@@ -20,12 +25,14 @@ import javax.xml.bind.JAXBElement;
  * @author mmacivor
  *
  */
-public class SimpleDocumentStringTestCases extends JAXBTestCases {
+public class SimpleDocumentStringTestCases extends JAXBWithJSONTestCases {
 		private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/simpledocument/stringroot.xml";
+		private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/simpledocument/stringroot.json";
 
 	    public SimpleDocumentStringTestCases(String name) throws Exception {
 	        super(name);
-	        setControlDocument(XML_RESOURCE);        
+	        setControlDocument(XML_RESOURCE);
+	        setControlJSON(JSON_RESOURCE);
 	        Class[] classes = new Class[1];
 	        classes[0] = StringObjectFactory.class;
 	        setClasses(classes);
@@ -37,5 +44,15 @@ public class SimpleDocumentStringTestCases extends JAXBTestCases {
 	    	return value;      
 	    }
 	    
+	    public Map getProperties(){
+	    	Map props = new HashMap();
+		    	
+	    	Map namespaces = new HashMap();
+	    	namespaces.put("ns0", "myns");
+
+	    	props.put(JAXBContext.NAMESPACES, namespaces);
+	    	
+		    return props;
+	}
 	    
 }

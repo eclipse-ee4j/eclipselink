@@ -13,17 +13,18 @@
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlEnumElementCollectionTestCases extends JAXBTestCases {
+public class XmlEnumElementCollectionTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_element_list.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_element_list.json";
     private final static String CONTROL_NAME = "John Doe";
 
     public XmlEnumElementCollectionTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);  
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeDepartmentList.class;
         classes[1] = Department.class;

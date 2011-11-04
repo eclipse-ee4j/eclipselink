@@ -964,7 +964,7 @@ public class XMLMarshaller implements Cloneable {
                 marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.NO_NS_SCHEMA_LOCATION, noNsSchemaLocation);
             }
             if (isNil) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+                marshalRecord.nilSimple(nr);
             }
 
             marshalRecord.namespaceDeclarations(nr);
@@ -1000,8 +1000,7 @@ public class XMLMarshaller implements Cloneable {
                       }
             	 }
             	
-                String value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
-                marshalRecord.characters(value);
+                marshalRecord.characters(root.getSchemaType(), object, false);
             }
         }
 

@@ -12,16 +12,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlValueAnnotationWithEnumTestCases extends JAXBTestCases {
+public class XmlValueAnnotationWithEnumTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_element_xmlvalue.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_element_xmlvalue.json";
     private final static String CONTROL_NAME = "John Doe";
 
     public XmlValueAnnotationWithEnumTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeSingleDepartmentWithXmlValue.class;
         classes[1] = Department.class;

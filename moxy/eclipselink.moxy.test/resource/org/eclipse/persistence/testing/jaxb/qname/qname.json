@@ -1,0 +1,5 @@
+{ "root":{
+  "attribute":"ns0:a",
+  "element":"ns1:b",
+  "list":["ns2:c","ns3:d"]
+}}

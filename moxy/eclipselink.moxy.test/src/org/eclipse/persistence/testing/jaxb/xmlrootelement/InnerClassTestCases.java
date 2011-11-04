@@ -13,15 +13,17 @@
 package org.eclipse.persistence.testing.jaxb.xmlrootelement;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class InnerClassTestCases extends JAXBTestCases {
+public class InnerClassTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlrootelement/inner.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlrootelement/inner.json";
 
     public InnerClassTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Inner.class;
         setClasses(classes);

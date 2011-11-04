@@ -333,6 +333,9 @@ public abstract class MarshalRecord extends XMLRecord {
                 prefix = namespaceResolver.generatePrefix();
                 attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespaceURI);
             }
+            if(XMLConstants.EMPTY_STRING.equals(prefix)){
+            	return qName.getLocalPart();
+            }
             return prefix + XMLConstants.COLON + qName.getLocalPart();
         }
     }

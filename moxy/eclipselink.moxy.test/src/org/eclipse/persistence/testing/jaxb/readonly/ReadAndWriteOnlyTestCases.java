@@ -12,20 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.readonly;
 
-import junit.framework.TestCase;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class ReadAndWriteOnlyTestCases extends JAXBTestCases {
+public class ReadAndWriteOnlyTestCases extends JAXBWithJSONTestCases {
 
     public static final String READ_CONTROL_DOC = "org/eclipse/persistence/testing/jaxb/readonly/readcontrol.xml";
     public static final String WRITE_CONTROL_DOC = "org/eclipse/persistence/testing/jaxb/readonly/writecontrol.xml";
+    public static final String JSON_READ_CONTROL_DOC = "org/eclipse/persistence/testing/jaxb/readonly/readcontrol.json";
+    public static final String JSON_WRITE_CONTROL_DOC = "org/eclipse/persistence/testing/jaxb/readonly/writecontrol.json";
     
     public ReadAndWriteOnlyTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {RootObject.class});
         setControlDocument(READ_CONTROL_DOC);
         setWriteControlDocument(WRITE_CONTROL_DOC);
+        setControlJSON(JSON_READ_CONTROL_DOC);
+        setWriteControlJSON(JSON_WRITE_CONTROL_DOC);
     }
 
     @Override

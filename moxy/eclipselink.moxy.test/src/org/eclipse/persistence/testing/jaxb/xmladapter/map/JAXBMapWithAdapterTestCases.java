@@ -18,14 +18,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class JAXBMapWithAdapterTestCases extends JAXBTestCases {
+public class JAXBMapWithAdapterTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/map.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/map.json";
 	
     public JAXBMapWithAdapterTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);       
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = MyObject.class;
         classes[1] = Person.class;

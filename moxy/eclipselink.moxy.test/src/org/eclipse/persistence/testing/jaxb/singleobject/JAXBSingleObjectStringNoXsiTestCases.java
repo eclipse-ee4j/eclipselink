@@ -13,7 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.singleobject;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -23,13 +25,15 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-public class JAXBSingleObjectStringNoXsiTestCases extends JAXBTestCases {
+public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObject.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectString.json";
 
 	public JAXBSingleObjectStringNoXsiTestCases(String name) throws Exception {
 		super(name);
@@ -38,6 +42,7 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
 		setClasses(classes);
@@ -66,6 +71,18 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBTestCases {
 		return jaxbElement;
 	}
 
+	public Map getProperties(){
+    	Map props = new HashMap();
+	    	
+    	Map namespaces = new HashMap();
+    	namespaces.put("ns0", "rootNamespace");
+
+    	props.put(JAXBContext.NAMESPACES, namespaces);
+    	
+    	props.put(JAXBContext.INCLUDE_ROOT, true);
+	    return props;
+}
+	
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE;
 	}
@@ -146,6 +163,24 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBTestCases {
             
             objectToXMLStringWriter(testObject);
         }    	
+    }
+    
+    public void testJSONUnmarshalFromInputStream() throws Exception {
+    	jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+        Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(inputStream), String.class);
+        inputStream.close();
+        jsonToObjectTest(testObject);
+    }
+
+    public void testJSONUnmarshalFromInputSource() throws Exception {
+        
+    }
+
+    public void testJSONUnmarshalFromReader() throws Exception {
+    }
+
+    public void testJSONUnmarshalFromURL() throws Exception {     
     }
 
 }

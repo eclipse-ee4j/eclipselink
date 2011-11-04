@@ -14,14 +14,16 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class PackageLevelAdapterTestCases extends JAXBTestCases{
+public class PackageLevelAdapterTestCases extends JAXBWithJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/packageleveltest.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/packageleveltest.json";
     
     public PackageLevelAdapterTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
    	    jaxbContext = JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel", classLoader);

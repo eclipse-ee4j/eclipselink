@@ -12,18 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
-import java.util.ArrayList;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-public class XmlEnumElementArrayTestCases extends JAXBTestCases {
+public class XmlEnumElementArrayTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_element_list.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_element_list.json";
+
     private final static String CONTROL_NAME = "John Doe";
 
     public XmlEnumElementArrayTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);     
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeDepartmentArray.class;
         classes[1] = Department.class;

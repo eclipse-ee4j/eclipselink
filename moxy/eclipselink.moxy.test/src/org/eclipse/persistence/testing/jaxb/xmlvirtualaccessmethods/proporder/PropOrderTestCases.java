@@ -17,17 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class PropOrderTestCases extends JAXBTestCases {
+public class PropOrderTestCases extends JAXBWithJSONTestCases {
 
     public PropOrderTestCases(String name) throws Exception {
         super(name);
         setControlDocument("org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer.xml");
+        setControlJSON("org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer.json");
         setTypes(new Class[] {Customer.class, Parent.class, PhoneNumber.class, Address.class});
     }
 

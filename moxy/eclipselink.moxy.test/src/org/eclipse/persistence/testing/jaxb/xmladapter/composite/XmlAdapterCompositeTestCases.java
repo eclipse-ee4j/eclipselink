@@ -13,10 +13,14 @@
 package org.eclipse.persistence.testing.jaxb.xmladapter.composite;
 
 import java.util.HashMap;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import java.util.Map;
 
-public class XmlAdapterCompositeTestCases extends JAXBTestCases {
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
+public class XmlAdapterCompositeTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/composite.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/composite.json";
     private final static int ID_1 = 123; 
     private final static int ID_2 = 321;
     private final static String VALUE_1 = "this is a value";
@@ -24,7 +28,8 @@ public class XmlAdapterCompositeTestCases extends JAXBTestCases {
 
     public XmlAdapterCompositeTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = MyMap.class;
         setClasses(classes);
@@ -36,5 +41,12 @@ public class XmlAdapterCompositeTestCases extends JAXBTestCases {
         myMap.hashMap.put(ID_2, VALUE_2);
         myMap.hashMap.put(ID_1, VALUE_1);
         return myMap;
+    }
+    
+    protected Map getProperties(){
+    	Map props = new HashMap();
+    	props.put(JAXBContext.VALUE_WRAPPER, "val");
+    	return props;
+    	
     }
 }

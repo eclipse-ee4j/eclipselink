@@ -12,13 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection;
 
-import java.util.ArrayList;
-
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.MyCalendarType;
 
-public class XmlAdapterDirectCollectionArrayTestCases extends JAXBTestCases {
+public class XmlAdapterDirectCollectionArrayTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/compositedirectcollection.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/compositedirectcollection.json";
     private final static int DAY_1 = 12; 
     private final static int MONTH_1 = 4; 
     private final static int YEAR_1 = 1997; 
@@ -28,7 +27,8 @@ public class XmlAdapterDirectCollectionArrayTestCases extends JAXBTestCases {
 
     public XmlAdapterDirectCollectionArrayTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE); 
         Class[] classes = new Class[2];
         classes[0] = MyCalendarWithArray.class;
         classes[1] = MyCalendarType.class;

@@ -14,10 +14,11 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.compositecollection;
 
 import java.util.ArrayList;
 import java.util.Date;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlAdapterCompositeCollectionTestCases extends JAXBTestCases {
+public class XmlAdapterCompositeCollectionTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/compositecollection.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/compositecollection.json";
     private final static int DAY_1 = 1;
     private final static int DAY_2 = 2;
     private final static int DAY_3 = 6;
@@ -30,7 +31,8 @@ public class XmlAdapterCompositeCollectionTestCases extends JAXBTestCases {
 
     public XmlAdapterCompositeCollectionTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);       
         Class[] classes = new Class[2];
         classes[0] = MyDates.class;
         classes[1] = MyDateType.class;

@@ -12,18 +12,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import java.util.HashMap;
+import java.util.Map;
 
-public class XmlEnumAttributeTestCases extends JAXBTestCases {
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
+public class XmlEnumAttributeTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_attribute.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_attribute.json";
+
     private final static String CONTROL_NAME = "John Doe";
 
     public XmlEnumAttributeTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);      
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeDepartmentAttribute.class;
         classes[1] = Department.class;
@@ -36,4 +41,11 @@ public class XmlEnumAttributeTestCases extends JAXBTestCases {
         emp.department = Department.J2EE;
         return emp;
     }
+    
+    protected Map getProperties(){
+    	Map<String, String> props = new HashMap<String, String>();
+    	props.put(JAXBContext.ATTRIBUTE_PREFIX, "@");
+    	return props;
+    }
 }
+

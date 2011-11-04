@@ -1,0 +1,16 @@
+{"testObject":{
+    "anotherClassBObject":{
+        "classCValue":"differentValue"
+    },
+    "classBCollection":[
+       {"theValue":"listValue1"},
+       {"theValue":"listValue2"}
+    ],
+    "classBObject":{
+      "theValue":"singleValue"
+    },
+    "subClassObject":{
+        "someValue":"subclassValue",
+	"extraString":"extra"
+    }
+}}

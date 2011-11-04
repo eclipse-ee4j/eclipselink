@@ -16,10 +16,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlIdRefInheritanceTestCases extends JAXBTestCases{
+public class XmlIdRefInheritanceTestCases extends JAXBWithJSONTestCases { 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance_inheritance.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance_inheritance.json";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/control_inheritance_schema.xsd";
   
     public XmlIdRefInheritanceTestCases(String name) throws Exception {
@@ -29,6 +30,7 @@ public class XmlIdRefInheritanceTestCases extends JAXBTestCases{
         classes[1] = TransferStudent.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     protected Object getControlObject() {

@@ -21,7 +21,6 @@ import java.net.URL;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.xml.sax.InputSource;

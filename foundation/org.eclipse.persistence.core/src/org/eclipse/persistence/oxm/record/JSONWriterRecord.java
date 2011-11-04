@@ -372,7 +372,7 @@ public class JSONWriterRecord extends MarshalRecord {
          position.setNeedToOpenComplex(false);
          if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);
-             characters((String)value);
+             characters((String)convertedValue);
          } else if(value.getClass() == String.class){
              //if schemaType is set and it's a numeric or boolean type don't treat as a string
              if(schemaType != null && isNumericOrBooleanType(schemaType)){

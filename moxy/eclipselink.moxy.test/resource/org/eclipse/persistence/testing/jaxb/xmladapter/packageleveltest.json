@@ -1,0 +1,9 @@
+{"testObject":{
+   "classBCollection":[
+       {"theValue":"listValue1"},
+       {"theValue":"listValue2"}
+   ],
+   "classBObject":{
+       "theValue":"singleValue"
+   }
+}}

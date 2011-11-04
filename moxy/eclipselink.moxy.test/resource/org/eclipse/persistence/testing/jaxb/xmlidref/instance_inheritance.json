@@ -1,0 +1,27 @@
+
+{"school":{
+   "students":{
+       "student":[
+           { 
+	      "id":1,
+	      "studentNumber":"B123"
+	   },
+	   { 
+	      "id":2,
+	      "studentNumber":"B456"
+	   },
+	    { 
+    	      "type":"transferStudent",
+	      "id":3,
+	      "studentNumber":"B789",
+	      "previousSchool":"Carleton"
+	   },
+	    { 
+	      "id":4,
+	      "studentNumber":"B987"
+	   }
+
+       ]
+   },    
+   "classPresident":3
+}}

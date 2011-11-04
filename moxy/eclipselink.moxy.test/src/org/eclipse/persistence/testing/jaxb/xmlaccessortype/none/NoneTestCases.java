@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlaccessortype.none;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,18 +19,18 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.xmladapter.classlevel.ClassA;
-import org.eclipse.persistence.testing.jaxb.xmladapter.classlevel.TestObject;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class NoneTestCases extends JAXBTestCases {
+public class NoneTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlaccessortype/none.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlaccessortype/none.json";
     private static final String BINDING_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlaccessortype/none-binding.xml";
 
     public NoneTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         Class[] classes = new Class[1];
         classes[0] = Root.class;

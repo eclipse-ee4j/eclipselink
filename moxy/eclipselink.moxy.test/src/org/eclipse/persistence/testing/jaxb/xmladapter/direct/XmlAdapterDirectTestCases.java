@@ -12,17 +12,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmladapter.direct;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlAdapterDirectTestCases extends JAXBTestCases {
+public class XmlAdapterDirectTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/direct.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/direct.json";
     private final static int DAY = 12; 
     private final static int MONTH = 4; 
     private final static int YEAR = 1997; 
 
     public XmlAdapterDirectTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);      
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = MyCalendar.class;
         classes[1] = MyCalendarType.class;

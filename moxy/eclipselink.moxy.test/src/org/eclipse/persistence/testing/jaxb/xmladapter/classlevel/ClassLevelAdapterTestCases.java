@@ -12,17 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.classlevel;
 
-import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class ClassLevelAdapterTestCases extends JAXBTestCases{
+public class ClassLevelAdapterTestCases extends JAXBWithJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/classleveltest.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/classleveltest.json";
     
     public ClassLevelAdapterTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);        
-
+        setControlJSON(JSON_RESOURCE);
+        
         Class[] classes = new Class[2];
         classes[0] = TestObject.class;
         classes[1] = ClassA.class;

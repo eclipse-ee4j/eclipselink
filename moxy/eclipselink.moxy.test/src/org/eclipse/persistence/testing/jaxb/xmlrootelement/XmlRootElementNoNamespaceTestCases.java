@@ -12,18 +12,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlrootelement;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlRootElementNoNamespaceTestCases extends JAXBTestCases {
+public class XmlRootElementNoNamespaceTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlrootelement/employee_nonamespace.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlrootelement/employee_nonamespace.json";
 	private final static int CONTROL_ID = 10;
 
     public XmlRootElementNoNamespaceTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = EmployeeNoNamespace.class;
         setClasses(classes);
