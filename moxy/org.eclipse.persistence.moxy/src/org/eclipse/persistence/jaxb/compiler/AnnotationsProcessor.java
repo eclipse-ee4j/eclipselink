@@ -4254,6 +4254,9 @@ public class AnnotationsProcessor {
     public void buildNewTypeInfo(JavaClass[] javaClasses) {
         preBuildTypeInfo(javaClasses);
         postBuildTypeInfo(javaClasses);
+        for(JavaClass next:javaClasses) {
+            processPropertyTypes(next);
+        }
     }
 
     /**
