@@ -39,18 +39,22 @@
 *********************************************************************************-->
 
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
-    <path id="maven-ant-tasks.classpath" path="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" />
+    <property file="${user.home}/build.properties"/>
+    <property file="build.properties"/>
+    <!-- The following properties defined so they can be overridden for testing -->
+    <property name="mavenant.dir" value="${build.deps.dir}/mavenant"/>
+    <property name="eclipselink.root.download.dir" value="home/data/httpd/download.eclipse.org/rt/eclipselink"/>
+    
+    <path id="maven-ant-tasks.classpath" path="${mavenant.dir}/maven-ant-tasks-2.0.8.jar" />
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
              classpathref="maven-ant-tasks.classpath" />
 
-    <!-- root of "download dir" defined so can be overridden for testing -->
-    <property name="eclipselink.root.download.dir" value="home/data/httpd/download.eclipse.org/rt/eclipselink"/>
     <!-- "maven dir" defined for later use ensuring only single upload occurs -->
     <property name="maven.repo.dir" value="${eclipselink.root.download.dir}/maven.repo"/>
     <!-- The repository where maven artifacts will be uploaded -->
     <artifact:remoteRepository id="eclipselink.repository" url="file:///${maven.repo.dir}" />
 
-    <target name="upload-maven-all" depends="upload-eclipselink"/> <!--, upload-dependencies"/ -->
+    <target name="upload-maven-all" depends="upload-eclipselink, upload-dependencies"/>
 
     <target name="discover-init">
         <dirname  property="maven.build.location_temp" file="${ant.file.Upload2Maven}"/>
@@ -74,18 +78,31 @@
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
     </target>
 
-    <target name="discover-jpaapi2-info" depends="discover-init">
-        <property name="jpaapi2.prefix" value="javax.persistence"/>
+    <target name="discover-static-built-info" depends="discover-init">
+        <property name="jpaapi2.prefix"   value="javax.persistence"/>
         <property name="jpaapi2.criteria" value="[2.0.0,2.1.0)"/>
-        <property name="jpaapi2.name" value="Javax Persistence"/>
+        <property name="jpaapi2.name"     value="Javax Persistence"/>
+        <property name="sdoapi.prefix"    value="commonj.sdo"/>
+        <property name="sdoapi.criteria"  value="[2.1.1,2.2.0)"/>
+        <property name="sdoapi.name"      value="SDO API"/>
 
         <selectbundle basename="${jpaapi2.prefix}" directory="${maven.2.jpa.plugins.dir}"
                      criterion="${jpaapi2.criteria}" property="jpaapi2.version" versiononly="true"
         />
+        <selectbundle basename="${sdoapi.prefix}" directory="${maven.2.sdo.plugins.dir}"
+                     criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
+        />
+        
         <echo message="jpaapi2.version = ${jpaapi2.version}"/>
+        <echo message="sdoapi.version  = ${sdoapi.version}"/>
     </target>
 
-    <target name="upload-maven-init" depends="discover-jpaapi2-info">
+    <target name="upload-maven-init" depends="discover-static-built-info">
+        <!-- Defaults for testing, will be previously set on real run -->
+        <tstamp>
+            <format property="build.date" pattern="yyyyMMdd"/>
+        </tstamp>
+ 
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
         <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
         <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
@@ -159,6 +176,7 @@
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi2.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}1.0.0.${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.sdoapi"        value="${dep.grp}commonj.sdo${dep.art}commonj.sdo${dep.ver}${sdoapi.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 
         <!-- These define the dependency block for a given artifact -->
         <!-- * JPA does have a dependency upon javax.persistence, but it is left unstated because while 2.0 functionality -->
@@ -176,10 +194,10 @@
         <property name="equinox.dependencies"  value="${deps.head}${dep.jpa.weaving}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
-        <property name="sdo.dependencies"      value="${deps.head}${dep.moxy}${dep.core}${deps.foot}"/>
+        <property name="sdoapi.dependencies"   value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
-    <target name="upload-jpaapi2" depends="discover-jpaapi2-info">
+    <target name="upload-static-built-jars" depends="discover-static-built-info">
         <antcall target="upload-release-artifact">
             <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${jpaapi2.prefix}/${jpaapi2.version}"/>
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -190,9 +208,18 @@
             <param name="artifactName"    value="${jpaapi2.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
+        <antcall target="upload-release-artifact-no-src">
+            <param name="repo.dir"        value="/${maven.repo.dir}/commonj/sdo/${sdoapi.prefix}/${sdoapi.version}"/>
+            <param name="groupId"         value="${sdoapi.prefix}"/>
+            <param name="artifactId"      value="${sdoapi.prefix}"/>
+            <param name="artifactVersion" value="${sdoapi.version}"/>
+            <param name="artifact"        value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}_${sdoapi.version}.jar"/>
+            <param name="artifactName"    value="${sdoapi.name}"/>
+            <param name="dependencies"    value=""/>
+        </antcall>
     </target>
 
-    <target name="upload-eclipselink" depends="upload-maven-init,upload-jpaapi2">
+    <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
         <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
@@ -225,8 +252,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.core"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.core.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
             <param name="dependencies" value="${core.dependencies}"/>
         </antcall>
@@ -234,8 +261,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.oracle.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.oracle.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
             <param name="dependencies" value="${oracle.dependencies}"/>
         </antcall>
@@ -243,8 +270,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.jpa"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.jpa.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.jpa.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA"/>
             <param name="dependencies" value="${jpa.dependencies}"/>
         </antcall>
@@ -252,7 +279,7 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.jpa.modelgen.processor"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.processor.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.processor.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA Modelgen Processor (non-OSGi)"/>
             <param name="dependencies" value=""/>
         </antcall>
@@ -260,8 +287,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.jpa.modelgen"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.modelgen.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.modelgen.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.modelgen.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.modelgen.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA Modelgen (non-OSGi)"/>
             <param name="dependencies" value="${modelgen.dependencies}"/>
         </antcall>
@@ -269,8 +296,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.weaving"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.weaving.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.weaving.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.weaving.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.weaving.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA Weaving for Equinox Fragment"/>
             <param name="dependencies" value="${weaving.dependencies}"/>
         </antcall>
@@ -278,8 +305,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.equinox"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.equinox.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.equinox.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.equinox.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.equinox.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink JPA Equinox Fragment"/>
             <param name="dependencies" value="${equinox.dependencies}"/>
         </antcall>
@@ -287,8 +314,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.osgi"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.osgi.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.osgi.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.osgi.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.osgi.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink OSGi Deployment Fragment"/>
             <param name="dependencies" value="${equinox.dependencies}"/>
         </antcall>
@@ -296,8 +323,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.moxy"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.moxy.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.moxy.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Moxy"/>
             <param name="dependencies" value="${moxy.dependencies}"/>
         </antcall>
@@ -305,8 +332,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.sdo"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.sdo.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.sdo.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink SDO"/>
             <param name="dependencies" value="${sdo.dependencies}"/>
         </antcall>
@@ -314,8 +341,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.dbws"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${eclipselink.plugins}/${eclipselink.dbws.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${eclipselink.plugins}/${eclipselink.dbws.bndl.prefix}.source_${version.string}.jar"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.dbws.bndl.prefix}_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.dbws.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink DBWS"/>
             <param name="dependencies" value="${dbws.dependencies}"/>
         </antcall>
@@ -325,9 +352,6 @@
     <target name="discover-dependency-info" depends="discover-init">
         <!-- third-party Dependency variables -->
         <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-        <property name="sdo.prefix" value="commonj.sdo"/>
-        <property name="sdo.criteria" value="[2.1.1,2.2.0)"/>
-        <property name="sdo.name" value="SDO API"/>
         <property name="activation.prefix" value="javax.activation"/>
         <property name="activation.criteria" value="[1.1.0,1.2.0)"/>
         <property name="activation.name" value="Javax Activation"/>
@@ -348,9 +372,6 @@
         <property name="xml.stream.name" value="Javax XML Stream"/>
 
         <!-- Discover dependencies for branch/build -->
-        <selectbundle basename="${sdo.prefix}" directory="${maven.2.sdo.plugins.dir}"
-                     criterion="${sdo.criteria}" property="sdo.version" versiononly="true"
-        />
         <selectbundle basename="${activation.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${activation.criteria}" property="activation.version" versiononly="true"
         />
@@ -366,7 +387,6 @@
         <selectbundle basename="${xml.stream.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
-        <echo message="sdo.version        = ${sdo.version}"/>
         <echo message="activation.version = ${activation.version}"/>
         <echo message="mail.version       = ${mail.version}"/>
         <echo message="servlet.version    = ${servlet.version}"/>
@@ -397,16 +417,6 @@
 
     <target name="upload-dependencies" depends="discover-dependency-info">
         <!-- call upload for each artifact we want to upload -->
-        <!-- SDO API -->
-        <antcall target="upload-release-artifact-no-src">
-            <param name="repo.dir" value="/${maven.repo.dir}/commonj/sdo/${sdo.prefix}/${sdo.version}"/>
-            <param name="groupId" value="${sdo.prefix}"/>
-            <param name="artifactId" value="${sdo.prefix}"/>
-            <param name="artifactVersion" value="${sdo.version}"/>
-            <param name="artifact" value="${maven.2.sdo.plugins.dir}/${sdo.prefix}_${sdo.version}.jar"/>
-            <param name="artifactName" value="${sdo.name}"/>
-            <param name="dependencies" value=""/>
-        </antcall>
         <!-- ACTIVATION API -->
         <antcall target="upload-release-artifact-no-src">
             <param name="repo.dir" value="/${maven.repo.dir}/javax/activation/${activation.prefix}/${activation.version}"/>
