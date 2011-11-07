@@ -39,6 +39,8 @@
 *********************************************************************************-->
 
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
+    <property file="${user.home}/build.properties"/>
+    <property file="build.properties"/>
     <!-- The following properties defined so they can be overridden for testing -->
     <property name="mavenant.dir" value="${build.deps.dir}/mavenant"/>
     <property name="eclipselink.root.download.dir" value="home/data/httpd/download.eclipse.org/rt/eclipselink"/>
@@ -111,10 +113,9 @@
 
     <target name="upload-maven-init" depends="discover-static-built-info">
         <!-- Defaults for testing, will be previously set on real run -->
-        <!-- tstamp>
+        <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
         </tstamp>
-        <property name="build.type" value="SNAPSHOT"/ -->
  
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
         <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
@@ -226,7 +227,7 @@
             <param name="groupId"         value="${sdoapi.prefix}"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.version}"/>
-            <param name="artifact"        value="${maven.2.sdoapi.plugins.dir}/${sdoapi.prefix}_${sdoapi.version}.jar"/>
+            <param name="artifact"        value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}_${sdoapi.version}.jar"/>
             <param name="artifactName"    value="${sdoapi.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
