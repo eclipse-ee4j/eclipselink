@@ -80,6 +80,9 @@
         <property name="jpaapi2.prefix"   value="javax.persistence"/>
         <property name="jpaapi2.criteria" value="[2.0.0,2.1.0)"/>
         <property name="jpaapi2.name"     value="Javax Persistence"/>
+        <property name="sdoapi.prefix"    value="commonj.sdo"/>
+        <property name="sdoapi.criteria"  value="[2.1.1,2.2.0)"/>
+        <property name="sdoapi.name"      value="SDO API"/>
         <property name="antlr.prefix"     value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria"   value="[3.0.0,4.0.0)"/>
         <property name="antlr.name"       value="EclipseLink ANTLR"/>
@@ -90,6 +93,9 @@
         <selectbundle basename="${jpaapi2.prefix}" directory="${maven.2.jpa.plugins.dir}"
                      criterion="${jpaapi2.criteria}" property="jpaapi2.version" versiononly="true"
         />
+        <selectbundle basename="${sdoapi.prefix}" directory="${maven.2.sdo.plugins.dir}"
+                     criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
+        />
         <selectbundle basename="${antlr.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
         />
@@ -98,6 +104,7 @@
         />
         
         <echo message="jpaapi2.version = ${jpaapi2.version}"/>
+        <echo message="sdoapi.version  = ${sdoapi.version}"/>
         <echo message="antlr.version   = ${antlr.version}"/>
         <echo message="asm.version     = ${asm.version}"/>
     </target>
@@ -182,6 +189,7 @@
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi2.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}1.0.0.${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.sdoapi"        value="${dep.grp}commonj.sdo${dep.art}commonj.sdo${dep.ver}${sdoapi.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 
         <!-- These define the dependency block for a given artifact -->
         <!-- * JPA does have a dependency upon javax.persistence, but it is left unstated because while 2.0 functionality -->
@@ -199,7 +207,7 @@
         <property name="equinox.dependencies"  value="${deps.head}${dep.jpa.weaving}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
-        <property name="sdo.dependencies"      value="${deps.head}${dep.moxy}${dep.core}${deps.foot}"/>
+        <property name="sdoapi.dependencies"   value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
     <target name="upload-static-built-jars" depends="discover-static-built-info">
@@ -211,6 +219,15 @@
             <param name="artifact"        value="${maven.2.jpa.plugins.dir}/${jpaapi2.prefix}_${jpaapi2.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi2.prefix}.source_${jpaapi2.version}.jar"/>
             <param name="artifactName"    value="${jpaapi2.name}"/>
+            <param name="dependencies"    value=""/>
+        </antcall>
+        <antcall target="upload-release-artifact-no-src">
+            <param name="repo.dir"        value="/${maven.repo.dir}/commonj/sdo/${sdoapi.prefix}/${sdoapi.version}"/>
+            <param name="groupId"         value="${sdoapi.prefix}"/>
+            <param name="artifactId"      value="${sdoapi.prefix}"/>
+            <param name="artifactVersion" value="${sdoapi.version}"/>
+            <param name="artifact"        value="${maven.2.sdoapi.plugins.dir}/${sdoapi.prefix}_${sdoapi.version}.jar"/>
+            <param name="artifactName"    value="${sdoapi.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-release-artifact">
@@ -368,9 +385,6 @@
     <target name="discover-dependency-info" depends="discover-init">
         <!-- third-party Dependency variables -->
         <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-        <property name="sdo.prefix" value="commonj.sdo"/>
-        <property name="sdo.criteria" value="[2.1.1,2.2.0)"/>
-        <property name="sdo.name" value="SDO API"/>
         <property name="activation.prefix" value="javax.activation"/>
         <property name="activation.criteria" value="[1.1.0,1.2.0)"/>
         <property name="activation.name" value="Javax Activation"/>
@@ -391,9 +405,6 @@
         <property name="xml.stream.name" value="Javax XML Stream"/>
 
         <!-- Discover dependencies for branch/build -->
-        <selectbundle basename="${sdo.prefix}" directory="${maven.2.sdo.plugins.dir}"
-                     criterion="${sdo.criteria}" property="sdo.version" versiononly="true"
-        />
         <selectbundle basename="${activation.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${activation.criteria}" property="activation.version" versiononly="true"
         />
@@ -409,7 +420,6 @@
         <selectbundle basename="${xml.stream.prefix}" directory="${maven.2.common.plugins.dir}"
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
-        <echo message="sdo.version        = ${sdo.version}"/>
         <echo message="activation.version = ${activation.version}"/>
         <echo message="mail.version       = ${mail.version}"/>
         <echo message="servlet.version    = ${servlet.version}"/>
@@ -440,16 +450,6 @@
 
     <target name="upload-dependencies" depends="discover-dependency-info">
         <!-- call upload for each artifact we want to upload -->
-        <!-- SDO API -->
-        <antcall target="upload-release-artifact-no-src">
-            <param name="repo.dir" value="/${maven.repo.dir}/commonj/sdo/${sdo.prefix}/${sdo.version}"/>
-            <param name="groupId" value="${sdo.prefix}"/>
-            <param name="artifactId" value="${sdo.prefix}"/>
-            <param name="artifactVersion" value="${sdo.version}"/>
-            <param name="artifact" value="${maven.2.sdo.plugins.dir}/${sdo.prefix}_${sdo.version}.jar"/>
-            <param name="artifactName" value="${sdo.name}"/>
-            <param name="dependencies" value=""/>
-        </antcall>
         <!-- ACTIVATION API -->
         <antcall target="upload-release-artifact-no-src">
             <param name="repo.dir" value="/${maven.repo.dir}/javax/activation/${activation.prefix}/${activation.version}"/>
