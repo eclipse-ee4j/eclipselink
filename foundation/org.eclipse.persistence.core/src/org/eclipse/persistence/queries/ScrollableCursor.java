@@ -25,6 +25,8 @@ public class ScrollableCursor extends Cursor implements ListIterator {
     protected transient Object previousObject;
     /** Store the previous row, for 1-m joining. */
     protected AbstractRecord previousRow;
+    /** Internal flag indicating if the end of the cursor has been reached */
+    protected boolean atEndOfCursor = false;
 
     /**
      * INTERNAL:
@@ -118,7 +120,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
 
     /**
      * INTERNAL:
-     * Clear the cache next and previous values.
+     * Clear the cached next and previous object and row values.
      * This must be called whenever the cursor is re-positioned.
      */
     protected void clearNextAndPrevious() {
@@ -126,6 +128,18 @@ public class ScrollableCursor extends Cursor implements ListIterator {
         this.previousObject = null;
         this.nextRow = null;
         this.previousRow = null;
+        this.atEndOfCursor = false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Clear only the cached next and previous object values.
+     * Called by previous() and next() to maintain the cached next
+     * and previous row values.
+     */
+    protected void clearNextAndPreviousObject() {
+        this.nextObject = null;
+        this.previousObject = null;
     }
 
     /**
@@ -425,7 +439,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             throw QueryException.readBeyondStream(this.query);
         }
         Object next = this.nextObject;
-        clearNextAndPrevious();
+        clearNextAndPreviousObject();
         return next;
     }
 
@@ -472,13 +486,12 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * @exception - throws exception if read pass first of stream
      */
     public Object previous() throws DatabaseException, QueryException {
-        // CR#4139
         loadPrevious();
-        if (getPreviousObject() == null) {
+        if (this.previousObject == null) {
             throw QueryException.readBeyondStream(this.query);
         }
-        Object previous = getPreviousObject();
-        clearNextAndPrevious();
+        Object previous = this.previousObject;
+        clearNextAndPreviousObject();
         return previous;
     }
 
@@ -544,15 +557,19 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 return null;
             }
             AbstractRecord row = null;
-            if (this.nextRow == null) {
-                row = getAccessor().cursorRetrieveNextRow(this.fields, this.resultSet, this.executionSession);
-            } else {
-                row = this.nextRow;
-                this.nextRow = null;
+            // if the end of the cursor has been reached, do not retrieve more rows
+            if (!this.atEndOfCursor) {
+                if (this.nextRow == null) {
+                    row = getAccessor().cursorRetrieveNextRow(this.fields, this.resultSet, this.executionSession);
+                } else {
+                    row = this.nextRow;
+                    this.nextRow = null;
+                }
             }
             
             this.position = currentPosition + 1;  // bug 309142
             if (row == null) {
+                this.atEndOfCursor = true;
                 return null;
             }
             
@@ -561,6 +578,10 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
                 if (joinManager.isToManyJoin()) {
                     this.nextRow = joinManager.processDataResults(row, this, true);
+                    // if the join manager returns a null next row, we are at the end of the cursor
+                    if (this.nextRow == null) {
+                       this.atEndOfCursor = true;
+                    }
                 }
             }
             
@@ -605,6 +626,12 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 row = this.previousRow;
                 this.previousRow = null;
             }
+
+            this.position = currentPosition - 1;
+            if (row == null) {
+                return null;
+            }
+            
             // If using 1-m joining need to fetch 1-m rows as well.
             if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
                 JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
@@ -612,11 +639,6 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                     this.previousRow = joinManager.processDataResults(row, this, false);
                 }
             }
-            // This scenario is now impossible.
-            if (row == null) {
-                return null;
-            }
-            this.position = currentPosition - 1;
 
             Object object = buildAndRegisterObject(row);
 
