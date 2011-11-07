@@ -46,6 +46,7 @@ import javax.xml.validation.Schema;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -102,6 +103,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
+        xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
         try {
             xmlInputFactory = XMLInputFactory.newInstance();
         } catch(FactoryConfigurationError e) {
@@ -739,6 +741,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
         	}
         } else if(JAXBContext.VALUE_WRAPPER.equals(key)){
         	xmlUnmarshaller.setValueWrapper((String)value); 
+        } else if (JAXBContext.ID_RESOLVER.equals(key)) {
+            setIDResolver((IDResolver) value);
         } else {
             throw new PropertyException(key, value);
         }
@@ -936,4 +940,26 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public String getAttributePrefix() {
         return attributePrefix;
     }
+
+    /**
+     * Return this Unmarshaller's custom IDResolver.
+     * 
+     * @see IDResolver
+     * @since 2.4
+     * @return the custom IDResolver, or null if one has not been specified.
+     */
+    public IDResolver getIDResolver() {
+        return getXMLUnmarshaller().getIDResolver();
+    }
+
+    /**
+     * Set this Unmarshaller's custom IDResolver.
+     * 
+     * @see IDResolver
+     * @since 2.4
+     */
+    public void setIDResolver(IDResolver idResolver) {
+        getXMLUnmarshaller().setIDResolver(idResolver);
+    }
+
 }

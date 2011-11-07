@@ -144,10 +144,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public static final String INCLUDE_ROOT = "eclipselink.include-root";
     
     /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
-     *  that will be used around things mapped with @XmlValue.  Not application if the
+     *  that will be used around things mapped with @XmlValue.  Not applicable if the
      *  eclipselink.media.type is set to "application/xml" 
      */
     public static final String VALUE_WRAPPER = "eclipselink.value-wrapper";
+
+    /** The Constant ID_RESOLVER.  This can be used to specify a custom
+     * IDResolver class, to allow customization of ID/IDREF processing.
+     */
+    public static final String ID_RESOLVER = "eclipselink.id-resolver";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
