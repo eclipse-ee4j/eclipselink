@@ -16,6 +16,8 @@ package dbws.testing.attachedbinary;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,6 +27,7 @@ import javax.activation.DataHandler;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -42,8 +45,69 @@ import dbws.testing.DBWSTestSuite;
 
 public class AttachedBinaryTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_ATTACHEDBINARY_TABLE =
+        "CREATE TABLE IF NOT EXISTS attachedbinary (" +
+            "\nID DECIMAL(7,0) NOT NULL," +
+            "\nNAME VARCHAR(80)," +
+            "\nB BLOB," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_ATTACHEDBINARY_TABLE = new String[] {
+        "insert into attachedbinary(ID, NAME, B) values (1, 'one', 0x010101010101010101010101010101)",
+        "insert into attachedbinary(ID, NAME, B) values (2, 'two', 0x020202020202020202020202020202)",
+        "insert into attachedbinary(ID, NAME, B) values (3, 'three', 0x030303030303030303030303030303)"
+    };
+    static final String CREATE_GETBLOBBYID_FUNCTION =
+        "CREATE FUNCTION getBLOBById(pk numeric(7)) RETURNS BLOB" +
+            "\nREADS SQL DATA" +
+        "\nBEGIN" +
+            "\nDECLARE blb BLOB;" +
+            "\nSELECT B into blb FROM attachedbinary WHERE ID=PK;" +
+            "\nreturn(blb);" +
+        "END";
+    static final String DROP_ATTACHEDBINARY_TABLE =
+        "DROP TABLE attachedbinary";
+    static final String DROP_GETBLOBBYID_FUNCTION =
+        "DROP FUNCTION getBLOBById";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_ATTACHEDBINARY_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                createDbArtifact(conn, CREATE_GETBLOBBYID_FUNCTION);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_ATTACHEDBINARY_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_ATTACHEDBINARY_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -78,6 +142,14 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             "</dbws-builder>";
         builder = null;
         DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_ATTACHEDBINARY_TABLE);
+            dropDbArtifact(conn, DROP_GETBLOBBYID_FUNCTION);
+        }
     }
 
     public static SOAPAttachmentHandler attachmentHandler = new SOAPAttachmentHandler();

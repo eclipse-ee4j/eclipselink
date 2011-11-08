@@ -87,17 +87,15 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchi
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //testing imports
-import static dbws.testing.TestHelper.DATABASE_DRIVER_KEY;
-import static dbws.testing.TestHelper.DATABASE_PASSWORD_KEY;
-import static dbws.testing.TestHelper.DATABASE_PLATFORM_KEY;
-import static dbws.testing.TestHelper.DATABASE_URL_KEY;
-import static dbws.testing.TestHelper.DATABASE_USERNAME_KEY;
-import static dbws.testing.TestHelper.DEFAULT_DATABASE_DRIVER;
-import static dbws.testing.TestHelper.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.TestHelper.DEFAULT_DATABASE_PLATFORM;
-import static dbws.testing.TestHelper.DEFAULT_DATABASE_URL;
-import static dbws.testing.TestHelper.DEFAULT_DATABASE_USERNAME;
-import static dbws.testing.TestHelper.documentToString;
+import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
+import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
+import static dbws.testing.DBWSTestSuite.documentToString;
 import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_PORT;
 import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE;
 import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE_NAMESPACE;
@@ -124,7 +122,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         "select * from SECONDARY";
     static final String SECONDARY_ALL_SCHEMA_TYPE = "secondaryType";
     static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SECONDARY_TEST;
-    
+
     static final String DBWS_BUILDER_XML_USERNAME =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -180,11 +178,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-        String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-        DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
+        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+        DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel =
@@ -265,7 +261,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          login.setUserName(builder.getUsername());
          login.setPassword(builder.getPassword());
          ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-         ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
+         ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
          Platform platform = builder.getDatabasePlatform();
          ConversionManager cm = platform.getConversionManager();
          cm.setLoader(parentClassLoader);
@@ -352,7 +348,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              sfe.printStackTrace();
              fail("An unexpected exception occurred: " + sfe.getMessage());
          }
-         
+
          if (response != null) {
              Source src = response.getSOAPPart().getContent();
              TransformerFactory tf = TransformerFactory.newInstance();
@@ -578,11 +574,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
          String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
          String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-         String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-         String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
          String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-             password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-               DBWS_BUILDER_XML_PLATFORM + platform +
+             password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+               DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM +
                  "</property>" +
               "</properties>" +
             "<sql " +

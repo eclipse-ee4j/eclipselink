@@ -18,6 +18,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -81,23 +85,22 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import org.eclipse.persistence.tools.dbws.SQLOperationModel;
-
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_DRIVER_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_PLATFORM_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
+import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.NONSENCE_WHERE_SQL;
 import static dbws.testing.DBWSTestSuite.SECONDARY;
 import static dbws.testing.DBWSTestSuite.SECONDARY_ALL_SCHEMA_TYPE;
@@ -109,6 +112,9 @@ import static dbws.testing.DBWSTestSuite.SECONDARY_PORT;
 import static dbws.testing.DBWSTestSuite.SECONDARY_SERVICE;
 import static dbws.testing.DBWSTestSuite.SECONDARY_SERVICE_NAMESPACE;
 import static dbws.testing.DBWSTestSuite.SECONDARY_TEST;
+import static dbws.testing.DBWSTestSuite.buildConnection;
+import static dbws.testing.DBWSTestSuite.createDbArtifact;
+import static dbws.testing.DBWSTestSuite.dropDbArtifact;
 
 @WebServiceProvider(
     targetNamespace = SECONDARY_SERVICE_NAMESPACE,
@@ -118,6 +124,37 @@ import static dbws.testing.DBWSTestSuite.SECONDARY_TEST;
 @ServiceMode(MESSAGE)
 
 public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+
+    static final String CREATE_SECONDARY_TABLE =
+        "CREATE TABLE IF NOT EXISTS secondary (" +
+            "\nEMPNO NUMERIC(4)," +
+            "\nENAME VARCHAR(10)," +
+            "\nJOB VARCHAR(9)," +
+            "\nMGR NUMERIC(4)," +
+            "\nHIREDATE DATE," +
+            "\nSAL NUMERIC(7,2)," +
+            "\nCOMM NUMERIC(7,2)," +
+            "\nDEPTNO NUMERIC(2)," +
+            "\nPRIMARY KEY (EMPNO)" +
+        "\n)";
+    static final String[] POPULATE_SECONDARY_TABLE = new String[] {
+        "INSERT INTO secondary VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20)",
+        "INSERT INTO secondary VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",
+        "INSERT INTO secondary VALUES (7521,'WARD','SALESMAN',7698,'1981-2-22',1250,500,30)",
+        "INSERT INTO secondary VALUES (7566,'JONES','MANAGER',7839,'1981-4-2',2975,NULL,20)",
+        "INSERT INTO secondary VALUES (7654,'MARTIN','SALESMAN',7698,'1981-9-28',1250,1400,30)",
+        "INSERT INTO secondary VALUES (7698,'BLAKE','MANAGER',7839,'1981-5-1',2850,NULL,30)",
+        "INSERT INTO secondary VALUES (7782,'CLARK','MANAGER',7839,'1981-6-9',2450,NULL,10)",
+        "INSERT INTO secondary VALUES (7788,'SCOTT','ANALYST',7566,'1981-06-09',3000,NULL,20)",
+        "INSERT INTO secondary VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10)",
+        "INSERT INTO secondary VALUES (7844,'TURNER','SALESMAN',7698,'1981-9-8',1500,0,30)",
+        "INSERT INTO secondary VALUES (7876,'ADAMS','CLERK',7788,'1987-05-23',1100,NULL,20)",
+        "INSERT INTO secondary VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30)",
+        "INSERT INTO secondary VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20)",
+        "INSERT INTO secondary VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10)"
+    };
+    static final String DROP_SECONDARY_TABLE =
+        "DROP TABLE secondary";
 
     static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SECONDARY_TEST;
     static final String DBWS_BUILDER_XML_USERNAME =
@@ -157,6 +194,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         "</dbws-builder>";
 
     // JUnit test fixtures
+    static String ddl = "false";
+    static Connection conn = null;
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
@@ -172,15 +211,38 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        try {
+            conn = buildConnection();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SECONDARY_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_SECONDARY_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_SECONDARY_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-        String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
 
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-        DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
+        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+        DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel =
@@ -212,6 +274,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
+        }
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SECONDARY_TABLE);
         }
     }
 
@@ -262,7 +327,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          login.setUserName(builder.getUsername());
          login.setPassword(builder.getPassword());
          ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-         ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
+         ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
          Platform platform = builder.getDatabasePlatform();
          ConversionManager cm = platform.getConversionManager();
          cm.setLoader(parentClassLoader);
@@ -340,16 +405,16 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
              new InputSource(new StringReader(COUNT_REQUEST_MSG))));
 
-         
 
-        /*         
+
+        /*
          Document requestDoc = (Document)domSource.getNode();
          String requestString = DBWSTestProviderHelper.documentToString(requestDoc);
          System.out.println(requestString);
         */
- 		        
 
-         
+
+
          part.setContent(domSource);
          Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
              Service.Mode.MESSAGE);
@@ -589,11 +654,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
          String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
          String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-         String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-         String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
          String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-             password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-               DBWS_BUILDER_XML_PLATFORM + platform +
+             password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+               DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM +
                  "</property>" +
               "</properties>" +
             "<sql " +

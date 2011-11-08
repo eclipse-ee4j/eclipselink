@@ -14,6 +14,8 @@ package dbws.testing.inlinebinary;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,6 +24,7 @@ import org.w3c.dom.Element;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -37,8 +40,53 @@ import dbws.testing.DBWSTestSuite;
 
 public class InlineBinaryTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_INLINE_TABLE =
+        "CREATE TABLE IF NOT EXISTS inlinebinary (" +
+            "\nID DECIMAL(7,0) NOT NULL," +
+            "\nNAME VARCHAR(80)," +
+            "\nB BLOB," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_INLINE_TABLE = new String[] {
+        "insert into inlinebinary(ID, NAME, B) values (1, 'one', 0x010101010101010101010101010101)",
+        "insert into inlinebinary(ID, NAME, B) values (2, 'two', 0x020202020202020202020202020202)",
+        "insert into inlinebinary(ID, NAME, B) values (3, 'three', 0x030303030303030303030303030303)"
+    };
+    static final String DROP_INLINE_TABLE =
+        "DROP TABLE inlinebinary";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_INLINE_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_INLINE_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_INLINE_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
            "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -64,6 +112,13 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
            "</dbws-builder>";
         builder = null;
         DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_INLINE_TABLE);
+        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -18,7 +18,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -60,47 +63,46 @@ import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAM
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
-public class TestHelper {
-    
+public class DBWSTestSuite {
+
+    public static final String DATABASE_DRIVER = "oracle.jdbc.OracleDriver";
+    public static final String DATABASE_PLATFORM =
+        "org.eclipse.persistence.platform.database.oracle.Oracle11Platform";
     public static final String DATABASE_USERNAME_KEY = "db.user";
     public static final String DATABASE_PASSWORD_KEY = "db.pwd";
     public static final String DATABASE_URL_KEY = "db.url";
-    public static final String DATABASE_DRIVER_KEY = "db.driver";
-    public static final String DATABASE_PLATFORM_KEY = "db.platform";
-    public static final String DEFAULT_DATABASE_DRIVER = "oracle.jdbc.OracleDriver";
-    public static final String DEFAULT_DATABASE_PLATFORM = 
-        "org.eclipse.persistence.platform.database.OraclePlatform";
     public static final String DEFAULT_DATABASE_USERNAME = "user";
     public static final String DEFAULT_DATABASE_PASSWORD = "password";
     public static final String DEFAULT_DATABASE_URL = "jdbc:oracle:thin:@localhost:1521:ORCL";
+    public static final String DATABASE_DDL_KEY = "db.ddl";
+    public static final String DEFAULT_DATABASE_DDL = "false";
     public static final String RELEASE_VERSION_KEY = "release.version";
     public static final String DEFAULT_RELEASE_VERSION= "2.4.0";
+    public static String releaseVersion = System.getProperty(RELEASE_VERSION_KEY, DEFAULT_RELEASE_VERSION);
 
+    //shared JUnit fixtures
+    public static Connection conn = AllTests.conn;
+    public static String username = null;
+    public static String password = null;
+    public static String url = null;
+    // JUnit test fixtures
     public static String DBWS_BUILDER_XML_USERNAME;
     public static String DBWS_BUILDER_XML_PASSWORD;
     public static String DBWS_BUILDER_XML_URL;
     public static String DBWS_BUILDER_XML_DRIVER;
     public static String DBWS_BUILDER_XML_PLATFORM;
     public static String DBWS_BUILDER_XML_MAIN;
-    public static String username = null;
-    public static String password = null;
-    public static String url = null;
-    public static String driver = null;
-    public static String platform = null;
-    public static String releaseVersion = System.getProperty(RELEASE_VERSION_KEY, DEFAULT_RELEASE_VERSION);
-    
+    public static XMLComparer comparer = new XMLComparer();
+    public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+    public static XMLParser xmlParser = xmlPlatform.newXMLParser();
+    public static DBWSBuilder builder = null;
+    public static XRServiceAdapter xrService = null;
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = null;
     public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = null;
     public static ByteArrayOutputStream DBWS_SESSION_STREAM = null;
     public static ByteArrayOutputStream DBWS_OR_STREAM = null;
     public static ByteArrayOutputStream DBWS_OX_STREAM = null;
     public static ByteArrayOutputStream DBWS_WSDL_STREAM = null;
-
-    public static XMLComparer comparer = new XMLComparer();
-    public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-    public static XMLParser xmlParser = xmlPlatform.newXMLParser();
-    public static DBWSBuilder builder = null;
-    public static XRServiceAdapter xrService = null;
 
     public static void setUp(String stageDir) throws WSDLException {
         if (builder == null) {
@@ -115,17 +117,15 @@ public class TestHelper {
         username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-        platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
-        String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD + 
-            password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver + 
-            DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
+        String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
+            password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+            DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel = (DBWSBuilderModel)unmarshaller.unmarshal(
             new StringReader(builderString));
         builder.quiet = true;
-        builder.setPlatformClassname(platform);
+        builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.properties = builderModel.properties;
         builder.operations = builderModel.operations;
         XRPackager xrPackager = new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
@@ -180,7 +180,7 @@ public class TestHelper {
                 login.setUserName(username);
                 login.setPassword(password);
                 ((DatabaseLogin) login).setConnectionString(url);
-                ((DatabaseLogin) login).setDriverClassName(driver);
+                ((DatabaseLogin) login).setDriverClassName(DATABASE_PLATFORM);
                 Platform platform = builder.getDatabasePlatform();
                 ConversionManager conversionManager = platform.getConversionManager();
                 if (conversionManager != null) {
@@ -212,12 +212,12 @@ public class TestHelper {
             new StringReader(DBWS_SERVICE_STREAM.toString()));
         xrService = factory.buildService(model);
     }
-    
+
     /**
      * Helper method that removes empty text nodes from a Document.
      * This is typically called prior to comparing two documents
      * for equality.
-     * 
+     *
      */
     public static void removeEmptyTextNodes(Node node) {
         NodeList nodeList = node.getChildNodes();
@@ -236,7 +236,7 @@ public class TestHelper {
 
     /**
      * Returns the given org.w3c.dom.Document as a String.
-     * 
+     *
      */
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);
@@ -250,6 +250,29 @@ public class TestHelper {
         } catch (Exception e) {
             // e.printStackTrace();
             return "<empty/>";
+        }
+    }
+
+    public static Connection buildConnection() throws ClassNotFoundException, SQLException {
+        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+        String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+        Class.forName(DATABASE_DRIVER);
+        return DriverManager.getConnection(url, username, password);
+    }
+
+    public static void createDbArtifact(Connection conn, String createTableDDL) throws SQLException {
+        PreparedStatement pStmt = conn.prepareStatement(createTableDDL);
+        pStmt.execute();
+    }
+
+    public static void dropDbArtifact(Connection conn, String dropTableDDL) {
+        try {
+            PreparedStatement pStmt = conn.prepareStatement(dropTableDDL);
+            pStmt.execute();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

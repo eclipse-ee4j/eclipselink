@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS simpletable2 (
-  ID NUMERIC NOT NULL,
-  NAME VARCHAR(25),
-  SINCE DATE,
-  PRIMARY KEY (ID)
-)|
-INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (1, 'mike', '2001-12-25')|
-INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (2, 'blaise','2001-12-25')|
-INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (3, 'rick','2001-12-25')|

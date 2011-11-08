@@ -13,31 +13,27 @@
 package dbws.testing.simpletablewithnestedsql;
 
 //javase imports
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_DRIVER_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_PLATFORM_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
-import static org.eclipse.persistence.internal.dbws.ProviderHelper.MATCH_SCHEMA;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.sql.Statement;
 
+//java eXtension imports
 import javax.wsdl.WSDLException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+//EclipseLink imports
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
@@ -48,14 +44,75 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
-import org.junit.Test;
+import static org.eclipse.persistence.internal.dbws.ProviderHelper.MATCH_SCHEMA;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
+//testing imports
 import dbws.testing.DBWSTestSuite;
 
 public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
 
+    static final String CREATE_SIMPLE2_TABLE =
+        "CREATE TABLE IF NOT EXISTS simpletable2 (" +
+            "\nID NUMERIC," +
+            "\nNAME varchar(25)," +
+            "\nSINCE date," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static String[] POPULATE_SIMPLE2_TABLE = new String[] {
+        "INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (1, 'mike', '2001-12-25')",
+        "INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (2, 'blaise','2001-12-25')",
+        "INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (3, 'rick','2001-12-25')"
+    };
+    static final String DROP_SIMPLE2_TABLE =
+        "DROP TABLE simpletable2";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     public final static String FINDBYNAME_RESPONSETYPE = "findByNameResponseType";
     public final static String TABLE_ALIAS ="ns1:simpletable2Type";
+
+    @BeforeClass
+    public static void setUp() {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SIMPLE2_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_SIMPLE2_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_SIMPLE2_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SIMPLE2_TABLE);
+        }
+    }
 
     @Test
     public void checkWSDL() throws WSDLException {
@@ -94,18 +151,16 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        String driver = System.getProperty(DATABASE_DRIVER_KEY, DEFAULT_DATABASE_DRIVER);
-        String platform = System.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-        DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
+        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+        DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel =
             (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
         DBWSBuilder builder = new DBWSBuilder();
         builder.quiet = true;
-        builder.setPlatformClassname(platform);
+        builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.properties = builderModel.properties;
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
         builder.operations = builderModel.operations;

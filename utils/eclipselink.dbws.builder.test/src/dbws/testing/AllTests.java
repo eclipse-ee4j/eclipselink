@@ -13,7 +13,12 @@
  ******************************************************************************/
 package dbws.testing;
 
+//javase imports
+import java.sql.Connection;
+import java.sql.SQLException;
+
 //JUnit4 imports
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -35,6 +40,7 @@ import dbws.testing.simpletable.SimpleTableTestSuite;
 import dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite;
 import dbws.testing.sqlascollection.SQLAsCollectionTestSuite;
 import dbws.testing.updatefault.UpdateFaultTestSuite;
+import static dbws.testing.DBWSTestSuite.buildConnection;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -56,4 +62,12 @@ import dbws.testing.updatefault.UpdateFaultTestSuite;
     UpdateFaultTestSuite.class
 })
 public class AllTests {
+
+    //shared JUnit fixtures
+    public static Connection conn = null;
+
+    @BeforeClass
+    public static void setUp() throws ClassNotFoundException, SQLException {
+        conn = buildConnection();
+    }
 }

@@ -14,12 +14,14 @@ package dbws.testing.plsqlcollection;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -30,20 +32,94 @@ import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests PL/SQL collections with simple arguments. 
+ * Tests PL/SQL collections with simple arguments.
  *
  */
-public class PLSQLCollectionTestSuite extends TestHelper {
-    
+public class PLSQLCollectionTestSuite extends DBWSTestSuite {
+
+    static final String CREATE_PACKAGE2_PACKAGE =
+        "CREATE OR REPLACE PACKAGE PACKAGE2 AS" +
+            "\nTYPE TAB1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
+            "\nTYPE ORECORD IS RECORD (" +
+                "\nO1 VARCHAR2(10)," +
+                "\nO2 DECIMAL(7,2)" +
+            "\n);" +
+            "\nTYPE TAB2 IS TABLE OF ORECORD INDEX BY BINARY_INTEGER;" +
+            "\nPROCEDURE COPYTABLE(OLDTAB IN TAB1, NEWTAB OUT TAB1);" +
+            "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2);" +
+            "\nFUNCTION COPYTABLE2(OLDTAB IN TAB1) RETURN TAB1;" +
+            "\nFUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2;" +
+        "\nEND PACKAGE2;";
+    static final String CREATE_PACKAGE2_BODY =
+        "CREATE OR REPLACE PACKAGE BODY PACKAGE2 AS" +
+            "\nPROCEDURE COPYTABLE(OLDTAB IN TAB1, NEWTAB OUT TAB1) AS" +
+            "\nBEGIN" +
+                "\nNEWTAB := OLDTAB;" +
+            "\nEND COPYTABLE;" +
+            "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2) AS" +
+            "\nBEGIN" +
+                "\nNEWTAB(0) := INREC;" +
+            "\nEND SETRECORD;" +
+            "\nFUNCTION COPYTABLE2(OLDTAB IN TAB1) RETURN TAB1 IS NEWTAB TAB1;" +
+            "\nBEGIN" +
+                "\nNEWTAB := OLDTAB;" +
+                "\nRETURN NEWTAB;" +
+            "\nEND COPYTABLE2;" +
+            "\nFUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2 IS NEWTAB TAB2;" +
+            "\nBEGIN" +
+                "\nNEWTAB(0) := INREC;" +
+                "\nRETURN NEWTAB;" +
+            "\nEND SETRECORD2;" +
+        "\nEND PACKAGE2;";
+    static final String CREATE_PACKAGE2_TAB1_TYPE =
+        "CREATE OR REPLACE TYPE PACKAGE2_TAB1 AS TABLE OF VARCHAR2(111)";
+    static final String CREATE_PACKAGE2_ORECORD_TYPE =
+        "CREATE OR REPLACE TYPE PACKAGE2_ORECORD AS OBJECT (" +
+            "\nO1 VARCHAR2(10)," +
+            "\nO2 DECIMAL(7,2)" +
+        "\n)";
+    static final String CREATE_PACKAGE2_TAB2_TYPE =
+        "CREATE OR REPLACE TYPE PACKAGE2_TAB2 AS TABLE OF PACKAGE2_ORECORD";
+    static final String DROP_PACKAGE2_PACKAGE =
+        "DROP PACKAGE PACKAGE2";
+    static final String DROP_PACKAGE2_TAB1_TYPE =
+        "DROP TYPE PACKAGE2_TAB1";
+    static final String DROP_PACKAGE2_TAB2_TYPE =
+        "DROP TYPE PACKAGE2_TAB2";
+    static final String DROP_PACKAGE2_ORECORD_TYPE =
+        "DROP TYPE PACKAGE2_ORECORD";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
-    public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
-        IllegalArgumentException, IllegalAccessException {
+    public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_PACKAGE2_PACKAGE);
+                createDbArtifact(conn, CREATE_PACKAGE2_BODY);
+                createDbArtifact(conn, CREATE_PACKAGE2_TAB1_TYPE);
+                createDbArtifact(conn, CREATE_PACKAGE2_ORECORD_TYPE);
+                createDbArtifact(conn, CREATE_PACKAGE2_TAB2_TYPE);
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -83,8 +159,18 @@ public class PLSQLCollectionTestSuite extends TestHelper {
                   "procedurePattern=\"SETRECORD2\" " +
               "/>" +
             "</dbws-builder>";
-          builder = new DBWSBuilder();
-          TestHelper.setUp(".");
+          builder = null;
+          DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_PACKAGE2_PACKAGE);
+            dropDbArtifact(conn, DROP_PACKAGE2_TAB1_TYPE);
+            dropDbArtifact(conn, DROP_PACKAGE2_TAB2_TYPE);
+            dropDbArtifact(conn, DROP_PACKAGE2_ORECORD_TYPE);
+        }
     }
 
     @Test
@@ -123,7 +209,7 @@ public class PLSQLCollectionTestSuite extends TestHelper {
         Document controlDoc = xmlParser.parse(new StringReader(TABLE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     /**
      * StoredProcedure test.
      */
@@ -156,7 +242,7 @@ public class PLSQLCollectionTestSuite extends TestHelper {
             "<o2>66.6</o2>" +
           "</item>" +
         "</PACKAGE2_TAB2>";
-    
+
     /**
      * StoredFunction test.
      */

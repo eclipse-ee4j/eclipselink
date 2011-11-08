@@ -13,37 +13,17 @@
 package dbws.testing.mtom;
 
 //javase imports
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
-import static dbws.testing.DBWSTestSuite.MTOM;
-import static dbws.testing.DBWSTestSuite.MTOM_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.MTOM_PORT;
-import static dbws.testing.DBWSTestSuite.MTOM_SERVICE;
-import static dbws.testing.DBWSTestSuite.MTOM_SERVICE_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.MTOM_TEST;
-import static javax.xml.ws.Service.Mode.MESSAGE;
-import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import org.xml.sax.InputSource;
 
+//java eXtension imports
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -66,7 +46,18 @@ import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
+import static javax.xml.ws.Service.Mode.MESSAGE;
+import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
 
+//JUnit4 imports
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+//EclipseLink imports
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -89,10 +80,31 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import org.eclipse.persistence.tools.dbws.OperationModel;
 import org.eclipse.persistence.tools.dbws.TableOperationModel;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.xml.sax.InputSource;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+
+//testing imports
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
+import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
+import static dbws.testing.DBWSTestSuite.MTOM;
+import static dbws.testing.DBWSTestSuite.MTOM_NAMESPACE;
+import static dbws.testing.DBWSTestSuite.MTOM_PORT;
+import static dbws.testing.DBWSTestSuite.MTOM_SERVICE;
+import static dbws.testing.DBWSTestSuite.MTOM_SERVICE_NAMESPACE;
+import static dbws.testing.DBWSTestSuite.MTOM_TEST;
+import static dbws.testing.DBWSTestSuite.buildConnection;
+import static dbws.testing.DBWSTestSuite.createDbArtifact;
+import static dbws.testing.DBWSTestSuite.dropDbArtifact;
 
 @WebServiceProvider(
     targetNamespace = MTOM_SERVICE_NAMESPACE,
@@ -101,6 +113,16 @@ import org.xml.sax.InputSource;
 )
 @ServiceMode(MESSAGE)
 public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+
+    static final String CREATE_MTOM_TABLE =
+        "CREATE TABLE IF NOT EXISTS mtom (" +
+            "\nID DECIMAL(7,0) NOT NULL," +
+            "\nDESCRIPT VARCHAR(80)," +
+            "\nSTUFF MEDIUMBLOB," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String DROP_MTOM_TABLE =
+        "DROP TABLE mtom";
 
     //lorem ipsum is the name given to commonly used placeholder filler text
     //this copy is exactly 5000 bytes long
@@ -212,25 +234,42 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         "</SOAP-ENV:Envelope>";
 
     // JUnit test fixtures
-    public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
-    public static XMLComparer comparer = new XMLComparer();
-    public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-    public static XMLParser xmlParser = xmlPlatform.newXMLParser();
-    public static Endpoint endpoint = null;
-    public static QName portQName = null;
-    public static Service testService = null;
-    public static Dispatch<SOAPMessage> dispatch = null;
-    public static DBWSBuilder builder = new DBWSBuilder();
+    static String ddl = "false";
+    static Connection conn = null;
+    static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
+    static XMLComparer comparer = new XMLComparer();
+    static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+    static XMLParser xmlParser = xmlPlatform.newXMLParser();
+    static Endpoint endpoint = null;
+    static QName portQName = null;
+    static Service testService = null;
+    static Dispatch<SOAPMessage> dispatch = null;
+    static DBWSBuilder builder = new DBWSBuilder();
 
     @Resource
     protected WebServiceContext wsContext;
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        try {
+            conn = buildConnection();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_MTOM_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
@@ -245,8 +284,8 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         builder.getOperations().add(mtomOp);
         builder.quiet = true;
         builder.setLogLevel(SessionLog.FINE_LABEL);
-        builder.setDriver(DEFAULT_DATABASE_DRIVER);
-        builder.setPlatformClassname(DEFAULT_DATABASE_PLATFORM);
+        builder.setDriver(DATABASE_DRIVER);
+        builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
         builder.setUsername(username);
         builder.setPassword(password);
@@ -275,6 +314,9 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
+        }
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_MTOM_TABLE);
         }
     }
 
@@ -333,7 +375,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         login.setUserName(builder.getUsername());
         login.setPassword(builder.getPassword());
         ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-        ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
+        ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
         Platform platform = builder.getDatabasePlatform();
         ConversionManager cm = platform.getConversionManager();
         cm.setLoader(parentClassLoader);
@@ -422,7 +464,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
             assertTrue("incorrect number of attachments",
                 response.countAttachments() == 3);
             for (Iterator<AttachmentPart> attachmentsIterator =
-                (Iterator<AttachmentPart>)response.getAttachments(); attachmentsIterator.hasNext();) {
+                response.getAttachments(); attachmentsIterator.hasNext();) {
                 AttachmentPart aPart = attachmentsIterator.next();
                 DataHandler dh = aPart.getDataHandler();
                 InputStream inputStream = dh.getInputStream();

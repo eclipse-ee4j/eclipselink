@@ -15,6 +15,8 @@ package dbws.testing.crud;
 //javase imports
 import java.io.Reader;
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,6 +26,7 @@ import org.xml.sax.InputSource;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -41,8 +44,52 @@ import dbws.testing.DBWSTestSuite;
 
 public class CRUDTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_CRUD_TABLE =
+        "CREATE TABLE IF NOT EXISTS crud_table (" +
+            "\nID NUMERIC NOT NULL," +
+            "\nNAME VARCHAR(80)," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_CRUD_TABLE = new String[] {
+        "insert into crud_table values (1, 'crud1')",
+        "insert into crud_table values (2, 'crud2')",
+        "insert into crud_table values (3, 'other')"
+    };
+    static final String DROP_CRUD_TABLE =
+        "DROP TABLE crud_table";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_CRUD_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_CRUD_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_CRUD_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -50,15 +97,15 @@ public class CRUDTestSuite extends DBWSTestSuite {
               "<property name=\"projectName\">crud</property>" +
               "<property name=\"logLevel\">off</property>" +
               "<property name=\"username\">";
-      DBWS_BUILDER_XML_PASSWORD =
+        DBWS_BUILDER_XML_PASSWORD =
               "</property><property name=\"password\">";
-      DBWS_BUILDER_XML_URL =
+        DBWS_BUILDER_XML_URL =
               "</property><property name=\"url\">";
-      DBWS_BUILDER_XML_DRIVER =
+        DBWS_BUILDER_XML_DRIVER =
               "</property><property name=\"driver\">";
-      DBWS_BUILDER_XML_PLATFORM =
+        DBWS_BUILDER_XML_PLATFORM =
               "</property><property name=\"platformClassname\">";
-      DBWS_BUILDER_XML_MAIN =
+        DBWS_BUILDER_XML_MAIN =
               "</property>" +
           "</properties>" +
           "<table " +
@@ -74,8 +121,15 @@ public class CRUDTestSuite extends DBWSTestSuite {
             "</sql>" +
           "</table>" +
         "</dbws-builder>";
-      builder = null;
-      DBWSTestSuite.setUp(".");
+        builder = null;
+        DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_CRUD_TABLE);
+        }
     }
 
     // hokey naming convention for test methods to assure order-of-operations

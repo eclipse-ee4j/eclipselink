@@ -18,6 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -73,19 +76,20 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.OperationModel;
 import org.eclipse.persistence.tools.dbws.TableOperationModel;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
-
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
+import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
 import static dbws.testing.DBWSTestSuite.ROOTCAUSE;
@@ -94,6 +98,9 @@ import static dbws.testing.DBWSTestSuite.ROOTCAUSE_NAMESPACE;
 import static dbws.testing.DBWSTestSuite.ROOTCAUSE_PORT;
 import static dbws.testing.DBWSTestSuite.ROOTCAUSE_SERVICE;
 import static dbws.testing.DBWSTestSuite.ROOTCAUSE_TEST;
+import static dbws.testing.DBWSTestSuite.buildConnection;
+import static dbws.testing.DBWSTestSuite.createDbArtifact;
+import static dbws.testing.DBWSTestSuite.dropDbArtifact;
 
 @WebServiceProvider(
   targetNamespace = ROOTCAUSE_SERVICE_NAMESPACE,
@@ -102,6 +109,18 @@ import static dbws.testing.DBWSTestSuite.ROOTCAUSE_TEST;
 )
 @ServiceMode(MESSAGE)
 public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+
+    static final String CREATE_ROOTCAUSE_TABLE =
+        "CREATE TABLE IF NOT EXISTS rootcause_table (" +
+            "\nID NUMERIC NOT NULL," +
+            "\nNAME VARCHAR(9)," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_ROOTCAUSE_TABLE = new String[] {
+        "insert into rootcause_table values (1, 'name1')"
+    };
+    static final String DROP_ROOTCAUSE_TABLE =
+        "DROP TABLE rootcause_table";
 
     public static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + ROOTCAUSE;
     static final String SOAP_UPDATE_REQUEST =
@@ -120,21 +139,48 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         "</SOAP-ENV:Envelope>";
 
     // JUnit test fixtures
-    public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
-    public static XMLComparer comparer = new XMLComparer();
-    public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-    public static XMLParser xmlParser = xmlPlatform.newXMLParser();
-    public static Endpoint endpoint = null;
-    public static QName portQName = null;
-    public static Service testService = null;
-    public static DBWSBuilder builder = new DBWSBuilder();
+    static String ddl = "false";
+    static Connection conn = null;
+    static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
+    static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
+    static XMLComparer comparer = new XMLComparer();
+    static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+    static XMLParser xmlParser = xmlPlatform.newXMLParser();
+    static Endpoint endpoint = null;
+    static QName portQName = null;
+    static Service testService = null;
+    static DBWSBuilder builder = new DBWSBuilder();
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        try {
+            conn = buildConnection();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_ROOTCAUSE_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_ROOTCAUSE_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_ROOTCAUSE_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
@@ -147,8 +193,8 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         builder.getOperations().add(rootCauseOp);
         builder.quiet = true;
         builder.setLogLevel(SessionLog.FINE_LABEL);
-        builder.setDriver(DEFAULT_DATABASE_DRIVER);
-        builder.setPlatformClassname(DEFAULT_DATABASE_PLATFORM);
+        builder.setDriver(DATABASE_DRIVER);
+        builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
         builder.setUsername(username);
         builder.setPassword(password);
@@ -173,6 +219,9 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
+        }
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_ROOTCAUSE_TABLE);
         }
     }
 
@@ -223,7 +272,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         login.setUserName(builder.getUsername());
         login.setPassword(builder.getPassword());
         ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-        ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
+        ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
         Platform platform = builder.getDatabasePlatform();
         ConversionManager cm = platform.getConversionManager();
         cm.setLoader(parentClassLoader);

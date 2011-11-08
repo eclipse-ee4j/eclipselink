@@ -10,7 +10,6 @@
  * Contributors:
  *     Mike Norman - May 2008, created DBWS test package
  ******************************************************************************/
-
 package dbws.testing;
 
 //javase imports
@@ -19,6 +18,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -62,9 +65,18 @@ import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 public class DBWSTestSuite {
 
+    public static final String DATABASE_DRIVER = "com.mysql.jdbc.Driver";
+    public static final String DATABASE_PLATFORM =
+        "org.eclipse.persistence.platform.database.MySQLPlatform";
+
+    public static final String DATABASE_USERNAME_KEY = "db.user";
     public static final String DEFAULT_DATABASE_USERNAME = "user";
+    public static final String DATABASE_PASSWORD_KEY = "db.pwd";
     public static final String DEFAULT_DATABASE_PASSWORD = "password";
-    public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://localhost:3306/test";
+    public static final String DATABASE_URL_KEY = "db.url";
+    public static final String DEFAULT_DATABASE_URL = "jdbc:mysql://localhost:3306/test";
+    public static final String DATABASE_DDL_KEY = "db.ddl";
+    public static final String DEFAULT_DATABASE_DDL = "false";
 
     public static final String SFAULT = "sfault_table";
     public static final String SFAULT_TEST = SFAULT + "Test";
@@ -108,6 +120,14 @@ public class DBWSTestSuite {
         "select * from secondary";
     public static final String SECONDARY_ALL_SCHEMA_TYPE = "secondaryType";
 
+    public static final String SQLCOLLECTION = "sqlAsCollection";
+    public static final String SQLCOLLECTION_NAMESPACE = "urn:" + SQLCOLLECTION;
+    public static final String SQLCOLLECTION_SERVICE_NAMESPACE = SQLCOLLECTION_NAMESPACE + "Service";
+    public static final String SQLCOLLECTION_SERVICE = SQLCOLLECTION + "Service";
+    public static final String SQLCOLLECTION_SERVICE_PORT = SQLCOLLECTION_SERVICE + "Port";
+
+    //shared JUnit fixtures
+    public static Connection conn = AllTests.conn;
     // JUnit test fixtures
     public static String DBWS_BUILDER_XML_USERNAME;
     public static String DBWS_BUILDER_XML_PASSWORD;
@@ -153,20 +173,18 @@ public class DBWSTestSuite {
         DBWS_OR_STREAM = new ByteArrayOutputStream();
         DBWS_OX_STREAM = new ByteArrayOutputStream();
         DBWS_WSDL_STREAM = new ByteArrayOutputStream();
-        final String username = System.getProperty(DBWSTestProviderHelper.DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-        final String password = System.getProperty(DBWSTestProviderHelper.DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-        final String url = System.getProperty(DBWSTestProviderHelper.DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        final String driver = System.getProperty(DBWSTestProviderHelper.DATABASE_DRIVER_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER);
-        final String platform = System.getProperty(DBWSTestProviderHelper.DATABASE_PLATFORM_KEY, DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM);
+        final String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        final String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+        final String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + driver +
-        DBWS_BUILDER_XML_PLATFORM + platform + DBWS_BUILDER_XML_MAIN;
+            password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+            DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel =
             (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
         builder.quiet = true;
-        builder.setPlatformClassname(platform);
+        builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.properties = builderModel.properties;
         builder.operations = builderModel.operations;
         XRPackager xrPackager = new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
@@ -222,7 +240,7 @@ public class DBWSTestSuite {
                 login.setUserName(username);
                 login.setPassword(password);
                 ((DatabaseLogin)login).setConnectionString(url);
-                ((DatabaseLogin)login).setDriverClassName(driver);
+                ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
                 Platform platform = builder.getDatabasePlatform();;
                 ConversionManager conversionManager = platform.getConversionManager();
                 if (conversionManager != null) {
@@ -291,6 +309,29 @@ public class DBWSTestSuite {
         } catch (Exception e) {
             // e.printStackTrace();
             return "<empty/>";
+        }
+    }
+
+    public static Connection buildConnection() throws ClassNotFoundException, SQLException {
+        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+        String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+        Class.forName(DATABASE_DRIVER);
+        return DriverManager.getConnection(url, username, password);
+    }
+
+    public static void createDbArtifact(Connection conn, String createTableDDL) throws SQLException {
+        PreparedStatement pStmt = conn.prepareStatement(createTableDDL);
+        pStmt.execute();
+    }
+
+    public static void dropDbArtifact(Connection conn, String dropTableDDL) {
+        try {
+            PreparedStatement pStmt = conn.prepareStatement(dropTableDDL);
+            pStmt.execute();
+        }
+        catch (Exception e) {
+            // ignore
         }
     }
 }

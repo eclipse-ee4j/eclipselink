@@ -47,14 +47,14 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests TableType where the database table contains all relevant scalar
  * types except UROWID, INTERVALDAYTOSECOND, and INTERVALYEARTOMINTH.
  *
  */
-public class TableTypeTestSuite extends TestHelper {
+public class TableTypeTestSuite extends DBWSTestSuite {
     
     @BeforeClass
     public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
@@ -100,7 +100,7 @@ public class TableTypeTestSuite extends TestHelper {
         ConstantTransformer constantTransformer =
             (ConstantTransformer)transformerField.get(versionTransformer);
         constantTransformer.setValue("Eclipse Persistence Services - " + releaseVersion);
-        TestHelper.setUp(".");
+        DBWSTestSuite.setUp(".");
     }
 
     @Test

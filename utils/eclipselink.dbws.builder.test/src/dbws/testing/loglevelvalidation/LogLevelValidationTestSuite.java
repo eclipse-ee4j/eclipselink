@@ -15,13 +15,14 @@ package dbws.testing.loglevelvalidation;
 //javase imports
 import java.io.StringReader;
 import java.lang.reflect.Field;
-
+import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +41,6 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.jdbc.JDBCHelper;
 
 //testing imports
-import dbws.testing.DBWSTestProviderHelper;
 import dbws.testing.DBWSTestSuite;
 
 /**
@@ -49,18 +49,26 @@ import dbws.testing.DBWSTestSuite;
  */
 public class LogLevelValidationTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_LOGLEVEL_TABLE =
+        "CREATE TABLE IF NOT EXISTS loglevel (" +
+            "\nID NUMERIC NOT NULL," +
+            "\nNAME VARCHAR(25)," +
+            "\nSINCE DATE," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String DROP_LOGLEVEL_TABLE =
+        "DROP TABLE loglevel";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     final static String username =
-        System.getProperty(DBWSTestProviderHelper.DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
     final static String password =
-        System.getProperty(DBWSTestProviderHelper.DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+        System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
     final static String url =
-        System.getProperty(DBWSTestProviderHelper.DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-    final static String driver =
-        System.getProperty(DBWSTestProviderHelper.DATABASE_DRIVER_KEY,
-            DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER);
-    final static String platform =
-        System.getProperty(DBWSTestProviderHelper.DATABASE_PLATFORM_KEY,
-            DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM);
+        System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+
     final static String VERSION = "SOME_VERSION";
     final static String info_level = "info";
     final static String off_level = "off";
@@ -68,6 +76,23 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_LOGLEVEL_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -133,6 +158,13 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         DBWSTestSuite.setUp(stageDir);
     }
 
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_LOGLEVEL_TABLE);
+        }
+    }
+
     static String SESSIONS_XML =
     	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     	"<sessions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\""+VERSION+"\">" +
@@ -144,7 +176,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     				"<platform-class>org.eclipse.persistence.platform.database.MySQLPlatform</platform-class>" +
     				"<user-name>"+username+"</user-name>" +
     				"<password>"+password+"</password>" +
-    				"<driver-class>"+driver+"</driver-class>" +
+    				"<driver-class>"+DATABASE_DRIVER+"</driver-class>" +
     				"<connection-url>"+url+"</connection-url>" +
     				"<byte-array-binding>false</byte-array-binding>" +
     				"<streams-for-binding>true</streams-for-binding>" +
@@ -173,6 +205,8 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         removeEmptyTextNodes(testDoc);
         Document controlDoc = xmlParser.parse(new StringReader(SESSIONS_XML));
         removeEmptyTextNodes(controlDoc);
-        assertTrue("Control document not same as instance document.\n Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
+        assertTrue("Control document not same as instance document.\n Expected:\n" +
+            documentToString(controlDoc) + "\nActual:\n" + documentToString(testDoc),
+            comparer.isNodeEqual(controlDoc, testDoc));
     }
 }

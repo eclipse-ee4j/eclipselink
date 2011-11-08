@@ -33,9 +33,9 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
-public class SimplePLSQLSFTestSuite extends TestHelper {
+public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
     
     @BeforeClass
     public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
@@ -77,7 +77,7 @@ public class SimplePLSQLSFTestSuite extends TestHelper {
           builder = new DBWSBuilder();
           OracleHelper builderHelper = new OracleHelper(builder);
           builder.setBuilderHelper(builderHelper);
-          TestHelper.setUp(".");
+          DBWSTestSuite.setUp(".");
     }
 
     @Test

@@ -14,6 +14,8 @@ package dbws.testing.customsql;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,9 +24,10 @@ import org.w3c.dom.Element;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
+//import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -34,12 +37,73 @@ import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
 //testing imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
-public class CustomSQLTestSuite extends TestHelper {
+public class CustomSQLTestSuite extends DBWSTestSuite {
+
+    static final String CREATE_CUSTOM_TABLE =
+        "CREATE TABLE CUSTOM (" +
+            "\nEMPNO NUMERIC(4)," +
+            "\nENAME VARCHAR(10)," +
+            "\nJOB VARCHAR(9)," +
+            "\nMGR NUMERIC(4)," +
+            "\nHIREDATE DATE," +
+            "\nSAL DECIMAL(7,2)," +
+            "\nCOMM NUMERIC(7,2)," +
+            "\nDEPTNO NUMERIC(2)," +
+            "\nPRIMARY KEY (EMPNO)" +
+        "\n)";
+    static final String[] POPULATE_CUSTOM_TABLE = new String[] {
+        "INSERT INTO CUSTOM VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20)",
+        "INSERT INTO CUSTOM VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",
+        "INSERT INTO CUSTOM VALUES (7521,'WARD','SALESMAN',7698,'1981-2-22',1250,500,30)",
+        "INSERT INTO CUSTOM VALUES (7566,'JONES','MANAGER',7839,'1981-4-2',2975,NULL,20)",
+        "INSERT INTO CUSTOM VALUES (7654,'MARTIN','SALESMAN',7698,'1981-9-28',1250,1400,30)",
+        "INSERT INTO CUSTOM VALUES (7698,'BLAKE','MANAGER',7839,'1981-5-1',2850,NULL,30)",
+        "INSERT INTO CUSTOM VALUES (7782,'CLARK','MANAGER',7839,'1981-6-9',2450,NULL,10)",
+        "INSERT INTO CUSTOM VALUES (7788,'SCOTT','ANALYST',7566,'1981-06-09',3000.99,NULL,20)",
+        "INSERT INTO CUSTOM VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000.99,NULL,10)",
+        "INSERT INTO CUSTOM VALUES (7844,'TURNER','SALESMAN',7698,'1981-9-8',1500,0,30)",
+        "INSERT INTO CUSTOM VALUES (7876,'ADAMS','CLERK',7788,'1987-05-23',1100,NULL,20)",
+        "INSERT INTO CUSTOM VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30)",
+        "INSERT INTO CUSTOM VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20)",
+        "INSERT INTO CUSTOM VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10)"
+    };
+    static final String DROP_CUSTOM_TABLE =
+        "DROP TABLE CUSTOM";
+
+    // JUnit test fixtures
+    static String ddl = "false";
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_CUSTOM_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_CUSTOM_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_CUSTOM_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -81,7 +145,14 @@ public class CustomSQLTestSuite extends TestHelper {
             "</table>" +
           "</dbws-builder>";
         builder = null;
-        TestHelper.setUp(".");
+        DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            //dropDbArtifact(conn, DROP_CUSTOM_TABLE);
+        }
     }
 
     @Test

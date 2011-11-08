@@ -19,13 +19,13 @@ package dbws.testing.bindingmodel;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
-import org.eclipse.persistence.internal.xr.QueryOperation;
-import org.eclipse.persistence.internal.xr.SQLQueryHandler;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.xr.QueryOperation;
+import org.eclipse.persistence.internal.xr.SQLQueryHandler;
 
 //domain-specific (test) imports
 import dbws.testing.DBWSTestSuite;

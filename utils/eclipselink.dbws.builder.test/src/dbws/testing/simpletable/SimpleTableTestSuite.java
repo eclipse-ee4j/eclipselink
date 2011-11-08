@@ -14,12 +14,16 @@ package dbws.testing.simpletable;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -35,8 +39,53 @@ import dbws.testing.DBWSTestSuite;
 
 public class SimpleTableTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_SIMPLE_TABLE =
+        "CREATE TABLE IF NOT EXISTS simpletable (" +
+            "\nID NUMERIC," +
+            "\nNAME varchar(25)," +
+            "\nSINCE date," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static String[] POPULATE_SIMPLE_TABLE = new String[] {
+        "INSERT INTO simpletable (ID, NAME, SINCE) VALUES (1, 'mike', '2001-12-25')",
+        "INSERT INTO simpletable (ID, NAME, SINCE) VALUES (2, 'merrick','2001-12-25')",
+        "INSERT INTO simpletable (ID, NAME, SINCE) VALUES (3, 'rick','2001-12-25')"
+    };
+    static final String DROP_SIMPLE_TABLE =
+        "DROP TABLE simpletable";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SIMPLE_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_SIMPLE_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_SIMPLE_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -62,6 +111,13 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
           "</dbws-builder>";
         builder = null;
         DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SIMPLE_TABLE);
+        }
     }
 
     @Test

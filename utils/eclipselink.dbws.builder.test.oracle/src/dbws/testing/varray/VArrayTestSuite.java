@@ -33,13 +33,13 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests VARRAY types. 
  *
  */
-public class VArrayTestSuite extends TestHelper {
+public class VArrayTestSuite extends DBWSTestSuite {
     
     @BeforeClass
     public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
@@ -108,7 +108,7 @@ public class VArrayTestSuite extends TestHelper {
                "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
-          TestHelper.setUp(".");
+          DBWSTestSuite.setUp(".");
     }
 
     @Test

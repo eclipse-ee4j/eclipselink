@@ -166,29 +166,6 @@
     />
   </presetdef>
   <macrodef
-    name="SetupDatabase"
-    >
-    <attribute name="testsuite-name"/>
-    <sequential>
-      <sql
-        onerror="continue"
-        keepformat="true"
-        driver="${db.driver}"
-        url="${db.url}"
-        userid="${db.user}"
-        password="${db.pwd}"
-        classpathref="dbwsbldrtest.run.path"
-        delimiter="|"
-        >
-        <fileset
-          dir="./${etc.dir}"
-          >
-         <include name="dbsetup_@{testsuite-name}.sql"/>
-        </fileset>
-      </sql>
-    </sequential>
-  </macrodef>
-  <macrodef
     name="CompileTestsuite"
     >
     <attribute name="testsuite-name"/>
@@ -285,29 +262,6 @@
     </sequential>
   </macrodef>
   <macrodef
-    name="TeardownDatabase"
-    >
-    <attribute name="testsuite-name"/>
-    <sequential>
-      <sql
-        onerror="continue"
-        keepformat="true"
-        driver="${db.driver}"
-        url="${db.url}"
-        userid="${db.user}"
-        password="${db.pwd}"
-        classpathref="dbwsbldrtest.run.path"
-        delimiter="|"
-        >
-        <fileset
-          dir="./${etc.dir}"
-          >
-         <include name="dbteardown_@{testsuite-name}.sql"/>
-        </fileset>
-      </sql>
-    </sequential>
-  </macrodef>
-  <macrodef
     name="SetupCompileRunTeardown"
     >
     <attribute name="testsuite-name"/>
@@ -316,9 +270,6 @@
         input="@{testsuite-name}"
         property="package-name"
       />
-      <SetupDatabase
-        testsuite-name="${package-name}"
-      />
       <CompileTestsuite
         testsuite-name="@{testsuite-name}"
         package-name="${package-name}"
@@ -326,9 +277,6 @@
       <RunTestsuite
         testsuite-name="@{testsuite-name}"
         package-name="${package-name}"
-      />
-      <TeardownDatabase
-        testsuite-name="${package-name}"
       />
     </sequential>
   </macrodef>

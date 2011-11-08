@@ -14,12 +14,16 @@ package dbws.testing.simplesp;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -36,8 +40,108 @@ import dbws.testing.DBWSTestSuite;
 
 public class SimpleSPTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_SIMPLESP_TABLE =
+        "CREATE TABLE IF NOT EXISTS simplesp (" +
+            "\nEMPNO decimal(4,0)," +
+            "\nENAME varchar(10)," +
+            "\nJOB varchar(9)," +
+            "\nMGR decimal(4,0)," +
+            "\nHIREDATE date," +
+            "\nSAL decimal(7,2)," +
+            "\nCOMM decimal(7,2)," +
+            "\nDEPTNO decimal(2)," +
+            "\nPRIMARY KEY (EMPNO)" +
+        "\n)";
+    static String[] POPULATE_SIMPLESP_TABLE = new String[] {
+        "INSERT INTO simplesp VALUES (7369,'SMITH','CLERK',7902,'1980-12--17',800,NULL,20)",
+        "INSERT INTO simplesp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",
+        "INSERT INTO simplesp VALUES (7521,'WARD','SALESMAN',7698,'1981-2-22',1250,500,30)",
+        "INSERT INTO simplesp VALUES (7566,'JONES','MANAGER',7839,'1981-4-2',2975,NULL,20)",
+        "INSERT INTO simplesp VALUES (7654,'MARTIN','SALESMAN',7698,'1981-9-28',1250,1400,30)",
+        "INSERT INTO simplesp VALUES (7698,'BLAKE','MANAGER',7839,'1981-5-1',2850,NULL,30)",
+        "INSERT INTO simplesp VALUES (7782,'CLARK','MANAGER',7839,'1981-6-9',2450,NULL,10)",
+        "INSERT INTO simplesp VALUES (7788,'SCOTT','ANALYST',7566,'1981-06-09',3000,NULL,20)",
+        "INSERT INTO simplesp VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10)",
+        "INSERT INTO simplesp VALUES (7844,'TURNER','SALESMAN',7698,'1981-9-8',1500,0,30)",
+        "INSERT INTO simplesp VALUES (7876,'ADAMS','CLERK',7788,'1987-05-23',1100,NULL,20)",
+        "INSERT INTO simplesp VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30)",
+        "INSERT INTO simplesp VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20)",
+        "INSERT INTO simplesp VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10)"
+    };
+    static final String CREATE_NOARGSP_PROC =
+        "CREATE PROCEDURE NoArgSP()" +
+        "\nBEGIN" +
+        "\nEND";
+    static final String CREATE_VARCHARSP_PROC =
+        "CREATE PROCEDURE VarcharSP(IN X VARCHAR(20))" +
+        "\nBEGIN" +
+        "\nEND";
+    static final String CREATE_GETALL_PROC =
+        "CREATE PROCEDURE GetAll()" +
+        "\nBEGIN" +
+            "\nSELECT * FROM simplesp;" +
+        "\nEND";
+    static final String CREATE_FINDBYJOB_PROC =
+        "CREATE PROCEDURE FindByJob(IN J VARCHAR(29))" +
+        "\nBEGIN" +
+            "\nSELECT * FROM simplesp WHERE JOB LIKE J;" +
+        "\nEND";
+    static final String CREATE_INOUTARGSP_PROC =
+        "CREATE PROCEDURE InOutArgsSP(IN T VARCHAR(20), OUT U VARCHAR(20), OUT V NUMERIC)" +
+        "\nBEGIN" +
+            "\nset U = CONCAT('barf-' , T);" +
+            "\nset V = 55;" +
+        "\nEND";
+    static final String DROP_SIMPLESP_TABLE =
+        "DROP TABLE simplesp";
+    static final String DROP_NOARGSP_PROC =
+        "DROP PROCEDURE NoArgSP";
+    static final String DROP_VARCHARSP_PROC =
+        "DROP PROCEDURE VarcharSP";
+    static final String DROP_GETALL_PROC =
+        "DROP PROCEDURE GetAll";
+    static final String DROP_FINDBYJOB_PROC =
+        "DROP PROCEDURE FindByJob";
+    static final String DROP_INOUTARGSP_PROC =
+        "DROP PROCEDURE InOutArgsSP";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SIMPLESP_TABLE);
+                createDbArtifact(conn, CREATE_NOARGSP_PROC);
+                createDbArtifact(conn, CREATE_VARCHARSP_PROC);
+                createDbArtifact(conn, CREATE_GETALL_PROC);
+                createDbArtifact(conn, CREATE_FINDBYJOB_PROC);
+                createDbArtifact(conn, CREATE_INOUTARGSP_PROC);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_SIMPLESP_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_SIMPLESP_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -90,6 +194,18 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
           "</dbws-builder>";
         builder = null;
         DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SIMPLESP_TABLE);
+            dropDbArtifact(conn, DROP_NOARGSP_PROC);
+            dropDbArtifact(conn, DROP_VARCHARSP_PROC);
+            dropDbArtifact(conn, DROP_GETALL_PROC);
+            dropDbArtifact(conn, DROP_FINDBYJOB_PROC);
+            dropDbArtifact(conn, DROP_INOUTARGSP_PROC);
+        }
     }
 
     @Test

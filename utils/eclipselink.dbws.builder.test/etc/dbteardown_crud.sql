@@ -1,1 +1,0 @@
-DROP TABLE crud_table|

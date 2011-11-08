@@ -12,14 +12,17 @@
  ******************************************************************************/
 package dbws.testing.objecttabletype;
 
+
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -31,20 +34,101 @@ import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
-import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests Oracle Object Table types. 
+ * Tests Oracle Object Table types.
  *
  */
-public class ObjectTableTypeTestSuite extends TestHelper {
-    
+public class ObjectTableTypeTestSuite extends DBWSTestSuite {
+
+    static final String CREATE_PERSONTYPE =
+        "CREATE OR REPLACE TYPE PERSONTYPE AS OBJECT (" +
+            "\nNAME VARCHAR2(20)," +
+            "\nAGE NUMBER," +
+            "\nGENDER VARCHAR2(1)," +
+            "\nINCARCERATED DATE" +
+        "\n)";
+    static final String CREATE_PERSONTYPE_TABLE =
+        "CREATE OR REPLACE TYPE PERSONTYPE_TABLE AS TABLE OF PERSONTYPE";
+    static final String CREATE_GET_PERSONTYPE_PROC =
+        "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE(PTABLE OUT PERSONTYPE_TABLE) AS" +
+        "\nBEGIN" +
+            "\nPTABLE := PERSONTYPE_TABLE();" +
+            "\nPTABLE.EXTEND;" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('BUBBLES', 32, 'M', '1990-11-19');" +
+            "\nPTABLE.EXTEND;" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('RICKY', 33, 'M', '1985-10-01');" +
+            "\nPTABLE.EXTEND;" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('JULIAN', 35, 'M', '1988-02-07');" +
+            "\nPTABLE.EXTEND;" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('SARAH', 25, 'F', '2002-05-12');" +
+            "\nPTABLE.EXTEND;" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('J-ROC', 27, 'M', '1998-12-17');" +
+        "\nEND GET_PERSONTYPE_TABLE;";
+    static final String CREATE_GET_PERSONTYPE2_FUNC =
+        "CREATE OR REPLACE FUNCTION GET_PERSONTYPE_TABLE2 RETURN PERSONTYPE_TABLE AS" +
+        "\nL_DATA PERSONTYPE_TABLE;" +
+        "\nBEGIN" +
+            "\nGET_PERSONTYPE_TABLE(L_DATA);" +
+            "\nRETURN L_DATA;" +
+        "\nEND GET_PERSONTYPE_TABLE2;";
+    static final String CREATE_ADD_PERSONTYPE_TO_TABLE_PROC =
+        "CREATE OR REPLACE PROCEDURE ADD_PERSONTYPE_TO_TABLE(PTYPETOADD IN PERSONTYPE, OLDTABLE IN PERSONTYPE_TABLE, NEWTABLE OUT PERSONTYPE_TABLE) AS" +
+        "\nBEGIN" +
+          "\nNEWTABLE := OLDTABLE;" +
+          "\nNEWTABLE.EXTEND;" +
+          "\nNEWTABLE(NEWTABLE.COUNT) := PTYPETOADD;" +
+        "\nEND ADD_PERSONTYPE_TO_TABLE;";
+    static final String CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC =
+        "CREATE OR REPLACE FUNCTION ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD IN PERSONTYPE, OLDTABLE IN PERSONTYPE_TABLE) RETURN PERSONTYPE_TABLE AS" +
+        "\nNEWTABLE PERSONTYPE_TABLE;" +
+        "\nBEGIN" +
+            "\nADD_PERSONTYPE_TO_TABLE(PTYPETOADD, OLDTABLE, NEWTABLE);" +
+            "\nRETURN NEWTABLE;" +
+        "\nEND ADD_PERSONTYPE_TO_TABLE2;";
+
+    static final String DROP_GET_PERSONTYPE_TABLE =
+        "DROP PROCEDURE GET_PERSONTYPE_TABLE";
+    static final String DROP_GET_PERSONTYPE2_FUNC =
+        "DROP FUNCTION GET_PERSONTYPE_TABLE2";
+    static final String DROP_ADD_PERSONTYPE_TO_TABLE_PROC =
+        "DROP PROCEDURE ADD_PERSONTYPE_TO_TABLE";
+    static final String DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC =
+        "DROP FUNCTION ADD_PERSONTYPE_TO_TABLE2";
+    static final String DROP_PERSONTYPE_TABLE =
+        "DROP TYPE PERSONTYPE_TABLE";
+    static final String DROP_PERSONTYPE =
+        "DROP TYPE PERSONTYPE";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
-    public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
-        IllegalArgumentException, IllegalAccessException {
+    public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_PERSONTYPE);
+                createDbArtifact(conn, CREATE_PERSONTYPE_TABLE);
+                createDbArtifact(conn, CREATE_GET_PERSONTYPE_PROC);
+                createDbArtifact(conn, CREATE_GET_PERSONTYPE2_FUNC);
+                createDbArtifact(conn, CREATE_ADD_PERSONTYPE_TO_TABLE_PROC);
+                createDbArtifact(conn, CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC);
+            }
+            catch (SQLException e) {
+                // ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -92,8 +176,20 @@ public class ObjectTableTypeTestSuite extends TestHelper {
                   "returnType=\"persontype_tableType\" " +
               "/>" +
             "</dbws-builder>";
-          builder = new DBWSBuilder();
-          TestHelper.setUp(".");
+          builder = null;
+          DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_GET_PERSONTYPE_TABLE);
+            dropDbArtifact(conn, DROP_GET_PERSONTYPE2_FUNC);
+            dropDbArtifact(conn, DROP_ADD_PERSONTYPE_TO_TABLE_PROC);
+            dropDbArtifact(conn, DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC);
+            dropDbArtifact(conn, DROP_PERSONTYPE_TABLE);
+            dropDbArtifact(conn, DROP_PERSONTYPE);
+        }
     }
 
     @Test
@@ -109,7 +205,7 @@ public class ObjectTableTypeTestSuite extends TestHelper {
         Document controlDoc = xmlParser.parse(new StringReader(RESULT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void getPersonTypeTable2() {
         Invocation invocation = new Invocation("GetPersonTypeTable2");
@@ -123,10 +219,10 @@ public class ObjectTableTypeTestSuite extends TestHelper {
         Document controlDoc = xmlParser.parse(new StringReader(RESULT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    static String RESULT_XML = 
+    static String RESULT_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
-        "<item>" + 
+        "<item>" +
         "<name>BUBBLES</name>" +
         "<age>32</age>" +
         "<gender>M</gender>" +
@@ -157,7 +253,7 @@ public class ObjectTableTypeTestSuite extends TestHelper {
         "<incarcerated>1998-12-17</incarcerated>" +
         "</item>" +
         "</persontype_tableType>";
-    
+
     @Test
     public void addPersonTypeToTable() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -198,7 +294,7 @@ public class ObjectTableTypeTestSuite extends TestHelper {
         Document controlDoc = xmlParser.parse(new StringReader(NEW_PTABLE_OUTPUT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    static String PTYPE_INPUT_XML = 
+    static String PTYPE_INPUT_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
         "<name>COREY</name>" +
@@ -206,11 +302,11 @@ public class ObjectTableTypeTestSuite extends TestHelper {
         "<gender>M</gender>" +
         "<incarcerated>1997-12-09</incarcerated>" +
         "</persontypeType>";
-    
-    static String PTABLE_INPUT_XML = 
+
+    static String PTABLE_INPUT_XML =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
-            "<item>" + 
+            "<item>" +
             "<name>BUBBLES</name>" +
             "<age>32</age>" +
             "<gender>M</gender>" +
@@ -241,11 +337,11 @@ public class ObjectTableTypeTestSuite extends TestHelper {
             "<incarcerated>1998-12-17</incarcerated>" +
             "</item>" +
             "</persontype_tableType>";
-    
-    static String NEW_PTABLE_OUTPUT_XML = 
+
+    static String NEW_PTABLE_OUTPUT_XML =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
-            "<item>" + 
+            "<item>" +
             "<name>BUBBLES</name>" +
             "<age>32</age>" +
             "<gender>M</gender>" +

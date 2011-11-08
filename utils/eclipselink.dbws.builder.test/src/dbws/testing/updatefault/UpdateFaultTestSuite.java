@@ -18,6 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -79,12 +82,14 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchi
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_DRIVER;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
+import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
+import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestProviderHelper.DEFAULT_DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
 import static dbws.testing.DBWSTestSuite.SFAULT;
@@ -93,6 +98,9 @@ import static dbws.testing.DBWSTestSuite.SFAULT_PORT;
 import static dbws.testing.DBWSTestSuite.SFAULT_SERVICE;
 import static dbws.testing.DBWSTestSuite.SFAULT_SERVICE_NAMESPACE;
 import static dbws.testing.DBWSTestSuite.SFAULT_TEST;
+import static dbws.testing.DBWSTestSuite.buildConnection;
+import static dbws.testing.DBWSTestSuite.createDbArtifact;
+import static dbws.testing.DBWSTestSuite.dropDbArtifact;
 
 @WebServiceProvider(
     targetNamespace = SFAULT_SERVICE_NAMESPACE,
@@ -101,6 +109,18 @@ import static dbws.testing.DBWSTestSuite.SFAULT_TEST;
 )
 @ServiceMode(MESSAGE)
 public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+
+    static final String CREATE_SFAULT_TABLE =
+        "CREATE TABLE IF NOT EXISTS sfault_table (" +
+            "\nID NUMERIC NOT NULL," +
+            "\nNAME varchar(9)," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static String[] POPULATE_SFAULT_TABLE = new String[] {
+        "insert into sfault_table values (1, 'name1')"
+    };
+    static final String DROP_SFAULT_TABLE =
+        "DROP TABLE sfault_table";
 
     public static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SFAULT;
     static final String SOAP_UPDATE_REQUEST =
@@ -119,6 +139,8 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         "</SOAP-ENV:Envelope>";
 
     // JUnit test fixtures
+    static String ddl = "false";
+    static Connection conn = null;
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
@@ -134,6 +156,31 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        try {
+            conn = buildConnection();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SFAULT_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_SFAULT_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_SFAULT_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
@@ -146,8 +193,8 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         builder.getOperations().add(sFaultOp);
         builder.quiet = true;
         builder.setLogLevel(SessionLog.FINE_LABEL);
-        builder.setDriver(DEFAULT_DATABASE_DRIVER);
-        builder.setPlatformClassname(DEFAULT_DATABASE_PLATFORM);
+        builder.setDriver(DATABASE_DRIVER);
+        builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
         builder.setUsername(username);
         builder.setPassword(password);
@@ -172,6 +219,9 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
+        }
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SFAULT_TABLE);
         }
     }
 
@@ -222,7 +272,7 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         login.setUserName(builder.getUsername());
         login.setPassword(builder.getPassword());
         ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-        ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
+        ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
         Platform platform = builder.getDatabasePlatform();
         ConversionManager cm = platform.getConversionManager();
         cm.setLoader(parentClassLoader);

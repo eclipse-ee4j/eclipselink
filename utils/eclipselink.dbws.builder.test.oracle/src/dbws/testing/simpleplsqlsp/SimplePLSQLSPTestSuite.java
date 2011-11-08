@@ -32,13 +32,13 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests PL/SQL procedures with simple arguments. 
  *
  */
-public class SimplePLSQLSPTestSuite extends TestHelper {
+public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
     
     @BeforeClass
     public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
@@ -81,7 +81,7 @@ public class SimplePLSQLSPTestSuite extends TestHelper {
               "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
-          TestHelper.setUp(".");
+          DBWSTestSuite.setUp(".");
     }
 
     @Test

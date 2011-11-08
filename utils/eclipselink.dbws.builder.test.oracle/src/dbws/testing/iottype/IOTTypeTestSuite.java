@@ -15,6 +15,8 @@ package dbws.testing.iottype;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,6 +25,7 @@ import org.w3c.dom.Element;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -34,17 +37,78 @@ import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests TableType where the database table is indexed and contains
  * a UROWID type.
- * 
+ *
  */
-public class IOTTypeTestSuite extends TestHelper {
-    
+public class IOTTypeTestSuite extends DBWSTestSuite {
+
+    static final String CREATE_INDEXED_TABLE =
+        "CREATE TABLE INDEXEDTABLETYPE (" +
+            "\nID NUMERIC(4) NOT NULL," +
+            "\nNAME VARCHAR(25)," +
+            "\nRID UROWID," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)" +
+        "\nORGANIZATION INDEX" +
+        "\nPCTTHRESHOLD 2" +
+        "\nSTORAGE (" +
+            "\nINITIAL 4K" +
+            "\nNEXT 2K" +
+            "\nPCTINCREASE 0" +
+            "\nMINEXTENTS 1" +
+            "\nMAXEXTENTS 1" +
+        "\n)" +
+        "\nOVERFLOW STORAGE (" +
+            "\nINITIAL 4K" +
+            "\nNEXT 2K" +
+            "\nPCTINCREASE 0" +
+            "\nMINEXTENTS 1" +
+            "\nMAXEXTENTS 1" +
+        "\n)";
+    static final String[] POPULATE_INDEXED_TABLE = new String[] {
+        "INSERT INTO INDEXEDTABLETYPE (ID, NAME, RID) VALUES (1, 'mike', '*EcLiPseLiNk1')",
+        "INSERT INTO INDEXEDTABLETYPE (ID, NAME, RID) VALUES (2, 'merrick', '*EcLiPseLiNk2')",
+        "INSERT INTO INDEXEDTABLETYPE (ID, NAME, RID) VALUES (3, 'rick', '*EcLiPseLiNk3')"
+    };
+    static final String DROP_INDEXED_TABLE =
+        "DROP TABLE INDEXEDTABLETYPE";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_INDEXED_TABLE);
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_INDEXED_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_INDEXED_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //ignore
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -69,9 +133,16 @@ public class IOTTypeTestSuite extends TestHelper {
             "/>" +
           "</dbws-builder>";
         builder = null;
-        TestHelper.setUp(".");
+        DBWSTestSuite.setUp(".");
     }
-    
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_INDEXED_TABLE);
+        }
+    }
+
     @Test
     public void findByPrimaryKeyTest() {
         Invocation invocation = new Invocation("findByPrimaryKey_indexedtabletypeType");
@@ -86,7 +157,7 @@ public class IOTTypeTestSuite extends TestHelper {
         Document controlDoc = xmlParser.parse(new StringReader(ONE_PERSON_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void findAllTest() {
@@ -112,7 +183,7 @@ public class IOTTypeTestSuite extends TestHelper {
           "<name>mike</name>" +
           "<rid>*EcLiPseLiNk1</rid>" +
         "</indexedtabletypeType>";
-    
+
     public static final String ALL_PEOPLE_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<tabletypeurowid-collection>" +

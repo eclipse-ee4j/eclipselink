@@ -49,9 +49,9 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import static org.eclipse.persistence.internal.dbws.ProviderHelper.MATCH_SCHEMA;
 
 //testing imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
-public class SimpleTableWithNestedSQLTestSuite extends TestHelper {
+public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
 
     public final static String FINDBYNAME_RESPONSETYPE = "findByNameResponseType";
     public final static String TABLE_ALIAS ="ns1:simpletable2Type";
@@ -91,7 +91,7 @@ public class SimpleTableWithNestedSQLTestSuite extends TestHelper {
             "</table>" +
           "</dbws-builder>";
         builder = new DBWSBuilder();
-        TestHelper.setUp(".");
+        DBWSTestSuite.setUp(".");
     }
     
     @SuppressWarnings("rawtypes")

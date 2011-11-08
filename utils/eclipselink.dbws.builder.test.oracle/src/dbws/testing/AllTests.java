@@ -14,6 +14,10 @@
 package dbws.testing;
 
 //JUnit4 imports
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -33,24 +37,33 @@ import dbws.testing.simplesp.SimpleSPTestSuite;
 import dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite;
 import dbws.testing.tabletype.TableTypeTestSuite;
 import dbws.testing.varray.VArrayTestSuite;
+import static dbws.testing.DBWSTestSuite.buildConnection;
 
 @RunWith(Suite.class)
 @SuiteClasses({
     CustomSQLTestSuite.class,
+    IOTTypeTestSuite.class,
+    ObjectTableTypeTestSuite.class/*,
+    ObjectTypeTestSuite.class,
+    PLSQLCollectionTestSuite.class,
+    PLSQLRecordTestSuite.class,
     SecondarySQLTestSuite.class,
+    SimplePLSQLSFTestSuite.class,
+    SimplePLSQLSPTestSuite.class,
     SimpleSFTestSuite.class,
     SimpleSPTestSuite.class,
-    IOTTypeTestSuite.class,
-    TableTypeTestSuite.class,
-    SimplePLSQLSPTestSuite.class,
-    SimplePLSQLSFTestSuite.class,
     SimpleTableWithNestedSQLTestSuite.class,
-    PLSQLRecordTestSuite.class,
-    PLSQLCollectionTestSuite.class,
-    VArrayTestSuite.class,
-    ObjectTypeTestSuite.class,
-    ObjectTableTypeTestSuite.class
+    TableTypeTestSuite.class,
+    VArrayTestSuite.class */
   }
 )
 public class AllTests {
+
+    //shared JUnit fixtures
+    public static Connection conn = null;
+
+    @BeforeClass
+    public static void setUp() throws ClassNotFoundException, SQLException {
+        conn = buildConnection();
+    }
 }

@@ -36,9 +36,9 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 //test imports
-import dbws.testing.TestHelper;
+import dbws.testing.DBWSTestSuite;
 
-public class SimpleSPTestSuite extends TestHelper {
+public class SimpleSPTestSuite extends DBWSTestSuite {
     
     @BeforeClass
     public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
@@ -102,7 +102,7 @@ public class SimpleSPTestSuite extends TestHelper {
             "</table>" +
           "</dbws-builder>";        
           builder = new DBWSBuilder();
-          TestHelper.setUp(".");
+          DBWSTestSuite.setUp(".");
     }
 
     public static final String VALUE_1_XML =
