@@ -12,14 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.server;
 
-import commonj.sdo.helper.DataFactory;
-import commonj.sdo.helper.XMLHelper;
-import commonj.sdo.helper.XSDHelper;
-
 import java.net.URL;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
 @Stateless(name = "org.eclipse.persistence.testing.sdo.server.DeptServiceBean", mappedName = "DeptServiceBean")
 @Remote
@@ -42,7 +40,7 @@ public class DeptServiceImpl implements DeptService {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 URL url = cl.getResource("org/eclipse/persistence/testing/sdo/server/Dept.xsd");
                 String path = url.toExternalForm();
-                XSDHelper.INSTANCE.define(url.openStream(), path.substring(0, path.lastIndexOf('/') + 1));
+                SDOHelperContext.getHelperContext().getXSDHelper().define(url.openStream(), path.substring(0, path.lastIndexOf('/') + 1));
                 _isInited = true;
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -53,8 +51,7 @@ public class DeptServiceImpl implements DeptService {
     public Dept getDept(Integer deptno) {
         System.out.println("\n********** getDept() Called **********\n");
         System.out.println(deptno);
-
-        Dept dept = (Dept) DataFactory.INSTANCE.create(Dept.class);
+        Dept dept = (Dept) SDOHelperContext.getHelperContext().getDataFactory().create(Dept.class);
         dept.setDeptno(deptno);
         dept.setDname("Dname" + deptno);
         dept.setLoc("Loc" + deptno);
@@ -64,8 +61,7 @@ public class DeptServiceImpl implements DeptService {
     public boolean updateDept(Dept dept) {
         System.out.println("\n********** updateDept() Called **********\n");
         DeptImpl deptImpl = (DeptImpl) dept;
-        System.out.println(XMLHelper.INSTANCE.save(deptImpl, deptImpl.getType().getURI(), deptImpl.getType().getName()));
-
+        SDOHelperContext.getHelperContext().getXMLHelper().save(deptImpl, deptImpl.getType().getURI(), deptImpl.getType().getName());
         return (dept != null);
     }
 }

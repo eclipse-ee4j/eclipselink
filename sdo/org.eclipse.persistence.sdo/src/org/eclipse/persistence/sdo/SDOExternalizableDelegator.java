@@ -15,20 +15,22 @@ package org.eclipse.persistence.sdo;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.lang.reflect.Field;
-import org.eclipse.persistence.sdo.helper.DataObjectInputStream;
-import commonj.sdo.helper.HelperContext;
-import commonj.sdo.impl.ExternalizableDelegator;
-import commonj.sdo.impl.HelperProvider;
-import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
+import org.eclipse.persistence.sdo.helper.DataObjectInputStream;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
-public class SDOExternalizableDelegator extends ExternalizableDelegator {
+import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.ExternalizableDelegator.Resolvable;
+import commonj.sdo.impl.HelperProvider;
 
-	static final PrivilegedGetField privilegedGetDelegateField = new PrivilegedGetField(ExternalizableDelegator.class, "delegate", true);
+public class SDOExternalizableDelegator extends AbstractExternalizableDelegator {
 
+	static final PrivilegedGetField privilegedGetDelegateField = new PrivilegedGetField(AbstractExternalizableDelegator.class, "delegate", true);
+	
 	public SDOExternalizableDelegator() {
 		super();
 	}
@@ -60,7 +62,7 @@ public class SDOExternalizableDelegator extends ExternalizableDelegator {
 		super.readExternal(in);
     }
 
-	private SDOResolvable getDelegate() {
+    private SDOResolvable getDelegate() {
 		try {	
 			Field delegateField = (Field) privilegedGetDelegateField.run();
 			PrivilegedGetValueFromField privilegedGetValueFromDelegateField = new PrivilegedGetValueFromField(delegateField, this);
@@ -83,5 +85,4 @@ public class SDOExternalizableDelegator extends ExternalizableDelegator {
 			throw SDOException.errorAccessingExternalizableDelegator("delegate", iaException);
 		}		
 	}
-
 }
