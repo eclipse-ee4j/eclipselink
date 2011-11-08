@@ -14,8 +14,12 @@ package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -260,6 +264,58 @@ public abstract class MarshalRecord extends XMLRecord {
      */
     public abstract void characters(String value);
 
+    /**
+     * Convert the value if necessary and write out the converted value.
+     * Returns true if a value was written, and false if not
+     * @since EclipseLink 2.3 
+     */    
+    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){  
+        XMLBinaryDataHelper helper = XMLBinaryDataHelper.getXMLBinaryDataHelper();
+        
+        if(mimeType != null) {
+            value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                    value, marshaller, mimeType).getData();
+        }
+        if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+            String convertedValue = getStringForQName((QName)value);
+            characters(convertedValue);
+        }else{
+            String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
+            if(isCDATA){
+                cdata(convertedValue);        	    
+            }else{
+                characters(convertedValue);
+            }
+        }
+    }
+    
+    protected String getStringForQName(QName qName){
+        if(null == qName) {
+            return null;
+        }
+        String namespaceURI = qName.getNamespaceURI();
+        if(null == namespaceURI || 0 == namespaceURI.length()) {
+            if(getNamespaceResolver() != null && getNamespaceResolver().getDefaultNamespaceURI() != null) {
+                //need to add a default namespace declaration.
+                attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
+            }
+            return qName.getLocalPart();
+        } else {
+            NamespaceResolver namespaceResolver = getNamespaceResolver();
+            if(namespaceResolver == null){
+                throw XMLMarshalException.namespaceResolverNotSpecified(namespaceURI);
+            }
+            if(namespaceURI.equals(namespaceResolver.getDefaultNamespaceURI())) {
+                return qName.getLocalPart();
+            }
+            String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
+            if(null == prefix) {
+                prefix = namespaceResolver.generatePrefix();
+                attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespaceURI);
+            }
+            return prefix + XMLConstants.COLON + qName.getLocalPart();
+        }
+    }
     /**
      * Receive notification of character data to be wrapped in a CDATA node.
      * @param value This is the value of the text to be wrapped

@@ -36,6 +36,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.JAXBTypeElement;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
@@ -226,6 +227,28 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 
 			objectToXMLDocumentTest(testDocument);
 		}
+	}
+	
+	public void testObjectToXMLStreamWriterRecord() throws Exception {
+        if (System.getProperty("java.version").contains("1.6")) {
+            StringWriter writer = new StringWriter();
+            Object objectToWrite = getWriteControlObject();
+            javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory
+                    .newInstance();
+            javax.xml.stream.XMLStreamWriter streamWriter = factory
+                    .createXMLStreamWriter(writer);
+
+            XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
+            ((org.eclipse.persistence.jaxb.JAXBMarshaller)getJAXBMarshaller()).marshal(objectToWrite, record);
+
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+
+            objectToXMLDocumentTest(testDocument);
+        }	    
 	}
 	
     public void testObjectToXMLEventWriter() throws Exception {

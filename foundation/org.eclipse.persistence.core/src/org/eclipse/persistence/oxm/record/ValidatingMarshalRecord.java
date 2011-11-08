@@ -256,7 +256,8 @@ public class ValidatingMarshalRecord extends MarshalRecord {
 
     @Override
     public void setMarshaller(XMLMarshaller marshaller) {
-        this.marshaller = marshaller;
+    	super.setMarshaller(marshaller);
+
         validatingRecord.setMarshaller(marshaller);
         marshalRecord.setMarshaller(marshaller);
     }
@@ -334,6 +335,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
 
     @Override
     public void setSession(AbstractSession session) {
+    	this.session = session;
         validatingRecord.setSession(session);
         marshalRecord.setSession(session);
     }
