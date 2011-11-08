@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 //test imports
 import dbws.testing.DBWSTestSuite;

@@ -151,7 +151,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     @AfterClass
     public static void tearDown() {
         if ("true".equalsIgnoreCase(ddl)) {
-            //dropDbArtifact(conn, DROP_CUSTOM_TABLE);
+            dropDbArtifact(conn, DROP_CUSTOM_TABLE);
         }
     }
 

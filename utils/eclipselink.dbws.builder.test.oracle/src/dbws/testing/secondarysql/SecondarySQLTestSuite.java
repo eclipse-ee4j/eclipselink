@@ -18,6 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -87,15 +90,21 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchi
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //testing imports
+import dbws.testing.AllTests;
 import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
 import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_KEY;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL;
+import static dbws.testing.DBWSTestSuite.buildConnection;
+import static dbws.testing.DBWSTestSuite.createDbArtifact;
 import static dbws.testing.DBWSTestSuite.documentToString;
+import static dbws.testing.DBWSTestSuite.dropDbArtifact;
 import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_PORT;
 import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE;
 import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE_NAMESPACE;
@@ -107,6 +116,37 @@ import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE_
 )
 @ServiceMode(MESSAGE)
 public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+
+    static final String CREATE_SECONDARY_TABLE =
+        "CREATE TABLE SECONDARY (" +
+            "\nEMPNO NUMERIC(4)," +
+            "\nENAME VARCHAR(10)," +
+            "\nJOB VARCHAR(9)," +
+            "\nMGR NUMERIC(4)," +
+            "\nHIREDATE DATE," +
+            "\nSAL DECIMAL(7,2)," +
+            "\nCOMM DECIMAL(7,2)," +
+            "\nDEPTNO NUMERIC(2)," +
+            "\nPRIMARY KEY (EMPNO)" +
+        "\n)";
+    static final String[] POPULATE_SECONDARY_TABLE = new String[] {
+        "INSERT INTO SECONDARY VALUES (7369,'SMITH','CLERK',7902,TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800.88,NULL,20)",
+        "INSERT INTO SECONDARY VALUES (7499,'ALLEN','SALESMAN',7698,TO_DATE('1981-2-20 00:00:00','YYYY-MM-DD HH24:MI:SS'),1600,300,30)",
+        "INSERT INTO SECONDARY VALUES (7521,'WARD','SALESMAN',7698,TO_DATE('1981-2-22 00:00:00','YYYY-MM-DD HH24:MI:SS'),1250,500,30)",
+        "INSERT INTO SECONDARY VALUES (7566,'JONES','MANAGER',7839,TO_DATE('1981-4-2 00:00:00','YYYY-MM-DD HH24:MI:SS'),2975,NULL,20)",
+        "INSERT INTO SECONDARY VALUES (7654,'MARTIN','SALESMAN',7698,TO_DATE('1981-9-28 00:00:00','YYYY-MM-DD HH24:MI:SS'),1250,1400,30)",
+        "INSERT INTO SECONDARY VALUES (7698,'BLAKE','MANAGER',7839,TO_DATE('1981-5-1 00:00:00','YYYY-MM-DD HH24:MI:SS'),2850,NULL,30)",
+        "INSERT INTO SECONDARY VALUES (7782,'CLARK','MANAGER',7839,TO_DATE('1981-6-9 00:00:00','YYYY-MM-DD HH24:MI:SS'),2450,NULL,10)",
+        "INSERT INTO SECONDARY VALUES (7788,'SCOTT','ANALYST',7566,TO_DATE('1981-06-09 00:00:00','YYYY-MM-DD HH24:MI:SS'),3000,NULL,20)",
+        "INSERT INTO SECONDARY VALUES (7839,'KING','PRESIDENT',NULL,TO_DATE('1981-11-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),5000.99,NULL,10)",
+        "INSERT INTO SECONDARY VALUES (7844,'TURNER','SALESMAN',7698,TO_DATE('1981-9-8 00:00:00','YYYY-MM-DD HH24:MI:SS'),1500,0,30)",
+        "INSERT INTO SECONDARY VALUES (7876,'ADAMS','CLERK',7788,TO_DATE('1987-05-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1100,NULL,20)",
+        "INSERT INTO SECONDARY VALUES (7900,'JAMES','CLERK',7698,TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS'),950,NULL,30)",
+        "INSERT INTO SECONDARY VALUES (7902,'FORD','ANALYST',7566,TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS'),3000,NULL,20)",
+        "INSERT INTO SECONDARY VALUES (7934,'MILLER','CLERK',7782,TO_DATE('1982-01-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1300,NULL,10)"
+        };
+    static final String DROP_SECONDARY_TABLE =
+        "DROP TABLE SECONDARY";
 
     static final String NONSENCE_WHERE_SQL = " WHERE 0=1";
     static final String SECONDARY = "secondarySQL";
@@ -160,6 +200,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         "</dbws-builder>";
 
     // JUnit test fixtures
+    static Connection conn = AllTests.conn;
+    static String ddl = "false";
     static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
     static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
     static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
@@ -175,12 +217,39 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                //e.printStackTrace(); ignore
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SECONDARY_TABLE);
+            }
+            catch (SQLException e) {
+              //e.printStackTrace(); ignore
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_SECONDARY_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_SECONDARY_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+              //e.printStackTrace(); ignore
+            }
+        }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-        password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
-        DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
+            password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+            DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
         XMLContext context = new XMLContext(new DBWSBuilderModelProject());
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSBuilderModel builderModel =
@@ -211,6 +280,9 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
+        }
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SECONDARY_TABLE);
         }
     }
 

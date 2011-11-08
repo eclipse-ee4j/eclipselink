@@ -43,11 +43,11 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
 @SuiteClasses({
     CustomSQLTestSuite.class,
     IOTTypeTestSuite.class,
-    ObjectTableTypeTestSuite.class/*,
+    ObjectTableTypeTestSuite.class,
     ObjectTypeTestSuite.class,
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
-    SecondarySQLTestSuite.class,
+    SecondarySQLTestSuite.class/*,
     SimplePLSQLSFTestSuite.class,
     SimplePLSQLSPTestSuite.class,
     SimpleSFTestSuite.class,
