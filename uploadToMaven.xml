@@ -194,7 +194,7 @@
         <property name="equinox.dependencies"  value="${deps.head}${dep.jpa.weaving}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
-        <property name="sdoapi.dependencies"   value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
+        <property name="sdo.dependencies"      value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
     <target name="upload-static-built-jars" depends="discover-static-built-info">
