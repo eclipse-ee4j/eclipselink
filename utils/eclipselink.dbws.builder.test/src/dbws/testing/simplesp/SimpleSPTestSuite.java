@@ -92,6 +92,13 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             "\nset U = CONCAT('barf-' , T);" +
             "\nset V = 55;" +
         "\nEND";
+    static final String CREATE_GETSALARYBYID_PROC = 
+        "CREATE PROCEDURE GetSalaryById(INOUT S NUMERIC)" +
+        "\nBEGIN" + 
+            "\nDECLARE VAL NUMERIC;" +
+            "\nSELECT SAL INTO VAL FROM simplesp WHERE EMPNO LIKE S;" +
+            "\nSET S = VAL;" +
+        "\nEND";
     static final String DROP_SIMPLESP_TABLE =
         "DROP TABLE simplesp";
     static final String DROP_NOARGSP_PROC =
@@ -104,6 +111,8 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         "DROP PROCEDURE FindByJob";
     static final String DROP_INOUTARGSP_PROC =
         "DROP PROCEDURE InOutArgsSP";
+    static final String DROP_GETSALARYBYID_PROC =
+            "DROP PROCEDURE GetSalaryById";
 
     // JUnit test fixtures
     static String ddl = "false";
@@ -127,6 +136,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_GETALL_PROC);
                 createDbArtifact(conn, CREATE_FINDBYJOB_PROC);
                 createDbArtifact(conn, CREATE_INOUTARGSP_PROC);
+                createDbArtifact(conn, CREATE_GETSALARYBYID_PROC);
             }
             catch (SQLException e) {
                 //ignore
@@ -191,6 +201,10 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 "procedurePattern=\"InOutArgsSP\" " +
                 "isSimpleXMLFormat=\"true\" " +
             "/>" +
+            "<procedure " +
+                "name=\"GetSalaryByIdTest\" " +
+                "procedurePattern=\"GetSalaryById\" " +
+            "/>" +
           "</dbws-builder>";
         builder = null;
         DBWSTestSuite.setUp(".");
@@ -205,6 +219,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             dropDbArtifact(conn, DROP_GETALL_PROC);
             dropDbArtifact(conn, DROP_FINDBYJOB_PROC);
             dropDbArtifact(conn, DROP_INOUTARGSP_PROC);
+            dropDbArtifact(conn, DROP_GETSALARYBYID_PROC);
         }
     }
 
@@ -471,4 +486,21 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
           "<V>55</V>" +
         "</simple-xml>" +
       "</simple-xml-format>";
+
+    @Test
+    public void getSalaryByIdTest() {
+        Invocation invocation = new Invocation("GetSalaryByIdTest");
+        invocation.setParameter("S", 7902);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(SALARY_XML));
+        assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String SALARY_XML =
+    	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<value>3000</value>";
 }

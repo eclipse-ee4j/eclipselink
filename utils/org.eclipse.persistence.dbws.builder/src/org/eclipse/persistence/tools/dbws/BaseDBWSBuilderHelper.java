@@ -67,6 +67,7 @@ import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.UpdateOperation;
 import org.eclipse.persistence.internal.xr.Util;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
+import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
@@ -135,6 +136,7 @@ import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
 import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
+import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 
 //DDL parser imports
@@ -717,7 +719,7 @@ public abstract class BaseDBWSBuilderHelper {
                 context.getSession(oxProject).getEventManager().addListener(new MissingDescriptorListener());
                 XMLMarshaller marshaller = context.createMarshaller();
                 marshaller.marshal(oxProject, new OutputStreamWriter(dbwsOxStream));
-            }
+           }
         }
         dbwsBuilder.getPackager().closeOrStream(dbwsOrStream);
         dbwsBuilder.getPackager().closeOxStream(dbwsOxStream);
@@ -1259,5 +1261,44 @@ public abstract class BaseDBWSBuilderHelper {
             // TODO - more conversions
         }
         return STRING;
+    }
+    
+    /**
+     * Apply SimpleXMLFormat if 'isSimpleXMLFormat' is true.  The SimpleXMLFormat is
+     * configured based on the given ProcedureOperationModel's simpleXMLFormatTag
+     * and xmlTag (if set) and set on the given Result.  A descriptor is also added
+     * to the OXProject if none exists.
+     */
+    protected void handleSimpleXMLFormat(boolean isSimpleXMLFormat, Result result, ProcedureOperationModel procedureOperationModel) {
+        if (isSimpleXMLFormat) {
+            SimpleXMLFormat sxf = new SimpleXMLFormat();
+            String simpleXMLFormatTag = procedureOperationModel.getSimpleXMLFormatTag();
+            if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
+                sxf.setSimpleXMLFormatTag(simpleXMLFormatTag);
+            }
+            String xmlTag = procedureOperationModel.getXmlTag();
+            if (xmlTag != null && xmlTag.length() > 0) {
+                sxf.setXMLTag(xmlTag);
+            }
+
+            result.setSimpleXMLFormat(sxf);
+            // check to see if the O-X project needs descriptor for SimpleXMLFormat
+            if (dbwsBuilder.getOxProject().getDescriptorForAlias(DEFAULT_SIMPLE_XML_FORMAT_TAG) == null) {
+                SimpleXMLFormatProject sxfProject = new SimpleXMLFormatProject();
+                dbwsBuilder.getOxProject().addDescriptor(sxfProject.buildXRRowSetModelDescriptor());
+            }
+        }
+    }
+    
+    /**
+     * Perform any additional actions required for operation creation
+     * for both PL/SQL and non-PL/SQL operation models.
+     */
+    protected void finishProcedureOperation() {
+        // check to see if the schema requires sxfType to be added
+        if (requiresSimpleXMLFormat(dbwsBuilder.getXrServiceModel()) &&
+            dbwsBuilder.getSchema().getTopLevelElements().get("simple-xml-format") == null) {
+            addSimpleXMLFormat(dbwsBuilder.getSchema());
+        }
     }
 }

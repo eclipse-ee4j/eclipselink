@@ -88,6 +88,11 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 "simpleXMLFormatTag=\"simplesp-rows\" " +
                 "xmlTag=\"simplesp-row\" " +
             "/>" +
+            "<procedure " +
+                "name=\"GetSalaryByIdTest\" " +
+                "catalogPattern=\"TOPLEVEL\" " +
+                "procedurePattern=\"GETSALARYBYID\" " +
+            "/>" +
             "<table " +
                "schemaPattern=\"%\" " +
                "tableNamePattern=\"SIMPLESP\" " +
@@ -108,7 +113,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
     public static final String VALUE_1_XML =
       "<?xml version = '1.0' encoding = 'UTF-8'?>" +
       "<value>1</value>";
-    @Test
+   @Test
     public void varcharTest() {
         Invocation invocation = new Invocation("VarcharTest");
         invocation.setParameter("X", "this is a test");
@@ -374,4 +379,21 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
           "</simplespType>" +
       "</all>";
 
+    @Test
+    public void getSalaryByIdTest() {
+        Invocation invocation = new Invocation("GetSalaryByIdTest");
+        invocation.setParameter("S", 7876);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(SALARY));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    public static final String SALARY = 
+    	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<value>1100</value>";
 }

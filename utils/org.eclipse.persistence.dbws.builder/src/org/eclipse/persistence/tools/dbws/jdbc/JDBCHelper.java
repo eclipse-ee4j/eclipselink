@@ -51,8 +51,6 @@ import org.eclipse.persistence.internal.xr.QueryOperation;
 import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredProcedureQueryHandler;
-import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
-import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
@@ -65,15 +63,12 @@ import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
 import org.eclipse.persistence.tools.dbws.Util;
 
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
-import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
-import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
-import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 
 //DDL parser imports
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
@@ -346,24 +341,9 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                 }
             }
             qo.setQueryHandler(qh);
-            SimpleXMLFormat sxf = null;
             String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
-            if (isSimpleXMLFormat || returnType == null) {
-                sxf = new SimpleXMLFormat();
-            }
-            String simpleXMLFormatTag = procedureOperationModel.getSimpleXMLFormatTag();
-            if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
-                sxf.setSimpleXMLFormatTag(simpleXMLFormatTag);
-            }
-            String xmlTag = procedureOperationModel.getXmlTag();
-            if (xmlTag != null && xmlTag.length() > 0) {
-                if (sxf == null) {
-                    sxf = new SimpleXMLFormat();
-                }
-                sxf.setXMLTag(xmlTag);
-            }
             Result result = null;
             if (storedProcedure.isFunction()) {
                 FunctionType storedFunction = (FunctionType) storedProcedure;
@@ -462,7 +442,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                         else {
                             // if user overrides returnType, assume they're right
                             // Hmm, multiple OUT's gonna be a problem - later!
-                            if (returnType != null && sxf == null) {
+                            if (returnType != null && !isSimpleXMLFormat) {
                                 xmlType = qNameFromString("{" + dbwsBuilder.getTargetNamespace() + "}" +
                                     returnType, dbwsBuilder.getSchema());
                             }
@@ -478,6 +458,13 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                             }
                         }
                         if (direction == INOUT) {
+                            parm = new Parameter();
+                            parm.setName(argName);
+                            parm.setType(xmlType);
+                            result.setType(xmlType);
+                            // use of INOUT precludes SimpleXMLFormat
+                            isSimpleXMLFormat = false;
+                            
                             if (qh instanceof StoredProcedureQueryHandler) {
                                 ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
                             }
@@ -493,23 +480,12 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                     }
                 }
             }
-            if (sxf != null) {
-                result.setSimpleXMLFormat(sxf);
-                // check to see if the O-X project needs descriptor for SimpleXMLFormat
-                if (dbwsBuilder.getOxProject().getDescriptorForAlias(DEFAULT_SIMPLE_XML_FORMAT_TAG) == null) {
-                    SimpleXMLFormatProject sxfProject = new SimpleXMLFormatProject();
-                    dbwsBuilder.getOxProject().addDescriptor(sxfProject.buildXRRowSetModelDescriptor());
-                }
-            }
+            
+            handleSimpleXMLFormat(isSimpleXMLFormat, result, procedureOperationModel);
             qo.setResult(result);
             dbwsBuilder.getXrServiceModel().getOperations().put(qo.getName(), qo);
         }
-
-        // check to see if the schema requires sxfType to be added
-        if (requiresSimpleXMLFormat(dbwsBuilder.getXrServiceModel()) && 
-            dbwsBuilder.getSchema().getTopLevelElements().get("simple-xml-format") == null) {
-            addSimpleXMLFormat(dbwsBuilder.getSchema());
-        }
+        finishProcedureOperation();
     }
     
     protected List<TableType> loadTables(String originalCatalogPattern, String originalSchemaPattern,

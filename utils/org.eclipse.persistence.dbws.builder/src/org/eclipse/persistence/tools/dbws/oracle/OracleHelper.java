@@ -309,6 +309,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             }
                         }
                         if (direction == INOUT) {
+                            parm = new Parameter();
+                            parm.setName(argName);
+                            parm.setType(xmlType);
+                            result.setType(xmlType);
+                            // use of INOUT precludes SimpleXMLFormat
+                            isSimpleXMLFormat = false;
+
                             if (qh instanceof StoredProcedureQueryHandler) {
                                 ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
                             }
@@ -566,45 +573,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         sb.append(storedProcedure.getProcedureName());
         return sb.toString();
-    }
-
-    /**
-     * Apply SimpleXMLFormat if 'isSimpleXMLFormat' is true.  The SimpleXMLFormat is
-     * configured based on the given ProcedureOperationModel's simpleXMLFormatTag
-     * and xmlTag (if set) and set on the given Result.  A descriptor is also added
-     * to the OXProject if none exists.
-     */
-    protected void handleSimpleXMLFormat(boolean isSimpleXMLFormat, Result result, ProcedureOperationModel procedureOperationModel) {
-        if (isSimpleXMLFormat) {
-            SimpleXMLFormat sxf = new SimpleXMLFormat();
-            String simpleXMLFormatTag = procedureOperationModel.getSimpleXMLFormatTag();
-            if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
-                sxf.setSimpleXMLFormatTag(simpleXMLFormatTag);
-            }
-            String xmlTag = procedureOperationModel.getXmlTag();
-            if (xmlTag != null && xmlTag.length() > 0) {
-                sxf.setXMLTag(xmlTag);
-            }
-
-            result.setSimpleXMLFormat(sxf);
-            // check to see if the O-X project needs descriptor for SimpleXMLFormat
-            if (dbwsBuilder.getOxProject().getDescriptorForAlias(DEFAULT_SIMPLE_XML_FORMAT_TAG) == null) {
-                SimpleXMLFormatProject sxfProject = new SimpleXMLFormatProject();
-                dbwsBuilder.getOxProject().addDescriptor(sxfProject.buildXRRowSetModelDescriptor());
-            }
-        }
-    }
-
-    /**
-     * Perform any additional actions required for operation creation
-     * for both PL/SQL and non-PL/SQL operation models.
-     */
-    protected void finishProcedureOperation() {
-        // check to see if the schema requires sxfType to be added
-        if (requiresSimpleXMLFormat(dbwsBuilder.getXrServiceModel()) &&
-            dbwsBuilder.getSchema().getTopLevelElements().get("simple-xml-format") == null) {
-            addSimpleXMLFormat(dbwsBuilder.getSchema());
-        }
     }
 
     /**

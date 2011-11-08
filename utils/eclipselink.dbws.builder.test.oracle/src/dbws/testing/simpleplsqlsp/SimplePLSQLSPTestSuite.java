@@ -79,6 +79,11 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"INOUTARGSPLSQLSP\" " +
                   "isSimpleXMLFormat=\"true\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"InOutArgTest\" " +
+                  "catalogPattern=\"SIMPLEPACKAGE1\" " +
+                  "procedurePattern=\"INOUTARGPLSQLSP\" " +
+              "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -135,4 +140,21 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
           "<V>55</V>" +
         "</simple-xml>" +
       "</simple-xml-format>";
+    
+    @Test
+    public void inOutArgTest() {
+        Invocation invocation = new Invocation("InOutArgTest");
+        invocation.setParameter("T", "yuck");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(IN_OUT_ARG_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String IN_OUT_ARG_XML =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+      "<value>barf-yuck</value>";
 }
