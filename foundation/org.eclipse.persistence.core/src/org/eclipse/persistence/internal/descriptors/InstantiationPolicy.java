@@ -380,7 +380,9 @@ public class InstantiationPolicy implements Cloneable, Serializable {
      */
     protected void initializeMethod() throws DescriptorException {
         Class tempClass;
-        if (this.getFactoryClass() == null) {
+        if (this.getFactory() != null) {
+            tempClass = this.getFactory().getClass();
+        } else if (this.getFactoryClass() == null) {
             tempClass = this.getDescriptor().getJavaClass();
         } else {
             tempClass = this.getFactoryClass();

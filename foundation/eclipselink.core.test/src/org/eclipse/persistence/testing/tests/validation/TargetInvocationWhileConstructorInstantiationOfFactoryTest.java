@@ -38,8 +38,8 @@ public class TargetInvocationWhileConstructorInstantiationOfFactoryTest extends 
         //   descriptor.setJavaClass(TargetInvocationWhileConstructorInstantiationOfFactoryTest.class);   //no problems
         descriptor.addTableName("EMPLOYEE");
         policy = descriptor.getInstantiationPolicy();
-        policy.setMethodName("invalidMethod");
-        policy.useFactoryInstantiationPolicy(ClassWithProblemConstructor.class, "invalidMethod");
+        policy.setMethodName("method");
+        policy.useFactoryInstantiationPolicy(ClassWithProblemConstructor.class, "method");
 
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker()); //moved into setup

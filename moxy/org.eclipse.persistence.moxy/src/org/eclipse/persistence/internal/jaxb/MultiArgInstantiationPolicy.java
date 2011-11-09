@@ -79,10 +79,12 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
     }
     protected void initializeMethod() throws DescriptorException {
         Class tempClass;
-        if (this.getFactory() == null) {
+        if (this.getFactory() != null) {
+            tempClass = this.getFactory().getClass();
+        } else if (this.getFactoryClass() == null) {
             tempClass = this.getDescriptor().getJavaClass();
         } else {
-            tempClass = this.getFactory().getClass();
+            tempClass = this.getFactoryClass();
         }
         if(this.parameterTypes == null) {
             this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class[0]));

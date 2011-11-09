@@ -38,8 +38,8 @@ public class InstantiationWhileConstructorInstantiationOfFactoryTest extends Exc
         descriptor.setJavaClass(ExceptionTest.class);
         descriptor.addTableName("EMPLOYEE");
         policy = descriptor.getInstantiationPolicy();
-        policy.setMethodName("invalidMethod");
-        policy.useFactoryInstantiationPolicy(ExceptionTest.class, "invalidMethod");
+        policy.setMethodName("reset");
+        policy.useFactoryInstantiationPolicy(ExceptionTest.class, "reset");
 
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker()); //moved into setup
