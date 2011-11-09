@@ -30,5 +30,5 @@
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="dbws.testing.AllTests"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="eclipselink.dbws.builder.test.oracle"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Ddb.user=${db.oracle.user} -Ddb.pwd=${db.oracle.pwd} -Ddb.url=${db.oracle.url} -Ddb.platform=${db.oracle.platform} -Ddb.driver=${db.oracle.driver} -Ddb.ddl=${db.ddl}"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Ddb.user=${db.oracle.user} -Ddb.pwd=${db.oracle.pwd} -Ddb.url=${db.oracle.url} -Ddb.platform=${db.oracle.platform} -Ddb.driver=${db.oracle.driver} -Ddb.ddl.create=${db.ddl.create} -Ddb.ddl.drop=${db.ddl.drop}"/>
 </launchConfiguration>

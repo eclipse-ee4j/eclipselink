@@ -75,8 +75,10 @@ public class DBWSTestSuite {
     public static final String DEFAULT_DATABASE_PASSWORD = "password";
     public static final String DATABASE_URL_KEY = "db.url";
     public static final String DEFAULT_DATABASE_URL = "jdbc:mysql://localhost:3306/test";
-    public static final String DATABASE_DDL_KEY = "db.ddl";
-    public static final String DEFAULT_DATABASE_DDL = "false";
+    public static final String DATABASE_DDL_CREATE_KEY = "db.ddl.create";
+    public static final String DEFAULT_DATABASE_DDL_CREATE = "false";
+    public static final String DATABASE_DDL_DROP_KEY = "db.ddl.drop";
+    public static final String DEFAULT_DATABASE_DDL_DROP = "false";
 
     public static final String SFAULT = "sfault_table";
     public static final String SFAULT_TEST = SFAULT + "Test";

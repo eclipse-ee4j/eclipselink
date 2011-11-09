@@ -74,8 +74,10 @@ public class DBWSTestSuite {
     public static final String DEFAULT_DATABASE_USERNAME = "user";
     public static final String DEFAULT_DATABASE_PASSWORD = "password";
     public static final String DEFAULT_DATABASE_URL = "jdbc:oracle:thin:@localhost:1521:ORCL";
-    public static final String DATABASE_DDL_KEY = "db.ddl";
-    public static final String DEFAULT_DATABASE_DDL = "false";
+    public static final String DATABASE_DDL_CREATE_KEY = "db.ddl.create";
+    public static final String DEFAULT_DATABASE_DDL_CREATE = "false";
+    public static final String DATABASE_DDL_DROP_KEY = "db.ddl.drop";
+    public static final String DEFAULT_DATABASE_DDL_DROP = "false";
     public static final String RELEASE_VERSION_KEY = "release.version";
     public static final String DEFAULT_RELEASE_VERSION= "2.4.0";
     public static String releaseVersion = System.getProperty(RELEASE_VERSION_KEY, DEFAULT_RELEASE_VERSION);

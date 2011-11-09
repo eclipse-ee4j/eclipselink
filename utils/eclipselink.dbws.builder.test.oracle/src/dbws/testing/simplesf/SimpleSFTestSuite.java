@@ -16,7 +16,6 @@ package dbws.testing.simplesf;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -104,9 +103,6 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
     static final String DROP_FINDMAXSALFORDEPT_FUNC =
         "DROP FUNCTION FINDMAXSALFORDEPT";
 
-    // JUnit test fixtures
-    static String ddl = "false";
-
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -117,8 +113,8 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_SIMPLESF_TABLE);
                 createDbArtifact(conn, CREATE_FINDMAXSAL_FUNC);
@@ -178,7 +174,8 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_FINDMAXSAL_FUNC);
             dropDbArtifact(conn, DROP_FINDMAXSALFORDEPT_FUNC);
             dropDbArtifact(conn, DROP_SIMPLESF_TABLE);

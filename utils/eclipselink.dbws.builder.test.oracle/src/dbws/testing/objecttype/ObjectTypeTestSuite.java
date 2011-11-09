@@ -106,9 +106,6 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     static final String DROP_ADD_EMP_TYPE2_FUNC =
         "DROP FUNCTION ADD_EMP_TYPE2_FUNC";
 
-    // JUnit test fixtures
-    static String ddl = "false";
-
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -119,8 +116,8 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_PHONE_TYPE);
                 createDbArtifact(conn, CREATE_EMP_TYPE);
@@ -197,7 +194,8 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_ADD_EMP_TYPE2_FUNC);
             dropDbArtifact(conn, DROP_ADD_EMP_TYPE_PROC);
             dropDbArtifact(conn, DROP_GET_EMP_TYPE_BY_ID_2_FUNC);

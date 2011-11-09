@@ -31,5 +31,5 @@
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="dbws.testing.AllTests"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="eclipselink.dbws.builder.test"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Ddb.user=${db.mysql.user} -Ddb.pwd=${db.mysql.pwd} -Ddb.url=${db.mysql.url} -Ddb.platform=${db.mysql.platform} -Ddb.driver=${db.mysql.driver} -Ddb.ddl=${db.ddl}"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Ddb.user=${db.mysql.user} -Ddb.pwd=${db.mysql.pwd} -Ddb.url=${db.mysql.url} -Ddb.platform=${db.mysql.platform} -Ddb.driver=${db.mysql.driver} -Ddb.ddl.create=${db.ddl.create} -Ddb.ddl.drop=${db.ddl.drop}"/>
 </launchConfiguration>

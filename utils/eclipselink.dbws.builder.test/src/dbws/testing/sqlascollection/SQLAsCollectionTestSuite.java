@@ -91,13 +91,15 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchi
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //testing imports
-import static dbws.testing.DBWSTestSuite.DATABASE_DDL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_CREATE_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DROP_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
 import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_CREATE;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_DROP;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
@@ -137,7 +139,6 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
 	static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SQLCOLLECTION + "Test";
 
     // JUnit test fixtures
-    static String ddl = "false";
     static Connection conn = null;
     static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
     static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
@@ -160,8 +161,8 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
         catch (Exception e) {
             e.printStackTrace();
         }
-        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_SQLCOLLECTION_TABLE);
             }
@@ -215,7 +216,8 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
         if (endpoint != null) {
             endpoint.stop();
         }
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_SQLCOLLECTION_TABLE);
         }
     }

@@ -91,13 +91,15 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchi
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //domain-specific (test) imports
-import static dbws.testing.DBWSTestSuite.DATABASE_DDL_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_CREATE_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DROP_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
 import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
 import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_CREATE;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_DROP;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
@@ -194,7 +196,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         "</dbws-builder>";
 
     // JUnit test fixtures
-    static String ddl = "false";
     static Connection conn = null;
     public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
     public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
@@ -217,8 +218,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         catch (Exception e) {
             e.printStackTrace();
         }
-        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_SECONDARY_TABLE);
             }
@@ -275,7 +276,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         if (endpoint != null) {
             endpoint.stop();
         }
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_SECONDARY_TABLE);
         }
     }

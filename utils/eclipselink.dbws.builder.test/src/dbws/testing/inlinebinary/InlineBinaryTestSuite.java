@@ -55,9 +55,6 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
     static final String DROP_INLINE_TABLE =
         "DROP TABLE inlinebinary";
 
-    // JUnit test fixtures
-    static String ddl = "false";
-
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -68,8 +65,8 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_INLINE_TABLE);
             }
@@ -116,7 +113,8 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_INLINE_TABLE);
         }
     }

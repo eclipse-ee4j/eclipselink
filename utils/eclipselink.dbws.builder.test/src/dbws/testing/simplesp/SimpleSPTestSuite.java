@@ -92,9 +92,9 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             "\nset U = CONCAT('barf-' , T);" +
             "\nset V = 55;" +
         "\nEND";
-    static final String CREATE_GETSALARYBYID_PROC = 
+    static final String CREATE_GETSALARYBYID_PROC =
         "CREATE PROCEDURE GetSalaryById(INOUT S NUMERIC)" +
-        "\nBEGIN" + 
+        "\nBEGIN" +
             "\nDECLARE VAL NUMERIC;" +
             "\nSELECT SAL INTO VAL FROM simplesp WHERE EMPNO LIKE S;" +
             "\nSET S = VAL;" +
@@ -114,9 +114,6 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
     static final String DROP_GETSALARYBYID_PROC =
             "DROP PROCEDURE GetSalaryById";
 
-    // JUnit test fixtures
-    static String ddl = "false";
-
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -127,8 +124,8 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_SIMPLESP_TABLE);
                 createDbArtifact(conn, CREATE_NOARGSP_PROC);
@@ -212,7 +209,8 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_SIMPLESP_TABLE);
             dropDbArtifact(conn, DROP_NOARGSP_PROC);
             dropDbArtifact(conn, DROP_VARCHARSP_PROC);

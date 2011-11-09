@@ -60,15 +60,12 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         "DROP TABLE loglevel";
 
     // JUnit test fixtures
-    static String ddl = "false";
-
     final static String username =
         System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
     final static String password =
         System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
     final static String url =
         System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-
     final static String VERSION = "SOME_VERSION";
     final static String info_level = "info";
     final static String off_level = "off";
@@ -84,8 +81,8 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_LOGLEVEL_TABLE);
             }
@@ -160,7 +157,8 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        if ("true".equalsIgnoreCase(ddl)) {
+        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_LOGLEVEL_TABLE);
         }
     }

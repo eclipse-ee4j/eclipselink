@@ -31,6 +31,7 @@ import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
 
@@ -77,6 +78,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
@@ -593,7 +595,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         List<ProcedureType> allProcsAndFuncs = new ArrayList<ProcedureType>();
         try {
             // handle PLSQL package stored procedures/functions
-            if (procedureModel.isPLSQLProcedureOperation()) {
+            if (procedureModel.isPLSQLProcedureOperation() ||
+                (procedureModel.getCatalogPattern() != null &&
+                 procedureModel.getCatalogPattern().length() > 0 &&
+                 !procedureModel.getCatalogPattern().equals(TOPLEVEL))) {
                 List<PLSQLPackageType> foundPackages = dtBuilder.buildPackages(dbwsBuilder.getConnection(),
                     procedureModel.getSchemaPattern(), procedureModel.getCatalogPattern());
                 if (foundPackages != null) {
@@ -605,7 +610,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 // handle top-level stored procedures/functions
                 List<ProcedureType> foundProcedures = dtBuilder.buildProcedures(dbwsBuilder.getConnection(),
                         procedureModel.getSchemaPattern(), procedureModel.getProcedurePattern());
@@ -1297,7 +1303,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 } else {
                     if (databaseType instanceof PLSQLCollection) {
                         dq.addArgument(arg.getArgumentName(), Array.class);
-                    } else if (databaseType instanceof PLSQLrecord) {
+                    } else if (databaseType instanceof PLSQLrecord || databaseType instanceof OracleObjectType) {
                         dq.addArgument(arg.getArgumentName(), Struct.class);
                     } else {
                         dq.addArgument(arg.getArgumentName(),
