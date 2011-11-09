@@ -15,6 +15,8 @@ package dbws.testing.simpletablewithnestedsql;
 //javase imports
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 
 //java eXtension imports
@@ -27,6 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -53,11 +56,56 @@ import dbws.testing.DBWSTestSuite;
 
 public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
 
-    public final static String FINDBYNAME_RESPONSETYPE = "findByNameResponseType";
-    public final static String TABLE_ALIAS ="ns1:simpletable2Type";
+    static final String CREATE_SIMPLE_TABLE =
+        "CREATE TABLE SIMPLETABLE2 (" +
+            "\nID NUMBER NOT NULL," +
+            "\nNAME VARCHAR(25)," +
+            "\nSINCE DATE," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_SIMPLE_TABLE = new String[] {
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (1, 'mike', '2001-12-25')",
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (2, 'blaise','2002-02-12')",
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (3, 'rick','2001-10-30')",
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (4, 'mikey', '2010-01-01')"
+    };
+    static final String DROP_SIMPLE_TABLE =
+        "DROP TABLE SIMPLETABLE2";
+    static final String FINDBYNAME_RESPONSETYPE = "findByNameResponseType";
+    static final String TABLE_ALIAS ="ns1:simpletable2Type";
+
+    // JUnit test fixtures
+    static String ddl = "false";
 
     @BeforeClass
     public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SIMPLE_TABLE);
+            }
+            catch (SQLException e) {
+                //e.printStackTrace();
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_SIMPLE_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_SIMPLE_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //e.printStackTrace();
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -93,7 +141,14 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
         builder = new DBWSBuilder();
         DBWSTestSuite.setUp(".");
     }
-    
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SIMPLE_TABLE);
+        }
+    }
+
     @SuppressWarnings("rawtypes")
     @Test
     public void findByNameTest() {
@@ -112,7 +167,7 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(FIND_BY_NAME_CONTROL_DOC));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    static String FIND_BY_NAME_CONTROL_DOC = 
+    static String FIND_BY_NAME_CONTROL_DOC =
             "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
             "<collection>" +
                "<simpletable2Type xmlns=\"urn:simpletable2\">" +
@@ -126,7 +181,7 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
                   "<since>2010-01-01</since>" +
                "</simpletable2Type>" +
             "</collection>";
-    
+
     @Test
     public void validateElementRefType() throws TransformerFactoryConfigurationError, TransformerException {
         StringWriter sw = new StringWriter();

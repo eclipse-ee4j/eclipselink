@@ -231,7 +231,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                 createDbArtifact(conn, CREATE_SECONDARY_TABLE);
             }
             catch (SQLException e) {
-              //e.printStackTrace(); ignore
+              //e.printStackTrace();
             }
             try {
                 Statement stmt = conn.createStatement();
@@ -241,7 +241,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-              //e.printStackTrace(); ignore
+              //e.printStackTrace();
             }
         }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);

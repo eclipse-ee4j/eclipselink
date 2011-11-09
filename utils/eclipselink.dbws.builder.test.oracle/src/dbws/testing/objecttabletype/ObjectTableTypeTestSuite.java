@@ -126,7 +126,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC);
             }
             catch (SQLException e) {
-                // ignore
+                //e.printStackTrace();
             }
         }
         DBWS_BUILDER_XML_USERNAME =

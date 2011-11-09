@@ -16,6 +16,8 @@ package dbws.testing.tabletype;
 //javase imports
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,6 +27,7 @@ import org.xml.sax.InputSource;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -55,10 +58,65 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class TableTypeTestSuite extends DBWSTestSuite {
-    
+
+    static final String CREATE_TABLETYPE_TABLE =
+        "CREATE TABLE TABLETYPE (" +
+            "\nID NUMERIC(4) NOT NULL," +
+            "\nNAME VARCHAR(25)," +
+            "\nDEPTNO DECIMAL(2,0)," +
+            "\nDEPTNAME VARCHAR2(40)," +
+            "\nSECTION CHAR(1)," +
+            "\nSAL FLOAT," +
+            "\nCOMMISSION REAL," +
+            "\nSALES DOUBLE PRECISION," +
+            "\nBINID BLOB," +
+            "\nB BLOB," +
+            "\nC CLOB," +
+            "\nR RAW(3)," +
+            "\nLR LONG RAW," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_TABLETYPE_TABLE = new String[] {
+        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R, LR) VALUES (1, 'mike', 99, 'sales', 'a', 100000.80, 450.80, 10000.80, '1010', '010101010101010101010101010101', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '010101', '010101010101010101')",
+        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R, LR) VALUES (2, 'merrick', 98, 'delivery', 'f', 20000, 0, 0, '0101', '020202020202020202020202020202', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '020202', '020202020202020202')",
+        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R, LR) VALUES (3, 'rick', 99, 'sales', 'b', 98000.20, 150.20, 2000.20, '1110', '030303030303030303030303030303', 'cccccccccccccccccccccccccccccc', '030303', '030303030303030303')"
+    };
+    static final String DROP_TABLETYPE_TABLE =
+        "DROP TABLE TABLETYPE";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
     public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
         IllegalArgumentException, IllegalAccessException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_TABLETYPE_TABLE);
+            }
+            catch (SQLException e) {
+                //e.printStackTrace();
+            }
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_TABLETYPE_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_TABLETYPE_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //e.printStackTrace();
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
           "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -87,7 +145,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         builder.setBuilderHelper(builderHelper);
         Field workbenchProj_field = BaseDBWSBuilderHelper.class.getDeclaredField("workbenchXMLProject");
         workbenchProj_field.setAccessible(true);
-        ObjectPersistenceWorkbenchXMLProject workbenchXMLProject = 
+        ObjectPersistenceWorkbenchXMLProject workbenchXMLProject =
             (ObjectPersistenceWorkbenchXMLProject)workbenchProj_field.get(builderHelper);
         XMLTransformationMapping versionMapping =
             (XMLTransformationMapping)workbenchXMLProject.getDescriptor(Project.class).
@@ -103,6 +161,13 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         DBWSTestSuite.setUp(".");
     }
 
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_TABLETYPE_TABLE);
+        }
+    }
+
     @Test
     public void findByPrimaryKeyTest() {
         Invocation invocation = new Invocation("findByPrimaryKey_tabletypeType");
@@ -113,11 +178,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(ONE_PERSON_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void findAllTest() {
@@ -135,7 +199,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(ALL_PEOPLE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void updateTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -149,7 +213,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         invocation.setParameter("theInstance", firstPerson);
         Operation op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
-        
+
         invocation = new Invocation("findByPrimaryKey_tabletypeType");
         invocation.setParameter("id", 1);
         op = xrService.getOperation(invocation.getName());
@@ -169,7 +233,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
     }
-    
+
     @Test
     public void createAndDeleteTest() {
         // create a new person
@@ -191,7 +255,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         // TODO: don't update binary data until we figure out how to round trip
         //newPerson.set("r", new String("110").getBytes());
         //newPerson.set("lr", new String("111111010101010101").getBytes());
-        
+
         Invocation invocation = new Invocation("create_tabletypeType");
         invocation.setParameter("theInstance", newPerson);
         Operation op = xrService.getOperation(invocation.getName());
@@ -220,7 +284,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         result = op.invoke(xrService, invocation);
         assertNull("Result is not null after delete call", result);
     }
-    
+
     @Test
     public void validateSchema() {
         Document testDoc = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
@@ -229,7 +293,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         removeEmptyTextNodes(controlDoc);
         assertTrue("Schema validation failed:\nExpected:" + XSD + "\nbut was:\n" + DBWS_SCHEMA_STREAM.toString(), comparer.isNodeEqual(controlDoc, testDoc));
     }
-    
+
     @Test
     public void validateWSDL() {
         Document testDoc = xmlParser.parse(new StringReader(DBWS_WSDL_STREAM.toString()));
@@ -257,7 +321,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         assertTrue("OX Project validation failed:\nExpected:" + OX_PROJECT + "\nbut was:\n" + DBWS_OX_STREAM.toString(), comparer.isNodeEqual(controlDoc, testDoc));
     }
 
-    protected static final String XSD = 
+    protected static final String XSD =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:tabletype\" xmlns=\"urn:tabletype\" elementFormDefault=\"qualified\">\n" +
            "<xsd:complexType name=\"tabletypeType\">\n" +
@@ -278,21 +342,21 @@ public class TableTypeTestSuite extends DBWSTestSuite {
               "</xsd:sequence>\n" +
            "</xsd:complexType>\n" +
            "<xsd:element name=\"tabletypeType\" type=\"tabletypeType\"/>\n" +
-        "</xsd:schema>";                    
+        "</xsd:schema>";
 
     protected static final String WSDL =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<wsdl:definitions\n" + 
-             "name=\"tabletypeService\"\n" + 
-             "targetNamespace=\"urn:tabletypeService\"\n" + 
-             "xmlns:ns1=\"urn:tabletype\"\n" + 
-             "xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n" + 
-             "xmlns:tns=\"urn:tabletypeService\"\n" + 
-             "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" + 
+        "<wsdl:definitions\n" +
+             "name=\"tabletypeService\"\n" +
+             "targetNamespace=\"urn:tabletypeService\"\n" +
+             "xmlns:ns1=\"urn:tabletype\"\n" +
+             "xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\"\n" +
+             "xmlns:tns=\"urn:tabletypeService\"\n" +
+             "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n" +
              "xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"\n" +
              ">\n" +
              "<wsdl:types>\n" +
-                "<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:tabletypeService\" xmlns:tns=\"urn:tabletypeService\"\n" + 
+                "<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:tabletypeService\" xmlns:tns=\"urn:tabletypeService\"\n" +
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
                 "<xsd:import namespace=\"urn:tabletype\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/>\n" +
                 "<xsd:complexType name=\"update_tabletypeTypeRequestType\">\n" +
@@ -485,8 +549,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "</wsdl:port>\n" +
              "</wsdl:service>\n" +
         "</wsdl:definitions>\n";
-    
-    protected static final String OR_PROJECT = 
+
+    protected static final String OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<object-persistence xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"Eclipse Persistence Services - " + releaseVersion + "\">\n" +
            "<name>tabletype-dbws-or</name>\n" +
@@ -614,7 +678,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
            "</login>\n" +
         "</object-persistence>";
 
-    protected static final String OX_PROJECT = 
+    protected static final String OX_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<object-persistence xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"Eclipse Persistence Services - " + releaseVersion + "\">\n" +
            "<name>tabletype-dbws-ox</name>\n" +
@@ -810,7 +874,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
           "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
           "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
         "</tabletypeType>";
-    
+
     protected static final String UPDATED_PERSON_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<tabletypeType xmlns=\"urn:tabletype\">" +
@@ -829,7 +893,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
           "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
         "</tabletypeType>";
 
-    
+
     // TODO: use this 'new person' once round trip binary is sorted out
     /*
     protected static final String NEW_PERSON_XML =
@@ -850,8 +914,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
           "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJERERAQEBAQEB</lr>" +
         "</tabletypeType>";
     */
-    
-    // TODO:  'rO0ABXA=' comes back for non-set/null binary types 
+
+    // TODO:  'rO0ABXA=' comes back for non-set/null binary types
     protected static final String NEW_PERSON_XML =
             "<?xml version = '1.0' encoding = 'UTF-8'?>" +
             "<tabletypeType xmlns=\"urn:tabletype\">" +

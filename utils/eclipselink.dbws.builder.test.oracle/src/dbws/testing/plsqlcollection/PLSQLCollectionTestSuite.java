@@ -117,7 +117,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_PACKAGE2_TAB2_TYPE);
             }
             catch (SQLException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
         DBWS_BUILDER_XML_USERNAME =

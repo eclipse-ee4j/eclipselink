@@ -47,14 +47,14 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     ObjectTypeTestSuite.class,
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
-    SecondarySQLTestSuite.class/*,
+    SecondarySQLTestSuite.class,
     SimplePLSQLSFTestSuite.class,
     SimplePLSQLSPTestSuite.class,
     SimpleSFTestSuite.class,
     SimpleSPTestSuite.class,
     SimpleTableWithNestedSQLTestSuite.class,
     TableTypeTestSuite.class,
-    VArrayTestSuite.class */
+    VArrayTestSuite.class
   }
 )
 public class AllTests {

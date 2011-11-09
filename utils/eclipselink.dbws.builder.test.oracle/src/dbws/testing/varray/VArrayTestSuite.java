@@ -14,12 +14,14 @@ package dbws.testing.varray;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -36,14 +38,101 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests VARRAY types. 
+ * Tests VARRAY types.
  *
  */
 public class VArrayTestSuite extends DBWSTestSuite {
-    
+
+    static final String CREATE_VCARRAY_VARRAY =
+        "CREATE OR REPLACE TYPE VCARRAY AS VARRAY(4) OF VARCHAR2(20)";
+    static final String CREATE_GETVCARRAY_PROC =
+        "CREATE OR REPLACE PROCEDURE GETVCARRAY(T IN VARCHAR, U OUT VCARRAY) AS" +
+        "\nBEGIN" +
+            "\nU := VCARRAY();" +
+            "\nU.EXTEND;" +
+            "\nU(1) := CONCAT('entry1-', T);" +
+            "\nU.EXTEND;" +
+            "\nU(2) := CONCAT('entry2-', T);" +
+        "\nEND GETVCARRAY;";
+    static final String CREATE_GETVCARRAY2_FUNC =
+        "CREATE OR REPLACE FUNCTION GETVCARRAY2(T IN VARCHAR) RETURN VCARRAY AS" +
+        "\nL_DATA VCARRAY := VCARRAY();" +
+        "\nBEGIN" +
+            "\nL_DATA.EXTEND;" +
+            "\nL_DATA(1) := CONCAT('entry1-', T);" +
+            "\nL_DATA.EXTEND;" +
+            "\nL_DATA(2) := CONCAT('entry2-', T);" +
+            "\nRETURN L_DATA;" +
+        "\nEND GETVCARRAY2;";
+    static final String CREATE_COPYVCARRAY_PROC =
+        "CREATE OR REPLACE PROCEDURE COPYVCARRAY(V IN VCARRAY, U OUT VCARRAY) AS" +
+        "\nBEGIN" +
+            "\nU := V;" +
+            "\nU.EXTEND;" +
+            "\nU(3) := 'copy';" +
+        "\nEND COPYVCARRAY;";
+    static final String CREATE_COPYVCARRAY2_FUNC =
+        "CREATE OR REPLACE FUNCTION COPYVCARRAY2(V IN VCARRAY) RETURN VCARRAY AS" +
+        "\nL_DATA VCARRAY := V;" +
+        "\nBEGIN" +
+            "\nL_DATA.EXTEND;" +
+            "\nL_DATA(3) := 'copy';" +
+            "\nRETURN L_DATA;" +
+        "\nEND COPYVCARRAY2;";
+    static final String CREATE_GETVALUEFROMVCARRAY_PROC =
+        "CREATE OR REPLACE PROCEDURE GETVALUEFROMVCARRAY(V IN VCARRAY, I IN INTEGER, U OUT VARCHAR2, O OUT VARCHAR2) AS" +
+        "\nBEGIN" +
+            "\nU := V(I);" +
+            "\nO := CONCAT('copy of ', V(I));" +
+        "\nEND GETVALUEFROMVCARRAY;";
+    static final String CREATE_GETVALUEFROMVCARRAY2_FUNC =
+        "CREATE OR REPLACE FUNCTION GETVALUEFROMVCARRAY2(V IN VCARRAY, I IN INTEGER) RETURN VARCHAR2 AS" +
+        "\nBEGIN" +
+            "\nRETURN V(I);" +
+        "\nEND GETVALUEFROMVCARRAY2;";
+    static final String DROP_VCARRAY_VARRAY =
+        "DROP TYPE VCARRAY";
+    static final String DROP_GETVCARRAY_PROC =
+        "DROP PROCEDURE GETVCARRAY";
+    static final String DROP_GETVCARRAY2_FUNC =
+        "DROP FUNCTION GETVCARRAY2";
+    static final String DROP_COPYVCARRAY_PROC =
+        "DROP PROCEDURE COPYVCARRAY";
+    static final String DROP_COPYVCARRAY2_FUNC =
+        "DROP FUNCTION COPYVCARRAY2";
+    static final String DROP_GETVALUEFROMVCARRAY_PROC =
+        "DROP PROCEDURE GETVALUEFROMVCARRAY";
+    static final String DROP_GETVALUEFROMVCARRAY2_FUNC =
+        "DROP FUNCTION GETVALUEFROMVCARRAY2";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
-    public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
-        IllegalArgumentException, IllegalAccessException {
+    public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_VCARRAY_VARRAY);
+                createDbArtifact(conn, CREATE_GETVCARRAY_PROC);
+                createDbArtifact(conn, CREATE_GETVCARRAY2_FUNC);
+                createDbArtifact(conn, CREATE_COPYVCARRAY_PROC);
+                createDbArtifact(conn, CREATE_COPYVCARRAY2_FUNC);
+                createDbArtifact(conn, CREATE_GETVALUEFROMVCARRAY_PROC);
+                createDbArtifact(conn, CREATE_GETVALUEFROMVCARRAY2_FUNC);
+            }
+            catch (SQLException e) {
+                //e.printStackTrace();
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -111,6 +200,19 @@ public class VArrayTestSuite extends DBWSTestSuite {
           DBWSTestSuite.setUp(".");
     }
 
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_GETVCARRAY_PROC);
+            dropDbArtifact(conn, DROP_GETVCARRAY2_FUNC);
+            dropDbArtifact(conn, DROP_COPYVCARRAY_PROC);
+            dropDbArtifact(conn, DROP_COPYVCARRAY2_FUNC);
+            dropDbArtifact(conn, DROP_GETVALUEFROMVCARRAY_PROC);
+            dropDbArtifact(conn, DROP_GETVALUEFROMVCARRAY2_FUNC);
+            dropDbArtifact(conn, DROP_VCARRAY_VARRAY);
+        }
+    }
+
     @Test
     public void getVCArrayTest() {
         Invocation invocation = new Invocation("GetVCArrayTest");
@@ -121,7 +223,6 @@ public class VArrayTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(VARRAY_RESULT));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
@@ -136,18 +237,17 @@ public class VArrayTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(VARRAY_RESULT));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
-    static String VARRAY_RESULT = 
+
+    static String VARRAY_RESULT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>entry1-xxx</item>" +
         "<item>entry2-xxx</item>" +
         "</vcarrayType>";
-    
+
     @Test
     public void copyVCArrayTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -160,10 +260,9 @@ public class VArrayTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(RESULT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-    }    
+    }
 
     @Test
     public void copyVCArrayTest2() {
@@ -177,19 +276,18 @@ public class VArrayTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(RESULT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-    }    
+    }
 
-    static String INPUT_XML = 
+    static String INPUT_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>one</item>" +
         "<item>two</item>" +
         "</vcarrayType>";
 
-    static String RESULT_XML = 
+    static String RESULT_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>one</item>" +
@@ -210,10 +308,9 @@ public class VArrayTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(RESULT2_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-    }    
+    }
 
     @Test
     public void getValueFromVCArrayTest2() {
@@ -228,12 +325,11 @@ public class VArrayTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(RESULT3_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-    }    
+    }
 
-    static String INPUT2_XML = 
+    static String INPUT2_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>1-foo</item>" +
@@ -242,7 +338,7 @@ public class VArrayTestSuite extends DBWSTestSuite {
         "<item>4-blah</item>" +
         "</vcarrayType>";
 
-    static String RESULT2_XML = 
+    static String RESULT2_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<simple-xml-format>" +
         "<simple-xml>" +
@@ -251,7 +347,7 @@ public class VArrayTestSuite extends DBWSTestSuite {
         "</simple-xml>" +
         "</simple-xml-format>";
 
-    static String RESULT3_XML = 
+    static String RESULT3_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<simple-xml-format>" +
         "<simple-xml>" +

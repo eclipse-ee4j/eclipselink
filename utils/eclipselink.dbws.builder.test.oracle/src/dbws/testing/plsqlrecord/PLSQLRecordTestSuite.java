@@ -132,7 +132,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_PACKAGE1_BODY);
             }
             catch (SQLException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
         DBWS_BUILDER_XML_USERNAME =

@@ -14,12 +14,15 @@ package dbws.testing.simpleplsqlsp;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -35,14 +38,65 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests PL/SQL procedures with simple arguments. 
+ * Tests PL/SQL procedures with simple arguments.
  *
  */
 public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
-    
+
+    static final String CREATE_SIMPLEPACKAGE1_PACKAGE =
+        "CREATE OR REPLACE PACKAGE SIMPLEPACKAGE1 AS" +
+            "\nPROCEDURE NOARGPLSQLSP;" +
+            "\nPROCEDURE VARCHARPLSQLSP(X IN VARCHAR);" +
+            "\nPROCEDURE INOUTARGSPLSQLSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC);" +
+            "\nPROCEDURE INOUTARGPLSQLSP(T IN OUT VARCHAR);" +
+        "\nEND SIMPLEPACKAGE1;";
+    static final String CREATE_SIMPLEPACKAGE1_BODY =
+        "CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE1 AS" +
+            "\nPROCEDURE NOARGPLSQLSP AS" +
+            "\nBEGIN" +
+                "\nnull;" +
+            "\nEND NOARGPLSQLSP;" +
+            "\nPROCEDURE VARCHARPLSQLSP(X IN VARCHAR) AS" +
+            "\nBEGIN" +
+                "\nnull;" +
+            "\nEND VARCHARPLSQLSP;" +
+            "\nPROCEDURE INOUTARGSPLSQLSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC) AS" +
+            "\nBEGIN" +
+                "\nU := CONCAT('barf-' , T);" +
+                "\nV := 55;" +
+            "\nEND INOUTARGSPLSQLSP;" +
+            "\nPROCEDURE INOUTARGPLSQLSP(T IN OUT VARCHAR) AS" +
+            "\nBEGIN" +
+                "\nT := CONCAT('barf-' , T);" +
+            "\nEND INOUTARGPLSQLSP;" +
+        "\nEND SIMPLEPACKAGE1;";
+
+    static final String DROP_SIMPLEPACKAGE1_PACKAGE =
+        "DROP PACKAGE SIMPLEPACKAGE1";
+
+    // JUnit test fixtures
+    static String ddl = "false";
+
     @BeforeClass
-    public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
-        IllegalArgumentException, IllegalAccessException {
+    public static void setUp() throws WSDLException {
+        if (conn == null) {
+            try {
+                conn = buildConnection();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ddl = System.getProperty(DATABASE_DDL_KEY, DEFAULT_DATABASE_DDL);
+        if ("true".equalsIgnoreCase(ddl)) {
+            try {
+                createDbArtifact(conn, CREATE_SIMPLEPACKAGE1_PACKAGE);
+                createDbArtifact(conn, CREATE_SIMPLEPACKAGE1_BODY);
+            }
+            catch (SQLException e) {
+                //e.printStackTrace();
+            }
+        }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -87,6 +141,13 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if ("true".equalsIgnoreCase(ddl)) {
+            dropDbArtifact(conn, DROP_SIMPLEPACKAGE1_PACKAGE);
+        }
     }
 
     @Test
@@ -140,7 +201,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
           "<V>55</V>" +
         "</simple-xml>" +
       "</simple-xml-format>";
-    
+
     @Test
     public void inOutArgTest() {
         Invocation invocation = new Invocation("InOutArgTest");

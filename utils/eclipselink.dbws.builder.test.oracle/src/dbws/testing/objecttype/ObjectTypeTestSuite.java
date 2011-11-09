@@ -131,7 +131,7 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_ADD_EMP_TYPE2_FUNC);
             }
             catch (SQLException e) {
-                //ignore
+                //e.printStackTrace();
             }
             try {
                 Statement stmt = conn.createStatement();
@@ -141,7 +141,7 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-                //ignore
+                //e.printStackTrace();
             }
         }
         DBWS_BUILDER_XML_USERNAME =

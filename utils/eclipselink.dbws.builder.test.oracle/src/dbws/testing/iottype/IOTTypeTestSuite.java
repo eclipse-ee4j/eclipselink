@@ -96,7 +96,7 @@ public class IOTTypeTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_INDEXED_TABLE);
             }
             catch (SQLException e) {
-                //ignore
+                //e.printStackTrace();
             }
             try {
                 Statement stmt = conn.createStatement();
@@ -106,7 +106,7 @@ public class IOTTypeTestSuite extends DBWSTestSuite {
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-                //ignore
+                //e.printStackTrace();
             }
         }
         DBWS_BUILDER_XML_USERNAME =

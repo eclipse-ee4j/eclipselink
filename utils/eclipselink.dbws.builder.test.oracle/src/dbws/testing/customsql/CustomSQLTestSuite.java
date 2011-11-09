@@ -91,7 +91,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_CUSTOM_TABLE);
             }
             catch (SQLException e) {
-                //ignore
+                //e.printStackTrace();
             }
             try {
                 Statement stmt = conn.createStatement();
@@ -101,7 +101,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-                //ignore
+                //e.printStackTrace();
             }
         }
         DBWS_BUILDER_XML_USERNAME =
