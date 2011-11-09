@@ -268,11 +268,13 @@ public class InstantiationPolicy implements Cloneable, Serializable {
             return;
         }
         try {
-            // If the factory has been specified directly, do not overwrite it
-            if (this.getFactory() == null) {
-                this.setFactory(this.buildFactory());
-            }
             this.initializeMethod();
+            if (!(Modifier.isStatic(getMethod().getModifiers()))) {
+                // If the factory has been specified directly, do not overwrite it
+                if (this.getFactory() == null) {
+                    this.setFactory(this.buildFactory());
+                }
+            }
         } catch (DescriptorException ex) {
             session.getIntegrityChecker().handleError(ex);
         }
@@ -378,10 +380,12 @@ public class InstantiationPolicy implements Cloneable, Serializable {
      */
     protected void initializeMethod() throws DescriptorException {
         Class tempClass;
-        if (this.getFactory() == null) {
+        if (this.getFactory() != null) {
+            tempClass = this.getFactory().getClass();
+        } else if (this.getFactoryClass() == null) {
             tempClass = this.getDescriptor().getJavaClass();
         } else {
-            tempClass = this.getFactory().getClass();
+            tempClass = this.getFactoryClass();
         }
         this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class[0]));
     }

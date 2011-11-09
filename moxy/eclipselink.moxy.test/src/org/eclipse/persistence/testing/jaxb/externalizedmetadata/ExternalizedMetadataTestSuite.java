@@ -72,6 +72,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlVal
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPriceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPricesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.factory.FactoryTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -137,6 +138,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(MultipleBindingsFourFilesTestCases.class);
         suite.addTestSuite(SplitPackageTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.externalizedmetadata.namespace.NamespaceTestCases.class);
+        suite.addTestSuite(FactoryTestCases.class);
         return suite;
     }
     
