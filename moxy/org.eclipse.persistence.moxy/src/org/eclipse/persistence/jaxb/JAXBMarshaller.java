@@ -43,6 +43,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -494,6 +495,49 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
+    public void marshal(Object object, MarshalRecord record) throws JAXBException {
+        if (object == null || record == null) {
+            throw new IllegalArgumentException();
+        }
+        // let the JAXBIntrospector determine if the object is a JAXBElement
+        if (object instanceof JAXBElement) {
+            // use the JAXBElement's properties to populate an XMLRoot
+            object = createXMLRootFromJAXBElement((JAXBElement) object);
+        }
+        try {
+            //System.out.println("[el-debug]marshal(Object object, MarshalRecord record)");
+            //xmlMarshaller.marshal(object,  System.out);
+            record.setMarshaller(xmlMarshaller);
+            xmlMarshaller.marshal(object, record);
+        } catch (Exception e) {
+            throw new MarshalException(e);
+        }
+    }
+    
+    public void marshal(Object object, MarshalRecord record, TypeMappingInfo type) throws JAXBException {
+        if (jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
+            marshal(object, record);
+        } else {
+            JAXBElement element = null;
+            Object value = object;
+            if (object instanceof JAXBElement) {
+                // use the JAXBElement's properties to populate an XMLRoot
+                element = (JAXBElement) object;
+                value = element.getValue();
+            }
+            RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+            if (adapter != null) {
+                try {
+                    value = adapter.getXmlAdapter().marshal(value);
+                } catch (Exception ex) {
+                    throw new JAXBException(XMLMarshalException.marshalException(ex));
+                }
+            }
+            value = wrapObject(value, element, type);
+            marshal(value, record);            
+        }
+    }
+    
     public void setAdapter(Class javaClass, XmlAdapter adapter) {
         HashMap result = (HashMap) xmlMarshaller.getProperty(XML_JAVATYPE_ADAPTERS);
         if (result == null) {
