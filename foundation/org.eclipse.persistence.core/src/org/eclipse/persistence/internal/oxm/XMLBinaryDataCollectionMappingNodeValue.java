@@ -186,6 +186,10 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             namespaceResolver = marshalRecord.getNamespaceResolver();
         }
 
+        String mimeType = this.xmlBinaryDataCollectionMapping.getMimeType(object);
+        if(mimeType == null) {
+            mimeType = "";
+        }
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         if (xmlBinaryDataCollectionMapping.getValueConverter() != null) {
             Converter converter = xmlBinaryDataCollectionMapping.getValueConverter();
@@ -206,10 +210,6 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             byte[] bytes = null;
             if (xmlBinaryDataCollectionMapping.getAttributeElementClass() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) objectValue);
-                if(c_id == null) {
-                    bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                            objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeType(object)).getData();
-                }
             } else {
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                         objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeType(object));
@@ -220,8 +220,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             if(c_id != null) {
                 marshalRecord.characters(c_id);
             } else {
-                String value = getValueToWrite(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), bytes, session);
-                marshalRecord.characters(value);
+                marshalRecord.characters(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         } else {
             if (marshalRecord.isXOPPackage() && !xmlBinaryDataCollectionMapping.shouldInlineBinaryData()) {
@@ -231,12 +230,8 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 if (objectValue.getClass() == ClassConstants.APBYTE) {
                     bytes = (byte[]) objectValue;
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataCollectionMapping.getMimeType(object), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
-                } else if (xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                } else if (xmlBinaryDataCollectionMapping.getAttributeElementClass() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
-                    if(c_id == null) {
-                        bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                                objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeType(object)).getData();
-                    }
                 } else {
                     XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                             objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeTypePolicy().getMimeType(object));
@@ -245,8 +240,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                             data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 }
                 if(c_id == null) {
-                    String value = getValueToWrite(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), bytes, session);
-                    marshalRecord.characters(value);
+                    marshalRecord.characters(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
                 } else {
                     XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
                     xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
@@ -261,15 +255,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                     //marshal as an attachment.
                 }
             } else {
-                String value = XMLConstants.EMPTY_STRING;
-                if (objectValue.getClass() == ClassConstants.ABYTE || objectValue.getClass() == ClassConstants.APBYTE) {
-                    value = getValueToWrite(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, session);
-                } else {
-                    byte[] bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                            objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeTypePolicy().getMimeType(object)).getData();
-                    value = getValueToWrite(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), bytes, session);
-                }
-                marshalRecord.characters(value);
+                marshalRecord.characters(((XMLField)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         }
         marshalRecord.endElement(xPathFragment, namespaceResolver);

@@ -111,14 +111,14 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         // figure out CID or bytes 
         String c_id = null;
         byte[] bytes = null;
+        String mimeType = this.xmlBinaryDataMapping.getMimeType(object);
+        if(mimeType == null) {
+            mimeType = "";
+        }
         if (xmlBinaryDataMapping.isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             //object value should be a DataHandler
             if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) objectValue);
-                if(c_id == null) {
-                    bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                            objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
-                }
             } else {
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                         objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object));
@@ -145,10 +145,6 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(object), localName, namespaceUri);
             } else if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, localName, namespaceUri);
-                if(c_id == null) {
-                    bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                            objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
-                }
             } else {
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                         objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object));
@@ -174,14 +170,12 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             if(c_id != null) {
                 marshalRecord.characters(c_id);
             } else {
-                String value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), bytes, session);
-                marshalRecord.characters(value);
+                marshalRecord.characters(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         } else {
             if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
                 if(c_id == null) {
-                    String value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), bytes, session);
-                    marshalRecord.characters(value);
+                    marshalRecord.characters(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
                 } else {
                     String xopPrefix = null;
                     // If the field's resolver is non-null and has an entry for XOP, 
@@ -214,15 +208,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                     //marshal as an attachment
                 }
             } else {
-                String value = XMLConstants.EMPTY_STRING;
-                if ((objectValue.getClass() == ClassConstants.ABYTE) || (objectValue.getClass() == ClassConstants.APBYTE)) {
-                    value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, session);
-                } else {
-                    bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                            objectValue, marshaller, xmlBinaryDataMapping.getMimeType(object)).getData();
-                    value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), bytes, session);
-                }
-                marshalRecord.characters(value);
+                marshalRecord.characters(((XMLField)xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         }
         

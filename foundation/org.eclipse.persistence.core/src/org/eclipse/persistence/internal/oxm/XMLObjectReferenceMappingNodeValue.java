@@ -178,7 +178,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
             marshalRecord.closeStartGroupingElements(groupingFragment);
-            marshalRecord.characters(schemaType, fieldValue, false);
+            marshalRecord.characters(schemaType, fieldValue, null, false);
         }
         return true;
     }

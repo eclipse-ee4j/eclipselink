@@ -94,7 +94,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
                 if(textXPathFragment !=null){
                 	marshalRecord.openStartElement(textXPathFragment, namespaceResolver);
                 }
-                marshalRecord.characters(schemaType, fieldValue, xmlDirectMapping.isCDATA());
+                marshalRecord.characters(schemaType, fieldValue, null, xmlDirectMapping.isCDATA());
                 if(textXPathFragment!=null){
                 	marshalRecord.endElement(textXPathFragment, namespaceResolver);
                 }

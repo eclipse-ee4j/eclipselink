@@ -323,7 +323,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
                 marshalRecord.closeStartElement();
                 marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
-                marshalRecord.characters(schemaType, value, xmlCompositeDirectCollectionMapping.isCDATA());                
+                marshalRecord.characters(schemaType, value, null, xmlCompositeDirectCollectionMapping.isCDATA());                
             }
             marshalRecord.endElement(xPathFragment, namespaceResolver);
             return true;

@@ -243,7 +243,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-                marshalRecord.characters(null, (String)value, false);
+                marshalRecord.characters(null, (String)value, null, false);
             }
         } else {
             QName schemaType;
@@ -261,7 +261,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             } else {
                 marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                 marshalRecord.closeStartElement();
-                marshalRecord.characters(schemaType, fieldValue, false);
+                marshalRecord.characters(schemaType, fieldValue, null, false);
             }
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }

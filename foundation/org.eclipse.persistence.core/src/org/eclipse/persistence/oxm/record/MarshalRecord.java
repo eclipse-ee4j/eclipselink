@@ -20,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -125,7 +126,7 @@ public abstract class MarshalRecord extends XMLRecord {
         XMLField xmlField = convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
         if (lastFragment.nameIsText()) {
-            characters(xmlField.getSchemaType(), value, xmlField.isCDATA());
+            characters(xmlField.getSchemaType(), value, null, xmlField.isCDATA());
             
         } else if (lastFragment.isAttribute()) {
             attribute(lastFragment, xmlField.getNamespaceResolver(), value, xmlField.getSchemaType());
@@ -286,7 +287,13 @@ public abstract class MarshalRecord extends XMLRecord {
      * Convert the value if necessary and write out the converted value.
      * @since EclipseLink 2.4 
      */    
-    public void characters(QName schemaType, Object value, boolean isCDATA){        
+    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){  
+        XMLBinaryDataHelper helper = XMLBinaryDataHelper.getXMLBinaryDataHelper();
+        
+        if(mimeType != null) {
+            value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                    value, marshaller, mimeType).getData();
+        }
         if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
             String convertedValue = getStringForQName((QName)value);
             characters(convertedValue);
@@ -297,7 +304,7 @@ public abstract class MarshalRecord extends XMLRecord {
             }else{
                 characters(convertedValue);
             }
-        }              
+        }
     }
     
     public String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager) {

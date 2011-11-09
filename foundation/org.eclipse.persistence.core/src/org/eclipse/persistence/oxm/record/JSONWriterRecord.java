@@ -360,14 +360,14 @@ public class JSONWriterRecord extends MarshalRecord {
     	 xPathFragment.setAttribute(true);
     	 xPathFragment.setAttribute(true);
          openStartElement(xPathFragment, namespaceResolver);
-         characters(schemaType, value, false);
+         characters(schemaType, value, null, false);
       	 endElement(xPathFragment, namespaceResolver);
      }     
      
      
      
      
-     public void characters(QName schemaType, Object value, boolean isCDATA){      
+     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){      
     	 Level position = levels.peek();
          position.setNeedToOpenComplex(false);
          if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){

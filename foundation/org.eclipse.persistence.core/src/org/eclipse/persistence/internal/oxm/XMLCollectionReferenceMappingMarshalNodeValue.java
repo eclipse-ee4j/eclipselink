@@ -169,7 +169,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
                 marshalRecord.closeStartElement();
             } else {
                 marshalRecord.closeStartElement();
-                marshalRecord.characters(schemaType, fieldValue, false);
+                marshalRecord.characters(schemaType, fieldValue, null, false);
             }
             return true;
 

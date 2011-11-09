@@ -1000,7 +1000,7 @@ public class XMLMarshaller implements Cloneable {
                       }
             	 }
             	
-                marshalRecord.characters(root.getSchemaType(), object, false);
+                marshalRecord.characters(root.getSchemaType(), object, null, false);
             }
         }
 
