@@ -878,11 +878,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         if (startPosition < 0) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_start_position", (Object[]) null));
         }
-        if (startPosition == 0) {
-            firstResultIndex = UNDEFINED;
-        } else {
-            firstResultIndex = startPosition;
-        }
+        // bug 362804
+        firstResultIndex = startPosition;
     }
 
     /**
@@ -1227,7 +1224,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
                 readQuery.setMaxRows(maxRows);
             }
-            if (firstResultIndex > -1) {
+            if (firstResultIndex > UNDEFINED) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery) getDatabaseQueryInternal();
                 readQuery.setFirstResult(firstResultIndex);
