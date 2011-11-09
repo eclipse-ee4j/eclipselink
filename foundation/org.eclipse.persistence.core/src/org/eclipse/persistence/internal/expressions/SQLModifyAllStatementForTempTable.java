@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
+import java.util.List;
 import java.util.Vector;
 import java.util.Collection;
 
@@ -20,6 +21,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
  * @author Andrei Ilitchev
@@ -32,7 +34,7 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
     public static final int CLEANUP_TEMP_TABLE = 3;
     
     protected Collection allFields;
-    protected Collection primaryKeyFields;
+    protected List<DatabaseField> primaryKeyFields;
     protected SQLCall selectCall;
     protected int mode;
     
@@ -51,10 +53,10 @@ public abstract class SQLModifyAllStatementForTempTable extends SQLModifyStateme
     public SQLCall getSelectCall() {
         return selectCall;
     }
-    public void setPrimaryKeyFields(Collection primaryKeyFields) {
+    public void setPrimaryKeyFields(List<DatabaseField> primaryKeyFields) {
         this.primaryKeyFields = primaryKeyFields;
     }
-    public Collection getPrimaryKeyFields() {
+    public List<DatabaseField> getPrimaryKeyFields() {
         return primaryKeyFields;
     }
     public void setMode(int mode) {

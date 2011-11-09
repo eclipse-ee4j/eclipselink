@@ -13,9 +13,11 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
+import java.util.List;
 import java.util.Vector;
 import java.util.Collection;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -25,7 +27,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class SQLDeleteAllStatementForTempTable extends SQLModifyAllStatementForTempTable {
     protected DatabaseTable targetTable;
-    protected Collection targetPrimaryKeyFields;
+    protected List<DatabaseField> targetPrimaryKeyFields;
     
     public void setTargetTable(DatabaseTable targetTable) {
         this.targetTable = targetTable;
@@ -33,10 +35,10 @@ public class SQLDeleteAllStatementForTempTable extends SQLModifyAllStatementForT
     public DatabaseTable getTargetTable() {
         return targetTable;
     }
-    public void setTargetPrimaryKeyFields(Collection targetPrimaryKeyFields) {
+    public void setTargetPrimaryKeyFields(List<DatabaseField> targetPrimaryKeyFields) {
         this.targetPrimaryKeyFields = targetPrimaryKeyFields;
     }
-    public Collection getTargetPrimaryKeyFields() {
+    public List<DatabaseField> getTargetPrimaryKeyFields() {
         return targetPrimaryKeyFields;
     }
 
@@ -46,7 +48,7 @@ public class SQLDeleteAllStatementForTempTable extends SQLModifyAllStatementForT
     
     protected void writeUpdateOriginalTable(AbstractSession session, Writer writer) throws IOException {
         session.getPlatform().writeDeleteFromTargetTableUsingTempTableSql(writer, getTable(), getTargetTable(),
-                                                        new Vector(getPrimaryKeyFields()), 
-                                                        new Vector(getTargetPrimaryKeyFields()), session.getPlatform());
+                                                        getPrimaryKeyFields(), 
+                                                        getTargetPrimaryKeyFields(), session.getPlatform());
     }
 }

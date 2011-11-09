@@ -24,10 +24,12 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.*;
@@ -356,29 +358,51 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      *  
      * @return Vector<SQLDeleteAllStatementForTempTable>
      */
-    protected Vector buildDeleteAllStatementsForMappingsWithTempTable(ClassDescriptor descriptor, DatabaseTable rootTable, Collection rootTablePrimaryKeyFields, boolean dontCheckDescriptor) {
+    protected Vector buildDeleteAllStatementsForMappingsWithTempTable(ClassDescriptor descriptor, DatabaseTable rootTable, boolean dontCheckDescriptor) {
         Vector deleteStatements = new Vector();
         for (DatabaseMapping mapping : descriptor.getMappings()) {
-            // TODO: Also need to delete 1-1 using join table, maybe element collection.
-            if (mapping.isManyToManyMapping() || mapping.isDirectCollectionMapping()) {
-                if ((dontCheckDescriptor
-                        || mapping.getDescriptor().equals(descriptor))
-                        && !((ForeignReferenceMapping)mapping).isCascadeOnDeleteSetOnDatabase()) {
-                    Vector targetFields = null;
-                    if (mapping.isManyToManyMapping()) {
-                        targetFields = ((ManyToManyMapping)mapping).getSourceRelationKeyFields();
-                    } else if (mapping.isDirectCollectionMapping()) {
+            if (mapping.isForeignReferenceMapping()) { 
+                List<DatabaseField> sourceFields = null;
+                List<DatabaseField> targetFields = null;
+                if (mapping.isDirectCollectionMapping()) {
+                    if (shouldBuildDeleteStatementForMapping((DirectCollectionMapping)mapping, dontCheckDescriptor, descriptor)) {
+                        sourceFields = ((DirectCollectionMapping)mapping).getSourceKeyFields();
                         targetFields = ((DirectCollectionMapping)mapping).getReferenceKeyFields();
                     }
-
+                } else if (mapping.isAggregateCollectionMapping()) {
+                    if (shouldBuildDeleteStatementForMapping((AggregateCollectionMapping)mapping, dontCheckDescriptor, descriptor)) {
+                        sourceFields = ((AggregateCollectionMapping)mapping).getSourceKeyFields();
+                        targetFields = ((AggregateCollectionMapping)mapping).getTargetForeignKeyFields();
+                    }
+                } else if (mapping.isManyToManyMapping()) {
+                    if (shouldBuildDeleteStatementForMapping((ManyToManyMapping)mapping, dontCheckDescriptor, descriptor)) {
+                        RelationTableMechanism relationTableMechanism = ((ManyToManyMapping)mapping).getRelationTableMechanism();
+                        sourceFields = relationTableMechanism.getSourceKeyFields();
+                        targetFields = relationTableMechanism.getSourceRelationKeyFields();
+                    }
+                } else if (mapping.isOneToOneMapping()) {
+                    RelationTableMechanism relationTableMechanism = ((OneToOneMapping)mapping).getRelationTableMechanism();
+                    if (relationTableMechanism != null) {
+                        if (shouldBuildDeleteStatementForMapping((OneToOneMapping)mapping, dontCheckDescriptor, descriptor)) {
+                            sourceFields = relationTableMechanism.getSourceKeyFields();
+                            targetFields = relationTableMechanism.getSourceRelationKeyFields();
+                        }
+                    }
+                }
+                if (sourceFields != null) {
                     DatabaseTable targetTable = ((DatabaseField)targetFields.get(0)).getTable();
                     SQLDeleteAllStatementForTempTable deleteStatement 
-                        =  buildDeleteAllStatementForTempTable(rootTable, rootTablePrimaryKeyFields, targetTable, targetFields);
+                        =  buildDeleteAllStatementForTempTable(rootTable, sourceFields, targetTable, targetFields);
                     deleteStatements.addElement(deleteStatement);
                 }
             }
         }
         return deleteStatements;
+    }
+    
+    protected boolean shouldBuildDeleteStatementForMapping(ForeignReferenceMapping frMapping, boolean dontCheckDescriptor, ClassDescriptor descriptor) {
+        return (dontCheckDescriptor || frMapping.getDescriptor().equals(descriptor))
+            && !(frMapping.isCascadeOnDeleteSetOnDatabase());
     }
     
     protected static String getAliasTableName(SQLSelectStatement selectStatement, DatabaseTable table, DatasourcePlatform platform) {
@@ -1443,24 +1467,46 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     // Create SQLDeleteAllStatements for mappings that may be responsible for references
     // to the objects to be deleted
     // in the tables NOT mapped to any class: ManyToManyMapping and DirectCollectionMapping
+    /**
+     * 
+     * NOTE: A similar pattern also used in method buildDeleteAllStatementsForMappingsWithTempTable:
+     *  if you are updating this method consider applying a similar update to that method as well.
+     *  
+     * @return Vector<SQLDeleteAllStatement>
+     */
     protected Vector buildDeleteAllStatementsForMappings(SQLCall selectCallForExist, SQLSelectStatement selectStatementForExist, boolean dontCheckDescriptor) {
         Vector deleteStatements = new Vector();
         ClassDescriptor descriptor = getDescriptor();
         for (DatabaseMapping mapping : descriptor.getMappings()) {
-            // TODO: Also need to delete 1-1 using join table, maybe element collection.
-            if (mapping.isManyToManyMapping() || mapping.isDirectCollectionMapping()) {
-                if ((dontCheckDescriptor
-                        || mapping.getDescriptor().equals(descriptor))
-                        && !((ForeignReferenceMapping)mapping).isCascadeOnDeleteSetOnDatabase()) {
-                    Vector sourceFields = null;
-                    Vector targetFields = null;
-                    if (mapping.isManyToManyMapping()) {
-                        sourceFields = ((ManyToManyMapping)mapping).getSourceKeyFields();
-                        targetFields = ((ManyToManyMapping)mapping).getSourceRelationKeyFields();
-                    } else if (mapping.isDirectCollectionMapping()) {
+            if (mapping.isForeignReferenceMapping()) { 
+                Vector sourceFields = null;
+                Vector targetFields = null;
+                if (mapping.isDirectCollectionMapping()) {
+                    if (shouldBuildDeleteStatementForMapping((DirectCollectionMapping)mapping, dontCheckDescriptor, descriptor)) {
                         sourceFields = ((DirectCollectionMapping)mapping).getSourceKeyFields();
                         targetFields = ((DirectCollectionMapping)mapping).getReferenceKeyFields();
                     }
+                } else if (mapping.isAggregateCollectionMapping()) {
+                    if (shouldBuildDeleteStatementForMapping((AggregateCollectionMapping)mapping, dontCheckDescriptor, descriptor)) {
+                        sourceFields = ((AggregateCollectionMapping)mapping).getSourceKeyFields();
+                        targetFields = ((AggregateCollectionMapping)mapping).getTargetForeignKeyFields();
+                    }
+                } else if (mapping.isManyToManyMapping()) {
+                    if (shouldBuildDeleteStatementForMapping((ManyToManyMapping)mapping, dontCheckDescriptor, descriptor)) {
+                        RelationTableMechanism relationTableMechanism = ((ManyToManyMapping)mapping).getRelationTableMechanism();
+                        sourceFields = relationTableMechanism.getSourceKeyFields();
+                        targetFields = relationTableMechanism.getSourceRelationKeyFields();
+                    }
+                } else if (mapping.isOneToOneMapping()) {
+                    RelationTableMechanism relationTableMechanism = ((OneToOneMapping)mapping).getRelationTableMechanism();
+                    if (relationTableMechanism != null) {
+                        if (shouldBuildDeleteStatementForMapping((OneToOneMapping)mapping, dontCheckDescriptor, descriptor)) {
+                            sourceFields = relationTableMechanism.getSourceKeyFields();
+                            targetFields = relationTableMechanism.getSourceRelationKeyFields();
+                        }
+                    }
+                }
+                if (sourceFields != null) {
                     deleteStatements.add(buildDeleteAllStatementForMapping(selectCallForExist, selectStatementForExist, sourceFields, targetFields));
                 }
             }
@@ -1756,7 +1802,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
         
         HashMap tables_databaseFieldsToValues =  new HashMap();
-        HashMap tablesToPrimaryKeyFields = new HashMap();
+        HashMap<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields = new HashMap();
         Iterator it = updateClauses.entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();
@@ -2243,7 +2289,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         return updateAllStatement;
     }
     
-    protected void prepareUpdateAllUsingTempStorage(HashMap tables_databaseFieldsToValues, HashMap tablesToPrimaryKeyFields) {
+    protected void prepareUpdateAllUsingTempStorage(HashMap tables_databaseFieldsToValues, HashMap<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields) {
         if(getExecutionSession().getPlatform().supportsTempTables()) {
             prepareUpdateAllUsingTempTables(tables_databaseFieldsToValues, tablesToPrimaryKeyFields);
         } else if(getExecutionSession().getPlatform().isOracle()) {
@@ -2266,7 +2312,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Pre-build the SQL statement from the expressions.
      */
-    protected void prepareUpdateAllUsingTempTables(HashMap tables_databaseFieldsToValues, HashMap tablesToPrimaryKeyFields) {
+    protected void prepareUpdateAllUsingTempTables(HashMap tables_databaseFieldsToValues, HashMap<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields) {
         int nTables = tables_databaseFieldsToValues.size();
         Vector createTableStatements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(nTables);
         Vector selectStatements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(nTables);
@@ -2278,7 +2324,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             Map.Entry entry = (Map.Entry)itEntrySets.next();
             DatabaseTable table = (DatabaseTable)entry.getKey();
             HashMap databaseFieldsToValues = (HashMap)entry.getValue();            
-            Collection primaryKeyFields = (Collection)tablesToPrimaryKeyFields.get(table);
+            List<DatabaseField> primaryKeyFields = tablesToPrimaryKeyFields.get(table);
 
             Vector statementsForTable = buildStatementsForUpdateAllForTempTables(table, databaseFieldsToValues, primaryKeyFields);
             
@@ -2312,7 +2358,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         
         // retrieve rootTable and its primary key fields for composing temporary table
         DatabaseTable rootTable = getDescriptor().getMultipleTableInsertOrder().get(0);
-        Collection rootTablePrimaryKeyFields = getPrimaryKeyFieldsForTable(rootTable);
+        List<DatabaseField> rootTablePrimaryKeyFields = getPrimaryKeyFieldsForTable(rootTable);
         ClassDescriptor rootDescriptor = getDescriptor();
         if(getDescriptor().hasInheritance()) {
             rootDescriptor = rootDescriptor.getInheritancePolicy().getRootParentDescriptor();
@@ -2369,7 +2415,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      *  
      * @return Vector<SQLDeleteAllStatementForTempTable>
      */
-    private Vector buildDeleteAllStatementsForTempTable(ClassDescriptor descriptor, DatabaseTable rootTable, Collection rootTablePrimaryKeyFields, Vector tablesToIgnore) {
+    private Vector buildDeleteAllStatementsForTempTable(ClassDescriptor descriptor, DatabaseTable rootTable, List<DatabaseField> rootTablePrimaryKeyFields, Vector tablesToIgnore) {
         Vector statements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         
         List<DatabaseTable> tablesInInsertOrder;
@@ -2408,7 +2454,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     
             // Add statements for ManyToMany and DirectCollection mappings
             Vector deleteStatementsForMappings 
-                = buildDeleteAllStatementsForMappingsWithTempTable(descriptor, rootTable, rootTablePrimaryKeyFields, tablesToIgnore == null);
+                = buildDeleteAllStatementsForMappingsWithTempTable(descriptor, rootTable, tablesToIgnore == null);
             statements.addAll(deleteStatementsForMappings);
         }
         
@@ -2459,7 +2505,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Build SQL delete statement which delete from target table using temporary table.
      * @return SQLDeleteAllStatementForTempTable
      */
-    private SQLDeleteAllStatementForTempTable buildDeleteAllStatementForTempTable(DatabaseTable rootTable, Collection rootTablePrimaryKeyFields, DatabaseTable targetTable, Collection targetTablePrimaryKeyFields) {
+    private SQLDeleteAllStatementForTempTable buildDeleteAllStatementForTempTable(DatabaseTable rootTable, List<DatabaseField> rootTablePrimaryKeyFields, DatabaseTable targetTable, List<DatabaseField> targetTablePrimaryKeyFields) {
         SQLDeleteAllStatementForTempTable deleteStatement = new SQLDeleteAllStatementForTempTable();
         deleteStatement.setMode(SQLModifyAllStatementForTempTable.UPDATE_ORIGINAL_TABLE);
         deleteStatement.setTable(rootTable);
@@ -2469,7 +2515,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         return deleteStatement;
     }
     
-    protected Vector buildStatementsForUpdateAllForTempTables(DatabaseTable table, HashMap databaseFieldsToValues, Collection primaryKeyFields) {
+    protected Vector buildStatementsForUpdateAllForTempTables(DatabaseTable table, HashMap databaseFieldsToValues, List<DatabaseField> primaryKeyFields) {
         Vector statements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
         
         Vector allFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
@@ -2539,18 +2585,23 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         return statements;
     }
 
-    protected Collection getPrimaryKeyFieldsForTable(DatabaseTable table) {
+    protected List<DatabaseField> getPrimaryKeyFieldsForTable(DatabaseTable table) {
         return getPrimaryKeyFieldsForTable(getDescriptor(), table);
     }
 
-    protected Collection getPrimaryKeyFieldsForTable(ClassDescriptor descriptor, DatabaseTable table) {
-        Collection primaryKeyFields;
+    protected List<DatabaseField> getPrimaryKeyFieldsForTable(ClassDescriptor descriptor, DatabaseTable table) {
+        List<DatabaseField> mainTablePrimaryKeyFields = descriptor.getPrimaryKeyFields();
         if(table.equals(descriptor.getTables().firstElement())) {
-            primaryKeyFields = descriptor.getPrimaryKeyFields();
+            return mainTablePrimaryKeyFields;
         } else {
-            primaryKeyFields = ((Map)descriptor.getAdditionalTablePrimaryKeyFields().get(table)).values();
+            List<DatabaseField> primaryKeyFields;
+            Map<DatabaseField, DatabaseField> additionalPksMap = descriptor.getAdditionalTablePrimaryKeyFields().get(table);
+            primaryKeyFields = new ArrayList(additionalPksMap.size());
+            for (DatabaseField field : mainTablePrimaryKeyFields) {
+                primaryKeyFields.add(additionalPksMap.get(field));
+            }
+            return primaryKeyFields;
         }
-        return primaryKeyFields;
     }
    
     /**
