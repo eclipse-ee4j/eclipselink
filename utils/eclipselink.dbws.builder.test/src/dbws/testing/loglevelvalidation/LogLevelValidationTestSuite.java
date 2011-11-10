@@ -110,7 +110,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
             "</properties>" +
             "<table " +
               "schemaPattern=\"%\" " +
-              "tableNamePattern=\"simpletable\" " +
+              "tableNamePattern=\"loglevel\" " +
             "/>" +
           "</dbws-builder>";
         builder = new DBWSBuilder();

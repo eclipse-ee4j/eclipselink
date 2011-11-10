@@ -78,6 +78,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
 
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
@@ -139,8 +140,10 @@ public class Util {
     static final String PROVIDER_LISTENER = "ProviderListener";
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
-    
-    //TODO - verify this
+
+    /**
+     * Return the JDBC type (as int) for a given type name. 
+     */
     public static int getJDBCTypeFromTypeName(String typeName) {
         int jdbcType = Types.OTHER;
         if (typeName.equals("NUMERIC")) {
@@ -209,9 +212,24 @@ public class Util {
         else if (typeName.equals("ARRAY")) {
             jdbcType = Types.ARRAY;
         }
+        else if (typeName.equals("BOOLEAN")) {
+            jdbcType = Types.INTEGER;
+        }
+        // TODO - will need to handle the following and more...
+        /*
+        else if (typeName.equals("BINARY_INTEGER")) {
+            jdbcType = Types.?;
+        }
+        else if (typeName.equals("PLS_INTEGER")) {
+            jdbcType = Types.?;
+        }
+        */
         return jdbcType;
     }
-    //TODO - verify this
+    
+    /**
+     * Return the JDBC type name for a given JDBC type code. 
+     */
     public static String getJDBCTypeNameFromType(int jdbcType) {
         String typeName = "OTHER";
         switch (jdbcType) {
@@ -547,6 +565,23 @@ public class Util {
                     || argType instanceof VArrayType
                     || argType instanceof ObjectType
                     || argType instanceof ObjectTableType) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Indicates if a given List<DatabaseType> contains one or more arguments 
+     * that are considered PL/SQL scalars, i.e. PLSQLBoolean, PLSQLInteger, 
+     * BinaryInteger, etc. 
+     */
+    public static boolean hasPLSQLScalarArgs(List<ArgumentType> arguments) {
+        for (ArgumentType arg : arguments) {
+            DatabaseType argType = arg.getDataType();
+            if (argType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE
+                    || argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE
+                    || argType == ScalarDatabaseTypeEnum.PLS_INTEGER_TYPE) {
                 return true;
             }
         }

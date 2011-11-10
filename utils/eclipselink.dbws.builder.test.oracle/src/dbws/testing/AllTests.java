@@ -38,6 +38,7 @@ import dbws.testing.simplesf.SimpleSFTestSuite;
 import dbws.testing.simplesp.SimpleSPTestSuite;
 import dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite;
 import dbws.testing.tabletype.TableTypeTestSuite;
+import dbws.testing.toplevelsimpleplsqlsp.TopLevelSimplePLSQLSPTestSuite;
 import dbws.testing.varray.VArrayTestSuite;
 import static dbws.testing.DBWSTestSuite.buildConnection;
 
@@ -57,6 +58,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     SimpleSPTestSuite.class,
     SimpleTableWithNestedSQLTestSuite.class,
     TableTypeTestSuite.class,
+    TopLevelSimplePLSQLSPTestSuite.class,
     VArrayTestSuite.class
   }
 )

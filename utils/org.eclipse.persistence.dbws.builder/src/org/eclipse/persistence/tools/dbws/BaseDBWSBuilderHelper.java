@@ -84,6 +84,7 @@ import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
+import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -941,10 +942,10 @@ public abstract class BaseDBWSBuilderHelper {
                 for (ArgumentType argument : procType.getArguments()) {
                     args.add(argument);
                 }
-                // only care about complex arguments
-                if (org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args)) {
-                    // set 'complex' flag on model to indicate complex arg processing is required
-                    nameAndModel.procOpModel.setHasComplexArguments(true);
+                boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
+                // set 'complex' flag on model to indicate complex arg processing is required
+                nameAndModel.procOpModel.setHasComplexArguments(hasComplexArgs);
+                if (hasComplexArgs || org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args)) {
                     // subclasses are responsible for processing complex arguments
                     addToOROXProjectsForComplexArgs(args, orProject, oxProject, nameAndModel.procOpModel);
                     // build a query for this ProcedureType as it has one or more complex arguments
@@ -1235,6 +1236,11 @@ public abstract class BaseDBWSBuilderHelper {
             }
             // TODO - return what here?
             return null;
+        } else if (dType instanceof ScalarDatabaseTypeEnum) {
+        	// handle PL/SQL Boolean
+        	if (dType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE) {
+        		return OraclePLSQLTypes.PLSQLBoolean;
+        	}
         }
         // scalar types
         return JDBCTypes.getDatabaseTypeForCode(org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName(dType.getTypeName()));
