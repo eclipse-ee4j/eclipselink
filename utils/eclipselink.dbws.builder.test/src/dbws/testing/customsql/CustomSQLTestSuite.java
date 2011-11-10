@@ -162,12 +162,6 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(COUNT_CUSTOM_CONTROL_DOC));
-        /*
-        String resultString = DBWSTestProviderHelper.documentToString(doc);
-        System.out.println(resultString);
-        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
-        System.out.println(controlString);
-        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
@@ -190,12 +184,6 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(COUNT_MAXSAL_CONTROL_DOC));
-        /*
-        String resultString = DBWSTestProviderHelper.documentToString(doc);
-        System.out.println(resultString);
-        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
-        System.out.println(controlString);
-        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
@@ -220,12 +208,6 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(FINDBYPK_7788_CONTROL_DOC));
-        /*
-        String resultString = DBWSTestProviderHelper.documentToString(doc);
-        System.out.println(resultString);
-        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
-        System.out.println(controlString);
-        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }
@@ -258,12 +240,6 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
             marshaller.marshal(r, ec);
         }
         Document controlDoc = xmlParser.parse(new StringReader(FIND_ALL_CONTROL_DOC));
-        /*
-        String resultString = DBWSTestProviderHelper.documentToString(doc);
-        System.out.println(resultString);
-        String controlString = DBWSTestProviderHelper.documentToString(controlDoc);
-        System.out.println(controlString);
-        */
         assertTrue("control document not same as instance document", comparer.isNodeEqual(
             controlDoc, doc));
     }

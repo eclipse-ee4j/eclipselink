@@ -216,7 +216,6 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(RESULT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
@@ -241,7 +240,6 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(RESULT2_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
@@ -268,7 +266,6 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(ETYPE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
@@ -284,7 +281,6 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(ETYPE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }

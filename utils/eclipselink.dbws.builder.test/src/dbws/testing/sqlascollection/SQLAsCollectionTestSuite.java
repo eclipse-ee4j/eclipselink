@@ -318,10 +318,8 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
             getTransformer().transform(src, result);
             Document resultDoc = (Document)result.getNode();
             String resultString = documentToString(resultDoc);
-            //System.out.println(resultString);
             Document controlDoc = xmlParser.parse(new StringReader(GETDATA_RESPONSE));
             String controlString = documentToString(controlDoc);
-            //System.out.println(controlString);
             assertTrue("Control document not same as instance document.\n Expected:\n" + controlString + "\nActual:\n" + resultString, controlString.equals(resultString));
         }
     }

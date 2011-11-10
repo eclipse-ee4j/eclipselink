@@ -13,16 +13,18 @@
  ******************************************************************************/
 package dbws.testing;
 
-//JUnit4 imports
+//javase imports
 import java.sql.Connection;
 import java.sql.SQLException;
 
+//JUnit4 imports
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 //testing imports
+import dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite;
 import dbws.testing.customsql.CustomSQLTestSuite;
 import dbws.testing.iottype.IOTTypeTestSuite;
 import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
@@ -41,6 +43,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+    AdvancedJDBCPackageTestSuite.class,
     CustomSQLTestSuite.class,
     IOTTypeTestSuite.class,
     ObjectTableTypeTestSuite.class,

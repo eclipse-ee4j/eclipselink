@@ -287,7 +287,6 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        //marshaller.marshal(result, System.out);
         Document controlDoc = xmlParser.parse(new StringReader(IN_OUT_ARGS_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }

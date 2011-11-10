@@ -13,28 +13,6 @@
 package org.eclipse.persistence.tools.dbws.oracle;
 
 //javase imports
-import static java.sql.Types.ARRAY;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.STRUCT;
-import static java.util.logging.Level.FINEST;
-import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
-import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
-import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
-import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
-import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
-import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
-import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
-import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
-import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
-
 import java.sql.Array;
 import java.sql.Struct;
 import java.sql.Types;
@@ -43,9 +21,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import static java.sql.Types.ARRAY;
+import static java.sql.Types.OTHER;
+import static java.sql.Types.STRUCT;
+import static java.util.logging.Level.FINEST;
 
+//java eXtension imports
 import javax.xml.namespace.QName;
 
+//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -111,6 +95,23 @@ import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
 import org.eclipse.persistence.tools.oracleddl.parser.ParseException;
 import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
+import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
+import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
+import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
+import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
+import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
 
 public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelper {
 
@@ -227,6 +228,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
             for (ArgumentType arg : storedProcedure.getArguments()) {
                 String argName = arg.getArgumentName();
+                DatabaseType argDataType = arg.getDataType();
                 if (argName != null) {
                     ProcedureArgument pa = null;
                     Parameter parm = null;
@@ -237,12 +239,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         hasComplexProcedureArgs = true;
                         String typeString = storedProcedure.getCatalogName() + "_" + arg.getTypeName();
                         xmlType = buildCustomQName(typeString, dbwsBuilder);
-                    } else if (arg.getDataType() instanceof VArrayType || arg.getDataType() instanceof ObjectTableType) {
+                    }
+                    else if (argDataType instanceof VArrayType ||
+                             argDataType instanceof ObjectTableType ||
+                             argDataType instanceof ObjectType) {
                         // handle advanced JDBC types
                         hasComplexProcedureArgs = true;
                         String typeString = arg.getTypeName().toLowerCase().concat("Type");
                         xmlType = buildCustomQName(typeString, dbwsBuilder);
-                    } else {
+                    }
+                    else {
                         switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
                             case STRUCT:
                             case ARRAY:
@@ -312,7 +318,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             result.setType(xmlType);
                             // use of INOUT precludes SimpleXMLFormat
                             isSimpleXMLFormat = false;
-
                             if (qh instanceof StoredProcedureQueryHandler) {
                                 ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
                             }
@@ -333,7 +338,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
             // the user may want simpleXMLFormat
             handleSimpleXMLFormat(isSimpleXMLFormat, result, procedureOperationModel);
-
             qo.setResult(result);
             dbwsBuilder.getXrServiceModel().getOperations().put(qo.getName(), qo);
         }
@@ -482,14 +486,26 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected Result buildResultForStoredFunction(ProcedureType storedProcedure, String returnType) {
         Result result = null;
         FunctionType storedFunction = (FunctionType)storedProcedure;
-        DatabaseType rarg = storedFunction.getReturnArgument();
+        ArgumentType rarg = storedFunction.getReturnArgument();
+        DatabaseType rargDataType = rarg.getDataType();
         if (rarg.getTypeName().contains("CURSOR")) {
             result = new CollectionResult();
             result.setType(SXF_QNAME_CURSOR);
         }
         else {
             result = new Result();
-            int rargJdbcType = Util.getJDBCTypeFromTypeName(rarg.getTypeName());
+            int rargJdbcType = OTHER;
+            if (rargDataType.isComposite()) {
+                if (rargDataType instanceof ObjectType) {
+                    rargJdbcType = STRUCT;
+                }
+                else if (rargDataType instanceof VArrayType || rargDataType instanceof ObjectTableType) {
+                    rargJdbcType = ARRAY;
+                }
+            }
+            else {
+                rargJdbcType = Util.getJDBCTypeFromTypeName(rarg.getTypeName());
+            }
             switch (rargJdbcType) {
                 case OTHER:
                     // if user overrides returnType, assume they're right
@@ -506,7 +522,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     // if user overrides returnType, assume they're right
                     if (returnType != null) {
                         result.setType(buildCustomQName(returnType, dbwsBuilder));
-                    } else {
+                    }
+                    else {
                         result.setType(ANY_QNAME);
                     }
                     break;
@@ -595,10 +612,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         List<ProcedureType> allProcsAndFuncs = new ArrayList<ProcedureType>();
         try {
             // handle PLSQL package stored procedures/functions
-            if (procedureModel.isPLSQLProcedureOperation() ||
-                (procedureModel.getCatalogPattern() != null &&
-                 procedureModel.getCatalogPattern().length() > 0 &&
-                 !procedureModel.getCatalogPattern().equals(TOPLEVEL))) {
+            if (procedureModel.getCatalogPattern() != null &&
+                procedureModel.getCatalogPattern().length() > 0 &&
+                !procedureModel.getCatalogPattern().equals(TOPLEVEL)) {
                 List<PLSQLPackageType> foundPackages = dtBuilder.buildPackages(dbwsBuilder.getConnection(),
                     procedureModel.getSchemaPattern(), procedureModel.getCatalogPattern());
                 if (foundPackages != null) {
@@ -1004,7 +1020,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             ordt = new ObjectRelationalDataTypeDescriptor();
             ordt.descriptorIsAggregate();
             ordt.setAlias(arrayAlias);
-            // TODO - what about package name?
             ordt.setJavaClassName(arrayAlias + COLLECTION_WRAPPER_SUFFIX);
             ordt.getQueryManager();
             orProject.addDescriptor(ordt);

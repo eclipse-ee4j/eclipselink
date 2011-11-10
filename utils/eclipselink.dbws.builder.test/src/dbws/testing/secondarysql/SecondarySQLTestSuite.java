@@ -406,17 +406,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          SOAPPart part = request.getSOAPPart();
          DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
              new InputSource(new StringReader(COUNT_REQUEST_MSG))));
-
-
-
-        /*
-         Document requestDoc = (Document)domSource.getNode();
-         String requestString = DBWSTestProviderHelper.documentToString(requestDoc);
-         System.out.println(requestString);
-        */
-
-
-
          part.setContent(domSource);
          Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
              Service.Mode.MESSAGE);
@@ -488,13 +477,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              transformer.transform(src, result);
              Document resultDoc = (Document)result.getNode();
              Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
-             /*
-             System.out.println("\n---- Control Document ----");
-             System.out.println(DBWSTestProviderHelper.documentToString(controlDoc));
-             System.out.println("---- Result Document ----");
-             System.out.println(DBWSTestProviderHelper.documentToString(resultDoc));
-             System.out.println("\n");
-              */
              assertTrue("control document not same as instance document",
                  comparer.isNodeEqual(controlDoc, resultDoc));
          }
