@@ -198,7 +198,6 @@ public class DBWSTestSuite {
         };
         xrPackager.setDBWSBuilder(builder);
         builder.setPackager(xrPackager);
-        builder.setPackager(xrPackager);
         if (stageDir == null) {
         	builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
             builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,

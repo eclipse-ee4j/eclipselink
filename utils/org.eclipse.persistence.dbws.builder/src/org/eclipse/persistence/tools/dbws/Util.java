@@ -97,7 +97,7 @@ public class Util {
         "classes";
     public static final String DEFAULT_WSDL_LOCATION_URI =
         "REPLACE_WITH_ENDPOINT_ADDRESS";
-    public static final String SWAREF_FILENAME = 
+    public static final String SWAREF_FILENAME =
     	XMLConstants.SWA_REF.toLowerCase() + ".xsd";
     // leave this duplicate as someone may be referencing it...
     public static final String WSI_SWAREF_XSD_FILE =
@@ -141,6 +141,7 @@ public class Util {
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
 
+    //TODO - verify this
     /**
      * Return the JDBC type (as int) for a given type name. 
      */
@@ -166,6 +167,9 @@ public class Util {
         }
         else if (typeName.equals("DECIMAL")) {
             jdbcType = Types.DECIMAL;
+        }
+        else if (typeName.equals("INTEGER")) {
+            jdbcType = Types.INTEGER;
         }
         else if (typeName.equals("CHAR")) {
             jdbcType = Types.CHAR;
@@ -296,24 +300,24 @@ public class Util {
         }
         return typeName;
     }
-    
+
     public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + DEFAULT_SIMPLE_XML_FORMAT_TAG);
     /**
-     * Return the XML type (as a QName) associated with the 
+     * Return the XML type (as a QName) associated with the
      * given JDBC type name.
      */
     public static QName getXMLTypeFromJDBCTypeName(String jdbcTypeName) {
         return getXMLTypeFromJDBCType(getJDBCTypeFromTypeName(jdbcTypeName));
     }
     /**
-     * Return the XML type (as a QName) associated with the 
+     * Return the XML type (as a QName) associated with the
      * given JDBC type.
      */
     public static QName getXMLTypeFromJDBCType(Short jdbcType) {
         return getXMLTypeFromJDBCType(jdbcType.intValue());
     }
     /**
-     * Return the XML type (as a QName) associated with the 
+     * Return the XML type (as a QName) associated with the
      * given JDBC type.
      */
     public static QName getXMLTypeFromJDBCType(int jdbcType) {
@@ -377,7 +381,7 @@ public class Util {
                         }
                         else {
                             nsURI = DEFAULT_NS_PREFIX;
-                        } 
+                        }
                     }
                 }
                 else {
@@ -552,7 +556,7 @@ public class Util {
         }
         return false;
     }
-    
+
     /**
      * Indicates if a given List<DatabaseType> contains one or more arguments that
      * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,

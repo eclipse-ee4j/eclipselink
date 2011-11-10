@@ -139,6 +139,13 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
                   "isAdvancedJDBC=\"true\" " +
                   "returnType=\"regionType\" " +
               "/>" +
+              "<procedure " +
+                  "name=\"echoEmpAddress\" " +
+                  "catalogPattern=\"ADVANCED_OBJECT_DEMO\" " +
+                  "procedurePattern=\"ECHOEMPADDRESS\" " +
+                  "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"emp_addressType\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -171,10 +178,38 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) +
             "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    static String REGION_TYPE_XML =
+    static final String REGION_TYPE_XML =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<regionType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<reg_id>5</reg_id>" +
         "<reg_name>this is a test</reg_name>" +
         "</regionType>";
+
+    @Test
+    public void struct2LevelDeep() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object empAddress = unmarshaller.unmarshal(new StringReader(EMP_ADDRESS_TYPE_XML));
+        Invocation invocation = new Invocation("echoEmpAddress");
+        invocation.setParameter("ANEMPADDRESS", empAddress);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(EMP_ADDRESS_TYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) +
+            "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static final String EMP_ADDRESS_TYPE_XML =
+        "<?xml version='1.0' encoding='UTF-8'?>" +
+        "<emp_addressType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+           "<street>20 Pinetrail Cres.</street>" +
+           "<suburb>Centrepointe</suburb>" +
+           "<addr_region>" +
+              "<reg_id>5</reg_id>" +
+              "<reg_name>this is a test</reg_name>" +
+           "</addr_region>" +
+           "<postcode>12</postcode>" +
+        "</emp_addressType>";
 }
