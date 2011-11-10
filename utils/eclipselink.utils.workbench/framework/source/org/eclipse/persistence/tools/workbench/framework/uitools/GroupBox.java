@@ -14,19 +14,29 @@ package org.eclipse.persistence.tools.workbench.framework.uitools;
 
 // JDK
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Arrays;
+
 import javax.accessibility.AccessibleContext;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JRadioButton;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+
+import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
 /**
  * A <code>GroupBox</code> properly lays out a series of buttons (radio buttons
@@ -452,31 +462,153 @@ public class GroupBox extends AccessibleTitledPanel
 	 */
 	private static class AccessibleTitledBorder extends TitledBorder
 	{
-		private boolean changeTitle;
+		private AbstractButton button;
 
 		private AccessibleTitledBorder(AbstractButton button)
 		{
 			super(button.getText());
-			button.setFont(getFont(button));
-			button.setForeground(getTitleColor());
+			initialize(button);
 		}
-
-		public String getTitle()
-		{
-			if (changeTitle)
-			{
-				return "      " + super.getTitle();
+		
+		private void initialize(AbstractButton button) {
+			PropertyChangeListener listener = buildPropertyChangeListener();
+			this.button = button;
+			this.button.addPropertyChangeListener("font", listener);
+			this.button.addPropertyChangeListener(AbstractButton.TEXT_CHANGED_PROPERTY, listener);
+		}
+				
+		private String buildWhitespaceTitle(AbstractButton button) {
+			String text = button.getText();
+			
+			if (text == null) {
+				text = StringTools.EMPTY_STRING;
 			}
-
-			return super.getTitle();
+			
+			FontMetrics fontMetrics = button.getFontMetrics(button.getFont());
+			
+			// Note:  It seems using the icon gap and not doing -5 
+			// make the border start too far to the right of the text
+			int width = fontMetrics.stringWidth(text) - 5;
+			int charWidth = fontMetrics.charWidth(' ');
+			
+			if (button instanceof JRadioButton) {
+				width += SwingTools.radioButtonIconWidth();
+			} else if (button instanceof JCheckBox) {
+				width += SwingTools.checkBoxIconWidth();
+			}
+			
+			StringBuilder sb = new StringBuilder();
+			int index = 0;
+			
+			while (index < width) {
+				sb.append(' ');
+				index += charWidth;
+			}
+			
+			return sb.toString();
 		}
-
-		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
-		{
-			changeTitle = true;
-			setTitleColor(c.getBackground());
-			super.paintBorder(c, g, x, y, width, height);
-			changeTitle = false;
+		
+		@Override
+		public int getBaseline(Component c, int width, int height) {
+			String oldText = getTitle();
+			setTitle(buildWhitespaceTitle(button));
+			setTitleFont(button.getFont());
+			
+			try {
+				return super.getBaseline(c, width, height);
+			} finally {
+				setTitle(oldText);
+			}
+		}
+		
+		@Override
+		public BaselineResizeBehavior getBaselineResizeBehavior(Component c) {
+			String oldText = getTitle();
+			setTitle(buildWhitespaceTitle(button));
+			setTitleFont(button.getFont());
+			
+			try {		
+				return super.getBaselineResizeBehavior(c);
+			} finally {
+				setTitle(oldText);
+			}
+		}
+		
+		@Override
+		public Insets getBorderInsets(Component c, Insets insets) {
+			String oldText = getTitle();
+			setTitle(buildWhitespaceTitle(button));
+			setTitleFont(button.getFont());
+			
+			try {
+				return super.getBorderInsets(c, insets);
+			} finally {
+				setTitle(oldText);
+			}
+		}
+		
+		@Override
+		public Insets getBorderInsets(Component c) {
+			String oldText = getTitle();
+			setTitle(buildWhitespaceTitle(button));
+			setTitleFont(button.getFont());
+			
+			try {
+				return super.getBorderInsets(c);
+			} finally {
+				setTitle(oldText);
+			}
+		}
+		
+		@Override
+		public Rectangle getInteriorRectangle(Component c, int x, int y,
+				int width, int height) {
+			String oldText = getTitle();
+			setTitle(buildWhitespaceTitle(button));
+			setTitleFont(button.getFont());
+			try {
+				return super.getInteriorRectangle(c, x, y, width, height);
+			} finally {
+				setTitle(oldText);
+			}
+		}
+		
+		@Override
+		public Dimension getMinimumSize(Component c) {
+			String oldText = getTitle();
+			setTitle(buildWhitespaceTitle(button));
+			setTitleFont(button.getFont());
+			
+			try {
+				return super.getMinimumSize(c);
+			} finally {
+				setTitle(oldText);
+			}
+		}
+		
+		@Override
+		public void paintBorder(Component c, Graphics g, int x, int y,
+				int width, int height) {
+			String oldText = getTitle();
+			setTitle(buildWhitespaceTitle(button));
+			setTitleFont(button.getFont());
+			
+			try {
+				super.paintBorder(c, g, x, y, width, height);
+			} finally {
+				setTitle(oldText);
+			}
+		}
+		
+		private PropertyChangeListener buildPropertyChangeListener() {
+			return new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					AbstractButton button = (AbstractButton)evt.getSource();
+					setTitleFont(button.getFont());
+					setTitle(buildWhitespaceTitle(button));
+				}
+			};
 		}
 	}
 }

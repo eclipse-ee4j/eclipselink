@@ -66,7 +66,7 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "EIS_PLATFORM_LABEL",                       "&Platform:" },
 		{ "SESSION_CREATION_DIALOG_NEW_SESSION_NAME", "Session" },
 		{ "SESSION_CREATION_DIALOG_INVALID_NAME",     "The name entered is already defined." },
-		{ "USE_SERVER_PLATFORM_CHECK_BOX",            "&Use Server Platform" },
+		{ "USE_SERVER_PLATFORM_CHECK_BOX",            "&Use Server Platform:" },
 
 		// Popup Menu, Selected menu
 		{ "ADD_BROKER",                            "&Broker..."},

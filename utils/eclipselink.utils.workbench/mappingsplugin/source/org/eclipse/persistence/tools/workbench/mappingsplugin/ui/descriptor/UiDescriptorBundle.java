@@ -352,7 +352,7 @@ public class UiDescriptorBundle extends java.util.ListResourceBundle {
 			{ "OUTER_JOIN_ALL_SUBCLASSES", "Outer &Join All Subclasses: "},
 			{ "READ_SUBCLASSES_VIEW_OPTIONAL", "Read Subclasses &View (Optional): " },
 			{ "IS_ROOT_DESC", "Is &Root Parent Descriptor:" },
-			{ "IS_CHILD_DESC", "Is C&hild Descriptor" },
+			{ "IS_CHILD_DESC", "Is C&hild Descriptor:" },
 			{ "PARENT_DESC", "&Parent Descriptor: " },
 			{"PARENT_DESCRIPTOR_LIST_BROWSER_DIALOG.title", "Select the Parent Descriptor"},
 			{"PARENT_DESCRIPTOR_LIST_BROWSER_DIALOG.listLabel", "&Descriptors:"},

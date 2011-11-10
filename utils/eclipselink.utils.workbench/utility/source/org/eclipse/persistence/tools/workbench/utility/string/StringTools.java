@@ -29,6 +29,12 @@ public final class StringTools {
 	/** carriage return */
 	public static final String CR = System.getProperty("line.separator");
 
+	/** empty string */
+	public static final String EMPTY_STRING = "";
+	
+	/** empty array */
+	public static final String[] EMPTY_STRING_ARRAY = new String[0];
+	
 	/**
 	 * The minimum count to be consider a match between two strings; which is 2.
 	 */

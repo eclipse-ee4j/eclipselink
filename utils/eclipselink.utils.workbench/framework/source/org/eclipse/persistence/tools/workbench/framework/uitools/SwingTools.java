@@ -13,6 +13,8 @@
 package org.eclipse.persistence.tools.workbench.framework.uitools;
 
 import javax.swing.Icon;
+import javax.swing.JCheckBox;
+import javax.swing.JRadioButton;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -42,7 +44,13 @@ public final class SwingTools
 	 * text.
 	 */
 	private static int checkBoxIconWidth = -1;
-
+	
+	/**
+	 * The width taken by the radio button icon and the gap between the icon and the
+	 * text.
+	 */
+	private static int radioButtonIconWidth = -1;
+	
 	/**
 	 * Retrieves the width taken by the check box icon including the gap between
 	 * the icon and the text.
@@ -53,12 +61,68 @@ public final class SwingTools
 	{
 		if (checkBoxIconWidth == -1)
 		{
-			Icon icon = (Icon) UIManager.get("CheckBox.icon");
+			Icon icon = checkBoxIcon();
 			checkBoxIconWidth = (icon != null) ? icon.getIconWidth() : 0;
-			Integer gap = (Integer) UIManager.get("CheckBox.textIconGap");
-			checkBoxIconWidth += (gap != null) ? gap.intValue() + 4 : 4;
+			checkBoxIconWidth += checkBoxTextIconGap();
+			checkBoxIconWidth += new JCheckBox().getInsets().left;
 		}
 	
 		return checkBoxIconWidth;
+	}
+	
+	/**
+	 * Returns the default icon showing the selection state of a check box.
+	 * 
+	 * @return The icon specified by the look and feel of a check box
+	 */
+	public static Icon checkBoxIcon() {
+		return UIManager.getIcon("CheckBox.icon");
+	}
+	
+	/**
+	 * Returns the default gap (in pixels) between the icon and the text that is usually used on a check box.
+	 * 
+	 * @return The default space between the icon and the text on a check box
+	 */
+	public static int checkBoxTextIconGap() {
+		return UIManager.getInt("CheckBox.textIconGap");
+	}
+	
+	/**
+	 * Returns the default gap (in pixels) between the icon and the text that is usually used on a radio button.
+	 * 
+	 * @return The default space between the icon and the text on a radio button
+	 */
+	public static int radioButtonTextIconGap() {
+		return UIManager.getInt("RadioButton.textIconGap");
+	}
+	
+	/**
+	 * Returns the default icon showing the selection state of a radio button.
+	 * 
+	 * @return The icon specified by the look and feel of a radio button
+	 */
+	public static Icon radioButtonIcon() {
+		return UIManager.getIcon("RadioButton.icon");
+	}
+	
+	/**
+	 * Retrieves the width taken by the radio button icon including the gap between
+	 * the icon and the text.
+	 *
+	 * @return The size of the icon and the gap
+	 */
+	public static int radioButtonIconWidth() {
+		{
+			if (radioButtonIconWidth == -1)
+			{
+				Icon icon = radioButtonIcon();
+				radioButtonIconWidth = (icon != null) ? icon.getIconWidth() : 0;
+				radioButtonIconWidth += radioButtonTextIconGap();
+				radioButtonIconWidth += new JRadioButton().getInsets().left;
+			}
+		
+			return radioButtonIconWidth;
+		}
 	}
 }
