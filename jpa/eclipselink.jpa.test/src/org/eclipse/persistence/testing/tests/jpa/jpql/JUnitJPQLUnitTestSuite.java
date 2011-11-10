@@ -96,6 +96,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testObjectNullComparisonWithoutForeignKey"));
+    suite.addTest(new JUnitJPQLUnitTestSuite("testResetFirstResultOnQuery"));
     
     return suite;
   }
@@ -165,6 +166,31 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         while (i.hasNext()){
             assertTrue("Employee with incorrect name returned on second query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
         }
+    }
+    
+    public void testResetFirstResultOnQuery() {
+        // bug 362804 - firstResult in EJBQueryImpl cannot be reset to 0
+        EntityManager em = createEntityManager();
+        clearCache();
+
+        Query query = em.createQuery("SELECT e FROM Employee e");
+        assertEquals("Query's firstResult should be zero", 0, query.getFirstResult());
+        
+        List controlList = query.getResultList();
+        List shortenedResults = query.setFirstResult(2).getResultList();
+        assertEquals("Full list should be shorter than the control results list", (controlList.size() - 2), shortenedResults.size());
+        
+        query.setFirstResult(0);
+        assertEquals("Query's firstResult should have been reset to zero", 0, query.getFirstResult());
+        
+        List fullResults = query.getResultList();
+        assertEquals("Full list should be the same as the control results list", controlList.size(), fullResults.size());
+        
+        List shortenedResults2 = query.setFirstResult(3).getResultList();
+        assertEquals("Full list should be shorter than the control results list #2", (controlList.size() - 3), shortenedResults2.size());
+        
+        query.setFirstResult(0);
+        assertEquals("Query's firstResult should have been reset to zero", 0, query.getFirstResult());
     }
     
     public void testOuterJoinOnOneToOne(){
