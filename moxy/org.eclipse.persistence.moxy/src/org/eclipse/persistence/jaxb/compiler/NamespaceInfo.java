@@ -12,10 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 
-import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  *  INTERNAL:
@@ -82,8 +79,10 @@ public class NamespaceInfo {
     public NamespaceResolver getNamespaceResolverForDescriptor() {
         if(this.namespaceResolverForDescriptor == null) {
             this.namespaceResolverForDescriptor = new NamespaceResolver();
-            for(String next:this.namespaceResolver.getPrefixesToNamespaces().keySet()) {
-                this.namespaceResolverForDescriptor.put(next, this.namespaceResolver.resolveNamespacePrefix(next));
+            if(this.namespaceResolver.hasPrefixesToNamespaces()) {
+                for(String next:this.namespaceResolver.getPrefixesToNamespaces().keySet()) {
+                    this.namespaceResolverForDescriptor.put(next, this.namespaceResolver.resolveNamespacePrefix(next));
+                }
             }
         }
         return this.namespaceResolverForDescriptor;
