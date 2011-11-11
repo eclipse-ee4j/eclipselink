@@ -204,7 +204,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String RECORD_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE1_NRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<n1>new record</n1>" +
           "<n2>100.11</n2>" +
@@ -232,13 +232,13 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String INPUTRECORD_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE1_NRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<n1>data</n1>" +
           "<n2>100.00</n2>" +
         "</PACKAGE1_NRECORD>";
     public static final String OUTPUTRECORD_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE1_NRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<n1>data.copy</n1>" +
           "<n2>100.1</n2>" +
@@ -285,12 +285,12 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String TABLE_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE1_MTAB1 xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>666</item>" +
         "</PACKAGE1_MTAB1>";
     public static final String OUTPUTRECORDWITHTABLE_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE1_MRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<m1>" +
               "<item>666</item>" +

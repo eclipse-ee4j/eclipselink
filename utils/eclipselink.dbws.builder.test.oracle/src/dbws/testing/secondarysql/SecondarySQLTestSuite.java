@@ -103,6 +103,7 @@ import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_CREATE;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_DROP;
+import static dbws.testing.DBWSTestSuite.REGULAR_XML_HEADER;
 import static dbws.testing.DBWSTestSuite.buildConnection;
 import static dbws.testing.DBWSTestSuite.createDbArtifact;
 import static dbws.testing.DBWSTestSuite.documentToString;
@@ -366,7 +367,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      }
 
      public static final String SCHEMA_CONTROL_DOC =
-         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+         REGULAR_XML_HEADER +
          "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:secondarySQL\" xmlns=\"urn:secondarySQL\" elementFormDefault=\"qualified\">\n" +
           "   <xsd:complexType name=\"secondaryType\">\n" +
          "      <xsd:sequence>\n" +
@@ -391,7 +392,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          "</xsd:schema>";
 
      static final String ALL_CUSTOM_CONTROL_DOC =
-         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
+         REGULAR_XML_HEADER +
          "<all-custom>" +
          "</all-custom>";
 

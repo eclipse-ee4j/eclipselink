@@ -216,38 +216,38 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static String RESULT_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
-        "<item>" +
-        "<name>BUBBLES</name>" +
-        "<age>32</age>" +
-        "<gender>M</gender>" +
-        "<incarcerated>1990-11-19</incarcerated>" +
-        "</item>" +
-        "<item>" +
-        "<name>RICKY</name>" +
-        "<age>33</age>" +
-        "<gender>M</gender>" +
-        "<incarcerated>1985-10-01</incarcerated>" +
-        "</item>" +
-        "<item>" +
-        "<name>JULIAN</name>" +
-        "<age>35</age>" +
-        "<gender>M</gender>" +
-        "<incarcerated>1988-02-07</incarcerated>" +
-        "</item>" +
-        "<item>" +
-        "<name>SARAH</name>" +
-        "<age>25</age>" +
-        "<gender>F</gender>" +
-        "<incarcerated>2002-05-12</incarcerated>" +
-        "</item>" +
-        "<item>" +
-        "<name>J-ROC</name>" +
-        "<age>27</age>" +
-        "<gender>M</gender>" +
-        "<incarcerated>1998-12-17</incarcerated>" +
-        "</item>" +
+            "<item>" +
+                "<name>BUBBLES</name>" +
+                "<age>32</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1990-11-19</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>RICKY</name>" +
+                "<age>33</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1985-10-01</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>JULIAN</name>" +
+                "<age>35</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1988-02-07</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>SARAH</name>" +
+                "<age>25</age>" +
+                "<gender>F</gender>" +
+                "<incarcerated>2002-05-12</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>J-ROC</name>" +
+                "<age>27</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1998-12-17</incarcerated>" +
+            "</item>" +
         "</persontype_tableType>";
 
     @Test
@@ -289,87 +289,87 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static String PTYPE_INPUT_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
-        "<name>COREY</name>" +
-        "<age>20</age>" +
-        "<gender>M</gender>" +
-        "<incarcerated>1997-12-09</incarcerated>" +
-        "</persontypeType>";
-
-    static String PTABLE_INPUT_XML =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
-            "<item>" +
-            "<name>BUBBLES</name>" +
-            "<age>32</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1990-11-19</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>RICKY</name>" +
-            "<age>33</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1985-10-01</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>JULIAN</name>" +
-            "<age>35</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1988-02-07</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>SARAH</name>" +
-            "<age>25</age>" +
-            "<gender>F</gender>" +
-            "<incarcerated>2002-05-12</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>J-ROC</name>" +
-            "<age>27</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1998-12-17</incarcerated>" +
-            "</item>" +
-            "</persontype_tableType>";
-
-    static String NEW_PTABLE_OUTPUT_XML =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
-            "<item>" +
-            "<name>BUBBLES</name>" +
-            "<age>32</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1990-11-19</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>RICKY</name>" +
-            "<age>33</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1985-10-01</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>JULIAN</name>" +
-            "<age>35</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1988-02-07</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>SARAH</name>" +
-            "<age>25</age>" +
-            "<gender>F</gender>" +
-            "<incarcerated>2002-05-12</incarcerated>" +
-            "</item>" +
-            "<item>" +
-            "<name>J-ROC</name>" +
-            "<age>27</age>" +
-            "<gender>M</gender>" +
-            "<incarcerated>1998-12-17</incarcerated>" +
-            "</item>" +
-            "<item>" +
             "<name>COREY</name>" +
             "<age>20</age>" +
             "<gender>M</gender>" +
             "<incarcerated>1997-12-09</incarcerated>" +
+        "</persontypeType>";
+
+    static String PTABLE_INPUT_XML =
+        REGULAR_XML_HEADER +
+        "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
+            "<item>" +
+                "<name>BUBBLES</name>" +
+                "<age>32</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1990-11-19</incarcerated>" +
             "</item>" +
-            "</persontype_tableType>";
+            "<item>" +
+                "<name>RICKY</name>" +
+                "<age>33</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1985-10-01</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>JULIAN</name>" +
+                "<age>35</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1988-02-07</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>SARAH</name>" +
+                "<age>25</age>" +
+                "<gender>F</gender>" +
+                "<incarcerated>2002-05-12</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>J-ROC</name>" +
+                "<age>27</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1998-12-17</incarcerated>" +
+            "</item>" +
+        "</persontype_tableType>";
+
+    static String NEW_PTABLE_OUTPUT_XML =
+        REGULAR_XML_HEADER +
+        "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
+            "<item>" +
+                "<name>BUBBLES</name>" +
+                "<age>32</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1990-11-19</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>RICKY</name>" +
+                "<age>33</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1985-10-01</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>JULIAN</name>" +
+                "<age>35</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1988-02-07</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>SARAH</name>" +
+                "<age>25</age>" +
+                "<gender>F</gender>" +
+                "<incarcerated>2002-05-12</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>J-ROC</name>" +
+                "<age>27</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1998-12-17</incarcerated>" +
+            "</item>" +
+            "<item>" +
+                "<name>COREY</name>" +
+                "<age>20</age>" +
+                "<gender>M</gender>" +
+                "<incarcerated>1997-12-09</incarcerated>" +
+            "</item>" +
+        "</persontype_tableType>";
 }

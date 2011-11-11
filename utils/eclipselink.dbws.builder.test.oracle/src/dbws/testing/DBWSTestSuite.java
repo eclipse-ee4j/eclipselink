@@ -80,7 +80,12 @@ public class DBWSTestSuite {
     public static final String DEFAULT_DATABASE_DDL_DROP = "false";
     public static final String RELEASE_VERSION_KEY = "release.version";
     public static final String DEFAULT_RELEASE_VERSION= "2.4.0";
-    public static String releaseVersion = System.getProperty(RELEASE_VERSION_KEY, DEFAULT_RELEASE_VERSION);
+    public static String releaseVersion =
+        System.getProperty(RELEASE_VERSION_KEY, DEFAULT_RELEASE_VERSION);
+    public static final String REGULAR_XML_HEADER =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>";
+    public static final String STANDALONE_XML_HEADER =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
 
     //shared JUnit fixtures
     public static Connection conn = AllTests.conn;

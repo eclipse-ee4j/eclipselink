@@ -856,7 +856,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "</object-persistence>";
 
     protected static final String ONE_PERSON_XML =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        REGULAR_XML_HEADER +
         "<tabletypeType xmlns=\"urn:tabletype\">" +
           "<id>1</id>" +
           "<name>mike</name>" +
@@ -874,7 +874,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "</tabletypeType>";
 
     protected static final String UPDATED_PERSON_XML =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        REGULAR_XML_HEADER +
         "<tabletypeType xmlns=\"urn:tabletype\">" +
           "<id>1</id>" +
           "<name>mike</name>" +
@@ -895,7 +895,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     // TODO: use this 'new person' once round trip binary is sorted out
     /*
     protected static final String NEW_PERSON_XML =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        REGULAR_XML_HEADER +
         "<tabletypeType xmlns=\"urn:tabletype\">" +
           "<id>99</id>" +
           "<name>Joe Black</name>" +
@@ -915,70 +915,70 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
     // TODO:  'rO0ABXA=' comes back for non-set/null binary types
     protected static final String NEW_PERSON_XML =
-            "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-            "<tabletypeType xmlns=\"urn:tabletype\">" +
-              "<id>99</id>" +
-              "<name>Joe Black</name>" +
-              "<deptno>22</deptno>" +
-              "<deptname>Janitor</deptname>" +
-              "<section>q</section>" +
-              "<sal>19000.0</sal>" +
-              "<commission>333.0</commission>" +
-              "<sales>1.0</sales>" +
-              "<binid>rO0ABXA=</binid>" +
-              "<b>rO0ABXA=</b>" +
-              "<c>adadadadadadadadadadadadadadad</c>" +
-              "<r>rO0ABXA=</r>" +
-              "<lr>rO0ABXA=</lr>" +
-            "</tabletypeType>";
+        REGULAR_XML_HEADER +
+        "<tabletypeType xmlns=\"urn:tabletype\">" +
+            "<id>99</id>" +
+            "<name>Joe Black</name>" +
+            "<deptno>22</deptno>" +
+            "<deptname>Janitor</deptname>" +
+            "<section>q</section>" +
+            "<sal>19000.0</sal>" +
+            "<commission>333.0</commission>" +
+            "<sales>1.0</sales>" +
+            "<binid>rO0ABXA=</binid>" +
+            "<b>rO0ABXA=</b>" +
+            "<c>adadadadadadadadadadadadadadad</c>" +
+            "<r>rO0ABXA=</r>" +
+            "<lr>rO0ABXA=</lr>" +
+        "</tabletypeType>";
 
     protected static final String ALL_PEOPLE_XML =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        REGULAR_XML_HEADER +
         "<tabletype-collection>" +
-          "<tabletypeType xmlns=\"urn:tabletype\">" +
-            "<id>1</id>" +
-            "<name>mike</name>" +
-            "<deptno>99</deptno>" +
-            "<deptname>sales</deptname>" +
-            "<section>a</section>" +
-            "<sal>100000.8</sal>" +
-            "<commission>450.8</commission>" +
-            "<sales>10000.8</sales>" +
-            "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACEBA=</binid>" +
-            "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
-            "<c>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</c>" +
-            "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
-            "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
-          "</tabletypeType>" +
-          "<tabletypeType xmlns=\"urn:tabletype\">" +
-            "<id>2</id>" +
-            "<name>merrick</name>" +
-            "<deptno>98</deptno>" +
-            "<deptname>delivery</deptname>" +
-            "<section>f</section>" +
-            "<sal>20000.0</sal>" +
-            "<commission>0.0</commission>" +
-            "<sales>0.0</sales>" +
-            "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACAQE=</binid>" +
-            "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
-            "<c>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</c>" +
-            "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAgIC</r>" +
-            "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAgICAgICAgIC</lr>" +
-          "</tabletypeType>" +
-          "<tabletypeType xmlns=\"urn:tabletype\">" +
-            "<id>3</id>" +
-            "<name>rick</name>" +
-            "<deptno>99</deptno>" +
-            "<deptname>sales</deptname>" +
-            "<section>b</section>" +
-            "<sal>98000.2</sal>" +
-            "<commission>150.2</commission>" +
-            "<sales>2000.2</sales>" +
-            "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACERA=</binid>" +
-            "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
-            "<c>cccccccccccccccccccccccccccccc</c>" +
-            "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAwMD</r>" +
-            "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAwMDAwMDAwMD</lr>" +
-          "</tabletypeType>" +
+            "<tabletypeType xmlns=\"urn:tabletype\">" +
+                "<id>1</id>" +
+                "<name>mike</name>" +
+                "<deptno>99</deptno>" +
+                "<deptname>sales</deptname>" +
+                "<section>a</section>" +
+                "<sal>100000.8</sal>" +
+                "<commission>450.8</commission>" +
+                "<sales>10000.8</sales>" +
+                "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACEBA=</binid>" +
+                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
+                "<c>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</c>" +
+                "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
+                "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
+            "</tabletypeType>" +
+            "<tabletypeType xmlns=\"urn:tabletype\">" +
+                "<id>2</id>" +
+                "<name>merrick</name>" +
+                "<deptno>98</deptno>" +
+                "<deptname>delivery</deptname>" +
+                "<section>f</section>" +
+                "<sal>20000.0</sal>" +
+                "<commission>0.0</commission>" +
+                "<sales>0.0</sales>" +
+                "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACAQE=</binid>" +
+                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
+                "<c>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</c>" +
+                "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAgIC</r>" +
+                "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAgICAgICAgIC</lr>" +
+            "</tabletypeType>" +
+            "<tabletypeType xmlns=\"urn:tabletype\">" +
+                "<id>3</id>" +
+                "<name>rick</name>" +
+                "<deptno>99</deptno>" +
+                "<deptname>sales</deptname>" +
+                "<section>b</section>" +
+                "<sal>98000.2</sal>" +
+                "<commission>150.2</commission>" +
+                "<sales>2000.2</sales>" +
+                "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACERA=</binid>" +
+                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
+                "<c>cccccccccccccccccccccccccccccc</c>" +
+                "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAwMD</r>" +
+                "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAwMDAwMDAwMD</lr>" +
+            "</tabletypeType>" +
         "</tabletype-collection>";
 }

@@ -108,7 +108,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
             dropDbArtifact(conn, DROP_BOOL_IN_PROC);
         }
     }
-    
+
     @Test
     public void testBoolean() {
         Invocation invocation = new Invocation("testBoolean");
@@ -123,10 +123,10 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Control document not same as instance document. Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String TEST_BOOLEAN_RESULT =
-      "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-      "<simple-xml-format>" +
-         "<simple-xml>" +
-            "<result>1</result>" +
-         "</simple-xml>" +
-      "</simple-xml-format>";
+        REGULAR_XML_HEADER +
+        "<simple-xml-format>" +
+            "<simple-xml>" +
+                "<result>1</result>" +
+            "</simple-xml>" +
+        "</simple-xml-format>";
 }

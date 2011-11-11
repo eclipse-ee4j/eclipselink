@@ -166,19 +166,19 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static String FIND_BY_NAME_CONTROL_DOC =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-            "<collection>" +
-               "<simpletable2Type xmlns=\"urn:simpletable2\">" +
-                  "<id>1</id>" +
-                  "<name>mike</name>" +
-                  "<since>2001-12-25</since>" +
-               "</simpletable2Type>" +
-               "<simpletable2Type xmlns=\"urn:simpletable2\">" +
-                  "<id>4</id>" +
-                  "<name>mikey</name>" +
-                  "<since>2010-01-01</since>" +
-               "</simpletable2Type>" +
-            "</collection>";
+        REGULAR_XML_HEADER +
+        "<collection>" +
+            "<simpletable2Type xmlns=\"urn:simpletable2\">" +
+                "<id>1</id>" +
+                "<name>mike</name>" +
+                "<since>2001-12-25</since>" +
+            "</simpletable2Type>" +
+            "<simpletable2Type xmlns=\"urn:simpletable2\">" +
+                "<id>4</id>" +
+                "<name>mikey</name>" +
+                "<since>2010-01-01</since>" +
+            "</simpletable2Type>" +
+        "</collection>";
 
     @Test
     public void validateElementRefType() throws TransformerFactoryConfigurationError, TransformerException {

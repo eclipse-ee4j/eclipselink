@@ -28,7 +28,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-//import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
@@ -146,6 +145,13 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
                   "isAdvancedJDBC=\"true\" " +
                   "returnType=\"emp_addressType\" " +
               "/>" +
+              "<procedure " +
+                  "name=\"echoEmpObject\" " +
+                  "catalogPattern=\"ADVANCED_OBJECT_DEMO\" " +
+                  "procedurePattern=\"ECHOEMPOBJECT\" " +
+                  "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"emp_objectType\" " +
+                  "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -165,7 +171,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     @Test
     public void struct1LevelDeep() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
-        Object region = unmarshaller.unmarshal(new StringReader(REGION_TYPE_XML));
+        Object region = unmarshaller.unmarshal(new StringReader(REGION_XML));
         Invocation invocation = new Invocation("echoRegion");
         invocation.setParameter("AREGION", region);
         Operation op = xrService.getOperation(invocation.getName());
@@ -174,12 +180,12 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(REGION_TYPE_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(REGION_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) +
             "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    static final String REGION_TYPE_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    static final String REGION_XML =
+        REGULAR_XML_HEADER +
         "<regionType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<reg_id>5</reg_id>" +
         "<reg_name>this is a test</reg_name>" +
@@ -188,7 +194,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     @Test
     public void struct2LevelDeep() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
-        Object empAddress = unmarshaller.unmarshal(new StringReader(EMP_ADDRESS_TYPE_XML));
+        Object empAddress = unmarshaller.unmarshal(new StringReader(EMP_ADDRESS_XML));
         Invocation invocation = new Invocation("echoEmpAddress");
         invocation.setParameter("ANEMPADDRESS", empAddress);
         Operation op = xrService.getOperation(invocation.getName());
@@ -197,12 +203,12 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(EMP_ADDRESS_TYPE_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(EMP_ADDRESS_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) +
             "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    static final String EMP_ADDRESS_TYPE_XML =
-        "<?xml version='1.0' encoding='UTF-8'?>" +
+    static final String EMP_ADDRESS_XML =
+        REGULAR_XML_HEADER +
         "<emp_addressType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<street>20 Pinetrail Cres.</street>" +
            "<suburb>Centrepointe</suburb>" +
@@ -212,4 +218,37 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
            "</addr_region>" +
            "<postcode>12</postcode>" +
         "</emp_addressType>";
+
+    @Test
+    public void struct3LevelDeep() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object empObject = unmarshaller.unmarshal(new StringReader(EMP_OBJECT_XML));
+        Invocation invocation = new Invocation("echoEmpObject");
+        invocation.setParameter("ANEMPOBJECT", empObject);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(EMP_OBJECT_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) +
+            "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static final String EMP_OBJECT_XML =
+        REGULAR_XML_HEADER +
+        "<emp_objectType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+           "<employee_id>55</employee_id>" +
+           "<address>" +
+              "<street>20 Pinetrail Cres.</street>" +
+              "<suburb>Centrepointe</suburb>" +
+              "<addr_region>" +
+                 "<reg_id>5</reg_id>" +
+                 "<reg_name>this is a test</reg_name>" +
+              "</addr_region>" +
+              "<postcode>12</postcode>" +
+           "</address>" +
+           "<employee_name>Mike Norman</employee_name>" +
+           "<date_of_hire>2011-11-11</date_of_hire>" +
+        "</emp_objectType>";
 }

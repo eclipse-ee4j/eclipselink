@@ -240,10 +240,10 @@ public class VArrayTestSuite extends DBWSTestSuite {
     }
 
     static String VARRAY_RESULT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        "<item>entry1-xxx</item>" +
-        "<item>entry2-xxx</item>" +
+            "<item>entry1-xxx</item>" +
+            "<item>entry2-xxx</item>" +
         "</vcarrayType>";
 
     @Test
@@ -279,18 +279,18 @@ public class VArrayTestSuite extends DBWSTestSuite {
     }
 
     static String INPUT_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        "<item>one</item>" +
-        "<item>two</item>" +
+            "<item>one</item>" +
+            "<item>two</item>" +
         "</vcarrayType>";
 
     static String RESULT_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        "<item>one</item>" +
-        "<item>two</item>" +
-        "<item>copy</item>" +
+            "<item>one</item>" +
+            "<item>two</item>" +
+            "<item>copy</item>" +
         "</vcarrayType>";
 
     @Test
@@ -328,28 +328,28 @@ public class VArrayTestSuite extends DBWSTestSuite {
     }
 
     static String INPUT2_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        "<item>1-foo</item>" +
-        "<item>2-bar</item>" +
-        "<item>3-foobar</item>" +
-        "<item>4-blah</item>" +
+            "<item>1-foo</item>" +
+            "<item>2-bar</item>" +
+            "<item>3-foobar</item>" +
+            "<item>4-blah</item>" +
         "</vcarrayType>";
 
     static String RESULT2_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-        "<simple-xml>" +
-        "<U>2-bar</U>" +
-        "<O>copy of 2-bar</O>" +
-        "</simple-xml>" +
+            "<simple-xml>" +
+                "<U>2-bar</U>" +
+                "<O>copy of 2-bar</O>" +
+            "</simple-xml>" +
         "</simple-xml-format>";
 
     static String RESULT3_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-        "<simple-xml>" +
-        "<result>3-foobar</result>" +
-        "</simple-xml>" +
+            "<simple-xml>" +
+                "<result>3-foobar</result>" +
+            "</simple-xml>" +
         "</simple-xml-format>";
 }

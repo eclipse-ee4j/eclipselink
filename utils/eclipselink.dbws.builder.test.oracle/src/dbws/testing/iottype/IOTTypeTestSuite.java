@@ -174,7 +174,7 @@ public class IOTTypeTestSuite extends DBWSTestSuite {
     }
 
     public static final String ONE_PERSON_XML =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        REGULAR_XML_HEADER +
         "<indexedtabletypeType xmlns=\"urn:tabletypeurowid\">" +
           "<id>1</id>" +
           "<name>mike</name>" +
@@ -182,7 +182,7 @@ public class IOTTypeTestSuite extends DBWSTestSuite {
         "</indexedtabletypeType>";
 
     public static final String ALL_PEOPLE_XML =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        REGULAR_XML_HEADER +
         "<tabletypeurowid-collection>" +
           "<indexedtabletypeType xmlns=\"urn:tabletypeurowid\">" +
             "<id>1</id>" +

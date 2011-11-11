@@ -187,7 +187,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String TABLE_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE2_TAB1 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>BLAH</item>" +
         "</PACKAGE2_TAB1>";
@@ -227,13 +227,13 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String INPUTORECORD_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE2_ORECORD xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<o1>somedata</o1>" +
           "<o2>66.6</o2>" +
         "</PACKAGE2_ORECORD>";
     public static final String OUTPUTTABLE_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        STANDALONE_XML_HEADER +
         "<PACKAGE2_TAB2 xmlns=\"urn:PLSQLCollection\">" +
           "<item>" +
             "<o1>somedata</o1>" +

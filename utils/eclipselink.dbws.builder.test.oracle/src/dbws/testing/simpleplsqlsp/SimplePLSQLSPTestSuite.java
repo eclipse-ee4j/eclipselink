@@ -15,7 +15,6 @@ package dbws.testing.simpleplsqlsp;
 //javase imports
 import java.io.StringReader;
 import java.sql.SQLException;
-
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -162,8 +161,8 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String VALUE_1_XML =
-      "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-      "<value>1</value>";
+        REGULAR_XML_HEADER +
+        "<value>1</value>";
 
     @Test
     public void noargsTest() {
@@ -192,13 +191,13 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String IN_OUT_ARGS_XML =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<simple-xml-format>" +
-        "<simple-xml>" +
-          "<U>barf-yuck</U>" +
-          "<V>55</V>" +
-        "</simple-xml>" +
-      "</simple-xml-format>";
+        REGULAR_XML_HEADER +
+        "<simple-xml-format>" +
+            "<simple-xml>" +
+                "<U>barf-yuck</U>" +
+                "<V>55</V>" +
+            "</simple-xml>" +
+        "</simple-xml-format>";
 
     @Test
     public void inOutArgTest() {
@@ -214,6 +213,6 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String IN_OUT_ARG_XML =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<value>barf-yuck</value>";
+        REGULAR_XML_HEADER +
+        "<value>barf-yuck</value>";
 }

@@ -220,14 +220,14 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static String RESULT_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        "<id>66</id>" +
-        "<name>BUBBLES</name>" +
-        "<phone>" +
-        "<home>(613) 234-4567</home>" +
-        "<cell>(613) 858-3434</cell>" +
-        "</phone>" +
+            "<id>66</id>" +
+            "<name>BUBBLES</name>" +
+            "<phone>" +
+                "<home>(613) 234-4567</home>" +
+                "<cell>(613) 858-3434</cell>" +
+            "</phone>" +
         "</emp_typeType>";
 
     @Test
@@ -244,14 +244,14 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static String RESULT2_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        "<id>69</id>" +
-        "<name>RICKY</name>" +
-        "<phone>" +
-        "<home>(613) 344-1232</home>" +
-        "<cell>(613) 823-2323</cell>" +
-        "</phone>" +
+            "<id>69</id>" +
+            "<name>RICKY</name>" +
+            "<phone>" +
+                "<home>(613) 344-1232</home>" +
+                "<cell>(613) 823-2323</cell>" +
+            "</phone>" +
         "</emp_typeType>";
 
     @Test
@@ -285,13 +285,13 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static String ETYPE_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-        "<id>9</id>" +
-        "<name>LAHEY</name>" +
-        "<phone>" +
-        "<home>(902) 987-0011</home>" +
-        "<cell>(902) 789-1100</cell>" +
-        "</phone>" +
+            "<id>9</id>" +
+            "<name>LAHEY</name>" +
+            "<phone>" +
+                "<home>(902) 987-0011</home>" +
+                "<cell>(902) 789-1100</cell>" +
+            "</phone>" +
         "</emp_typeType>";
 }

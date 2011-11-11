@@ -195,7 +195,7 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String FIND_MAX_SAL_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<simple-xml-format>" +
           "<simple-xml>" +
             "<result>5000</result>" +
@@ -216,7 +216,7 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String FIND_MAX_SAL_FOR_DEPT_XML =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        REGULAR_XML_HEADER +
         "<max-sal-for-dept xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
           "<simple-xml>" +
             "<result>2850</result>" +
