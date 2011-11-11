@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
@@ -642,7 +644,7 @@ public class FunctionExpression extends BaseExpression {
             // now need to find out if it is a direct to field or something
             // else.
             DatabaseMapping mapping = getLeafMappingFor(baseExp, ((QueryKeyExpression) baseExp).descriptor);
-            if ((mapping != null) && !mapping.isDirectToFieldMapping()) {
+            if ((mapping != null) && !mapping.isAbstractDirectMapping()) {
                 outerJoin = ((QueryKeyExpression) baseExp).shouldUseOuterJoin();
                 if (mapping.isAggregateMapping()) {
                     newDescriptor = mapping.getDescriptor();

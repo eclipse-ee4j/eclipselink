@@ -10,6 +10,8 @@
  * Contributors:
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType 
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -28,6 +30,7 @@ public interface MultitenantPolicy {
     public abstract void addToTableDefinition(TableDefinition tableDefinition);
     public abstract void addFieldsToRow(AbstractRecord row, AbstractSession session);
     public abstract MultitenantPolicy clone(ClassDescriptor descriptor);
+    public abstract boolean isSingleTableMultitenantPolicy();
     public abstract void postInitialize(AbstractSession session);
     public abstract void initialize(AbstractSession session) throws DescriptorException;    
     public abstract void preInitialize(AbstractSession session) throws DescriptorException;

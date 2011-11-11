@@ -16,6 +16,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType 
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -24,6 +26,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MultitenantIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
@@ -165,6 +168,14 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
         }
 
         policy.addTenantDiscriminatorField(m_contextProperty, tenantDiscriminatorField);
+        
+        // Add a multitenant id accessor to the descriptor (to be processed 
+        // later) other mappings may need to look it up hence need to create a 
+        // new mapping accessor.
+        if (tenantDiscriminatorField.isPrimaryKey()) {
+            MultitenantIdAccessor idAccessor = new MultitenantIdAccessor(m_contextProperty, tenantDiscriminatorField, getAccessibleObject(), descriptor.getClassAccessor());
+            descriptor.addMappingAccessor(idAccessor);
+        }
     }
     
     /**

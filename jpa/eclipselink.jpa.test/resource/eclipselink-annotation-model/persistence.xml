@@ -265,6 +265,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
@@ -292,6 +293,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="tenant.id" value="123"/>

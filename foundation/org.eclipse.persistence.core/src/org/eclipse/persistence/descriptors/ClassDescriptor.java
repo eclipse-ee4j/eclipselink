@@ -22,6 +22,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 5)
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -2886,7 +2888,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             // PERF: Ensure direct primary key mappings are first.
             for (int index = getObjectBuilder().getPrimaryKeyMappings().size() - 1; index >= 0; index--) {
                 DatabaseMapping mapping = getObjectBuilder().getPrimaryKeyMappings().get(index);
-                if ((mapping != null) && mapping.isDirectToFieldMapping()) {
+                if ((mapping != null) && mapping.isAbstractDirectMapping()) {
                     getMappings().remove(mapping);
                     getMappings().add(0, mapping);
                     DatabaseField field = ((AbstractDirectMapping)mapping).getField();

@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -182,7 +182,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, XMLNillableMapping {
+public class XMLDirectMapping extends AbstractAttributeDirectMapping implements XMLMapping, XMLNillableMapping {
    
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
@@ -238,7 +238,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         super.initialize(session);
         ((XMLField)getField()).setIsCDATA(this.isCDATA());
         String xpathString = ((XMLField)getField()).getXPath();
-        if (this.isAbstractDirectMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {            
+        if (this.isAbstractAttributeDirectMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {            
             throw DescriptorException.invalidXpathForXMLDirectMapping(this);
         }
     }

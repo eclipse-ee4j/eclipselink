@@ -69,6 +69,8 @@
  *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification 
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -468,7 +470,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         setFieldName(field, defaultName, loggingCtx);
 
         // Store all the fields for this descriptor. This will allow re-use
-        // and easy lookup of refererenced column names.
+        // and easy lookup of referenced column names.
         getDescriptor().addField(field);
         
         return field;
@@ -531,24 +533,27 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * This method will validate the join columns and default any where 
      * necessary.
      */    
-    protected List<JoinColumnMetadata> getJoinColumnsAndValidate(List<JoinColumnMetadata> joinColumns, MetadataDescriptor descriptor) {
+    protected List<JoinColumnMetadata> getJoinColumnsAndValidate(List<JoinColumnMetadata> joinColumns, MetadataDescriptor referenceDescriptor) {
         if (joinColumns.isEmpty()) {
-            if (descriptor.hasCompositePrimaryKey()) {
+            if (referenceDescriptor.hasCompositePrimaryKey()) {
                 // Add a default one for each part of the composite primary
                 // key. Foreign and primary key to have the same name.
-                for (DatabaseField primaryKeyField : descriptor.getPrimaryKeyFields()) {
-                    JoinColumnMetadata joinColumn = new JoinColumnMetadata();
-                    joinColumn.setReferencedColumnName(primaryKeyField.getName());
-                    joinColumn.setName(primaryKeyField.getName());
-                    joinColumn.setProject(descriptor.getProject());
-                    joinColumns.add(joinColumn);
+                for (DatabaseField primaryKeyField : referenceDescriptor.getPrimaryKeyFields()) {
+                    // Multitenant primary key fields will be dealt with below so avoid adding here.
+                    if (! primaryKeyField.isPrimaryKey()) {
+                        JoinColumnMetadata joinColumn = new JoinColumnMetadata();
+                        joinColumn.setReferencedColumnName(primaryKeyField.getName());
+                        joinColumn.setName(primaryKeyField.getName());
+                        joinColumn.setProject(referenceDescriptor.getProject());
+                        joinColumns.add(joinColumn);
+                    }
                 }
             } else {
                 // Add a default one for the single case, not setting any
                 // foreign and primary key names. They will default based
                 // on which accessor is using them.
                 JoinColumnMetadata jcm = new JoinColumnMetadata();
-                jcm.setProject(descriptor.getProject());
+                jcm.setProject(referenceDescriptor.getProject());
                 joinColumns.add(jcm);
             }
         } else {
@@ -568,14 +573,57 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 if (referencedColumnName != null && !isVariableOneToOne()) {
                     DatabaseField referencedField = new DatabaseField();
                     setFieldName(referencedField, referencedColumnName);
-                    joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedField).getName());
+                    joinColumn.setReferencedColumnName(referenceDescriptor.getPrimaryKeyJoinColumnAssociation(referencedField).getName());
                 }
             }
         }
         
-        if (descriptor.hasCompositePrimaryKey()) {
+        // Multitenant entities. Go through and add any multitenant primary key 
+        // fields that need to be added. The user may or may not specify them
+        // in metadata. 
+        if (referenceDescriptor.hasSingleTableMultitenant() && joinColumns.size() != referenceDescriptor.getPrimaryKeyFields().size()) {
+            Map<String, List<DatabaseField>> referenceTenantFields = referenceDescriptor.getSingleTableMultitenantFields();
+                
+            // If we are multitenant then we can sync up on relationship fields
+            // using the context property.
+            Map<String, List<DatabaseField>> tenantFields = getDescriptor().hasSingleTableMultitenant() ? getDescriptor().getSingleTableMultitenantFields() : null;
+                    
+            for (String contextProperty : referenceTenantFields.keySet()) {
+                List<DatabaseField> referenceFields = referenceTenantFields.get(contextProperty);
+
+                for (DatabaseField referenceField : referenceFields) {
+                    // Only if it is a primary key field, otherwise we don't
+                    // care about it.
+                    if (referenceField.isPrimaryKey()) {
+                        JoinColumnMetadata jcm = new JoinColumnMetadata();
+                        // This join column must be read only.
+                        jcm.setInsertable(false);
+                        jcm.setUpdatable(false);
+                        
+                        // If we have a related context property, look up a 
+                        // field that matches from it.
+                        if (tenantFields != null && tenantFields.containsKey(contextProperty)) {
+                            // This is going to return a list just pick the first
+                            // field (they populate the same value so doesn't really
+                            // matter which one we pick.
+                            jcm.setName(tenantFields.get(contextProperty).get(0).getName());
+                        } else {
+                            // We don't have a match, use the same name.
+                            jcm.setName(referenceField.getName());
+                        }
+                            
+                        jcm.setReferencedColumnName(referenceField.getName());
+                        jcm.setProject(referenceDescriptor.getProject());
+                        joinColumns.add(jcm);
+                    }
+                }
+            } 
+        }
+        
+        // Now run some validation.
+        if (referenceDescriptor.hasCompositePrimaryKey()) {
             // The number of join columns should equal the number of primary key fields.
-            if (joinColumns.size() != descriptor.getPrimaryKeyFields().size()) {
+            if (joinColumns.size() != referenceDescriptor.getPrimaryKeyFields().size()) {
                 throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
             }
             
@@ -618,7 +666,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      * Return the owning descriptors of this accessor. In most cases this is
-     * a single descriptors. Multiples can only exist when dealing with 
+     * a single descriptor. Multiples can only exist when dealing with 
      * accessors for an embeddable that is shared.
      */
     public List<MetadataDescriptor> getOwningDescriptors() {
@@ -1085,6 +1133,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public boolean isMappedKeyMapAccessor() {
         return MappedKeyMapAccessor.class.isAssignableFrom(getClass()) && isMapAccessor() && ! hasMapKey();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor is a multitenant id mapping.
+     */
+    public boolean isMultitenantId() {
+        return false;
     }
     
     /**
@@ -1834,9 +1890,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      *     metadata.
      */
     protected void setMapping(DatabaseMapping mapping) {
-        // Before adding the mapping to the descriptor, process the properties
-        // for this mapping (if any)
-        processProperties(mapping);
+        if (! isMultitenantId()) {
+            // Before adding the mapping to the descriptor, process the 
+            // properties for this mapping (if any). Avoid this is we are
+            // multitenant id accessor which is derived from primary key
+            // tenant discriminator columns on the class where any properties
+            // defined there do not apply to this mapping.
+            processProperties(mapping);
+        }
         
         // Add the mapping to the class descriptor.
         getDescriptor().getClassDescriptor().addMapping(mapping);
@@ -1925,5 +1986,4 @@ public abstract class MappingAccessor extends MetadataAccessor {
             return m_classAccessor.usesFieldAccess();
         }
     }
-    
 }

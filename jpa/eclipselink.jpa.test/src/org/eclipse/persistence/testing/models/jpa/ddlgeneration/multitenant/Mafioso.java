@@ -10,6 +10,8 @@
  * Contributors:
  *     04/28/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 6)
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant;
 
@@ -23,6 +25,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -38,7 +41,7 @@ import static javax.persistence.InheritanceType.JOINED;
 @Entity
 @Table(name="DDL_MAFIOSO")
 @Multitenant
-@TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id", primaryKey=true)
+@TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id")
 @Inheritance(strategy=JOINED)
 @DiscriminatorColumn(name="DTYPE")
 public abstract class Mafioso {
@@ -53,7 +56,9 @@ public abstract class Mafioso {
     public Mafioso() {}
 
     @ManyToOne
-    @JoinColumn(name="FAMILY_ID")
+    @JoinColumns({
+        @JoinColumn(name="FAMILY_ID", referencedColumnName="ID")
+    })
     public MafiaFamily getFamily() { 
         return family; 
     }

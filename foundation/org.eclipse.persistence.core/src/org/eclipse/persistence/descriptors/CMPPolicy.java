@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/17/2010-2.2 Guy Pelletier 
  *       - 330755: Nested embeddables can't be used as embedded ids
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -24,8 +26,8 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -296,9 +298,9 @@ public class CMPPolicy implements java.io.Serializable {
         } else {
             Object fieldValue = null;
             
-            if (mapping.isDirectToFieldMapping()) {
+            if (mapping.isAbstractDirectMapping()) {
                 fieldValue = keyElements[elementIndex[0]];
-                Converter converter = ((DirectToFieldMapping) mapping).getConverter();
+                Converter converter = ((AbstractDirectMapping) mapping).getConverter();
                 if (converter != null){
                     fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
                 }
@@ -352,8 +354,8 @@ public class CMPPolicy implements java.io.Serializable {
         KeyElementAccessor[] pkElementArray = getKeyClassFields();
         if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[0].getAttributeName());
-            if (mapping.isDirectToFieldMapping()) {
-                Converter converter = ((DirectToFieldMapping) mapping).getConverter();
+            if (mapping.isAbstractDirectMapping()) {    
+                Converter converter = ((AbstractDirectMapping) mapping).getConverter();
                 if (converter != null){
                     return converter.convertDataValueToObjectValue(keyElements[elementIndex[0]], session);
                 }

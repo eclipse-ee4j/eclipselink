@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
@@ -358,7 +360,7 @@ public class QueryKeyExpression extends ObjectExpression {
     public Object getFieldValue(Object objectValue, AbstractSession session) {
         DatabaseMapping mapping = getMapping();
         Object fieldValue = objectValue;
-        if ((mapping != null) && (mapping.isDirectToFieldMapping() || mapping.isDirectCollectionMapping())) {
+        if ((mapping != null) && (mapping.isAbstractDirectMapping() || mapping.isDirectCollectionMapping())) {
             // CR#3623207, check for IN Collection here not in mapping.
             if (objectValue instanceof Collection) {
                 // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
@@ -373,7 +375,7 @@ public class QueryKeyExpression extends ObjectExpression {
                 }
                 fieldValue = fieldValues;
             } else {
-                if (mapping.isDirectToFieldMapping()) {
+                if (mapping.isAbstractDirectMapping()) {
                     fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(objectValue, session);
                 } else if (mapping.isDirectCollectionMapping()) {
                     fieldValue = ((DirectCollectionMapping)mapping).getFieldValue(objectValue, session);                    
@@ -996,7 +998,7 @@ public class QueryKeyExpression extends ObjectExpression {
             }
         }
 
-        if (mapping.isDirectToFieldMapping()) {
+        if (mapping.isAbstractDirectMapping()) {
             return ((AbstractDirectMapping)mapping).valueFromObject(object, mapping.getField(), session);
         } else if (mapping.isForeignReferenceMapping()) {
             //CR 3677 integration of a ValueHolderPolicy

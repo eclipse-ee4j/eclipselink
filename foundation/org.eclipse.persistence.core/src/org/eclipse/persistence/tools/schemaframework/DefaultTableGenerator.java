@@ -16,6 +16,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 3)
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -624,7 +626,7 @@ public class DefaultTableGenerator {
         // Find mappedBy target mapping to check constraint cascade.
         for (DatabaseField foreignKey : mapping.getSourceToTargetKeyFields().values()) {
             DatabaseMapping mappedBy = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(foreignKey);
-            if (mappedBy.isOneToOneMapping()) {
+            if (mappedBy != null && mappedBy.isOneToOneMapping()) {
                 cascadeDelete = ((OneToOneMapping)mappedBy).isCascadeOnDeleteSetOnDatabase();
             } else {
                 List<DatabaseMapping> readOnlyMappings = mapping.getReferenceDescriptor().getObjectBuilder().getReadOnlyMappingsForField(foreignKey);

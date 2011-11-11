@@ -10,10 +10,14 @@
  * Contributors:
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType 
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -37,11 +41,13 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
     protected boolean includeTenantCriteria;
     protected ClassDescriptor descriptor;
     protected Map<DatabaseField, String> tenantDiscriminatorFields;
+    protected Map<String, List<DatabaseField>> tenantDiscriminatorFieldsKeyedOnContext;
     
     public SingleTableMultitenantPolicy(ClassDescriptor desc) {
         descriptor = desc;
         includeTenantCriteria = true;
         tenantDiscriminatorFields = new HashMap(5);
+        tenantDiscriminatorFieldsKeyedOnContext = new HashMap<String, List<DatabaseField>>(5);
     }
     
     /**
@@ -95,6 +101,12 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
             }
         } else {
             tenantDiscriminatorFields.put(field, property);
+            
+            if (! tenantDiscriminatorFieldsKeyedOnContext.containsKey(property)) {
+                tenantDiscriminatorFieldsKeyedOnContext.put(property, new ArrayList<DatabaseField>());
+            }
+            
+            tenantDiscriminatorFieldsKeyedOnContext.get(property).add(field);
         }
     }
 
@@ -103,6 +115,13 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
      */
     public Map<DatabaseField, String> getTenantDiscriminatorFields() {
         return tenantDiscriminatorFields;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Map<String, List<DatabaseField>> getTenantDiscriminatorFieldsKeyedOnContext() {
+        return tenantDiscriminatorFieldsKeyedOnContext;
     }
     
     /**
@@ -123,13 +142,20 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
             for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForField(discriminatorField);
                 
-                if (mapping != null && ! mapping.isReadOnly()) {
+                if (mapping != null && ! mapping.isReadOnly() && ! mapping.isMultitenantPrimaryKeyMapping()) {
                     throw ValidationException.nonReadOnlyMappedTenantDiscriminatorField(getDescriptor().getJavaClassName(), discriminatorField.getQualifiedName());
                 }
             }
         }
     }
     
+    /**
+     * INTERNAL:
+     */
+    public boolean isSingleTableMultitenantPolicy() {
+        return true;
+    }
+
     /**
      * INTERNAL:
      * Subclasses that need to add field to an expresison should override this method.

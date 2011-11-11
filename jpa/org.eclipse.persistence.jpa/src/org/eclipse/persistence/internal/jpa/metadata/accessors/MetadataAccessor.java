@@ -57,12 +57,15 @@
  *       - 343632: Can't map a compound constraint because of exception: 
  *                 The reference column name [y] mapped on the element [field x] 
  *                 does not correspond to a valid field on the mapping reference
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.Converters;
@@ -81,6 +84,7 @@ import org.eclipse.persistence.annotations.TypeConverters;
 import org.eclipse.persistence.annotations.UnionPartitioning;
 import org.eclipse.persistence.annotations.ValuePartitioning;
 import org.eclipse.persistence.annotations.RoundRobinPartitioning;
+import org.eclipse.persistence.descriptors.SingleTableMultitenantPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -884,8 +888,8 @@ public abstract class MetadataAccessor extends ORMetadata {
             if (getDescriptor().hasCompositePrimaryKey()) {
                 // Add a default one for each part of the composite primary
                 // key. Foreign and primary key to have the same name.
-                for (DatabaseField primaryKeyField : getDescriptor().getPrimaryKeyFields()) {
-                    PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata(this.m_project);
+                for (DatabaseField primaryKeyField : getDescriptor().getPrimaryKeyFields()) { 
+                    PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata(getProject());
                     primaryKeyJoinColumn.setReferencedColumnName(primaryKeyField.getName());
                     primaryKeyJoinColumn.setName(primaryKeyField.getName());
                     primaryKeyJoinColumns.add(primaryKeyJoinColumn);
@@ -894,10 +898,30 @@ public abstract class MetadataAccessor extends ORMetadata {
                 // Add a default one for the single case, not setting any
                 // foreign and primary key names. They will default based
                 // on which accessor is using them.
-                primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(this.m_project));
+                primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getProject()));
+            }
+        } else {
+            // If we are a multitenant entity and the number of primary key join
+            // columns does not equal the number of primary key fields we must
+            // add the multitenant primary key tenant discriminator fields.
+            if (getDescriptor().hasSingleTableMultitenant() && primaryKeyJoinColumns.size() != getDescriptor().getPrimaryKeyFields().size()) {
+                SingleTableMultitenantPolicy policy = (SingleTableMultitenantPolicy) getDescriptor().getClassDescriptor().getMultitenantPolicy();
+                Map<DatabaseField, String> tenantFields = policy.getTenantDiscriminatorFields();
+                
+                // Go through the key sets ...
+                for (DatabaseField tenantField : tenantFields.keySet()) {
+                    if (tenantField.isPrimaryKey()) {
+                        PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata();
+                        primaryKeyJoinColumn.setName(tenantField.getName());
+                        primaryKeyJoinColumn.setReferencedColumnName(tenantField.getName());
+                        primaryKeyJoinColumn.setProject(getProject());
+                        primaryKeyJoinColumns.add(primaryKeyJoinColumn);
+                    }
+                }
             }
         }
         
+        // Now validate what we have.
         if (getDescriptor().hasCompositePrimaryKey()) {
             // All the primary and foreign key field names should be specified.
             // The number of join columns need not match the number of primary

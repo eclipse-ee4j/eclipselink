@@ -12,6 +12,8 @@
  *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.dynamic;
 
@@ -43,6 +45,7 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
+import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -466,13 +469,13 @@ public class DynamicTypeBuilder {
         }
 
         // Try to configure the attribute classification if name is available
-        if (mapping.getAttributeClassification() == null && mapping.isAbstractDirectMapping()) {
-            String typeName = ((AbstractDirectMapping) mapping).getAttributeClassificationName();
+        if (mapping.getAttributeClassification() == null && mapping.isAbstractAttributeDirectMapping()) {
+            String typeName = ((AbstractAttributeDirectMapping) mapping).getAttributeClassificationName();
             if (typeName != null) {
                 // Remove any additional padding
                 typeName = typeName.trim();
                 Class<?> attrType = ConversionManager.getDefaultManager().convertClassNameToClass(typeName);
-                ((AbstractDirectMapping) mapping).setAttributeClassification(attrType);
+                ((AbstractAttributeDirectMapping) mapping).setAttributeClassification(attrType);
             }
         }
 

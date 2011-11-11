@@ -629,7 +629,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         // PERF:  handle normal case faster.
         if (this.lockMapping != null) {
             // converted to the correct (for the mapping) type lock value.
-            Object convertedLockValue = this.lockMapping.getAttributeValue(lockValue, session); 
+            Object convertedLockValue = this.lockMapping.getObjectValue(lockValue, session); 
             if (objectChangeSet != null && (!objectChangeSet.isNew() || query.getDescriptor().shouldUseFullChangeSetsForNewObjects())) {
                 Object oldValue = this.lockMapping.getAttributeValueFromObject(object);
                 this.lockMapping.setAttributeValueInObject(object, convertedLockValue);

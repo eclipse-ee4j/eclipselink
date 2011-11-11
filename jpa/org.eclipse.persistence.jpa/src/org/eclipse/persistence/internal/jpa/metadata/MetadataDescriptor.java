@@ -90,6 +90,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -107,6 +109,7 @@ import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
+import org.eclipse.persistence.descriptors.SingleTableMultitenantPolicy;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -1108,6 +1111,14 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Assumes a call to hasSingleTableMultitenant has been made before hand.
+     */
+    public Map<String, List<DatabaseField>> getSingleTableMultitenantFields() {
+        return ((SingleTableMultitenantPolicy) m_descriptor.getMultitenantPolicy()).getTenantDiscriminatorFieldsKeyedOnContext();
+    }
+    
+    /**
+     * INTERNAL:
      * Returns true is an additional criteria has been set on this descriptor's
      * query manager.
      */
@@ -1250,6 +1261,14 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates if multitenant metadata has been processed for this descriptor.
+     */
+    public boolean hasMultitenant() { 
+        return m_descriptor.hasMultitenantPolicy();
+    }
+    
+    /**
+     * INTERNAL:
      */
     public boolean hasPKClass() {
         return m_pkClass != null;
@@ -1283,10 +1302,11 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Indicates if multitenant metadata has been processed for this descriptor.
+     * Indicates if single table multitenant metadata has been processed for 
+     * this descriptor.
      */
-    public boolean hasMultitenant() { 
-        return m_descriptor.hasMultitenantPolicy();
+    public boolean hasSingleTableMultitenant() { 
+        return hasMultitenant() && m_descriptor.getMultitenantPolicy().isSingleTableMultitenantPolicy();
     }
     
     /**
@@ -1714,7 +1734,6 @@ public class MetadataDescriptor {
      */
     public void setPKClass(MetadataClass pkClass) {
         m_pkClass = pkClass;
-        
         CMP3Policy policy = new CMP3Policy();
         policy.setPrimaryKeyClassName(pkClass.getName());
         m_descriptor.setCMPPolicy(policy);

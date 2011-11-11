@@ -17,6 +17,8 @@
  *       - 290567: mappedbyid support incomplete
  *     12/17/2010-2.2 Guy Pelletier 
  *       - 330755: Nested embeddables can't be used as embedded ids
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -32,6 +34,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.MultitenantPrimaryKeyMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.exceptions.*;
@@ -203,7 +206,7 @@ public class CMP3Policy extends CMPPolicy {
         for (int index = 0; index < pkElementArray.length; index++) {
             DatabaseMapping mapping = pkElementArray[index].getMapping();
             Object fieldValue = null;
-            if (mapping.isDirectToFieldMapping()) {
+            if (mapping.isAbstractDirectMapping()) {    
                 if (pkElementArray[index].isNestedAccessor()) {
                     // We have nested aggregate(s) in the embedded id pkclass.
                     DatabaseField keyField = pkElementArray[index].getDatabaseField();
@@ -401,10 +404,10 @@ public class CMP3Policy extends CMPPolicy {
                 } else {
                     String fieldName = (mapping.hasMapsIdValue()) ? mapping.getMapsIdValue() : mapping.getAttributeName();
                 
-                    if (currentKeyClass == null){
+                    if (currentKeyClass == null || mapping.isMultitenantPrimaryKeyMapping()) {
                         // must be a primitive since key class was not set
                         pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
-                        if (mapping.isDirectToFieldMapping()){
+                        if (mapping.isAbstractAttributeDirectMapping()) {
                             setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
                         } else if (mapping.isOneToOneMapping()) {
                             ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
@@ -432,6 +435,7 @@ public class CMP3Policy extends CMPPolicy {
                                 break;
                             }
                         }
+                        
                         try {
                             pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
                             fieldToAccessorMap.put(field, pkAttributes[i]);
@@ -441,7 +445,7 @@ public class CMP3Policy extends CMPPolicy {
                             String setMethodName = null; 
                             if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
                                 WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
-                                if(weavedIndirectionPolicy.hasUsedMethodAccess()) {
+                                if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
                                     getMethodName = weavedIndirectionPolicy.getGetMethodName();
                                     setMethodName = weavedIndirectionPolicy.getSetMethodName();
                                 }
@@ -588,7 +592,7 @@ public class CMP3Policy extends CMPPolicy {
             }
         }
     }
-
+    
     /**
      * INTERNAL:
      * This class will be used when the element of the keyclass is a field
@@ -671,7 +675,7 @@ public class CMP3Policy extends CMPPolicy {
         Object fieldValue = null;
         KeyElementAccessor accessor = this.fieldToAccessorMap.get(field);
         DatabaseMapping mapping = accessor.getMapping();
-        if (mapping.isDirectToFieldMapping()) {
+        if (mapping.isAbstractDirectMapping()) {
             fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(accessor.getValue(key, session), session);
         } else {
             fieldValue = accessor.getValue(key, session);

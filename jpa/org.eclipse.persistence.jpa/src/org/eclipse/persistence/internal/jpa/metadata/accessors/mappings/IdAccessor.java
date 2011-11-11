@@ -25,6 +25,8 @@
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -32,7 +34,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
@@ -62,8 +64,8 @@ public class IdAccessor extends BasicAccessor {
     /**
      * INTERNAL:
      */
-    public IdAccessor(MetadataAnnotation id, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
-        super(id, annotatedElement, classAccessor);
+    public IdAccessor(MetadataAnnotation id, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+        super(id, accessibleObject, classAccessor);
     }
     
     /**

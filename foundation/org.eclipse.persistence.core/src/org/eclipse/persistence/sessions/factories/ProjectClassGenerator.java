@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.factories;
 
@@ -28,8 +30,8 @@ import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.factories.DirectToXMLTypeMappingHelper;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.*;
 import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.sessions.*;
@@ -678,7 +680,7 @@ public class ProjectClassGenerator {
                 method.addLine(mappingName + ".setSetMethodName(\"" + mapping.getSetMethodName() + "\");");
             }
         }
-        if (mapping.isDirectToFieldMapping()) {
+        if (mapping.isAbstractDirectMapping()) {
             AbstractDirectMapping directMapping = (AbstractDirectMapping)mapping;
             if (mapping.getDescriptor().isAggregateDescriptor()) {
                 method.addLine(mappingName + ".setFieldName(\"" + directMapping.getField().getName() + "\");");

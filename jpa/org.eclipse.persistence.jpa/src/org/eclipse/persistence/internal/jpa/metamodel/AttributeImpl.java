@@ -23,6 +23,8 @@
  *       - do not attempt a reflective call on a superclass  
  *       - see design issue #25
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -243,7 +245,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
          * ONE_TO_MANY (MANY_TO_MANY internally for unidirectional mappings on MappedSuperclasses)
          * ELEMENT_COLLECTION
          */ 
-        if (mapping.isDirectToFieldMapping()) {
+        if (mapping.isAbstractDirectMapping()) {
             return PersistentAttributeType.BASIC;
         }
         if (mapping.isAggregateObjectMapping()) {

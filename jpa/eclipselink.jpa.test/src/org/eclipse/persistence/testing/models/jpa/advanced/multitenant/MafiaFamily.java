@@ -15,7 +15,9 @@
  *     06/1/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 9)
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -36,6 +38,7 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -48,9 +51,12 @@ import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name="JPA_MAFIA_FAMILY")
-@SecondaryTable(name="JPA_FAMILY_REVENUE")
+@SecondaryTable(
+    name="JPA_FAMILY_REVENUE",
+    pkJoinColumns={@PrimaryKeyJoinColumn(name="FAMILY_ID", referencedColumnName="ID")}
+)
 @Multitenant
-@TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id", primaryKey = true)
+@TenantDiscriminatorColumn(name="TENANT_ID", contextProperty="tenant.id", primaryKey=true)
 @NamedQueries({
     @NamedQuery(
      name="findAllMafiaFamilies", 
@@ -103,7 +109,9 @@ public class MafiaFamily implements Serializable {
     @ElementCollection
     @CollectionTable(
       name="JPA_FAMILY_TAGS",
-      joinColumns=@JoinColumn(name="FAMILY_ID"))
+      joinColumns={
+          @JoinColumn(name="FAMILY_ID", referencedColumnName="ID")
+      })
     @Column(name="TAG")
     public Collection<String> getTags() { 
         return tags; 

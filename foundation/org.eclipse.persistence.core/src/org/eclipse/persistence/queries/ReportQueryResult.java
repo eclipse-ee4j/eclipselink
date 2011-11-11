@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -177,7 +179,7 @@ public class ReportQueryResult implements Serializable, Map {
                 }
                 // If mapping is not null then it must be a direct mapping - see Reportitem.init.
                 value = row.getValues().get(itemIndex);
-                value = ((AbstractDirectMapping)mapping).getAttributeValue(value, query.getSession());
+                value = ((AbstractDirectMapping)mapping).getObjectValue(value, query.getSession());
                 // GF_ISSUE_395
                 if (this.key != null) {
                     this.key.append(value);

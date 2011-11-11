@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
@@ -19,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -314,8 +316,8 @@ public class TransformerFactory {
      */
     private MetadataClass getAttributeTypeFromClass(MetadataClass metadataClass, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){       
         String getterMethod = mapping.getGetMethodName();
-        if (mapping.isAbstractDirectMapping() && mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
-            return metadataClass.getMetadataClass(((AbstractDirectMapping)mapping).getAttributeClassificationName());
+        if (mapping.isAbstractAttributeDirectMapping() && mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
+            return metadataClass.getMetadataClass(((AbstractAttributeDirectMapping)mapping).getAttributeClassificationName());
         } else if (mapping != null && getterMethod != null) {
             MetadataMethod method = metadataClass.getMethod(getterMethod, new ArrayList(), checkSuperclass);
             if (method == null) {
@@ -345,6 +347,12 @@ public class TransformerFactory {
 
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+            
+            // Can't weave something that isn't really there and not going to be there.
+            if (mapping.isMultitenantPrimaryKeyMapping()) {
+                continue;
+            }
+            
             String attribute = mapping.getAttributeName();
             AttributeDetails attributeDetails = new AttributeDetails(attribute, mapping);
 

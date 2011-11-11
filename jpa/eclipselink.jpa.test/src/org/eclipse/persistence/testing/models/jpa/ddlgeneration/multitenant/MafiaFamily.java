@@ -10,6 +10,8 @@
  * Contributors:
  *     04/28/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 6)
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant;
 
@@ -87,7 +89,9 @@ public class MafiaFamily implements Serializable {
     @ElementCollection
     @CollectionTable(
       name="DDL_FAMILY_TAGS",
-      joinColumns=@JoinColumn(name="FAMILY_ID"))
+      joinColumns={
+          @JoinColumn(name="FAMILY_ID", referencedColumnName="ID")
+      })
     @Column(name="TAG")
     public Collection<String> getTags() { 
         return tags; 

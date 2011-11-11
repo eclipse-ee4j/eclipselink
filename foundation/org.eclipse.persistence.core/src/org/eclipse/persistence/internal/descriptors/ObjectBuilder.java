@@ -15,6 +15,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -267,7 +269,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if ((handledMappings != null) && handledMappings.contains(mapping)) {
             return;
         }
-        if (mapping.isDirectToFieldMapping()) {
+        if (mapping.isAbstractDirectMapping()) {
             if(changeSet != null && (!changeSet.isNew() || (query.getDescriptor() != null && query.getDescriptor().shouldUseFullChangeSetsForNewObjects()))) {
                 DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)changeSet.getChangesForAttributeNamed(mapping.getAttributeName());
                 Object oldAttributeValue = null;
@@ -359,7 +361,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "assign_sequence", sequenceValue, object);
         Object convertedSequenceValue = null;
         if (this.sequenceMapping != null) {
-            convertedSequenceValue = this.sequenceMapping.getAttributeValue(sequenceValue, writeSession);
+            convertedSequenceValue = this.sequenceMapping.getObjectValue(sequenceValue, writeSession);
             this.sequenceMapping.setAttributeValueInObject(object, convertedSequenceValue);
         } else {
             // Now add the value to the object, this gets ugly.
@@ -1520,7 +1522,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DatabaseMapping mapping = (DatabaseMapping)pkMappings.get(i);
 
             //if (query.shouldReadMapping(mapping)) {
-            if (!mapping.isDirectToFieldMapping()) {
+            if (!mapping.isAbstractDirectMapping()) {
                 mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
             }
         }
@@ -1530,7 +1532,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
 
             //if (query.shouldReadMapping(mapping)) {
-            if (mapping.isDirectToFieldMapping()) {
+            if (mapping.isAbstractDirectMapping()) {
                 mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
             }
         }
@@ -2213,8 +2215,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         DatabaseMapping mapping = (DatabaseMapping)primaryKeyMappings.get(index);
     
                         // Only null out direct mappings, as others will be nulled in the respective objects.
-                        if (mapping.isDirectToFieldMapping()) {
-                            Object nullValue = ((AbstractDirectMapping)mapping).getAttributeValue(null, copyGroup.getSession());
+                        if (mapping.isAbstractAttributeDirectMapping()) {
+                            Object nullValue = ((AbstractAttributeDirectMapping)mapping).getAttributeValue(null, copyGroup.getSession());
                             mapping.setAttributeValueInObject(copy, nullValue);
                         } else if (mapping.isTransformationMapping()) {
                             mapping.setAttributeValueInObject(copy, null);
@@ -2654,7 +2656,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
         
         String attributeName = mapping.getAttributeName();
-        if (mapping.isDirectToFieldMapping()) {
+        if (mapping.isAbstractDirectMapping()) {
             DirectToFieldChangeRecord changeRecord = (DirectToFieldChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
             if (changeRecord == null) {
                 changeRecord = new DirectToFieldChangeRecord(objectChangeSet);
@@ -2975,7 +2977,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public DatabaseField getTargetFieldForQueryKeyName(String queryKeyName) {
         DatabaseMapping mapping = getMappingForAttributeName(queryKeyName);
-        if ((mapping != null) && mapping.isDirectToFieldMapping()) {
+        if ((mapping != null) && mapping.isAbstractDirectMapping()) {
             return ((AbstractDirectMapping)mapping).getField();
         }
 
@@ -3026,7 +3028,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
             
             // Cache relationship mappings.
-            if (!mapping.isDirectToFieldMapping()) {
+            if (!mapping.isAbstractDirectMapping()) {
                 getRelationshipMappings().add(mapping);
             }
 
@@ -3082,7 +3084,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (this.descriptor.usesSequenceNumbers()) {
             DatabaseMapping sequenceMapping = getMappingForField(this.descriptor.getSequenceNumberField());
             if ((sequenceMapping != null) && sequenceMapping.isDirectToFieldMapping()) {
-                setSequenceMapping((AbstractDirectMapping)sequenceMapping);
+                setSequenceMapping((AbstractAttributeDirectMapping)sequenceMapping);
             }
         }
         if(this.descriptor.usesOptimisticLocking()) {
@@ -3308,7 +3310,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
     
                 // Primary key mapping may be null for aggregate collection.
-                if ((mapping == null) || (!mapping.isDirectToFieldMapping())) {
+                if ((mapping == null) || (!mapping.isAbstractDirectMapping())) {
                     hasSimplePrimaryKey = false;
                     break;
                 }

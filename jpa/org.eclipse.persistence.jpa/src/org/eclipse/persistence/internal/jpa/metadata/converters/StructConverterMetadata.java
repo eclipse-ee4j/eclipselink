@@ -17,6 +17,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -30,9 +32,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
-
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
 
 /**
  * INTERNAL:
@@ -115,8 +116,8 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
      * INTERNAL: 
      */
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
-        if (mapping.isAbstractDirectMapping()) {
-            AbstractDirectMapping directMapping = ((AbstractDirectMapping)mapping); 
+        if (mapping.isAbstractAttributeDirectMapping()) {
+            AbstractAttributeDirectMapping directMapping = ((AbstractAttributeDirectMapping) mapping); 
             directMapping.setFieldType(Types.STRUCT);
             directMapping.setConverter(null);
             directMapping.setConverterClassName(null);

@@ -21,7 +21,9 @@
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries
  *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType  
+ *       - 356197: Add new VPD type to MultitenantType
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -47,6 +49,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -57,6 +60,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo;
@@ -108,6 +112,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedMultiTenantJunitTest("testComplexMultitenantQueries"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testVPDEMPerTenant"));
         
+        suite.addTest(new AdvancedMultiTenantJunitTest("testMultitenantPrimaryKeyWithIdClass"));
+        
         return suite;
     }
     
@@ -120,6 +126,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testCreateMafiaFamily707() {
         EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        
         try {
             beginTransaction(em);
             //on server side, you have to set the em properties after transaction begins
@@ -931,7 +938,36 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             }
         }
     }
-
+    
+    public void testMultitenantPrimaryKeyWithIdClass() {
+        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        
+        PhoneNumber number = new PhoneNumber();;
+        number.setAreaCode("613");
+        number.setNumber("123-4567");
+        number.setType("Home");
+        
+        try {
+            beginTransaction(em);
+            // On server side, you have to set the em properties after 
+            // transaction begins
+            em.setProperty("tenant.id", "707");
+            em.persist(number);
+            commitTransaction(em);
+            
+            // This should hit the cache.
+            PhoneNumber refreshedNumber = em.find(PhoneNumber.class, number.buildPK());
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
     private Task testInsert(EntityManager em, String description, boolean isCompleted) {
         beginTransaction(em);
         Task task = new Task();

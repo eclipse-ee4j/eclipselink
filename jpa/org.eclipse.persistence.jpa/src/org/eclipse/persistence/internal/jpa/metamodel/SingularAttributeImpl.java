@@ -14,6 +14,8 @@
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
  *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation       
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -90,7 +92,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             // Note: OneToMany, ManyToMany are handled by PluralAttributeImpl
             if(mapping.isOneToOneMapping()) { // handles @ManyToOne
                 attributeClass = ((OneToOneMapping)mapping).getReferenceClass();
-            } else if (mapping.isDirectToFieldMapping()) { // Also handles the keys of an EmbeddedId
+            } else if (mapping.isAbstractDirectMapping()) { // Also handles the keys of an EmbeddedId
                 attributeClass = mapping.getField().getType();
                 if(null == attributeClass) {
                     // lookup the attribute on the containing class

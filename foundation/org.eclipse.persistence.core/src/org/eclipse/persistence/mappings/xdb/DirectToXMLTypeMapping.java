@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.xdb;
 
@@ -111,7 +113,7 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
      * new one.
      */
     @Override
-    public Object getAttributeValue(Object fieldValue, Session session) throws ConversionException {
+    public Object getObjectValue(Object fieldValue, Session session) throws ConversionException {
         Object attributeValue = fieldValue;
         try {
             if (attributeValue != null) {

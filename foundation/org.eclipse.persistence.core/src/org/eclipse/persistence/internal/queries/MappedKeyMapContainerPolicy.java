@@ -10,6 +10,8 @@
  * Contributors:
  *     tware - initial implementation
  *     tware - implemenation of basic CRUD functionality
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
@@ -553,7 +555,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     @Override
     public boolean isMapKeyAttribute() {
-        return ((DatabaseMapping)keyMapping).isAbstractDirectMapping();
+        return ((DatabaseMapping)keyMapping).isAbstractAttributeDirectMapping();
     }
     
     /**

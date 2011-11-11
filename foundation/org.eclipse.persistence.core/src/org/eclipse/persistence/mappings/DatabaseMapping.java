@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/10/2011-2.4 Guy Pelletier 
+ *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -877,6 +879,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL
+     */
+    public boolean isMultitenantPrimaryKeyMapping() {
+        return false;
+    }
+    
+    /**
      * @param isMapKeyMapping the isMapKeyMapping to set
      */
     public void setIsMapKeyMapping(boolean isMapKeyMapping) {
@@ -1026,6 +1035,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Related mapping should implement this method to return true.
      */
     public boolean isAbstractDirectMapping() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isAbstractAttributeDirectMapping() {
         return false;
     }
 
@@ -1188,7 +1204,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Some mappings support no attribute (transformation).
+     * Some mappings support no attribute (transformation and multitenant primary key).
      */
     public boolean isWriteOnly() {
         return false;
