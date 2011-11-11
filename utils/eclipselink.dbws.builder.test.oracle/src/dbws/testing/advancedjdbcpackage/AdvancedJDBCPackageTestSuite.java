@@ -59,11 +59,19 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
             "\nEMPLOYEE_NAME VARCHAR2(80)," +
             "\nDATE_OF_HIRE  DATE" +
         "\n)";
+    static final String CREATE_EMP_INFO_TYPE =
+        "CREATE OR REPLACE TYPE EMP_INFO AS OBJECT (" +
+            "\nID NUMBER(5)," +
+            "\nNAME VARCHAR2(50)" +
+        "\n)";
+    static final String CREATE_EMP_INFO_ARRAY_TYPE =
+        "CREATE OR REPLACE TYPE EMP_INFO_ARRAY AS VARRAY(3) OF EMP_INFO";
     static final String CREATE_ADVANCED_OBJECT_DEMO_PACKAGE =
         "CREATE OR REPLACE PACKAGE ADVANCED_OBJECT_DEMO AS" +
             "\nFUNCTION ECHOREGION(AREGION IN REGION) RETURN REGION;" +
             "\nFUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN EMP_ADDRESS) RETURN EMP_ADDRESS;" +
             "\nFUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN EMP_OBJECT) RETURN EMP_OBJECT;" +
+            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN EMP_INFO_ARRAY;" +
         "\nEND ADVANCED_OBJECT_DEMO;";
     static final String CREATE_ADVANCED_OBJECT_DEMO_BODY =
         "CREATE OR REPLACE PACKAGE BODY ADVANCED_OBJECT_DEMO AS" +
@@ -79,14 +87,26 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
             "\nBEGIN" +
                 "\nRETURN ANEMPOBJECT;" +
             "\nEND ECHOEMPOBJECT;" +
+            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN EMP_INFO_ARRAY AS" +
+            "\nL_DATA EMP_INFO_ARRAY := EMP_INFO_ARRAY();" +
+            "\nBEGIN" +
+                "\nFOR I IN 1 .. NUM LOOP" +
+                    "\nL_DATA.EXTEND;" +
+                    "\nL_DATA(I) := EMP_INFO(I, 'entry ' || i);" +
+                "\nEND LOOP;" +
+                "\nRETURN L_DATA;" +
+            "\nEND BUILDEMPARRAY;" +
         "\nEND ADVANCED_OBJECT_DEMO;";
-
     static final String DROP_REGION_TYPE =
         "DROP TYPE REGION";
     static final String DROP_EMP_ADDRESS_TYPE =
         "DROP TYPE EMP_ADDRESS";
     static final String DROP_EMP_OBJECT_TYPE =
         "DROP TYPE EMP_OBJECT";
+    static final String DROP_EMP_INFO_ARRAY_TYPE =
+        "DROP TYPE EMP_INFO_ARRAY";
+    static final String DROP_EMP_INFO_TYPE =
+        "DROP TYPE EMP_INFO";
     static final String DROP_ADVANCED_OBJECT_DEMO_PACKAGE =
         "DROP PACKAGE ADVANCED_OBJECT_DEMO";
 
@@ -106,6 +126,8 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
                 createDbArtifact(conn, CREATE_REGION_TYPE);
                 createDbArtifact(conn, CREATE_EMP_ADDRESS_TYPE);
                 createDbArtifact(conn, CREATE_EMP_OBJECT_TYPE);
+                createDbArtifact(conn, CREATE_EMP_INFO_TYPE);
+                createDbArtifact(conn, CREATE_EMP_INFO_ARRAY_TYPE);
                 createDbArtifact(conn, CREATE_ADVANCED_OBJECT_DEMO_PACKAGE);
                 createDbArtifact(conn, CREATE_ADVANCED_OBJECT_DEMO_BODY);
             }
@@ -152,6 +174,13 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
                   "isAdvancedJDBC=\"true\" " +
                   "returnType=\"emp_objectType\" " +
                   "/>" +
+              "<procedure " +
+                  "name=\"buildEmpArray\" " +
+                  "catalogPattern=\"ADVANCED_OBJECT_DEMO\" " +
+                  "procedurePattern=\"BUILDEMPARRAY\" " +
+                  "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"emp_info_arrayType\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -162,6 +191,8 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
             dropDbArtifact(conn, DROP_ADVANCED_OBJECT_DEMO_PACKAGE);
+            dropDbArtifact(conn, DROP_EMP_INFO_ARRAY_TYPE);
+            dropDbArtifact(conn, DROP_EMP_INFO_TYPE);
             dropDbArtifact(conn, DROP_EMP_OBJECT_TYPE);
             dropDbArtifact(conn, DROP_EMP_ADDRESS_TYPE);
             dropDbArtifact(conn, DROP_REGION_TYPE);
@@ -251,4 +282,35 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
            "<employee_name>Mike Norman</employee_name>" +
            "<date_of_hire>2011-11-11</date_of_hire>" +
         "</emp_objectType>";
+
+    @Test
+    public void buildEmpArray() {
+        Invocation invocation = new Invocation("buildEmpArray");
+        invocation.setParameter("NUM", Integer.valueOf(3));
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(EMP_INFO_ARRAY_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) +
+            "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static final String EMP_INFO_ARRAY_XML =
+        REGULAR_XML_HEADER +
+        "<emp_info_arrayType xmlns=\"urn:advancedjdbcpackage\">" +
+            "<item>" +
+                "<id>1</id>" +
+                "<name>entry 1</name>" +
+            "</item>" +
+            "<item>" +
+                "<id>2</id>" +
+                "<name>entry 2</name>" +
+            "</item>" +
+            "<item>" +
+                "<id>3</id>" +
+                "<name>entry 3</name>" +
+            "</item>" +
+         "</emp_info_arrayType>";
 }

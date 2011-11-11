@@ -658,7 +658,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String name;
             String targetTypeName;
             String alias;
-
             if (dbType instanceof PLSQLType) {
                 name = opModel.getCatalogPattern() + "." + dbType.getTypeName();
                 targetTypeName = opModel.getCatalogPattern() + "_" + dbType.getTypeName();
@@ -760,7 +759,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             fieldMapping.setXPath(lFieldName + "/item/text()");
                             XMLField xField = (XMLField)fieldMapping.getField();
                             xField.setRequired(true);
-                            fieldMapping.useCollectionClassName("java.util.ArrayList");
+                            fieldMapping.useCollectionClass(ArrayList.class);
                             AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
                             nullPolicy.setNullRepresentedByEmptyNode(false);
                             nullPolicy.setMarshalNullRepresentation(XSI_NIL);
@@ -806,21 +805,21 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 Object o = i.next();
                 if (o instanceof DatabaseField) {
                     DatabaseField field = (DatabaseField)o;
-                    if (field.getName().equals(lFieldName)) {
+                    if (field.getName().equalsIgnoreCase(fieldName)) {
                         found = true;
                         break;
                     }
                 }
             }
             if (!found) {
-                ordtDesc.addFieldOrdering(lFieldName);
+                ordtDesc.addFieldOrdering(fieldName);
             }
             if (ordtDesc.getMappingForAttributeName(lFieldName) == null) {
                 if (fType.isComposite()) {
                     if (fType.getDataType() instanceof PLSQLRecordType) {
                         StructureMapping structureMapping = new StructureMapping();
                         structureMapping.setAttributeName(lFieldName);
-                        structureMapping.setFieldName(lFieldName);
+                        structureMapping.setFieldName(fieldName);
                         structureMapping.setReferenceClassName(recordName.toLowerCase());
                         ordtDesc.addMapping(structureMapping);
                     }
@@ -829,20 +828,22 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         if (tableType.getNestedType().isComposite()) {
                             ObjectArrayMapping objectArrayMapping = new ObjectArrayMapping();
                             objectArrayMapping.setAttributeName(lFieldName);
-                            objectArrayMapping.setFieldName(lFieldName);
+                            objectArrayMapping.setFieldName(fieldName);
                             objectArrayMapping.setStructureName(targetTypeName);
+                            objectArrayMapping.useCollectionClass(ArrayList.class);
                             objectArrayMapping.setReferenceClassName((catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                             ordtDesc.addMapping(objectArrayMapping);
                         } else {
                             ArrayMapping arrayMapping = new ArrayMapping();
                             arrayMapping.setAttributeName(lFieldName);
-                            arrayMapping.setFieldName(lFieldName);
+                            arrayMapping.setFieldName(fieldName);
                             arrayMapping.setStructureName(targetTypeName);
+                            arrayMapping.useCollectionClass(ArrayList.class);
                             ordtDesc.addMapping(arrayMapping);
                         }
                     }
                 } else {
-                    ordtDesc.addDirectMapping(lFieldName, lFieldName);
+                    ordtDesc.addDirectMapping(lFieldName, fieldName);
                 }
             }
         }
@@ -882,7 +883,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 itemsMapping.setXPath(ITEM_MAPPING_NAME);
                 XMLField xField = (XMLField)itemsMapping.getField();
                 xField.setRequired(true);
-                itemsMapping.useCollectionClassName("java.util.ArrayList");
+                itemsMapping.useCollectionClass(ArrayList.class);
                 itemsMapping.setReferenceClassName((catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase());
                 xdesc.addMapping(itemsMapping);
             } else {
@@ -892,7 +893,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     itemsMapping.setXPath(ITEM_MAPPING_NAME);
                     XMLField xField = (XMLField)itemsMapping.getField();
                     xField.setRequired(true);
-                    itemsMapping.useCollectionClassName("java.util.ArrayList");
+                    itemsMapping.useCollectionClass(ArrayList.class);
                     // TODO - verify reference class;  should it be 'nestedType.getTypeName().toLowerCase'?
                     itemsMapping.setReferenceClassName(tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                     xdesc.addMapping(itemsMapping);
@@ -905,7 +906,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     itemsMapping.setXPath(ITEM_MAPPING_NAME + "/text()");
                     XMLField xField = (XMLField)itemsMapping.getField();
                     xField.setRequired(true);
-                    itemsMapping.useCollectionClassName("java.util.ArrayList");
+                    itemsMapping.useCollectionClass(ArrayList.class);
                     AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
                     nullPolicy.setNullRepresentedByEmptyNode(false);
                     nullPolicy.setMarshalNullRepresentation(XSI_NIL);
@@ -941,12 +942,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
                 itemsMapping.setStructureName(targetTypeName);
                 itemsMapping.setReferenceClassName((catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase());
+                itemsMapping.useCollectionClass(ArrayList.class);
                 ordt.addMapping(itemsMapping);
             } else {
                 ArrayMapping itemsMapping = new ArrayMapping();
                 itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
-                itemsMapping.useCollectionClass(ArrayList.class);
                 itemsMapping.setStructureName(targetTypeName);
                 ordt.addMapping(itemsMapping);
             }
@@ -961,8 +962,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         QName xmlType = buildCustomQName(arrayName, dbwsBuilder);
         String targetNamespace = xmlType.getNamespaceURI();
         String userType = nct.generateSchemaAlias(arrayAlias);
-
-        XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(arrayAlias);
+        DatabaseType nestedDbType = ((VArrayType)dbType).getEnclosedType();
+        String referenceType = nestedDbType.getTypeName().toLowerCase();
+        XMLDescriptor xdesc = (XMLDescriptor)oxProject.getDescriptorForAlias(arrayAlias);
         if (xdesc == null) {
             xdesc = new XMLDescriptor();
             xdesc.setAlias(arrayAlias);
@@ -976,24 +978,30 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             nr.setDefaultNamespaceURI(targetNamespace);
             xdesc.setNamespaceResolver(nr);
             xdesc.setDefaultRootElement(userType);
+            // before we add this descriptor, check if the nested type's descriptor
+            // should be built and added first
+            XMLDescriptor refXdesc = (XMLDescriptor)oxProject.getDescriptorForAlias(referenceType);
+            if (refXdesc == null) {
+                if (nestedDbType instanceof ObjectType) {
+                    addToOXProjectForObjectTypeArg(nestedDbType, oxProject, referenceType, referenceType);
+                }
+            }
             oxProject.addDescriptor(xdesc);
         }
-
         boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
-            DatabaseType nestedType = ((VArrayType) dbType).getEnclosedType();
-            if (nestedType.isComposite()) {
+            if (nestedDbType.isComposite()) {
                 XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
                 itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 itemsMapping.setXPath(ITEM_MAPPING_NAME);
                 ((XMLField)itemsMapping.getField()).setRequired(true);
                 itemsMapping.useCollectionClass(ArrayList.class);
-                itemsMapping.setReferenceClassName(nestedType.getTypeName().toLowerCase());
+                itemsMapping.setReferenceClassName(referenceType);
                 xdesc.addMapping(itemsMapping);
             }
             else {
                 XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
-                itemsMapping.setAttributeElementClass(getAttributeClassForDatabaseType(nestedType));
+                itemsMapping.setAttributeElementClass(getAttributeClassForDatabaseType(nestedDbType));
                 itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 itemsMapping.setUsesSingleNode(true);
                 itemsMapping.setXPath(ITEM_MAPPING_NAME + "/text()");
@@ -1015,6 +1023,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * created descriptor will be added to the given OX project.
      */
     protected void addToORProjectForVArrayArg(DatabaseType dbType, Project orProject, String arrayName, String arrayAlias) {
+        DatabaseType nestedDbType = ((VArrayType)dbType).getEnclosedType();
+        String referenceType = nestedDbType.getTypeName().toLowerCase();
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(arrayAlias);
         if (ordt == null) {
             ordt = new ObjectRelationalDataTypeDescriptor();
@@ -1022,9 +1032,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             ordt.setAlias(arrayAlias);
             ordt.setJavaClassName(arrayAlias + COLLECTION_WRAPPER_SUFFIX);
             ordt.getQueryManager();
+            // before we add this descriptor, check if the nested type's descriptor
+            // should be built and added first
+            ClassDescriptor refdesc = orProject.getDescriptorForAlias(referenceType);
+            if (refdesc == null) {
+                if (nestedDbType instanceof ObjectType) {
+                    addToORProjectForObjectTypeArg(nestedDbType, orProject, referenceType);
+                }
+            }
             orProject.addDescriptor(ordt);
         }
-
         boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((VArrayType) dbType).getEnclosedType();
@@ -1033,9 +1050,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
                 itemsMapping.setStructureName(arrayName);
-                itemsMapping.setReferenceClassName((nestedType.getTypeName()).toLowerCase());
+                itemsMapping.setReferenceClassName(referenceType);
+                itemsMapping.useCollectionClass(ArrayList.class);
                 ordt.addMapping(itemsMapping);
-            } else {
+            }
+            else {
                 ArrayMapping itemsMapping = new ArrayMapping();
                 itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
@@ -1120,14 +1139,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 Object o = i.next();
                 if (o instanceof DatabaseField) {
                     DatabaseField field = (DatabaseField)o;
-                    if (field.getName().equals(lFieldName)) {
+                    if (field.getName().equalsIgnoreCase(fieldName)) {
                         found = true;
                         break;
                     }
                 }
             }
             if (!found) {
-                ordt.addFieldOrdering(lFieldName);
+                ordt.addFieldOrdering(fieldName);
             }
 
             if (ordt.getMappingForAttributeName(lFieldName) == null) {
@@ -1143,7 +1162,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             addToORProjectForObjectTypeArg(fType.getDataType(), orProject, alias);
                         }
                         StructureMapping structMapping = new StructureMapping();
-                        structMapping.setFieldName(lFieldName);
+                        structMapping.setFieldName(fieldName);
                         structMapping.setAttributeName(lFieldName);
                         structMapping.setReferenceClassName(ordt2.getJavaClassName());
                         ordt.addMapping(structMapping);
@@ -1152,7 +1171,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 } else {
                     // direct mapping
                     DirectToFieldMapping dfm = new DirectToFieldMapping();
-                    dfm.setFieldName(lFieldName);
+                    dfm.setFieldName(fieldName);
                     dfm.setAttributeName(lFieldName);
                     ordt.addMapping(dfm);
                 }
@@ -1191,10 +1210,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             // assumes ObjectTableType has an enclosed ObjectType type
             ObjectType nestedType = (ObjectType)((ObjectTableType) dbType).getEnclosedType();
             String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
-
             addToOXProjectForObjectTypeArg(nestedType, oxProject, nestedType.getTypeName(), nestedTypeAlias);
             XMLDescriptor nestedTypeDesc = (XMLDescriptor) oxProject.getDescriptorForAlias(nestedTypeAlias);
-
             // ObjectType is composite
             XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
             itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
@@ -1216,16 +1233,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             ordt = buildNewObjectRelationalDataTypeDescriptor(objectTableAlias, objectTableAlias + COLLECTION_WRAPPER_SUFFIX);
             orProject.addDescriptor(ordt);
         }
-
         boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             // assumes ObjectTableType has an enclosed ObjectType type
             ObjectType nestedType = (ObjectType)((ObjectTableType) dbType).getEnclosedType();
             String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
-
             addToORProjectForObjectTypeArg(nestedType, orProject, nestedTypeAlias);
             ObjectRelationalDataTypeDescriptor nestedTypeDesc = (ObjectRelationalDataTypeDescriptor) orProject.getDescriptorForAlias(nestedTypeAlias);
-
             // ObjectType is composite
             ObjectArrayMapping itemsMapping = new ObjectArrayMapping();
             itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
@@ -1347,8 +1361,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             if (returnArg.isComposite()) {
                 DatabaseType dataType = returnArg.getDataType();
                 if (dataType instanceof VArrayType || dataType instanceof ObjectTableType) {
-                    call = new StoredFunctionCall(Types.ARRAY, returnArg.getTypeName(), javaTypeName, buildFieldForNestedType(dataType));
-                } else {
+                    call = new StoredFunctionCall(Types.ARRAY, returnArg.getTypeName(), javaTypeName,
+                        buildFieldForNestedType(dataType));
+                }
+                else {
                     // assumes ObjectType
                     call = new StoredFunctionCall(Types.STRUCT, returnArg.getTypeName(), javaTypeName);
                 }
@@ -1362,7 +1378,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         String cat = procType.getCatalogName();
         String catalogPrefix = (cat == null || cat.length() == 0) ? "" : cat + ".";
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
-
         String returnType = opModel.getReturnType();
         boolean hasResponse = returnType != null;
         DatabaseQuery dq = null;
@@ -1374,7 +1389,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         dq.bindAllParameters();
         dq.setName(queryName);
         dq.setCall(call);
-
         for (ArgumentType arg : procType.getArguments()) {
             DatabaseType argType = arg.getDataType();
             ArgumentTypeDirection direction = arg.getDirection();
@@ -1383,21 +1397,27 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             if (desc != null) {
                 javaTypeName = desc.getJavaClassName();
             }
-
             if (direction == ArgumentTypeDirection.IN) {
                 // TODO - set argument class as well as name
                 if (argType instanceof VArrayType) {
                     dq.addArgument(arg.getArgumentName());
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(), Types.ARRAY, argType.getTypeName(), javaTypeName);
-                } else if (argType instanceof ObjectType) {
+                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+                        Types.ARRAY, argType.getTypeName(), javaTypeName);
+                }
+                else if (argType instanceof ObjectType) {
                     dq.addArgument(arg.getArgumentName());
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName(), javaTypeName);
-                } else if (argType instanceof ObjectTableType) {
+                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+                        Types.STRUCT, argType.getTypeName(), javaTypeName);
+                }
+                else if (argType instanceof ObjectTableType) {
                     dq.addArgument(arg.getArgumentName(), java.sql.Array.class);
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(), Types.ARRAY, argType.getTypeName(), buildFieldForNestedType(argType));
-                } else {
+                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+                        Types.ARRAY, argType.getTypeName(), buildFieldForNestedType(argType));
+                }
+                else {
                     dq.addArgument(arg.getArgumentName());
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(), Util.getJDBCTypeFromTypeName(argType.getTypeName()));
+                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+                        Util.getJDBCTypeFromTypeName(argType.getTypeName()));
                 }
             }
             else if (direction == ArgumentTypeDirection.OUT) {
@@ -1405,27 +1425,17 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     if (argType instanceof VArrayType || argType instanceof ObjectTableType) {
                         // the following call will try and load the collection wrapper class via XRDynamicClassLoader
                         try {
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.ARRAY, argType.getTypeName(), new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName), buildFieldForNestedType(argType));
-                        } catch (ClassNotFoundException e) {
-                            // TODO - will we ever get here?
-                            // at this point we can try updating the field's type name manually
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.ARRAY, argType.getTypeName(), (Class)null, buildFieldForNestedType(argType));
-                            for (Object param : call.getParameters()) {
-                                DatabaseField dbf = (DatabaseField) param;
-                                if (dbf.getName().equals(arg.getArgumentName())) {
-                                    dbf.setTypeName(javaTypeName);
-                                }
-                            }
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                                Types.ARRAY, argType.getTypeName(),
+                                new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName),
+                                buildFieldForNestedType(argType));
                         }
-                    } else {
-                        // assumes ObjectType
-                        try {
-                            // the following call will try and load the object type class via XRDynamicClassLoader
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName(), new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName));
-                        } catch (ClassNotFoundException e) {
+                        catch (ClassNotFoundException e) {
                             // TODO - will we ever get here?
                             // at this point we can try updating the field's type name manually
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName(), (Class)null);
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                                Types.ARRAY, argType.getTypeName(),
+                                (Class)null, buildFieldForNestedType(argType));
                             for (Object param : call.getParameters()) {
                                 DatabaseField dbf = (DatabaseField) param;
                                 if (dbf.getName().equals(arg.getArgumentName())) {
@@ -1434,8 +1444,31 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             }
                         }
                     }
-                } else {
-                    call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Util.getJDBCTypeFromTypeName(argType.getTypeName()));
+                    else {
+                        // assumes ObjectType
+                        try {
+                            // the following call will try and load the object type class via XRDynamicClassLoader
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                                Types.STRUCT, argType.getTypeName(),
+                                new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName));
+                        }
+                        catch (ClassNotFoundException e) {
+                            // TODO - will we ever get here?
+                            // at this point we can try updating the field's type name manually
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                                Types.STRUCT, argType.getTypeName(), (Class)null);
+                            for (Object param : call.getParameters()) {
+                                DatabaseField dbf = (DatabaseField) param;
+                                if (dbf.getName().equals(arg.getArgumentName())) {
+                                    dbf.setTypeName(javaTypeName);
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                        Util.getJDBCTypeFromTypeName(argType.getTypeName()));
                 }
             }
             else if (direction == ArgumentTypeDirection.INOUT) {
@@ -1455,11 +1488,18 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField("");
         DatabaseType nestedType;
         if (owningType instanceof VArrayType) {
-            nestedType = ((VArrayType) owningType).getEnclosedType();
-        nestedField.setSqlTypeName(Util.getJDBCTypeNameFromType(Types.ARRAY));
-        nestedField.setSqlType(Types.ARRAY);
-        } else {
-            nestedType = ((ObjectTableType) owningType).getEnclosedType();
+            nestedType = ((VArrayType)owningType).getEnclosedType();
+            if (nestedType.isComposite()) {
+                nestedField.setSqlTypeName(nestedType.getTypeName());
+                nestedField.setSqlType(Types.STRUCT);
+            }
+            else {
+                nestedField.setSqlTypeName(Util.getJDBCTypeNameFromType(Types.ARRAY));
+                nestedField.setSqlType(Types.ARRAY);
+            }
+        }
+        else {
+            nestedType = ((ObjectTableType)owningType).getEnclosedType();
             nestedField.setSqlTypeName(Util.getJDBCTypeNameFromType(Types.STRUCT));
             nestedField.setSqlType(Types.STRUCT);
         }
