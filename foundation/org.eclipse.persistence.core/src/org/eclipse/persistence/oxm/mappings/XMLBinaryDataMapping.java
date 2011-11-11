@@ -423,4 +423,10 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
     public boolean isAbstractDirectMapping() {
         return false;
     }
+
+    @Override
+    public boolean isAbstractAttributeDirectMapping() {
+        return false;
+    }
+
 }

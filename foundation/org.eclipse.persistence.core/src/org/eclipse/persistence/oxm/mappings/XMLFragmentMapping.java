@@ -100,4 +100,10 @@ public class XMLFragmentMapping extends XMLDirectMapping {
     public boolean isAbstractDirectMapping() {
         return false;
     }
+
+    @Override
+    public boolean isAbstractAttributeDirectMapping() {
+        return false;
+    }
+
 }
