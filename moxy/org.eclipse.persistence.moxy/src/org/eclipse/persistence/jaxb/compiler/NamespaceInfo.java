@@ -79,10 +79,8 @@ public class NamespaceInfo {
     public NamespaceResolver getNamespaceResolverForDescriptor() {
         if(this.namespaceResolverForDescriptor == null) {
             this.namespaceResolverForDescriptor = new NamespaceResolver();
-            if(this.namespaceResolver.hasPrefixesToNamespaces()) {
-                for(String next:this.namespaceResolver.getPrefixesToNamespaces().keySet()) {
-                    this.namespaceResolverForDescriptor.put(next, this.namespaceResolver.resolveNamespacePrefix(next));
-                }
+            for(String next:this.namespaceResolver.getPrefixesToNamespaces().keySet()) {
+                this.namespaceResolverForDescriptor.put(next, this.namespaceResolver.resolveNamespacePrefix(next));
             }
         }
         return this.namespaceResolverForDescriptor;
