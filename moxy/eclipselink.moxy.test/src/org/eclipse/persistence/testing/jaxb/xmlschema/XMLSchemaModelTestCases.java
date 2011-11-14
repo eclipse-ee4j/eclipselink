@@ -21,7 +21,7 @@ public class XMLSchemaModelTestCases extends JAXBTestCases{
 
 	public XMLSchemaModelTestCases(String name) throws Exception {
 		super(name);
-		setClasses(new Class[]{Schema.class});
+		setClasses(new Class[]{ObjectFactory.class});
 		setControlDocument(XML_RESOURCE); 
 	}
 

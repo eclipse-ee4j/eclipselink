@@ -763,6 +763,14 @@ public class AnnotationsProcessor {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
                 }
+                
+                
+                // handle XmlElementRef(s) - validate and build the required
+                // ElementDeclaration object               
+                 if (property.isReference()) {
+                    processReferenceProperty(property, tInfo, jClass);
+                }
+                 
                 if (property.isSwaAttachmentRef() && !this.hasSwaRef) {
                     this.hasSwaRef = true;
                 }
@@ -874,13 +882,6 @@ public class AnnotationsProcessor {
             	if (property.isTransient()) {
                     continue;
                 }
-                
-                // handle XmlElementRef(s) - validate and build the required
-                // ElementDeclaration object               
-                 if (property.isReference()) {
-                    processReferenceProperty(property, info, next);
-                }
-                 
                 JavaClass type = property.getActualType();
                 
                 if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
@@ -897,7 +898,10 @@ public class AnnotationsProcessor {
                     buildNewTypeInfo(jClassArray);
                     
                 }               
-            	
+
+                if(property.isReference()) {
+                	processReferencePropertyTypes(property, info, next);
+                }
                 if (property.isChoice()) {
                 	
                     processChoiceProperty(property, info, next, type);
@@ -2093,31 +2097,18 @@ public class AnnotationsProcessor {
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
+            
             if (isCollectionType(property)) {
                 if (type.hasActualTypeArguments()) {
                     type = property.getGenericType();
                     typeName = type.getQualifiedName();
                 }
             }
-            
-            if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName) && type.getActualTypeArguments().size() >0){
-            	JavaClass theType = (JavaClass) type.getActualTypeArguments().iterator().next();
-            	processPropertyTypes(theType);
-            }
 
-            // for DEFAULT, if from XML the type will be
-            // "XmlElementRef.DEFAULT",
-            // and from annotations the value will be "XmlElementref$DEFAULT"
             if (!(nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
                 typeName = nextRef.getType();
                 type = helper.getJavaClass(typeName);
             }
-            TypeInfo refTypeInfo = typeInfo.get(type.getQualifiedName());
-            if (refTypeInfo==null && shouldGenerateTypeInfo(type)) {
-                JavaClass[] jClassArray = new JavaClass[] { type };
-                buildNewTypeInfo(jClassArray);
-            }
-            
             
             boolean missingReference = true;
             for (Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
@@ -2157,6 +2148,41 @@ public class AnnotationsProcessor {
             }
         }
         return property;
+    }
+    
+    private void processReferencePropertyTypes(Property property, TypeInfo info, JavaClass theClass) {
+        for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
+            JavaClass type = property.getType();
+            String typeName = type.getQualifiedName();
+            if (isCollectionType(property)) {
+                if (type.hasActualTypeArguments()) {
+                    type = property.getGenericType();
+                    typeName = type.getQualifiedName();
+                }
+            }
+            
+            if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName) && type.getActualTypeArguments().size() >0){
+            	JavaClass theType = (JavaClass) type.getActualTypeArguments().iterator().next();
+                TypeInfo refTypeInfo = typeInfo.get(theType.getQualifiedName());
+                if (refTypeInfo==null && shouldGenerateTypeInfo(theType)) {
+                    JavaClass[] jClassArray = new JavaClass[] { theType };
+                    buildNewTypeInfo(jClassArray);            
+                }
+            }
+
+            // for DEFAULT, if from XML the type will be
+            // "XmlElementRef.DEFAULT",
+            // and from annotations the value will be "XmlElementref$DEFAULT"
+            if (!(nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
+                typeName = nextRef.getType();
+                type = helper.getJavaClass(typeName);
+            }
+            TypeInfo refTypeInfo = typeInfo.get(type.getQualifiedName());
+            if (refTypeInfo==null && shouldGenerateTypeInfo(type)) {
+                JavaClass[] jClassArray = new JavaClass[] { type };
+                buildNewTypeInfo(jClassArray);
+            }
+        }
     }
 
     private void processPropertyAnnotations(TypeInfo info, JavaClass cls, JavaHasAnnotations javaHasAnnotations, Property property) {
@@ -3230,6 +3256,7 @@ public class AnnotationsProcessor {
                         }
                     }
 
+                    
                     if(XMLConstants.EMPTY_STRING.equals(url)) {
                         isDefaultNamespaceAllowed = false;
                     }
