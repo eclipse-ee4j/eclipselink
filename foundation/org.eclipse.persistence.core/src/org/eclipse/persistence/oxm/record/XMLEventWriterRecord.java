@@ -297,12 +297,14 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 }
                 namespaceDeclarations.add(namespace);
             }
-            for(Map.Entry<String, String> entry:this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                XMLEvent namespace = xmlEventFactory.createNamespace(entry.getKey(), entry.getValue());
-                if(null == namespaceDeclarations) {
-                    namespaceDeclarations = new ArrayList();
+            if(this.namespaceResolver.hasPrefixesToNamespaces()) {
+                for(Map.Entry<String, String> entry:this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                    XMLEvent namespace = xmlEventFactory.createNamespace(entry.getKey(), entry.getValue());
+                    if(null == namespaceDeclarations) {
+                        namespaceDeclarations = new ArrayList();
+                    }
+                    namespaceDeclarations.add(namespace);
                 }
-                namespaceDeclarations.add(namespace);
             }
             namespaceResolver = null;
         }

@@ -1099,14 +1099,16 @@ public class XMLMarshaller implements Cloneable {
         }
         copyNamespaces(xmlDescriptor.getNamespaceResolver(), record.getNamespaceResolver());
     }
-    
+
     private void copyNamespaces(NamespaceResolver source, NamespaceResolver target) {
-        if (null != source && null != target) {            
-            target.getPrefixesToNamespaces().putAll(source.getPrefixesToNamespaces());            
+        if (null != source && null != target) {
+            if(source.hasPrefixesToNamespaces()) {
+                target.getPrefixesToNamespaces().putAll(source.getPrefixesToNamespaces());
+            }
             target.setDefaultNamespaceURI(source.getDefaultNamespaceURI());
         }
     }
-    
+
     /**
     * PUBLIC:
     * Convert the given object to descendants of the parent element

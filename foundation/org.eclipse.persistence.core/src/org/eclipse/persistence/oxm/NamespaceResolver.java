@@ -68,11 +68,17 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     public NamespaceResolver() {
         super();
-        prefixesToNamespaces = new HashMap<String, String>();
     }
 
     public Map<String, String> getPrefixesToNamespaces() {
+        if(null == prefixesToNamespaces) {
+            prefixesToNamespaces = new HashMap<String, String>();
+        }
         return prefixesToNamespaces;
+    }
+
+    public boolean hasPrefixesToNamespaces() {
+         return null != prefixesToNamespaces;
     }
 
     public void setDOM(Node dom) {
@@ -89,7 +95,10 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         if (null == prefix || prefix.length() == 0) {
             return defaultNamespaceURI;
         }
-        String uri = prefixesToNamespaces.get(prefix);
+        String uri = null;
+        if(null != prefixesToNamespaces) {
+            uri = prefixesToNamespaces.get(prefix);
+        }
         if(null != uri) {
             return uri;
         } else if (XMLConstants.XML_NAMESPACE_PREFIX.equals(prefix)) {
@@ -109,9 +118,11 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         if(null == uri) {
             return null;
         }
-        for(Entry<String, String> entry : prefixesToNamespaces.entrySet()) {
-            if(uri.equals(entry.getValue())) {
-                return entry.getKey();
+        if(null != prefixesToNamespaces) {
+            for(Entry<String, String> entry : prefixesToNamespaces.entrySet()) {
+                if(uri.equals(entry.getValue())) {
+                    return entry.getKey();
+                }
             }
         }
         if (uri.equalsIgnoreCase(XMLConstants.XMLNS_URL)) {
@@ -160,7 +171,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         if(null == prefix || 0 == prefix.length()) {
             defaultNamespaceURI = namespaceURI;
         } else {
-            prefixesToNamespaces.put(prefix, namespaceURI.intern());
+            getPrefixesToNamespaces().put(prefix, namespaceURI.intern());
         }
     }
 
@@ -170,7 +181,11 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @return An Enumeration containing the prefixes in the NamespaceResolver
      */
     public Enumeration getPrefixes() {
-        return new IteratorEnumeration(prefixesToNamespaces.keySet().iterator());
+        if(hasPrefixesToNamespaces()) {
+            return new IteratorEnumeration(getPrefixesToNamespaces().keySet().iterator());
+        } else {
+            return new IteratorEnumeration(null);
+        }
     }
 
     /**
@@ -180,6 +195,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @return  A Vector containing the namespace URIs in the namespace resolver
      */
     public Vector getNamespaces() {
+        if(!hasPrefixesToNamespaces()) {
+            return new Vector(0);
+        }
         Vector names = new Vector(prefixesToNamespaces.size());
         for(Entry<String, String> entry: prefixesToNamespaces.entrySet()) {
             Namespace namespace = new Namespace(entry.getKey(), entry.getValue());
@@ -221,7 +239,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     public void removeNamespace(String prefix) {
-        prefixesToNamespaces.remove(prefix);
+        if(null != prefixesToNamespaces) {
+            prefixesToNamespaces.remove(prefix);
+        }
     }
 
     public void setDefaultNamespaceURI(String namespaceUri) {    	        
@@ -245,6 +265,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         }
 
         public boolean hasMoreElements() {
+            if(null == iterator) {
+                return false;
+            }
             return iterator.hasNext();
         }
 
