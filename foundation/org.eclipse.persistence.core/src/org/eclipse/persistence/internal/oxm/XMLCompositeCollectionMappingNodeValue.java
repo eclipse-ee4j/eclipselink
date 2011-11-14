@@ -253,7 +253,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
 
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
-        if(descriptor == null || descriptor.hasInheritance()){
+        if(descriptor == null || (descriptor.hasInheritance() && !(descriptor.getJavaClass() == value.getClass()))){
         	descriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
         }
         
