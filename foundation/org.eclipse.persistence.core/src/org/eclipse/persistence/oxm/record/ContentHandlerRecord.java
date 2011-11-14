@@ -150,9 +150,11 @@ public class ContentHandlerRecord extends MarshalRecord {
             attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
         }
 
-        for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-            String namespacePrefix = entry.getKey();
-            attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
+        if(namespaceResolver.hasPrefixesToNamespaces()) {
+            for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                String namespacePrefix = entry.getKey();
+                attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
+            }
         }
     }
 

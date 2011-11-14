@@ -524,12 +524,14 @@ public class XMLDescriptor extends ClassDescriptor {
                     if(null == namespaceResolver) {
                         namespaceResolver = getNonNullNamespaceResolver();
                     }
-                    for(Entry<String, String> entry : parentNamespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                        String namespaceURI = namespaceResolver.resolveNamespacePrefix(entry.getKey());
-                        if(null == namespaceURI) {
-                            namespaceResolver.put(entry.getKey(), entry.getValue());
-                        } else if(!namespaceURI.equals(entry.getValue())) {
-                            throw XMLMarshalException.subclassAttemptedToOverrideNamespaceDeclaration(entry.getKey(), getJavaClassName(), namespaceURI, parentDescriptor.getJavaClassName(), entry.getValue());
+                    if(parentNamespaceResolver.hasPrefixesToNamespaces()) {
+                        for(Entry<String, String> entry : parentNamespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                            String namespaceURI = namespaceResolver.resolveNamespacePrefix(entry.getKey());
+                            if(null == namespaceURI) {
+                                namespaceResolver.put(entry.getKey(), entry.getValue());
+                            } else if(!namespaceURI.equals(entry.getValue())) {
+                                throw XMLMarshalException.subclassAttemptedToOverrideNamespaceDeclaration(entry.getKey(), getJavaClassName(), namespaceURI, parentDescriptor.getJavaClassName(), entry.getValue());
+                            }
                         }
                     }
                 }

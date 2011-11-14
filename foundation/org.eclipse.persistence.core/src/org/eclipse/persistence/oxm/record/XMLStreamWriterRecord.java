@@ -217,8 +217,10 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                 if(defaultNamespace != null) {
                     xmlStreamWriter.writeNamespace(XMLConstants.EMPTY_STRING, defaultNamespace);
                 }
-                for(Map.Entry<String, String> entry:this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                    xmlStreamWriter.writeNamespace(entry.getKey(), entry.getValue());
+                if(namespaceResolver.hasPrefixesToNamespaces()) {
+                    for(Map.Entry<String, String> entry:this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {
+                        xmlStreamWriter.writeNamespace(entry.getKey(), entry.getValue());
+                    }
                 }
                 namespaceResolver = null;
             }

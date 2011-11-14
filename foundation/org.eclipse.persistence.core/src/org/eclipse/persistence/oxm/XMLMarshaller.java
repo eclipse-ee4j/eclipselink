@@ -1147,7 +1147,9 @@ public class XMLMarshaller implements Cloneable {
     
     private void copyNamespaces(NamespaceResolver source, NamespaceResolver target) {
         if (null != source && null != target) {            
-            target.getPrefixesToNamespaces().putAll(source.getPrefixesToNamespaces());            
+            if(source.hasPrefixesToNamespaces()) {
+                target.getPrefixesToNamespaces().putAll(source.getPrefixesToNamespaces());
+            }
             target.setDefaultNamespaceURI(source.getDefaultNamespaceURI());
         }
     }

@@ -543,27 +543,30 @@ public class XMLObjectBuilder extends ObjectBuilder {
             return null;
         }
 
-
-        Map<String, String> prefixesToNamespaces = desc.getNonNullNamespaceResolver().getPrefixesToNamespaces();
+        NamespaceResolver descriptorNamespaceResolver = desc.getNamespaceResolver();
+        if(null == descriptorNamespaceResolver || !descriptorNamespaceResolver.hasPrefixesToNamespaces()) {
+            return null;
+        }
+        Map<String, String> prefixesToNamespaces = descriptorNamespaceResolver.getPrefixesToNamespaces();
         if(prefixesToNamespaces.size() == 0) {
             return null;
         }
         List returnList = new ArrayList();
-
+        NamespaceResolver marshalRecordNamespaceResolver = marshalRecord.getNamespaceResolver();
         for(Entry<String, String> entry: prefixesToNamespaces.entrySet()) {
 
             //if isn't already on a parentadd namespace to this element
-            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(entry.getValue());
+            String prefix = marshalRecordNamespaceResolver.resolveNamespaceURI(entry.getValue());
 
             if (prefix == null || prefix.length() == 0) {
                 //if there is no prefix already declared for this uri in the nr add this one                //
-                marshalRecord.getNamespaceResolver().put(entry.getKey(), entry.getValue());
+                marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
                 returnList.add(new Namespace(entry.getKey(), entry.getValue()));
             } else {
                 //if prefix is the same do nothing
                 if (!prefix.equals(entry.getKey())) {
                     //if prefix exists for uri but is different then add this
-                    marshalRecord.getNamespaceResolver().put(entry.getKey(), entry.getValue());
+                    marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
                     returnList.add(new Namespace(entry.getKey(), entry.getValue()));
                 }
             }
