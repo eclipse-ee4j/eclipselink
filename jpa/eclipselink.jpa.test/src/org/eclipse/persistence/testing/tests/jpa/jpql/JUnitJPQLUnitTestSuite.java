@@ -96,7 +96,10 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testObjectNullComparisonWithoutForeignKey"));
-    suite.addTest(new JUnitJPQLUnitTestSuite("testResetFirstResultOnQuery"));
+    if (!isJPA10()) {
+        // JPA 2.0 Tests
+        suite.addTest(new JUnitJPQLUnitTestSuite("testResetFirstResultOnQuery"));
+    }
     
     return suite;
   }
