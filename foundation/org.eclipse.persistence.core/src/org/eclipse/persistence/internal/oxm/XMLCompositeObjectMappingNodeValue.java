@@ -155,7 +155,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
         }
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
-        if(descriptor == null || descriptor.hasInheritance()){
+        if(descriptor == null || (descriptor.hasInheritance() && !(objectValue.getClass() == descriptor.getJavaClass()))) {
             descriptor = (XMLDescriptor)session.getDescriptor(objectValue.getClass());
         }
 
