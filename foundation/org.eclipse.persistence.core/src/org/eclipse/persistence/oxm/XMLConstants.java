@@ -59,6 +59,7 @@ public class XMLConstants {
     public static final String XOP_PREFIX = "xop";
     public static final Class QNAME_CLASS = QName.class;
     public static final String DEFAULT_XML_ENCODING = "UTF-8";
+    public final static String CONTENT_TYPE = "contentType";
     public static final String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
     public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
     public static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
