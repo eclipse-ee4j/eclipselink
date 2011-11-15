@@ -3,5 +3,6 @@
     <description>Advanced Multitenant Test Model Instance Document</description>
         
     <entity name="Task" class="org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Task" access="FIELD"/>
+    <entity name="SubTask" class="org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubTask" access="FIELD"/>
 
 </entity-mappings>
