@@ -651,7 +651,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
         // set the root element's local name and namespace prefix and look for
         // schema locations etc.
-        if (null == rootElementName  && null == rootElementLocalName) {
+        if (null == rootElementName  && null == rootElementLocalName && parentRecord == null) {
             rootElementLocalName = localName;
             rootElementName = qName;
             rootElementNamespaceUri = namespaceURI;
