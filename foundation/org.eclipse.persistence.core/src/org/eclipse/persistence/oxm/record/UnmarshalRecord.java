@@ -101,6 +101,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private Map<XPathFragment, Integer> indexMap;
     private List<NullCapableValue> nullCapableValues;
     private Map<ContainerValue, Object> containersMap;
+    private Object lastAccessedContainer;
+    private ContainerValue lastAccessedContainerNode;
     private boolean isBufferCDATA;
     private Attributes attributes;
     private QName typeQName;
@@ -157,6 +159,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         if(null != containersMap) {
             containersMap.clear();
         }
+        lastAccessedContainer = null;
+        lastAccessedContainerNode = null;
         isBufferCDATA = false;
         attributes = null;
         typeQName = null;
@@ -281,7 +285,13 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         if (null == containersMap) {
             return null;
         }
-        return containersMap.get(containerValue);
+        if(containerValue == lastAccessedContainerNode && lastAccessedContainer != null) {
+        	return lastAccessedContainer;
+        }
+        Object container = containersMap.get(containerValue);
+        lastAccessedContainer = container;
+        lastAccessedContainerNode = containerValue;
+        return container;
     }
 
     /**
