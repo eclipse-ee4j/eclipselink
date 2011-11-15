@@ -1158,13 +1158,15 @@ public class MappingsGenerator {
         }
         // use a non-dynamic implementation of MimeTypePolicy to wrap the MIME string
         if (property.getMimeType() != null) {
-            mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType()));
+            mapping.setMimeTypePolicy(new FixedMimeTypePolicy(property.getMimeType(), mapping));
         } else {
-        	if(areEquals(property.getType(), javax.xml.transform.Source.class)) {
-                mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/xml"));
-        	} else {
-        		mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
-        	}
+            if(areEquals(property.getType(), javax.xml.transform.Source.class)) {
+                mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/xml", mapping));
+            } else if(areEquals(property.getType(), java.awt.Image.class)) {
+                mapping.setMimeTypePolicy(new FixedMimeTypePolicy("image/png", mapping));
+            } else {
+                mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream", mapping));
+            }
         }
         return mapping;
     }

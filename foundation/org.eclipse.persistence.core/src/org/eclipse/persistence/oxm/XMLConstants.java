@@ -54,6 +54,7 @@ public class XMLConstants {
     public static final String XOP_PREFIX = "xop";
     public static final Class QNAME_CLASS = QName.class;
     public final static String DEFAULT_XML_ENCODING = "UTF-8";
+    public final static String CONTENT_TYPE = "contentType";
     public final static String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
     public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
     
