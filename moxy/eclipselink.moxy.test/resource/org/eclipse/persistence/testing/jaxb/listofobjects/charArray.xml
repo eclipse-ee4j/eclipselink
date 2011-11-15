@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<ns1:root xmlns:ns1="examplenamespace" xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:stringArray">
+<ns0:root xmlns:ns0="examplenamespace" xmlns:ns1="http://jaxb.dev.java.net/array" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:stringArray">
    <item>a</item>
    <item>b</item>
    <item>c</item>
    <item>d</item>
-</ns1:root>
+</ns0:root>

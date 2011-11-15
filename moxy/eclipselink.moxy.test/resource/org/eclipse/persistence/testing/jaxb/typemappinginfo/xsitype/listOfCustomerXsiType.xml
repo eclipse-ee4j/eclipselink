@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<ns0:testListOfCustomer xmlns:ns0="someUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:testListOfCustomer xmlns:ns0="someUri">
    <item>
       <id>2</id>
       <name>aaa</name>

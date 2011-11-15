@@ -261,12 +261,12 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 return -1;
             }
             int index = 0;
-            QName testQName = new QName(uri, localName);
+
             for(Attribute attribute : attributes()) {
-                if(attribute.getQName().equals(testQName)) {
-                    return index;
-                }
-                index++;
+                if(localName.equals(attribute.getLocalName()) && uri.equals(attribute.getUri())){
+            	  return index;
+            	}
+				index++;
             }
             return -1;
         }
@@ -276,7 +276,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         }
 
         public String getLocalName(int index) {
-            return attributes().get(index).getQName().getLocalPart();
+            return attributes().get(index).getLocalName();
         }
 
         public String getQName(int index) {
@@ -296,7 +296,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         }
 
         public String getURI(int index) {
-            return attributes().get(index).getQName().getNamespaceURI();
+            return attributes().get(index).getUri();
         }
 
         public String getValue(int index) {
@@ -327,18 +327,28 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
 
     private static class Attribute {
 
-        private QName qName;
+        private String localName;
+        private String uri;        
         private String name;
         private String value;
 
         public Attribute(String uri, String localName, String name, String value) {
-            this.qName = new QName(uri, localName);
+            this.localName = localName;
+            if(uri == null){
+            	this.uri = XMLConstants.EMPTY_STRING;
+            }else{
+                this.uri = uri;
+            }
             this.name = name;
             this.value = value;
         }
 
-        public QName getQName() {
-            return qName;
+        public String getLocalName() {
+            return localName;
+        }
+        
+        public String getUri() {
+            return uri;
         }
 
         public String getName() {

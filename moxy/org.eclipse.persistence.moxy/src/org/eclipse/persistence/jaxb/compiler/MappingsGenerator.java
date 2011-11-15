@@ -345,12 +345,13 @@ public class MappingsGenerator {
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
         if (info.getClassNamespace() == null || info.getClassNamespace().equals("")) {
             schemaRef.setSchemaContext("/" + info.getSchemaTypeName());
+            schemaRef.setSchemaContextAsQName(new QName(info.getSchemaTypeName()));
         } else {
             String prefix = desc.getNonNullNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
             if (prefix != null && !prefix.equals("")) {
                 schemaRef.setSchemaContext("/" + prefix + ":" + info.getSchemaTypeName());
             } else {
-            	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null);
+            	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null, false);            
             	schemaRef.setSchemaContext("/" + getQualifiedString(generatedPrefix, info.getSchemaTypeName()));
             }
             schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
@@ -1852,9 +1853,9 @@ public class MappingsGenerator {
         	nrUri = namespaceResolver.resolveNamespacePrefix(prefix);
         }
         if(addPrefixToNR){
-        	namespaceResolver.put(prefix, URI);
-        	globalNamespaceResolver.put(prefix, URI);
+        	namespaceResolver.put(prefix, URI);        	
         }
+        globalNamespaceResolver.put(prefix, URI);
         return prefix;
     }
 
@@ -1916,21 +1917,18 @@ public class MappingsGenerator {
                 if (rootTypeInfo.isSetXmlDiscriminatorNode()) {
                     classIndicatorField = new XMLField(rootTypeInfo.getXmlDiscriminatorNode());
                 } else {
-                    String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, rootDescriptor.getNamespaceResolver(),XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                    classIndicatorField = new XMLField(ATT + getQualifiedString(prefix, "type"));
+                    classIndicatorField = new XMLField(ATT + "type");
+                    classIndicatorField.getXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
                 }
             	rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
             }
 
-            String sCtx = null;
+            Object sCtx = null;
             //TypeInfo tInfo = typeInfo.get(jClass.getName());
             if (tInfo.isSetXmlDiscriminatorValue()) {
                 sCtx = tInfo.getXmlDiscriminatorValue();
             } else if(!tInfo.isAnonymousComplexType()){
-                sCtx = sRef.getSchemaContext();
-                if (sCtx.length() > 1 && sCtx.startsWith("/")) {
-                    sCtx = sCtx.substring(1);
-                }
+            	sCtx = sRef.getSchemaContextAsQName();
             }
             if(sCtx != null) {
                 descriptor.getInheritancePolicy().setParentClassName(superClass.getName());
@@ -1943,10 +1941,7 @@ public class MappingsGenerator {
                 } else {
                     XMLSchemaReference rootSRef = rootDescriptor.getSchemaReference();
                     if (rootSRef != null && rootSRef.getSchemaContext() != null) {
-                        String rootSCtx = rootSRef.getSchemaContext();
-                        if (rootSCtx.length() > 1 && rootSCtx.startsWith("/")) {
-                            rootSCtx = rootSCtx.substring(1);
-                        }
+                    	QName rootSCtx = rootSRef.getSchemaContextAsQName();
                         rootDescriptor.getInheritancePolicy().addClassNameIndicator(rootDescriptor.getJavaClassName(), rootSCtx);
                     }
                 }
@@ -2642,7 +2637,14 @@ public class MappingsGenerator {
 
 	  			if(info != null) {
 	  				NamespaceResolver resolver = info.getNamespaceResolverForDescriptor();
-	  				String prefix = resolver.resolveNamespaceURI(namespaceUri);
+	  				
+	  				String prefix = null;
+	  				if(namespaceUri != XMLConstants.EMPTY_STRING){
+	  				    prefix = resolver.resolveNamespaceURI(namespaceUri);
+	  				    if(prefix == null){
+	  					    prefix = getPrefixForNamespace(namespaceUri, resolver, null);	  					
+	  				    }
+	  				}
 	  				desc.setNamespaceResolver(resolver);
 	  				desc.setDefaultRootElement("");
 	  				desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
@@ -2819,10 +2821,6 @@ public class MappingsGenerator {
         boolean xsiRepresentsNull = xmlAbsNullPolicy.isXsiNilRepresentsNull();
         if (xsiRepresentsNull) {
             absNullPolicy.setNullRepresentedByXsiNil(true);
-            // add namespace prefix/uri pair to the resolver
-            if (nsr != null) {
-                nsr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-            }
         }
 
         return absNullPolicy;

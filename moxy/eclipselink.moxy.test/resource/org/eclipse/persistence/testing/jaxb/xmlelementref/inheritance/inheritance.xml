@@ -1,4 +1,4 @@
-<customer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<customer>
     <address>
         <street>test street</street>
     </address>

@@ -1,4 +1,4 @@
-<ns0:childRoot xmlns:ns0="childnamespace"  xmlns:ns1="parentnamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:childRoot xmlns:ns0="childnamespace">
     <parentThing>parentValue</parentThing>
     <childThing>childValue</childThing>
 </ns0:childRoot>

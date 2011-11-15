@@ -88,7 +88,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
         // If we have a namespace resolver, check any of the class-indicator values
         // for prefixed type names and resolve the namespaces.
-        if (!this.shouldUseClassNameAsIndicator() && (namespaceResolver != null)) {
+        if (!this.shouldUseClassNameAsIndicator()){ 
             // Must first clone the map to avoid concurrent modification.
             Iterator<Map.Entry> entries = new HashMap(getClassIndicatorMapping()).entrySet().iterator();
             while (entries.hasNext()) {
@@ -98,7 +98,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                     QName qname;
                     String indicatorValue = (String)key;
                     int index = indicatorValue.indexOf(XMLConstants.COLON);
-                    if (index != -1) {
+                    if (index != -1 && namespaceResolver != null) {
                         //if it's a prefixed string, key it on QName and 
                         //local name, in case the namespace can't be resolved
                         //at runtime. Needs to be revisited.
@@ -152,20 +152,19 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         if (indicator == AbstractRecord.noEntry) {
             return null;
         }
-        Object classFieldValue = session.getDatasourcePlatform().getConversionManager().convertObject(indicator, getClassIndicatorField().getType());
 
-        if (classFieldValue == null) {
+        if (indicator == null) {
             return null;
         }
 
         Class concreteClass;
-        if (classFieldValue instanceof String) {
-            String indicatorValue = (String)classFieldValue;
+        if (indicator instanceof String) {
+            String indicatorValue = (String)indicator;
             int index = indicatorValue.indexOf(XMLConstants.COLON);
             if (index == -1) {
                 String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
                 if(uri == null) {
-                    concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
+                    concreteClass = (Class)this.classIndicatorMapping.get(new QName(((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI() ,indicatorValue));
                 } else {
                     QName qname = new QName(uri, indicatorValue);
                     concreteClass = (Class)this.classIndicatorMapping.get(qname);
@@ -182,10 +181,10 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 }
             }
         } else {
-            concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
+            concreteClass = (Class)this.classIndicatorMapping.get(indicator);
         }
         if (concreteClass == null) {
-            throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
+            throw DescriptorException.missingClassForIndicatorFieldValue(indicator, getDescriptor());
         }
         return concreteClass;
     }

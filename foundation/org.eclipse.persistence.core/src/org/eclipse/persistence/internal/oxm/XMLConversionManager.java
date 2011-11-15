@@ -644,8 +644,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
            String sourceString = (String) sourceObject;
            if(sourceString.length() == 0) {
                return null;
-           } else if(sourceString.charAt(0) == PLUS) {
-               return super.convertObjectToBigDecimal(sourceString.substring(1));
            }
        }
        return super.convertObjectToBigDecimal(sourceObject);

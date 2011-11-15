@@ -1,4 +1,4 @@
-<parking-lot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<parking-lot>
     <vehicles>
         <vehicle>
             <model>Grand Am</model>
