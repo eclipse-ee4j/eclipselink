@@ -22,8 +22,10 @@
  *       - 341940: Add disable/enable allowing native queries
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier 
- *       - 357474: Address primaryKey option from tenant discriminator column  
+ *     11/10/2011-2.4 Guy Pelletier
+ *       - 357474: Address primaryKey option from tenant discriminator column
+ *     11/15/2011-2.3.2 Guy Pelletier
+ *       - 363820: Issue with clone method from VPDMultitenantPolicy
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -64,6 +66,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumb
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubTask;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Task;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
 
@@ -899,21 +902,24 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             em2 = createEntityManager(MULTI_TENANT_VPD_PU);
             em2.setProperty("tenant.id", "gdune@there.ca");
             
-            testInsert(em1, "blah", false);
-            testInsert(em2, "halb", false);
+            testInsertTask(em1, "blah", false);
+            testInsertTask(em2, "halb", false);
                 
             assertTrue("Found more than one result", em1.createQuery("Select t from Task t").getResultList().size() == 1);
             assertTrue("Found more than one result", em2.createQuery("Select t from Task t").getResultList().size() == 1);
                 
-            Task task1 = testInsertWithOneSubtask(em1, "Rock that Propsal", false, "Write Proposal", false);
-                
+            Task task1 = testInsertTaskWithOneSubtask(em1, "Rock that Propsal", false, "Write Proposal", false);
             assertNotNull(em1.find(Task.class, task1.getId()));
             assertNull(em2.find(Task.class, task1.getId())); // negative test
                 
-            Task task3 = testInsert(em2, "mow lawn", true);
-                
+            Task task3 = testInsertTask(em2, "mow lawn", true);
             assertNull(em1.find(Task.class, task3.getId())); // negative test
             assertNotNull(em2.find(Task.class, task3.getId()));
+            
+            SubTask task4 = testInsertSubTaskObject(em1, "SubTask Object Creation", true);
+            assertNotNull(em1.find(SubTask.class, task4.getId()));
+            assertNull(em2.find(SubTask.class, task4.getId())); // negative test
+            
         } catch (RuntimeException e) {
             if (em1 != null && isTransactionActive(em1)){
                 rollbackTransaction(em1);
@@ -968,7 +974,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         }
     }
     
-    private Task testInsert(EntityManager em, String description, boolean isCompleted) {
+    private Task testInsertTask(EntityManager em, String description, boolean isCompleted) {
         beginTransaction(em);
         Task task = new Task();
         task.setDescription(description);
@@ -978,7 +984,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         return task;
     }
 
-    private Task testInsertWithOneSubtask(EntityManager em, String description, boolean isCompleted, String subtaskDesc, boolean isSubtaskCompleted) {
+    private Task testInsertTaskWithOneSubtask(EntityManager em, String description, boolean isCompleted, String subtaskDesc, boolean isSubtaskCompleted) {
         beginTransaction(em);        
         Task task = new Task();
         Task subtask = new Task();
@@ -991,5 +997,15 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         em.persist(task);
         commitTransaction(em);
         return task;
+    }
+    
+    private SubTask testInsertSubTaskObject(EntityManager em, String description, boolean isCompleted) {
+        beginTransaction(em);        
+        SubTask subTask = new SubTask();
+        subTask.setDescription(description);
+        subTask.setCompleted(isCompleted);
+        em.persist(subTask);
+        commitTransaction(em);
+        return subTask;
     }
 }

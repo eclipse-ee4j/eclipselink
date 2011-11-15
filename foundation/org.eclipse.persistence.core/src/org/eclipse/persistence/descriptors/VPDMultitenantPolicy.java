@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     09/09/2011-2.3.1 Guy Pelletier 
- *       - 356197: Add new VPD type to MultitenantType 
+ *       - 356197: Add new VPD type to MultitenantType
+ *     11/15/2011-2.3.2 Guy Pelletier
+ *       - 363820: Issue with clone method from VPDMultitenantPolicy
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -61,7 +63,9 @@ public class VPDMultitenantPolicy extends SingleTableMultitenantPolicy {
      * INTERNAL:
      */
     public MultitenantPolicy clone(ClassDescriptor descriptor) {
-        VPDMultitenantPolicy clonedPolicy = (VPDMultitenantPolicy) super.clone(descriptor);
+        VPDMultitenantPolicy clonedPolicy = new VPDMultitenantPolicy(descriptor);
+        clonedPolicy.includeTenantCriteria = includeTenantCriteria;
+        clonedPolicy.tenantDiscriminatorFields = tenantDiscriminatorFields;
         clonedPolicy.vpdIdentifier = vpdIdentifier;
         clonedPolicy.vpdIdentifierFieldName = vpdIdentifierFieldName;
         return clonedPolicy;
