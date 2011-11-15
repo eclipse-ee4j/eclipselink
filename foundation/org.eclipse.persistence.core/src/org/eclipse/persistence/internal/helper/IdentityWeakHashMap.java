@@ -587,7 +587,17 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         }
 
         protected Object clone(ReferenceQueue refQueue) {
-             return new WeakEntry<K,V>(hash, key.get(), value.get(), ((next == null) ? null : (WeakEntry<K,V>)next.clone(refQueue)), refQueue);
+            WeakEntry current = this;
+            WeakEntry root = new WeakEntry(current.hash, current.key.get(), current.value.get(), null, refQueue);
+            WeakEntry currentClone = root;
+
+            while (current.next != null) {
+               currentClone.next = new WeakEntry(current.next.hash, current.next.key.get(), current.next.value.get(), null, refQueue);
+               current = current.next;
+               currentClone = currentClone.next;
+            }
+
+            return root;
         }
 
         // Map.Entry Ops
