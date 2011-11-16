@@ -1747,7 +1747,7 @@
         <echo>Running test on ${db.url}</echo>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
-             maxmemory="512m"
+             maxmemory=${max.heap.memory}
              failonerror="false"
              dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
