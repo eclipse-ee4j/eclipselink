@@ -210,7 +210,7 @@ public abstract class BaseDBWSBuilderHelper {
     protected abstract List<ProcedureType> loadProcedures(ProcedureOperationModel procedureModel);
 
     protected abstract void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments, Project orProject, Project oxProject, ProcedureOperationModel opModel);
-    protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName);
+    protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel);
 
     protected void addToOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
         Project orProject, Project oxProject, NamingConventionTransformer nct) {
@@ -932,24 +932,24 @@ public abstract class BaseDBWSBuilderHelper {
             if (nameAndModel != null && (nameAndModel.procOpModel.isPLSQLProcedureOperation()
                     || nameAndModel.procOpModel.isAdvancedJDBCProcedureOperation())) {
                 // build list of arguments to process (i.e. build descriptors for)
-                List<ArgumentType> args = new ArrayList<ArgumentType>();
-                // return argument
-                if (procType.isFunction()) {
-                    // assumes that a function MUST have a return type
-                    args.add(((FunctionType) procType).getReturnArgument());
-                }
-                // IN/OUT/INOUT arguments
-                for (ArgumentType argument : procType.getArguments()) {
-                    args.add(argument);
-                }
+                List<ArgumentType> args = getArgumentListForProcedureType(procType);
+                
                 boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
+                boolean hasScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
+                
                 // set 'complex' flag on model to indicate complex arg processing is required
-                nameAndModel.procOpModel.setHasComplexArguments(hasComplexArgs);
-                if (hasComplexArgs || org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args)) {
+                // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
+                //       model necessarily have complex args, but we will need to know to 
+                //       process the ones that do
+                if (!nameAndModel.procOpModel.hasComplexArguments) {
+                	nameAndModel.procOpModel.setHasComplexArguments(hasComplexArgs);
+                }
+                
+                if (hasComplexArgs || hasScalarArgs) {
                     // subclasses are responsible for processing complex arguments
                     addToOROXProjectsForComplexArgs(args, orProject, oxProject, nameAndModel.procOpModel);
                     // build a query for this ProcedureType as it has one or more complex arguments
-                    buildQueryForProcedureType(procType, orProject, oxProject, nameAndModel.procOpModel, nameAndModel.name);
+                    buildQueryForProcedureType(procType, orProject, oxProject, nameAndModel.procOpModel);
                 }
             }
         }
@@ -1306,5 +1306,23 @@ public abstract class BaseDBWSBuilderHelper {
             dbwsBuilder.getSchema().getTopLevelElements().get("simple-xml-format") == null) {
             addSimpleXMLFormat(dbwsBuilder.getSchema());
         }
+    }
+    
+    /**
+     * Return a list of ArgumentTypes for a given Procedure Type.  This will include
+     * a return argument if pType is a FunctionType.
+     */
+    protected List<ArgumentType> getArgumentListForProcedureType(ProcedureType pType) {
+        List<ArgumentType> args = new ArrayList<ArgumentType>();
+        // return argument
+        if (pType.isFunction()) {
+            // assumes that a function MUST have a return type
+            args.add(((FunctionType) pType).getReturnArgument());
+        }
+        // IN/OUT/INOUT arguments
+        for (ArgumentType argument : pType.getArguments()) {
+            args.add(argument);
+        }
+        return args;
     }
 }

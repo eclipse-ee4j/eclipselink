@@ -140,8 +140,8 @@ public class Util {
     static final String PROVIDER_LISTENER = "ProviderListener";
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
+    public static final String PERCENT = "%";
 
-    //TODO - verify this
     /**
      * Return the JDBC type (as int) for a given type name. 
      */
@@ -186,7 +186,8 @@ public class Util {
         else if (typeName.equals("DOUBLE")) {
             jdbcType = Types.DOUBLE;
         }
-        else if (typeName.equals("BINARY")) {
+        else if (typeName.equals("BINARY") ||
+        		 typeName.equals("LONG")) {
             jdbcType = Types.BINARY;
         }
         else if (typeName.equals("BLOB")) {
@@ -216,18 +217,12 @@ public class Util {
         else if (typeName.equals("ARRAY")) {
             jdbcType = Types.ARRAY;
         }
-        else if (typeName.equals("BOOLEAN")) {
+        else if (typeName.equals("BOOLEAN")  || 
+        		 typeName.equals("INTEGER")  ||
+        		 typeName.equals("SMALLINT") ||
+        		 typeName.equals("TINYINT")) {
             jdbcType = Types.INTEGER;
         }
-        // TODO - will need to handle the following and more...
-        /*
-        else if (typeName.equals("BINARY_INTEGER")) {
-            jdbcType = Types.?;
-        }
-        else if (typeName.equals("PLS_INTEGER")) {
-            jdbcType = Types.?;
-        }
-        */
         return jdbcType;
     }
     

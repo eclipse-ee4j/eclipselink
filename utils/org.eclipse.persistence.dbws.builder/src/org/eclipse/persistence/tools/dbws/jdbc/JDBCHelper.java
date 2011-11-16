@@ -815,7 +815,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         // TODO - handle complex arguments
     }
     @Override
-    protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName) {
+    protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
         // TODO - handle queries
     }
 }

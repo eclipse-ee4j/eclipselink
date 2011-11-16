@@ -209,7 +209,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
 
     @Test
     public void findMaxSalForDeptTest() {
-        Invocation invocation = new Invocation("FindMaxSalForDeptTest");
+        Invocation invocation = new Invocation("FindMaxSalForDeptTest_FINDPLSQLMAXSALFORDEPT");
         invocation.setParameter("DEPT", 30);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);

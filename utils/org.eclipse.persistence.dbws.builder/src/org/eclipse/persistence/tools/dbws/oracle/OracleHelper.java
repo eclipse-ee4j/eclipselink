@@ -17,6 +17,7 @@ import java.sql.Array;
 import java.sql.Struct;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     protected DatabaseTypeBuilder dtBuilder = new DatabaseTypeBuilder();
     protected boolean hasComplexProcedureArgs = false;
-
+    
     public OracleHelper(DBWSBuilder dbwsBuilder) {
         super(dbwsBuilder);
     }
@@ -159,16 +160,30 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             //TODO - add to dbStoredProcedure2QueryName map
         }
 
-        // handle PL/SQL
-        if (procedureOperationModel.isPLSQLProcedureOperation() && procedureOperationModel.hasComplexArguments()) {
-            buildPLSQLProcedureOperation(procedureOperationModel, procs);
-            return;
+        // the model may have a mix of procs/funcs that do/do not have complex args
+        List<ProcedureType> procsWithComplexArgs = new ArrayList<ProcedureType>();
+        List<ProcedureType> procsWithSimpleArgs = new ArrayList<ProcedureType>();
+        
+        for (ProcedureType storedProcedure : procs) {
+	        List<ArgumentType> args = getArgumentListForProcedureType(storedProcedure);
+	        boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
+	        // TODO: do we care about PL/SQL scalar args?
+	        //boolean hasScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
+	        
+	        if (hasComplexArgs) {
+	        	procsWithComplexArgs.add(storedProcedure);
+	        } else {
+	        	procsWithSimpleArgs.add(storedProcedure);
+	        }
         }
+                
+        // handle PL/SQL complex args
+        buildPLSQLProcedureOperation(procedureOperationModel, procsWithComplexArgs);
 
         // handle non-PL/SQL
-        for (ProcedureType storedProcedure : procs) {
+        for (ProcedureType storedProcedure : procsWithSimpleArgs) {
             QueryOperation qo = new QueryOperation();
-            qo.setName(getNameForQueryOperation(name, storedProcedure));
+            qo.setName(getNameForQueryOperation(procedureOperationModel, storedProcedure));
 
             String qualifiedProcName = getQualifiedProcedureName(procedureOperationModel, storedProcedure);
             dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + qualifiedProcName);
@@ -351,7 +366,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         String name = procedureOperationModel.getName();
         for (ProcedureType storedProcedure : procs) {
             QueryOperation qo = new QueryOperation();
-            qo.setName(getNameForQueryOperation(name, storedProcedure));
+            qo.setName(getNameForQueryOperation(procedureOperationModel, storedProcedure));
 
             dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + getQualifiedProcedureName(procedureOperationModel, storedProcedure));
 
@@ -362,6 +377,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             Result result = null;
             if (storedProcedure.isFunction()) {
                 result = buildResultForStoredFunction(storedProcedure, returnType);
+            } else if (Util.noOutArguments(storedProcedure)){
+                result = new Result();
+                result.setType(new QName(SCHEMA_URL, "int", "xsd")); // rowcount
             }
             if (procedureOperationModel.getBinaryAttachment()) {
                 Attachment attachment = new Attachment();
@@ -537,31 +555,54 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Returns the name to be used for a QueryOperation based on a given
-     * ProcedureType and ProcedureOperationModel name.
+     * Returns the name to be used for a QueryOperation (or Query) based on a 
+     * given ProcedureType and ProcedureOperationModel.
      *
-     * The returned string will either be the provided 'modelName' if
-     * non-null & non-empty string, or in the format:
-     * 'overload_catalog_schema_procedureName'
+     * The returned string will be:
+     * 
+     * 1) If the given ProcedureOperationModel 'name' is a non-null & non-empty
+     * string, the returned string will be one of the following:
+     *   a) 'modelName' if no pattern matching or overloading
+     *   b) 'modelName_procedureName' if pattern matching and no overloading
+     *   c) 'modelName_overload' if overloading and no pattern matching
+     *   d) 'modelName_procedureName_overload' if pattern matching & overloading
+     * 
+     * OR
+     *  
+     * 2) If the given ProcedureOperationModel 'name' is a null or empty string, the
+     * returned string will be in the format: 'overload_catalog_schema_procedureName'
      */
-    protected String getNameForQueryOperation(String modelName, ProcedureType storedProcedure) {
+    protected String getNameForQueryOperation(ProcedureOperationModel opModel, ProcedureType storedProcedure) {
+    	StringBuilder sb = new StringBuilder();
+    	String modelName = opModel.getName();
+    	
         if (modelName != null && modelName.length() > 0) {
-            return modelName;
+        	sb.append(modelName);
+        	// handle pattern matching
+        	if (opModel.getProcedurePattern().contains(Util.PERCENT)) {
+	        	sb.append('_');
+	        	sb.append(storedProcedure.getProcedureName());
+        	}
+        	// handle overload
+        	if (storedProcedure.getOverload() != 0) {
+            	sb.append('_');
+            	sb.append(storedProcedure.getOverload());
+        	}
+        } else {
+	        if (storedProcedure.getOverload() > 0) {
+	            sb.append(storedProcedure.getOverload());
+	            sb.append('_');
+	        }
+	        if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+	            sb.append(storedProcedure.getCatalogName());
+	            sb.append('_');
+	        }
+	        if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
+	            sb.append(storedProcedure.getSchema());
+	            sb.append('_');
+	        }
+	        sb.append(storedProcedure.getProcedureName());
         }
-        StringBuilder sb = new StringBuilder();
-        if (storedProcedure.getOverload() > 0) {
-            sb.append(storedProcedure.getOverload());
-            sb.append('_');
-        }
-        if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
-            sb.append(storedProcedure.getCatalogName());
-            sb.append('_');
-        }
-        if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
-            sb.append(storedProcedure.getSchema());
-            sb.append('_');
-        }
-        sb.append(storedProcedure.getProcedureName());
         return sb.toString();
     }
 
@@ -619,8 +660,27 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     procedureModel.getSchemaPattern(), procedureModel.getCatalogPattern());
                 if (foundPackages != null) {
                     for (PLSQLPackageType plsqlpkg : foundPackages) {
+                    	// maintain a map of proc names to proctypes to handle overloading
+                    	Map<String, List<ProcedureType>> procNamesToProcs = new HashMap<String, List<ProcedureType>>();
                         for (ProcedureType pType : plsqlpkg.getProcedures()) {
-                            if (Util.sqlMatch(procedureModel.getProcedurePattern(), pType.getProcedureName())) {
+                        	String procName = pType.getProcedureName();
+                            if (Util.sqlMatch(procedureModel.getProcedurePattern(), procName)) {
+                            	// if there's already and entry, we have overloading
+                        		List<ProcedureType> procList;
+                            	if (procNamesToProcs.containsKey(procName)) {
+                            		procList = procNamesToProcs.get(procName);
+                            		ProcedureType lastType = procList.get(procList.size()-1);
+                            		// we want to start overload at 1
+                            		if (procList.size() == 1) {
+                            			lastType.setOverload(1);
+                            		}
+                            		pType.setOverload(lastType.getOverload() + 1);
+                            		procList.add(pType);
+                            	} else {
+                            		procList = new ArrayList<ProcedureType>();
+                            		procList.add(pType);
+                            		procNamesToProcs.put(procName, procList);
+                            	}
                                 allProcsAndFuncs.add(pType);
                             }
                         }
@@ -829,7 +889,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             ObjectArrayMapping objectArrayMapping = new ObjectArrayMapping();
                             objectArrayMapping.setAttributeName(lFieldName);
                             objectArrayMapping.setFieldName(fieldName);
-                            objectArrayMapping.setStructureName(targetTypeName);
+                            objectArrayMapping.setStructureName(getStructureNameForField(fType, catalogPattern));
                             objectArrayMapping.useCollectionClass(ArrayList.class);
                             objectArrayMapping.setReferenceClassName((catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                             ordtDesc.addMapping(objectArrayMapping);
@@ -837,7 +897,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             ArrayMapping arrayMapping = new ArrayMapping();
                             arrayMapping.setAttributeName(lFieldName);
                             arrayMapping.setFieldName(fieldName);
-                            arrayMapping.setStructureName(targetTypeName);
+                            arrayMapping.setStructureName(getStructureNameForField(fType, catalogPattern));
                             arrayMapping.useCollectionClass(ArrayList.class);
                             ordtDesc.addMapping(arrayMapping);
                         }
@@ -884,7 +944,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 XMLField xField = (XMLField)itemsMapping.getField();
                 xField.setRequired(true);
                 itemsMapping.useCollectionClass(ArrayList.class);
-                itemsMapping.setReferenceClassName((catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase());
+                String referenceClassName = (catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
+                itemsMapping.setReferenceClassName(referenceClassName);
+                if (oxProject.getDescriptorForAlias(referenceClassName) == null) {
+                	String refTypeName = catalogPattern + "_" + ((PLSQLRecordType)nestedType).getTypeName();
+                	String alias = refTypeName.toLowerCase();
+                    addToOXProjectForPLSQLRecordArg(nestedType, oxProject, referenceClassName, alias, refTypeName, catalogPattern);
+                }
                 xdesc.addMapping(itemsMapping);
             } else {
                 if (nestedType.isComposite()) {
@@ -894,7 +960,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     XMLField xField = (XMLField)itemsMapping.getField();
                     xField.setRequired(true);
                     itemsMapping.useCollectionClass(ArrayList.class);
-                    // TODO - verify reference class;  should it be 'nestedType.getTypeName().toLowerCase'?
                     itemsMapping.setReferenceClassName(tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                     xdesc.addMapping(itemsMapping);
                 }
@@ -941,7 +1006,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
                 itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
                 itemsMapping.setStructureName(targetTypeName);
-                itemsMapping.setReferenceClassName((catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase());
+                String referenceClassName = (catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
+                itemsMapping.setReferenceClassName(referenceClassName);
+                if (orProject.getDescriptorForAlias(referenceClassName) == null) {
+                	String refTypeName = catalogPattern + "_" + ((PLSQLRecordType)nestedType).getTypeName(); 
+                	String alias = refTypeName.toLowerCase();
+                	addToORProjectForPLSQLRecordArg(nestedType, orProject, referenceClassName, alias, refTypeName, catalogPattern);
+                }
                 itemsMapping.useCollectionClass(ArrayList.class);
                 ordt.addMapping(itemsMapping);
             } else {
@@ -1255,11 +1326,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Build a Query for the given ProcedureType instance and add
      * it to the given OR project's list of queries.
      */
-    protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName) {
+    protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
         if (opModel.isPLSQLProcedureOperation()) {
-            buildQueryForPLSQLProcedureType(procType, orProject, oxProject, opModel, queryName);
+            buildQueryForPLSQLProcedureType(procType, orProject, oxProject, opModel);
         } else {
-            buildQueryForAdvancedJDBCProcedureType(procType, orProject, oxProject, opModel, queryName);
+            buildQueryForAdvancedJDBCProcedureType(procType, orProject, oxProject, opModel);
         }
     }
     /**
@@ -1267,7 +1338,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * it to the given OR project's list of queries.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void buildQueryForPLSQLProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName) {
+    protected void buildQueryForPLSQLProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
         PLSQLStoredProcedureCall call;
         if (procType.isFunction()) {
             org.eclipse.persistence.internal.helper.DatabaseType returnDatabaseType = opModel.getDbStoredFunctionReturnType();
@@ -1311,7 +1382,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             dq = new ValueReadQuery();
         }
         dq.bindAllParameters();
-        dq.setName(queryName);
+        dq.setName(getNameForQueryOperation(opModel, procType));
         dq.setCall(call);
 
         for (ArgumentType arg : procType.getArguments()) {
@@ -1348,7 +1419,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * it to the given OR project's list of queries.
      */
     @SuppressWarnings("rawtypes")
-    protected void buildQueryForAdvancedJDBCProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, String queryName) {
+    protected void buildQueryForAdvancedJDBCProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
         StoredProcedureCall call;
         if (procType.isFunction()) {
             ArgumentType returnArg = ((FunctionType)procType).getReturnArgument();
@@ -1387,7 +1458,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             dq = new ValueReadQuery();
         }
         dq.bindAllParameters();
-        dq.setName(queryName);
+        dq.setName(getNameForQueryOperation(opModel, procType));
         dq.setCall(call);
         for (ArgumentType arg : procType.getArguments()) {
             DatabaseType argType = arg.getDataType();
@@ -1576,5 +1647,18 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         ordt.setJavaClassName(javaClassName);
         ordt.getQueryManager();
         return ordt;
+    }
+    
+    /**
+     * Return the structure name to be set on a mapping based on a given
+     * FieldType and packageName. 
+     */
+    protected String getStructureNameForField(FieldType fType, String packageName) {
+    	DatabaseType type = fType.getDataType();
+    	String structureName = type.getTypeName();
+    	if (packageName != null && packageName.length() > 0 && !packageName.equals("TOPLEVEL")) {
+    		structureName = packageName + "_" + structureName;
+    	}
+    	return structureName;
     }
 }

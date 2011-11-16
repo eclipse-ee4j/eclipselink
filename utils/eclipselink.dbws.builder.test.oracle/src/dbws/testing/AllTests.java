@@ -29,6 +29,8 @@ import dbws.testing.customsql.CustomSQLTestSuite;
 import dbws.testing.iottype.IOTTypeTestSuite;
 import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
 import dbws.testing.objecttype.ObjectTypeTestSuite;
+import dbws.testing.ordescriptor.ORDescriptorTestSuite;
+import dbws.testing.oxdescriptor.OXDescriptorTestSuite;
 import dbws.testing.plsqlcollection.PLSQLCollectionTestSuite;
 import dbws.testing.plsqlrecord.PLSQLRecordTestSuite;
 import dbws.testing.secondarysql.SecondarySQLTestSuite;
@@ -39,6 +41,7 @@ import dbws.testing.simplesp.SimpleSPTestSuite;
 import dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite;
 import dbws.testing.tabletype.TableTypeTestSuite;
 import dbws.testing.toplevelsimpleplsqlsp.TopLevelSimplePLSQLSPTestSuite;
+import dbws.testing.types.TypesTestSuite;
 import dbws.testing.varray.VArrayTestSuite;
 import static dbws.testing.DBWSTestSuite.buildConnection;
 
@@ -49,6 +52,8 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     IOTTypeTestSuite.class,
     ObjectTableTypeTestSuite.class,
     ObjectTypeTestSuite.class,
+    ORDescriptorTestSuite.class,
+    OXDescriptorTestSuite.class,
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
     SecondarySQLTestSuite.class,
@@ -59,6 +64,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     SimpleTableWithNestedSQLTestSuite.class,
     TableTypeTestSuite.class,
     TopLevelSimplePLSQLSPTestSuite.class,
+    TypesTestSuite.class,
     VArrayTestSuite.class
   }
 )
