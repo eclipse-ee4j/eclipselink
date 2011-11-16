@@ -290,8 +290,6 @@ public abstract class MarshalRecord extends XMLRecord {
      * @since EclipseLink 2.4 
      */    
     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){  
-        XMLBinaryDataHelper helper = XMLBinaryDataHelper.getXMLBinaryDataHelper();
-        
         if(mimeType != null) {
             value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                     value, marshaller, mimeType).getData();
