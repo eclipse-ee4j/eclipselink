@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.MultitenantPrimaryKeyMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.exceptions.*;
@@ -405,7 +404,11 @@ public class CMP3Policy extends CMPPolicy {
                     String fieldName = (mapping.hasMapsIdValue()) ? mapping.getMapsIdValue() : mapping.getAttributeName();
                 
                     if (currentKeyClass == null || mapping.isMultitenantPrimaryKeyMapping()) {
-                        // must be a primitive since key class was not set
+                        // Without a currentKeyClass, the primary key is a non compound key but
+                        // we may need to add any multitenant primary key mappings that are
+                        // defined and we need an accessor for them. The same case will hold
+                        // true when we do have a currentKeyClass. Multitenant primary keys
+                        // must still be added.
                         pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
                         if (mapping.isAbstractAttributeDirectMapping()) {
                             setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
