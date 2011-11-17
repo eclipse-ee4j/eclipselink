@@ -228,6 +228,11 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * See ClassDescriptor for their types.
      */
     protected QueryRedirector getDefaultRedirector(){
+        // 364001 - Do not return redirector if objects list is null.
+        if (objects == null) {
+            return null;
+        }
+        
         return descriptor.getDefaultDeleteObjectQueryRedirector();
     }
 
