@@ -21,6 +21,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.tests.jpql.HermesBugsTest;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
@@ -33,7 +34,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	StateObjectTest2_0.class
+	StateObjectTest2_0.class,
+	HermesBugsTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllStateObjectTest2_0 {

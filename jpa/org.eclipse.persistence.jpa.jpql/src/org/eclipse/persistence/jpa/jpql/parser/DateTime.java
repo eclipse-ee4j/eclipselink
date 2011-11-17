@@ -79,7 +79,7 @@ public final class DateTime extends AbstractExpression {
 	 *
 	 * @return The identifier that was actually parsed
 	 */
-	public String getActualNotIdentifier() {
+	public String getActualIdentifier() {
 		return identifier;
 	}
 

@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.eclipse.persistence.jpa.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
@@ -34,11 +32,6 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
  * @author Pascal Filion
  */
 abstract class AbstractRangeDeclaration extends Declaration {
-
-	/**
-	 * The identification variables that are defined in the <b>JOIN</b> expressions.
-	 */
-	List<String> joinIdentificationVariables;
 
 	/**
 	 * The list of <b>JOIN</b> expressions that are declared in the same declaration than the
@@ -68,45 +61,6 @@ abstract class AbstractRangeDeclaration extends Declaration {
 		joins.add(join);
 	}
 
-	private List<String> buildJoinIdentificationVariables() {
-
-		List<String> variables;
-
-		if (joins != null) {
-			variables = new LinkedList<String>();
-
-			for (Join join : joins) {
-				IdentificationVariable identificationVariable = (IdentificationVariable) join.getIdentificationVariable();
-				variables.add(identificationVariable.getVariableName());
-			}
-		}
-		else {
-			variables = Collections.emptyList();
-		}
-
-		return variables;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	Expression findExpressionWithVariableName(String variableName) {
-
-		Expression expression = super.findExpressionWithVariableName(variableName);
-
-		if ((expression == null) && (joins != null)) {
-			for (Join join : joins) {
-				IdentificationVariable identificationVariable = (IdentificationVariable) join.getIdentificationVariable();
-				if (identificationVariable.getVariableName().equals(variableName)) {
-					return join;
-				}
-			}
-		}
-
-		return expression;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -124,18 +78,6 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	}
 
 	/**
-	 * Returns the identification variables that are defined in the <b>JOIN</b> expressions.
-	 *
-	 * @return The identification variables that are defined in the <b>JOIN</b> expressions
-	 */
-	List<String> getJoinIdentificationVariables() {
-		if (joinIdentificationVariables == null) {
-			joinIdentificationVariables = buildJoinIdentificationVariables();
-		}
-		return joinIdentificationVariables;
-	}
-
-	/**
 	 * Returns the <b>JOIN</b> expressions that were part of the range variable declaration in the
 	 * ordered they were parsed.
 	 *
@@ -147,32 +89,7 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	boolean hasAlias(String variableName) {
-		return super.hasAlias(variableName) || hasJoinAlias(variableName);
-	}
-
-	private boolean hasJoinAlias(String variableName) {
-
-		if (joins != null) {
-
-			for (Join join : joins) {
-				IdentificationVariable identificationVariable = (IdentificationVariable) join.getIdentificationVariable();
-				if (identificationVariable.getVariableName().equals(variableName)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Determines whether the declaration contains <b>JOIN</b> expressions. This can be
-	 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
-	 * member declaration does not have <b>JOIN</b> expressions.
+	 * Determines whether the declaration contains <b>JOIN</b> expressions.
 	 *
 	 * @return <code>true</code> if at least one <b>JOIN</b> expression was parsed; otherwise
 	 * <code>false</code>

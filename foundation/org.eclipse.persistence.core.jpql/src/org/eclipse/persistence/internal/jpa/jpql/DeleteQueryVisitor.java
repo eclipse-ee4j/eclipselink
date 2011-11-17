@@ -13,7 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 
 /**
  * This builder is responsible to populate a {@link DeleteAllQuery}.
@@ -23,7 +24,7 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-final class DeleteQueryVisitor extends AbstractModifyAllQueryBuilder<DeleteAllQuery> {
+final class DeleteQueryVisitor extends AbstractModifyAllQueryBuilder {
 
 	/**
 	 * Creates a new <code>DeleteQueryBuilder</code>.
@@ -33,5 +34,26 @@ final class DeleteQueryVisitor extends AbstractModifyAllQueryBuilder<DeleteAllQu
 	 */
 	DeleteQueryVisitor(JPQLQueryContext queryContext) {
 		super(queryContext);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(DeleteClause expression) {
+		expression.getRangeVariableDeclaration().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(DeleteStatement expression) {
+
+		expression.getDeleteClause().accept(this);
+
+		if (expression.hasWhereClause()) {
+			expression.getWhereClause().accept(this);
+		}
 	}
 }

@@ -13,9 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseChildrenVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.queries.ModifyAllQuery;
@@ -31,7 +30,12 @@ import org.eclipse.persistence.queries.ModifyAllQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-abstract class AbstractModifyAllQueryBuilder<T extends ModifyAllQuery> extends AbstractEclipseLinkTraverseChildrenVisitor {
+abstract class AbstractModifyAllQueryBuilder extends AbstractEclipseLinkExpressionVisitor {
+
+	/**
+	 * The {@link ModifyAllQuery} to update.
+	 */
+	ModifyAllQuery query;
 
 	/**
 	 * The {@link JPQLQueryContext} is used to query information about the application metadata and
@@ -51,26 +55,13 @@ abstract class AbstractModifyAllQueryBuilder<T extends ModifyAllQuery> extends A
 	}
 
 	/**
-	 * Returns the {@link ModifyAllQuery}.
-	 *
-	 * @return The query being populated
-	 */
-	@SuppressWarnings("unchecked")
-	T getDatabaseQuery() {
-		return (T) queryContext.getDatabaseQuery();
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void visit(RangeVariableDeclaration expression) {
 
-		T query = getDatabaseQuery();
-
 		// Set the ExpressionBuilder
-		Expression baseExpression = queryContext.getBaseExpression();
-		ExpressionBuilder expressionBuilder = baseExpression.getBuilder();
+		ExpressionBuilder expressionBuilder = queryContext.getBaseExpression().getBuilder();
 		query.setExpressionBuilder(expressionBuilder);
 
 		// Set the reference class if it's not set
@@ -84,7 +75,6 @@ abstract class AbstractModifyAllQueryBuilder<T extends ModifyAllQuery> extends A
 	 */
 	@Override
 	public void visit(WhereClause expression) {
-		Expression queryExpression = queryContext.buildExpression(expression);
-		getDatabaseQuery().setSelectionCriteria(queryExpression);
+		query.setSelectionCriteria(queryContext.buildExpression(expression));
 	}
 }

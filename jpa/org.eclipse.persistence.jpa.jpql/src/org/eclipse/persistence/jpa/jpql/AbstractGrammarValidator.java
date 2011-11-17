@@ -3574,11 +3574,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 		String text = expression.getText();
 
-		// â€¢ Exact numeric literals support the use of Java integer literal
+		// - Exact numeric literals support the use of Java integer literal
 		//   syntax as well as SQL exact numeric literal syntax
-		// â€¢ Approximate literals support the use Java floating point literal
+		// - Approximate literals support the use Java floating point literal
 		//   syntax as well as SQL approximate numeric literal syntax
-		// â€¢ Appropriate suffixes can be used to indicate the specific type
+		// - Appropriate suffixes can be used to indicate the specific type
 		//   of a numeric literal in accordance with the Java Language Specification
 		if (!isNumericLiteral(text)) {
 			int startPosition = position(expression);

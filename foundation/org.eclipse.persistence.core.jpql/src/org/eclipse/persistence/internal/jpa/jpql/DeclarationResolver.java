@@ -43,16 +43,18 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 
 /**
  * This visitor visits the declaration clause of the query and creates the list of {@link Declaration}
- * objects. Those objects will then be used when querying information.
+ * objects. Those objects will then be used to query information of that declaration clause, a
+ * {@link Declaration} is mapped to its identification variable for fast retrieval.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 final class DeclarationResolver {
 
 	/**
-	 * The first {@link Declaration} that was created when visiting the declaration clause;
+	 * The first {@link Declaration} that was created when visiting the declaration clause.
 	 */
 	private Declaration baseDeclaration;
 
@@ -121,15 +123,16 @@ final class DeclarationResolver {
 	}
 
 	/**
-	 * Adds a "virtual" range variable declaration that will be used when a JPQL fragment is parsed.
+	 * Adds a "virtual" range variable declaration that will be used when parsing a JPQL fragment.
 	 *
 	 * @param entityName The name of the entity to be accessible with the given variable name
 	 * @param variableName The identification variable used to navigate to the entity
+	 * @return The {@link RangeDeclaration} that contains the information of the "virtual" range
+	 * variable declaration
 	 */
-	void addRangeVariableDeclaration(String entityName, String variableName) {
+	RangeDeclaration addRangeVariableDeclaration(String entityName, String variableName) {
 
-		variableName = variableName.toUpperCase().intern();
-
+		// Create the "virtual" range variable declaration
 		RangeVariableDeclaration rangeVariableDeclaration = new RangeVariableDeclaration(
 			entityName,
 			variableName
@@ -137,13 +140,22 @@ final class DeclarationResolver {
 
 		// Make sure the identification variable was not declared more than once,
 		// this could cause issues when trying to resolve it
-		Declaration declaration = new RangeDeclaration(queryContext);
-		declaration.baseExpression         = rangeVariableDeclaration;
+		RangeDeclaration declaration = new RangeDeclaration(queryContext);
 		declaration.rootPath               = entityName;
+		declaration.baseExpression         = rangeVariableDeclaration;
 		declaration.identificationVariable = (IdentificationVariable) rangeVariableDeclaration.getIdentificationVariable();
+
+		// Identification variable is always used as upper case because .equals() is used instead of
+		// .equalsIgnoreCase(), which means equivalency will be used because intern() was used everywhere
+		variableName = variableName.toUpperCase().intern();
 		declarations.put(variableName, declaration);
 
-		baseDeclaration = declaration;
+		// Make sure it marked as the base declaration
+		if (baseDeclaration == null) {
+			baseDeclaration = declaration;
+		}
+
+		return declaration;
 	}
 
 	/**
@@ -173,7 +185,7 @@ final class DeclarationResolver {
 
 			String variableName = null;
 
-			// Now replace the old declaration
+			// Now replace the old declaration with the new one
 			for (Map.Entry<String, Declaration> entry : declarations.entrySet()) {
 				if (entry.getValue() == declaration) {
 					variableName = entry.getKey();
@@ -214,6 +226,7 @@ final class DeclarationResolver {
 	void dispose() {
 
 		populated = false;
+		baseDeclaration = null;
 		resultVariablesPopulated = false;
 		declarations.clear();
 
@@ -221,24 +234,6 @@ final class DeclarationResolver {
 			resultVariables.clear();
 		}
 	}
-
-//	org.eclipse.persistence.jpa.jpql.parser.Expression findDeclarationExpression(String variableName) {
-//		org.eclipse.persistence.jpa.jpql.parser.Expression expression = findDeclarationExpressionImp(variableName);
-//		if ((expression == null) && (parent != null)) {
-//			expression = parent.findDeclarationExpressionImp(variableName);
-//		}
-//		return expression;
-//	}
-
-//	private Expression findDeclarationExpressionImp(String variableName) {
-//		for (Declaration declaration : declarations) {
-//			Expression expression = declaration.findExpressionWithVariableName(variableName);
-//			if (expression != null) {
-//				return expression;
-//			}
-//		}
-//		return null;
-//	}
 
 	/**
 	 * Retrieves the {@link Declaration} for which the given variable name is used to navigate to the
@@ -330,9 +325,9 @@ final class DeclarationResolver {
 	}
 
 	/**
-	 * Determines if the given variable is a result variable.
+	 * Determines whether the given variable is a result variable or not.
 	 *
-	 * @param variableName The variable to check if it's a result variable
+	 * @param variableName The variable to check if it used to identify a select expression
 	 * @return <code>true</code> if the given variable is defined as a result variable;
 	 * <code>false</code> otherwise
 	 */
@@ -352,8 +347,8 @@ final class DeclarationResolver {
 	}
 
 	/**
-	 * Visits the current query (which is either the top-level query or a subquery) and gathers the
-	 * information from the declaration clause.
+	 * Visits the given {@link Expression} (which is either the top-level query or a subquery) and
+	 * retrieve the information from its declaration clause.
 	 *
 	 * @param expression The {@link Expression} to visit in order to retrieve the information
 	 * contained in the given query's declaration
@@ -407,7 +402,7 @@ final class DeclarationResolver {
 	private static class DeclarationVisitor extends AbstractEclipseLinkExpressionVisitor {
 
 		/**
-		 *
+		 * The first {@link Declaration} that was created when visiting the declaration clause.
 		 */
 		private Declaration baseDeclaration;
 
@@ -448,7 +443,7 @@ final class DeclarationResolver {
 
 			// A derived collection member declaration does not have an identification variable
 			if (expression.isDerived()) {
-				declarations.put(declaration.baseExpression.toActualText(), declaration);
+				declarations.put(declaration.baseExpression.toParsedText(), declaration);
 			}
 			else {
 				IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
@@ -543,7 +538,7 @@ final class DeclarationResolver {
 		public void visit(RangeVariableDeclaration expression) {
 
 			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
-			String rootPath = expression.getAbstractSchemaName().toActualText();
+			String rootPath = expression.getAbstractSchemaName().toParsedText();
 
 			// Abstract schema name
 			if (rootPath.indexOf('.') == -1) {
@@ -641,7 +636,13 @@ final class DeclarationResolver {
 		 */
 		@Override
 		public void visit(CollectionValuedPathExpression expression) {
-			declaration.rootPath = expression.toActualText();
+			// Create the path because CollectionValuedPathExpression.toParsedText()
+			// does not contain the virtual identification variable
+			StringBuilder rootPath = new StringBuilder();
+			rootPath.append(outerVariableName);
+			rootPath.append(".");
+			rootPath.append(expression.toParsedText());
+			declaration.rootPath = rootPath.toString();
 		}
 
 		/**
@@ -664,7 +665,6 @@ final class DeclarationResolver {
 			derivedDeclaration.rootPath                    = declaration.rootPath;
 			derivedDeclaration.baseExpression              = declaration.baseExpression;
 			derivedDeclaration.identificationVariable      = declaration.identificationVariable;
-			derivedDeclaration.joinIdentificationVariables = declaration.joinIdentificationVariables;
 			declaration = derivedDeclaration;
 
 			expression.setVirtualIdentificationVariable(outerVariableName, declaration.rootPath);
@@ -672,6 +672,9 @@ final class DeclarationResolver {
 		}
 	}
 
+	/**
+	 * This visitor traverses the <code><b>SELECT</b></code> clause and retrieves the result variables.
+	 */
 	private class ResultVariableVisitor extends AbstractEclipseLinkExpressionVisitor {
 
 		/**
@@ -715,44 +718,4 @@ final class DeclarationResolver {
 			expression.getSelectClause().accept(this);
 		}
 	}
-
-//	ClassDescriptor resolveDescriptor(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-//		ClassDescriptor descriptor = resolveDescriptorImp(expression);
-//		if ((descriptor == null) && (parent != null)) {
-//			descriptor = parent.resolveDescriptor(expression);
-//		}
-//		return descriptor;
-//	}
-
-//	private ClassDescriptor resolveDescriptorImp(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-//
-//		for (Declaration declaration : declarations) {
-//			ClassDescriptor descriptor = declaration.resolveDescriptor(expression);
-//			if (descriptor != null) {
-//				return descriptor;
-//			}
-//		}
-//
-//		return null;
-//	}
-
-//	DatabaseMapping resolveMapping(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-//		DatabaseMapping mapping = resolveMappingImp(expression);
-//		if ((mapping == null) && (parent != null)) {
-//			mapping = parent.resolveMapping(expression);
-//		}
-//		return mapping;
-//	}
-//
-//	private DatabaseMapping resolveMappingImp(Expression expression) {
-//
-//		for (Declaration declaration : declarations) {
-//			DatabaseMapping mapping = declaration.resolveMapping(expression);
-//			if (mapping != null) {
-//				return mapping;
-//			}
-//		}
-//
-//		return null;
-//	}
 }

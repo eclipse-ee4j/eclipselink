@@ -19,6 +19,8 @@ import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
+ * A <code>JoinDeclaration</code> represents a single <code><b>JOIN</b></code> expression.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -39,8 +41,8 @@ final class JoinDeclaration extends Declaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	Expression buildExpression() {
-		return queryContext.buildExpression(getBaseExpression());
+	Expression buildQueryExpression() {
+		return queryContext.buildExpression(baseExpression);
 	}
 
 	/**
@@ -87,15 +89,7 @@ final class JoinDeclaration extends Declaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	Class<?> resolveType() {
-		return getMapping().getReferenceDescriptor().getJavaClass();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public String toString() {
-		return baseExpression.toActualText();
+		return baseExpression.toParsedText();
 	}
 }

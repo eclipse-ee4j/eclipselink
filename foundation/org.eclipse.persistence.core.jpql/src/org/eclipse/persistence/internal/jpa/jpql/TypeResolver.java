@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.jpa.jpql.ResolverBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
@@ -60,12 +59,14 @@ import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
+import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
@@ -125,18 +126,21 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
+ * This visitor resolves the type of any given {@link Expression}.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
+final class TypeResolver implements EclipseLinkExpressionVisitor {
 
 	/**
 	 * This visitor is responsible to retrieve the {@link CollectionExpression} if it is visited.
@@ -144,14 +148,18 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	private CollectionExpressionVisitor collectionExpressionVisitor;
 
 	/**
-	 *
+	 * This {@link Comparator} compares numeric types and sorts them based on precedence.
 	 */
 	private Comparator<Class<?>> numericTypeComparator;
 
+	/**
+	 * This visitor resolves a path expression by retrieving the mapping and descriptor of the last
+	 * segment.
+	 */
 	private PathResolver pathResolver;
 
 	/**
-	 * The context used to query information about the query.
+	 * The context used to query information about the application metadata and cached information.
 	 */
 	private final JPQLQueryContext queryContext;
 
@@ -168,7 +176,8 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * Creates a new <code>TypeResolver</code>.
 	 *
-	 * @param query The external form representing the JPQL query
+	 * @param queryContext The context used to query information about the application metadata and
+	 * cached information
 	 */
 	TypeResolver(JPQLQueryContext queryContext) {
 		super();
@@ -188,13 +197,11 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 		return collectionExpressionVisitor;
 	}
 
-	private Class<?> compareCollectionEquivalentTypes(List<Class<?>> types) {
+	Class<?> compareCollectionEquivalentTypes(List<Class<?>> types) {
 
 		Class<?> localType = null;
 
-		for (int index = 0, count = types.size(); index < count; index++) {
-
-			Class<?> anotherType = types.get(index);
+		for (Class<?> anotherType : types) {
 
 			if (anotherType == UNRESOLVABLE_TYPE) {
 				continue;
@@ -216,20 +223,26 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 		return localType;
 	}
 
-	private Class<?> convertSumFunctionType(Class<?> type) {
+	Class<?> convertSumFunctionType(Class<?> type) {
 
 		// Integral types: int/Integer, long/Long => the result is a Long
-		if (type == Integer.TYPE || type == Integer.class) {
+		if ((type == Integer.TYPE) ||
+		    (type == Integer.class)) {
+
 			type = Long.class;
 		}
 
 		// Floating types: float/Float, double/Double => the result is a Double
-		else if (type == Float.TYPE || type == Float.class) {
+		else if ((type == Float.TYPE) ||
+		         (type == Float.class)) {
+
 			type = Double.class;
 		}
 
 		// Anything else, use Object
-		else if (type != BigDecimal.class && type != BigInteger.class) {
+		else if ((type != BigDecimal.class) &&
+		         (type != BigInteger.class)) {
+
 			type = Object.class;
 		}
 
@@ -362,7 +375,7 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 				return resolveQueryKeyType(resolver.queryKey);
 			}
 			else {
-				return queryContext.getEnumType(expression.toActualText());
+				return queryContext.getEnumType(expression.toParsedText());
 			}
 		}
 		finally {
@@ -373,7 +386,7 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	}
 
 	@SuppressWarnings({ "unchecked", "null" })
-	private Class<?> resolveMappingType(DatabaseMapping mapping) {
+	Class<?> resolveMappingType(DatabaseMapping mapping) {
 
 		// For aggregate mappings (@Embedded and @EmbeddedId), we need to use the descriptor
 		// because its mappings have to be retrieve from this one and not from the descriptor
@@ -412,10 +425,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 				}
 
 				return mapping.getContainerPolicy().getContainerClass();
-//				IType type = getTypeRepository().getType(mapping.getContainerPolicy().getContainerClass());
-//				IType keyType = getTypeRepository().getType(key);
-//				IType valueType = getTypeRepository().getType(value);
-//				return buildTypeDeclaration(type, new IType[] { keyType, valueType });
 			}
 
 			if (mapping.isCollectionMapping()) {
@@ -423,42 +432,29 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 
 				// Collection<T>
 				if (containerPolicy.isCollectionPolicy()) {
-//					Class<?> containerClass = containerPolicy.getContainerClass();
 					Class<?> propertyType = referenceMapping.getReferenceClass();
 					if (propertyType == null) {
 						propertyType = mapping.getAttributeClassification();
 					}
 					return propertyType;
-//					IType type = getTypeRepository().getType(containerClass);
-//					return buildTypeDeclaration(type, propertyType);
 				}
 
 				if (containerPolicy.isMapPolicy()) {
 					MapContainerPolicy mapPolicy = (MapContainerPolicy) containerPolicy;
 					return mapPolicy.getContainerClass();
-//					IType type = getTypeRepository().getType(mapPolicy.getContainerClass());
-//					IType valueType = getTypeRepository().getType(mapPolicy.getElementClass());
-//					Object key = mapPolicy.getKeyType();
-//					IType keyType;
-//
-//					if (key instanceof Class<?>) {
-//						keyType = getTypeRepository().getType((Class<?>) key);
-//					}
-//					else if (key instanceof ClassDescriptor) {
-//						ClassDescriptor descriptor = (ClassDescriptor) key;
-//						keyType = getTypeRepository().getType(descriptor.getJavaClass());
-//					}
-//					else {
-//						keyType = null;
-//					}
-//
-//					return buildTypeDeclaration(type, new IType[] { keyType, valueType });
 				}
 			}
 
 			// T
-//			return buildTypeDeclaration(referenceMapping.getReferenceDescriptor());
 			return referenceMapping.getReferenceClass();
+		}
+
+		if (mapping.isDirectToFieldMapping()) {
+			DirectToFieldMapping directMapping = (DirectToFieldMapping) mapping;
+			Class<?> type = directMapping.getAttributeClassification();
+			if (type != null) {
+				return type;
+			}
 		}
 
 		AttributeAccessor accessor = mapping.getAttributeAccessor();
@@ -475,7 +471,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 				catch (Exception e) {}
 			}
 
-//			return buildTypeDeclaration(field);
 			return field.getType();
 		}
 
@@ -491,13 +486,10 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 				catch (Exception e) {}
 			}
 
-//			return buildTypeDeclaration(method);
 			return method.getReturnType();
 		}
 
 		// Anything else
-//		IType type = getTypeRepository().getType(attributeType);
-//		return new JavaTypeDeclaration(getTypeRepository(), type, null, attributeType.isArray());
 		return accessor.getAttributeClass();
 	}
 
@@ -524,7 +516,7 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 		}
 	}
 
-	private Class<?> resolveQueryKeyType(QueryKey queryKey) {
+	Class<?> resolveQueryKeyType(QueryKey queryKey) {
 
 		Class<?> type;
 
@@ -545,21 +537,19 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(AbsExpression expression) {
 
 		// Visit the child expression in order to create the resolver
 		expression.getExpression().accept(this);
 
-		if (!isNumericType()) {
-			type = Object.class;
-		}
+//		if (!isNumericType()) {
+//			type = Object.class;
+//		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(AbstractSchemaName expression) {
 		ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
 		type = descriptor.getJavaClass();
@@ -568,7 +558,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(AdditionExpression expression) {
 		visitArithmeticExpression(expression);
 	}
@@ -576,7 +565,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(AllOrAnyExpression expression) {
 		expression.getExpression().accept(this);
 	}
@@ -584,7 +572,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(AndExpression expression) {
 		type = Boolean.class;
 	}
@@ -592,7 +579,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ArithmeticFactor expression) {
 
 		// First traverse the expression
@@ -607,7 +593,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(AvgFunction expression) {
 		type = Double.class;
 	}
@@ -615,7 +600,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(BadExpression expression) {
 		type = Object.class;
 	}
@@ -623,7 +607,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(BetweenExpression expression) {
 		type = Boolean.class;
 	}
@@ -631,7 +614,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(CaseExpression expression) {
 		visitCollectionEquivalentExpression(
 			expression.getWhenClauses(),
@@ -642,7 +624,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(CoalesceExpression expression) {
 		visitCollectionEquivalentExpression(expression.getExpression(), null);
 	}
@@ -650,7 +631,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(CollectionExpression expression) {
 		expression.acceptChildren(this);
 	}
@@ -658,7 +638,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(CollectionMemberDeclaration expression) {
 		expression.getCollectionValuedPathExpression().accept(this);
 	}
@@ -666,7 +645,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(CollectionMemberExpression expression) {
 		type = Boolean.class;
 	}
@@ -674,7 +652,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(CollectionValuedPathExpression expression) {
 		type = resolveMappingType(expression);
 	}
@@ -682,7 +659,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ComparisonExpression expression) {
 		type = Boolean.class;
 	}
@@ -690,7 +666,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ConcatExpression expression) {
 		type = String.class;
 	}
@@ -698,7 +673,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ConstructorExpression expression) {
 		type = queryContext.getType(expression.getClassName());
 	}
@@ -706,7 +680,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(CountFunction expression) {
 		type = Long.class;
 	}
@@ -714,7 +687,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(DateTime expression) {
 
 		if (expression.isCurrentDate()) {
@@ -747,7 +719,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(DeleteClause expression) {
 		type = Object.class;
 	}
@@ -755,7 +726,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(DeleteStatement expression) {
 		type = Object.class;
 	}
@@ -763,7 +733,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(DivisionExpression expression) {
 		visitArithmeticExpression(expression);
 	}
@@ -771,7 +740,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(EmptyCollectionComparisonExpression expression) {
 		type = Boolean.class;
 	}
@@ -779,7 +747,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(EntityTypeLiteral expression) {
 		String entityTypeName = expression.getEntityTypeName();
 		ClassDescriptor descriptor = queryContext.getDescriptor(entityTypeName);
@@ -789,7 +756,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(EntryExpression expression) {
 		type = Map.Entry.class;
 	}
@@ -797,7 +763,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ExistsExpression expression) {
 		type = Boolean.class;
 	}
@@ -805,7 +770,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(FromClause expression) {
 		type = Object.class;
 	}
@@ -813,7 +777,13 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	public void visit(FuncExpression expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(GroupByClause expression) {
 		type = Object.class;
 	}
@@ -821,7 +791,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(HavingClause expression) {
 		type = Object.class;
 	}
@@ -829,38 +798,35 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(IdentificationVariable expression) {
-		Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
-		type = declaration.getType();
-//		PathResolver resolver = pathResolver();
-//
-//		DatabaseMapping oldMapping    = resolver.mapping;
-//		ClassDescriptor oldDescriptor = resolver.descriptor;
-//
-//		try {
-//			resolver.mapping    = null;
-//			resolver.descriptor = null;
-//
-//			expression.accept(resolver);
-//
-//			if (resolver.mapping != null) {
-//				type = resolveMappingType(resolver.mapping);
-//			}
-//			else {
-//				type = resolver.descriptor.getJavaClass();
-//			}
-//		}
-//		finally {
-//			resolver.mapping    = oldMapping;
-//			resolver.descriptor = oldDescriptor;
-//		}
+
+		PathResolver resolver = pathResolver();
+
+		DatabaseMapping oldMapping    = resolver.mapping;
+		ClassDescriptor oldDescriptor = resolver.descriptor;
+
+		try {
+			resolver.mapping    = null;
+			resolver.descriptor = null;
+
+			expression.accept(resolver);
+
+			if (resolver.mapping != null) {
+				type = resolveMappingType(resolver.mapping);
+			}
+			else {
+				type = resolver.descriptor.getJavaClass();
+			}
+		}
+		finally {
+			resolver.mapping    = oldMapping;
+			resolver.descriptor = oldDescriptor;
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(IdentificationVariableDeclaration expression) {
 		type = Object.class;
 	}
@@ -868,7 +834,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(IndexExpression expression) {
 		type = Integer.class;
 	}
@@ -876,7 +841,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(InExpression expression) {
 		type = Boolean.class;
 	}
@@ -884,7 +848,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(InputParameter expression) {
 		type = UNRESOLVABLE_TYPE;
 	}
@@ -892,7 +855,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(Join expression) {
 		expression.getJoinAssociationPath().accept(this);
 	}
@@ -900,7 +862,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(JoinFetch expression) {
 		expression.getJoinAssociationPath().accept(this);
 	}
@@ -908,7 +869,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(JPQLExpression expression) {
 		expression.getQueryStatement().accept(this);
 	}
@@ -916,21 +876,17 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(KeyExpression expression) {
 		IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
 		Declaration declaration = queryContext.findDeclaration(identificationVariable.getVariableName());
 		DatabaseMapping mapping = declaration.getMapping();
 		MappedKeyMapContainerPolicy mapContainerPolicy = (MappedKeyMapContainerPolicy) mapping.getContainerPolicy();
 		type = (Class<?>) mapContainerPolicy.getKeyType();
-//		ClassDescriptor descriptor = resolveDescriptor(expression);
-//		type = descriptor.getJavaClass();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(KeywordExpression expression) {
 
 		String text = expression.getText();
@@ -948,7 +904,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(LengthExpression expression) {
 		type = Integer.class;
 	}
@@ -956,7 +911,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(LikeExpression expression) {
 		type = Boolean.class;
 	}
@@ -964,7 +918,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(LocateExpression expression) {
 		type = Integer.class;
 	}
@@ -972,7 +925,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(LowerExpression expression) {
 		type = String.class;
 	}
@@ -980,7 +932,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(MaxFunction expression) {
 
 		// Visit the state field path expression in order to create the resolver
@@ -996,7 +947,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(MinFunction expression) {
 
 		// Visit the state field path expression in order to create the resolver
@@ -1012,7 +962,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ModExpression expression) {
 		type = Integer.class;
 	}
@@ -1020,7 +969,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(MultiplicationExpression expression) {
 		visitArithmeticExpression(expression);
 	}
@@ -1028,7 +976,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(NotExpression expression) {
 		type = Boolean.class;
 	}
@@ -1036,7 +983,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(NullComparisonExpression expression) {
 		type = Boolean.class;
 	}
@@ -1044,7 +990,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(NullExpression expression) {
 		type = UNRESOLVABLE_TYPE;
 	}
@@ -1052,7 +997,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(NullIfExpression expression) {
 		expression.getFirstExpression().accept(this);
 	}
@@ -1060,7 +1004,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(NumericLiteral expression) {
 
 		try {
@@ -1097,7 +1040,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ObjectExpression expression) {
 		expression.getExpression().accept(this);
 	}
@@ -1105,7 +1047,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(OrderByClause expression) {
 		type = Object.class;
 	}
@@ -1113,7 +1054,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(OrderByItem expression) {
 		type = Object.class;
 	}
@@ -1121,7 +1061,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(OrExpression expression) {
 		type = Boolean.class;
 	}
@@ -1129,7 +1068,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(RangeVariableDeclaration expression) {
 		type = Object.class;
 	}
@@ -1137,7 +1075,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ResultVariable expression) {
 		expression.getSelectExpression().accept(this);
 	}
@@ -1145,7 +1082,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SelectClause expression) {
 
 		Expression selectExpression = expression.getSelectExpression();
@@ -1165,7 +1101,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SelectStatement expression) {
 		expression.getSelectClause().accept(this);
 	}
@@ -1173,7 +1108,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SimpleFromClause expression) {
 		type = Object.class;
 	}
@@ -1181,7 +1115,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SimpleSelectClause expression) {
 		expression.getSelectExpression().accept(this);
 	}
@@ -1189,7 +1122,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SimpleSelectStatement expression) {
 		queryContext.newSubQueryContext(expression, null);
 		try {
@@ -1203,7 +1135,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SizeExpression expression) {
 		type = Integer.class;
 	}
@@ -1211,7 +1142,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SqrtExpression expression) {
 		type = Double.class;
 	}
@@ -1219,7 +1149,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(StateFieldPathExpression expression) {
 		type = resolveMappingType(expression);
 	}
@@ -1227,7 +1156,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(StringLiteral expression) {
 		type = String.class;
 	}
@@ -1235,7 +1163,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SubExpression expression) {
 		expression.getExpression().accept(this);
 	}
@@ -1243,7 +1170,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SubstringExpression expression) {
 		type = String.class;
 	}
@@ -1251,7 +1177,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SubtractionExpression expression) {
 		visitArithmeticExpression(expression);
 	}
@@ -1259,7 +1184,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(SumFunction expression) {
 
 		// Visit the state field path expression in order to create the resolver
@@ -1273,7 +1197,13 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	public void visit(TreatExpression expression) {
+		expression.getEntityType().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(TrimExpression expression) {
 		type = String.class;
 	}
@@ -1281,7 +1211,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(TypeExpression expression) {
 		expression.getExpression().accept(this);
 	}
@@ -1289,15 +1218,14 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(UnknownExpression expression) {
 		type = Object.class;
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(UpdateClause expression) {
 		type = Object.class;
 	}
@@ -1305,16 +1233,13 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(UpdateItem expression) {
 		type = Object.class;
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(UpdateStatement expression) {
 		type = Object.class;
 	}
@@ -1322,7 +1247,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(UpperExpression expression) {
 		type = String.class;
 	}
@@ -1330,28 +1254,16 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(ValueExpression expression) {
 		IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
 		Declaration declaration = queryContext.findDeclaration(identificationVariable.getVariableName());
 		DatabaseMapping mapping = declaration.getMapping();
 		type = mapping.getReferenceDescriptor().getJavaClass();
-
-//		type = mapping.getValueClass();
-//
-//		if (type == null) {
-//			type = mapping.getAttributeClassification();
-//		}
-//
-//		if (type == null) {
-//			type = Object.class;
-//		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(WhenClause expression) {
 		expression.getThenExpression().accept(this);
 	}
@@ -1359,7 +1271,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
@@ -1509,14 +1420,6 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 		QueryKey queryKey;
 
 		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AbstractSchemaName expression) {
-			descriptor = queryContext.getDescriptor(expression.getText());
-		}
-
-		/**
 		 * {@link InputParameter}
 		 */
 		@Override
@@ -1572,7 +1475,7 @@ final class TypeResolver extends AbstractEclipseLinkTraverseParentVisitor {
 		 */
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
-			expression.getAbstractSchemaName().accept(this);
+			expression.getIdentificationVariable().accept(this);
 		}
 
 		@Override

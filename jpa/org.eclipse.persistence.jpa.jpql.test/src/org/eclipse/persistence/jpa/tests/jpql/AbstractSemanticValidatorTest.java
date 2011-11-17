@@ -997,11 +997,11 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 	@Test
 	public void test_InExpression_InItem_WrongType_1() throws Exception {
-//		String query = "SELECT e FROM Employee e WHERE e.name IN(e, â€˜JPQLâ€™)
+//		String query = "SELECT e FROM Employee e WHERE e.name IN(e, ‘JPQL’)
 //		List<QueryProblem> problems = validate(query);
 //
 //		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(".length();
-//		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN(e, â€˜JPQLâ€™".length();
+//		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN(e, ‘JPQL’".length();
 //
 //		testHasProblem(
 //			problems,
@@ -1013,7 +1013,7 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 	@Test
 	public void test_InExpression_InItem_WrongType_2() throws Exception {
-//		String query = "SELECT e FROM Employee e WHERE e.name IN(e.name, :name, â€˜JPQLâ€™)
+//		String query = "SELECT e FROM Employee e WHERE e.name IN(e.name, :name, ‘JPQL’)
 //		List<QueryProblem> problems = validate(query);
 //
 //		testDoesNotHaveProblem(

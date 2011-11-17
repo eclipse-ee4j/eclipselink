@@ -36,6 +36,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
 /**
@@ -66,7 +67,7 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 	/**
 	 * The contextual information for building a {@link DatabaseQuery}.
 	 */
-	private JPQLQueryContext queryContext;
+	private final JPQLQueryContext queryContext;
 
 	/**
 	 * This helper is used to invoke validation on a JPQL query if it is turned on.
@@ -101,14 +102,14 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 	 */
 	public HermesParser(boolean validateQueries) {
 		super();
-		initialize(validateQueries);
+		this.queryContext    = new JPQLQueryContext();
+		this.validateQueries = validateQueries;
 	}
 
 	/**
 	 * Registers the input parameters derived from the jpql expression with the {@link DatabaseQuery}.
 	 *
-	 * @param databaseQuery The EclipseLink {@link DatabaseQuery} where the input parameter types
-	 * are added
+	 * @param databaseQuery The EclipseLink {@link DatabaseQuery} where the input parameter types are added
 	 */
 	private void addArguments(DatabaseQuery databaseQuery) {
 		for (Map.Entry<String, Class<?>> inputParameters : queryContext.inputParameters()) {
@@ -196,11 +197,6 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 		return deleteQueryVisitor;
 	}
 
-	private void initialize(boolean validateQueries) {
-		this.validateQueries = validateQueries;
-		this.queryContext    = new JPQLQueryContext();
-	}
-
 	private JPQLGrammar jpqlGrammar() {
 		return DefaultEclipseLinkJPQLGrammar.instance();
 	}
@@ -277,12 +273,9 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 			// Now populate it
 			jpqlExpression.accept(databaseQueryVisitor());
 
-			boolean updateArguments = (query == null);
-			DatabaseQuery elQuery = query;
-			query = queryContext.getDatabaseQuery();
-
 			// Store the input parameter types
-			if (updateArguments) {
+			if (query == null) {
+				query = queryContext.getDatabaseQuery();
 				addArguments(query);
 			}
 
@@ -335,7 +328,7 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 
 			List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
 
-			// First validate the query using the grammar
+			// Validate the query using the grammar
 			queryHelper.validateGrammar(expression, problems);
 
 			if (!problems.isEmpty()) {
@@ -366,6 +359,7 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 
 			DeleteAllQuery query = queryContext.getDatabaseQuery();
 
+			// Create and prepare the query
 			if (query == null) {
 				query = new DeleteAllQuery();
 				queryContext.setDatabasQuery(query);
@@ -375,7 +369,15 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 
-			expression.accept(deleteQueryVisitor());
+			// Now populate it
+			DeleteQueryVisitor visitor = deleteQueryVisitor();
+			try {
+				visitor.query = query;
+				expression.accept(visitor);
+			}
+			finally {
+				visitor.query = null;
+			}
 		}
 
 		/**
@@ -394,6 +396,7 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 
 			ObjectLevelReadQuery query = queryContext.getDatabaseQuery();
 
+			// Create and prepare the query
 			if (query == null) {
 				query = buildReadAllQuery(expression);
 				queryContext.setDatabasQuery(query);
@@ -401,12 +404,20 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 
 			query.setJPQLString(queryContext.getJPQLQuery());
 
-			AbstractReadAllQueryVisitor visitor =
-				query.isReportQuery() ?
-				queryContext.reportQueryVisitor() :
-			   objectLevelReadQueryVisitor();
-
-			expression.accept(visitor);
+			// Now populate it
+			if (query.isReportQuery()) {
+				queryContext.populateReportQuery(expression, (ReportQuery) query);
+			}
+			else {
+				ObjectLevelReadQueryVisitor visitor = objectLevelReadQueryVisitor();
+				try {
+					visitor.query = query;
+					expression.accept(visitor);
+				}
+				finally {
+					visitor.query = null;
+				}
+			}
 		}
 
 		/**
@@ -417,6 +428,7 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 
 			UpdateAllQuery query = queryContext.getDatabaseQuery();
 
+			// Create and prepare the query
 			if (query == null) {
 				query = new UpdateAllQuery();
 				queryContext.setDatabasQuery(query);
@@ -426,7 +438,15 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 
-			expression.accept(updateQueryVisitor());
+			// Now populate it
+			UpdateQueryVisitor visitor = updateQueryVisitor();
+			try {
+				visitor.query = query;
+				expression.accept(visitor);
+			}
+			finally {
+				visitor.query = null;
+			}
 		}
 	}
 }

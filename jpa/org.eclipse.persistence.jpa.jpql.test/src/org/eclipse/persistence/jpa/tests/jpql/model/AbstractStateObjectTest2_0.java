@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.model;
 
-
-
 /**
  * The abstract definition
  *

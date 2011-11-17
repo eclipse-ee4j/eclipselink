@@ -137,7 +137,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T date(String jdbcDate);
 
 	/**
-	 * Creates the expression <code><b>x Ã· y</b></code>.
+	 * Creates the expression <code><b>x ÷ y</b></code>.
 	 *
 	 * @param builder The right side of the addition expression
 	 * @return This {@link T builder}
@@ -253,7 +253,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T mod(T parameter1, T parameter2);
 
 	/**
-	 * Creates the expression <code><b>x Ã— y</b></code>.
+	 * Creates the expression <code><b>x × y</b></code>.
 	 *
 	 * @param builder The right side of the addition expression
 	 * @return This {@link T builder}

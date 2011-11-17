@@ -108,15 +108,20 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	 */
 	protected void initialize() {
 
+		// Create the base grammar, if this one is an extension
 		jpqlGrammar = buildBaseGrammar();
 
+		// There is no base grammar, create the local ExpressionRegistry
 		if (jpqlGrammar == null) {
 			registry = buildExpressionRegistry();
 		}
+		// This grammar extends another grammar, simply use the base grammar's
+		// ExpressionRegistry so this grammar can modify it
 		else {
 			registry = jpqlGrammar.getExpressionRegistry();
 		}
 
+		// Add the support provided by this grammar
 		initializeIdentifiers();
 		initializeBNFs();
 		initializeExpressionFactories();

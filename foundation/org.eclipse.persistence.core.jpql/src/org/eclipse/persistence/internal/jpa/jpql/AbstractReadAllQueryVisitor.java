@@ -85,6 +85,11 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	private OrderByVisitor orderByVisitor;
 
 	/**
+	 * The {@link ObjectLevelReadQuery} to populate.
+	 */
+	ObjectLevelReadQuery query;
+
+	/**
 	 * The {@link JPQLQueryContext} is used to query information about the application metadata and
 	 * cached information.
 	 */
@@ -106,15 +111,6 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 			countFunctionVisitor = new CountFunctionVisitor();
 		}
 		return countFunctionVisitor;
-	}
-
-	/**
-	 * Returns the {@link ObjectLevelReadQuery}.
-	 *
-	 * @return The query being visitor
-	 */
-	ObjectLevelReadQuery getDatabaseQuery() {
-		return (ObjectLevelReadQuery) queryContext.getDatabaseQuery();
 	}
 
 	private boolean hasNotCountFunction(AbstractSelectClause expression) {
@@ -241,13 +237,10 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	 */
 	@Override
 	public void visit(WhereClause expression) {
-		Expression queryExpression = queryContext.buildExpression(expression);
-		getDatabaseQuery().setSelectionCriteria(queryExpression);
+		query.setSelectionCriteria(queryContext.buildExpression(expression));
 	}
 
-	private void visitAbstractFromClause(AbstractFromClause expression) {
-
-		ObjectLevelReadQuery query = queryContext.getDatabaseQuery();
+	void visitAbstractFromClause(AbstractFromClause expression) {
 
 		// Set the ExpressionBuilder
 		Expression baseExpression = queryContext.getBaseExpression();
@@ -261,9 +254,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		}
 	}
 
-	private void visitAbstractSelectClause(AbstractSelectClause expression) {
-
-		ObjectLevelReadQuery query = queryContext.getDatabaseQuery();
+	void visitAbstractSelectClause(AbstractSelectClause expression) {
 
 		// DISTINCT
 		if (expression.hasDistinct() && !hasNotCountFunction(expression)) {
@@ -276,7 +267,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		query.setShouldBuildNullForNullPk(buildNullForNullPK);
 	}
 
-	private void visitAbstractSelectStatement(AbstractSelectStatement expression) {
+	void visitAbstractSelectStatement(AbstractSelectStatement expression) {
 
 		// First visit the FROM clause in order to retrieve the reference classes and
 		// create an ExpressionBuilder for each abstract schema name
@@ -339,6 +330,25 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 
 	private class JoinExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
 
+		private void addNonFetchJoinedAttribute(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
+		                                        IdentificationVariable identificationVariable) {
+
+			String variableName = identificationVariable.getVariableName();
+
+			// If the join's identification variable was not used in the query,
+			// then add a non fetch joined attribute
+			if (!queryContext.isIdentificationVariableUsed(variableName)) {
+				Expression queryExpression = queryContext.getQueryExpression(variableName);
+
+				if (queryExpression == null) {
+					queryExpression = queryContext.buildExpression(expression);
+					queryContext.addQueryExpression(variableName, queryExpression);
+				}
+
+				query.addNonFetchJoinedAttribute(queryExpression);
+			}
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -352,21 +362,10 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		 */
 		@Override
 		public void visit(CollectionMemberDeclaration expression) {
-
-			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
-			String variableName = identificationVariable.getVariableName();
-
-			if (!queryContext.isIdentificationVariableUsed(expression, variableName)) {
-
-				ObjectLevelReadQuery query = queryContext.getDatabaseQuery();
-				Expression queryExpression = queryContext.getQueryExpression(variableName);
-
-				if (queryExpression == null) {
-					queryExpression = queryContext.buildExpression(expression.getCollectionValuedPathExpression());
-				}
-
-				query.addNonFetchJoinedAttribute(queryExpression);
-			}
+			addNonFetchJoinedAttribute(
+				expression,
+				(IdentificationVariable) expression.getIdentificationVariable()
+			);
 		}
 
 		/**
@@ -392,20 +391,10 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		 */
 		@Override
 		public void visit(Join expression) {
-
-			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
-			String variableName = identificationVariable.getVariableName();
-
-			if (!queryContext.isIdentificationVariableUsed(expression, variableName)) {
-				Expression queryExpression = queryContext.getQueryExpression(variableName);
-
-				if (queryExpression == null) {
-					queryExpression = queryContext.buildExpression(expression);
-					queryContext.addQueryExpression(variableName, queryExpression);
-				}
-
-				getDatabaseQuery().addNonFetchJoinedAttribute(queryExpression);
-			}
+			addNonFetchJoinedAttribute(
+				expression,
+				(IdentificationVariable) expression.getIdentificationVariable()
+			);
 		}
 
 		/**
@@ -588,31 +577,15 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		@Override
 		public void visit(OrderByItem expression) {
 
-			Expression queryExpression = null;
-
-			// If the order by item is an identification variable or a result variable, then
-			// retrieve its variable name so we can check if an Expression was cached
-//			String variableName = queryContext.literal(
-//				expression.getExpression(),
-//				LiteralType.IDENTIFICATION_VARIABLE
-//			);
-
-			// Retrieve the cached expression
-//			if (ExpressionTools.stringIsNotEmpty(variableName)) {
-//				queryExpression = queryContext.getQueryExpression(variableName);
-//			}
-
-			// Create the Expression for the order by item if it was not cached
-//			if (queryExpression == null) {
-				queryExpression = queryContext.buildExpression(expression.getExpression());
-//			}
+			// Create the order by item expression
+			Expression queryExpression = queryContext.buildExpression(expression.getExpression());
 
 			// Create the ordering item
 			if (expression.getOrdering() == Ordering.DESC) {
-				getDatabaseQuery().addOrdering(queryExpression.descending());
+				query.addOrdering(queryExpression.descending());
 			}
 			else {
-				getDatabaseQuery().addOrdering(queryExpression.ascending());
+				query.addOrdering(queryExpression.ascending());
 			}
 		}
 	}

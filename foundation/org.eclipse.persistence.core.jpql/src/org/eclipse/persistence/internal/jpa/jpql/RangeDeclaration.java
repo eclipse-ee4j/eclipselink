@@ -67,8 +67,43 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	Expression buildExpression() {
-		return new ExpressionBuilder(getDescriptor().getJavaClass());
+	Expression buildQueryExpression() {
+
+		ClassDescriptor descriptor = getDescriptor();
+
+		// The abstract schema name can't be resolved, we'll assume it's actually an unqualified
+		// state field path expression or collection-valued path expression declared in an UPDATE
+		// or DELETE query
+		if (descriptor == null) {
+
+			// Convert the AbstractSchemaName into a CollectionValuedPathExpression since
+			// it's an unqualified state field path expression or collection-valued path expression
+			convertUnqualifiedDeclaration();
+
+			// The abstract schema name is now a CollectionValuedPathExpression, request the context
+			// to return the Expression for the new Declaration
+			return queryContext.getBaseExpression();
+		}
+
+		return new ExpressionBuilder(descriptor.getJavaClass());
+	}
+
+	/**
+	 * Converts the given {@link Declaration} from being set as a range variable declaration to
+	 * a path expression declaration.
+	 * <p>
+	 * In this query "<code>UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
+	 * managedEmployees m) > 0</code>" <em>managedEmployees</em> is an unqualified collection-valued
+	 * path expression (<code>employee.managedEmployees</code>).
+	 */
+	private void convertUnqualifiedDeclaration() {
+
+		// Retrieve the range identification variable from the parent declaration
+		Declaration parentDeclaration = queryContext.getParent().getFirstDeclarationImp();
+		String outerVariableName = parentDeclaration.getVariableName();
+
+		// Qualify the range expression to be fully qualified
+		queryContext.getDeclarationResolver().convertUnqualifiedDeclaration(this, outerVariableName);
 	}
 
 	/**
@@ -125,13 +160,5 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	DatabaseMapping resolveMapping() {
 		// A range declaration does not have a mapping, only a descriptor
 		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	Class<?> resolveType() {
-		return getDescriptor().getJavaClass();
 	}
 }

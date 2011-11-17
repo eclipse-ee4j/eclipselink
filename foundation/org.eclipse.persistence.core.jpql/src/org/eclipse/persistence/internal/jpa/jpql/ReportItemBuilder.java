@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.jpql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
@@ -33,7 +34,6 @@ import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
-import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
@@ -66,7 +66,6 @@ import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ReportQuery;
 
 import static org.eclipse.persistence.jpa.jpql.LiteralType.*;
@@ -94,10 +93,21 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	private boolean multipleSelects;
 
 	/**
+	 * The {@link ReportQuery} to add the select expressions.
+	 */
+	ReportQuery query;
+
+	/**
 	 * The {@link JPQLQueryContext} is used to query information about the application metadata and
 	 * cached information.
 	 */
 	private final JPQLQueryContext queryContext;
+
+	/**
+	 * This array is used to store the type of the select {@link Expression JPQL Expression} that is
+	 * converted into an {@link Expression EclipseLink Expression}.
+	 */
+	final Class<?>[] type;
 
 	/**
 	 * Creates a new <code>ReportItemBuilder</code>.
@@ -107,108 +117,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	ReportItemBuilder(JPQLQueryContext queryContext) {
 		super();
+		this.type = new Class<?>[1];
 		this.queryContext = queryContext;
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link Expression}. No name will be
-	 * associated with the attribute and no type will be calculated.
-	 *
-	 * @param expression The {@link Expression JPQL Expression} to convert into an {@link
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 */
-	private void addAttribute(Expression expression) {
-		addAttribute(ExpressionTools.EMPTY_STRING, expression);
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link Expression}. No name will be
-	 * associated with the attribute.
-	 *
-	 * @param expression The {@link Expression JPQL Expression} to convert into an {@link
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 * @param type The attribute's type, which can be <code>null</code>
-	 */
-	private void addAttribute(Expression expression, Class<?> type) {
-		addAttribute(ExpressionTools.EMPTY_STRING, expression, type);
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link Expression}. No type will be
-	 * calculated.
-	 *
-	 * @param name The name of the attribute
-	 * @param expression The {@link Expression JPQL Expression} to convert into an {@link
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 */
-	private void addAttribute(String name, Expression expression) {
-		addAttribute(name, expression, null);
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link Expression}. No type will be
-	 * calculated.
-	 *
-	 * @param name The name of the attribute
-	 * @param expression The {@link Expression JPQL Expression} to convert into an {@link
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 * @param type The attribute's type, which can be <code>null</code>
-	 */
-	private void addAttribute(String name, Expression expression, Class<?> type) {
-		addAttribute(name, queryContext.buildExpression(expression), type);
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link org.eclipse.persistence.expressions.Expression
-	 * Expression}. No type will be calculated.
-	 *
-	 * @param name The name of the attribute
-	 * @param expression The {@link org.eclipse.persistence.expressions.Expression Expression} to
-	 * add as an attribute
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 */
-	private void addAttribute(String name, org.eclipse.persistence.expressions.Expression expression) {
-		addAttribute(name, expression, null);
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link org.eclipse.persistence.expressions.Expression
-	 * Expression}. No type will be calculated.
-	 *
-	 * @param name The name of the attribute
-	 * @param expression The {@link org.eclipse.persistence.expressions.Expression Expression} to
-	 * add as an attribute
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 * @param type The attribute's type, which can be <code>null</code>
-	 */
-	private void addAttribute(String name,
-	                          org.eclipse.persistence.expressions.Expression expression,
-	                          Class<?> type) {
-
-		getDatabaseQuery().addAttribute(name, expression, type);
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link Expression}. No name will be
-	 * associated with the attribute and a type will be calculated.
-	 *
-	 * @param expression The {@link Expression JPQL Expression} to convert into an {@link
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 */
-	private void addAttributeWithType(Expression expression) {
-		addAttributeWithType(ExpressionTools.EMPTY_STRING, expression);
-	}
-
-	/**
-	 * Adds an attribute to the report query for the given {@link Expression} and a type will be
-	 * calculated.
-	 *
-	 * @param name The name of the attribute
-	 * @param expression The {@link Expression JPQL Expression} to convert into an {@link
-	 * org.eclipse.persistence.expressions.Expression Expression}
-	 */
-	private void addAttributeWithType(String name, Expression expression) {
-		addAttribute(name, expression, queryContext.getType(expression));
 	}
 
 	private ConstructorExpressionVisitor constructorExpressionVisitor() {
@@ -218,16 +128,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		return constructorExpressionVisitor;
 	}
 
-	private ReportQuery getDatabaseQuery() {
-		return queryContext.getDatabaseQuery();
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void visit(AbsExpression expression) {
-		addAttributeWithType(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -236,15 +143,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	@Override
 	public void visit(AdditionExpression expression) {
 
-		// Calculate the type
-		Class<?> type = queryContext.getType(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
 
-		if (type == Object.class) {
-			type = null;
+		if (type[0] == Object.class) {
+			type[0] = null;
 		}
 
-		// Add the attribute
-		addAttribute("plus", expression, type);
+		query.addAttribute("plus", queryExpression, type[0]);
 	}
 
 	/**
@@ -252,9 +157,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(AvgFunction expression) {
-		CollectionValuedPathExpression pathExpression = (CollectionValuedPathExpression) expression.getExpression();
+
+		StateFieldPathExpression pathExpression = (StateFieldPathExpression) expression.getExpression();
 		String name = pathExpression.getPath(pathExpression.pathSize() - 1);
-		addAttribute(name, expression, Double.class);
+
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(name, queryExpression, type[0]);
 	}
 
 	/**
@@ -262,7 +170,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(CaseExpression expression) {
-		addAttributeWithType("Case", expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute("Case", queryExpression, type[0]);
 	}
 
 	/**
@@ -270,7 +179,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(CoalesceExpression expression) {
-		addAttribute("Coalesce", expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute("Coalesce", queryExpression);
 	}
 
 	/**
@@ -278,8 +188,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(CollectionExpression expression) {
+
 		multipleSelects = true;
-		expression.acceptChildren(this);
+
+		for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
+			child.accept(this);
+			type[0] = null;
+		}
 	}
 
 	/**
@@ -287,7 +202,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(ConcatExpression expression) {
-		addAttribute(expression, String.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -296,7 +212,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	@Override
 	public void visit(ConstructorExpression expression) {
 
-		ReportQuery query = getDatabaseQuery();
 		Class<?> type = queryContext.getType(expression.getClassName());
 
 		query.beginAddingConstructorArguments(type);
@@ -313,12 +228,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		// Retrieve the attribute name
 		String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
 
-		if (ExpressionTools.stringIsEmpty(name)) {
+		if (name == ExpressionTools.EMPTY_STRING) {
 			name = CountFunction.COUNT;
 		}
 
 		// Add the attribute
-		addAttribute(name, expression, Long.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(name, queryExpression, type[0]);
 	}
 
 	/**
@@ -326,11 +242,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(DateTime expression) {
+		Expression queryExpression = queryContext.buildExpression(expression, type);
 		if (expression.isJDBCDate()) {
-			addAttribute("CONSTANT", expression);
+			query.addAttribute("CONSTANT", queryExpression);
 		}
 		else {
-			addAttributeWithType("date", expression);
+			query.addAttribute("date", queryExpression, type[0]);
 		}
 	}
 
@@ -340,15 +257,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	@Override
 	public void visit(DivisionExpression expression) {
 
-		// Calculate the type
-		Class<?> type = queryContext.getType(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
 
-		if (type == Object.class) {
-			type = null;
+		if (type[0] == Object.class) {
+			type[0] = null;
 		}
 
-		// Add the attribute
-		addAttribute("divide", expression, type);
+		query.addAttribute("divide", queryExpression, type[0]);
 	}
 
 	/**
@@ -356,7 +271,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(EntryExpression expression) {
-		addAttribute(" MapEntry", expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(" MapEntry", queryExpression);
 	}
 
 	/**
@@ -364,7 +280,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(FuncExpression expression) {
-		addAttribute(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
 	}
 
 	/**
@@ -397,22 +314,20 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 					if (joinFetchExpressions == null) {
 						joinFetchExpressions = new ArrayList<org.eclipse.persistence.expressions.Expression>();
 					}
-					joinFetchExpressions.add(queryContext.buildExpression(joinFetch));
+					joinFetchExpressions.add(queryContext.buildExpression(joinFetch, type));
 				}
 			}
 		}
 
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+
 		// Add the attribute without any JOIN FETCH
 		if (joinFetchExpressions == null) {
-			addAttribute(expression.getText(), queryContext.buildExpression(expression));
+			query.addAttribute(expression.getText(), queryExpression);
 		}
 		// Add the attribute with the JOIN FETCH expressions
 		else {
-			getDatabaseQuery().addItem(
-				expression.getText(),
-				queryContext.buildExpression(expression),
-				joinFetchExpressions
-			);
+			query.addItem(expression.getText(), queryExpression, joinFetchExpressions);
 		}
 	}
 
@@ -421,7 +336,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(IndexExpression expression) {
-		addAttribute("Index", expression, Integer.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute("Index", queryExpression, type[0]);
 	}
 
 	/**
@@ -429,7 +345,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(KeyExpression expression) {
-		addAttribute("MapKey", expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute("MapKey", queryExpression);
 	}
 
 	/**
@@ -437,7 +354,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(KeywordExpression expression) {
-		addAttribute("CONSTANT", expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute("CONSTANT", queryExpression);
 	}
 
 	/**
@@ -445,7 +363,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(LengthExpression expression) {
-		addAttribute(expression, Integer.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -453,7 +372,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(LocateExpression expression) {
-		addAttribute(expression, Integer.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -461,7 +381,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(LowerExpression expression) {
-		addAttribute(expression, String.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -469,8 +390,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(MaxFunction expression) {
-		String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
-		addAttribute(name, expression);
+
+		StateFieldPathExpression pathExpression = (StateFieldPathExpression) expression.getExpression();
+		String name = pathExpression.getPath(pathExpression.pathSize() - 1);
+
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(name, queryExpression);
 	}
 
 	/**
@@ -478,8 +403,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(MinFunction expression) {
-		String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
-		addAttribute(name, expression);
+
+		StateFieldPathExpression pathExpression = (StateFieldPathExpression) expression.getExpression();
+		String name = pathExpression.getPath(pathExpression.pathSize() - 1);
+
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(name, queryExpression);
 	}
 
 	/**
@@ -487,7 +416,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(ModExpression expression) {
-		addAttribute(expression, Integer.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -496,15 +426,14 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	@Override
 	public void visit(MultiplicationExpression expression) {
 
-		// Calculate the type
-		Class<?> type = queryContext.getType(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
 
-		if (type == Object.class) {
-			type = null;
+		if (type[0] == Object.class) {
+			type[0] = null;
 		}
 
 		// Add the attribute
-		addAttribute("multiply", expression, type);
+		query.addAttribute("multiply", queryExpression, type[0]);
 	}
 
 	/**
@@ -512,7 +441,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(NullIfExpression expression) {
-		addAttribute(NullIfExpression.NULLIF, expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(NullIfExpression.NULLIF, queryExpression);
 	}
 
 	/**
@@ -520,7 +450,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(NumericLiteral expression) {
-		addAttribute("CONSTANT", expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute("CONSTANT", queryExpression);
 	}
 
 	/**
@@ -536,7 +467,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-		addAttribute(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
 	}
 
 	/**
@@ -549,9 +481,10 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		expression.getSelectExpression().accept(this);
 
 		// Now cache the Expression for future retrieval by the ORDER BY clause
-		String variableName = queryContext.literal(expression.getResultVariable(), RESULT_VARIABLE);
+		IdentificationVariable identificationVariable = (IdentificationVariable) expression.getResultVariable();
+		String variableName = identificationVariable.getVariableName();
 
-		List<ReportItem> items = getDatabaseQuery().getItems();
+		List<ReportItem> items = query.getItems();
 		ReportItem lastItem = items.get(items.size() - 1);
 		queryContext.addQueryExpression(variableName, lastItem.getAttributeExpression());
 	}
@@ -579,15 +512,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	public void visit(SizeExpression expression) {
 
 		// Add the attribute
-		org.eclipse.persistence.expressions.Expression queryExpression =
-			queryContext.buildExpression(expression.getExpression());
-
-		addAttribute("size", queryExpression.count(), int.class);
+		Expression queryExpression = queryContext.buildExpression(expression.getExpression());
+		query.addAttribute("size", queryExpression.count(), Integer.class);
 
 		// Now add the GROUP BY expression
 		CollectionValuedPathExpression pathExpression = (CollectionValuedPathExpression) expression.getExpression();
-		queryExpression = queryContext.buildExpression(pathExpression, pathExpression.pathSize() - 1);
-		getDatabaseQuery().addGrouping(queryExpression);
+		queryExpression = queryContext.buildGroupByExpression(pathExpression);
+		query.addGrouping(queryExpression);
 	}
 
 	/**
@@ -595,7 +526,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(SqrtExpression expression) {
-		addAttribute(expression, Double.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -604,20 +536,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	@Override
 	public void visit(StateFieldPathExpression expression) {
 
-		// Retrieve the Resolver rather than building the Expression
-		DatabaseMapping mapping = queryContext.resolveMapping(expression);
-
 		// Temporarily change the null allowed flag if the state field is a foreign reference mapping
-		org.eclipse.persistence.expressions.Expression queryExpression =
-			queryContext.buildExpression(
-				expression,
-				(mapping != null) && mapping.isForeignReferenceMapping()
-			);
+		Expression queryExpression = queryContext.buildModifiedPathExpression(expression);
 
 		// Register the EclipseLink Expression with the state field name
 		String name = expression.getPath(expression.pathSize() - 1);
-		addAttribute(name, queryExpression);
-      getDatabaseQuery().dontRetrievePrimaryKeys();
+		query.addAttribute(name, queryExpression);
+      query.dontRetrievePrimaryKeys();
 	}
 
 	/**
@@ -625,7 +550,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(StringLiteral expression) {
-		addAttribute("CONSTANT", expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute("CONSTANT", queryExpression);
 	}
 
 	/**
@@ -641,7 +567,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(SubstringExpression expression) {
-		addAttribute(expression, String.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -650,15 +577,14 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	@Override
 	public void visit(SubtractionExpression expression) {
 
-		// Calculate the type
-		Class<?> type = queryContext.getType(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
 
-		if (type == Object.class) {
-			type = null;
+		if (type[0] == Object.class) {
+			type[0] = null;
 		}
 
 		// Add the attribute
-		addAttribute("minus", expression, type);
+		query.addAttribute("minus", queryExpression, type[0]);
 	}
 
 	/**
@@ -666,8 +592,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(SumFunction expression) {
-		String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
-		addAttributeWithType(name, expression);
+
+		StateFieldPathExpression pathExpression = (StateFieldPathExpression) expression.getExpression();
+		String name = pathExpression.getPath(pathExpression.pathSize() - 1);
+
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(name, queryExpression, type[0]);
 	}
 
 	/**
@@ -683,7 +613,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(TrimExpression expression) {
-		addAttribute(expression, String.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -691,7 +622,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(TypeExpression expression) {
-		super.visit(expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
 	}
 
 	/**
@@ -699,7 +631,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(UpperExpression expression) {
-		addAttribute(expression, String.class);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
 
 	/**
@@ -708,7 +641,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	@Override
 	public void visit(ValueExpression expression) {
 		IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
-		addAttribute(identificationVariable.getText(), expression);
+		Expression queryExpression = queryContext.buildExpression(expression, type);
+		query.addAttribute(identificationVariable.getText(), queryExpression);
 	}
 
 	private void visitAbstractSelectClause(AbstractSelectClause expression) {
@@ -717,10 +651,10 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		expression.getSelectExpression().accept(this);
 
 		if (multipleSelects) {
-			getDatabaseQuery().returnWithoutReportQueryResult();
+			query.returnWithoutReportQueryResult();
 		}
 		else {
-			getDatabaseQuery().returnSingleAttribute();
+			query.returnSingleAttribute();
 		}
 	}
 
@@ -750,7 +684,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		 * {@inheritDoc}
 		 */
 		@Override
-		protected void visit(Expression expression) {
+		protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 			expression.accept(ReportItemBuilder.this);
 		}
 	}

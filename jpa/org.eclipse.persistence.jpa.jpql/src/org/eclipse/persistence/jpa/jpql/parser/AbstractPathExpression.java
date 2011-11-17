@@ -54,6 +54,11 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	private List<String> paths;
 
 	/**
+	 * The cached number of segments representing the path expression.
+	 */
+	private int pathSize;
+
+	/**
 	 * Determines whether the path starts with a dot or not.
 	 */
 	private boolean startsWithDot;
@@ -73,6 +78,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 */
 	protected AbstractPathExpression(AbstractExpression parent, AbstractExpression expression) {
 		super(parent);
+		this.pathSize = -1;
 		this.identificationVariable = expression;
 		this.identificationVariable.setParent(this);
 	}
@@ -85,6 +91,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 */
 	protected AbstractPathExpression(AbstractExpression parent, String paths) {
 		super(parent, paths);
+		this.pathSize = -1;
 	}
 
 	/**
@@ -270,8 +277,11 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * @return The number of segments
 	 */
 	public final int pathSize() {
-		checkPaths();
-		return paths.size();
+		if (pathSize == -1) {
+			checkPaths();
+			pathSize = paths.size();
+		}
+		return pathSize;
 	}
 
 	/**

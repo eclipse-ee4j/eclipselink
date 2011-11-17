@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -35,18 +34,20 @@ import org.eclipse.persistence.jpa.jpql.EclipseLinkLiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
- * This extension over the default {@link EclipseLinkJPQLQueryContext} adds the necessary
- * functionality to properly convert the JPQL query into a {@link DatabaseQuery}.
+ * This context is used when creating and populating a {@link DatabaseQuery} when traversing the
+ * parsed representation of a JPQL query.
  *
  * @version 2.4
  * @since 2.3
@@ -55,12 +56,6 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 @SuppressWarnings("nls")
 final class JPQLQueryContext {
-
-	/**
-	 * The base {@link Expression} is the {@link Expression} for the current query, which is created
-	 * when {@link #getBaseExpression()} is called on the current context for the first time.
-	 */
-	private Expression baseExpression;
 
 	/**
 	 * The current {@link JPQLQueryContext} is the context used for the current query or subquery.
@@ -79,13 +74,6 @@ final class JPQLQueryContext {
 	 * it contains a single range declaration variable.
 	 */
 	private DeclarationResolver declarationResolver;
-
-	/**
-	 * The abstract schema names mapped to their {@link Expression}, which are cached because a
-	 * single one should exist for every abstract schema name on any given query (top-level and
-	 * subqueries).
-	 */
-	private Map<String, Expression> entityExpressions;
 
 	/**
 	 * The builder that can convert a {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL
@@ -148,7 +136,8 @@ final class JPQLQueryContext {
 	private AbstractSession session;
 
 	/**
-	 *
+	 * This resolver is used to calculate the type of any {@link org.eclipse.persistence.jpa.jpql.
+	 * parser.Expression JPQL Expression}.
 	 */
 	private TypeResolver typeResolver;
 
@@ -158,10 +147,15 @@ final class JPQLQueryContext {
 	private Map<String, Class<?>> types;
 
 	/**
-	 * The identification variables that are found in the query and used in any clauses (except
-	 * defined in the declaration clause).
+	 * The identification variables that were used in the current query.
 	 */
-	private Map<org.eclipse.persistence.jpa.jpql.parser.Expression, Set<String>> usedIdentificationVariables;
+	private Set<String> usedIdentificationVariables;
+
+	/**
+	 * An empty array used when the type of an {@link org.eclipse.persistence.jpa.jpql.parser.
+	 * Expression JPQL Expression} is not required.
+	 */
+	private static final Class<?>[] EMPTY_TYPE = new Class<?>[1];
 
 	/**
 	 * Creates a new <code>JPQLQueryContext</code>.
@@ -226,7 +220,7 @@ final class JPQLQueryContext {
 	 * {@link Expression}
 	 * @param expression The {@link Expression} that can be reused rather than being recreated
 	 */
-	private void addQueryExpressionImp(String variableName, Expression expression) {
+	void addQueryExpressionImp(String variableName, Expression expression) {
 		if (expressions == null) {
 			expressions = new HashMap<String, Expression>();
 		}
@@ -242,12 +236,13 @@ final class JPQLQueryContext {
 	void addRangeVariableDeclaration(String entityName, String variableName) {
 
 		// Add the virtual range variable declaration
-		getDeclarationResolverImp().addRangeVariableDeclaration(entityName, variableName);
+		RangeDeclaration declaration = getDeclarationResolverImp().addRangeVariableDeclaration(
+			entityName,
+			variableName
+		);
 
 		// Make sure the base Expression is initialized
-		if (baseExpression == null) {
-			baseExpression = buildBaseExpression();
-		}
+		declaration.getQueryExpression();
 	}
 
 	/**
@@ -267,19 +262,10 @@ final class JPQLQueryContext {
 	 * @param variableName The identification variable that is used within a clause
 	 */
 	void addUsedIdentificationVariableImp(String variableName) {
-
 		if (usedIdentificationVariables == null) {
-			usedIdentificationVariables = new HashMap<org.eclipse.persistence.jpa.jpql.parser.Expression, Set<String>>();
+			usedIdentificationVariables = new HashSet<String>();
 		}
-
-		Set<String> used = usedIdentificationVariables.get(currentQuery);
-
-		if (used == null) {
-			used = new HashSet<String>();
-			usedIdentificationVariables.put(currentQuery, used);
-		}
-
-		used.add(variableName);
+		usedIdentificationVariables.add(variableName);
 	}
 
 	/**
@@ -311,107 +297,6 @@ final class JPQLQueryContext {
 		}
 	}
 
-	private Expression buildBaseExpression() {
-
-		// Retrieve the first declaration, which is the base declaration (For top-level query, it's
-		// always a range over an abstract schema name. For subqueries, it's either a range over an
-		// abstract schema name or a derived path expression)
-		Declaration declaration = getDeclarationResolverImp().getFirstDeclaration();
-
-		// Check to see if it was already created
-		String variableName = declaration.getVariableName();
-		Expression expression = getQueryExpressionImp(variableName);
-
-		if (expression == null) {
-
-			// Create the Expression for the abstract schema name
-			if (declaration.isRange()) {
-				expression = buildBaseExpression((RangeDeclaration) declaration);
-			}
-			else {
-				// The root path is a derived path expression
-				if (declaration.isDerived()) {
-
-					// Retrieve the superquery identification variable from the derived path
-					DerivedDeclaration derivedDeclaration = (DerivedDeclaration) declaration;
-					String variable = derivedDeclaration.getDerivedIdentificationVariableName();
-
-					// Create the local ExpressionBuilder for the super identification variable
-					expression = parent.getQueryExpressionImp(variable);
-					expression = new ExpressionBuilder(expression.getBuilder().getQueryClass());
-
-					// Cache the info into the subquery context
-					addUsedIdentificationVariableImp(variable);
-					addQueryExpressionImp(variable, expression);
-				}
-
-				// Resolve the path expression
-				expression = buildExpression(declaration.getBaseExpression());
-			}
-
-			// Cache the base expression with its identification variable as well
-			addQueryExpressionImp(variableName, expression);
-		}
-
-		return expression;
-	}
-
-	/**
-	 * Creates the EclipseLink {@link Expression} defined by the given {@link Declaration}.
-	 *
-	 * @param declaration The {@link Declaration} part for which a new {@link Expression} is created
-	 * @return A new {@link Expression}
-	 */
-	private Expression buildBaseExpression(RangeDeclaration declaration) {
-
-		ClassDescriptor descriptor = getDescriptor(declaration.rootPath);
-
-		// The abstract schema name can't be resolved, we'll assume it's actually an unqualified
-		// state field path expression or collection-valued path expression declared in an UPDATE
-		// or DELETE query
-		if (descriptor == null) {
-
-			// Convert the AbstractSchemaName into a CollectionValuedPathExpression since
-			// it's an unqualified state field path expression or collection-valued path expression
-			convertUnqualifiedDeclaration(declaration);
-
-			// The abstract schema name is now a CollectionValuedPathExpression
-			return buildExpression(declaration.getBaseExpression());
-		}
-
-		return new ExpressionBuilder(descriptor.getJavaClass());
-	}
-
-	/**
-	 * Converts the given {@link org.eclipse.persistence.jpa.query.parser.AbstractPathExpression
-	 * AbstractPathExpression} into an {@link Expression}.
-	 *
-	 * @param expression The {@link org.eclipse.persistence.jpa.query.parser.AbstractPathExpression
-	 * AbstractPathExpression} to visit and to convert into an {@link Expression}
-	 * @param nullAllowed
-	 * @return The {@link Expression} representing the given parsed expression
-	 */
-	org.eclipse.persistence.expressions.Expression buildExpression(AbstractPathExpression expression,
-	                                                               boolean nullAllowed) {
-
-		return getExpressionBuilder().buildExpression(expression, nullAllowed);
-	}
-
-	/**
-	 * Converts the given {@link org.eclipse.persistence.jpa.query.parser.AbstractPathExpression
-	 * AbstractPathExpression} into an {@link Expression}.
-	 *
-	 * @param expression The {@link org.eclipse.persistence.jpa.query.parser.AbstractPathExpression
-	 * AbstractPathExpression} to visit and to convert into an {@link Expression}
-	 * @param length
-	 * @return The {@link Expression} representing the given parsed expression
-	 */
-	org.eclipse.persistence.expressions.Expression buildExpression(AbstractPathExpression expression,
-	                                                               int length) {
-
-		return getExpressionBuilder().buildExpression(expression, length);
-	}
-
 	/**
 	 * Converts the given {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}
 	 * into an {@link Expression}.
@@ -421,7 +306,30 @@ final class JPQLQueryContext {
 	 * @return The {@link Expression} representing the given parsed expression
 	 */
 	Expression buildExpression(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-		return getExpressionBuilder().buildExpression(expression);
+		return expressionBuilder().buildExpression(expression, EMPTY_TYPE);
+	}
+
+	/**
+	 * Converts the given {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}
+	 * into an {@link Expression}.
+	 *
+	 * @param expression The {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}
+	 * to visit and to convert into an {@link Expression}
+	 * @param type The given array will be used to store the type of the given expression
+	 * @return The {@link Expression} representing the given parsed expression
+	 */
+	Expression buildExpression(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
+	                           Class<?>[] type) {
+
+		return expressionBuilder().buildExpression(expression, type);
+	}
+
+	Expression buildGroupByExpression(CollectionValuedPathExpression expression) {
+		return expressionBuilder().buildGroupByExpression(expression);
+	}
+
+	Expression buildModifiedPathExpression(StateFieldPathExpression expression) {
+		return expressionBuilder().buildModifiedPathExpression(expression);
 	}
 
 	/**
@@ -447,30 +355,6 @@ final class JPQLQueryContext {
 	}
 
 	/**
-	 * Converts the given {@link Declaration} from being set as a range variable declaration to
-	 * a path expression declaration.
-	 * <p>
-	 * In this query "<code>UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
-	 * managedEmployees m) > 0</code>" <em>managedEmployees</em> is an unqualified collection-valued
-	 * path expression (<code>employee.managedEmployees</code>).
-	 *
-	 * @param declaration The {@link Declaration} that was parsed to range over an abstract schema
-	 * name but is actually ranging over a path expression
-	 */
-	private void convertUnqualifiedDeclaration(RangeDeclaration declaration) {
-
-		if (parent != null) {
-
-			// Retrieve the range identification variable from the parent declaration
-			Declaration parentDeclaration = parent.getDeclarationResolverImp().getFirstDeclaration();
-			String outerVariableName = parentDeclaration.getVariableName();
-
-			// Qualify the range expression to be fully qualified
-			getDeclarationResolverImp().convertUnqualifiedDeclaration(declaration, outerVariableName);
-		}
-	}
-
-	/**
 	 * Disposes the internal data.
 	 */
 	void dispose() {
@@ -479,14 +363,12 @@ final class JPQLQueryContext {
 		session        = null;
 		jpqlQuery      = null;
 		currentQuery   = null;
-		baseExpression = null;
 		jpqlExpression = null;
 		currentContext = this;
 
 		if (types != null)                       types.clear();
 		if (expressions != null)                 expressions.clear();
 		if (inputParameters != null)             inputParameters.clear();
-		if (entityExpressions != null)           entityExpressions.clear();
 		if (declarationResolver != null)         declarationResolver.dispose();
 		if (usedIdentificationVariables != null) usedIdentificationVariables.clear();
 	}
@@ -499,13 +381,31 @@ final class JPQLQueryContext {
 		currentContext = currentContext.parent;
 	}
 
+	private ExpressionBuilderVisitor expressionBuilder() {
+
+		if (parent != null) {
+			return parent.expressionBuilder();
+		}
+
+		if (expressionBuilder == null) {
+			expressionBuilder = new ExpressionBuilderVisitor(this);
+		}
+
+		return expressionBuilder;
+	}
+
+	/**
+	 * Retrieves the {@link Declaration} for which the given variable name is used to navigate to the
+	 * "root" object. This goes up the hierarchy when looking for the {@link Declaration} if it's not
+	 * defined in the current context.
+	 *
+	 * @param variableName The name of the identification variable that is used to navigate a "root" object
+	 * @return The {@link Declaration} containing the information about the identification variable declaration
+	 * @see #getDeclaration(String)
+	 */
 	Declaration findDeclaration(String variableName) {
 		return currentContext.findDeclarationImp(variableName);
 	}
-
-//	org.eclipse.persistence.jpa.jpql.parser.Expression findDeclarationExpression(String variableName) {
-//		return getDeclarationResolver().findDeclarationExpression(variableName);
-//	}
 
 	Declaration findDeclarationImp(String variableName) {
 		Declaration declaration = getDeclarationResolverImp().getDeclaration(variableName);
@@ -528,14 +428,11 @@ final class JPQLQueryContext {
 		return currentContext.findQueryExpressionImp(variableName);
 	}
 
-	private Expression findQueryExpressionImp(String variableName) {
-
+	Expression findQueryExpressionImp(String variableName) {
 		Expression expression = getQueryExpressionImp(variableName);
-
 		if ((expression == null) && (parent != null)) {
 			expression = parent.findQueryExpressionImp(variableName);
 		}
-
 		return expression;
 	}
 
@@ -545,14 +442,10 @@ final class JPQLQueryContext {
 	 * @return The root {@link Expression} of the query or subquery
 	 */
 	Expression getBaseExpression() {
-		return currentContext.getBaseExpressionImp();
-	}
-
-	private Expression getBaseExpressionImp() {
-		if (baseExpression == null) {
-			baseExpression = buildBaseExpression();
-		}
-		return baseExpression;
+		// Retrieve the first declaration, which is the base declaration (For top-level query, it's
+		// always a range over an abstract schema name. For subqueries, it's either a range over an
+		// abstract schema name or a derived path expression)
+		return getDeclarationResolver().getFirstDeclaration().getQueryExpression();
 	}
 
 	/**
@@ -627,12 +520,11 @@ final class JPQLQueryContext {
 
 	/**
 	 * Retrieves the {@link Declaration} for which the given variable name is used to navigate to the
-	 * "root" object.
+	 * "root" object. This does not go up the hierarchy when looking for the {@link Declaration}.
 	 *
-	 * @param variableName The name of the identification variable that is used to navigate a "root"
-	 * object
-	 * @return The {@link Declaration} containing the information about the identification variable
-	 * declaration
+	 * @param variableName The name of the identification variable that is used to navigate a "root" object
+	 * @return The {@link Declaration} containing the information about the identification variable declaration
+	 * @see #findDeclaration(String)
 	 */
 	Declaration getDeclaration(String variableName) {
 		return getDeclarationResolver().getDeclaration(variableName);
@@ -656,7 +548,7 @@ final class JPQLQueryContext {
 	 *
 	 * @return The {@link DeclarationResolver} for the current query being visited
 	 */
-	private DeclarationResolver getDeclarationResolverImp() {
+	DeclarationResolver getDeclarationResolverImp() {
 
 		if (declarationResolver == null) {
 			DeclarationResolver parentResolver = (parent == null) ? null : parent.getDeclarationResolverImp();
@@ -721,26 +613,24 @@ final class JPQLQueryContext {
 		return ((type != null) && type.isEnum()) ? type : null;
 	}
 
-	private ExpressionBuilderVisitor getExpressionBuilder() {
-
-		if (parent != null) {
-			return parent.getExpressionBuilder();
-		}
-
-		if (expressionBuilder == null) {
-			expressionBuilder = new ExpressionBuilderVisitor(this);
-		}
-
-		return expressionBuilder;
-	}
-
 	/**
-	 * Returns the first {@link Declaration} that was created after visiting the declaration clause.
+	 * Returns the first {@link Declaration} of the current context that was created after visiting
+	 * the declaration clause.
 	 *
 	 * @return The first {@link Declaration} object
 	 */
 	Declaration getFirstDeclaration() {
-		return getDeclarationResolver().getFirstDeclaration();
+		return currentContext.getFirstDeclarationImp();
+	}
+
+	/**
+	 * Returns the first {@link Declaration}, from this context, that was created after visiting the
+	 * declaration clause.
+	 *
+	 * @return The first {@link Declaration} object
+	 */
+	Declaration getFirstDeclarationImp() {
+		return getDeclarationResolverImp().getFirstDeclaration();
 	}
 
 	/**
@@ -801,19 +691,7 @@ final class JPQLQueryContext {
 	 * @return The parent context or <code>null</code> if the current context is the root
 	 */
 	JPQLQueryContext getParent() {
-		return parent;
-	}
-
-	/**
-	 * Retrieves the cached {@link Expression} associated with the given variable name. The scope of
-	 * the search is local to the current query or subquery
-	 *
-	 * @param variableName The variable name for which its associated {@link Expression} is requested
-	 * @return The cached {@link Expression} associated with the given variable name or <code>null</code>
-	 * if none was cached.
-	 */
-	Expression getParentQueryExpression(String variableName) {
-		return currentContext.parent.getQueryExpressionImp(variableName);
+		return currentContext.parent;
 	}
 
 	/**
@@ -835,7 +713,7 @@ final class JPQLQueryContext {
 	 * @return The cached {@link Expression} associated with the given variable name or <code>null</code>
 	 * if none was cached.
 	 */
-	private Expression getQueryExpressionImp(String variableName) {
+	Expression getQueryExpressionImp(String variableName) {
 		return (expressions == null) ? null : expressions.get(variableName);
 	}
 
@@ -875,27 +753,26 @@ final class JPQLQueryContext {
 	}
 
 	/**
-	 * Returns
+	 * Returns the identification variables that was used in the current query.
 	 *
-	 * @return
+	 * @return The identification variables that were used throughout the current query at the
+	 * exception of their declaration
 	 */
 	Set<String> getUsedIdentificationVariables() {
 		return currentContext.getUsedIdentificationVariablesImp();
 	}
 
-	private Set<String> getUsedIdentificationVariablesImp() {
-
+	/**
+	 * Returns the identification variables that are registered in this context.
+	 *
+	 * @return The identification variables that were used throughout the current query at the
+	 * exception of their declaration
+	 */
+	Set<String> getUsedIdentificationVariablesImp() {
 		if (usedIdentificationVariables == null) {
 			return Collections.emptySet();
 		}
-
-		Set<String> used = usedIdentificationVariables.get(currentQuery);
-
-		if (used != null) {
-			return used;
-		}
-
-		return Collections.emptySet();
+		return usedIdentificationVariables;
 	}
 
 	/**
@@ -918,52 +795,15 @@ final class JPQLQueryContext {
 	 * @return <code>true</code> if the identification is used in a clause, at the exception of where
 	 * it was defined; <code>false</code> otherwise
 	 */
-	boolean isIdentificationVariableUsed(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
-	                                     String variableName) {
-
-		return currentContext.isIdentificationVariableUsedImp(expression, variableName);
+	boolean isIdentificationVariableUsed(String variableName) {
+		return currentContext.isIdentificationVariableUsedImp(variableName);
 	}
 
-	/**
-	 * Determines
-	 *
-	 * @param path
-	 * @return
-	 */
-//	boolean isNullAllowed(String path) {
-//		return getDeclarationResolver().isNullAllowed(path);
-//	}
-
-	private boolean isIdentificationVariableUsedImp(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
-	                                                String variableName) {
-
-		org.eclipse.persistence.jpa.jpql.parser.Expression copy = expression;
-		boolean result = false;
-
-		if (usedIdentificationVariables != null) {
-			while (expression != null) {
-				Set<String> variables = usedIdentificationVariables.get(expression);
-
-				if (variables != null) {
-					result = variables.contains(variableName);
-					if (result) {
-						break;
-					}
-				}
-
-				if (getCurrentQuery() == expression) {
-					expression = null;
-				}
-				else {
-					expression = expression.getParent();
-				}
-			}
-		}
-
+	private boolean isIdentificationVariableUsedImp(String variableName) {
+		boolean result = (usedIdentificationVariables != null) && usedIdentificationVariables.contains(variableName);
 		if (!result && (parent != null)) {
-			result = parent.isIdentificationVariableUsedImp(copy, variableName);
+			result = parent.isIdentificationVariableUsedImp(variableName);
 		}
-
 		return result;
 	}
 
@@ -977,7 +817,6 @@ final class JPQLQueryContext {
 	 * if it's defined in a collection member declaration
 	 */
 	boolean isRangeIdentificationVariable(String variableName) {
-		// TODO: Probably need to support the hierarchy
 		return getDeclarationResolverImp().isRangeIdentificationVariable(variableName);
 	}
 
@@ -1029,12 +868,7 @@ final class JPQLQueryContext {
 		}
 	}
 
-	/**
-	 * Returns
-	 *
-	 * @return
-	 */
-	LiteralVisitor literalVisitor() {
+	private LiteralVisitor literalVisitor() {
 
 		if (parent != null) {
 			return parent.literalVisitor();
@@ -1185,11 +1019,48 @@ final class JPQLQueryContext {
 	}
 
 	/**
+	 * Visits the given <code><b>SELECT</b></code> query or subquery and populates the given {@link
+	 * ReportQuery}.
+	 *
+	 * @param expression The {@link AbstractSelectStatement} to visit and to convert its information
+	 * by populating the given query
+	 * @param query The {@link ReportQuery} to populate
+	 */
+	void populateReportQuery(AbstractSelectStatement expression, ReportQuery query) {
+		populateReportQuery(expression, query, EMPTY_TYPE);
+	}
+
+	/**
+	 * Visits the given <code><b>SELECT</b></code> query or subquery and populates the given {@link
+	 * ReportQuery}.
+	 *
+	 * @param expression The {@link AbstractSelectStatement} to visit and to convert its information
+	 * by populating the given query
+	 * @param query The {@link ReportQuery} to populate
+	 * @param type This array of a single element is used to store the result type
+	 */
+	void populateReportQuery(AbstractSelectStatement expression,
+	                         ReportQuery query,
+	                         Class<?>[] type) {
+
+		ReportQueryVisitor visitor = reportQueryVisitor();
+		try {
+			visitor.type  = type;
+			visitor.query = query;
+			expression.accept(visitor);
+		}
+		finally {
+			visitor.type  = null;
+			visitor.query = null;
+		}
+	}
+
+	/**
 	 * Returns the visitor that will visit the parsed JPQL query and populate an {@link ReportQuery}.
 	 *
 	 * @return The visitor used for a query of report query type
 	 */
-	ReportQueryVisitor reportQueryVisitor() {
+	private ReportQueryVisitor reportQueryVisitor() {
 
 		if (parent != null) {
 			return parent.reportQueryVisitor();
@@ -1202,38 +1073,41 @@ final class JPQLQueryContext {
 		return reportQueryVisitor;
 	}
 
+	/**
+	 * Resolves the given {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} and
+	 * returns the corresponding descriptor. Usually this method is used when retrieving the
+	 * descriptor for an identification variable or a path expression. In the case of a range
+	 * variable declaration, the descriptor of the entity is returned. In the case of a path
+	 * expression, the mapping reference descriptor will be returned.
+	 *
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
+	 */
 	ClassDescriptor resolveDescriptor(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 		return typeResolver().resolveDescriptor(expression);
-	}
-
-	ClassDescriptor resolveDescriptor(String variableName) {
-		Declaration declaration = findDeclaration(variableName);
-		return declaration.getDescriptor();
 	}
 
 	DatabaseMapping resolveMapping(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 		return typeResolver().resolveMapping(expression);
 	}
 
-	DatabaseMapping resolveMapping(String variableName) {
-		Declaration declaration = findDeclaration(variableName);
-		return declaration.getMapping();
+	Class<?> resolveMappingType(DatabaseMapping mapping) {
+		return typeResolver().resolveMappingType(mapping);
 	}
 
-	QueryKey resolveQueryKey(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-		return typeResolver().resolveQueryKey(expression);
+	Class<?> resolveQueryKeyType(QueryKey queryKey) {
+		return typeResolver().resolveQueryKeyType(queryKey);
 	}
 
 	/**
-	 * Sets
+	 * Sets the query to populate.
 	 *
-	 * @param query
+	 * @param query The {@link DatabaseQuery} that was created before populating it
 	 */
 	void setDatabasQuery(DatabaseQuery query) {
 		this.query = query;
 	}
 
-	private TypeResolver typeResolver() {
+	TypeResolver typeResolver() {
 
 		if (parent != null) {
 			return parent.typeResolver();

@@ -163,7 +163,6 @@ public final class DeleteClause extends AbstractExpression {
 		if (rangeVariableDeclaration == null) {
 			rangeVariableDeclaration = buildNullExpression();
 		}
-
 		return rangeVariableDeclaration;
 	}
 

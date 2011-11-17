@@ -14,7 +14,10 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
 /**
@@ -25,7 +28,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder<UpdateAllQuery> {
+final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder {
 
 	/**
 	 * Creates a new <code>UpdateQueryBuilder</code>.
@@ -41,6 +44,23 @@ final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder<UpdateAllQu
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(CollectionExpression expression) {
+		expression.acceptChildren(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(UpdateClause expression) {
+		expression.getRangeVariableDeclaration().accept(this);
+		expression.getUpdateItems().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(UpdateItem expression) {
 
 		// Create the Expression for the state field path expression
@@ -50,6 +70,19 @@ final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder<UpdateAllQu
 		Expression rightExpression = queryContext.buildExpression(expression.getNewValue());
 
 		// Add the expressions to the query
-		getDatabaseQuery().addUpdate(leftExpression, rightExpression);
+		((UpdateAllQuery) query).addUpdate(leftExpression, rightExpression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(UpdateStatement expression) {
+
+		expression.getUpdateClause().accept(this);
+
+		if (expression.hasWhereClause()) {
+			expression.getWhereClause().accept(this);
+		}
 	}
 }

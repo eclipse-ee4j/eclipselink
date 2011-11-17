@@ -105,7 +105,8 @@ final class ObjectLevelReadQueryVisitor extends AbstractReadAllQueryVisitor {
 					// Then add the join associated path expression as a joined attribute
 					// Example: FROM Employee e JOIN FETCH e.employees
 					if (variableName.equals(joinFetchVariableName)) {
-						getDatabaseQuery().addJoinedAttribute(queryContext.buildExpression(joinFetch));
+						org.eclipse.persistence.expressions.Expression queryExpression = queryContext.buildExpression(joinFetch);
+						query.addJoinedAttribute(queryExpression);
 					}
 				}
 			}

@@ -13,14 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
-import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
-import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -45,6 +42,12 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	private ReportItemBuilder selectItemsBuilder;
 
 	/**
+	 * This array is used to store the type of the select {@link Expression JPQL Expression} that is
+	 * converted into an {@link Expression EclipseLink Expression}.
+	 */
+	Class<?>[] type;
+
+	/**
 	 * Creates a new <code>ReportQueryVisitor</code>.
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
@@ -52,14 +55,6 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	 */
 	ReportQueryVisitor(JPQLQueryContext queryContext) {
 		super(queryContext);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	ReportQuery getDatabaseQuery() {
-		return (ReportQuery) super.getDatabaseQuery();
 	}
 
 	private GroupByVisitor groupByVisitor() {
@@ -75,7 +70,7 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	 *
 	 * @return The builder used for the select items
 	 */
-	private ExpressionVisitor selectItemsBuilder() {
+	private ReportItemBuilder selectItemsBuilder() {
 		if (selectItemsBuilder == null) {
 			selectItemsBuilder = new ReportItemBuilder(queryContext);
 		}
@@ -95,26 +90,34 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	 */
 	@Override
 	public void visit(HavingClause expression) {
-		Expression queryExpression = queryContext.buildExpression(expression);
-		getDatabaseQuery().setHavingExpression(queryExpression);
+		((ReportQuery) query).setHavingExpression(queryContext.buildExpression(expression));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SelectClause expression) {
-		super.visit(expression);
-		expression.accept(selectItemsBuilder());
+	void visitAbstractSelectClause(AbstractSelectClause expression) {
+		super.visitAbstractSelectClause(expression);
+		visitSelectClause(expression);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(SimpleSelectClause expression) {
-		super.visit(expression);
-		expression.accept(selectItemsBuilder());
+	private void visitSelectClause(AbstractSelectClause expression) {
+
+		ReportItemBuilder builder = selectItemsBuilder();
+
+		try {
+			builder.type[0] = null;
+			builder.query   = (ReportQuery) query;
+
+			expression.accept(builder);
+
+			type[0] = builder.type[0];
+		}
+		finally {
+			builder.query   = null;
+			builder.type[0] = null;
+		}
 	}
 
 	/**
@@ -144,8 +147,7 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 		 */
 		@Override
 		protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-			Expression queryExpression = queryContext.buildExpression(expression);
-			getDatabaseQuery().addGrouping(queryExpression);
+			((ReportQuery) query).addGrouping(queryContext.buildExpression(expression));
 		}
 	}
 }

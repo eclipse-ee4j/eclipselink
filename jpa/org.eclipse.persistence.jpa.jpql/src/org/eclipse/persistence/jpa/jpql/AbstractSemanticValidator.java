@@ -1653,8 +1653,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		// 1. A state_field_path_expression that evaluates to an orderable state
 		//    field of an entity or embeddable class abstract schema type
 		//    designated in the SELECT clause by one of the following:
-		//    â€¢ a general_identification_variable
-		//    â€¢ a single_valued_object_path_expression
+		//    • a general_identification_variable
+		//    • a single_valued_object_path_expression
 		// 2. A state_field_path_expression that evaluates to the same state field
 		//    of the same entity or embeddable abstract schema type as a
 		//    state_field_path_expression in the SELECT clause

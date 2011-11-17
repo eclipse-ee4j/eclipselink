@@ -14,7 +14,105 @@
 package org.eclipse.persistence.jpa.jpql.model;
 
 import java.util.ListIterator;
-import org.eclipse.persistence.jpa.jpql.model.query.*;
+import org.eclipse.persistence.jpa.jpql.model.query.AbsExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractConditionalClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractDoubleEncapsulatedExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractFromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractIdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractModifyStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractPathExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractRangeVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractSchemaNameStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractSelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractSingleEncapsulatedExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractTripleEncapsulatedExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AdditionExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AllOrAnyExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AndExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ArithmeticFactorStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AvgFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.BadExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.BetweenExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CaseExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CoalesceExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CollectionMemberDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CollectionMemberExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CollectionValuedPathExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ComparisonExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CompoundExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ConcatExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ConstructorExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CountFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DateTimeStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DeleteClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DeleteStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DerivedPathIdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DerivedPathVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DivisionExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EmptyCollectionComparisonExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EncapsulatedIdentificationVariableExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EntityTypeLiteralStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EntryExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EnumTypeStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ExistsExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.FromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.GroupByClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.HavingClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.InExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IndexExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.InputParameterStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.JoinFetchStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.JoinStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.KeyExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.KeywordExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LengthExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LikeExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ListHolderStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LocateExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LowerExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.MaxFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.MinFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ModExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.MultiplicationExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NotExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NullComparisonExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NullIfExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NumericLiteralStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ObjectExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OrExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OrderByClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OrderByItemStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.RangeVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ResultVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SelectClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleFromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleSelectClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleSelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SizeExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SqrtExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateObjectVisitor;
+import org.eclipse.persistence.jpa.jpql.model.query.StringLiteralStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SubtractionExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SumFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.TrimExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.TypeExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UnknownExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpdateClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpdateItemStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpdateStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpperExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ValueExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.WhenClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.WhereClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractDoubleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
@@ -28,6 +126,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
@@ -36,6 +135,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
+import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
@@ -398,33 +498,39 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			// FROM clause
 			stateObject.getFromClause().accept(this);
 
+			if (!exactMatch && expression.hasSpaceAfterFrom()) {
+				writer.append(SPACE);
+			}
+
 			// WHERE clause
 			if (stateObject.hasWhereClause()) {
-
-				if (!exactMatch | expression.hasSpaceAfterFrom()) {
+				if (exactMatch) {
 					writer.append(SPACE);
 				}
-
 				stateObject.getWhereClause().accept(this);
+			}
+
+			if (!exactMatch && expression.hasSpaceAfterWhere()) {
+				writer.append(SPACE);
 			}
 
 			// GROUP BY clause
 			if (stateObject.hasGroupByClause()) {
-
-				if (!exactMatch | expression.hasSpaceAfterWhere()) {
+				if (exactMatch) {
 					writer.append(SPACE);
 				}
-
 				stateObject.getGroupByClause().accept(this);
+			}
+
+			if (!exactMatch && expression.hasSpaceAfterGroupBy()) {
+				writer.append(SPACE);
 			}
 
 			// HAVING clause
 			if (stateObject.hasHavingClause()) {
-
-				if (!exactMatch | expression.hasSpaceAfterGroupBy()) {
+				if (exactMatch) {
 					writer.append(SPACE);
 				}
-
 				stateObject.getHavingClause().accept(this);
 			}
 		}
@@ -965,7 +1071,14 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(DateTimeStateObject stateObject) {
-		toStringSimpleStateObject(stateObject);
+
+		if (stateObject.isDecorated()) {
+			stateObject.getDecorator().accept(this);
+		}
+		else {
+			DateTime expression = stateObject.getExpression();
+			writer.append(expression.getActualIdentifier());
+		}
 	}
 
 	/**
@@ -1284,7 +1397,14 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(KeywordExpressionStateObject stateObject) {
-		toStringSimpleStateObject(stateObject);
+
+		if (stateObject.isDecorated()) {
+			stateObject.getDecorator().accept(this);
+		}
+		else {
+			KeywordExpression expression = stateObject.getExpression();
+			writer.append(expression.getActualIdentifier());
+		}
 	}
 
 	/**
@@ -1438,7 +1558,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 
 			// Expression
 			if (stateObject.hasStateObject()) {
-				stateObject.accept(this);
+				stateObject.getStateObject().accept(this);
 				writer.append(SPACE);
 			}
 			else if (expression.hasExpression()) {
@@ -1635,12 +1755,15 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 
 		SelectStatement expression = stateObject.getExpression();
 
-		if (!exactMatch | expression.hasSpaceBeforeOrderBy()) {
+		if (!exactMatch && expression.hasSpaceBeforeOrderBy()) {
 			writer.append(SPACE);
 		}
 
 		// ORDER BY clause
 		if (stateObject.hasOrderByClause()) {
+			if (exactMatch) {
+				writer.append(SPACE);
+			}
 			stateObject.getOrderByClause().accept(this);
 		}
 	}

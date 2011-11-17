@@ -31,7 +31,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 abstract class Declaration {
 
 	/**
-	 * Either the range variable declaration if this is a range declaration otherwise the
+	 * The base {@link Expression} is the  Either the range variable declaration if this is a range declaration otherwise the
 	 * collection-valued path expression when this is a collection member declaration.
 	 */
 	Expression baseExpression;
@@ -44,7 +44,7 @@ abstract class Declaration {
 	Expression declarationExpression;
 
 	/**
-	 *
+	 * The cached {@link ClassDescriptor} that represents this {@link Declaration}'s "root" path.
 	 */
 	private ClassDescriptor descriptor;
 
@@ -55,7 +55,8 @@ abstract class Declaration {
 	IdentificationVariable identificationVariable;
 
 	/**
-	 *
+	 * The cached {@link DatabaseMapping} if this {@link Declaration}'s "root" path points to a
+	 * mapping, otherwise it will be <code>null</code>.
 	 */
 	private DatabaseMapping mapping;
 
@@ -66,13 +67,17 @@ abstract class Declaration {
 	final JPQLQueryContext queryContext;
 
 	/**
+	 * The {@link org.eclipse.persistence.expressions.Expression Expression} representing the
+	 * information of this {@link Declaration}.
+	 */
+	private org.eclipse.persistence.expressions.Expression queryExpression;
+
+	/**
 	 * The "root" object for objects which may not be reachable by navigation, it is either the
 	 * abstract schema name (entity name), a derived path expression (which is only defined in a
 	 * subquery) or <code>null</code> if this {@link Declaration} is a collection member declaration.
 	 */
 	String rootPath;
-
-	private Class<?> type;
 
 	/**
 	 * Creates a new <code>Declaration</code>.
@@ -85,20 +90,12 @@ abstract class Declaration {
 		this.queryContext = queryContext;
 	}
 
-	abstract org.eclipse.persistence.expressions.Expression buildExpression();
-
 	/**
-	 * Retrieves
+	 * Creates the Expression {@link Expression} for this {@link Declaration}.
 	 *
-	 * @param variableName
-	 * @return
+	 * @return A new {@link org.eclipse.persistence.expressions.Expression Expression}
 	 */
-	Expression findExpressionWithVariableName(String variableName) {
-		if (getVariableName().equals(variableName)) {
-			return baseExpression;
-		}
-		return null;
-	}
+	abstract org.eclipse.persistence.expressions.Expression buildQueryExpression();
 
 	/**
 	 * Returns the range variable declaration if this is a range declaration otherwise the
@@ -122,9 +119,9 @@ abstract class Declaration {
 	}
 
 	/**
-	 * Returns
+	 * Returns the {@link ClassDescriptor} that represents this {@link Declaration}'s "root" path.
 	 *
-	 * @return
+	 * @return The descriptor of the "root" path
 	 */
 	final ClassDescriptor getDescriptor() {
 		if (descriptor == null) {
@@ -134,9 +131,11 @@ abstract class Declaration {
 	}
 
 	/**
-	 * Returns
+	 * Returns the {@link DatabaseMapping} that this {@link Declaration} represents, which may be
+	 * <code>null</code> in the case it does not represent one.
 	 *
-	 * @return
+	 * @return Either the {@link DatabaseMapping} of the "root" path, or <code>null</code> if the
+	 * "root" path is not a mapping
 	 */
 	final DatabaseMapping getMapping() {
 		if (mapping == null) {
@@ -146,15 +145,23 @@ abstract class Declaration {
 	}
 
 	/**
-	 * Returns
+	 * Returns the Expression {@link Expression} for this {@link Declaration}.
 	 *
-	 * @return
+	 * @return The {@link org.eclipse.persistence.expressions.Expression Expression} representing the
+	 * information of this {@link Declaration}
 	 */
-	final Class<?> getType() {
-		if (type == null) {
-			type = resolveType();
+	final org.eclipse.persistence.expressions.Expression getQueryExpression() {
+
+		if (queryExpression == null) {
+
+			// First create the Expression
+			queryExpression = buildQueryExpression();
+
+			// Cache the base expression with its identification variable as well
+			queryContext.addQueryExpressionImp(getVariableName(), queryExpression);
 		}
-		return type;
+
+		return queryExpression;
 	}
 
 	/**
@@ -163,21 +170,11 @@ abstract class Declaration {
 	 *
 	 * @return The identification variable or an empty string if none was defined
 	 */
-	String getVariableName() {
+	final String getVariableName() {
 		if (identificationVariable == null) {
 			return ExpressionTools.EMPTY_STRING;
 		}
 		return identificationVariable.getVariableName();
-	}
-
-	/**
-	 * Determines whether
-	 *
-	 * @param variableName
-	 * @return
-	 */
-	boolean hasAlias(String variableName) {
-		return getVariableName().equals(variableName);
 	}
 
 	/**
@@ -212,13 +209,6 @@ abstract class Declaration {
 	 * @return
 	 */
 	abstract DatabaseMapping resolveMapping();
-
-	/**
-	 * Resolves
-	 *
-	 * @return
-	 */
-	abstract Class<?> resolveType();
 
 	/**
 	 * {@inheritDoc}

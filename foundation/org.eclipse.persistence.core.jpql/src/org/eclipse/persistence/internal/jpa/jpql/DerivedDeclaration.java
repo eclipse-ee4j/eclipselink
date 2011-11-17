@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -31,11 +32,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 final class DerivedDeclaration extends AbstractRangeDeclaration {
 
 	/**
-	 * The identification variable of the derived path expression.
-	 */
-	private String derivedIdentificationVariableName;
-
-	/**
 	 * Creates a new <code>DerivedDeclaration</code>.
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
@@ -49,22 +45,22 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	Expression buildExpression() {
-		return queryContext.buildExpression(getBaseExpression().getAbstractSchemaName());
-	}
+	Expression buildQueryExpression() {
 
-	/**
-	 * Returns the identification variable used in the derived path expression that is defined in the
-	 * superquery.
-	 *
-	 * @return The identification variable starting the derived path expression
-	 */
-	String getDerivedIdentificationVariableName() {
-		if (derivedIdentificationVariableName == null) {
-			int index = rootPath.indexOf('.');
-			derivedIdentificationVariableName = rootPath.substring(0, index).toUpperCase().intern();
-		}
-		return derivedIdentificationVariableName;
+		// Retrieve the superquery identification variable from the derived path
+		int index = rootPath.indexOf('.');
+		String superqueryVariableName = rootPath.substring(0, index).toUpperCase().intern();
+
+		// Create the local ExpressionBuilder for the super identification variable
+		Expression expression = queryContext.getParent().findQueryExpressionImp(superqueryVariableName);
+		expression = new ExpressionBuilder(expression.getBuilder().getQueryClass());
+
+		// Cache the info
+		queryContext.addUsedIdentificationVariable(superqueryVariableName);
+		queryContext.addQueryExpression(superqueryVariableName, expression);
+
+		// Now create the base Expression for the actual derived path
+		return queryContext.buildExpression(baseExpression);
 	}
 
 	/**
@@ -88,7 +84,7 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 	 */
 	@Override
 	ClassDescriptor resolveDescriptor() {
-		return getMapping().getReferenceDescriptor();
+		return queryContext.resolveDescriptor(getBaseExpression().getAbstractSchemaName());
 	}
 
 	/**
@@ -97,13 +93,5 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 	@Override
 	DatabaseMapping resolveMapping() {
 		return queryContext.resolveMapping(getBaseExpression().getAbstractSchemaName());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	Class<?> resolveType() {
-		return getMapping().getReferenceDescriptor().getJavaClass();
 	}
 }

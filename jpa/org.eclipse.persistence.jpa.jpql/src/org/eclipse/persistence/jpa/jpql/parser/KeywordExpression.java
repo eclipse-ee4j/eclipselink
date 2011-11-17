@@ -98,8 +98,8 @@ public final class KeywordExpression extends AbstractExpression {
 
 	private String parseIdentifier(WordParser wordParser) {
 		switch (wordParser.character()) {
-			case 'T': return TRUE;
-			case 'F': return FALSE;
+			case 'T': case 't': return TRUE;
+			case 'F': case 'f': return FALSE;
 			default:  return NULL;
 		}
 	}

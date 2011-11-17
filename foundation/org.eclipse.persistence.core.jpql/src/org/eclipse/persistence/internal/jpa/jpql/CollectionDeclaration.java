@@ -46,8 +46,8 @@ final class CollectionDeclaration extends Declaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	Expression buildExpression() {
-		return queryContext.buildExpression(getBaseExpression());
+	Expression buildQueryExpression() {
+		return queryContext.buildExpression(baseExpression);
 	}
 
 	/**
@@ -87,7 +87,7 @@ final class CollectionDeclaration extends Declaration {
 	 */
 	@Override
 	ClassDescriptor resolveDescriptor() {
-		return getMapping().getReferenceDescriptor();
+		return queryContext.resolveDescriptor(baseExpression);
 	}
 
 	/**
@@ -95,14 +95,6 @@ final class CollectionDeclaration extends Declaration {
 	 */
 	@Override
 	DatabaseMapping resolveMapping() {
-		return queryContext.resolveMapping(getBaseExpression());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	Class<?> resolveType() {
-		return getMapping().getReferenceDescriptor().getJavaClass();
+		return queryContext.resolveMapping(baseExpression);
 	}
 }

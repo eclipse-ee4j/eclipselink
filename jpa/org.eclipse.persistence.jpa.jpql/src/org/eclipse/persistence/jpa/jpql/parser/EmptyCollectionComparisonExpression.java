@@ -257,10 +257,23 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		String identifier = getText();
 
 		if (identifier != null) {
-			wordParser.moveForward(identifier);
+			// 'IS'
 			hasIs = true;
+			isIdentifier = wordParser.moveForward(IS);
 			hasSpaceAfterIs = true;
+
+			wordParser.moveForward(1);
+
+			// 'NOT'
 			hasNot = (identifier == IS_NOT_EMPTY);
+
+			if (hasNot) {
+				notIdentifier = wordParser.moveForward(NOT);
+				wordParser.moveForward(1);
+			}
+
+			// 'EMPTY'
+			emptyIdentifier = wordParser.moveForward(EMPTY);
 		}
 		else {
 			// Parse 'IS'
@@ -273,13 +286,13 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 			// Parse 'NOT'
 			hasNot = wordParser.startsWithIdentifier(NOT);
 
-			// Remove 'NOT'
+			// Parse 'NOT'
 			if (hasNot) {
 				notIdentifier = wordParser.moveForward(NOT);
 				wordParser.skipLeadingWhitespace();
 			}
 
-			// Remove 'EMPTY'
+			// Parse 'EMPTY'
 			emptyIdentifier = wordParser.moveForward(EMPTY);
 		}
 	}
