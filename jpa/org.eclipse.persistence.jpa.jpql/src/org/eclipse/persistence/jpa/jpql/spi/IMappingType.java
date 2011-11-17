@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -14,86 +14,66 @@
 package org.eclipse.persistence.jpa.jpql.spi;
 
 /**
- * This enumeration lists the supported mapping types.
+ * This enumeration lists the mapping types defined in the Java Persistence functional specification.
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
-public enum IMappingType {
+public interface IMappingType {
 
 	/**
 	 * The constant for a basic mapping.
 	 */
-	BASIC,
+	int BASIC = 1;
 
 	/**
-	 * The constant for a basic collection mapping, which is deprecated.
+	 * The constant for an element collection mapping.
 	 */
-	BASIC_COLLECTION,
-
-	/**
-	 * The constant for a basic map mapping, which is deprecated.
-	 */
-	BASIC_MAP,
-
-	/**
-	 * The constant for a element collection mapping.
-	 */
-	ELEMENT_COLLECTION,
+	int ELEMENT_COLLECTION = 2;
 
 	/**
 	 * The constant for an embedded mapping.
 	 */
-	EMBEDDED,
+	int EMBEDDED = 3;
 
 	/**
 	 * The constant for an embedded ID mapping.
 	 */
-	EMBEDDED_ID,
+	int EMBEDDED_ID = 4;
 
 	/**
 	 * The constant for an ID mapping.
 	 */
-	ID,
+	int ID = 5;
 
 	/**
 	 * The constant for a many to many mapping.
 	 */
-	MANY_TO_MANY,
+	int MANY_TO_MANY = 6;
 
 	/**
 	 * The constant for a many to one mapping.
 	 */
-	MANY_TO_ONE,
+	int MANY_TO_ONE = 7;
 
 	/**
 	 * The constant for a one to many mapping.
 	 */
-	ONE_TO_MANY,
+	int ONE_TO_MANY = 8;
 
 	/**
 	 * The constant for a one to one mapping.
 	 */
-	ONE_TO_ONE,
-
-	/**
-	 * The constant for a transformation mapping.
-	 */
-	TRANSFORMATION,
+	int ONE_TO_ONE = 9;
 
 	/**
 	 * The constant for an attribute that is not persistent.
 	 */
-	TRANSIENT,
-
-	/**
-	 * The constant for a variable one to one mapping.
-	 */
-	VARIABLE_ONE_TO_ONE,
+	int TRANSIENT = 10;
 
 	/**
 	 * The constant for a version mapping.
 	 */
-	VERSION
+	int VERSION = 11;
 }

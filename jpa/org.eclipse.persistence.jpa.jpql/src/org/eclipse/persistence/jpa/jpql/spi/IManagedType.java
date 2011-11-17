@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.spi;
 
+import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
+
 /**
  * The external representation of a managed type, which is a JPA persistent object.
  *
@@ -20,7 +22,7 @@ package org.eclipse.persistence.jpa.jpql.spi;
  * @see IEntity
  * @see IMappedSuperclass
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
@@ -38,15 +40,14 @@ public interface IManagedType extends IExternalForm,
 	 * Returns the {@link IMapping} with the given name.
 	 *
 	 * @param name The name of the mapping to retrieve
-	 * @return Either the {@link IMapping} or <code>null</code> if it could not
-	 * be found
+	 * @return Either the {@link IMapping} or <code>null</code> if it could not be found
 	 */
 	IMapping getMappingNamed(String name);
 
 	/**
 	 * Retrieves the owner of this managed type.
 	 *
-	 * @return The external form holding onto the JPA managed types.
+	 * @return The external form holding onto the JPA managed types
 	 */
 	IManagedTypeProvider getProvider();
 
@@ -62,5 +63,5 @@ public interface IManagedType extends IExternalForm,
 	 *
 	 * @return The collection of persistent fields and properties of this managed type
 	 */
-	Iterable<IMapping> mappings();
+	IterableIterator<IMapping> mappings();
 }

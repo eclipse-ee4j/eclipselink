@@ -1,0 +1,154 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation
+ *
+ ******************************************************************************/
+package org.eclipse.persistence.jpa.tests.jpql.parser;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
+import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
+import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.SelectItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
+
+/**
+ * @version 2.4
+ * @since 2.3
+ * @author Pascal Filion
+ */
+public class JPQLQueryBNFAccessor {
+
+	public ExpressionRegistry registry;
+
+	/**
+	 * Creates a new <code>JPQLQueryBNFAccessor</code>.
+	 *
+	 * @param registry
+	 */
+	public JPQLQueryBNFAccessor(ExpressionRegistry registry) {
+		super();
+		this.registry = registry;
+	}
+
+	public Iterable<String> aggregates(Iterable<String> identifiers) {
+		return filter(identifiers, IdentifierRole.AGGREGATE);
+	}
+
+	public Iterable<String> clauses(Iterable<String> identifiers) {
+		return filter(identifiers, IdentifierRole.CLAUSE);
+	}
+
+	public Iterable<String> collectionMemberDeclarationParameters() {
+		return getIdentifiers(CollectionValuedPathExpressionBNF.ID);
+	}
+
+	public Iterable<String> comparisonExpressionClauses() {
+		return clauses(comparisonExpressionIdentifiers());
+	}
+
+	public Iterable<String> comparisonExpressionFunctions() {
+		return functions(comparisonExpressionIdentifiers());
+	}
+
+	public Iterable<String> comparisonExpressionIdentifiers() {
+		return getIdentifiers(ComparisonExpressionBNF.ID);
+	}
+
+	public Iterable<String> constructorItemFunctions() {
+		return functions(constructorItemIdentifiers());
+	}
+
+	public Iterable<String> constructorItemIdentifiers() {
+		return getIdentifiers(ConstructorItemBNF.ID);
+	}
+
+	public Iterable<String> countFunctions() {
+		return functions(countIdentifiers());
+	}
+
+	public Iterable<String> countIdentifiers() {
+		return getIdentifiers(InternalCountBNF.ID);
+	}
+
+	public Iterable<String> filter(Iterable<String> identifiers,
+	                                       IdentifierRole identifierRole) {
+
+		List<String> items = new ArrayList<String>();
+
+		for (String identifier : identifiers) {
+			if (getIdentifierRole(identifier) == identifierRole) {
+				items.add(identifier);
+			}
+		}
+
+		return items;
+	}
+
+	public Iterable<String> functions(Iterable<String> identifiers) {
+		return filter(identifiers, IdentifierRole.FUNCTION);
+	}
+
+	public IdentifierRole getIdentifierRole(String identifier) {
+		return registry.getIdentifierRole(identifier);
+	}
+
+	public Iterable<String> getIdentifiers(String queryBNFId) {
+		return getQueryBNF(queryBNFId).getIdentifiers();
+	}
+
+	public JPQLQueryBNF getQueryBNF(String queryBNFId) {
+		return registry.getQueryBNF(queryBNFId);
+	}
+
+	public Iterable<String> scalarExpressionFunctions() {
+		return functions(scalarExpressionIdentifiers());
+	}
+
+	public Iterable<String> scalarExpressionIdentifiers() {
+		return getIdentifiers(ScalarExpressionBNF.ID);
+	}
+
+	public Iterable<String> selectItemAggregates() {
+		return aggregates(selectItemIdentifiers());
+	}
+
+	public Iterable<String> selectItemFunctions() {
+		return functions(selectItemIdentifiers());
+	}
+
+	public Iterable<String> selectItemIdentifiers() {
+		return getIdentifiers(SelectItemBNF.ID);
+	}
+
+	public Iterable<String> subSelectFunctions() {
+		return functions(subSelectIdentifiers());
+	}
+
+	public Iterable<String> subSelectIdentifiers() {
+		return getIdentifiers(SimpleSelectExpressionBNF.ID);
+	}
+
+	public Iterable<String> whereClauseFunctions() {
+		return functions(whereClauseIdentifiers());
+	}
+
+	public Iterable<String> whereClauseIdentifiers() {
+		return getIdentifiers(ConditionalExpressionBNF.ID);
+	}
+}

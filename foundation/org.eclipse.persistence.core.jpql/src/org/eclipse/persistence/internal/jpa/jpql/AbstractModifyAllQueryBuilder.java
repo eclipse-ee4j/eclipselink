@@ -15,9 +15,9 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractTraverseChildrenVisitor;
-import org.eclipse.persistence.jpa.internal.jpql.parser.RangeVariableDeclaration;
-import org.eclipse.persistence.jpa.internal.jpql.parser.WhereClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseChildrenVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.queries.ModifyAllQuery;
 
 /**
@@ -26,24 +26,26 @@ import org.eclipse.persistence.queries.ModifyAllQuery;
  * @see DeleteQueryVisitor
  * @see UpdateQueryVisitor
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
  */
-abstract class AbstractModifyAllQueryBuilder<T extends ModifyAllQuery> extends AbstractTraverseChildrenVisitor {
+abstract class AbstractModifyAllQueryBuilder<T extends ModifyAllQuery> extends AbstractEclipseLinkTraverseChildrenVisitor {
 
 	/**
-	 * The context used to query information about the application metadata.
+	 * The {@link JPQLQueryContext} is used to query information about the application metadata and
+	 * cached information.
 	 */
-	final DefaultJPQLQueryContext queryContext;
+	final JPQLQueryContext queryContext;
 
 	/**
 	 * Creates a new <code>AbstractModifyAllQueryBuilder</code>.
 	 *
-	 * @param queryContext The context used to query information about the application metadata
+	 * @param queryContext The context used to query information about the application metadata and
+	 * cached information
 	 */
-	AbstractModifyAllQueryBuilder(DefaultJPQLQueryContext queryContext) {
+	AbstractModifyAllQueryBuilder(JPQLQueryContext queryContext) {
 		super();
 		this.queryContext = queryContext;
 	}
@@ -51,7 +53,7 @@ abstract class AbstractModifyAllQueryBuilder<T extends ModifyAllQuery> extends A
 	/**
 	 * Returns the {@link ModifyAllQuery}.
 	 *
-	 * @return The query being visitor
+	 * @return The query being populated
 	 */
 	@SuppressWarnings("unchecked")
 	T getDatabaseQuery() {
@@ -82,7 +84,7 @@ abstract class AbstractModifyAllQueryBuilder<T extends ModifyAllQuery> extends A
 	 */
 	@Override
 	public void visit(WhereClause expression) {
-		Expression queryExpression = queryContext.buildQueryExpression(expression);
+		Expression queryExpression = queryContext.buildExpression(expression);
 		getDatabaseQuery().setSelectionCriteria(queryExpression);
 	}
 }

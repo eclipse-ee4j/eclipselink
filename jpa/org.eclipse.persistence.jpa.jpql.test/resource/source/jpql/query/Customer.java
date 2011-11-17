@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 
@@ -42,8 +43,10 @@ public class Customer implements Serializable {
 	@OrderBy
 	@OneToMany(mappedBy = "customer")
 	private List<Alias> aliases;
+	@OneToOne
 	private Home home;
 	@Transient
 	private String title;
+	@OneToOne
 	private Dept dept;
 }

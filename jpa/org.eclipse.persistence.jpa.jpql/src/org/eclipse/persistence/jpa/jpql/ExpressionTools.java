@@ -13,12 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import org.eclipse.persistence.jpa.internal.jpql.WordParser;
-
 /**
  * A utility class containing various methods related to the Hermes parser.
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
@@ -157,6 +155,20 @@ public final class ExpressionTools {
 		}
 
 		return wordParser.substring(wordParser.position(), endIndex);
+	}
+
+	/**
+	 * Returns the given string literal by wrapping it with single quotes. Any single quote within
+	 * the string will be escaped with another single quote.
+	 *
+	 * @param text The original text to quote
+	 * @return The quoted text
+	 * @since 2.4
+	 */
+	public static String quote(String text) {
+		text = text.replace("'", "''");
+		text = "'" + text + "'";
+		return text;
 	}
 
 	/**
@@ -392,41 +404,5 @@ public final class ExpressionTools {
 		text = text.substring(startIndex, endIndex);
 		text = text.replace("''", "'");
 		return text;
-	}
-
-	/**
-	 * Determines whether the values are different, with the appropriate <code>null</code> checks.
-	 *
-	 * @param value1 The first value to check for equality and equivalency
-	 * @param value2 The second value to check for equality and equivalency
-	 * @return <code>true</code> if both values are different; <code>true</code> if they are both
-	 * <code>null</code>, equal or equivalent
-	 */
-	public static boolean valuesAreDifferent(Object value1, Object value2) {
-		return !valuesAreEqual(value1, value2);
-	}
-
-	/**
-	 * Determines whether the values are equal or equivalent, with the appropriate <code>null</code>
-	 * checks.
-	 *
-	 * @param value1 The first value to check for equality and equivalency
-	 * @param value2 The second value to check for equality and equivalency
-	 * @return <code>true</code> if both values are <code>null</code>, equal or equivalent;
-	 * <code>false</code> otherwise
-	 */
-	public static boolean valuesAreEqual(Object value1, Object value2) {
-
-		// Both are equal or both are null
-		if ((value1 == value2) || (value1 == null) && (value2 == null)) {
-			return true;
-		}
-
-		// One is null but the other is not
-		if ((value1 == null) || (value2 == null)) {
-			return false;
-		}
-
-		return value1.equals(value2);
 	}
 }

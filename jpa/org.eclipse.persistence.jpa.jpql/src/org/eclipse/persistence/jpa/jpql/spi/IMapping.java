@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2006, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -21,19 +21,22 @@ import java.lang.annotation.Annotation;
  *
  * @see IManagedType
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
 public interface IMapping extends IExternalForm,
                                   Comparable<IMapping> {
 
+
 	/**
 	 * Returns the type of this mapping.
 	 *
-	 * @return One of the supported mapping type
+	 * @return One of the supported mapping type, which is one of the constants defined in {@link
+	 * org.eclipse.persistence.jpa.jpql.spi.IMappingType IMappingType} when the provider only
+	 * supports generic JPA
 	 */
-	IMappingType getMappingType();
+	int getMappingType();
 
 	/**
 	 * Returns the name of the persistence property represented by this mapping.
@@ -83,4 +86,40 @@ public interface IMapping extends IExternalForm,
 	 * otherwise
 	 */
 	boolean hasAnnotation(Class<? extends Annotation> annotationType);
+
+	/**
+	 * Determines whether this {@link IMapping} is a collection type mapping.
+	 *
+	 * @return <code>true</code> if this {@link IMapping} is a collection mapping;
+	 * <code>false</code> otherwise
+	 * @since 2.4
+	 */
+	boolean isCollection();
+
+	/**
+	 * Determines whether this {@link IMapping} is a not a collection type mapping.
+	 *
+	 * @return <code>true</code> if this {@link IMapping} is a not collection mapping;
+	 * <code>false</code> otherwise
+	 * @since 2.4
+	 */
+	boolean isProperty();
+
+	/**
+	 * Determines whether this {@link IMapping} is a relationship type mapping.
+	 *
+	 * @return <code>true</code> if this {@link IMapping} is a relationship mapping;
+	 * <code>false</code> otherwise
+	 * @since 2.4
+	 */
+	boolean isRelationship();
+
+	/**
+	 * Determines whether this {@link IMapping} is a transient mapping.
+	 *
+	 * @return <code>true</code> if this {@link IMapping} is a transient mapping;
+	 * <code>false</code> otherwise
+	 * @since 2.4
+	 */
+	boolean isTransient();
 }

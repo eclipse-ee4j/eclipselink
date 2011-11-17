@@ -1,0 +1,34 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation
+ *
+ ******************************************************************************/
+package org.eclipse.persistence.jpa.jpql.model;
+
+/**
+ * @version 2.4
+ * @since 2.4
+ * @author Pascal Filion
+ */
+public final class DefaultActualJPQLQueryFormatter extends AbstractActualJPQLQueryFormatter {
+
+	/**
+	 * Creates a new <code>DefaultActualJPQLQueryFormatter</code>.
+	 *
+	 * @param exactMatch Determines whether the string representation of any given {@link StateObject}
+	 * should reflect the exact string that was parsed: <code>true</code> will use every bit of
+	 * information contained in the corresponding {@link Expression} to perfectly match what was
+	 * parsed; <code>false</code> will only match the case sensitivity of the JPQL identifiers
+	 */
+	public DefaultActualJPQLQueryFormatter(boolean exactMatch) {
+		super(exactMatch);
+	}
+}

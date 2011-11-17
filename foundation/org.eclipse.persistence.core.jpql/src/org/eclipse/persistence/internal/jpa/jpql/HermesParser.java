@@ -20,20 +20,22 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemMessages;
-import org.eclipse.persistence.jpa.internal.jpql.JPQLQueryProblemResourceBundle;
-import org.eclipse.persistence.jpa.internal.jpql.parser.AbstractExpressionVisitor;
-import org.eclipse.persistence.jpa.internal.jpql.parser.DeleteStatement;
-import org.eclipse.persistence.jpa.internal.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.SelectStatement;
-import org.eclipse.persistence.jpa.internal.jpql.parser.UpdateStatement;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-import org.eclipse.persistence.jpa.jpql.spi.IJPAVersion;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
-import org.eclipse.persistence.queries.ModifyAllQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
 /**
@@ -43,13 +45,18 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * @see DefaultJPQLQueryHelper
  * @see JPQLExpression
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author John Bracken
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class HermesParser /*implements JPQLQueryParser*/ {
+public final class HermesParser /*implements JPAQueryBuilder*/ {
+
+	/**
+	 * The visitor used to populate an existing {@link DatabaseQuery}.
+	 */
+	private DatabaseQueryVisitor databaseQueryVisitor;
 
 	/**
 	 * This visitor is responsible to create and populate a {@link DeleteAllQuery}.
@@ -57,24 +64,24 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 	private DeleteQueryVisitor deleteQueryVisitor;
 
 	/**
-	 * The visitor used to populate an existing {@link DatabaseQuery}.
-	 */
-	private ExistingQueryBuilderVisitor existingQueryBuilderVisitor;
-
-	/**
-	 * The visitor used to create a new {@link DatabaseQuery}.
-	 */
-	private NewQueryBuilderVisitor newQueryBuilderVisitor;
-
-	/**
 	 * The contextual information for building a {@link DatabaseQuery}.
 	 */
-	private DefaultJPQLQueryContext queryContext;
+	private JPQLQueryContext queryContext;
 
 	/**
 	 * This helper is used to invoke validation on a JPQL query if it is turned on.
 	 */
-	private JPQLQueryHelper queryHelper;
+	private DefaultJPQLQueryHelper queryHelper;
+
+	/**
+	 * This visitor is responsible to create the right read query based on the select expression.
+	 */
+	private ReadAllQueryBuilder readAllQueryBuilder;
+
+	/**
+	 * This visitor is responsible to create and populate a {@link ObjectLevelReadQuery}.
+	 */
+	private ObjectLevelReadQueryVisitor readAllQueryVisitor;
 
 	/**
 	 * This visitor is responsible to create and populate a {@link UpdateAllQuery}.
@@ -89,8 +96,8 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 	/**
 	 * Creates a new {@link HermesParser}.
 	 *
-	 * @param validateQueries Determines whether the JPQL queries should be validated before creating
-	 * the {@link Expression Expression}
+	 * @param validateQueries Determines whether JPQL queries should be validated before creating the
+	 * {@link Expression Expression}
 	 */
 	public HermesParser(boolean validateQueries) {
 		super();
@@ -110,41 +117,16 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 	}
 
 	/**
-	 * Registers the input parameters derived from the jpql expression with the {@link DatabaseQuery}.
-	 *
-	 * @param arguments The map used to register the input parameters and their types
+	 * {@inheritDoc}
 	 */
-	private void addArguments(Map<String, Class<?>> arguments) {
-		for (Map.Entry<String, Class<?>> inputParameters : queryContext.inputParameters()) {
-			arguments.put(inputParameters.getKey().substring(1), inputParameters.getValue());
-		}
+	public DatabaseQuery buildQuery(String jpqlQuery, AbstractSession session) {
+		return populateQueryImp(jpqlQuery, null, session);
 	}
 
-	/**
-	 * Parses the given string representation of the Java Persistence query into a parsed tree using
-	 * the optimized parsing algorithm (non-tolerant).
-	 *
-	 * @param query The string representation of the Java Persistence query to parse
-	 * @return The parsed tree representation of the query
-	 */
-	private JPQLExpression buildExpression(String query) {
-		return new JPQLExpression(query, IJPAVersion.DEFAULT_VERSION, validateQueries);
-	}
-
-	/**
-	 * Creates the root of the {@link DatabaseQuery} hierarchy by visiting the given {@link
-	 * org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression} in order to determine
-	 * what type of query to create.
-	 *
-	 * @return Either {@link UpdateAllQuery}, {@link DeleteAllQuery}, {@link
-	 * org.eclipse.persistence.queries.ReportQuery ReportQuery} or {@link
-	 * org.eclipse.persistence.queries.ReadAllQuery ReadAllQuery}
-	 */
-	private DatabaseQuery buildQuery(JPQLExpression jpqlExpression) {
-		NewQueryBuilderVisitor visitor = newQueryVisitor();
+	private ReadAllQuery buildReadAllQuery(SelectStatement expression) {
+		ReadAllQueryBuilder visitor = readAllQueryBuilder();
 		try {
-			jpqlExpression.accept(visitor);
-			queryContext.setQuery(visitor.query);
+			expression.accept(visitor);
 			return visitor.query;
 		}
 		finally {
@@ -155,73 +137,58 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 	/**
 	 * {@inheritDoc}
 	 */
-	public DatabaseQuery buildQuery(String jpqlQuery, AbstractSession session) {
-
-		// Create the parsed tree representation of the query
-		JPQLExpression jpqlExpression = buildExpression(jpqlQuery);
-		queryContext.setJPQLExpression(jpqlExpression);
-
-		// Now set the Session and JPQL query so the SPI is implemented
-		queryContext.setQuery(session, jpqlQuery);
-
-		// Validate the query
-		validate(jpqlExpression);
-
-		// Create the query
-		DatabaseQuery query = buildQuery(jpqlExpression);
-		query.setEJBQLString(jpqlQuery);
-
-		try {
-			// Now populate it
-			jpqlExpression.accept(existingQueryVisitor());
-
-			// Store the input parameter types
-			addArguments(query);
-		}
-		finally {
-			dispose();
-		}
-
-		return query;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Expression buildSelectionCriteria(String abstractSchemaName,
+	public Expression buildSelectionCriteria(String entityName,
 	                                         String selectionCriteria,
-	                                         AbstractSession session,
-	                                         Map<String, Class<?>> arguments) {
+	                                         AbstractSession session) {
 
 		try {
 			// Create the parsed tree representation of the selection criteria
-			org.eclipse.persistence.jpa.internal.jpql.parser.Expression expression = JPQLExpression.parseConditionalExpression(
-				abstractSchemaName,
+			JPQLExpression jpqlExpression = new JPQLExpression(
 				selectionCriteria,
-				IJPAVersion.DEFAULT_VERSION,
+				jpqlGrammar(),
+				ConditionalExpressionBNF.ID,
 				validateQueries
 			);
-			queryContext.setJPQLExpression(expression.getRoot());
 
-			// Now set the Session and JPQL query so the SPI is implemented
-			queryContext.setQuery(session, selectionCriteria);
+			// Caches the info and add a virtual range variable declaration
+			queryContext.cache(session, null, jpqlExpression, selectionCriteria);
+			queryContext.addRangeVariableDeclaration(entityName, "this");
 
 			// Validate the query
-			validate(expression);
+			validate(jpqlExpression.getQueryStatement());
 
-			// Create the visitor that converts the parsed expression into an Expression
-			Expression queryExpression = queryContext.buildQueryExpression(expression);
-
-			// Add the additional arguments and their types
-			addArguments(arguments);
-
-			return queryExpression;
+			// Create the Expression representing the selection criteria
+			return queryContext.buildExpression(jpqlExpression.getQueryStatement());
 		}
+		// Note: Used for debugging purposes
+//		catch (Exception e) {
+//			queryContext.dispose();
+//			e.printStackTrace();
+//			return null;
+//		}
 		finally {
-			dispose();
+			queryContext.dispose();
 		}
 	}
 
+	/**
+	 * Returns the visitor that will populate the {@link DatabaseQuery} by traversing the parsed tree
+	 * representation of the JPQL query.
+	 *
+	 * @return The visitor used to populate the given query by traversing the JPQL parsed tree
+	 */
+	private DatabaseQueryVisitor databaseQueryVisitor() {
+		if (databaseQueryVisitor == null) {
+			databaseQueryVisitor = new DatabaseQueryVisitor();
+		}
+		return databaseQueryVisitor;
+	}
+
+	/**
+	 * Returns the visitor that will visit the parsed JPQL query and populate a {@link DeleteAllQuery}.
+	 *
+	 * @return The visitor used for a query of delete query type
+	 */
 	private DeleteQueryVisitor deleteQueryVisitor() {
 		if (deleteQueryVisitor == null) {
 			deleteQueryVisitor = new DeleteQueryVisitor(queryContext);
@@ -229,26 +196,13 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 		return deleteQueryVisitor;
 	}
 
-	private void dispose() {
-		queryContext.dispose();
-	}
-
-	/**
-	 * Creates a new {@link QueryBuilderVisitor} that visits an existing {@link DatabaseQuery}.
-	 *
-	 * @return The visitor used to populate the given query by traversing the JPQL parsed tree
-	 */
-	private ExistingQueryBuilderVisitor existingQueryVisitor() {
-		if (existingQueryBuilderVisitor == null) {
-			existingQueryBuilderVisitor = new ExistingQueryBuilderVisitor();
-		}
-		return existingQueryBuilderVisitor;
-	}
-
 	private void initialize(boolean validateQueries) {
 		this.validateQueries = validateQueries;
-		this.queryContext    = new DefaultJPQLQueryContext();
-		this.queryHelper     = new JPQLQueryHelper(queryContext);
+		this.queryContext    = new JPQLQueryContext();
+	}
+
+	private JPQLGrammar jpqlGrammar() {
+		return DefaultEclipseLinkJPQLGrammar.instance();
 	}
 
 	/**
@@ -287,45 +241,81 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 	}
 
 	/**
-	 * Creates a new {@link QueryBuilderVisitor} that creates a new {@link DatabaseQuery}.
+	 * Returns the visitor that will visit the parsed JPQL query and populate an {@link
+	 * ObjectLevelReadQuery}.
 	 *
-	 * @param queryContext The context used to query information about the application metadata
-	 * @return The visitor used to create a {@link DatabaseQuery} by traversing the JPQL parsed tree
+	 * @return The visitor used for a query of object level read query type
 	 */
-	private NewQueryBuilderVisitor newQueryVisitor() {
-		if (newQueryBuilderVisitor == null) {
-			newQueryBuilderVisitor = new NewQueryBuilderVisitor();
+	private ObjectLevelReadQueryVisitor objectLevelReadQueryVisitor() {
+		if (readAllQueryVisitor == null) {
+			readAllQueryVisitor = new ObjectLevelReadQueryVisitor(queryContext);
 		}
-		return newQueryBuilderVisitor;
+		return readAllQueryVisitor;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void populateQuery(String jpqlQuery, DatabaseQuery query, AbstractSession session) {
+		populateQueryImp(jpqlQuery, query, session);
+	}
+
+	private DatabaseQuery populateQueryImp(String jpqlQuery,
+	                                       DatabaseQuery query,
+	                                       AbstractSession session) {
+
+		// Create the parsed tree representation of the query
+		JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar(), validateQueries);
+
+		// Now set the Session and JPQL query so the SPI is implemented
+		queryContext.cache(session, query, jpqlExpression, jpqlQuery);
 
 		try {
-			// Parse the JPQL query
-			JPQLExpression jpqlExpression = buildExpression(jpqlQuery);
-			queryContext.setJPQLExpression(jpqlExpression);
-
-			// Cache the DatabaseQuery
-			queryContext.setQuery(query);
-
-			// Now set the Session and JPQL query so the SPI is implemented
-			queryContext.setQuery(session, jpqlQuery);
-
 			// Validate the query
 			validate(jpqlExpression);
 
-			// Populate the DatabaseQuery with the information from the string representation
-			jpqlExpression.accept(existingQueryVisitor());
+			// Now populate it
+			jpqlExpression.accept(databaseQueryVisitor());
+
+			boolean updateArguments = (query == null);
+			DatabaseQuery elQuery = query;
+			query = queryContext.getDatabaseQuery();
+
+			// Store the input parameter types
+			if (updateArguments) {
+				addArguments(query);
+			}
+
+			return query;
 		}
+		// Note: Used for debugging purposes
+//		catch (Exception e) {
+//			queryContext.dispose();
+//			e.printStackTrace();
+//			return null;
+//		}
 		finally {
-			dispose();
+			queryContext.dispose();
 		}
 	}
 
+	/**
+	 * Returns the visitor that will visit the parsed JPQL query and populate a {@link ReadAllQuery}.
+	 *
+	 * @return The visitor used for a query of read query type
+	 */
+	private ReadAllQueryBuilder readAllQueryBuilder() {
+		if (readAllQueryBuilder == null) {
+			readAllQueryBuilder = new ReadAllQueryBuilder(queryContext);
+		}
+		return readAllQueryBuilder;
+	}
+
+	/**
+	 * Returns the visitor that will visit the parsed JPQL query and populate a {@link UpdateAllQuery}.
+	 *
+	 * @return The visitor used for a query of update query type
+	 */
 	private UpdateQueryVisitor updateQueryVisitor() {
 		if (updateQueryVisitor == null) {
 			updateQueryVisitor = new UpdateQueryVisitor(queryContext);
@@ -339,7 +329,7 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 	 *
 	 * @param expression The JPQL expression to validate
 	 */
-	private void validate(org.eclipse.persistence.jpa.internal.jpql.parser.Expression expression) {
+	private void validate(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 
 		if (validateQueries) {
 
@@ -366,24 +356,25 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 	 * This visitor is responsible to handle traversing the expression of an existing query and to
 	 * complete that query.
 	 */
-	private class ExistingQueryBuilderVisitor extends AbstractExpressionVisitor {
-
-		private void updateQuery(ModifyAllQuery query) {
-			query.setJPQLString(queryContext.getJPQLQuery());
-			query.setSession(queryContext.getSession());
-			query.setShouldDeferExecutionInUOW(false);
-		}
-
-		private void updateQuery(ObjectLevelReadQuery query) {
-			query.setJPQLString(queryContext.getJPQLQuery());
-		}
+	private class DatabaseQueryVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public void visit(DeleteStatement expression) {
-			updateQuery(queryContext.<DeleteAllQuery>getDatabaseQuery());
+
+			DeleteAllQuery query = queryContext.getDatabaseQuery();
+
+			if (query == null) {
+				query = new DeleteAllQuery();
+				queryContext.setDatabasQuery(query);
+			}
+
+			query.setJPQLString(queryContext.getJPQLQuery());
+			query.setSession(queryContext.getSession());
+			query.setShouldDeferExecutionInUOW(false);
+
 			expression.accept(deleteQueryVisitor());
 		}
 
@@ -400,8 +391,22 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 		 */
 		@Override
 		public void visit(SelectStatement expression) {
-			updateQuery(queryContext.<ObjectLevelReadQuery>getDatabaseQuery());
-			expression.accept(queryContext.readQueryVisitor());
+
+			ObjectLevelReadQuery query = queryContext.getDatabaseQuery();
+
+			if (query == null) {
+				query = buildReadAllQuery(expression);
+				queryContext.setDatabasQuery(query);
+			}
+
+			query.setJPQLString(queryContext.getJPQLQuery());
+
+			AbstractReadAllQueryVisitor visitor =
+				query.isReportQuery() ?
+				queryContext.reportQueryVisitor() :
+			   objectLevelReadQueryVisitor();
+
+			expression.accept(visitor);
 		}
 
 		/**
@@ -409,59 +414,19 @@ public final class HermesParser /*implements JPQLQueryParser*/ {
 		 */
 		@Override
 		public void visit(UpdateStatement expression) {
-			updateQuery(queryContext.<UpdateAllQuery>getDatabaseQuery());
+
+			UpdateAllQuery query = queryContext.getDatabaseQuery();
+
+			if (query == null) {
+				query = new UpdateAllQuery();
+				queryContext.setDatabasQuery(query);
+			}
+
+			query.setJPQLString(queryContext.getJPQLQuery());
+			query.setSession(queryContext.getSession());
+			query.setShouldDeferExecutionInUOW(false);
+
 			expression.accept(updateQueryVisitor());
-		}
-	}
-
-	/**
-	 * Visitor that handles traversing the expression of a new query that builds the query in the
-	 * process.
-	 */
-	private class NewQueryBuilderVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 * The {@link DatabaseQuery} that got created by traversing the root clause.
-		 */
-		DatabaseQuery query;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteStatement expression) {
-			query = new DeleteAllQuery();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JPQLExpression expression) {
-			expression.getQueryStatement().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SelectStatement expression) {
-			ReadQueryBuilder visitor = queryContext.readQueryBuilder();
-			try {
-				expression.accept(visitor);
-				query = visitor.query;
-			}
-			finally {
-				visitor.query = null;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateStatement expression) {
-			query = new UpdateAllQuery();
 		}
 	}
 }

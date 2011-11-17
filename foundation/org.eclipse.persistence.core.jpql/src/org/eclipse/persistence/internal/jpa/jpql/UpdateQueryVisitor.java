@@ -14,14 +14,13 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.jpa.internal.jpql.parser.UpdateItem;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
 /**
- * This builder/visitor is responsible to populate a {@link UpdateAllQuery} when the query is a
- * <b>UPDATE</b> query.
+ * This builder is responsible to populate a {@link UpdateAllQuery}.
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -31,18 +30,11 @@ final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder<UpdateAllQu
 	/**
 	 * Creates a new <code>UpdateQueryBuilder</code>.
 	 *
-	 * @param queryContext The context used to query information about the application metadata
+	 * @param queryContext The context used to query information about the application metadata and
+	 * cached information
 	 */
-	UpdateQueryVisitor(DefaultJPQLQueryContext queryContext) {
+	UpdateQueryVisitor(JPQLQueryContext queryContext) {
 		super(queryContext);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	UpdateAllQuery getDatabaseQuery() {
-		return super.getDatabaseQuery();
 	}
 
 	/**
@@ -52,10 +44,10 @@ final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder<UpdateAllQu
 	public void visit(UpdateItem expression) {
 
 		// Create the Expression for the state field path expression
-		Expression leftExpression = queryContext.buildQueryExpression(expression.getStateFieldPathExpression());
+		Expression leftExpression = queryContext.buildExpression(expression.getStateFieldPathExpression());
 
 		// Create the Expression for the new value
-		Expression rightExpression = queryContext.buildQueryExpression(expression.getNewValue());
+		Expression rightExpression = queryContext.buildExpression(expression.getNewValue());
 
 		// Add the expressions to the query
 		getDatabaseQuery().addUpdate(leftExpression, rightExpression);

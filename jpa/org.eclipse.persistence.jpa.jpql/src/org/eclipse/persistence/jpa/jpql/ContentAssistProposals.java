@@ -13,15 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
 
 /**
  * This object stores the various proposals available for content assist for a certain position
  * within a JPQL query. The proposals are stored in categories (abstract schema types, identifiers,
  * identification variables and mappings).
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
@@ -32,7 +34,7 @@ public interface ContentAssistProposals {
 	 *
 	 * @return The {@link IEntity entities} defined in the persistence context
 	 */
-	Iterable<IEntity> abstractSchemaTypes();
+	IterableIterator<IEntity> abstractSchemaTypes();
 
 	/**
 	 * Creates a new JPQL query by inserting the given proposal at the given position. The resulted
@@ -85,6 +87,16 @@ public interface ContentAssistProposals {
 	IEntity getAbstractSchemaType(String identificationVariable);
 
 	/**
+	 * Returns the role of the given JPQL identifier.
+	 *
+	 * @param identifier The JPQL identifier to retrieve its role
+	 * @return The {@link IdentifierRole} for the given JPQL identifier or <code>null</code> if no
+	 * role was defined or if the given string is not a valid JPQL identifier
+	 * @since 2.4
+	 */
+	IdentifierRole getIdentifierRole(String identifier);
+
+	/**
 	 * Determines whether there is at least one proposals.
 	 *
 	 * @return <code>true</code> if there is at least one proposal; otherwise <code>false</code>
@@ -96,14 +108,14 @@ public interface ContentAssistProposals {
 	 *
 	 * @return The list of possible identification variables
 	 */
-	Iterable<String> identificationVariables();
+	IterableIterator<String> identificationVariables();
 
 	/**
 	 * Returns the collection of possible JPQL identifiers.
 	 *
 	 * @return The list of possible JPQL identifiers
 	 */
-	Iterable<String> identifiers();
+	IterableIterator<String> identifiers();
 
 	/**
 	 * Returns the collection of possible {@link IMapping mappings}, which can be state fields,
@@ -112,5 +124,5 @@ public interface ContentAssistProposals {
 	 *
 	 * @return The list of possible proposals {@link IMapping mappings}
 	 */
-	Iterable<IMapping> mappings();
+	IterableIterator<IMapping> mappings();
 }

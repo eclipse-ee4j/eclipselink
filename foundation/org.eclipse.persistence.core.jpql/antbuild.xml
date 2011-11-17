@@ -109,7 +109,7 @@
 
         <!-- dependency properties -->
         <selectbundle basename="org.eclipse.persistence.jpa.jpql" directory="${elhermes.build.location}/${elhermes.2.common.plugins.dir}" separator="_"
-                     criterion="[1.0.0,2.0.0)" property="hermes.lib" includepath="true"
+                     criterion="[2.0.0,3.0.0)" property="hermes.lib" includepath="true"
         />
         <!-- property name="core.lib"             value="${elhermes.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/ -->
         <selectbundle basename="org.eclipse.persistence.core" directory="${elhermes.build.location}/${elhermes.2.common.plugins.dir}" separator="_"
