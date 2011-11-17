@@ -100,9 +100,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private List<UnmarshalRecord> selfRecords;
     private Map<XPathFragment, Integer> indexMap;
     private List<NullCapableValue> nullCapableValues;
-    private Map<ContainerValue, Object> containersMap;
-    private Object lastAccessedContainer;
-    private ContainerValue lastAccessedContainerNode;
+    private Object[] containerInstances;
     private boolean isBufferCDATA;
     private Attributes attributes;
     private QName typeQName;
@@ -156,11 +154,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             indexMap.clear();
         }
         nullCapableValues = null;
-        if(null != containersMap) {
-            containersMap.clear();
-        }
-        lastAccessedContainer = null;
-        lastAccessedContainerNode = null;
         isBufferCDATA = false;
         attributes = null;
         typeQName = null;
@@ -282,16 +275,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public Object getContainerInstance(ContainerValue containerValue) {
-        if (null == containersMap) {
-            return null;
-        }
-        if(containerValue == lastAccessedContainerNode && lastAccessedContainer != null) {
-        	return lastAccessedContainer;
-        }
-        Object container = containersMap.get(containerValue);
-        lastAccessedContainer = container;
-        lastAccessedContainerNode = containerValue;
-        return container;
+    	return containerInstances[containerValue.getIndex()];    	
     }
 
     /**
@@ -475,7 +459,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
-                containersMap = new HashMap(containerValues.size());
+            	List choiceContainerValues = treeObjectBuilder.getChoiceContainerValues();
+            	if(choiceContainerValues!=null){
+            		containerInstances = new Object[containerValues.size() + choiceContainerValues.size()];
+            	}else{
+            		containerInstances = new Object[containerValues.size()];
+            	}
                 for (int x = 0, containerValuesSize = containerValues.size(); x < containerValuesSize; x++) {
                     ContainerValue containerValue = (ContainerValue)containerValues.get(x);
                     Object containerInstance = null;
@@ -486,12 +475,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                     if(null == containerInstance) {
                         containerInstance = containerValue.getContainerInstance();
                     }
-                    containersMap.put(containerValue, containerInstance);
+                    containerInstances[containerValue.getIndex()] = containerInstance;
                     if(containerValue.getMapping() instanceof XMLChoiceCollectionMapping) {
                         XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)containerValue;
                         for(NodeValue next:nodeValue.getAllNodeValues()) {
                             NodeValue nestedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)next).getChoiceElementNodeValue();
-                            containersMap.put((ContainerValue)nestedNodeValue, containerInstance);
+                            containerInstances[((ContainerValue)nestedNodeValue).getIndex()] = containerInstance;
                         }
                     }
                 }
@@ -539,9 +528,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
         try {
             // PROCESS COLLECTION MAPPINGS
-            if (null != containersMap) {
-                for(Entry<ContainerValue, Object> entry : containersMap.entrySet()) {
-                    entry.getKey().setContainerInstance(currentObject, entry.getValue());
+            if(null != treeObjectBuilder.getContainerValues()){
+                for(int i=0; i<treeObjectBuilder.getContainerValues().size(); i++){
+            	    ContainerValue cv =((ContainerValue)treeObjectBuilder.getContainerValues().get(i));
+            	       cv.setContainerInstance(currentObject, containerInstances[cv.getIndex()]);
                 }
             }
 

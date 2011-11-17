@@ -53,5 +53,20 @@ public interface ContainerValue {
      * create the container. 
      */
     public boolean getReuseContainer();
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */    
+    public int getIndex();
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public void setIndex(int index);
+    
+  
 
 }

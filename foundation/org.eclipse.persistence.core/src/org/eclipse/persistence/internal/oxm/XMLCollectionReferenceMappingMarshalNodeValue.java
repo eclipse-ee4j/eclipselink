@@ -29,6 +29,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
 
     private XMLCollectionReferenceMapping xmlCollectionReferenceMapping;
     private XPathNode branchNode;
+    private int index = -1;
 
     public XMLCollectionReferenceMappingMarshalNodeValue(XMLCollectionReferenceMapping xmlCollectionReferenceMapping) {
         this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
@@ -183,6 +184,23 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             return xmlCollectionReferenceMapping;
         }
 
+    }
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
     }
 
 }
