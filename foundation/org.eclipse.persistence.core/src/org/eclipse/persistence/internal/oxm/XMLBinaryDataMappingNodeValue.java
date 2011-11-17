@@ -77,10 +77,16 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         XPathFragment xmlRootFrag = null;
+
         if(objectValue instanceof XMLRoot) {
-            xmlRootFrag = ((XMLRoot)objectValue).getRootFragment();
+            XMLRoot xmlRoot = (XMLRoot) objectValue;
+            xmlRootFrag = xmlRoot.getRootFragment();
+            if (xmlRoot.getNamespaceURI() != null) {
+                String prefix = namespaceResolver.resolveNamespaceURI(xmlRoot.getNamespaceURI());
+                xmlRootFrag.setXPath(prefix + XMLConstants.COLON + xmlRootFrag.getLocalName());
+            }
         }
-        
+
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         if (xmlBinaryDataMapping.getConverter() != null) {
             Converter converter = xmlBinaryDataMapping.getConverter();
