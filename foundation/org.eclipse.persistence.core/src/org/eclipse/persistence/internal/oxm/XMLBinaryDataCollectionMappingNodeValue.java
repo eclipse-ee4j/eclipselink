@@ -43,6 +43,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue implements ContainerValue {
 
     private XMLBinaryDataCollectionMapping xmlBinaryDataCollectionMapping;
+    private int index = -1;
 
     public XMLBinaryDataCollectionMappingNodeValue(XMLBinaryDataCollectionMapping mapping) {
         this.xmlBinaryDataCollectionMapping = mapping;
@@ -273,4 +274,20 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return getMapping().getReuseContainer();
     }
 
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
+    }
 }

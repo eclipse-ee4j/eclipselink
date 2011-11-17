@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
  */
 public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements ContainerValue {
     private XMLFragmentCollectionMapping xmlFragmentCollectionMapping;
+    private int index = -1;
 
     public XMLFragmentCollectionMappingNodeValue(XMLFragmentCollectionMapping xmlFragmentCollectionMapping) {
         super();
@@ -133,6 +134,23 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
 
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
+    }
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
     }
 
 }

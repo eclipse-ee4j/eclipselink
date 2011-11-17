@@ -47,7 +47,8 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     private XMLField xmlField;
     private ContainerValue containerNodeValue;
     private boolean isMixedNodeValue;
-    
+    private int index = -1;
+
     public XMLChoiceCollectionMappingUnmarshalNodeValue(XMLChoiceCollectionMapping mapping, XMLField xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
@@ -192,5 +193,22 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
      */
     public boolean isMixedContentNodeValue() {
         return this.isMixedNodeValue;
+    }
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
     }
 }

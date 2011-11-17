@@ -47,6 +47,7 @@ import org.xml.sax.SAXException;
  */
 public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNodeValue implements ContainerValue {
     private XMLAnyCollectionMapping xmlAnyCollectionMapping;
+    private int index = -1;
 
     public XMLAnyCollectionMappingNodeValue(XMLAnyCollectionMapping xmlAnyCollectionMapping) {
         super();
@@ -361,5 +362,21 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     public boolean isMixedContentNodeValue() {
         return this.xmlAnyCollectionMapping.isMixedContent();
     }
-
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
+    }
 }

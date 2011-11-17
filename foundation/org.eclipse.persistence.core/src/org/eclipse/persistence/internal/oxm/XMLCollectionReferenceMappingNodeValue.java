@@ -54,6 +54,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
     private XMLCollectionReferenceMapping xmlCollectionReferenceMapping;
     private XMLField xmlField;
     private static final String SPACE = " ";
+    private int index = -1;
 
     /**
      * This constructor sets the XMLCollectionReferenceMapping and XMLField members to
@@ -280,5 +281,21 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
     public boolean isMarshalNodeValue() {
         return xmlCollectionReferenceMapping.getFields().size() == 1 || xmlCollectionReferenceMapping.usesSingleNode();
     }
-
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
+    }
 }

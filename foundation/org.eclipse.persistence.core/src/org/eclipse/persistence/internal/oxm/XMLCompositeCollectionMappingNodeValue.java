@@ -53,6 +53,7 @@ import org.xml.sax.SAXException;
  */
 public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappingNodeValue implements ContainerValue {
     private XMLCompositeCollectionMapping xmlCompositeCollectionMapping;
+    private int index = -1;
 
     public XMLCompositeCollectionMappingNodeValue(XMLCompositeCollectionMapping xmlCompositeCollectionMapping) {
         super();
@@ -307,6 +308,23 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
+    }
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
     }
 
 }

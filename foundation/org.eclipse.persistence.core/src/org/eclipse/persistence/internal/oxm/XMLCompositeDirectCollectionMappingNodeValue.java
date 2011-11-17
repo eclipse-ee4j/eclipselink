@@ -37,6 +37,7 @@ import org.xml.sax.Attributes;
 public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeValue implements ContainerValue {
     private static final String SPACE = " ";
     private XMLCompositeDirectCollectionMapping xmlCompositeDirectCollectionMapping;
+    private int index = -1;
 
     public XMLCompositeDirectCollectionMappingNodeValue(XMLCompositeDirectCollectionMapping xmlCompositeDirectCollectionMapping) {
         super();
@@ -350,6 +351,23 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
     public boolean getReuseContainer() {
         return getMapping().getReuseContainer();
+    }
+    
+    /**
+     *  INTERNAL:
+     *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
+     */  
+    public void setIndex(int index){
+    	this.index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
+     * Set during TreeObjectBuilder initialization 
+     */
+    public int getIndex(){
+    	return index;
     }
 
 }
