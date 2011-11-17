@@ -68,7 +68,7 @@
          id="org.eclipse.persistence.asm"
          download-size="0"
          install-size="0"
-         version="@VERSION@.@QUALIFIER@"
+         version="@ASM_VERSION@"
          unpack="false"/>
 
    <plugin

@@ -26,14 +26,14 @@
          id="org.eclipse.persistence.antlr.source"
          download-size="0"
          install-size="0"
-         version="@VERSION@.@QUALIFIER@"
+         version="@ANTLR_VERSION@"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.asm.source"
          download-size="0"
          install-size="0"
-         version="@VERSION@.@QUALIFIER@"
+         version="@ASM_VERSION@"
          unpack="false"/>
 
    <plugin

@@ -128,7 +128,7 @@
         <echo message=" ---"/>
 
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir" value="C:/eclipseSDK-3.6M6/eclipse"/>
+        <property name="p2.SDK.install.dir" value="D:/Indigo-gm/eclipse"/>
         <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.publisher.jar" value="org.eclipse.equinox.p2.publisher_*.jar"/>
         <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
@@ -147,12 +147,12 @@
         <echo message=" ---"/>
 
         <!-- Input definitions -->
-        <property name="p2.composite.home.dir"    value="C:/__EL-CompositeRepositoryTest2Site"/>
+        <property name="p2.composite.home.dir"    value="D:/__EL-CompositeRepositoryTest2Site"/>
         <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${version.string}"
-                                                   else="C:/__EL-RepositorySite">
+                                                   else="D:/__EL-RepositorySite">
             <isset property="do.composite"/>
         </condition>
-        <property name="p2.mirror.dir"            value="C:/__EL-MirroredRepoSite"/>
+        <property name="p2.mirror.dir"            value="D:/__EL-MirroredRepoSite"/>
         <property name="p2.feature.dir"           value="${p2.repos.dir}/features"/>
         <property name="p2.bundle.dir"            value="${p2.repos.dir}/plugins"/>
         <condition property="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"
@@ -214,6 +214,10 @@
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
         <!-- For EclipseLink bundles -->
+        <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
+        <property name="antlr.criteria" value="[3.0,4.0)"/>
+        <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
+        <property name="asm.criteria" value="[3.0,4.0)"/>
         <property name="hermes.prefix" value="org.eclipse.persistence.jpa.jpql"/>
         <property name="hermes.criteria" value="[1.0,2.0)"/>
     </target>
@@ -276,6 +280,12 @@
         <selectbundle basename="${xml.stream.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
+        <selectbundle basename="${antlr.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
+        />
+        <selectbundle basename="${asm.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${asm.criteria}" property="asm.version" versiononly="true"
+        />
         <selectbundle basename="${hermes.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
@@ -296,6 +306,10 @@
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
         <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="xml.stream.version"/>
         <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
+        <say  message="   antlr.version      = '${antlr.version}'"      if="antlr.version"/>
+        <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
+        <say  message="   asm.version      = '${asm.version}'"      if="asm.version"/>
+        <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
         <say  message="   hermes.version      = '${hermes.version}'"      if="hermes.version"/>
         <say  message="   '${hermes.prefix}_${hermes.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
     </target>
@@ -315,6 +329,8 @@
         <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
         <filter token="XMLSTREAM_VERSION"   value="${xml.stream.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
+        <filter token="ANTLR_VERSION"       value="${antlr.version}"/>
+        <filter token="ASM_VERSION"         value="${asm.version}"/>
         <filter token="HERMES_VERSION"      value="${hermes.version}"/>
         <!--          Filters for feature.properties files          -->
         <filter token="PROVIDER"            value="${specification.vendor}"/>
