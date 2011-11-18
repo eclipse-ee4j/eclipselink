@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<EchoByteArray xmlns:ns0="http://missing-uri.org/">
+<EchoByteArray xmlns="http://root.org/" xmlns:ns0="http://missing-uri.org/">
    <ns0:request>AAECBAg=</ns0:request>
 </EchoByteArray>
