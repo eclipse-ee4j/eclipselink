@@ -483,7 +483,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
        String typeValue = typeValueQName.getLocalPart();
        String uri = typeValueQName.getNamespaceURI();
-       if(uri != null && !uri.equals(XMLConstants.EMPTY_STRING)){
+       if(uri != null && !uri.equals(XMLConstants.EMPTY_STRING) && !uri.equals(row.getNamespaceResolver().getDefaultNamespaceURI())){
     	   String prefix = row.getNamespaceResolver().resolveNamespaceURI(uri);
     	   if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
     		   typeValue = prefix + XMLConstants.COLON + typeValue;
