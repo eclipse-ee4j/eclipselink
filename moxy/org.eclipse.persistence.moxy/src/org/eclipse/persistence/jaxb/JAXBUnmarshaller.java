@@ -91,6 +91,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private XMLUnmarshaller xmlUnmarshaller;
     private JAXBContext jaxbContext;
     private XMLInputFactory xmlInputFactory;
+    private boolean initializedXMLInputFactory = false;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
     private NamespaceResolver namespaceResolver;
@@ -104,11 +105,19 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
         xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
-        try {
-            xmlInputFactory = XMLInputFactory.newInstance();
-        } catch(FactoryConfigurationError e) {
-        }
         includeRoot = false;
+    }
+
+    private XMLInputFactory getXMLInputFactory() {
+        if(!initializedXMLInputFactory) {
+            try {
+                xmlInputFactory = XMLInputFactory.newInstance();
+            } catch(FactoryConfigurationError e) {
+            } finally {
+                initializedXMLInputFactory = true;
+            }
+        }
+        return xmlInputFactory;
     }
 
     public XMLUnmarshaller getXMLUnmarshaller() {
@@ -144,6 +153,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 InputSource source = new InputSource(inputStream);
                 return unmarshal(source);
             }
+            XMLInputFactory xmlInputFactory = getXMLInputFactory();
             if(null == xmlInputFactory ||
                 XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
                 return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(inputStream));
@@ -214,6 +224,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix,namespaceResolver, namespaceAware, true), new InputSource(reader)));
         }
         try {
+            XMLInputFactory xmlInputFactory = getXMLInputFactory();
             if(null == xmlInputFactory ||
                 XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
                 return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(reader));
