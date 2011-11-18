@@ -774,7 +774,7 @@ public class XMLContext {
         private Map descriptorsByQName;
         private Map descriptorsByGlobalType;
         private boolean hasDocumentPreservation = false;
-		private boolean requireUnitOfWork = false;
+        private boolean requireUnitOfWork = false;
 
         private XMLContextState(XMLContext xmlContext, Collection projects, ClassLoader classLoader) {
             this.xmlContext = xmlContext;
@@ -950,9 +950,9 @@ public class XMLContext {
                     // we don't currently support document preservation
                     // and non-shared cache (via unit of work)
                     //if (!documentPreservationPolicy.shouldPreserveDocument()) {
-                	if(requireUnitOfWork) {
-                		next = next.acquireUnitOfWork();
-                	}
+                    if(requireUnitOfWork) {
+                        next = next.acquireUnitOfWork();
+                    }
                     //}
                     return next;
                 }
@@ -981,9 +981,9 @@ public class XMLContext {
                     // we don't currently support document preservation
                     // and non-shared cache (via unit of work)
                     //if (!documentPreservationPolicy.shouldPreserveDocument()) {
-                	if(requireUnitOfWork) {
-                		next = next.acquireUnitOfWork();
-                	}
+                    if(requireUnitOfWork) {
+                        next = next.acquireUnitOfWork();
+                    }
                     //}
                     return next;
                 }
@@ -1012,9 +1012,9 @@ public class XMLContext {
                     // we don't currently support document preservation
                     // and non-shared cache (via unit of work)
                     //if (!documentPreservationPolicy.shouldPreserveDocument()) {
-                	if(requireUnitOfWork) {
-                		next = next.acquireUnitOfWork();
-                	}
+                    if(requireUnitOfWork) {
+                        next = next.acquireUnitOfWork();
+                    }
                     //}
                     return next;
                 }
@@ -1139,7 +1139,7 @@ public class XMLContext {
             String defaultRootName;
 
             if(xmlDescriptor.hasReferenceMappings()) {
-            	this.requireUnitOfWork = true;
+                this.requireUnitOfWork = true;
             }
             List tableNames = xmlDescriptor.getTableNames();
             for (int i = 0; i < tableNames.size(); i++) {

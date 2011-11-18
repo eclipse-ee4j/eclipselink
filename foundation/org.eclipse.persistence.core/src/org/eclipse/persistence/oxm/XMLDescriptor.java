@@ -68,7 +68,8 @@ public class XMLDescriptor extends ClassDescriptor {
     private boolean resultAlwaysXMLRoot = false;
     private boolean lazilyInitialized = false;
 
-	private boolean hasReferenceMappings = false;
+    private boolean hasReferenceMappings = false;
+	
 
     /**
      * PUBLIC:
@@ -672,25 +673,24 @@ public class XMLDescriptor extends ClassDescriptor {
             DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
             validateMappingType(mapping);
             mapping.initialize(session);
-
             if(mapping.isObjectReferenceMapping()) {
-            	this.hasReferenceMappings = true;
+                this.hasReferenceMappings = true;
             }
             if(mapping instanceof XMLChoiceObjectMapping) {
-            	XMLChoiceObjectMapping choiceMapping = ((XMLChoiceObjectMapping)mapping);
-            	for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
-            		if(((DatabaseMapping)next).isObjectReferenceMapping()) {
-                    	this.hasReferenceMappings = true;
-            		}
-            	}
+                XMLChoiceObjectMapping choiceMapping = ((XMLChoiceObjectMapping)mapping);
+                for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
+                    if(((DatabaseMapping)next).isObjectReferenceMapping()) {
+                        this.hasReferenceMappings = true;
+                    }
+                }
             }
             if(mapping instanceof XMLChoiceCollectionMapping) {
-            	XMLChoiceCollectionMapping choiceMapping = ((XMLChoiceCollectionMapping)mapping);
-            	for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
-            		if(((DatabaseMapping)next).isObjectReferenceMapping()) {
-                    	this.hasReferenceMappings = true;
-            		}
-            	}
+                XMLChoiceCollectionMapping choiceMapping = ((XMLChoiceCollectionMapping)mapping);
+                for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
+                    if(((DatabaseMapping)next).isObjectReferenceMapping()) {
+                        this.hasReferenceMappings = true;
+                    }
+                }
             }
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
@@ -918,7 +918,7 @@ public class XMLDescriptor extends ClassDescriptor {
      * mappings.
      */
     public boolean hasReferenceMappings() {
-    	return this.hasReferenceMappings;
+        return this.hasReferenceMappings;
     }
 
     @Override
