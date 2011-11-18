@@ -38,7 +38,10 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -65,6 +68,7 @@ public class XMLDescriptor extends ClassDescriptor {
     private boolean resultAlwaysXMLRoot = false;
     private boolean lazilyInitialized = false;
     private AttributeAccessor locationAccessor = null;
+    private boolean hasReferenceMappings = false;
 
     /**
      * PUBLIC:
@@ -659,7 +663,25 @@ public class XMLDescriptor extends ClassDescriptor {
             DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
             validateMappingType(mapping);
             mapping.initialize(session);
-
+            if(mapping.isObjectReferenceMapping()) {
+                this.hasReferenceMappings = true;
+            }
+            if(mapping instanceof XMLChoiceObjectMapping) {
+                XMLChoiceObjectMapping choiceMapping = ((XMLChoiceObjectMapping)mapping);
+                for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
+                    if(((DatabaseMapping)next).isObjectReferenceMapping()) {
+                        this.hasReferenceMappings = true;
+                    }
+                }
+            }
+            if(mapping instanceof XMLChoiceCollectionMapping) {
+                XMLChoiceCollectionMapping choiceMapping = ((XMLChoiceCollectionMapping)mapping);
+                for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
+                    if(((DatabaseMapping)next).isObjectReferenceMapping()) {
+                        this.hasReferenceMappings = true;
+                    }
+                }
+            }
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
         }
@@ -900,6 +922,15 @@ public class XMLDescriptor extends ClassDescriptor {
 
     public void setResultAlwaysXMLRoot(boolean resultAlwaysXMLRoot) {
         this.resultAlwaysXMLRoot = resultAlwaysXMLRoot;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if any of the mappings on this descriptor are key-based reference
+     * mappings.
+     */
+    public boolean hasReferenceMappings() {
+        return this.hasReferenceMappings;
     }
 
     @Override
