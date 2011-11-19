@@ -99,15 +99,17 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            } else {
                value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(value.toString());
            } 
-           value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
-       }
-       if (converter != null) {
-           if (converter instanceof XMLConverter) {
-               value = ((XMLConverter)converter).convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
+           if (converter != null) {
+               if (converter instanceof XMLConverter) {
+                   value = ((XMLConverter)converter).convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
+               } else {
+                   value = converter.convertDataValueToObjectValue(value, parent.getSession());
+               }
            } else {
-               value = converter.convertDataValueToObjectValue(value, parent.getSession());
+               value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
            }
-       }       
+       }
+    
        if(isCollection) {
            if(value != null) {
                parent.addAttributeValue((ContainerValue)nodeValue, value);
