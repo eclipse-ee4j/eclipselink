@@ -103,7 +103,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 	 *
 	 * @return The identifier that was actually parsed
 	 */
-	public final String getActualNotIdentifier() {
+	public final String getActualIdentifier() {
 		return identifier;
 	}
 
