@@ -46,8 +46,6 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  */
 public final class InExpression extends AbstractExpression {
 
-	int count;
-
 	/**
 	 * The expression before the 'IN' identifier used for identification.
 	 */
@@ -142,17 +140,14 @@ public final class InExpression extends AbstractExpression {
 	protected void addOrderedChildrenTo(List<StringExpression> children) {
 
 		// State field path expression or type discriminator
-		if (expression != null) {
+		if (hasExpression()) {
 			children.add(expression);
+			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'NOT'
 		if (hasNot) {
-			children.add(buildStringExpression(SPACE));
 			children.add(buildStringExpression(NOT));
-		}
-		else if (hasExpression()) {
-			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'IN'
@@ -162,12 +157,12 @@ public final class InExpression extends AbstractExpression {
 		if (hasLeftParenthesis) {
 			children.add(buildStringExpression(LEFT_PARENTHESIS));
 		}
-		else if (hasInItems()) {
+		else if (hasSpaceAfterIn) {
 			children.add(buildStringExpression(SPACE));
 		}
 
 		// In items
-		if (inItems != null) {
+		if (hasInItems()) {
 			children.add(inItems);
 		}
 
@@ -392,9 +387,6 @@ public final class InExpression extends AbstractExpression {
 		if (hasRightParenthesis) {
 			wordParser.moveForward(1);
 		}
-		else {
-			wordParser.moveBackward(count);
-		}
 	}
 
 	/**
@@ -406,9 +398,6 @@ public final class InExpression extends AbstractExpression {
 		// State field path expression or type discriminator
 		if (hasExpression()) {
 			expression.toParsedText(writer, actual);
-		}
-
-		if (hasExpression()) {
 			writer.append(SPACE);
 		}
 
