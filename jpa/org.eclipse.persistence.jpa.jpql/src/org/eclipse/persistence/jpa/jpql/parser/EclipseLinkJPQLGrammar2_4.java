@@ -30,6 +30,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 
 	/**
@@ -87,5 +88,13 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected void initializeIdentifiers() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "JPQL grammar for EclipseLink 2.4";
 	}
 }

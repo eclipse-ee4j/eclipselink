@@ -321,6 +321,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 
 	/**
@@ -463,5 +464,13 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 		registerIdentifierVersion(Expression.TYPE,     JPAVersion.VERSION_2_0);
 		registerIdentifierVersion(Expression.VALUE,    JPAVersion.VERSION_2_0);
 		registerIdentifierVersion(Expression.WHEN,     JPAVersion.VERSION_2_0);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "JPQLGrammar for JPA 2.0";
 	}
 }

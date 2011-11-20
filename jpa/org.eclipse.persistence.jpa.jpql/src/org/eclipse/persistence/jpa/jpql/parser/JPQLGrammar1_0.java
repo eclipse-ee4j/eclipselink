@@ -583,4 +583,12 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole("GROUP",                          IdentifierRole.CLAUSE);             // Part of GROUP BY
 		registerIdentifierRole("ORDER",                          IdentifierRole.CLAUSE);             // Part of ORDERY BY
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "JPQLGrammar for JPA 1.0";
+	}
 }

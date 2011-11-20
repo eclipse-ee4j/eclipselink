@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
 
 	/**
@@ -56,5 +57,13 @@ public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
 	 */
 	public JPAVersion getJPAVersion() {
 		return EclipseLinkJPQLGrammar2_4.instance().getJPAVersion();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "Default EclipseLink JPQL Grammar (version 2.4)";
 	}
 }
