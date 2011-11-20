@@ -680,7 +680,7 @@ public abstract class AbstractExpression extends StringExpression
 					break;
 				}
 
-				// Parse the query using the factory
+				// Parse using the factory
 				if (shouldParseWithFactoryFirst()) {
 					ExpressionFactory factory = queryBNF.getExpressionFactory(word);
 
@@ -690,7 +690,7 @@ public abstract class AbstractExpression extends StringExpression
 						if (child != null) {
 							expression = updateParsingInfo(expression, child, children, separatedByCommas, separatedBySpaces);
 
-							// Continue to the next character/word
+							// Continue with the next character/word
 							count     = wordParser.skipLeadingWhitespace();
 							character = wordParser.character();
 							beginning = false;
@@ -725,17 +725,17 @@ public abstract class AbstractExpression extends StringExpression
 			    (wordParser.position() == length) &&
 			    (character != COMMA)) {
 
-				if (word.length() > 0 && getExpressionRegistry().getIdentifierRole(word) != IdentifierRole.AGGREGATE) {
+				if ((word.length() > 0) && getExpressionRegistry().getIdentifierRole(word) != IdentifierRole.AGGREGATE) {
 					ExpressionFactory factory = getExpressionRegistry().expressionFactoryForIdentifier(word);
 
-					if ((factory != null) /*&& isValidExpressionFactory(factory)*/) {
+					if (factory != null) {
 						child = parse(wordParser, word, factory, queryBNF, expression, tolerant);
 
 						if (child != null) {
 							child = new BadExpression(this, child);
 							expression = updateParsingInfo(expression, child, children, separatedByCommas, separatedBySpaces);
 
-							// Continue to the next character/word
+							// Continue with the next character/word
 							character = wordParser.character();
 							beginning = false;
 						}
@@ -752,9 +752,9 @@ public abstract class AbstractExpression extends StringExpression
 			// Store the child but skip a very special case, which happens when parsing
 			// two subqueries in a collection expression. Example: (SELECT ... ), (SELECT ... )
 			if ((expression == null) || (child != null)) {
-				children.add(child);
-				separatedByCommas.add(Boolean.FALSE);
-				separatedBySpaces.add(count > 1);
+				 children.add(child);
+				 separatedByCommas.add(Boolean.FALSE);
+				 separatedBySpaces.add(count > 1);
 			}
 
 			// Nothing else to parse
@@ -765,8 +765,8 @@ public abstract class AbstractExpression extends StringExpression
 			// ','
 			if (character == COMMA) {
 
-				// The current expression does not handle collection, than stop the
-				// parsing here so the parent can continue parsing it
+				// The current expression does not handle collection, then stop the
+				// parsing here so the parent can continue to parse
 				if (!queryBNF.handleCollection()) {
 					break;
 				}
@@ -796,7 +796,7 @@ public abstract class AbstractExpression extends StringExpression
 				if (wordParser.isTail() || stopParsing) {
 					child = null;
 
-					// Make sure the space isn't re-added at the end of the query
+					// Make sure the space is not re-added at the end of the query
 					count = 0;
 
 					// Add a null Expression since the expression ends with a comma
@@ -810,7 +810,7 @@ public abstract class AbstractExpression extends StringExpression
 					}
 				}
 
-				// More text to parse, continue right away otherwise the else
+				// Nothing more to parse, stop right away otherwise the else
 				// of the if statement below will stop the parsing
 				if (character == RIGHT_PARENTHESIS) {
 					break;
@@ -940,18 +940,6 @@ public abstract class AbstractExpression extends StringExpression
 			}
 
 			throw new IllegalStateException("The traversal to find the ExpressionFactories didn't work correctly, it shouldn't hit this.");
-		}
-	}
-
-	/**
-	 * Adds spaces at the front of the given text.
-	 *
-	 * @param text The text to have spaces added at its beginning
-	 * @param count The number of spaces to add
-	 */
-	protected final void readdLeadingSpaces(StringBuilder text, int count) {
-		for (int index = count; --index >= 0; ) {
-			text.insert(0, SPACE);
 		}
 	}
 
