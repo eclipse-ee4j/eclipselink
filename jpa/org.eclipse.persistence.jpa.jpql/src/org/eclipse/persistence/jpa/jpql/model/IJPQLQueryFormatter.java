@@ -18,8 +18,8 @@ import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
 /**
  * A <code>IJPQLQueryFormatter</code> helps to write a string representation of a {@link StateObject}.
  *
- * @version 3.1
- * @since 3.1
+ * @version 2.4
+ * @since 2.4
  * @author Pascal Filion
  */
 public interface IJPQLQueryFormatter {

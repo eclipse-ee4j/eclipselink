@@ -19,7 +19,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.TreatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
-import static org.eclipse.persistence.jpa.jpql.model.AbstractJPQLQueryFormatter.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -53,6 +52,22 @@ public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQ
 	 */
 	public EclipseLinkActualJPQLQueryFormatter(boolean exactMatch) {
 		super(exactMatch);
+	}
+
+	/**
+	 * Creates a new <code>EclipseLinkActualJPQLQueryFormatter</code>.
+	 *
+	 * @param exactMatch Determines whether the string representation of any given {@link StateObject}
+	 * should reflect the exact string that was parsed: <code>true</code> will use every bit of
+	 * information contained in the corresponding {@link Expression} to perfectly match what was
+	 * parsed (case of JPQL identifiers and the presence of whitespace); <code>false</code> will only
+	 * match the case sensitivity of the JPQL identifiers
+	 * @param style Determines how the JPQL identifiers are written out, which is used if the
+	 * {@link StateObject} was modified after its creation
+	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
+	 */
+	protected EclipseLinkActualJPQLQueryFormatter(boolean exactMatch, IdentifierStyle style) {
+		super(exactMatch, style);
 	}
 
 	/**

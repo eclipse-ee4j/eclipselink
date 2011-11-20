@@ -29,6 +29,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder {
 
 	/**
@@ -88,5 +89,13 @@ public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder 
 	 */
 	public JPQLGrammar getGrammar() {
 		return jpqlGrammar;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "EclipseLinkJPQLQueryBuilder using " + jpqlGrammar.toString();
 	}
 }

@@ -44,14 +44,6 @@ public class EclipseLinkJPQLQueryFormatter extends AbstractJPQLQueryFormatter
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public String formatIdentifier(String identifier) {
-		return identifier;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(FuncExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {

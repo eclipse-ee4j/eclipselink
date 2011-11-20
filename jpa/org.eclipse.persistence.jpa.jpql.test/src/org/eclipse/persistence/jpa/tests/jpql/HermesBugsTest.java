@@ -1,16 +1,12 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import java.util.List;
-import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryHelper;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.model.DefaultActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.DefaultJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
-import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
+import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
 import org.junit.Test;
 
@@ -26,7 +22,6 @@ public class HermesBugsTest extends JPQLCoreTest {
 
 	/**
 	 * formatter throws StackOverflowError on "IS NULL"
-	 *
 	 */
 	@Test
 	public void testFormatterIsNullOrderStackOverflow() throws Exception {
@@ -40,7 +35,6 @@ public class HermesBugsTest extends JPQLCoreTest {
 
 	/**
 	 * DefaultJPQLQueryFormatter omits important space after LIKE
-	 *
 	 */
 	@Test
 	public void testFormatterLikeMissingSpace() throws Exception  {
@@ -56,7 +50,6 @@ public class HermesBugsTest extends JPQLCoreTest {
 
 	/**
 	 * lowercase 'true" is formatted as NULL
-	 *
 	 */
 	@Test
 	public void testFormatterLowercaseTrue() throws Exception  {
@@ -75,9 +68,7 @@ public class HermesBugsTest extends JPQLCoreTest {
 	}
 
 	/**
-	 * DefaultActualJPQLQueryFormatter with exactMatch=true omits important
-	 * space before ORDER BY
-	 *
+	 * DefaultActualJPQLQueryFormatter with exactMatch=true omits important space before ORDER BY
 	 */
 	@Test
 	public void testFormatterOrderByMissingSpace() throws Exception  {
@@ -92,7 +83,6 @@ public class HermesBugsTest extends JPQLCoreTest {
 
 	/**
 	 * "IS EMPTY" is formatted as "null"
-	 *
 	 */
 	@Test
 	public void testFormatterOrderStackOverflow() throws Exception  {
@@ -106,24 +96,57 @@ public class HermesBugsTest extends JPQLCoreTest {
 	}
 
 	/**
-	 * UPPER() on a string literal causes validateGrammar() to fail
-	 *
+	 * Default formatter still throws StackOverflowError on "IS NULL"
 	 */
 	@Test
-	public void testValidateUpperOnLiteral() throws Exception  {
+	public void testFormatterIsNullStackOverflow() throws Exception {
+		String jpql = "SELECT r FROM AnyRelationshipType r WHERE r.groupUUID IS NULL";
+		JPQLQueryStateObject so = queryBuilder.buildStateObject(getPersistenceUnit(), jpql, true);
+		IJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
+		assertEquals(jpql, formatter.toString(so)); // passes
+		formatter = new DefaultJPQLQueryFormatter(IdentifierStyle.UPPERCASE);
+		assertEquals(jpql, formatter.toString(so)); // fails with StackOverflowError
+	}
 
-		String jpql = "SELECT b FROM AnyEntityType b WHERE UPPER(b.name) LIKE 'PortType/TimeProcess'";
-		IQuery query = new JavaQuery(getPersistenceUnit(), jpql);
-		DefaultJPQLQueryHelper helper = new DefaultJPQLQueryHelper(queryBuilder.getGrammar());
-		helper.setQuery(query);
-		List<JPQLQueryProblem> problems = helper.validateGrammar();
-		assertTrue(problems.isEmpty()); // this passes
+	/**
+	 * missing space before WHERE statement
+	 */
+	@Test
+	public void testAddWhereClauseMissingSpace() throws Exception {
 
-//		jpql = "SELECT b FROM AnyEntityType b WHERE UPPER(b.name) LIKE UPPER('PortType/TimeProcess')";
-//		query = new JavaQuery(getPersistenceUnit(), jpql);
-//		helper = new DefaultJPQLQueryHelper(queryBuilder.getGrammar());
-//		helper.setQuery(query);
-//		problems = helper.validateGrammar();
-//		assertTrue(problems.isEmpty()); // fails here with validation problems
+		String jpql = "SELECT a FROM Artifact a";
+		JPQLQueryStateObject so = queryBuilder.buildStateObject(getPersistenceUnit(), jpql, true);
+
+		SelectStatementStateObject selectSO = (SelectStatementStateObject) so.getQueryStatement();
+		assertFalse(selectSO.hasWhereClause());
+		selectSO.addWhereClause("a.relativeURI LIKE '%bar'");
+
+		IJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
+		assertEquals("SELECT a FROM Artifact a WHERE a.relativeURI LIKE '%bar'", formatter.toString(so));
+		// instead we get
+		// SELECT a FROM Artifact aWHERE a.relativeURI LIKE '%bar'
+		// this only happens with DefaultActualJPQLQueryFormatter with exactMatch=false.
+		// doesn't happen for DefaultJPQLQueryFormatter
+	}
+
+	/**
+	 * WhereClauseStateObject.andParse() doesn't preserve order of operations. I think it should?
+	 */
+	@Test
+	public void testAndParseOrderOfOperations() throws Exception {
+
+		String jpql = "SELECT r FROM AnyRelationshipType r WHERE r.name = a OR r.name = b";
+		JPQLQueryStateObject so = queryBuilder.buildStateObject(getPersistenceUnit(), jpql, false);
+
+		SelectStatementStateObject selectSO = (SelectStatementStateObject) so.getQueryStatement();
+		selectSO.getWhereClause().andParse("r.name = c OR r.name = d");
+
+		IJPQLQueryFormatter formatter = new DefaultJPQLQueryFormatter(IdentifierStyle.UPPERCASE);
+		assertEquals("SELECT r FROM AnyRelationshipType r WHERE (r.name = a OR r.name = b) AND (r.name = c OR r.name = d)", formatter.toString(so));
+
+		// instead formatter.toString(so) returns:
+		// SELECT r FROM AnyRelationshipType r WHERE r.name = a OR r.name = b
+		// AND r.name = c OR r.name = d
+		// which is logically different
 	}
 }

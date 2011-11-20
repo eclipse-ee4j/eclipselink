@@ -14,6 +14,17 @@
 package org.eclipse.persistence.jpa.jpql.model;
 
 /**
+ * This {@link IJPQLQueryFormatter} is used to output a string representation of a {@link StateObject}
+ * based on how it was parsed, which means this formatter can only be used when the {@link StateObject}
+ * was created from parsing a JPQL query because it needs to retrieve parsing information from the
+ * corresponding {@link Expression}.
+ * <p>
+ * It is possible to partially match the JPQL query that was parsed, the value of the <em>exactMatch</em>
+ * will determine whether the string representation of any given {@link StateObject} should reflect
+ * the exact string that was parsed. <code>true</code> will use every bit of information contained
+ * in the corresponding {@link Expression} to perfectly match what was parsed; <code>false</code>
+ * will only match the case sensitivity of the JPQL identifiers.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -26,9 +37,26 @@ public final class DefaultActualJPQLQueryFormatter extends AbstractActualJPQLQue
 	 * @param exactMatch Determines whether the string representation of any given {@link StateObject}
 	 * should reflect the exact string that was parsed: <code>true</code> will use every bit of
 	 * information contained in the corresponding {@link Expression} to perfectly match what was
-	 * parsed; <code>false</code> will only match the case sensitivity of the JPQL identifiers
+	 * parsed (case of JPQL identifiers and the presence of whitespace); <code>false</code> will only
+	 * match the case sensitivity of the JPQL identifiers
 	 */
 	public DefaultActualJPQLQueryFormatter(boolean exactMatch) {
 		super(exactMatch);
+	}
+
+	/**
+	 * Creates a new <code>DefaultActualJPQLQueryFormatter</code>.
+	 *
+	 * @param exactMatch Determines whether the string representation of any given {@link StateObject}
+	 * should reflect the exact string that was parsed: <code>true</code> will use every bit of
+	 * information contained in the corresponding {@link Expression} to perfectly match what was
+	 * parsed (case of JPQL identifiers and the presence of whitespace); <code>false</code> will only
+	 * match the case sensitivity of the JPQL identifiers
+	 * @param style Determines how the JPQL identifiers are written out, which is used if the
+	 * {@link StateObject} was modified after its creation
+	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
+	 */
+	protected DefaultActualJPQLQueryFormatter(boolean exactMatch, IdentifierStyle style) {
+		super(exactMatch, style);
 	}
 }

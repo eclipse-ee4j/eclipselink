@@ -99,7 +99,23 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
 	 * expression
 	 */
 	public void andParse(String jpqlFragment) {
+
 		StateObject stateObject = buildStateObject(jpqlFragment, ConditionalExpressionBNF.ID);
+
+		// Make sure the current conditional expression is encapsulated if it's an OR expression in
+		// order to preserve logical operator precedence.
+		// Example: A or B and we're adding C, it has to become (A or B) and C
+		if (shouldEncapsulateORExpression(conditionalStateObject)) {
+			conditionalStateObject = new SubExpressionStateObject(this, conditionalStateObject);
+		}
+
+		// Make sure the right side of the AND expression is encapsulated in order to preserve logical
+		// operator precedence in the case it's an OR expression.
+		// Example: A and we're adding B or C, it has to become A and (B or C)
+		if (shouldEncapsulateORExpression(stateObject)) {
+			stateObject = new SubExpressionStateObject(this, stateObject);
+		}
+
 		stateObject = new AndExpressionStateObject(this, conditionalStateObject, stateObject);
 		setConditional(stateObject);
 	}
@@ -184,6 +200,25 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
 		StateObject oldConditionalStateObject = this.conditionalStateObject;
 		this.conditionalStateObject = parent(conditionalStateObject);
 		firePropertyChanged(CONDITIONAL_STATE_OBJECT_PROPERTY, oldConditionalStateObject, conditionalStateObject);
+	}
+
+	protected boolean shouldEncapsulateORExpression(StateObject stateObject) {
+
+		if (stateObject == null) {
+			return false;
+		}
+
+		final boolean[] encapsulate = { false };
+
+		StateObjectVisitor visitor = new AbstractStateObjectVisitor() {
+			@Override
+			public void visit(OrExpressionStateObject stateObject) {
+				encapsulate[0] = true;
+			}
+		};
+
+		stateObject.accept(visitor);
+		return encapsulate[0];
 	}
 
 	/**

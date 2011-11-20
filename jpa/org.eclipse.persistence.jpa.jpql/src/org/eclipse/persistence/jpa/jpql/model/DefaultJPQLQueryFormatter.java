@@ -17,8 +17,8 @@ package org.eclipse.persistence.jpa.jpql.model;
  * The default implementation of a {@link IJPQLQueryFormatter}, which support creating a string
  * representation of a JPQL query written for JPA 1.0 and 2.0.
  *
- * @version 3.1
- * @since 3.1
+ * @version 2.4
+ * @since 2.4
  * @author Pascal Filion
  */
 public class DefaultJPQLQueryFormatter extends AbstractJPQLQueryFormatter {

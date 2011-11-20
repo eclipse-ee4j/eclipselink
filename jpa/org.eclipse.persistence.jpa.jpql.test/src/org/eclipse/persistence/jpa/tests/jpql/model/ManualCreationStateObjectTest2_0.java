@@ -36,7 +36,7 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class ManualCreationStateObjectTest2_0 extends AbstractStateObjectTest2_0 {
+public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectTest2_0 {
 
 	protected JPQLQueryStateObject buildJPQLQueryStateObject() throws Exception {
 		return new JPQLQueryStateObject(getQueryBuilder(), getPersistenceUnit());

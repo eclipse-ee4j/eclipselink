@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpa.jpql.model;
 
 import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.model.query.AbsExpressionStateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.AbstractConditionalClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractDoubleEncapsulatedExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractFromClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractIdentificationVariableDeclarationStateObject;
@@ -97,7 +96,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.SizeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SqrtExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.StateObjectVisitor;
 import org.eclipse.persistence.jpa.jpql.model.query.StringLiteralStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
@@ -126,11 +124,12 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
-import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
+import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -150,8 +149,8 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
+import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 
-import static org.eclipse.persistence.jpa.jpql.model.AbstractJPQLQueryFormatter.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -160,18 +159,19 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * was created from parsing a JPQL query because it needs to retrieve parsing information from the
  * corresponding {@link Expression}.
  * <p>
- * It is possible to partially match the JPQL query that was parsed, the value of the <em>exactMatch</em>
+ * It is possible to partially match the JPQL query that was parsed, the value of <em>exactMatch</em>
  * will determine whether the string representation of any given {@link StateObject} should reflect
  * the exact string that was parsed. <code>true</code> will use every bit of information contained
- * in the corresponding {@link Expression} to perfectly match what was parsed; <code>false</code>
- * will only match the case sensitivity of the JPQL identifiers.
+ * in the corresponding {@link Expression} to perfectly match what was parsed (case of JPQL
+ * identifiers and the presence of whitespace); <code>false</code> will only match the case
+ * sensitivity of the JPQL identifiers.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVisitor,
-                                                                  IJPQLQueryFormatter {
+@SuppressWarnings("null")
+public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryFormatter {
 
 	/**
 	 * Determines whether the string representation of any given {@link StateObject} should reflect
@@ -182,22 +182,34 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	protected final boolean exactMatch;
 
 	/**
-	 * The holder of the string representation of the JPQL query.
-	 */
-	protected final StringBuilder writer;
-
-	/**
-	 * Creates a new <code>ActualJPQLQueryFormatter</code>.
+	 * Creates a new <code>AbstractActualJPQLQueryFormatter</code>.
 	 *
 	 * @param exactMatch Determines whether the string representation of any given {@link StateObject}
 	 * should reflect the exact string that was parsed: <code>true</code> will use every bit of
 	 * information contained in the corresponding {@link Expression} to perfectly match what was
-	 * parsed; <code>false</code> will only match the case sensitivity of the JPQL identifiers
+	 * parsed (case of JPQL identifiers and the presence of whitespace); <code>false</code> will only
+	 * match the case sensitivity of the JPQL identifiers
 	 */
 	protected AbstractActualJPQLQueryFormatter(boolean exactMatch) {
-		super();
+		super(IdentifierStyle.UPPERCASE);
 		this.exactMatch = exactMatch;
-		this.writer     = new StringBuilder();
+	}
+
+	/**
+	 * Creates a new <code>AbstractActualJPQLQueryFormatter</code>.
+	 *
+	 * @param exactMatch Determines whether the string representation of any given {@link StateObject}
+	 * should reflect the exact string that was parsed: <code>true</code> will use every bit of
+	 * information contained in the corresponding {@link Expression} to perfectly match what was
+	 * parsed (case of JPQL identifiers and the presence of whitespace); <code>false</code> will only
+	 * match the case sensitivity of the JPQL identifiers
+	 * @param style Determines how the JPQL identifiers are written out, which is used if the
+	 * {@link StateObject} was modified after its creation
+	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
+	 */
+	protected AbstractActualJPQLQueryFormatter(boolean exactMatch, IdentifierStyle style) {
+		super(style);
+		this.exactMatch = exactMatch;
 	}
 
 	/**
@@ -211,33 +223,16 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 */
 	protected void appendIdentifier(String actualIdentifier, String identifier) {
 
-		if (actualIdentifier.length() == 0) {
-			actualIdentifier = identifier;
+		// Revert to use the constant
+		if ((actualIdentifier == null) || (actualIdentifier.length() == 0)) {
+			actualIdentifier = formatIdentifier(identifier);
 		}
 
 		writer.append(actualIdentifier);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return writer.toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String toString(StateObject stateObject) {
-
-		if (writer.length() > 0) {
-			writer.delete(0, writer.length());
-		}
-
-		stateObject.accept(this);
-
-		return toString();
+	protected boolean shouldOutput(Expression expression) {
+		return !exactMatch || (expression == null);
 	}
 
 	protected void toStringChildren(ListHolderStateObject<? extends StateObject> stateObject,
@@ -251,7 +246,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 		}
 	}
 
-	protected void toStringCompound(CompoundExpressionStateObject stateObject) {
+	protected void toStringCompound(CompoundExpressionStateObject stateObject, String identifier) {
 
 		if (stateObject.isDecorated()) {
 			stateObject.getDecorator().accept(this);
@@ -264,40 +259,17 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 				stateObject.getLeft().accept(this);
 				writer.append(SPACE);
 			}
-			else if (expression.hasLeftExpression()) {
-				writer.append(expression.getLeftExpression().toActualText());
-				writer.append(SPACE);
-			}
 
 			// Identifier
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : identifier, identifier);
 
-			if (!exactMatch | expression.hasSpaceAfterIdentifier()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterIdentifier()) {
 				writer.append(SPACE);
 			}
 
 			// Right expression
 			if (stateObject.hasRight()) {
 				stateObject.getRight().accept(this);
-			}
-			else {
-				writer.append(expression.getRightExpression().toActualText());
-			}
-		}
-	}
-
-	protected void toStringConditional(AbstractConditionalClauseStateObject stateObject) {
-
-		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
-		}
-		else {
-			writer.append(stateObject.getIdentifier());
-
-			if (stateObject.hasConditional()) {
-				// TODO: HANDLE SPACE
-				writer.append(SPACE);
-				stateObject.getConditional().accept(this);
 			}
 		}
 	}
@@ -314,7 +286,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			writer.append(stateObject.getIdentifier());
 
 			// '('
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 			else if (expression.hasSpaceAfterIdentifier()) {
@@ -327,11 +299,11 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			}
 
 			// ','
-			if (!exactMatch | expression.hasComma()) {
+			if (shouldOutput(expression) || expression.hasComma()) {
 				writer.append(COMMA);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterComma()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterComma()) {
 				writer.append(SPACE);
 			}
 
@@ -341,7 +313,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			}
 
 			// ')'
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -359,7 +331,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			writer.append(stateObject.getIdentifier());
 
 			// '('
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 
@@ -369,7 +341,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			}
 
 			// ')'
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -384,9 +356,9 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			AbstractFromClause expression = stateObject.getExpression();
 
 			// 'FROM'
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : FROM, FROM);
 
-			if (!exactMatch | expression.hasSpaceAfterFrom()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterFrom()) {
 				writer.append(SPACE);
 			}
 
@@ -397,7 +369,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 		}
 	}
 
-	private void toStringIdentificationVariableDeclaration(AbstractIdentificationVariableDeclarationStateObject stateObject) {
+	protected void toStringIdentificationVariableDeclaration(AbstractIdentificationVariableDeclarationStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
 			stateObject.getDecorator().accept(this);
@@ -411,7 +383,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			// Join | Join Fetch
 			if (stateObject.hasItems()) {
 
-				if (!exactMatch | expression.hasSpace()) {
+				if (shouldOutput(expression) || expression.hasSpace()) {
 					writer.append(SPACE);
 				}
 
@@ -446,7 +418,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 		}
 	}
 
-	private void toStringRangeVariableDeclaration(AbstractRangeVariableDeclarationStateObject stateObject) {
+	protected void toStringRangeVariableDeclaration(AbstractRangeVariableDeclarationStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
 			stateObject.getDecorator().accept(this);
@@ -457,15 +429,15 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			// "Root" object (abstract schema name or derived declaration)
 			stateObject.getRootStateObject().accept(this);
 
-			if (!exactMatch | expression.hasSpaceAfterAbstractSchemaName()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterAbstractSchemaName()) {
 				writer.append(SPACE);
 			}
 
 			// 'AS'
 			if (stateObject.hasAs()) {
-				appendIdentifier(expression.getActualAsIdentifier(), AS);
+				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
 
-				if (!exactMatch | expression.hasSpaceAfterAs()) {
+				if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
 					writer.append(SPACE);
 				}
 			}
@@ -479,8 +451,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 		}
 	}
 
-	protected void toStringSelectStatement(AbstractSelectStatementStateObject stateObject,
-	                                       boolean useNewLine) {
+	protected void toStringSelectStatement(AbstractSelectStatementStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
 			stateObject.getDecorator().accept(this);
@@ -491,46 +462,51 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			// SELECT clause
 			stateObject.getSelectClause().accept(this);
 
-			if (!exactMatch | expression.hasSpaceAfterSelect()) {
+			// If no select items were parsed by they got added later, make sure a space is added
+			if (shouldOutput(expression) ||
+			    expression.hasSpaceAfterSelect() ||
+			    (!expression.getSelectClause().hasSelectExpression() &&
+			     stateObject.getSelectClause().hasSelectItem())) {
+
 				writer.append(SPACE);
 			}
 
 			// FROM clause
 			stateObject.getFromClause().accept(this);
 
-			if (!exactMatch && expression.hasSpaceAfterFrom()) {
+			// If no WHERE clause was parsed but was added later, make sure a space is added
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterFrom() ||
+			    stateObject.hasWhereClause()) {
+
 				writer.append(SPACE);
 			}
 
 			// WHERE clause
 			if (stateObject.hasWhereClause()) {
-				if (exactMatch) {
-					writer.append(SPACE);
-				}
 				stateObject.getWhereClause().accept(this);
 			}
 
-			if (!exactMatch && expression.hasSpaceAfterWhere()) {
+			// If no GROUP BY clause was parsed but was added later, make sure a space is added
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterWhere() ||
+			    stateObject.hasGroupByClause()) {
+
 				writer.append(SPACE);
 			}
 
 			// GROUP BY clause
 			if (stateObject.hasGroupByClause()) {
-				if (exactMatch) {
-					writer.append(SPACE);
-				}
 				stateObject.getGroupByClause().accept(this);
 			}
 
-			if (!exactMatch && expression.hasSpaceAfterGroupBy()) {
+			// If no HAVING clause was parsed but was added later, make sure a space is added
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterGroupBy() ||
+			    stateObject.hasHavingClause()) {
+
 				writer.append(SPACE);
 			}
 
 			// HAVING clause
 			if (stateObject.hasHavingClause()) {
-				if (exactMatch) {
-					writer.append(SPACE);
-				}
 				stateObject.getHavingClause().accept(this);
 			}
 		}
@@ -555,22 +531,19 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			AbstractSingleEncapsulatedExpression expression = stateObject.getExpression();
 
 			// Identifier
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : ABS, ABS);
 
 			// '('
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 
 			if (stateObject.hasStateObject()) {
 				stateObject.getStateObject().accept(this);
 			}
-			else if (expression.hasEncapsulatedExpression()) {
-				writer.append(expression.toActualText());
-			}
 
 			// ')'
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -588,7 +561,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			writer.append(stateObject.getIdentifier());
 
 			// '('
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 
@@ -597,11 +570,11 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 				stateObject.getFirst().accept(this);
 			}
 
-			if (!exactMatch | expression.hasFirstComma()) {
+			if (shouldOutput(expression) || expression.hasFirstComma()) {
 				writer.append(COMMA);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterFirstComma()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterFirstComma()) {
 				writer.append(SPACE);
 			}
 
@@ -610,11 +583,11 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 				stateObject.getSecond().accept(this);
 			}
 
-			if (!exactMatch | expression.hasSecondComma()) {
+			if (shouldOutput(expression) || expression.hasSecondComma()) {
 				writer.append(COMMA);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterSecondComma()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterSecondComma()) {
 				writer.append(SPACE);
 			}
 
@@ -624,7 +597,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			}
 
 			// ')'
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -674,7 +647,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(AdditionExpressionStateObject stateObject) {
-		toStringCompound(stateObject);
+		toStringCompound(stateObject, PLUS);
 	}
 
 	/**
@@ -688,7 +661,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(AndExpressionStateObject stateObject) {
-		toStringCompound(stateObject);
+		toStringCompound(stateObject, AND);
 	}
 
 	/**
@@ -704,9 +677,6 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 
 			if (stateObject.hasStateObject()) {
 				stateObject.getStateObject().accept(this);
-			}
-			else {
-				writer.append(stateObject.getExpression().getExpression().toActualText());
 			}
 		}
 	}
@@ -741,21 +711,17 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 				stateObject.getStateObject().accept(this);
 				writer.append(SPACE);
 			}
-			else if (expression.hasExpression()) {
-				writer.append(expression.getExpression().toActualText());
-				writer.append(SPACE);
-			}
 
 			// 'NOT
 			if (stateObject.hasNot()) {
-				appendIdentifier(expression.getActualNotIdentifier(), NOT);
+				appendIdentifier((expression != null) ? expression.getActualNotIdentifier() : NOT, NOT);
 				writer.append(SPACE);
 			}
 
 			// 'BETWEEN'
-			writer.append(expression.getActualBetweenIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualBetweenIdentifier() : BETWEEN, BETWEEN);
 
-			if (!exactMatch | expression.hasSpaceAfterBetween()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterBetween()) {
 				writer.append(SPACE);
 			}
 
@@ -763,29 +729,23 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasLowerBound()) {
 				stateObject.getLowerBound().accept(this);
 			}
-			else {
-				writer.append(expression.getLowerBoundExpression().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterLowerBound()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterLowerBound()) {
 				writer.append(SPACE);
 			}
 
 			// 'AND'
-			if (!exactMatch | expression.hasAnd()) {
-				appendIdentifier(expression.getActualAndIdentifier(), AND);
+			if (shouldOutput(expression) || expression.hasAnd()) {
+				appendIdentifier((expression != null) ? expression.getActualAndIdentifier() : AND, AND);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterAnd()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterAnd()) {
 				writer.append(SPACE);
 			}
 
 			// Upper bound expression
 			if (stateObject.hasUpperBound()) {
 				stateObject.getUpperBound().accept(this);
-			}
-			else {
-				writer.append(expression.getUpperBoundExpression().toActualText());
 			}
 		}
 	}
@@ -802,9 +762,9 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			CaseExpression expression = stateObject.getExpression();
 
 			// 'CASE'
-			writer.append(expression.getActualCaseIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualCaseIdentifier() : CASE, CASE);
 
-			if (!exactMatch | expression.hasSpaceAfterCase()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterCase()) {
 				writer.append(SPACE);
 			}
 
@@ -812,11 +772,8 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasCaseOperand()) {
 				stateObject.getCaseOperand().accept(this);
 			}
-			else if (expression.hasCaseOperand()) {
-				writer.append(expression.getCaseOperand().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterCaseOperand()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterCaseOperand()) {
 				writer.append(SPACE);
 			}
 
@@ -824,20 +781,17 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasItems()) {
 				toStringChildren(stateObject, false);
 			}
-			else {
-				writer.append(expression.getWhenClauses().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterWhenClauses()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterWhenClauses()) {
 				writer.append(SPACE);
 			}
 
 			// 'ELSE'
-			if (!exactMatch | expression.hasElse()) {
-				appendIdentifier(expression.getActualElseIdentifier(), ELSE);
+			if (shouldOutput(expression) || expression.hasElse()) {
+				appendIdentifier((expression != null) ? expression.getActualElseIdentifier() : ELSE, ELSE);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterElse()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterElse()) {
 				writer.append(SPACE);
 			}
 
@@ -845,17 +799,14 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasElse()) {
 				stateObject.getElse().accept(this);
 			}
-			else {
-				writer.append(expression.getElseExpression().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterElseExpression()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterElseExpression()) {
 				writer.append(SPACE);
 			}
 
 			// END
-			if (!exactMatch | expression.hasEnd()) {
-				appendIdentifier(expression.getActualEndIdentifier(), END);
+			if (shouldOutput(expression) || expression.hasEnd()) {
+				appendIdentifier((expression != null) ? expression.getActualEndIdentifier() : END, END);
 			}
 		}
 	}
@@ -872,10 +823,10 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			CoalesceExpression expression = stateObject.getExpression();
 
 			// 'COALESCE'
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : COALESCE, COALESCE);
 
 			// '('
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 			else if (expression.hasSpaceAfterIdentifier()) {
@@ -885,7 +836,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			toStringChildren(stateObject, true);
 
 			// ')'
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -903,7 +854,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			CollectionMemberDeclaration expression = stateObject.getExpression();
 
 			// 'IN'
-			writer.append(expression.getActualInIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualInIdentifier() : IN, IN);
 
 			// '('
 			if (!stateObject.isDerived()) {
@@ -926,10 +877,10 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 
 			// 'AS'
 			if (stateObject.hasAs()) {
-				appendIdentifier(expression.getActualAsIdentifier(), AS);
+				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterAs()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
 				writer.append(SPACE);
 			}
 
@@ -959,23 +910,23 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 
 			// 'NOT'
 			if (stateObject.hasNot()) {
-				appendIdentifier(expression.getActualNotIdentifier(), NOT);
+				appendIdentifier((expression != null) ? expression.getActualNotIdentifier() : NOT, NOT);
 				writer.append(SPACE);
 			}
 
 			// 'MEMBER'
-			writer.append(expression.getActualMemberIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualMemberIdentifier() : MEMBER, MEMBER);
 
-			if (!exactMatch | expression.hasSpaceAfterMember()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterMember()) {
 				writer.append(SPACE);
 			}
 
 			// 'OF'
 			if (stateObject.hasOf()) {
-				appendIdentifier(expression.getActualOfIdentifier(), OF);
+				appendIdentifier((expression != null) ? expression.getActualOfIdentifier() : OF, OF);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterOf()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterOf()) {
 				writer.append(SPACE);
 			}
 
@@ -994,7 +945,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(ComparisonExpressionStateObject stateObject) {
-		toStringCompound(stateObject);
+		toStringCompound(stateObject, stateObject.getIdentifier());
 	}
 
 	/**
@@ -1009,17 +960,17 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			ConcatExpression expression = stateObject.getExpression();
 
 			// 'CONCAT'
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : CONCAT, CONCAT);
 
 			// '('
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 
 			toStringChildren(stateObject, true);
 
 			// ')'
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -1037,9 +988,9 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			ConstructorExpression expression = stateObject.getExpression();
 
 			// 'NEW'
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : NEW, NEW);
 
-			if (!exactMatch | expression.hasSpaceAfterNew()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterNew()) {
 				writer.append(SPACE);
 			}
 
@@ -1047,14 +998,14 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			writer.append(stateObject.getClassName());
 
 			// '('
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 
 			toStringChildren(stateObject, true);
 
 			// ')'
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -1076,8 +1027,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			stateObject.getDecorator().accept(this);
 		}
 		else {
-			DateTime expression = stateObject.getExpression();
-			writer.append(expression.getActualIdentifier());
+			writer.append(stateObject.getText());
 		}
 	}
 
@@ -1093,18 +1043,18 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			DeleteClause expression = stateObject.getExpression();
 
 			// 'DELETE'
-			writer.append(expression.getActualDeleteIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualDeleteIdentifier() : DELETE, DELETE);
 
-			if (!exactMatch | expression.hasSpaceAfterDelete()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterDelete()) {
 				writer.append(SPACE);
 			}
 
 			// 'FROM'
-			if (!exactMatch | expression.hasFrom()) {
-				writer.append(expression.getActualFromIdentifier());
+			if (shouldOutput(expression) || expression.hasFrom()) {
+				appendIdentifier((expression != null) ? expression.getActualFromIdentifier() : FROM, FROM);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterFrom()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterFrom()) {
 				writer.append(SPACE);
 			}
 
@@ -1122,13 +1072,6 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
-		toStringRangeVariableDeclaration(stateObject);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject) {
 		toStringIdentificationVariableDeclaration(stateObject);
 	}
@@ -1136,8 +1079,15 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
+		toStringRangeVariableDeclaration(stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(DivisionExpressionStateObject stateObject) {
-		toStringCompound(stateObject);
+		toStringCompound(stateObject, DIVISION);
 	}
 
 	/**
@@ -1155,17 +1105,17 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			writer.append(SPACE);
 
 			// 'IS'
-			writer.append(expression.getActualIsIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIsIdentifier() : IS, IS);
 			writer.append(SPACE);
 
 			// 'NOT'
 			if (stateObject.hasNot()) {
-				appendIdentifier(expression.getActualNotIdentifier(), NOT);
+				appendIdentifier((expression != null) ? expression.getActualNotIdentifier() : NOT, NOT);
 				writer.append(SPACE);
 			}
 
 			// 'EMPTY'
-			writer.append(expression.getActualEmptyIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualEmptyIdentifier() : EMPTY, EMPTY);
 		}
 	}
 
@@ -1216,9 +1166,9 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			GroupByClause expression = stateObject.getExpression();
 
 			// 'GROUP BY'
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : GROUP_BY, GROUP_BY);
 
-			if (!exactMatch | expression.hasSpaceAfterGroupBy()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterGroupBy()) {
 				writer.append(SPACE);
 			}
 
@@ -1233,7 +1183,27 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(HavingClauseStateObject stateObject) {
-		toStringConditional(stateObject);
+
+		if (stateObject.isDecorated()) {
+			stateObject.getDecorator().accept(this);
+		}
+		else {
+			HavingClause expression = stateObject.getExpression();
+
+			// 'HAVING'
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : HAVING, HAVING);
+
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterIdentifier() ||
+			    stateObject.hasConditional()) {
+
+				writer.append(SPACE);
+			}
+
+			// Conditional expression
+			if (stateObject.hasConditional()) {
+				stateObject.getConditional().accept(this);
+			}
+		}
 	}
 
 	/**
@@ -1272,24 +1242,20 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 				stateObject.getStateObject().accept(this);
 				writer.append(SPACE);
 			}
-			else if (expression.hasExpression()) {
-				writer.append(expression.getExpression().toActualText());
-				writer.append(SPACE);
-			}
 
 			// 'NOT'
 			if (stateObject.hasNot()) {
-				appendIdentifier(expression.getActualNotIdentifier(), NOT);
+				appendIdentifier((expression != null) ? expression.getActualNotIdentifier() : NOT, NOT);
 				writer.append(SPACE);
 			}
 
 			// 'IN'
-			writer.append(expression.getActualInIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualInIdentifier() : IN, IN);
 
 			if (!stateObject.isSingleInputParameter()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
-			else if (!exactMatch | expression.hasSpaceAfterIn()) {
+			else if (shouldOutput(expression) || expression.hasSpaceAfterIn()) {
 				writer.append(SPACE);
 			}
 
@@ -1322,9 +1288,9 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			JoinFetch expression = stateObject.getExpression();
 
 			// JOIN FETCH
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getJoinType(), stateObject.getJoinType());
 
-			if (!exactMatch | expression.hasSpaceAfterFetch()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterFetch()) {
 				writer.append(SPACE);
 			}
 
@@ -1345,25 +1311,25 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			Join expression = stateObject.getExpression();
 
 			// JOIN
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getJoinType(), stateObject.getJoinType());
 
-			if (!exactMatch | expression.hasSpaceAfterJoin()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterJoin()) {
 				writer.append(SPACE);
 			}
 
 			// Join association path
 			stateObject.getJoinAssociationPathStateObject().accept(this);
 
-			if (!exactMatch | expression.hasSpaceAfterJoinAssociation()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterJoinAssociation()) {
 				writer.append(SPACE);
 			}
 
 			// AS
 			if (stateObject.hasAs()) {
 
-				appendIdentifier(expression.getActualAsIdentifier(), AS);
+				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
 
-				if (!exactMatch | expression.hasSpaceAfterAs()) {
+				if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
 					writer.append(SPACE);
 				}
 			}
@@ -1403,7 +1369,13 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 		}
 		else {
 			KeywordExpression expression = stateObject.getExpression();
-			writer.append(expression.getActualIdentifier());
+
+			if (expression != null) {
+				writer.append(expression.getActualIdentifier());
+			}
+			else {
+				writer.append(stateObject.getText());
+			}
 		}
 	}
 
@@ -1429,24 +1401,21 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasStringStateObject()) {
 				stateObject.getStringStateObject().accept(this);
 			}
-			else {
-				writer.append(expression.getStringExpression().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterStringExpression()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterStringExpression()) {
 				writer.append(SPACE);
 			}
 
 			// 'NOT'
 			if (stateObject.hasNot()) {
-				appendIdentifier(expression.getActualNotIdentifier(), NOT);
+				appendIdentifier((expression != null) ? expression.getActualNotIdentifier() : NOT, NOT);
 				writer.append(SPACE);
 			}
 
 			// 'LIKE'
-			writer.append(expression.getActualLikeIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualLikeIdentifier() : LIKE, LIKE);
 
-			if (!exactMatch | expression.hasSpaceAfterLike()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterLike()) {
 				writer.append(SPACE);
 			}
 
@@ -1454,19 +1423,21 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasPatternValue()) {
 				stateObject.getPatternValue().accept(this);
 			}
-			else {
-				writer.append(expression.getPatternValue().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterPatternValue()) {
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterPatternValue()) {
 				writer.append(SPACE);
 			}
 
 			// Escape character
 			if (stateObject.hasEscapeCharacter()) {
-				appendIdentifier(expression.getActualEscapeIdentifier(), ESCAPE);
 
-				if (!exactMatch | expression.hasSpaceAfterEscape()) {
+				if (!exactMatch) {
+					writer.append(SPACE);
+				}
+
+				appendIdentifier((expression != null) ? expression.getActualEscapeIdentifier() : ESCAPE, ESCAPE);
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterEscape()) {
 					writer.append(SPACE);
 				}
 
@@ -1514,7 +1485,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(MultiplicationExpressionStateObject stateObject) {
-		toStringCompound(stateObject);
+		toStringCompound(stateObject, MULTIPLICATION);
 	}
 
 	/**
@@ -1529,18 +1500,15 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			NotExpression expression = stateObject.getExpression();
 
 			// 'NOT'
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : NOT, NOT);
 
-			if (!exactMatch | expression.hasSpaceAfterNot()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterNot()) {
 				writer.append(SPACE);
 			}
 
 			// Expression
 			if (stateObject.hasStateObject()) {
 				stateObject.accept(this);
-			}
-			else {
-				writer.append(expression.getExpression().toActualText());
 			}
 		}
 	}
@@ -1561,23 +1529,19 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 				stateObject.getStateObject().accept(this);
 				writer.append(SPACE);
 			}
-			else if (expression.hasExpression()) {
-				writer.append(expression.getExpression().toActualText());
-				writer.append(SPACE);
-			}
 
 			// 'IS'
-			writer.append(expression.getActualIsIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIsIdentifier() : IS, IS);
 			writer.append(SPACE);
 
 			// 'NOT'
 			if (stateObject.hasNot()) {
-				writer.append(expression.getActualNotIdentifier());
+				appendIdentifier((expression != null) ? expression.getActualNotIdentifier() : NOT, NOT);
 				writer.append(SPACE);
 			}
 
 			// 'NULL'
-			writer.append(expression.getActualNullIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualNullIdentifier() : NULL, NULL);
 		}
 	}
 
@@ -1614,18 +1578,15 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			OrderByClause expression = stateObject.getExpression();
 
 			// 'ORDER BY'
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : ORDER_BY, ORDER_BY);
 
-			if (!exactMatch | expression.hasSpaceAfterOrderBy()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterOrderBy()) {
 				writer.append(SPACE);
 			}
 
 			// Order by items
 			if (stateObject.hasItems()) {
 				toStringChildren(stateObject, true);
-			}
-			else {
-				writer.append(expression.getOrderByItems().toActualText());
 			}
 		}
 	}
@@ -1645,17 +1606,19 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasStateObject()) {
 				stateObject.getStateObject().accept(this);
 			}
-			else {
-				writer.append(expression.getExpression().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterExpression()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterExpression()) {
 				writer.append(SPACE);
 			}
 
 			// ASC/DESC
 			if (stateObject.getOrdering() != Ordering.DEFAULT) {
-				writer.append(expression.getActualOrdering());
+				if (expression != null) {
+					writer.append(expression.getActualOrdering());
+				}
+				else {
+					formatIdentifier(stateObject.getOrdering().name());
+				}
 			}
 		}
 	}
@@ -1664,7 +1627,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(OrExpressionStateObject stateObject) {
-		toStringCompound(stateObject);
+		toStringCompound(stateObject, OR);
 	}
 
 	/**
@@ -1689,25 +1652,19 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasStateObject()) {
 				stateObject.getStateObject().accept(this);
 			}
-			else {
-				writer.append(expression.getResultVariable().toActualText());
-			}
 
 			// 'AS'
 			if (stateObject.hasAs()) {
-				writer.append(expression.getActualAsIdentifier());
+				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterAs()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
 				writer.append(SPACE);
 			}
 
 			// Result variable
 			if (stateObject.hasResultVariable()) {
 				writer.append(stateObject.getResultVariable());
-			}
-			else {
-				writer.append(expression.getResultVariable().toActualText());
 			}
 		}
 	}
@@ -1724,17 +1681,17 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			SelectClause expression = stateObject.getExpression();
 
 			// SELECT
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : SELECT, SELECT);
 
-			if (!exactMatch | expression.hasSpaceAfterSelect()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterSelect()) {
 				writer.append(SPACE);
 			}
 
 			// DISTINCT
 			if (stateObject.hasDistinct()) {
-				appendIdentifier(expression.getActualDistinctIdentifier(), DISTINCT);
+				appendIdentifier((expression != null) ? expression.getActualDistinctIdentifier() : DISTINCT, DISTINCT);
 
-				if (!exactMatch | expression.hasSpaceAfterDistinct()) {
+				if (shouldOutput(expression) || expression.hasSpaceAfterDistinct()) {
 					writer.append(SPACE);
 				}
 			}
@@ -1751,19 +1708,19 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 */
 	public void visit(SelectStatementStateObject stateObject) {
 
-		toStringSelectStatement(stateObject, true);
+		toStringSelectStatement(stateObject);
 
 		SelectStatement expression = stateObject.getExpression();
 
-		if (!exactMatch && expression.hasSpaceBeforeOrderBy()) {
+		// If no ORDER BY clause was parsed but was added later, make sure a space is added
+		if (exactMatch && (expression != null) && expression.hasSpaceBeforeOrderBy() ||
+		    stateObject.hasOrderByClause() && (writer.charAt(writer.length() - 1) != ' ')) {
+
 			writer.append(SPACE);
 		}
 
 		// ORDER BY clause
 		if (stateObject.hasOrderByClause()) {
-			if (exactMatch) {
-				writer.append(SPACE);
-			}
 			stateObject.getOrderByClause().accept(this);
 		}
 	}
@@ -1787,27 +1744,24 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			SimpleSelectClause expression = stateObject.getExpression();
 
 			// SELECT
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : SELECT, SELECT);
 
-			if (!exactMatch | expression.hasSpaceAfterSelect()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterSelect()) {
 				writer.append(SPACE);
 			}
 
 			// DISTINCT
 			if (stateObject.hasDistinct()) {
-				appendIdentifier(expression.getActualDistinctIdentifier(), DISTINCT);
+				appendIdentifier((expression != null) ? expression.getActualDistinctIdentifier() : DISTINCT, DISTINCT);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterDistinct()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterDistinct()) {
 				writer.append(SPACE);
 			}
 
 			// Select expression
 			if (stateObject.hasSelectItem()) {
 				stateObject.getSelectItem().accept(this);
-			}
-			else if (exactMatch) {
-				writer.append(expression.getSelectExpression().toActualText());
 			}
 		}
 	}
@@ -1816,7 +1770,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(SimpleSelectStatementStateObject stateObject) {
-		toStringSelectStatement(stateObject, false);
+		toStringSelectStatement(stateObject);
 	}
 
 	/**
@@ -1865,7 +1819,7 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(SubtractionExpressionStateObject stateObject) {
-		toStringCompound(stateObject);
+		toStringCompound(stateObject, MINUS);
 	}
 
 	/**
@@ -1908,25 +1862,25 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			UpdateClause expression = stateObject.getExpression();
 
 			// 'UPDATE'
-			writer.append(expression.getActualUpdateIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualUpdateIdentifier() : UPDATE, UPDATE);
 
-			if (!exactMatch | expression.hasSpaceAfterUpdate()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterUpdate()) {
 				writer.append(SPACE);
 			}
 
 			// Range variable declaration
 			stateObject.getRangeVariableDeclaration().accept(this);
 
-			if (!exactMatch | expression.hasSpaceAfterRangeVariableDeclaration()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterRangeVariableDeclaration()) {
 				writer.append(SPACE);
 			}
 
 			// 'SET'
-			if (!exactMatch | expression.hasSet()) {
-				appendIdentifier(expression.getActualSetIdentifier(), SET);
+			if (shouldOutput(expression) || expression.hasSet()) {
+				appendIdentifier((expression != null) ? expression.getActualSetIdentifier() : SET, SET);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterSet()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterSet()) {
 				writer.append(SPACE);
 			}
 
@@ -1951,25 +1905,22 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			// Update item
 			stateObject.getStateFieldPath().accept(this);
 
-			if (!exactMatch | expression.hasSpaceAfterStateFieldPathExpression()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterStateFieldPathExpression()) {
 				writer.append(SPACE);
 			}
 
 			// '='
-			if (!exactMatch | expression.hasEqualSign()) {
+			if (shouldOutput(expression) || expression.hasEqualSign()) {
 				writer.append(EQUAL);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterEqualSign()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterEqualSign()) {
 				writer.append(SPACE);
 			}
 
 			// New value
 			if (stateObject.hasNewValue()) {
 				stateObject.getNewValue().accept(this);
-			}
-			else {
-				writer.append(expression.getNewValue().toActualText());
 			}
 		}
 	}
@@ -2007,9 +1958,9 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			WhenClause expression = stateObject.getExpression();
 
 			// 'WHEN'
-			writer.append(expression.getActualWhenIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualWhenIdentifier() : WHEN, WHEN);
 
-			if (!exactMatch | expression.hasSpaceAfterWhen()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterWhen()) {
 				writer.append(SPACE);
 			}
 
@@ -2017,29 +1968,23 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 			if (stateObject.hasConditional()) {
 				stateObject.getConditional().accept(this);
 			}
-			else {
-				writer.append(expression.getWhenExpression().toActualText());
-			}
 
-			if (!exactMatch | expression.hasSpaceAfterWhenExpression()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterWhenExpression()) {
 				writer.append(SPACE);
 			}
 
 			// 'THEN'
-			if (!exactMatch | expression.hasThen()) {
-				appendIdentifier(expression.getActualThenIdentifier(), THEN);
+			if (shouldOutput(expression) || expression.hasThen()) {
+				appendIdentifier((expression != null) ? expression.getActualThenIdentifier() : THEN, THEN);
 			}
 
-			if (!exactMatch | expression.hasSpaceAfterThen()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterThen()) {
 				writer.append(SPACE);
 			}
 
 			// THEN expression
 			if (stateObject.hasThen()) {
 				stateObject.getThen().accept(this);
-			}
-			else {
-				writer.append(expression.getThenExpression().toActualText());
 			}
 		}
 	}
@@ -2048,6 +1993,26 @@ public abstract class AbstractActualJPQLQueryFormatter implements StateObjectVis
 	 * {@inheritDoc}
 	 */
 	public void visit(WhereClauseStateObject stateObject) {
-		toStringConditional(stateObject);
+
+		if (stateObject.isDecorated()) {
+			stateObject.getDecorator().accept(this);
+		}
+		else {
+			WhereClause expression = stateObject.getExpression();
+
+			// 'WHERE
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : WHERE, WHERE);
+
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterIdentifier() ||
+			    stateObject.hasConditional()) {
+
+				writer.append(SPACE);
+			}
+
+			// Conditional expression
+			if (stateObject.hasConditional()) {
+				stateObject.getConditional().accept(this);
+			}
+		}
 	}
 }

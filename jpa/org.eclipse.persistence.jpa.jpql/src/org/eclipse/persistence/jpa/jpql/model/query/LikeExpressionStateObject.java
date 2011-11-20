@@ -294,7 +294,7 @@ public class LikeExpressionStateObject extends AbstractStateObject {
 			patternValue.toString(writer);
 		}
 
-		if (escapeCharacter != null) {
+		if (hasEscapeCharacter()) {
 			writer.append(SPACE);
 			writer.append(ESCAPE);
 			writer.append(SPACE);

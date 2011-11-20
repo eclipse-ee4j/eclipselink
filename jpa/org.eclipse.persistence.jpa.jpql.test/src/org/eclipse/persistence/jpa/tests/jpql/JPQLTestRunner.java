@@ -46,7 +46,7 @@ import org.junit.runners.model.Statement;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
+@SuppressWarnings({ "nls", "restriction" })
 public class JPQLTestRunner extends ParentRunner<Runner> {
 
 	/**
@@ -577,7 +577,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 			if (primaryKey != null) {
 				writer.append(" - ");
-				writer.append(helpers.get(primaryKey).getClass().getSimpleName());
+				writer.append(helpers.get(primaryKey).toString());
 			}
 
 			if (parent != null) {

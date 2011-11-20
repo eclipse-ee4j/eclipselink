@@ -14,8 +14,6 @@
 package org.eclipse.persistence.jpa.jpql.model;
 
 import java.util.ListIterator;
-import java.util.StringTokenizer;
-import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.model.query.AbsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractConditionalClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractDoubleEncapsulatedExpressionStateObject;
@@ -100,7 +98,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.SizeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SqrtExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.StateObjectVisitor;
 import org.eclipse.persistence.jpa.jpql.model.query.StringLiteralStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
@@ -124,48 +121,11 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The abstract definition of a {@link IJPQLQueryFormatter}, which converts an {@link StateObject}
  * into its string representation that can be used as a real JPQL query.
  *
- * @version 3.1
- * @since 3.1
+ * @version 2.4
+ * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
-public abstract class AbstractJPQLQueryFormatter implements StateObjectVisitor,
-                                                            IJPQLQueryFormatter {
-
-	/**
-	 * Determines how the JPQL identifiers are written out.
-	 */
-	private IdentifierStyle style;
-
-	/**
-	 * The holder of the string representation of the JPQL query.
-	 */
-	protected StringBuilder writer;
-
-	/**
-	 * The constant for a comma: ','.
-	 */
-	protected static final String COMMA = ",";
-
-	/**
-	 * The constant for a comma followed by a space: ', '.
-	 */
-	protected static final String COMMA_SPACE = ", ";
-
-	/**
-	 * The constant for the left parenthesis: '('.
-	 */
-	protected static final String LEFT_PARENTHESIS = "(";
-
-	/**
-	 * The constant for the right parenthesis: ')'.
-	 */
-	protected static final String RIGHT_PARENTHESIS = ")";
-
-	/**
-	 * The constant for a space: '&nbsp;&nbsp;'.
-	 */
-	protected static final String SPACE = " ";
+public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter {
 
 	/**
 	 * Creates a new <code>AbstractJPQLQueryFormatter</code>.
@@ -174,92 +134,11 @@ public abstract class AbstractJPQLQueryFormatter implements StateObjectVisitor,
 	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
 	 */
 	protected AbstractJPQLQueryFormatter(IdentifierStyle style) {
-		super();
-		initialize(style);
-	}
-
-	/**
-	 * Returns the given JPQL identifier with the first letter of each word capitalized and the rest
-	 * being lower case.
-	 *
-	 * @param identifier The JPQL identifier to format
-	 * @return The formatted JPQL identifier
-	 */
-	protected String capitalizeEachWord(String identifier) {
-
-		StringBuilder sb = new StringBuilder();
-
-		for (StringTokenizer tokenizer = new StringTokenizer(identifier, SPACE); tokenizer.hasMoreTokens(); ) {
-			String token = tokenizer.nextToken();
-			sb.append(Character.toUpperCase(token.charAt(0)));
-			sb.append(token.substring(1).toLowerCase());
-		}
-
-		return sb.toString();
-	}
-
-	/**
-	 * Formats the given JPQL identifier, if it needs to be decorated with more information. Which
-	 * depends on how the string is created.
-	 *
-	 * @param identifier JPQL identifier to format
-	 * @return By default the given identifier is returned
-	 */
-	protected String formatIdentifier(String identifier) {
-		switch (style) {
-			case CAPITALIZE_EACH_WORD: return capitalizeEachWord(identifier);
-			case LOWERCASE:            return identifier.toLowerCase();
-			default:                   return identifier.toUpperCase();
-		}
-	}
-
-	/**
-	 * Returns the style to use when formatting the JPQL identifiers.
-	 *
-	 * @return One of the possible ways to format the JPQL identifiers
-	 */
-	protected IdentifierStyle getIdentifierStyle() {
-		return style;
-	}
-
-	/**
-	 * Initializes this formatter.
-	 *
-	 * @param style Determines how the JPQL identifiers are written out
-	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
-	 */
-	protected void initialize(IdentifierStyle style) {
-
-		Assert.isNotNull(style, "The IdentifierStyle cannot be null");
-
-		this.style  = style;
-		this.writer = new StringBuilder();
+		super(style);
 	}
 
 	protected String newLine() {
 		return SPACE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return writer.toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String toString(StateObject stateObject) {
-
-		if (writer.length() > 0) {
-			writer.delete(0, writer.length());
-		}
-
-		stateObject.accept(this);
-
-		return toString();
 	}
 
 	protected void toStringChildren(ListHolderStateObject<? extends StateObject> stateObject,
@@ -364,7 +243,7 @@ public abstract class AbstractJPQLQueryFormatter implements StateObjectVisitor,
 		}
 	}
 
-	private void toStringIdentificationVariableDeclaration(AbstractIdentificationVariableDeclarationStateObject stateObject) {
+	protected void toStringIdentificationVariableDeclaration(AbstractIdentificationVariableDeclarationStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
 			stateObject.getDecorator().accept(this);
@@ -416,7 +295,7 @@ public abstract class AbstractJPQLQueryFormatter implements StateObjectVisitor,
 		}
 	}
 
-	private void toStringRangeVariableDeclaration(AbstractRangeVariableDeclarationStateObject stateObject) {
+	protected void toStringRangeVariableDeclaration(AbstractRangeVariableDeclarationStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
 			stateObject.getDecorator().accept(this);
@@ -1150,11 +1029,11 @@ public abstract class AbstractJPQLQueryFormatter implements StateObjectVisitor,
 		else {
 
 			if (stateObject.hasStateObject()) {
-				stateObject.accept(this);
+				stateObject.getStateObject().accept(this);
 				writer.append(SPACE);
 			}
 
-			writer.append(formatIdentifier(stateObject.hasNot() ? IS_NOT_EMPTY : IS_EMPTY));
+			writer.append(formatIdentifier(stateObject.hasNot() ? IS_NOT_NULL : IS_NULL));
 		}
 	}
 
