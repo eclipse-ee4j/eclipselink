@@ -36,7 +36,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
 
     public RootWithCompositeObjectTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class, Address.class, PhoneNumber.class});
+        setClasses(new Class[] {Employee.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/events/composite_object.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_object.json");
 
@@ -54,6 +54,8 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
         
         expectedClassBasedUnmarshalEvents = new ArrayList();
         expectedClassBasedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.EMPLOYEE_BEFORE_UNMARSHAL);
+        expectedClassBasedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.ADDRESS_BEFORE_UNMARSHAL);
+        expectedClassBasedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.ADDRESS_AFTER_UNMARSHAL);
         expectedClassBasedUnmarshalEvents.add(JAXBUnmarshalListenerImpl.EMPLOYEE_AFTER_UNMARSHAL);
         
         expectedClassBasedMarshalEvents = new ArrayList();
@@ -74,13 +76,13 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
     }
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
-        assertTrue("Class based callbacks not corrent", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
+        assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
         assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
     }
     
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
-        assertTrue("Class based callbacks not corrent", ((Employee)getWriteControlObject()).triggeredEvents.equals(expectedClassBasedMarshalEvents));        
+        assertTrue("Class based callbacks not correct", ((Employee)getWriteControlObject()).triggeredEvents.equals(expectedClassBasedMarshalEvents));        
         assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
     }
 
@@ -134,7 +136,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
             ArrayList expectedEvents = new ArrayList();
             expectedEvents.addAll(expectedClassBasedUnmarshalEvents);
             expectedEvents.addAll(expectedClassBasedMarshalEvents);
-            assertTrue("Class based callbacks not corrent", ((Employee)testObject).triggeredEvents.equals(expectedEvents));
+            assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedEvents));
         }    	
     }
     

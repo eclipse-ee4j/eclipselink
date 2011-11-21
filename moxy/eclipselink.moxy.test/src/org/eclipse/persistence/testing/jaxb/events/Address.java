@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.events;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 
 public class Address {
@@ -23,5 +24,15 @@ public class Address {
         }
         String objStreet = ((Address)obj).street;
         return objStreet == street || (objStreet != null && street != null && objStreet.equals(street));
+    }
+    
+    public void beforeUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        ((Employee)parent).triggeredEvents.add(JAXBUnmarshalListenerImpl.ADDRESS_BEFORE_UNMARSHAL);        
+    }
+    
+    public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        ((Employee)parent).triggeredEvents.add(JAXBUnmarshalListenerImpl.ADDRESS_AFTER_UNMARSHAL);                
     }    
+    
+    
 }

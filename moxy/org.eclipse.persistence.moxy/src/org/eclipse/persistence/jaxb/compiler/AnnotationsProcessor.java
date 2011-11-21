@@ -234,10 +234,10 @@ public class AnnotationsProcessor {
         init(classes, typeMappingInfos);
         preBuildTypeInfo(classes);
         classes = postBuildTypeInfo(classes);
-        processJavaClasses(null);
         processPropertyTypes(this.typeInfoClasses.toArray(new JavaClass[this.typeInfoClasses.size()]));
         finalizeProperties();
         createElementsForTypeMappingInfo();
+        processJavaClasses(null);
     }
 
     public void createElementsForTypeMappingInfo() {
