@@ -2035,6 +2035,20 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
+     * Return if the database requires the ORDER BY fields to be part of the select clause.
+     */
+    public boolean shouldSelectIncludeOrderBy() {
+        return false;
+    }
+    
+    /**
+     * Return if the database requires the ORDER BY fields to be part of the select clause.
+     */
+    public boolean shouldSelectDistinctIncludeOrderBy() {
+        return true;
+    }
+    
+    /**
      * Indicates whether the ANSI syntax for inner joins (e.g. SELECT FROM t1
      * JOIN t2 ON t1.pk = t2.fk) is supported by this platform.
      */
@@ -2312,6 +2326,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * This method is to be used *ONLY* by sequencing classes
      */
     public boolean supportsIdentity() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the platform supports the count distinct function with multiple fields.
+     */
+    public boolean supportsCountDistinctWithMultipleFields() {
         return false;
     }
 

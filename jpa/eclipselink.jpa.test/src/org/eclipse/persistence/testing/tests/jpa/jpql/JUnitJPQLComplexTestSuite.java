@@ -10,9 +10,6 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
-
-
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.math.BigInteger;
@@ -45,6 +42,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.Session;
 
 import org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 
@@ -57,7 +55,9 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Man;
 import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
@@ -69,6 +69,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.SalaryRate;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
 import org.eclipse.persistence.testing.models.jpa.datatypes.DataTypesTableCreator;
 import org.eclipse.persistence.testing.models.jpa.datatypes.WrapperTypes;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
@@ -239,8 +240,30 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testEnumNullNotNull"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testPessimisticLock"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testAliasedFunction"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInGroupBy"));
         
+        suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInGroupBy"));
+        // TODO - add back when working.
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInSelect"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInFrom"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testParralelFrom"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testGroupByInIn"));
+        
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testJoinFetchAlias"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testNestedJoinFetch"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testNestedJoinFetchAlias"));
+        
+        suite.addTest(new JUnitJPQLComplexTestSuite("testDistinctOrderByEmbedded"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testElementCollection"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testDoubleAggregateManyToMany"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testGroupByHavingFunction"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testSubSelect"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testOrderPackage"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectStackOverflow"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testAliasPlus"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionsWithParameters"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testEmbeddableDistinct"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testObjectIn"));
+
         return suite;
     }
     
@@ -286,6 +309,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             SchemaManager schema = new SchemaManager(session);
             schema.replaceObject(buildStoredFunction());
         }
+        
+        new CompositePKTableCreator().replaceTables(JUnitTestCase.getServerSession());
     }
 
     public StoredFunctionDefinition buildStoredFunction() {
@@ -3215,11 +3240,338 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         closeEntityManager(em);
     }
-    
+
+    // Bug 350597
+    // Test that subselects can be used in the groupby clause.
     public void testSubselectInGroupBy() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e.firstName, COUNT(e) from Employee e group by e.firstName having count(e) > (Select count(e2) from Employee e2)");
         query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // TODO Bug 350597
+    // Test that subselects can be used in the select clause.
+    public void testSubselectInSelect() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select (Select count(e2) from Employee e2 where e2.firstName = e.firstName), e.firstName from Employee e");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // TODO Bug 350597
+    // Test that subselects can be used in the from clause.
+    public void testSubselectInFrom() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e.firstName, avg(e3.count) from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // TODO Bug 350597
+    // Test that an alias not used in the where clause is not ignored.
+    public void testParralelFrom() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select count(e) from Employee e");
+        long count = (Long)query.getSingleResult();
+        Query query2 = em.createQuery("Select count(e) from Employee e, Employee e2");
+        long count2 = (Long)query2.getSingleResult();
+        if ((count * count) != count2) {
+            fail("Incorrect count returned from parralel, got: " + count2 + " expected: n^2 " + count);            
+        }
+        closeEntityManager(em);
+    }
+    
+    // TODO Bug 333645
+    // Test that brackets are parsed when using a group by and an in.
+    public void testGroupByInIn() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.id <> 4 and (e.id in (select max(e2.id) from Employee e2 group by e2.id having max(e2.id) > 1))");
+        //Query query = em.createQuery("Select e from Employee e where e.id <> 4 and (e.id in (select max(e2.id) from Employee e2 group by e2.id having max(e2.id) > 1) or not exists (select e3 from Employee e3))");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 346729
+    // Test that distinct order by columns are not duplicated (fails on SQL Server 2005)
+    public void testDistinctOrderByEmbedded() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select distinct e from Employee e order by e.period.startDate");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // TODO Bug 321722
+    // Test that join fetch allows an alias.
+    public void testJoinFetchAlias() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e join fetch e.address a order by a.city");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // TODO Bug 321722
+    // Test that nested join fetching works through using dot notation.
+    public void testNestedJoinFetch() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e join fetch e.manager.address");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // TODO Bug 321722
+    // Test that nested join fetching works through using an alias.
+    public void testNestedJoinFetchAlias() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e join fetch e.manager m join fetch m.address");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 331124
+    // Test that join to elemenet collections work.
+    public void testElementCollection() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select b from Buyer b join b.creditLines l where l > 0");
+        query.getResultList();
+        query = em.createQuery("Select b from Buyer b join b.creditLines l where Key(l) <> ''");
+        query.getResultList();
+        query = em.createQuery("Select d from Department d join d.competencies c where c.rating > 0");
+        query.getResultList();
+        query = em.createQuery("Select b from BeerConsumer b join b.commentLookup c where KEY(c).number > 0");
+        query.getResultList();
+        query = em.createQuery("Select b from BeerConsumer b join b.commentLookup c where c <> ''");
+        query.getResultList();
+        query = em.createQuery("Select b from BeerConsumer b join b.redStripes r where r.alcoholContent > 0");
+        query.getResultList();
+        query = em.createQuery("Select b from BeerConsumer b join b.redStripes r where KEY(r) <> ''");
+        query.getResultList();
+        query = em.createQuery("Select b from BeerConsumer b join b.redStripesByAlcoholContent r where KEY(r) > 0");
+        query.getResultList();
+        query = em.createQuery("Select b from BeerConsumer b join b.redStripesByAlcoholContent r where r.alcoholContent > 0");
+        query.getResultList();
+        query = em.createQuery("Select b from Buyer b join b.creditLines l where l in :arg");
+        List args = new ArrayList();
+        args.add(0);
+        args.add(1);
+        query.setParameter("arg", args);
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 331969
+    // Test that the correct aliases are used in the select clause when joining the same relationship twice.
+    // ... even if the correct aliases are used, the SQL result is the same because of join semantics...
+    public void testDoubleAggregateManyToMany() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e.id, sum(p1.budget), sum(p2.budget) from Employee e join treat(e.projects as LargeProject) p1 join treat(e.projects as LargeProject) p2 where p1.budget > 200 and p2.budget > 0 group by e.id");
+        List<Object[]> results = query.getResultList();
+        for (Object[] result : results) {
+            if (result[1].equals(result[2])) {
+                //fail("Sums should be different: " + result[0] + " : " + result[1]);
+            }
+        }
+        closeEntityManager(em);
+    }
+    
+    // TODO Bug 347562
+    // Test group by having works with aggregate functions (it disappears).
+    public void testGroupByHavingFunction() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e group by e having count(e.phoneNumbers) > 100");
+        if (query.getResultList().size() > 0) {
+            fail("Group by not included");
+        }
+        closeEntityManager(em);
+    }
+    
+    // Bug 300625
+    // Test subselect does not join table twice.
+    public void testSubSelect() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.id in (Select p.id from PhoneNumber p where p.owner = e)");
+        query.getResultList().size();
+        if (isJPA10()) {
+            closeEntityManager(em);
+            return;
+        }
+        String sql = query.unwrap(DatabaseQuery.class).getSQLString();
+        int index = sql.indexOf("CMP3_EMPLOYEE");
+        if (index == -1) {
+            fail("CMP3_EMPLOYEE table missing.");
+        }
+        index = sql.indexOf("CMP3_EMPLOYEE", index + 1);
+        if (index != -1) {
+            fail("CMP3_EMPLOYEE table incorrectly join twice.");
+        }
+        closeEntityManager(em);
+    }
+    
+    // TODO Bug 300625
+    // Test reserved words can be used in package names.
+    public void testOrderPackage() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select new org.order.where.select.from.Foo(e.id) from Employee e");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 301905
+    // Test subselect does not cause stack overflow.
+    public void testSubselectStackOverflow() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select object(e) from Employee e where :id in (select p.id from in(e.projects) p)");
+        query.setParameter("id", 123);
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 326848
+    // Test that plus nodes can be aliased.
+    public void testAliasPlus() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select (e.id + 5) as p from Employee e order by p");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 327848
+    // Test functions with parameters.
+    public void testFunctionsWithParameters() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where exists (Select a from e.address a  where UPPER(:arg) = UPPER(:arg2))");
+        query.setParameter("arg", "foo");
+        query.setParameter("arg2", "FOO");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 314025
+    // Test IN with subselects and objects.
+    public void testObjectIn() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.id in (Select e2.id from Employee e2)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e in (Select e2 from Employee e2)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address in (Select a from Address a)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address = (Select a from Address a where a.ID = (Select Max(a2.ID) from Address a2))");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address in (:a, :a2)");
+        Address address = new Address();
+        address.setID(123);
+        query.setParameter("a", address);
+        query.setParameter("a2", address);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address in :a");
+        List addresses = new ArrayList();
+        addresses.add(address);
+        addresses.add(address);
+        query.setParameter("a", addresses);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e join e.phoneNumbers p where p in (Select p2 from PhoneNumber p2)");
+        query.getResultList();
+        if (getPlatform().isOracle()) {
+            // IN on composite requires arrays, which is not supported on all databases.
+            query = em.createQuery("Select e from Employee e join e.phoneNumbers p where p in (:p, :p2)");
+            PhoneNumber phone = new PhoneNumber();
+            phone.setId(123);
+            phone.setType("fax");
+            query.setParameter("p", phone);
+            query.setParameter("p2", phone);
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e join e.phoneNumbers p where p in :p");
+            List phones = new ArrayList();
+            phones.add(phone);
+            phones.add(phone);
+            query.setParameter("p", phones);
+            query.getResultList();
+        }
+        // NOT IN
+        query = em.createQuery("Select e from Employee e where e.id not in (Select e2.id from Employee e2)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e not in (Select e2 from Employee e2)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address not in (Select a from Address a)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address <> (Select a from Address a where a.ID = (Select Max(a2.ID) from Address a2))");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address not in (:a, :a2)");
+        query.setParameter("a", address);
+        query.setParameter("a2", address);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address not in :a");
+        query.setParameter("a", addresses);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e join e.phoneNumbers p where p not in (Select p2 from PhoneNumber p2)");
+        query.getResultList();
+        if (getPlatform().isOracle()) {
+            // IN on composite requires arrays, which is not supported on all databases.
+            query = em.createQuery("Select e from Employee e join e.phoneNumbers p where p not in (:p, :p2)");
+            PhoneNumber phone = new PhoneNumber();
+            phone.setId(123);
+            phone.setType("fax");
+            query.setParameter("p", phone);
+            query.setParameter("p2", phone);
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e join e.phoneNumbers p where p not in :p");
+            List phones = new ArrayList();
+            phones.add(phone);
+            phones.add(phone);
+            query.setParameter("p", phones);
+            query.getResultList();
+        }
+        closeEntityManager(em);
+    }
+    
+    // Bug 245652
+    // Test distinct on an embeddable.
+    public void testEmbeddableDistinct() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select count(e) from Employee e");
+        long count = ((Number)query.getSingleResult()).longValue();
+        query = em.createQuery("Select count(distinct e) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select e, count(distinct e) from Employee e group by e");
+        query.getResultList();
+        query = em.createQuery("Select g, count(distinct g) from Golfer g group by g");
+        query.getResultList();
+        query = em.createQuery("Select count(c) from PhoneNumber c");
+        long count2 = ((Number)query.getSingleResult()).longValue();
+        query = em.createQuery("Select count(distinct p) from PhoneNumber p");
+        query.getResultList();
+        query = em.createQuery("Select count(distinct c) from Captain c");
+        query.getResultList();
+        query = em.createQuery("Select count(distinct c) from Captain c where c.id.name <> ''");
+        query.getResultList();
+        query = em.createQuery("Select count(distinct e2), count(distinct e) from Employee e2, Employee e");
+        Object[] results = (Object[])query.getSingleResult();
+        if (!(((Number)results[1]).longValue() == (count))) {
+            fail("Employee count not correct: " + count + " was " + results[1]);
+        }
+        if (!(((Number)results[0]).longValue() == (count))) {
+            fail("Employee 2 count not correct: " + count + " was " + results[0]);
+        }
+        query = em.createQuery("Select count(distinct p), count(distinct e) from PhoneNumber p, Employee e");
+        results = (Object[])query.getSingleResult();
+        if (!(((Number)results[1]).longValue() == (count))) {
+            fail("Employee count not correct: " + count + " was " + results[1]);
+        }
+        if (!(((Number)results[0]).longValue() == (count2))) {
+            // TODO - this does not throw an error, but the result is not correct,
+            // should either work, or throw an error.
+            if (getPlatform().isMySQL()) {
+                fail("PhoneNumber count not correct: " + count2 + " was " + results[0]);
+            }
+        }
+        if (getPlatform().isMySQL()) {
+            // This only works on MySQL currently.
+            query = em.createQuery("Select count(distinct p) from PhoneNumber p group by p.areaCode");
+            query.getResultList();
+            query = em.createQuery("Select c, count(distinct c) from Captain c group by c");
+            query.getResultList();
+        }
         closeEntityManager(em);
     }
     

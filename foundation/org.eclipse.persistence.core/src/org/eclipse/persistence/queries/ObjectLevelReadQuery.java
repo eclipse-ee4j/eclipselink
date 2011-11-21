@@ -49,7 +49,6 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
 import org.eclipse.persistence.internal.expressions.ForUpdateClause;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
-import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -61,19 +60,14 @@ import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.queries.MapContainerPolicy;
-import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.queries.QueryByExampleMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
-import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
  * <p><b>Purpose</b>:
@@ -831,20 +825,29 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * attributes declared on the descriptor.
      */
     protected void checkPrePrepare(AbstractSession session) {
-        // This query is first prepared for global common state, this must be synced.
-        if (!this.isPrePrepared) {// Avoid the monitor is already prePrepare, must check again for concurrency.      
-            synchronized (this) {
-                if (!isPrePrepared()) {
-                    AbstractSession alreadySetSession = getSession();
-                    setSession(session);// Session is required for some init stuff.
-                    prePrepare();
-                    setSession(alreadySetSession);
-                    setIsPrePrepared(true);// MUST not set prepare until done as other thread may hit before finishing the prePrepare.
+        try {
+            // This query is first prepared for global common state, this must be synced.
+            if (!this.isPrePrepared) {// Avoid the monitor is already prePrepare, must check again for concurrency.      
+                synchronized (this) {
+                    if (!isPrePrepared()) {
+                        AbstractSession alreadySetSession = getSession();
+                        setSession(session);// Session is required for some init stuff.
+                        prePrepare();
+                        setSession(alreadySetSession);
+                        setIsPrePrepared(true);// MUST not set prepare until done as other thread may hit before finishing the prePrepare.
+                    }
                 }
+            } else {        
+                // Must always check descriptor as transient for remote.
+                checkDescriptor(session);
             }
-        } else {        
-            // Must always check descriptor as transient for remote.
-            checkDescriptor(session);
+        } catch (QueryException knownFailure) {
+            // Set the query, as preprepare can be called directly.
+            if (knownFailure.getQuery() == null) {
+                knownFailure.setQuery(this);
+                knownFailure.setSession(session);
+            }
+            throw knownFailure;
         }
     }
 
@@ -1363,110 +1366,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setShouldFilterDuplicates(boolean shouldFilterDuplicates) {
         getJoinedAttributeManager().setShouldFilterDuplicates(shouldFilterDuplicates);
-    }
-    
-   /**
-     * INTERNAL:
-     * Lookup the mapping for this item by traversing its expression recursively.
-     * If an aggregate of foreign mapping is found it is traversed.
-     */
-    public DatabaseMapping getLeafMappingFor(Expression expression, ClassDescriptor rootDescriptor) throws QueryException {
-        // Check for database field expressions or place holder
-        if ((expression == null) || (expression.isFieldExpression())) {
-            return null;
-        }
-
-        if (!(expression.isQueryKeyExpression())) {
-            return null;
-        }
-        
-        if (expression.isMapEntryExpression()){
-            MapEntryExpression teExpression = (MapEntryExpression)expression;
-            
-            // get the expression that we want the table entry for
-            QueryKeyExpression baseExpression = (QueryKeyExpression)teExpression.getBaseExpression();
-            
-            // get the expression that owns the mapping for the table entry
-            Expression owningExpression = baseExpression.getBaseExpression();
-            ClassDescriptor owningDescriptor = getLeafDescriptorFor(owningExpression, rootDescriptor);
-            
-            // Get the mapping that owns the table
-            CollectionMapping mapping = (CollectionMapping)owningDescriptor.getObjectBuilder().getMappingForAttributeName(baseExpression.getName());
-            
-            if (teExpression.shouldReturnMapEntry()){
-                return mapping;
-            }
-            if (mapping.getContainerPolicy().isMappedKeyMapPolicy()){
-                MappedKeyMapContainerPolicy policy = (MappedKeyMapContainerPolicy)mapping.getContainerPolicy();
-                return (DatabaseMapping)policy.getKeyMapping();
-            }
-            return mapping;
-        }
-
-        QueryKeyExpression qkExpression = (QueryKeyExpression)expression;
-        Expression baseExpression = qkExpression.getBaseExpression();
-
-        ClassDescriptor descriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
-        if (descriptor == null){
-            return null;
-        }
-        return descriptor.getObjectBuilder().getMappingForAttributeName(qkExpression.getName());
-    }
-
-    /**
-     * INTERNAL:
-     * Lookup the descriptor for this item by traversing its expression recursively.
-     */
-    public ClassDescriptor getLeafDescriptorFor(Expression expression, ClassDescriptor rootDescriptor) throws QueryException {
-        // The base case
-        if (expression.isExpressionBuilder()) {
-            // The following special case is where there is a parallel builder
-            // which has a different reference class as the primary builder.
-            Class queryClass = ((ExpressionBuilder)expression).getQueryClass();
-            if ((queryClass != null) && (queryClass != getReferenceClass())) {
-                return getSession().getDescriptor(queryClass);
-            }
-            return rootDescriptor;
-        }
-        Expression baseExpression = ((QueryKeyExpression)expression).getBaseExpression();
-        ClassDescriptor baseDescriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
-        
-        if (expression.isMapEntryExpression()){
-            // get the expression that owns the mapping for the table entry
-            Expression owningExpression = ((QueryKeyExpression)baseExpression).getBaseExpression();
-            ClassDescriptor owningDescriptor = getLeafDescriptorFor(owningExpression, rootDescriptor);
-            
-            // Get the mapping that owns the table
-            CollectionMapping mapping = (CollectionMapping)owningDescriptor.getObjectBuilder().getMappingForAttributeName(baseExpression.getName());
-            
-            return ((MapContainerPolicy)mapping.getContainerPolicy()).getDescriptorForMapKey();
-        }
-
-        ClassDescriptor descriptor = null;
-        String attributeName = expression.getName();
-
-        DatabaseMapping mapping = baseDescriptor.getObjectBuilder().getMappingForAttributeName(attributeName);
-
-        if (mapping == null) {
-            QueryKey queryKey = baseDescriptor.getQueryKeyNamed(attributeName);
-            if (queryKey != null) {
-                if (queryKey.isForeignReferenceQueryKey()) {
-                    descriptor = getSession().getDescriptor(((ForeignReferenceQueryKey)queryKey).getReferenceClass());
-                } else// if (queryKey.isDirectQueryKey())
-                 {
-                    descriptor = queryKey.getDescriptor();
-                }
-            }
-            if (descriptor == null) {
-                throw QueryException.invalidExpressionForQueryItem(expression, this);
-            }
-        } else if (mapping.isAggregateObjectMapping()) {
-            descriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
-        } else if (mapping.isForeignReferenceMapping()) {
-            descriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
-        }
-        return descriptor;
-    }
+    }    
 
     /**
      * INTERNAL:

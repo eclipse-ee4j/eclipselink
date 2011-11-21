@@ -31,9 +31,10 @@ import org.eclipse.persistence.queries.*;
 public class InformixPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
 
     /**
-     *    Answer a platform correct string representation of a Date, suitable for SQL generation.
-     *    Native format: 'yyyy-mm-dd
+     * Answer a platform correct string representation of a Date, suitable for SQL generation.
+     * Native format: 'yyyy-mm-dd
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -71,6 +72,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * Answer a platform correct string representation of a Calendar, suitable for SQL generation.
      * The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             appendInformixCalendar(calendar, writer);
@@ -89,9 +91,10 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     /**
-     *    Answer a platform correct string representation of a Time, suitable for SQL generation.
-     *    The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
+     * Answer a platform correct string representation of a Time, suitable for SQL generation.
+     * The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
      */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -103,9 +106,10 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     /**
-     *    Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
-     *    The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
+     * Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
+     * The date is printed in the ODBC platform independent format {d'YYYY-MM-DD'}.
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             appendInformixTimestamp(timestamp, writer);
@@ -114,6 +118,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
         }
     }
 
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -152,6 +157,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
@@ -165,6 +171,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * returns the maximum number of characters that can be used in a field
      * name on this platform.
      */
+    @Override
     public int getMaxFieldNameSize() {
         return 18;
     }
@@ -172,10 +179,12 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     /**
      * Informix seems to like this syntax instead of the OF * syntax.
      */
+    @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
     }
 
+    @Override
     public boolean isInformix() {
         return true;
     }
@@ -184,15 +193,26 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * Some database require outer joins to be given in the where clause, others require it in the from clause.
      * Informix requires it in the from clause with no ON expression.
      */
+    @Override
     public boolean isInformixOuterJoin() {
+        return true;
+    }
+    
+    /**
+     * Informix seemed to require this at some point.
+     * Not sure if it still does.
+     */
+    @Override
+    public boolean shouldSelectIncludeOrderBy() {
         return true;
     }
 
     /**
-     *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale
      */
+    @Override
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -208,10 +228,11 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
      */
+    @Override
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -229,6 +250,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     /**
      * Append the receiver's field serial constraint clause to a writer.
      */
+    @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
             writer.write(" SERIAL");
@@ -238,15 +260,17 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     /**
-     * USed for sp calls.
+     * Used for sp calls.
      */
+    @Override
     public boolean requiresProcedureCallBrackets() {
         return false;
     }
 
     /**
-    * Some Platforms want the constraint name after the constraint definition.
-    */
+     * Some Platforms want the constraint name after the constraint definition.
+     */
+    @Override
     public boolean shouldPrintConstraintNameAfter() {
         return true;
     }
@@ -258,6 +282,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      *  Informix does this through SERIAL field types.
      *  This method is to be used *ONLY* by sequencing classes
      */
+    @Override
     public boolean supportsIdentity() {
         return true;
     }
@@ -267,6 +292,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      *  Indicates whether the platform supports sequence objects.
      *  This method is to be used *ONLY* by sequencing classes
      */
+    @Override
     public boolean supportsSequenceObjects() {
         return true;
     }
@@ -279,6 +305,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * If the platform supportsSequenceObjects then (at least) one of buildSelectQueryForSequenceObject
      * methods should return non-null query.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
         return new ValueReadQuery("select " + qualifiedSeqName + ".nextval from systables where tabid = 1");
     }
@@ -288,6 +315,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * Override this method if the platform supports sequence objects
      * and it's possible to alter sequence object's increment in the database.
      */
+    @Override
     public boolean isAlterSequenceObjectSupported() {
         return true;
     }

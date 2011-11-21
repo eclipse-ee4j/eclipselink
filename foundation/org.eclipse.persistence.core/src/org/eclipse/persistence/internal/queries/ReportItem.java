@@ -69,6 +69,10 @@ public class ReportItem implements Cloneable, java.io.Serializable {
     public Expression getAttributeExpression() {
         return attributeExpression;
     }
+    
+    public void setAttributeExpression(Expression attributeExpression) {
+        this.attributeExpression = attributeExpression;
+    }
 
     public ClassDescriptor getDescriptor(){
         return this.descriptor;
@@ -120,57 +124,57 @@ public class ReportItem implements Cloneable, java.io.Serializable {
      * Looks up mapping for attribute during preExecute of ReportQuery
      */
     public void initialize(ReportQuery query) throws QueryException {
-        if (getMapping() == null) {
-            DatabaseMapping mapping = query.getLeafMappingFor(getAttributeExpression(), query.getDescriptor());
-            if (mapping == null){
-                if (getAttributeExpression() != null){
-                    if (getAttributeExpression().isExpressionBuilder()) {
-                        Class resultClass = ((ExpressionBuilder)getAttributeExpression()).getQueryClass();
+        if (this.mapping == null) {
+            if (this.attributeExpression != null) {
+                DatabaseMapping mapping = this.attributeExpression.getLeafMapping(query, query.getDescriptor(), query.getSession());
+                if (mapping == null){
+                    if (this.attributeExpression.isExpressionBuilder()) {
+                        Class resultClass = ((ExpressionBuilder)this.attributeExpression).getQueryClass();
                         if (resultClass == null){
                             resultClass = query.getReferenceClass();
-                            ((ExpressionBuilder)getAttributeExpression()).setQueryClass(resultClass);
+                            ((ExpressionBuilder)this.attributeExpression).setQueryClass(resultClass);
                         }
                         setDescriptor(query.getSession().getDescriptor(resultClass));
                         if (getDescriptor().hasInheritance()){
-                            ((ExpressionBuilder)getAttributeExpression()).setShouldUseOuterJoinForMultitableInheritance(true);
-                        }
-                    }
-                }
-            } else {
-                if (mapping.isAbstractDirectMapping() || getAttributeExpression().isMapEntryExpression() || mapping.isAggregateObjectMapping()){
-                        setMapping(mapping);
-                //Bug4942640  Widen the check to support collection mapping too
-                } else if (mapping.isForeignReferenceMapping()) {
-                    // DirectCollectionMapping doesn't have reference descriptor
-                    if(mapping.getReferenceDescriptor() != null) {
-                        setDescriptor(mapping.getReferenceDescriptor());
-                        if (getDescriptor().hasInheritance()){
-                            ((QueryKeyExpression)getAttributeExpression()).setShouldUseOuterJoinForMultitableInheritance(true);
+                            ((ExpressionBuilder)this.attributeExpression).setShouldUseOuterJoinForMultitableInheritance(true);
                         }
                     }
                 } else {
-                    throw QueryException.invalidExpressionForQueryItem(getAttributeExpression(), query);
-                }
-            }
-            if (hasJoining()) {
-                this.joinedAttributeManager.setDescriptor(this.descriptor);
-                this.joinedAttributeManager.setBaseQuery(query);
-            }
-            if (getAttributeExpression() != null){
-                if (getAttributeExpression().getBuilder().wasQueryClassSetInternally()){
-                    //rebuild if class was not set by user this ensures the query has the same base
-                    this.attributeExpression = getAttributeExpression().rebuildOn(query.getExpressionBuilder());
+                    if (mapping.isAbstractDirectMapping() || this.attributeExpression.isMapEntryExpression() || mapping.isAggregateObjectMapping()){
+                            setMapping(mapping);
+                    //Bug4942640  Widen the check to support collection mapping too
+                    } else if (mapping.isForeignReferenceMapping()) {
+                        // DirectCollectionMapping doesn't have reference descriptor
+                        if(mapping.getReferenceDescriptor() != null) {
+                            setDescriptor(mapping.getReferenceDescriptor());
+                            if (getDescriptor().hasInheritance()){
+                                ((QueryKeyExpression)this.attributeExpression).setShouldUseOuterJoinForMultitableInheritance(true);
+                            }
+                        }
+                    } else {
+                        throw QueryException.invalidExpressionForQueryItem(this.attributeExpression, query);
+                    }
                 }
                 if (hasJoining()) {
-                    this.joinedAttributeManager.setBaseExpressionBuilder(this.attributeExpression.getBuilder());
+                    this.joinedAttributeManager.setDescriptor(this.descriptor);
+                    this.joinedAttributeManager.setBaseQuery(query);
                 }
-            } else if (hasJoining()) {
-                this.joinedAttributeManager.setBaseExpressionBuilder(query.getExpressionBuilder());
-            }
-            if (hasJoining()) {
-                this.joinedAttributeManager.prepareJoinExpressions(query.getSession());
-                this.joinedAttributeManager.processJoinedMappings(query.getSession());
-                this.joinedAttributeManager.computeJoiningMappingQueries(query.getSession());
+                if (getAttributeExpression() != null){
+                    if (getAttributeExpression().getBuilder().wasQueryClassSetInternally()){
+                        //rebuild if class was not set by user this ensures the query has the same base
+                        this.attributeExpression = this.attributeExpression.rebuildOn(query.getExpressionBuilder());
+                    }
+                    if (hasJoining()) {
+                        this.joinedAttributeManager.setBaseExpressionBuilder(this.attributeExpression.getBuilder());
+                    }
+                } else if (hasJoining()) {
+                    this.joinedAttributeManager.setBaseExpressionBuilder(query.getExpressionBuilder());
+                }
+                if (hasJoining()) {
+                    this.joinedAttributeManager.prepareJoinExpressions(query.getSession());
+                    this.joinedAttributeManager.processJoinedMappings(query.getSession());
+                    this.joinedAttributeManager.computeJoiningMappingQueries(query.getSession());
+                }
             }
         }
     }

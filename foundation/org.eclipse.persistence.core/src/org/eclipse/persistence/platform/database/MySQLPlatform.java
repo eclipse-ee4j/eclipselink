@@ -18,9 +18,11 @@ package org.eclipse.persistence.platform.database;
 import java.io.*;
 import java.sql.Statement;
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
@@ -59,6 +61,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * Appends an MySQL specific date if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: 'YYYY-MM-DD'
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -73,6 +76,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * Appends an MySQL specific time if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: 'HH:MM:SS'.
      */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -87,6 +91,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * Appends an MySQL specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
      * Native Format: 'YYYY-MM-DD HH:MM:SS' 
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -101,6 +106,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * Appends an MySQL specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
      * Native Format: 'YYYY-MM-DD HH:MM:SS'
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("'");
@@ -114,6 +120,7 @@ public class MySQLPlatform extends DatabasePlatform {
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -151,6 +158,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
@@ -187,32 +195,33 @@ public class MySQLPlatform extends DatabasePlatform {
     public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
         return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
-    
+
     /**
-     * Internal: This gets called on each batch statement execution
-     * Needs to be implemented so that it returns the number of rows successfully modified
-     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
-     * the call uses optimistic locking).  
+     * Internal: This gets called on each batch statement execution Needs to be
+     * implemented so that it returns the number of rows successfully modified
+     * by this statement for optimistic locking purposes (if
+     * useNativeBatchWriting is enabled, and the call uses optimistic locking).
      * 
-     * @param isStatementPrepared - flag is set to true if this statement is prepared 
+     * @param isStatementPrepared
+     *            - flag is set to true if this statement is prepared
      * @return - number of rows modified/deleted by this statement
      */
-	public int executeBatch(Statement statement, boolean isStatementPrepared)
-			throws java.sql.SQLException {
-		int[] updateResult = statement.executeBatch();
-		if (isStatementPrepared) {
-			int updateCount = 0;
-			for (int count : updateResult) {
-				if (count == Statement.SUCCESS_NO_INFO) {
-					count = 1;
-				}
-				updateCount += count;
-			}
-			return updateCount;
-		} else {
-			return updateResult.length;
-		}
-	}
+    @Override
+    public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
+        int[] updateResult = statement.executeBatch();
+        if (isStatementPrepared) {
+            int updateCount = 0;
+            for (int count : updateResult) {
+                if (count == Statement.SUCCESS_NO_INFO) {
+                    count = 1;
+                }
+                updateCount += count;
+            }
+            return updateCount;
+        } else {
+            return updateResult.length;
+        }
+    }
 
     /**
      * INTERNAL:
@@ -227,6 +236,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Used for constraint deletion.
      */
+    @Override
     public String getConstraintDeletionString() {
         return " DROP FOREIGN KEY ";
     }
@@ -237,7 +247,7 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public String getFunctionCallHeader() {
         return "? " + getAssignmentString() + getProcedureCallHeader();
-            // different order -  CALL clause ^^^ comes AFTER assignment operator
+        // different order -  CALL clause ^^^ comes AFTER assignment operator
     }
 
     /**
@@ -252,6 +262,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Used for pessimistic locking.
      */
+    @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
     }
@@ -266,6 +277,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * This method returns the query to select the timestamp
      * from the server for MySQL.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
@@ -278,6 +290,7 @@ public class MySQLPlatform extends DatabasePlatform {
     /**
      * Answers whether platform is MySQL.
      */
+    @Override
     public boolean isMySQL() {
         return true;
     }
@@ -285,6 +298,7 @@ public class MySQLPlatform extends DatabasePlatform {
     /**
      * Initialize any platform-specific operators.
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(logOperator());
@@ -439,6 +453,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Append the receiver's field 'identity' constraint clause to a writer.
      */
+    @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
             writer.write(" AUTO_INCREMENT");
@@ -451,6 +466,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * JDBC defines an outer join syntax which many drivers do not support. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
@@ -460,14 +476,25 @@ public class MySQLPlatform extends DatabasePlatform {
      * Indicates whether the platform supports identity.
      * MySQL supports native sequencing through AUTO_INCREMENT field types.
      */
+    @Override
     public boolean supportsIdentity() {
         return true;
     }
 
     /**
      * INTERNAL:
+     * Indicates whether the platform supports the count distinct function with multiple fields.
+     */
+    @Override
+    public boolean supportsCountDistinctWithMultipleFields() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this database requires the table name when dropping an index.
      */
+    @Override
     public boolean requiresTableInIndexDropDDL() {
         return true;
     }
@@ -476,6 +503,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL supports temp tables for update-all, delete-all queries.
      */
+    @Override
     public boolean supportsGlobalTempTables() {
         return true;
     }
@@ -489,6 +517,7 @@ public class MySQLPlatform extends DatabasePlatform {
      *   on SQLServer platform (method returns true):
      *     SELECT t0.EMP_ID..., t1.SALARY FROM EMPLOYEE t0, SALARY t1 WITH (UPDLOCK) WHERE ...
      */
+    @Override
     public boolean supportsIndividualTableLocking() {
         return false;
     }
@@ -503,6 +532,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * UPDATE OL_PHONE SET PHONE_ORDER_VARCHAR = (PHONE_ORDER_VARCHAR + 1) WHERE ...
      * SELECT ... WHERE  ... t0.MANAGED_ORDER_VARCHAR BETWEEN 1 AND 4 ...
      */
+    @Override
     public boolean supportsAutoConversionToNumericForArithmeticOperations() {
         return true;
     }
@@ -511,6 +541,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL temp table syntax, used for update-all, delete-all queries.
      */
+    @Override
     protected String getCreateTempTableSqlPrefix() {
         return "CREATE TEMPORARY TABLE IF NOT EXISTS ";
     }
@@ -519,6 +550,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL supports temp tables for update-all, delete-all queries.
      */
+    @Override
     public boolean shouldAlwaysUseTempStorageForModifyAll() {
         return true;
     }
@@ -527,8 +559,8 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL stored procedure calls do not require the argument name be printed in the call string
      * e.g. call MyStoredProc(?) instead of call MyStoredProc(myvariable = ?)
-     * @return
      */
+    @Override
     public boolean shouldPrintStoredProcedureArgumentNameInCall(){
 	    return false;
     }
@@ -540,6 +572,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * @see getStartDelimiter()
      * @see getEndDelimiter()
      */
+    @Override
     public String getIdentifierQuoteCharacter() {
         return "`";
     }
@@ -548,6 +581,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL uses the INOUT keyword for this.
      */
+    @Override
     public String getInOutputProcedureToken() {
         return "INOUT";
     }
@@ -555,6 +589,7 @@ public class MySQLPlatform extends DatabasePlatform {
     /**
      * MySQL does not use the AS token.
      */
+    @Override
     public String getProcedureAsString() {
         return "";
     }
@@ -563,6 +598,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL requires the direction at the start of the argument.
      */
+    @Override
     public boolean shouldPrintOutputTokenAtStart() {
         return true;
     }
@@ -571,6 +607,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Used for stored procedure calls.
      */
+    @Override
     public String getProcedureCallHeader() {
         return "CALL ";
     }
@@ -579,6 +616,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL requires BEGIN.
      */
+    @Override
     public String getProcedureBeginString() {
         return "BEGIN ";
     }
@@ -587,6 +625,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL requires END.
      */
+    @Override
     public String getProcedureEndString() {
         return "END";
     }
@@ -595,6 +634,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Writes MySQL specific SQL for accessing temp tables for update-all queries.
      */
+    @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                     Collection pkFields,
                                                     Collection assignedFields) throws IOException 
@@ -613,9 +653,10 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * Writes MySQL specific SQL for accessing temp tables for delete-all queries.
      */
+    @Override
     public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
-                                                        Collection pkFields, 
-                                                        Collection targetPkFields) throws IOException 
+            Collection pkFields, 
+            Collection targetPkFields, DatasourcePlatform platform) throws IOException 
     {
         writer.write("DELETE FROM ");
         String targetTableName = targetTable.getQualifiedNameDelimited(this);
@@ -654,6 +695,7 @@ public class MySQLPlatform extends DatabasePlatform {
     /**
      * Used for stored procedure creation: MySQL platforms need brackets around arguments declaration even if no arguments exist.
      */
+    @Override
     public boolean requiresProcedureBrackets() {
         return true;
     }

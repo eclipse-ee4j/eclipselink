@@ -9,8 +9,6 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/10/2011-2.4 Guy Pelletier 
- *       - 357474: Address primaryKey option from tenant discriminator column
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
@@ -23,15 +21,13 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
+import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -169,19 +165,20 @@ public class FunctionExpression extends BaseExpression {
     /**
      * INTERNAL:
      */
-    public Expression create(Expression base, Vector arguments, ExpressionOperator anOperator) {
-        baseExpression = base;
+    @Override
+    public Expression create(Expression base, List arguments, ExpressionOperator anOperator) {
+        this.baseExpression = base;
         setOperator(anOperator);
         addChild(base);
         Expression localBase = base;
-        if(anOperator.isFunctionOperator()) {
+        if (anOperator.isFunctionOperator()) {
             ExpressionBuilder builder = getBuilder();
-            if(builder != null) {
+            if (builder != null) {
                 localBase = builder;
             }
         }
-        for (Enumeration e = arguments.elements(); e.hasMoreElements();) {
-            Expression arg = Expression.from(e.nextElement(), localBase);
+        for (Object argument : arguments) {
+            Expression arg = Expression.from(argument, localBase);
             addChild(arg);
         }
         return this;
@@ -331,13 +328,12 @@ public class FunctionExpression extends BaseExpression {
      * Return if the represents an object comparison.
      */
     protected boolean isObjectComparison() {
-        if (this.children.size() != 1) {
-            return false;
-        }
-
         int selector = this.operator.getSelector();
-        if ((selector != ExpressionOperator.IsNull) && (selector != ExpressionOperator.NotNull)) {
-            return false;
+        if (((selector != ExpressionOperator.IsNull) && (selector != ExpressionOperator.NotNull)) || (this.children.size() != 1)) {
+            if (((selector != ExpressionOperator.InSubQuery) && (selector != ExpressionOperator.NotInSubQuery))
+                    || (this.children.size() != 2)) {
+                return false;
+            }
         }
 
         Expression base = getBaseExpression();
@@ -360,7 +356,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Normalize into a structure that is printable.
      * Also compute printing information such as outer joins.
-     * This checks for object isNull and notNull comparisons.
+     * This checks for object isNull, notNull, in and notIn comparisons.
      */
     public Expression normalize(ExpressionNormalizer normalizer) {
         //This method has no validation but we should still make the method call for consistency
@@ -378,31 +374,87 @@ public class FunctionExpression extends BaseExpression {
         }
         
         if (this.operator.getSelector() == ExpressionOperator.Count && getBaseExpression().isObjectExpression() && (!((ObjectExpression)getBaseExpression()).isAttribute())){
-            // we are attempting to count an Entity and not an attribute.  Need to augment this expression.
-            prepareObjectAttributeCount(normalizer);
+            // Attempting to count an Entity and not an attribute.  Need to augment this expression.
+            // This is normally normalized in ReportQuery, but can get to here in a having clause.
+            prepareObjectAttributeCount(normalizer, null, null, null);
         }
 
         if (!isObjectComparison()) {
             for (int index = 0; index < this.children.size(); index++) {
-                this.children.setElementAt(((Expression)this.children.elementAt(index)).normalize(normalizer), index);
+                this.children.set(index, ((Expression)this.children.get(index)).normalize(normalizer));
             }
             return this;
         } else {
-            //if not normalising we must still validate the corresponding node to make sure that they are valid
+            //if not normalizing we must still validate the corresponding node to make sure that they are valid
             //bug # 2956674
             for (int index = 0; index < this.children.size(); index++) {
-                ((Expression)this.children.elementAt(index)).validateNode();
+                ((Expression)this.children.get(index)).validateNode();
             }
         }
 
-        // This code is executed only in the case of an is[not]Null on an
+        // This code is executed only in the case of an is[not]Null, or [not]in on an
         // object attribute.
         ObjectExpression base = (ObjectExpression)getBaseExpression();
 
         // For cr2334, fix code so that normalize is first called on base expressions.
         // I.e. if base itself had a base expression this expression would not be normalized.
-        base.getBaseExpression().normalize(normalizer);
+        if (base.getBaseExpression() != null) {
+            base.getBaseExpression().normalize(normalizer);
+        }
 
+        // Check for IN with objects.
+        if ((this.operator.getSelector() == ExpressionOperator.InSubQuery)
+                || (this.operator.getSelector() == ExpressionOperator.NotInSubQuery)) {
+            // Switch object comparison to compare on primary key.
+            ClassDescriptor descriptor = base.getDescriptor();
+            if (this.children.size() != 2) {
+                throw QueryException.invalidExpression(this);
+            }
+            if (descriptor.getPrimaryKeyFields().size() != 1) {
+                // For composite ids an exists and subselect is used.
+                SubSelectExpression subSelectExp = (SubSelectExpression)this.children.get(1);
+                ReportQuery subQuery = subSelectExp.getSubQuery();
+                
+                // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
+                subQuery.getItems().clear();
+                subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+                
+                Expression subSelectCriteria = subQuery.getSelectionCriteria();
+                ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
+                Expression newExp;
+                // Any or Some
+                if (this.operator.getSelector() == ExpressionOperator.InSubQuery) {
+                    subSelectCriteria = subBuilder.equal(base).and(subSelectCriteria);
+                } else {
+                    subSelectCriteria = subBuilder.notEqual(base).and(subSelectCriteria);
+                }
+                subQuery.setSelectionCriteria(subSelectCriteria);
+                newExp = builder.exists(subQuery);
+                return newExp.normalize(normalizer);
+            }
+            DatabaseField primaryKey = descriptor.getPrimaryKeyFields().get(0);
+            Expression newBase = base.getField(primaryKey);
+            setBaseExpression(newBase);
+            this.children.set(0, newBase);
+            Expression right = (Expression)this.children.get(1);
+            if (right.isSubSelectExpression()) {
+                // Check for sub-select, need to replace sub-selects on object to select its id.
+                ReportQuery query = ((SubSelectExpression)right).getSubQuery();
+                if (query.getItems().size() != 1) {
+                    throw QueryException.invalidExpression(this);                    
+                }
+                ReportItem item = query.getItems().get(0);
+                item.setAttributeExpression(item.getAttributeExpression().getField(primaryKey));
+            } else {
+                throw QueryException.invalidExpression(this);
+            }
+            // Still need to normalize the children.
+            for (int index = 0; index < this.children.size(); index++) {
+                this.children.set(index, ((Expression)this.children.get(index)).normalize(normalizer));
+            }
+            return this;
+        }
+        
         // Switch to null foreign key comparison (i.e. get('c').isNull() to getField('C_ID').isNull()).
         // For bug 3105559 also must handle aggregates: get("period").isNull();
         Expression foreignKeyJoin = base.getMapping().buildObjectJoinExpression(base, (Object)null, getSession());
@@ -631,137 +683,156 @@ public class FunctionExpression extends BaseExpression {
         }
     }
     
-    private void prepareObjectAttributeCount(ExpressionNormalizer normalizer) {
-        Expression baseExp = this.getBaseExpression();
-        boolean distinctUsed = false;
-        if (baseExp.isFunctionExpression() && (((FunctionExpression) baseExp).getOperator().getSelector() == ExpressionOperator.Distinct)) {
-            distinctUsed = true;
-            baseExp = ((FunctionExpression) baseExp).getBaseExpression();
-        }
-        boolean outerJoin = false;
-        ClassDescriptor newDescriptor = null;
-        if (baseExp.isQueryKeyExpression()) {
-            // now need to find out if it is a direct to field or something
-            // else.
-            DatabaseMapping mapping = getLeafMappingFor(baseExp, ((QueryKeyExpression) baseExp).descriptor);
-            if ((mapping != null) && !mapping.isAbstractDirectMapping()) {
-                outerJoin = ((QueryKeyExpression) baseExp).shouldUseOuterJoin();
-                if (mapping.isAggregateMapping()) {
-                    newDescriptor = mapping.getDescriptor();
-                    baseExp = ((QueryKeyExpression) baseExp).getBaseExpression();
-                } else {
-                    newDescriptor = mapping.getReferenceDescriptor();
-                }
-            } else {
-                QueryKey queryKey = getLeafQueryKeyFor(baseExp, ((QueryKeyExpression) baseExp).descriptor);
-                if ((queryKey != null) && !queryKey.isDirectQueryKey()){
-                    outerJoin = ((QueryKeyExpression) baseExp).shouldUseOuterJoin();
-                    newDescriptor = queryKey.getDescriptor();
-                }
-            }
-        } else if (baseExp.isExpressionBuilder()) {
-            newDescriptor = normalizer.getSession().getDescriptor(((ExpressionBuilder) baseExp).getQueryClass());
-        }
-
-        if (newDescriptor != null) {
-            // At this point we are committed to rewriting the query.
-            if (newDescriptor.hasSimplePrimaryKey() && (newDescriptor.getPrimaryKeyFields().size() == 1)) {
-                // case 1: simple PK =>
-                // treat COUNT(entity) as COUNT(entity.pk)
-                DatabaseMapping pk = getMappingOfFirstPrimaryKey(newDescriptor);
-                Expression countArg = baseExp.get(pk.getAttributeName());
-                if (distinctUsed) {
-                    countArg = countArg.distinct();
-                }
-                this.setBaseExpression(countArg);
-                this.children.setElementAt(countArg, 0);
-            } else if (!distinctUsed) {
-                // case 2: composite PK, but no DISTINCT =>
-                // pick a PK column for the COUNT aggregate
-                DatabaseMapping pk = getMappingOfFirstPrimaryKey(newDescriptor);
-                Expression countArg = baseExp.get(pk.getAttributeName());
-                while (pk.isAggregateObjectMapping()) {
-                    newDescriptor = ((AggregateObjectMapping) pk).getReferenceDescriptor();
-                    pk = getMappingOfFirstPrimaryKey(newDescriptor);
-                    countArg = countArg.get(pk.getAttributeName());
-                }
-                this.setBaseExpression(countArg);
-                this.children.setElementAt(countArg, 0);
-            } else if (!outerJoin) {
-                // case 3: composite PK and DISTINCT, but no
-                // outer join => previous solution using
-                // COUNT(*) and EXISTS subquery
-
-                // If this is a subselect baseExp is yet uncloned,
-                // and will miss out if moved now from items into a selection
-                // criteria.
-                // Now the reference class of the query needs to be reversed.
-                // See the bug description for an explanation.
-                ExpressionBuilder countBuilder = baseExp.getBuilder();
-                ExpressionBuilder outerBuilder = new ExpressionBuilder();
-
-                ReportQuery subSelect = new ReportQuery(newDescriptor.getJavaClass(), countBuilder);
-                subSelect.setShouldRetrieveFirstPrimaryKey(true);
-
-                // Make sure the outerBuilder does not appear on the left of the
-                // subselect.
-                // Putting a builder on the left is desirable to trigger an
-                // optimization.
-                subSelect.setSelectionCriteria(baseExp.equal(outerBuilder));
-                SubSelectExpression sub = new SubSelectExpression(subSelect, ((BaseExpression) baseExp).getBaseExpression());
-                this.setBaseExpression(outerBuilder);
-                this.children.setElementAt(outerBuilder, 0);
-            } else {
-                // case 4: composite PK, DISTINCT, outer join =>
-                // not supported, throw exception
-                throw new UnsupportedOperationException("COMPOSIT PK WITH DISTINCT OUTER");
-            }
-        }
-    }
-
     /**
      * INTERNAL:
-     * Lookup the mapping for this item by traversing its expression recursively.
-     * If an aggregate of foreign mapping is found it is traversed.
+     * JPQL allows count([distinct] e), where e can be an object, not just a single field,
+     * however the database only allows a single field, so object needs to be translated to a single field.
+     * If the descriptor has a single pk, it is used, otherwise any pk is used if distinct, otherwise a subselect is used.
+     * If the object was obtained through an outer join, then the subselect also will not work, so an error is thrown.
      */
-    protected DatabaseMapping getLeafMappingFor(Expression expression, ClassDescriptor rootDescriptor) throws QueryException {
-        // Check for database field expressions or place holder
-        if ((expression == null) || (expression.isFieldExpression())) {
-            return null;
-        }
-
-        if (!(expression.isQueryKeyExpression())) {
-            return null;
-        }
-        
-        if (expression.isMapEntryExpression()){
-            MapEntryExpression teExpression = (MapEntryExpression)expression;
-            
-            // get the expression that we want the table entry for
-            QueryKeyExpression baseExpression = (QueryKeyExpression)teExpression.getBaseExpression();
-            
-            // get the expression that owns the mapping for the table entry
-            Expression owningExpression = baseExpression.getBaseExpression();
-            ClassDescriptor owningDescriptor = getLeafDescriptorFor(owningExpression, rootDescriptor);
-            
-            // Get the mapping that owns the table
-            CollectionMapping mapping = (CollectionMapping)owningDescriptor.getObjectBuilder().getMappingForAttributeName(baseExpression.getName());
-            
-            if (teExpression.shouldReturnMapEntry()){
-                return mapping;
+    public void prepareObjectAttributeCount(ExpressionNormalizer normalizer, ReportItem item, ReportQuery query, Map clonedExpressions) {
+        // ** Note that any of the arguments may be null depending on the caller.
+        if (getOperator().getSelector() == ExpressionOperator.Count) {
+            Expression baseExp = getBaseExpression();
+            boolean distinctUsed = false;
+            if (baseExp.isFunctionExpression() && (((FunctionExpression)baseExp).getOperator().getSelector() == ExpressionOperator.Distinct)) {
+                distinctUsed = true;
+                baseExp = ((FunctionExpression)baseExp).getBaseExpression();
             }
-            if (mapping.getContainerPolicy().isMappedKeyMapPolicy()){
-                MappedKeyMapContainerPolicy policy = (MappedKeyMapContainerPolicy)mapping.getContainerPolicy();
-                return (DatabaseMapping)policy.getKeyMapping();
+            boolean outerJoin = false;
+            ClassDescriptor newDescriptor = null;
+            AbstractSession session = null;
+            if (query != null) {
+                session = query.getSession();
+            } else {
+                session = normalizer.getSession();
             }
-            return mapping;
+            if (baseExp.isQueryKeyExpression()) {
+                // now need to find out if it is a direct to field or something else.
+                ClassDescriptor descriptor = null;
+                if (query == null) {
+                    descriptor = ((QueryKeyExpression) baseExp).getDescriptor();
+                } else {
+                    descriptor = query.getDescriptor();
+                }
+                DatabaseMapping mapping = baseExp.getLeafMapping(query, descriptor, session);
+                if ((mapping != null) && !mapping.isAbstractDirectMapping()) {
+                    outerJoin = ((QueryKeyExpression)baseExp).shouldUseOuterJoin();
+                    if (mapping.isAggregateMapping()){
+                        newDescriptor = mapping.getDescriptor();
+                        baseExp = ((QueryKeyExpression)baseExp).getBaseExpression();
+                    } else {
+                        newDescriptor = mapping.getReferenceDescriptor();
+                    }
+                } else {
+                    QueryKey queryKey = getLeafQueryKeyFor(query, baseExp, descriptor, session);
+                    if ((queryKey != null) && queryKey.isForeignReferenceQueryKey()){
+                        outerJoin = ((QueryKeyExpression) baseExp).shouldUseOuterJoin();
+                        newDescriptor = session.getDescriptor(((ForeignReferenceQueryKey)queryKey).getReferenceClass());
+                    }
+                }
+            } else if (baseExp.isExpressionBuilder()) {
+                if (((ExpressionBuilder)baseExp).getQueryClass() == null) {
+                    if (item != null) {
+                        item.setResultType(ClassConstants.INTEGER);
+                    }
+                } else {
+                    newDescriptor = session.getDescriptor(((ExpressionBuilder)baseExp).getQueryClass());
+                }
+            }
+            
+            if (newDescriptor != null) {
+                // At this point we are committed to rewriting the query.
+                if ((newDescriptor.getPrimaryKeyFields().size() == 1) || !distinctUsed) {
+                    // case 1: single PK =>
+                    // treat COUNT(entity) as COUNT(entity.pk)
+                    Expression countArg = baseExp.getField(newDescriptor.getPrimaryKeyFields().get(0));
+                    if (distinctUsed) {
+                        countArg = countArg.distinct();
+                    }
+                    setBaseExpression(countArg);
+                    getChildren().set(0, countArg);
+                } else if (((DatabasePlatform)session.getPlatform(newDescriptor.getJavaClass())).supportsCountDistinctWithMultipleFields()) {                            
+                    // case 3, is database allows multiple fields, then just print them
+                    // treat COUNT(distinct entity) as COUNT(distinct entity.pk1, entity.pk2)
+                    List args = new ArrayList(newDescriptor.getPrimaryKeyFields().size());
+                    Expression firstField = null;
+                    for (DatabaseField field : newDescriptor.getPrimaryKeyFields()) {
+                        if (firstField == null) {
+                            firstField = baseExp.getField(field);
+                        } else {
+                            args.add(baseExp.getField(field));
+                        }
+                    }
+                    
+                    ExpressionOperator anOperator = new ExpressionOperator();
+                    anOperator.setType(ExpressionOperator.FunctionOperator);
+                    Vector v = NonSynchronizedVector.newInstance(args.size());
+                    v.addElement("DISTINCT ");
+                    for (int index = 0; index < args.size(); index++) {
+                        v.add(", ");
+                    }
+                    v.add("");
+                    anOperator.printsAs(v);
+                    anOperator.bePrefix();
+                    anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+                    Expression distinctFunction = anOperator.expressionForArguments(firstField, args);
+                    
+                    setBaseExpression(distinctFunction);
+                    getChildren().set(0, distinctFunction);
+                } else if (!outerJoin && (query != null)) {
+                    // case 4: composite PK and DISTINCT, but no
+                    // outer join => previous solution using
+                    // COUNT(*) and EXISTS subquery
+                    // TODO, this doesn't really work for most cases (joins, other things selected, group by),
+                    // this should probably be removed and throw an error,
+                    // or changed to just concat all the pks together.
+                    
+                    // If this is a subselect baseExp is yet uncloned,
+                    // and will miss out if moved now from items into a selection criteria.
+                    if (clonedExpressions != null) {
+                        if (clonedExpressions.get(baseExp.getBuilder()) != null) {
+                            baseExp = baseExp.copiedVersionFrom(clonedExpressions);
+                        } else {
+                            baseExp = baseExp.rebuildOn(query.getExpressionBuilder());
+                        }
+                    }
+                    
+                    // Now the reference class of the query needs to be reversed.
+                    // See the bug description for an explanation.
+                    ExpressionBuilder countBuilder = baseExp.getBuilder();
+                    ExpressionBuilder outerBuilder ;
+                    
+                    ReportQuery subSelect = new ReportQuery(query.getReferenceClass(), countBuilder);
+                    query.getSession().getPlatform().retrieveFirstPrimaryKeyOrOne(subSelect);
+                    
+                    // Make sure the outerBuilder does not appear on the left of the subselect.
+                    // Putting a builder on the left is desirable to trigger an optimization.
+                    if (query.getSelectionCriteria() != null) {
+                        outerBuilder = new ExpressionBuilder(newDescriptor.getJavaClass());
+                        query.setExpressionBuilder(outerBuilder);
+                        subSelect.setSelectionCriteria(baseExp.equal(outerBuilder).and(query.getSelectionCriteria()));
+                    } else {
+                        outerBuilder = new ExpressionBuilder(newDescriptor.getJavaClass());
+                        query.setExpressionBuilder(outerBuilder);
+                        subSelect.setSelectionCriteria(baseExp.equal(outerBuilder));
+                    }
+                    query.setSelectionCriteria(outerBuilder.exists(subSelect));
+                    setBaseExpression(outerBuilder);
+                    getChildren().set(0, outerBuilder);
+                    query.setReferenceClass(newDescriptor.getJavaClass());
+                    query.changeDescriptor(session);
+                } else {
+                    // case 4: composite PK, DISTINCT, outer join => 
+                    // not supported, throw exception
+                    DatabaseQuery reportQuery = query;
+                    if (query == null) {
+                        reportQuery = normalizer.getStatement().getQuery();
+                    }
+                    throw QueryException.distinctCountOnOuterJoinedCompositePK(newDescriptor, reportQuery);
+                }
+            }
         }
-
-        QueryKeyExpression qkExpression = (QueryKeyExpression)expression;
-        Expression baseExpression = qkExpression.getBaseExpression();
-
-        ClassDescriptor descriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
-        return descriptor.getObjectBuilder().getMappingForAttributeName(qkExpression.getName());
     }
 
     /**
@@ -769,7 +840,7 @@ public class FunctionExpression extends BaseExpression {
      * Lookup the query key for this item.
      * If an aggregate of foreign mapping is found it is traversed.
      */
-    protected QueryKey getLeafQueryKeyFor(Expression expression, ClassDescriptor rootDescriptor) throws QueryException {
+    protected QueryKey getLeafQueryKeyFor(DatabaseQuery query, Expression expression, ClassDescriptor rootDescriptor, AbstractSession session) throws QueryException {
         // Check for database field expressions or place holder
         if ((expression == null) || (expression.isFieldExpression())) {
             return null;
@@ -782,52 +853,8 @@ public class FunctionExpression extends BaseExpression {
         QueryKeyExpression qkExpression = (QueryKeyExpression)expression;
         Expression baseExpression = qkExpression.getBaseExpression();
 
-        ClassDescriptor descriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
+        ClassDescriptor descriptor = baseExpression.getLeafDescriptor(query, rootDescriptor, session);
         return descriptor.getQueryKeyNamed(qkExpression.getName());
-    }
-    
-    /**
-     * INTERNAL:
-     * Lookup the descriptor for this item by traversing its expression recursively.
-     * @param expression
-     * @param rootDescriptor
-     * @return
-     * @throws org.eclipse.persistence.exceptions.QueryException
-     */
-    protected ClassDescriptor getLeafDescriptorFor(Expression expression, ClassDescriptor rootDescriptor) throws QueryException {
-        // The base case
-        if (expression.isExpressionBuilder()) {
-            // The following special case is where there is a parallel builder
-            // which has a different reference class as the primary builder.
-            Class queryClass = ((ExpressionBuilder)expression).getQueryClass();
-            return getSession().getDescriptor(queryClass);
-        }
-        Expression baseExpression = ((QueryKeyExpression)expression).getBaseExpression();
-        ClassDescriptor baseDescriptor = getLeafDescriptorFor(baseExpression, rootDescriptor);
-        ClassDescriptor descriptor = null;
-        String attributeName = expression.getName();
-
-        DatabaseMapping mapping = baseDescriptor.getObjectBuilder().getMappingForAttributeName(attributeName);
-
-        if (mapping == null) {
-            QueryKey queryKey = baseDescriptor.getQueryKeyNamed(attributeName);
-            if (queryKey != null) {
-                if (queryKey.isForeignReferenceQueryKey()) {
-                    descriptor = getSession().getDescriptor(((ForeignReferenceQueryKey)queryKey).getReferenceClass());
-                } else// if (queryKey.isDirectQueryKey())
-                 {
-                    descriptor = queryKey.getDescriptor();
-                }
-            }
-            if (descriptor == null) {
-                throw QueryException.invalidQueryKeyInExpression(attributeName);
-            }
-        } else if (mapping.isAggregateObjectMapping()) {
-            descriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
-        } else if (mapping.isForeignReferenceMapping()) {
-            descriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
-        }
-        return descriptor;
     }
 
     protected DatabaseMapping getMappingOfFirstPrimaryKey(ClassDescriptor descriptor) {

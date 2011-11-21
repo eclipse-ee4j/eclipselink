@@ -21,6 +21,7 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -447,20 +448,23 @@ public class RelationExpression extends CompoundExpression {
      * Return if the represents an object comparison.
      */
     protected boolean isObjectComparison() {
-        if (isObjectComparisonExpression == null) {
+        if (this.isObjectComparisonExpression == null) {
             // PERF: direct-access.
             if ((!this.firstChild.isObjectExpression()) || ((ObjectExpression)this.firstChild).isAttribute()) {
-                isObjectComparisonExpression = Boolean.FALSE;
+                this.isObjectComparisonExpression = Boolean.FALSE;
             } else {
                 DatabaseMapping mapping = ((ObjectExpression)this.firstChild).getMapping();
                 if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.firstChild.isMapEntryExpression())) {
-                    isObjectComparisonExpression = Boolean.FALSE;
+                    this.isObjectComparisonExpression = Boolean.FALSE;
                 } else {    
-                    isObjectComparisonExpression = Boolean.valueOf(this.secondChild.isObjectExpression() || (this.secondChild.isValueExpression() || (this.secondChild.isFunctionExpression() && ((FunctionExpression)this.secondChild).operator.isAnyOrAll())));
+                    this.isObjectComparisonExpression = Boolean.valueOf(this.secondChild.isObjectExpression()
+                            || this.secondChild.isValueExpression()
+                            || this.secondChild.isSubSelectExpression()
+                            || (this.secondChild.isFunctionExpression() && ((FunctionExpression)this.secondChild).operator.isAnyOrAll()));
                 }
             }
         }
-        return isObjectComparisonExpression.booleanValue();
+        return this.isObjectComparisonExpression.booleanValue();
     }
 
     /**
@@ -526,14 +530,87 @@ public class RelationExpression extends CompoundExpression {
             validateNode();
         }
         if ((this.operator.getSelector() != ExpressionOperator.Equal) && 
-            (this.operator.getSelector() != ExpressionOperator.NotEqual)) {
+                (this.operator.getSelector() != ExpressionOperator.NotEqual) && 
+                (this.operator.getSelector() != ExpressionOperator.In) && 
+                (this.operator.getSelector() != ExpressionOperator.NotIn)) {
             throw QueryException.invalidOperatorForObjectComparison(this);
         }
-
+        
+        // Check for IN with objects, "object IN :objects", "objects IN (:object1, :object2 ...)", "object IN aList"
+        if ((this.operator.getSelector() == ExpressionOperator.In) || (this.operator.getSelector() == ExpressionOperator.NotIn)) {
+            // Switch object comparison to compare on primary key.
+            Expression left = this.firstChild;
+            left = left.normalize(normalizer);
+            if (!left.isObjectExpression()) {
+                throw QueryException.invalidExpression(this);
+            }
+            ClassDescriptor descriptor = ((ObjectExpression)left).getDescriptor();
+            boolean composite = descriptor.getPrimaryKeyFields().size() > 1;
+            DatabaseField primaryKey = descriptor.getPrimaryKeyFields().get(0);
+            Expression newLeft = null;
+            if (composite) {
+                // For composite ids an array comparison is used, this only works on some databases.
+                List fields = new ArrayList();
+                for (DatabaseField field : descriptor.getPrimaryKeyFields()) {
+                    fields.add(left.getField(field));
+                }
+                newLeft = getBuilder().value(fields);
+            } else {
+                newLeft = left.getField(primaryKey);
+            }
+            setFirstChild(newLeft);
+            Expression right = this.secondChild;
+            if (right.isConstantExpression()) {
+                // Check for a constant with a List of objects, need to collect the ids (also allow a list of ids).
+                ConstantExpression constant = (ConstantExpression)right;
+                if (constant.getValue() instanceof Collection) {
+                    Collection objects = (Collection)constant.getValue();
+                    List newObjects = new ArrayList(objects.size());
+                    for (Object object : objects) {
+                        if (object instanceof Expression) {
+                            if (composite) {
+                                // For composite ids an array comparison is used, this only works on some databases.
+                                List values = new ArrayList();
+                                for (DatabaseField field : descriptor.getPrimaryKeyFields()) {
+                                    values.add(((Expression)object).getField(field));
+                                }
+                                object = getBuilder().value(values);
+                            } else {
+                                object = ((Expression)object).getField(primaryKey);
+                            }
+                        } else if (descriptor.getJavaClass().isInstance(object)) {
+                            if (composite) {
+                                // For composite ids an array comparison is used, this only works on some databases.
+                                List values = new ArrayList();
+                                for (Object value : ((CacheId)descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, normalizer.getSession())).getPrimaryKey()) {
+                                    values.add(value);
+                                }
+                                object = getBuilder().value(values);
+                            } else {
+                                object = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, normalizer.getSession());
+                            }
+                        } else {
+                            // Assume it is an id, so leave it.
+                        }
+                        newObjects.add(object);
+                    }
+                    constant.setValue(newObjects);
+                } else {
+                    throw QueryException.invalidExpression(this);
+                }
+            } else if (right.isParameterExpression()) {
+                // Parameters must be handled when the call is executed.
+            } else {
+                throw QueryException.invalidExpression(this);
+            }
+            return super.normalize(normalizer);
+        }
+        
+        // Check for sub-selects, "object = ALL(Select object...) or ANY(Select object...), or "object = (Select object..)"
         if (this.secondChild.isFunctionExpression()) {
             FunctionExpression funcExp = (FunctionExpression)this.secondChild;
             if (funcExp.operator.isAnyOrAll()) {
-                SubSelectExpression subSelectExp = (SubSelectExpression)funcExp.getChildren().elementAt(1);
+                SubSelectExpression subSelectExp = (SubSelectExpression)funcExp.getChildren().get(1);
                 ReportQuery subQuery = subSelectExp.getSubQuery();
                 
                 // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
@@ -567,6 +644,29 @@ public class RelationExpression extends CompoundExpression {
                 }
                 return newExp.normalize(normalizer);
             }
+        } else if (this.secondChild.isSubSelectExpression()) {
+            SubSelectExpression subSelectExp = (SubSelectExpression)this.secondChild;
+            ReportQuery subQuery = subSelectExp.getSubQuery();
+            
+            // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
+            subQuery.getItems().clear();
+            subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+            
+            Expression subSelectCriteria = subQuery.getSelectionCriteria();
+            ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
+
+            ExpressionBuilder builder = this.firstChild.getBuilder();
+
+            Expression newExp;
+            // Any or Some
+            if (this.operator.getSelector() == ExpressionOperator.Equal) {
+                subSelectCriteria = subBuilder.equal(this.firstChild).and(subSelectCriteria);
+            } else {
+                subSelectCriteria = subBuilder.notEqual(this.firstChild).and(subSelectCriteria);
+            }
+            subQuery.setSelectionCriteria(subSelectCriteria);
+            newExp = builder.exists(subQuery);
+            return newExp.normalize(normalizer);
         }
         
         // This can either be comparison to another object, null or another expression reference.

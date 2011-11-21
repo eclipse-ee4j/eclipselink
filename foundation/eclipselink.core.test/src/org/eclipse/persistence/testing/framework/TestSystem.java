@@ -406,8 +406,8 @@ public class TestSystem {
         login.useSQLServer();
         login.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         login.setDriverURLHeader("jdbc:sqlserver://");
-        login.setDatabaseURL("tlsvrdb6");
-        login.setUserName("QA10");
+        login.setDatabaseURL("ottvm041");
+        login.setUserName("dev1");
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
         login.useByteArrayBinding();
@@ -420,8 +420,8 @@ public class TestSystem {
     public void useSQLServerWeblogicDBLib() {
         DatabaseLogin login = new DatabaseLogin();
         login.useWebLogicSQLServerDBLibDriver();
-        login.setODBCDataSourceName("tlsvrdb6");
-        login.setUserName("QA10");
+        login.setDatabaseURL("ottvm041");
+        login.setUserName("dev1");
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
         login.useByteArrayBinding();
@@ -436,8 +436,8 @@ public class TestSystem {
         login.useSQLServer();
         login.setDriverClassName("com.oracle.ias.jdbc.sqlserver.SQLServerDriver");
         login.setDriverURLHeader("jdbc:oracle:sqlserver://");
-        login.setDatabaseURL("localhost\\\\sql2000:1433");
-        login.setUserName("QA10");
+        login.setDatabaseURL("localhost\\\\ottvm041");
+        login.setUserName("dev1");
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
         login.useByteArrayBinding();

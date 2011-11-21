@@ -119,10 +119,11 @@ public abstract class CompoundExpression extends Expression {
     /**
      * INTERNAL:
      */
-    public Expression create(Expression base, Vector arguments, ExpressionOperator operator) {
+    @Override
+    public Expression create(Expression base, List arguments, ExpressionOperator operator) {
         setFirstChild(base);
         if (!arguments.isEmpty()) {
-            setSecondChild((Expression)arguments.firstElement());
+            setSecondChild((Expression)arguments.get(0));
         }
         setOperator(operator);
         return this;

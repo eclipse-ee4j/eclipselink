@@ -419,9 +419,9 @@ public class ParameterExpression extends BaseExpression {
             queryKey = this.getLocalBase();
         }
         
-        if (value != null && queryKey != null && queryKey.isObjectExpression()) {
+        if ((value != null) && !(value instanceof Collection) && (queryKey != null) && queryKey.isObjectExpression()) {
             DatabaseMapping mapping = ((ObjectExpression) queryKey).getMapping();
-            if (mapping != null){
+            if (mapping != null) {
                 if (mapping.isCollectionMapping() && queryKey.isMapEntryExpression() && !((MapEntryExpression)queryKey).shouldReturnMapEntry()){
                     // this is a map key expression, operate on the key
                     ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
@@ -430,16 +430,8 @@ public class ParameterExpression extends BaseExpression {
                     if (!keyTypeClass.isInstance(value)){
                         throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
                     }
-                } else if (mapping.isDirectCollectionMapping()){
-                    Class targetClass = ((DirectCollectionMapping)mapping).getDirectField().getType();
-                    if (targetClass == null) {
-                        // we do not know the class of the target and cannot do validation
-                        return;
-                    } else {
-                        if (!targetClass.isInstance(value)){
-                            throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
-                        }
-                    }
+                } else if (mapping.isDirectCollectionMapping()) {
+                    // Do not validate direct collection, as type may be convertable.
                 } else if (mapping.isForeignReferenceMapping() && !mapping.getReferenceDescriptor().getJavaClass().isInstance(value)) {
                     throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
                 }

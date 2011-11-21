@@ -21,10 +21,13 @@ import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.querykeys.*;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -381,6 +384,21 @@ public class QueryKeyExpression extends ObjectExpression {
                     fieldValue = ((DirectCollectionMapping)mapping).getFieldValue(objectValue, session);                    
                 }
             }
+        } else if ((objectValue instanceof Collection) && (mapping.isForeignReferenceMapping())) {
+            // Was an IN with a collection of objects, extract their ids.
+            List ids = new ArrayList();
+            for (Object object : ((Collection)objectValue)) {
+                if ((mapping.getReferenceDescriptor() != null) && (mapping.getReferenceDescriptor().getJavaClass().isInstance(object))) {
+                    Object id = mapping.getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, session);
+                    if (id instanceof CacheId) {
+                        id = Arrays.asList(((CacheId)id).getPrimaryKey());
+                    }
+                    ids.add(id);
+                } else {
+                    ids.add(object);
+                }
+            }
+            fieldValue = ids;
         }
 
         return fieldValue;
@@ -1064,7 +1082,91 @@ public class QueryKeyExpression extends ObjectExpression {
             throw QueryException.cannotConformExpression();
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Lookup the descriptor for this item by traversing its expression recursively.
+     */
+    @Override
+    public ClassDescriptor getLeafDescriptor(DatabaseQuery query, ClassDescriptor rootDescriptor, AbstractSession session) {
+        Expression baseExpression = getBaseExpression();
+        ClassDescriptor baseDescriptor = baseExpression.getLeafDescriptor(query, rootDescriptor, session);
+        
+        if (isMapEntryExpression()) {
+            // get the expression that owns the mapping for the table entry
+            Expression owningExpression = ((QueryKeyExpression)baseExpression).getBaseExpression();
+            ClassDescriptor owningDescriptor = owningExpression.getLeafDescriptor(query, rootDescriptor, session);
+            
+            // Get the mapping that owns the table
+            CollectionMapping mapping = (CollectionMapping)owningDescriptor.getObjectBuilder().getMappingForAttributeName(baseExpression.getName());
+            
+            return ((MapContainerPolicy)mapping.getContainerPolicy()).getDescriptorForMapKey();
+        }
 
+        ClassDescriptor descriptor = null;
+        String attributeName = getName();
+
+        DatabaseMapping mapping = baseDescriptor.getObjectBuilder().getMappingForAttributeName(attributeName);
+
+        if (mapping == null) {
+            QueryKey queryKey = baseDescriptor.getQueryKeyNamed(attributeName);
+            if (queryKey != null) {
+                if (queryKey.isForeignReferenceQueryKey()) {
+                    descriptor = session.getDescriptor(((ForeignReferenceQueryKey)queryKey).getReferenceClass());
+                } else { // if (queryKey.isDirectQueryKey())
+                    descriptor = queryKey.getDescriptor();
+                }
+            }
+            if (descriptor == null) {
+                throw QueryException.invalidExpressionForQueryItem(this, query);
+            }
+        } else if (mapping.isAggregateObjectMapping()) {
+            descriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+        } else if (mapping.isForeignReferenceMapping()) {
+            descriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+        }
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Lookup the mapping for this item by traversing its expression recursively.
+     * If an aggregate of foreign mapping is found it is traversed.
+     */
+    @Override
+    public DatabaseMapping getLeafMapping(DatabaseQuery query, ClassDescriptor rootDescriptor, AbstractSession session) {
+        if (isMapEntryExpression()){
+            MapEntryExpression mapEntryExpression = (MapEntryExpression)this;
+            
+            // get the expression that we want the table entry for
+            QueryKeyExpression baseExpression = (QueryKeyExpression)mapEntryExpression.getBaseExpression();
+            
+            // get the expression that owns the mapping for the table entry
+            Expression owningExpression = baseExpression.getBaseExpression();
+            ClassDescriptor owningDescriptor = owningExpression.getLeafDescriptor(query, rootDescriptor, session);
+            
+            // Get the mapping that owns the table
+            CollectionMapping mapping = (CollectionMapping)owningDescriptor.getObjectBuilder().getMappingForAttributeName(baseExpression.getName());
+            
+            if (mapEntryExpression.shouldReturnMapEntry()) {
+                return mapping;
+            }
+            if (mapping.getContainerPolicy().isMappedKeyMapPolicy()){
+                MappedKeyMapContainerPolicy policy = (MappedKeyMapContainerPolicy)mapping.getContainerPolicy();
+                return (DatabaseMapping)policy.getKeyMapping();
+            }
+            return mapping;
+        }
+
+        Expression baseExpression = getBaseExpression();
+
+        ClassDescriptor descriptor = baseExpression.getLeafDescriptor(query, rootDescriptor, session);
+        if (descriptor == null){
+            return null;
+        }
+        return descriptor.getObjectBuilder().getMappingForAttributeName(getName());
+    }
+    
     /**
      * INTERNAL:
      * Used to print a debug form of the expression tree.

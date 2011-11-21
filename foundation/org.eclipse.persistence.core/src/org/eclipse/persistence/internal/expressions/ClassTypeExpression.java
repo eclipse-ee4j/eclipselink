@@ -235,8 +235,8 @@ public class ClassTypeExpression extends DataExpression {
             queryClass = ((ExpressionBuilder)getBaseExpression()).getQueryClass();
             return query.getSession().getDescriptor(queryClass);
         } else {
-            //it must be a QueryKeyExpression
-            return query.getLeafDescriptorFor(getBaseExpression(), query.getDescriptor());
+            // It must be a QueryKeyExpression.
+            return getBaseExpression().getLeafDescriptor(query, query.getDescriptor(), query.getSession());
         }
     }
     

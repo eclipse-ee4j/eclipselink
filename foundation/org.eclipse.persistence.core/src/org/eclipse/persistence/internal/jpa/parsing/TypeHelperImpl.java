@@ -16,6 +16,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -227,6 +228,12 @@ public class TypeHelperImpl
             if (type == null){
                 type = Object.class;
             }
+        } else if (mapping.isAggregateCollectionMapping()) {
+            // Return the ClassDescriptor as the type representation in case
+            // of an embedded. This makes sure that any property or field
+            // access of the embedded uses the correct mapping information and
+            // not the shell of the descriptors as stored by the session.
+            type = ((AggregateCollectionMapping)mapping).getReferenceDescriptor();
         } else if (mapping.isForeignReferenceMapping()) {
             ClassDescriptor descriptor = mapping.getReferenceDescriptor();
             type = descriptor == null ? null : descriptor.getJavaClass();

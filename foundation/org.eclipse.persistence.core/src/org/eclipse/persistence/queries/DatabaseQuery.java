@@ -619,6 +619,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 // Profile the query preparation time.
                 session.endOperationProfile(SessionProfiler.QueryPreparation, this, SessionProfiler.ALL);
             }
+        } catch (QueryException knownFailure) {
+            // Set the query, as prepare can be called directly.
+            if (knownFailure.getQuery() == null) {
+                knownFailure.setQuery(this);
+                knownFailure.setSession(session);
+            }
+            throw knownFailure;
         } catch (EclipseLinkException knownFailure) {
             throw knownFailure;
         } catch (RuntimeException unexpectedFailure) {

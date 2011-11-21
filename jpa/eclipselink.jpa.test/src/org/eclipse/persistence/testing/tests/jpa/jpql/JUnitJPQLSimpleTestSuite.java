@@ -50,13 +50,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus;
 import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * <p>

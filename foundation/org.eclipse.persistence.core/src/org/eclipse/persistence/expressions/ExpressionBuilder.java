@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.expressions.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * <P>
@@ -484,6 +485,22 @@ public class ExpressionBuilder extends ObjectExpression {
      */
     public boolean wasQueryClassSetInternally(){
         return this.wasQueryClassSetInternally;
+    }
+    
+    /**
+     * INTERNAL:
+     * Lookup the descriptor for this item by traversing its expression recursively.
+     */
+    @Override
+    public ClassDescriptor getLeafDescriptor(DatabaseQuery query, ClassDescriptor rootDescriptor, AbstractSession session) {
+        // The base case
+        // The following special case is where there is a parallel builder
+        // which has a different reference class as the primary builder.
+        Class queryClass = getQueryClass();
+        if ((queryClass != null) && ((query == null) || (queryClass != query.getReferenceClass()))) {
+            return session.getDescriptor(queryClass);
+        }
+        return rootDescriptor;
     }
     
     /**

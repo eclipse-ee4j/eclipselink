@@ -1031,7 +1031,16 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Create an expression for this operator, using the given base and arguments.
      */
+    @Deprecated
     public Expression expressionForArguments(Expression base, Vector arguments) {
+        return newExpressionForArguments(base, arguments);
+    }
+
+    /**
+     * INTERNAL:
+     * Create an expression for this operator, using the given base and arguments.
+     */
+    public Expression expressionForArguments(Expression base, List arguments) {
         return newExpressionForArguments(base, arguments);
     }
 
@@ -1772,7 +1781,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * The general case.
      */
-    public Expression newExpressionForArguments(Expression base, Vector arguments) {
+    public Expression newExpressionForArguments(Expression base, List arguments) {
         if ((arguments.size() == 1) && (arguments.get(0) == null)) {
             if (this.selector == Equal) {
                 return base.isNull();

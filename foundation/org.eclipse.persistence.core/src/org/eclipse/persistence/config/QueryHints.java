@@ -412,7 +412,7 @@ public class QueryHints {
      * By default queries generate their SQL the first time they are executed,
      * and avoid the cost of generating the SQL on subsequent executions.
      * This can be used to generate the SQL on every execution if the 
-     * query requires usage of dynamic SQL.
+     * query requires usage of dynamic SQL, such as to handle null parameters (use IS NULL instead of = null).
      * This only effects the SQL generation, not parameter binding or statement caching.
      * Valid values are:  HintValues.FALSE, HintValues.TRUE,
      * "" could be used instead of default value HintValues.FALSE

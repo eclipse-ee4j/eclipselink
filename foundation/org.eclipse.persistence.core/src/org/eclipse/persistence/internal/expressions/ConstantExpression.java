@@ -96,6 +96,10 @@ public class ConstantExpression extends Expression {
         return value;
     }
 
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
     public boolean isConstantExpression() {
         return true;
     }

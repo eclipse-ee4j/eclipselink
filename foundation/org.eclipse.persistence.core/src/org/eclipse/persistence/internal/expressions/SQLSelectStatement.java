@@ -887,7 +887,7 @@ public class SQLSelectStatement extends SQLStatement {
      * This is used on order by expression when the field being ordered by must be in the select,
      * but cannot be in the select twice.
      */
-    protected boolean fieldsContainField(Vector fields, Expression expression) {
+    protected boolean fieldsContainField(List fields, Expression expression) {
         DatabaseField orderByField;
 
         if (expression instanceof DataExpression) {
@@ -897,16 +897,20 @@ public class SQLSelectStatement extends SQLStatement {
         }
 
         //check all fields for a match
-        for (Enumeration fieldsEnum = fields.elements(); fieldsEnum.hasMoreElements();) {
-            Object fieldOrExpression = fieldsEnum.nextElement();
-
+        for (Object fieldOrExpression : fields) {
             if (fieldOrExpression instanceof DatabaseField) {
                 DatabaseField field = (DatabaseField)fieldOrExpression;
                 DataExpression exp = (DataExpression)expression;
 
-                if (field.equals(orderByField) && (exp.getBaseExpression() == getBuilder())) {
-                    // found a match
-                    return true;
+                if (field.equals(orderByField)) {
+                    // Ignore aggregates
+                    while (((DataExpression)exp.getBaseExpression()).getMapping() instanceof AggregateObjectMapping) {
+                        exp = (DataExpression)exp.getBaseExpression();
+                    }
+                    if (exp.getBaseExpression() == getBuilder()) {
+                        // found a match
+                        return true;
+                    }
                 }
             }
             // For CR#2589.  This method was not getting the fields in the same way that
@@ -923,7 +927,6 @@ public class SQLSelectStatement extends SQLStatement {
                 }
             }
         }
-
         // no matches
         return false;
     }
@@ -1384,18 +1387,19 @@ public class SQLSelectStatement extends SQLStatement {
             normalizer.normalizeSubSelects(clonedExpressions);
         }
 
-        // CR2114; If this is data level then we don't have a descriptor.
-        // We don't have a target class so we must use the root platform. PWK
-        // We are not fixing the informix.
-        Class aClass = null;
-
-        if (descriptor != null) {
-            aClass = descriptor.getJavaClass();
-        }
-
         // When a distinct is used the order bys must be in the select clause, so this forces them into the select.
-        if ((session.getPlatform(aClass).isInformix()) || (shouldDistinctBeUsed() && hasOrderByExpressions())) {
-            addOrderByExpressionToSelectForDistinct();
+        if (hasOrderByExpressions()) {
+            // CR2114; If this is data level then we don't have a descriptor.
+            // We don't have a target class so we must use the root platform. PWK
+            // We are not fixing the informix.
+            Class queryClass = null;
+            if (descriptor != null) {
+                queryClass = descriptor.getJavaClass();
+            }
+            DatabasePlatform platform = (DatabasePlatform)session.getPlatform(queryClass);
+            if (platform.shouldSelectIncludeOrderBy() || (shouldDistinctBeUsed() && platform.shouldSelectDistinctIncludeOrderBy())) {
+                addOrderByExpressionToSelectForDistinct();
+            }
         }
     }
 
