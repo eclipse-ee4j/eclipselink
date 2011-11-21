@@ -15,10 +15,6 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmllocation;
 
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.xml.sax.Locator;
 
@@ -44,11 +40,11 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
         d.data1 = "sdjfhdsaoiufhosaidufh";
         d.data2 = "kjdfgkjdsfg8374934874";
         d.data3 = "84376328476324XXXXXXX";
-        d.locator = new TestLocator(2, 61, includeSysId);
+        d.locator = new TestLocator(2, 7, includeSysId);
 
-        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(7, 37, includeSysId); d.subData.add(sd1);
+        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(7, 91, includeSysId); d.subData.add(sd1);
         SubDataNT sd2 = new SubDataNT(); sd2.info = "phone|6132832684";  sd2.locator = new TestLocator(14, 13, includeSysId); d.subData.add(sd2);
-        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(21, 35, includeSysId); d.subData.add(sd3);
+        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(21, 89, includeSysId); d.subData.add(sd3);
 
         if (this.getName().endsWith("Node") || this.getName().endsWith("UnmarshallerHandler")) {
             TestLocator noLoc = new TestLocator(0, 0, false);

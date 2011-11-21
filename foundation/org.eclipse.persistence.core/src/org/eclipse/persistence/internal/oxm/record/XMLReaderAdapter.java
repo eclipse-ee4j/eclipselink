@@ -237,7 +237,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
             int index = 0;
             QName testQName = new QName(uri, localName);
             for(Attribute attribute : attributes()) {                
-                if(attribute.getQName().equals(testQName)) {
+              	if(localName.equals(attribute.getLocalName()) && uri.equals(attribute.getUri())){
                     return index;
                 }
                 index++;
@@ -250,7 +250,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
         }
 
         public String getLocalName(int index) {
-            return attributes().get(index).getQName().getLocalPart();
+            return attributes().get(index).getLocalName();
         }
 
         public String getQName(int index) {
@@ -270,7 +270,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
         }
 
         public String getURI(int index) {
-            return attributes().get(index).getQName().getNamespaceURI();
+            return attributes().get(index).getUri();
         }
 
         public String getValue(int index) {
@@ -301,18 +301,20 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     protected static class Attribute {
 
-        private QName qName;
+        private String localName;
+        private String uri;
         private String name;
         private String value;
 
         public Attribute(String uri, String localName, String name, String value) {
-            this.qName = new QName(uri, localName);
+            this.localName = localName;
+            if(uri == null){
+            	this.uri = XMLConstants.EMPTY_STRING;
+            }else{
+                this.uri = uri;
+            }
             this.name = name;
             this.value = value;
-        }
-
-        public QName getQName() {
-            return qName;
         }
 
         public String getName() {
@@ -323,6 +325,13 @@ public abstract class XMLReaderAdapter extends XMLReader {
             return value;
         }
 
+        public String getLocalName() {
+            return localName;
+        }
+        
+        public String getUri() {
+            return uri;
+        }
     }
 
 }

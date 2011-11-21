@@ -13,14 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmllocation;
 
-import java.io.IOException;
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+
 import org.xml.sax.Locator;
+
 
 public class XmlLocationTestCases extends JAXBTestCases {
 
@@ -44,11 +42,11 @@ public class XmlLocationTestCases extends JAXBTestCases {
         d.data1 = "sdjfhdsaoiufhosaidufh";
         d.data2 = "kjdfgkjdsfg8374934874";
         d.data3 = "84376328476324XXXXXXX";
-        d.locator = new TestLocator(15, 89, 29, includeSysId);
+        d.locator = new TestLocator(15, 35, 29, includeSysId);
 
-        SubData sd1 = new DetailData(); sd1.info = "name|rbarkhouse"; sd1.setLoc(new TestLocator(20, 35, 4, includeSysId)); d.subData.add(sd1);
+        SubData sd1 = new DetailData(); sd1.info = "name|rbarkhouse"; sd1.setLoc(new TestLocator(20, 89, 4, includeSysId)); d.subData.add(sd1);
         SubData sd2 = new SubData(); sd2.info = "phone|6132832684";  sd2.setLoc(new TestLocator(30, 26, 17, includeSysId)); d.subData.add(sd2);
-        SubData sd3 = new LeafData(); sd3.info = "id|8827"; sd3.setLoc(new TestLocator(32, 33, 4, includeSysId)); d.subData.add(sd3);
+        SubData sd3 = new LeafData(); sd3.info = "id|8827"; sd3.setLoc(new TestLocator(32, 87, 4, includeSysId)); d.subData.add(sd3);
 
         if (this.getName().endsWith("Node") || this.getName().endsWith("UnmarshallerHandler")) {
             TestLocator noLoc = new TestLocator(0, 0, 0, false);

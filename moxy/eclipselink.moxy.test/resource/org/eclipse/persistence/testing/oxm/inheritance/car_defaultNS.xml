@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<prefix:vehicle xsi:type="car-type" xmlns:prefix="mynamespaceuri" xmlns="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+   <prefix:model>Grand Am</prefix:model>
+   <prefix:manufacturer>Pontiac</prefix:manufacturer>
+   <prefix:top-speed>220</prefix:top-speed>
+   <prefix:number-of-doors>2</prefix:number-of-doors>
+   <prefix:miles-per-gallon>30</prefix:miles-per-gallon>
+</prefix:vehicle>

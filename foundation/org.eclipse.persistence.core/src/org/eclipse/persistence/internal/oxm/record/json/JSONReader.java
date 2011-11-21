@@ -258,9 +258,9 @@ public class JSONReader extends XMLReaderAdapter {
             for(Attribute attribute : attributes()) {
             	if(namespaceAware){
 	                QName testQName = new QName(uri, localName);
-	                if(attribute.getQName().equals(testQName)) {
-	                    return index;
-	                }
+	                if(localName.equals(attribute.getLocalName()) && uri.equals(attribute.getUri())){
+	              	  return index;
+	              	}
             	}else{
             		if(attribute.getName().equals(localName)) {
 	                    return index;

@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<myns:employee xsi:type="oxm:person" xmlns:myns="test" xmlns:oxm="test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><name>Joe Smith</name></myns:employee>
+<myns:employee xsi:type="myns:person" xmlns:myns="test" xmlns:oxm="test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><name>Joe Smith</name></myns:employee>

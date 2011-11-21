@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ns0:root xmlns:ns0="urn:example" xmlns:x="listOfObjectsNamespace">
-    <char2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+    <char2dArray>
         <item>a</item>
         <item>b</item>
         <item>c</item>
         <item>d</item>
     </char2dArray>
-    <char2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+    <char2dArray>
         <item>e</item>
         <item>f</item>
         <item>g</item>
@@ -32,19 +32,19 @@
             <innerName>B</innerName>
         </item>
     </innerClass2dArray>
-    <int2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+    <int2dArray>
         <item>1</item>
         <item>2</item>
     </int2dArray>
-    <int2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+    <int2dArray>
         <item>3</item>
         <item>4</item>
     </int2dArray>
-    <int2dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+    <int2dArray>
         <item>5</item>
         <item>6</item>
     </int2dArray>
-    <int3dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+    <int3dArray>
         <item>
             <item>1</item>
             <item>2</item>
@@ -58,7 +58,7 @@
             <item>6</item>
         </item>
     </int3dArray>
-    <int3dArray xmlns:ns1="http://jaxb.dev.java.net/array">
+    <int3dArray>
         <item>
             <item>7</item>
             <item>8</item>

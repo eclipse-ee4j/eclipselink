@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -88,7 +89,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
         // If we have a namespace resolver, check any of the class-indicator values
         // for prefixed type names and resolve the namespaces.
-        if (!this.shouldUseClassNameAsIndicator() && (namespaceResolver != null)) {
+        if (!this.shouldUseClassNameAsIndicator()){ 
             // Must first clone the map to avoid concurrent modification.
             Iterator<Map.Entry> entries = new HashMap(getClassIndicatorMapping()).entrySet().iterator();
             while (entries.hasNext()) {
@@ -98,7 +99,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                     XPathQName qname;
                     String indicatorValue = (String)key;
                     int index = indicatorValue.indexOf(XMLConstants.COLON);
-                    if (index != -1) {
+                    if (index != -1 && namespaceResolver != null) {
                         //if it's a prefixed string, key it on QName and 
                         //local name, in case the namespace can't be resolved
                         //at runtime. Needs to be revisited.
@@ -116,6 +117,10 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                         }
                     }
                     getClassIndicatorMapping().put(qname, entry.getValue());
+                }else if(key instanceof QName){
+                	XPathQName xpathQName = new XPathQName((QName)key, true);
+                	getClassIndicatorMapping().put(xpathQName, entry.getValue());
+                	
                 }
             }
         }
@@ -153,21 +158,20 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         if (indicator == AbstractRecord.noEntry) {
             return null;
         }
-        Object classFieldValue = session.getDatasourcePlatform().getConversionManager().convertObject(indicator, getClassIndicatorField().getType());
 
-        if (classFieldValue == null) {
+        if (indicator == null) {
             return null;
         }
 
         Class concreteClass;
-        if (classFieldValue instanceof String) {
-            String indicatorValue = (String)classFieldValue;
+        if (indicator instanceof String) {
+            String indicatorValue = (String)indicator;
             int index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());
             if (index == -1) {
             	if(namespaceAware){
                     String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
                     if(uri == null) {
-                        concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
+                    concreteClass = (Class)this.classIndicatorMapping.get(new XPathQName(((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI() ,indicatorValue, namespaceAware));
                     } else {
                     	XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);
                         concreteClass = (Class)this.classIndicatorMapping.get(qname);
@@ -188,10 +192,10 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 }
             }
         } else {
-            concreteClass = (Class)this.classIndicatorMapping.get(classFieldValue);
+            concreteClass = (Class)this.classIndicatorMapping.get(indicator);
         }
         if (concreteClass == null) {
-            throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
+            throw DescriptorException.missingClassForIndicatorFieldValue(indicator, getDescriptor());
         }
         return concreteClass;
     }

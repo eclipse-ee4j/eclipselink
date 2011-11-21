@@ -12,12 +12,12 @@ encoding="UTF-8"?>
 
 
 
-                            <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                            <data>
 	<key>dat325</key>
    <data1>sdjfhdsaoiufhosaidufh</data1>
    <data2>kjdfgkjdsfg8374934874</data2>
    <data3>84376328476324XXXXXXX</data3>
-   <subData xsi:type="detailData">
+   <subData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="detailData">
       <info>name|rbarkhouse</info>
    </subData>
    
@@ -29,7 +29,7 @@ encoding="UTF-8"?>
    
                 <subData>
       <info>phone|6132832684</info></subData>
-   <subData xsi:type="leafData">
+   <subData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="leafData">
       <info>id|8827</info>
    </subData>	
 </data>

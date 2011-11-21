@@ -1206,7 +1206,11 @@ public class XMLContext {
                         schemaContext = schemaContext.substring(1, schemaContext.length());
                         XPathFragment typeFragment = new XPathFragment(schemaContext);
                         if (null != xmlDescriptor.getNamespaceResolver()) {
-                            typeFragment.setNamespaceURI(xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(typeFragment.getPrefix()));
+                           String uri = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(typeFragment.getPrefix());
+                           if(uri == null && xmlSchemaReference.getSchemaContextAsQName() != null){
+                               uri = xmlSchemaReference.getSchemaContextAsQName().getNamespaceURI();
+                           }
+                           typeFragment.setNamespaceURI(uri);
                         }
                         this.descriptorsByGlobalType.put(typeFragment, xmlDescriptor);
                     } else {

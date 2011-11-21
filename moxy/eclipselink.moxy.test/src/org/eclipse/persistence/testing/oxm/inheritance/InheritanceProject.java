@@ -24,15 +24,23 @@ import org.eclipse.persistence.sessions.Project;
  *  @since   release specific (what release of product did this appear in)
  */
 public class InheritanceProject extends Project {
-    protected NamespaceResolver namespaceResolver;
-
+    protected NamespaceResolver namespaceResolver;    
+    
     public InheritanceProject() {
+    	this(false);
+    }
+    
+    public InheritanceProject(boolean defaultNS) {
         super();
 
         namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaceResolver.put("prefix", "mynamespaceuri");
 
+        if(defaultNS){
+        	namespaceResolver.setDefaultNamespaceURI("mynamespaceuri");
+        }
+        
         addDescriptor(getParkingLotDescriptor());
         addDescriptor(getVehicleDescriptor());
         addDescriptor(getCarDescriptor());

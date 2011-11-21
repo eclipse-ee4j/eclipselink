@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns1:root xmlns:ns1="examplenamespace" xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:intArrayArrayArray">
+<ns0:root xmlns:ns0="examplenamespace" xmlns:ns1="http://jaxb.dev.java.net/array" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:intArrayArrayArray">
     <item>
         <item>
             <item>0</item>
@@ -40,4 +40,4 @@
             <item>23</item>
         </item>
     </item>
-</ns1:root>
+</ns0:root>

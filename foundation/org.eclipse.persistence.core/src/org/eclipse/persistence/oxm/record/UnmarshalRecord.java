@@ -385,11 +385,14 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         XMLField xmlField = this.convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
         NamespaceResolver namespaceResolver = xmlField.getNamespaceResolver();
-        String namespaceURI = XMLConstants.EMPTY_STRING;
-        if (null != namespaceResolver) {
-            namespaceURI = namespaceResolver.resolveNamespacePrefix(lastFragment.getPrefix());
-            if (null == namespaceURI) {
-                namespaceURI = XMLConstants.EMPTY_STRING;
+        String namespaceURI = lastFragment.getNamespaceURI();
+        if(namespaceURI == null){
+            namespaceURI = XMLConstants.EMPTY_STRING;
+            if (null != namespaceResolver) {
+                namespaceURI = namespaceResolver.resolveNamespacePrefix(lastFragment.getPrefix());
+                if (null == namespaceURI) {
+                    namespaceURI = XMLConstants.EMPTY_STRING;
+                }
             }
         }
         if(isNamespaceAware()){

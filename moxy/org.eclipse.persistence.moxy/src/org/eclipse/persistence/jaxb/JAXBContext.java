@@ -19,11 +19,14 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.xml.bind.PropertyException;
@@ -56,11 +59,15 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
@@ -948,6 +955,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         protected JAXBContextState(XMLContext context) {
             xmlContext = context;
+            updateNamespaces();
         }
 
         protected JAXBContextState(XMLContext context, Generator generator, Type[] boundTypes, Map properties) {
@@ -1013,6 +1021,72 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             return boundType;
         }
 
+        private void updateNamespaces(){
+        	
+        	Collection descriptors = xmlContext.getSession(0).getDescriptors().values();
+        	Iterator iter = descriptors.iterator();
+        	
+        	while(iter.hasNext()){
+        	   XMLDescriptor desc = (XMLDescriptor)iter.next();
+        	   processXMLDescriptor(new  ArrayList<XMLDescriptor>(), desc, desc.getNonNullNamespaceResolver());
+        	}
+    	
+        }
+           
+        private void processRefClasses(List processed, Set refClasses, NamespaceResolver nr){
+            if(refClasses != null){
+                Iterator iter = refClasses.iterator();
+                while(iter.hasNext()){
+                    Class nextClass = (Class) iter.next();
+                    XMLDescriptor desc = (XMLDescriptor) xmlContext.getSession(0).getProject().getDescriptor(nextClass);
+                    processXMLDescriptor(processed, desc, nr);
+                }
+            }
+        }
+
+        private void processXMLDescriptor(List<XMLDescriptor> processed, XMLDescriptor desc, NamespaceResolver nr){
+            if(desc == null || processed.contains(desc)){
+                return;
+            }
+            processed.add(desc);
+        		
+            Vector mappings = desc.getMappings();
+    		
+            for(int i =0; i<mappings.size(); i++){
+                DatabaseMapping nextMapping = (DatabaseMapping) mappings.get(i);
+                Vector fields = nextMapping.getFields();
+                updateResolverForFields(fields, nr);
+                XMLDescriptor refDesc = (XMLDescriptor) ((DatabaseMapping)nextMapping).getReferenceDescriptor();
+                if(refDesc != null && !processed.contains(refDesc)){    				
+                    processXMLDescriptor(processed, refDesc, nr); 
+	            }    
+    			
+                if(nextMapping instanceof XMLChoiceObjectMapping){    				    			
+                    Set refClasses = ((XMLChoiceObjectMapping)nextMapping).getClassToFieldMappings().keySet();
+                    processRefClasses(processed, refClasses, nr);    				
+                } else if(nextMapping instanceof XMLChoiceCollectionMapping){    				    			
+                    Set refClasses = ((XMLChoiceCollectionMapping)nextMapping).getClassToFieldMappings().keySet();
+                    processRefClasses(processed, refClasses, nr);
+                }    			
+            }    		
+        }
+
+        private void updateResolverForFields(Collection fields, NamespaceResolver nr){
+        	Iterator fieldIter = fields.iterator();
+        	while(fieldIter.hasNext()){        	
+        	    XMLField field = (XMLField)fieldIter.next();        	
+			    String uri = field.getXPathFragment().getNamespaceURI(); 		
+			    if(uri != null && nr.resolveNamespaceURI(uri) == null && !uri.equals(nr.getDefaultNamespaceURI())){   
+				    String prefix = field.getXPathFragment().getPrefix();
+				    if(prefix == null){
+					    prefix = nr.generatePrefix();
+				    }
+			        nr.put(prefix, uri);				        					
+			    }	
+        	}
+        }
+        
+        
         private HashMap<String, Class> getClassToGeneratedClasses() {
             return classToGeneratedClasses;
         }
