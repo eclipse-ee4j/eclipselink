@@ -368,14 +368,14 @@ public class TestConditionalExpressions extends QueryTest {
     @Test
     public void testBeanComparisonHandling() {
         assertValidQuery("SELECT p FROM Person p WHERE p.city = ALL(Select c FROM City c)");
-        assertInvalidQuery("SELECT p FROM Person p WHERE p.city = (Select c FROM City c)");
+        assertValidQuery("SELECT p FROM Person p WHERE p.city = (Select c FROM City c)");
         assertValidQuery("SELECT p FROM Person p, City c WHERE p.city = c");
         assertValidQuery("SELECT p FROM Person p WHERE p.city = ?1");
         assertValidQuery("SELECT p FROM Person p WHERE ?1 = p.city");
         assertValidQuery("SELECT p FROM Person p WHERE p.city = :one");
         assertValidQuery("SELECT p FROM Person p WHERE :one = p.city");
         assertValidQuery("SELECT p FROM Person p, City c WHERE c = p.city");
-        assertInvalidQuery("SELECT p FROM Person p WHERE (Select c FROM City c) = p.city");
+        assertValidQuery("SELECT p FROM Person p WHERE (Select c FROM City c) = p.city");
         assertValidQuery("SELECT p FROM Person p, City c WHERE p.city = (c) and true = true or (false = true and 5 = 6)");
 
     }

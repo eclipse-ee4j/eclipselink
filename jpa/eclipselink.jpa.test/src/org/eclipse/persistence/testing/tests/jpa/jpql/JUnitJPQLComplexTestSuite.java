@@ -255,8 +255,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testDistinctOrderByEmbedded"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testElementCollection"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testDoubleAggregateManyToMany"));
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testGroupByHavingFunction"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testSubSelect"));
+        //suite.addTest(new JUnitJPQLComplexTestSuite("testGroupByHavingFunction"));      
+        if (!isJPA10()) {
+            suite.addTest(new JUnitJPQLComplexTestSuite("testSubSelect"));
+        }
         //suite.addTest(new JUnitJPQLComplexTestSuite("testOrderPackage"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectStackOverflow"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testAliasPlus"));
@@ -3391,10 +3393,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.id in (Select p.id from PhoneNumber p where p.owner = e)");
         query.getResultList().size();
-        if (isJPA10()) {
-            closeEntityManager(em);
-            return;
-        }
         String sql = query.unwrap(DatabaseQuery.class).getSQLString();
         int index = sql.indexOf("CMP3_EMPLOYEE");
         if (index == -1) {
