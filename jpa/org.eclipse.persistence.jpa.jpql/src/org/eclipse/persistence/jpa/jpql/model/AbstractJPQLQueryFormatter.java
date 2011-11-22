@@ -1013,7 +1013,7 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
 
 			if (stateObject.hasStateObject()) {
 				writer.append(SPACE);
-				stateObject.accept(this);
+				stateObject.getStateObject().accept(this);
 			}
 		}
 	}

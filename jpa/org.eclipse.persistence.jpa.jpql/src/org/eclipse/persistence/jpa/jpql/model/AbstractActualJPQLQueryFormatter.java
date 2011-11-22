@@ -1508,7 +1508,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 
 			// Expression
 			if (stateObject.hasStateObject()) {
-				stateObject.accept(this);
+				stateObject.getStateObject().accept(this);
 			}
 		}
 	}
