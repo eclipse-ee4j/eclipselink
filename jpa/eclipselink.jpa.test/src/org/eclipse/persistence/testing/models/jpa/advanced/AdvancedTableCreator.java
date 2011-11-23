@@ -80,6 +80,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildLOOTTable());
         addTableDefinition(buildADVSIMPLEENTITYTable());
         addTableDefinition(buildADVECSIMPLETable());
+        addTableDefinition(buildADVSIMPLELANGUAGETable());
+        addTableDefinition(buildADVSIMPLEENTITYLANGUAGETable());
         addTableDefinition(buildCMP3_JIGSAWTable());
         addTableDefinition(buildCMP3_JIGSAW_PIECETable());
         addTableDefinition(buildRABBITTable());
@@ -2325,6 +2327,84 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
        
     }
     
+    public TableDefinition buildADVSIMPLELANGUAGETable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("ADV_SIMPLE_LANGUAGE");
+
+        FieldDefinition fieldCODE = new FieldDefinition();
+        fieldCODE.setName("CODE");
+        fieldCODE.setTypeName("VARCHAR2");
+        fieldCODE.setSize(2);
+        fieldCODE.setShouldAllowNull(false);
+        fieldCODE.setIsPrimaryKey(true);
+        fieldCODE.setUnique(false);
+        fieldCODE.setIsIdentity(true);
+        table.addField(fieldCODE);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(100);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        table.addField(fieldDESCRIPTION);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+   
+        return table;
+    }
+    
+    public TableDefinition buildADVSIMPLEENTITYLANGUAGETable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("ADV_SIMPLE_ENTITY_LANGUAGE");
+
+        FieldDefinition fieldSIMPLEID = new FieldDefinition();
+        fieldSIMPLEID.setName("SIMPLE_ID");
+        fieldSIMPLEID.setTypeName("NUMERIC");
+        fieldSIMPLEID.setSize(15);
+        fieldSIMPLEID.setShouldAllowNull(false);
+        fieldSIMPLEID.setIsPrimaryKey(false);
+        fieldSIMPLEID.setUnique(false);
+        fieldSIMPLEID.setIsIdentity(false);
+        fieldSIMPLEID.setForeignKeyFieldName("ADV_SIMPLE_ENTITY.SIMPLE_ID");
+        table.addField(fieldSIMPLEID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("LANG_DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(255);
+        fieldDESCRIPTION.setShouldAllowNull(false);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        table.addField(fieldDESCRIPTION);
+        
+        FieldDefinition fieldLANG_CODE = new FieldDefinition();
+        fieldLANG_CODE.setName("LANG_CODE");
+        fieldLANG_CODE.setTypeName("VARCHAR2");
+        fieldLANG_CODE.setSize(2);
+        fieldLANG_CODE.setShouldAllowNull(false);
+        fieldLANG_CODE.setIsPrimaryKey(false);
+        fieldLANG_CODE.setUnique(false);
+        fieldLANG_CODE.setIsIdentity(false);
+        table.addField(fieldLANG_CODE);
+ 
+        return table;
+    }
+ 
+ 
     public TableDefinition buildCMP3_JIGSAWTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_JIGSAW");

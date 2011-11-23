@@ -41,6 +41,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleEntity;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleNature;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleLanguage;
 
 public class AdvancedJunitTest extends JUnitTestCase {
     public AdvancedJunitTest() {
@@ -64,6 +65,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testStringArrayField"));
         suite.addTest(new AdvancedJunitTest("testCreateDerivedPKFromPKValues"));
         suite.addTest(new AdvancedJunitTest("testElementCollectionClear"));
+        suite.addTest(new AdvancedJunitTest("testElementCollectionEntityMapKeyRemove"));
         
         return suite;
     }
@@ -356,6 +358,78 @@ public class AdvancedJunitTest extends JUnitTestCase {
                 count++;
             }
             Assert.assertEquals("All entries of collection have not been removed from database for ElementCollection Test.", 0, count);
+        } catch (RuntimeException e) {
+           throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testElementCollectionEntityMapKeyRemove() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            SimpleEntity se = new SimpleEntity();
+            se.setId(102L);
+            se.setDescription("Element Collection Entity MapKey Remove Test Record");
+            
+            SimpleLanguage slen = new SimpleLanguage();
+            slen.setCode("EN");
+            slen.setDescription("English");
+            
+            SimpleLanguage slfr = new SimpleLanguage();
+            slfr.setCode("FR");
+            slfr.setDescription("French");
+            
+            se.getSimpleLanguage().put(slen, "Modest");
+            se.getSimpleLanguage().put(slfr, "Modeste");
+        
+            em.persist(slen);
+            em.persist(slfr);
+            em.persist(se);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // Clear Cache.
+        clearCache();
+        em = createEntityManager();
+        
+        SimpleEntity se = null;
+        SimpleLanguage slfr = null;
+        try {
+            beginTransaction(em);
+            se = em.find(SimpleEntity.class, 102L);
+            slfr = em.find(SimpleLanguage.class, "FR");
+            // Remove French Language from ElementCollection.
+            se.getSimpleLanguage().remove(slfr);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // Clear Cache
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
+            slfr = em.find(SimpleLanguage.class, "FR");
+            Assert.assertNotSame("Entity used as key in Collection Map has been deleted along with data in collection table on remove.", null, slfr);
         } catch (RuntimeException e) {
            throw e;
         } finally {

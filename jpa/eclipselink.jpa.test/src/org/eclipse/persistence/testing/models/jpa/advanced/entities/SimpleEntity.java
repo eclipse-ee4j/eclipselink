@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.models.jpa.advanced.entities;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -25,6 +27,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -45,6 +48,12 @@ public class SimpleEntity {
     @CollectionTable(name = "ADV_EC_SIMPLE", joinColumns = @JoinColumn(name = "SIMPLE_ID"))
     @Column(name = "SIMPLE_NATURE")
     private Collection<String> simpleNature = new ArrayList<String>();
+
+    @ElementCollection
+    @CollectionTable(name = "ADV_SIMPLE_ENTITY_LANGUAGE", joinColumns = @JoinColumn(name = "SIMPLE_ID"))
+    @MapKeyJoinColumn(name = "LANG_CODE", referencedColumnName = "CODE")
+    @Column(name = "LANG_DESCRIPTION")
+    private Map<SimpleLanguage, String> simpleLanguage = new HashMap<SimpleLanguage, String>();
 
     public SimpleEntity() {        
     }
@@ -89,6 +98,14 @@ public class SimpleEntity {
     public String removeSimpleNature(int index) {
         this.simpleNature.remove(SimpleNature.PERSONALITY[index]);
         return SimpleNature.PERSONALITY[index];
+    }
+
+    public Map<SimpleLanguage, String> getSimpleLanguage() {
+        return simpleLanguage;
+    }
+
+    public void setSimpleLanguage(Map<SimpleLanguage, String> simpleLanguage) {
+        this.simpleLanguage = simpleLanguage;
     }
 
     public String toString() {
