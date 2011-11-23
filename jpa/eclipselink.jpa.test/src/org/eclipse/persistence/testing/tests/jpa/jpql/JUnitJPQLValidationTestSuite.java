@@ -29,6 +29,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
@@ -1275,20 +1276,18 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     }
         
 
-    public void testUnsupportedCountDistinctOnOuterJoinedCompositePK()
-    {
-        try 
-        {
+    public void testUnsupportedCountDistinctOnOuterJoinedCompositePK() {
+        try  {
             String jpql = "SELECT COUNT(DISTINCT p) FROM Employee e LEFT JOIN e.phoneNumbers p GROUP BY e.lastName";
-            List result = createEntityManager().createQuery(jpql).getResultList();
-            fail ("Failed to throw expected IllegalArgumentException for query " + 
-                  " having a COUNT DISTINCT on a joined variable with a composite primary key.");
-        } catch(IllegalArgumentException ex)
-        {
+            createEntityManager().createQuery(jpql).getResultList();
+            if (!((DatabasePlatform)getPlatform()).supportsCountDistinctWithMultipleFields()) {
+                fail ("Failed to throw expected IllegalArgumentException for query " + 
+                      " having a COUNT DISTINCT on a joined variable with a composite primary key.");
+            }
+        } catch(IllegalArgumentException ex) {
             Assert.assertEquals(((QueryException) ex.getCause()).getErrorCode(),
                                 QueryException.DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK);
-        } catch(QueryException ex)
-        {
+        } catch(QueryException ex) {
             Assert.assertEquals(ex.getErrorCode(),
                                 QueryException.DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK);
         }   

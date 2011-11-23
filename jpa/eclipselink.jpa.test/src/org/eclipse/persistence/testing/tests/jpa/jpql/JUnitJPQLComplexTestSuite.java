@@ -258,6 +258,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         //suite.addTest(new JUnitJPQLComplexTestSuite("testGroupByHavingFunction"));      
         if (!isJPA10()) {
             suite.addTest(new JUnitJPQLComplexTestSuite("testSubSelect"));
+            //suite.addTest(new JUnitJPQLComplexTestSuite("testSubSelect2"));
         }
         //suite.addTest(new JUnitJPQLComplexTestSuite("testOrderPackage"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectStackOverflow"));
@@ -3400,7 +3401,26 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         index = sql.indexOf("CMP3_EMPLOYEE", index + 1);
         if (index != -1) {
-            fail("CMP3_EMPLOYEE table incorrectly join twice.");
+            fail("CMP3_EMPLOYEE table incorrectly joined twice.");
+        }
+        closeEntityManager(em);
+    }
+    
+    // Bug 301741
+    // Test subselect does not join table twice.
+    // TODO
+    public void testSubSelect2() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.address.id in (Select a.id from e.address a)");
+        query.getResultList().size();
+        String sql = query.unwrap(DatabaseQuery.class).getSQLString();
+        int index = sql.indexOf("CMP3_EMPLOYEE");
+        if (index == -1) {
+            fail("CMP3_EMPLOYEE table missing.");
+        }
+        index = sql.indexOf("CMP3_EMPLOYEE", index + 1);
+        if (index != -1) {
+            fail("CMP3_EMPLOYEE table incorrectly joined twice.");
         }
         closeEntityManager(em);
     }
@@ -3543,13 +3563,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select count(distinct c) from Captain c where c.id.name <> ''");
         query.getResultList();
-        query = em.createQuery("Select count(distinct e2), count(distinct e) from Employee e2, Employee e");
-        Object[] results = (Object[])query.getSingleResult();
-        if (!(((Number)results[1]).longValue() == (count))) {
-            fail("Employee count not correct: " + count + " was " + results[1]);
-        }
-        if (!(((Number)results[0]).longValue() == (count))) {
-            fail("Employee 2 count not correct: " + count + " was " + results[0]);
+        Object[] results = null;
+        if (!getPlatform().isDerby()) {
+            query = em.createQuery("Select count(distinct e2), count(distinct e) from Employee e2, Employee e");
+            results = (Object[])query.getSingleResult();
+            if (!(((Number)results[1]).longValue() == (count))) {
+                fail("Employee count not correct: " + count + " was " + results[1]);
+            }
+            if (!(((Number)results[0]).longValue() == (count))) {
+                fail("Employee 2 count not correct: " + count + " was " + results[0]);
+            }
         }
         query = em.createQuery("Select count(distinct p), count(distinct e) from PhoneNumber p, Employee e");
         results = (Object[])query.getSingleResult();
