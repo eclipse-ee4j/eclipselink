@@ -450,6 +450,10 @@ final class DeclarationResolver {
 				declaration.identificationVariable = identificationVariable;
 				declarations.put(identificationVariable.getVariableName(), declaration);
 			}
+
+			if (baseDeclaration == null) {
+				baseDeclaration = declaration;
+			}
 		}
 
 		/**

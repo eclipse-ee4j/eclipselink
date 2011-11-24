@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.jpa.jpql.spi.JavaManagedTypeProvider;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
@@ -32,6 +33,8 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
+import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -68,11 +71,6 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 	 * The contextual information for building a {@link DatabaseQuery}.
 	 */
 	private final JPQLQueryContext queryContext;
-
-	/**
-	 * This helper is used to invoke validation on a JPQL query if it is turned on.
-	 */
-	private DefaultJPQLQueryHelper queryHelper;
 
 	/**
 	 * This visitor is responsible to create the right read query based on the select expression.
@@ -117,6 +115,10 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 		}
 	}
 
+	private IManagedTypeProvider buildProvider(AbstractSession session) {
+		return new JavaManagedTypeProvider(session);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -156,7 +158,8 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 			queryContext.addRangeVariableDeclaration(entityName, "this");
 
 			// Validate the query
-			validate(jpqlExpression.getQueryStatement());
+			// Note: Currently turned off, I need to tweak validation to support JPQL fragment
+//			validate(jpqlExpression, session, selectionCriteria);
 
 			// Create the Expression representing the selection criteria
 			return queryContext.buildExpression(jpqlExpression.getQueryStatement());
@@ -268,7 +271,7 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 
 		try {
 			// Validate the query
-			validate(jpqlExpression);
+			validate(jpqlExpression, session, jpqlQuery);
 
 			// Now populate it
 			jpqlExpression.accept(databaseQueryVisitor());
@@ -322,11 +325,16 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 	 *
 	 * @param expression The JPQL expression to validate
 	 */
-	private void validate(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+	private void validate(JPQLExpression expression, AbstractSession session, String jpqlQuery) {
 
 		if (validateQueries) {
 
 			List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+
+			// Create the helper
+			EclipseLinkJPQLQueryHelper queryHelper = new EclipseLinkJPQLQueryHelper(jpqlGrammar());
+			queryHelper.setJPQLExpression(expression);
+			queryHelper.setQuery(new JavaQuery(buildProvider(session), jpqlQuery));
 
 			// Validate the query using the grammar
 			queryHelper.validateGrammar(expression, problems);
