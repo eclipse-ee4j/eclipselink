@@ -143,10 +143,11 @@ public abstract class AbstractJPQLQueryHelper {
 	protected abstract AbstractGrammarValidator buildGrammarValidator(JPQLQueryContext queryContext);
 
 	/**
-	 * Creates
+	 * Creates a context that will be used to store and retrieve information about the JPQL query.
 	 *
-	 * @param jpqlGrammar
-	 * @return
+	 * @param jpqlGrammar The JPQL grammar that is required for dictating how the JPQL query will be
+	 * parsed. It is also used by validation and by the content assist
+	 * @return A new {@link JPQLQueryContext}
 	 */
 	protected abstract JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar);
 
