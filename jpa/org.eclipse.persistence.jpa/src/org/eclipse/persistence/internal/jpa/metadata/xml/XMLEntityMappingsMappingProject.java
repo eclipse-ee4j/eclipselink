@@ -933,6 +933,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ColumnMetadata.class);
     
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getUniqueAttributeMapping());
         descriptor.addMapping(getNullableAttributeMapping());
@@ -940,22 +941,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getUpdatableAttributeMapping());
         descriptor.addMapping(getColumnDefinitionAttributeMapping());
         descriptor.addMapping(getTableAttributeMapping());
-        
         descriptor.addMapping(getLengthAttributeMapping());
-        
-        XMLDirectMapping precisionMapping = new XMLDirectMapping();
-        precisionMapping.setAttributeName("m_precision");
-        precisionMapping.setGetMethodName("getPrecision");
-        precisionMapping.setSetMethodName("setPrecision");
-        precisionMapping.setXPath("@precision");
-        descriptor.addMapping(precisionMapping);
-        
-        XMLDirectMapping scaleMapping = new XMLDirectMapping();
-        scaleMapping.setAttributeName("m_scale");
-        scaleMapping.setGetMethodName("getScale");
-        scaleMapping.setSetMethodName("setScale");
-        scaleMapping.setXPath("@scale");
-        descriptor.addMapping(scaleMapping);
+        descriptor.addMapping(getPrecisionAttributeMapping());
+        descriptor.addMapping(getScaleAttributeMapping());
         
         return descriptor;
     }
@@ -1200,13 +1188,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTargetClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getAttributeTypeAttributeMapping());
-        
-        XMLDirectMapping databaseTypeMapping = new XMLDirectMapping();
-        databaseTypeMapping.setAttributeName("m_databaseType");
-        databaseTypeMapping.setGetMethodName("getDatabaseType");
-        databaseTypeMapping.setSetMethodName("setDatabaseType");
-        databaseTypeMapping.setXPath("@database-type");
-        descriptor.addMapping(databaseTypeMapping);
+        descriptor.addMapping(getDatabaseTypeAttributeMapping());
         
         return descriptor;
     }
@@ -1875,15 +1857,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(JoinColumnMetadata.class);
     
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
-        
-        XMLDirectMapping referencedColumnNameMapping = new XMLDirectMapping();
-        referencedColumnNameMapping.setAttributeName("m_referencedColumnName");
-        referencedColumnNameMapping.setGetMethodName("getReferencedColumnName");
-        referencedColumnNameMapping.setSetMethodName("setReferencedColumnName");
-        referencedColumnNameMapping.setXPath("@referenced-column-name");
-        descriptor.addMapping(referencedColumnNameMapping);
-        
+        descriptor.addMapping(getReferencedColumnNameMapping());
         descriptor.addMapping(getUniqueAttributeMapping());
         descriptor.addMapping(getNullableAttributeMapping());        
         descriptor.addMapping(getInsertableAttributeMapping());
@@ -2580,56 +2556,15 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(PLSQLParameterMetadata.class);
     
-        XMLDirectMapping directionMapping = new XMLDirectMapping();
-        directionMapping.setAttributeName("m_direction");
-        directionMapping.setGetMethodName("getDirection");
-        directionMapping.setSetMethodName("setDirection");
-        directionMapping.setXPath("@direction");
-        descriptor.addMapping(directionMapping);
-        
+        // Attribute mappings.
+        descriptor.addMapping(getDirectionAttributeMapping());
         descriptor.addMapping(getNameAttributeMapping());
-        
-        XMLDirectMapping queryParameterMapping = new XMLDirectMapping();
-        queryParameterMapping.setAttributeName("m_queryParameter");
-        queryParameterMapping.setGetMethodName("getQueryParameter");
-        queryParameterMapping.setSetMethodName("setQueryParameter");
-        queryParameterMapping.setXPath("@query-parameter");
-        descriptor.addMapping(queryParameterMapping);
-
-        XMLDirectMapping optionalMapping = new XMLDirectMapping();
-        optionalMapping.setAttributeName("m_optional");
-        optionalMapping.setGetMethodName("getOptional");
-        optionalMapping.setSetMethodName("setOptional");
-        optionalMapping.setXPath("@optional");
-        descriptor.addMapping(optionalMapping);
-        
-        XMLDirectMapping typeMapping = new XMLDirectMapping();
-        typeMapping.setAttributeName("m_databaseType");
-        typeMapping.setGetMethodName("getDatabaseType");
-        typeMapping.setSetMethodName("setDatabaseType");
-        typeMapping.setXPath("@database-type");
-        descriptor.addMapping(typeMapping);
-        
-        XMLDirectMapping lengthMapping = new XMLDirectMapping();
-        lengthMapping.setAttributeName("m_length");
-        lengthMapping.setGetMethodName("getLength");
-        lengthMapping.setSetMethodName("setLength");
-        lengthMapping.setXPath("@length");
-        descriptor.addMapping(lengthMapping);
-        
-        XMLDirectMapping precisionMapping = new XMLDirectMapping();
-        precisionMapping.setAttributeName("m_precision");
-        precisionMapping.setGetMethodName("getPrecision");
-        precisionMapping.setSetMethodName("setPrecision");
-        precisionMapping.setXPath("@precision");
-        descriptor.addMapping(precisionMapping);
-        
-        XMLDirectMapping scaleMapping = new XMLDirectMapping();
-        scaleMapping.setAttributeName("m_scale");
-        scaleMapping.setGetMethodName("getScale");
-        scaleMapping.setSetMethodName("setScale");
-        scaleMapping.setXPath("@scale");
-        descriptor.addMapping(scaleMapping);
+        descriptor.addMapping(getQueryParameterMapping());
+        descriptor.addMapping(getOptionalAttributeMapping());
+        descriptor.addMapping(getDatabaseTypeAttributeMapping());
+        descriptor.addMapping(getLengthAttributeMapping());
+        descriptor.addMapping(getPrecisionAttributeMapping());
+        descriptor.addMapping(getScaleAttributeMapping());
         
         return descriptor;
     }
@@ -2724,15 +2659,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(PrimaryKeyJoinColumnMetadata.class);
         
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
-        
-        XMLDirectMapping referencedColumnNameMapping = new XMLDirectMapping();
-        referencedColumnNameMapping.setAttributeName("m_referencedColumnName");
-        referencedColumnNameMapping.setGetMethodName("getReferencedColumnName");
-        referencedColumnNameMapping.setSetMethodName("setReferencedColumnName");
-        referencedColumnNameMapping.setXPath("orm:referenced-column-name");
-        descriptor.addMapping(referencedColumnNameMapping);
-        
+        descriptor.addMapping(getReferencedColumnNameMapping());
         descriptor.addMapping(getColumnDefinitionAttributeMapping());
     
         return descriptor;
@@ -2965,14 +2894,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     protected ClassDescriptor buildStoredProcedureParameterDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureParameterMetadata.class);
-    
-        XMLDirectMapping directionMapping = new XMLDirectMapping();
-        directionMapping.setAttributeName("m_direction");
-        directionMapping.setGetMethodName("getDirection");
-        directionMapping.setSetMethodName("setDirection");
-        directionMapping.setXPath("@direction");
-        descriptor.addMapping(directionMapping);
         
+        // Attribute mappings.
+        descriptor.addMapping(getDirectionAttributeMapping());
         descriptor.addMapping(getNameAttributeMapping());
         
         XMLDirectMapping queryParameterMapping = new XMLDirectMapping();
@@ -2982,12 +2906,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         queryParameterMapping.setXPath("@query-parameter");
         descriptor.addMapping(queryParameterMapping);
 
-        XMLDirectMapping optionalMapping = new XMLDirectMapping();
-        optionalMapping.setAttributeName("m_optional");
-        optionalMapping.setGetMethodName("getOptional");
-        optionalMapping.setSetMethodName("setOptional");
-        optionalMapping.setXPath("@optional");
-        descriptor.addMapping(optionalMapping);
+        descriptor.addMapping(getOptionalAttributeMapping());
         
         XMLDirectMapping typeMapping = new XMLDirectMapping();
         typeMapping.setAttributeName("m_typeName");
@@ -3434,9 +3353,12 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(WriteTransformerMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getColumnMapping());
+        
+        // Attribute mappings.
         descriptor.addMapping(getTransformerClassAttributeMapping());
         descriptor.addMapping(getMethodAttributeMapping());
-        descriptor.addMapping(getColumnMapping());
         
         return descriptor;
     }
@@ -3933,6 +3855,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getDatabaseTypeAttributeMapping() {
+        XMLDirectMapping typeMapping = new XMLDirectMapping();
+        typeMapping.setAttributeName("m_databaseType");
+        typeMapping.setGetMethodName("getDatabaseType");
+        typeMapping.setSetMethodName("setDatabaseType");
+        typeMapping.setXPath("@database-type");
+        return typeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getDataTypeAttributeMapping() {
         XMLDirectMapping dataTypeMapping = new XMLDirectMapping();
         dataTypeMapping.setAttributeName("m_dataTypeName");
@@ -3968,6 +3902,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptionMapping.setSetMethodName("setDescription");
         descriptionMapping.setXPath("orm:description/text()");
         return descriptionMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getDirectionAttributeMapping() {
+        XMLDirectMapping directionMapping = new XMLDirectMapping();
+        directionMapping.setAttributeName("m_direction");
+        directionMapping.setGetMethodName("getDirection");
+        directionMapping.setSetMethodName("setDirection");
+        directionMapping.setXPath("@direction");
+        return directionMapping;
     }
     
     /**
@@ -4965,6 +4911,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getPrecisionAttributeMapping() {
+        XMLDirectMapping precisionMapping = new XMLDirectMapping();
+        precisionMapping.setAttributeName("m_precision");
+        precisionMapping.setGetMethodName("getPrecision");
+        precisionMapping.setSetMethodName("setPrecision");
+        precisionMapping.setXPath("@precision");
+        return precisionMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getPrePeristMapping() {
         XMLDirectMapping prePersistMapping = new XMLDirectMapping();
         prePersistMapping.setAttributeName("m_prePersist");
@@ -5090,6 +5048,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getQueryParameterMapping() {
+        XMLDirectMapping queryParameterMapping = new XMLDirectMapping();
+        queryParameterMapping.setAttributeName("m_queryParameter");
+        queryParameterMapping.setGetMethodName("getQueryParameter");
+        queryParameterMapping.setSetMethodName("setQueryParameter");
+        queryParameterMapping.setXPath("@query-parameter");
+        return queryParameterMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getQueryRedirectorsMapping() {
         XMLCompositeObjectMapping redirectorsMapping = new XMLCompositeObjectMapping();
         redirectorsMapping.setAttributeName("m_queryRedirectors");
@@ -5123,6 +5093,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         readOnlyMapping.setSetMethodName("setReadOnly");
         readOnlyMapping.setXPath("@read-only");
         return readOnlyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getReferencedColumnNameMapping() {
+        XMLDirectMapping referencedColumnNameMapping = new XMLDirectMapping();
+        referencedColumnNameMapping.setAttributeName("m_referencedColumnName");
+        referencedColumnNameMapping.setGetMethodName("getReferencedColumnName");
+        referencedColumnNameMapping.setSetMethodName("setReferencedColumnName");
+        referencedColumnNameMapping.setXPath("@referenced-column-name");
+        return referencedColumnNameMapping;
     }
     
     /**
@@ -5198,6 +5180,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setReferenceClass(RoundRobinPartitioningMetadata.class);
         mapping.setXPath("orm:round-robin-partitioning");
         return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getScaleAttributeMapping() {
+        XMLDirectMapping scaleMapping = new XMLDirectMapping();
+        scaleMapping.setAttributeName("m_scale");
+        scaleMapping.setGetMethodName("getScale");
+        scaleMapping.setSetMethodName("setScale");
+        scaleMapping.setXPath("@scale");
+        return scaleMapping;   
     }
     
     /**
