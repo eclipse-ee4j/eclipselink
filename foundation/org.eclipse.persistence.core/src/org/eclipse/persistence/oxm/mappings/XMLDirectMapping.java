@@ -14,8 +14,10 @@ package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -187,6 +189,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
     private boolean isWriteOnly;
+    private boolean isCollapsingStringValues;
+    private boolean isNormalizingStringValues;
 
     public XMLDirectMapping() {
         super();
@@ -388,6 +392,13 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             if(value == XMLRecord.noEntry) {
                 return;                    
             }
+            if(value != null && value.getClass() == ClassConstants.STRING) {
+                if(isCollapsingStringValues) {
+                    value = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)value);
+                } else if(isNormalizingStringValues) {
+                    value = XMLConversionManager.getDefaultXMLManager().normalizeStringValue((String)value);
+                }
+            }
             this.attributeAccessor.setAttributeValueInObject(object, value);
         } catch (DescriptorException exception) {
             exception.setMapping(this);
@@ -421,5 +432,50 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
-
+    
+    
+    /**
+     * PUBLIC: 
+     * Returns true if this mapping is normalizing string values on unmarshal before setting
+     * them in the object. Normalize replaces any CR, LF or Tab characters with a 
+     * single space character. 
+     */
+    public boolean isNormalizingStringValues() {
+        return this.isNormalizingStringValues;
+    }
+    
+    /**
+     * PUBLIC:
+     * Indicates that this mapping should normalize all string values before setting them
+     * in the object on unmarshal. Normalize replaces any CR, LF or Tab characters with a 
+     * single space character. 
+     * @param normalize
+     */
+    public void setNormalizingStringValues(boolean normalize) {
+        this.isNormalizingStringValues = normalize;
+    }
+    
+    
+    /**
+     * PUBLIC:
+     * Indicates that this mapping should collapse all string values before setting them
+     * in the object on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
+     * any sequence of whitepsace characters with a single space. 
+     * @param normalize
+     */
+    public void setCollapsingStringValues(boolean collapse) {
+        this.isCollapsingStringValues = collapse;
+    }
+    
+    /**
+     * PUBLIC:
+     * Returns true if this mapping should collapse all string values before setting them
+     * in the object on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
+     * any sequence of whitepsace characters with a single space. 
+     * @param normalize
+     */
+    public boolean isCollapsingStringValues() {
+        return this.isCollapsingStringValues;
+    }
+    
 }

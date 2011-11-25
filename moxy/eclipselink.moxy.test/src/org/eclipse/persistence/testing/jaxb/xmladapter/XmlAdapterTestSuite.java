@@ -20,9 +20,13 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.bytearray.ByteArrayTestCa
 import org.eclipse.persistence.testing.jaxb.xmladapter.classlevel.ClassLevelAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.composite.XmlAdapterCompositeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositecollection.XmlAdapterCompositeCollectionTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection.CollapsedStringListTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection.NormalizedStringListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection.XmlAdapterCompositeDirectCollectionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection.XmlAdapterDirectCollectionArrayTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.direct.CollapsedStringTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.ListToStringAdapterTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.direct.NormalizedStringTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.objectlist.ObjectListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefListTestCases;
@@ -64,6 +68,10 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(AdapterWithGenericsTestCases.class);
         suite.addTestSuite(XmlAdapterDirectCollectionArrayTestCases.class);
         suite.addTestSuite(ByteArrayTestCases.class);
+        suite.addTestSuite(CollapsedStringListTestCases.class);
+        suite.addTestSuite(CollapsedStringTestCases.class);
+        suite.addTestSuite(NormalizedStringListTestCases.class);
+        suite.addTestSuite(NormalizedStringTestCases.class);
         return suite;
     }
 }
