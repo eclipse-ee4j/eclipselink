@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -37,6 +36,7 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 
@@ -316,8 +316,8 @@ public class TransformerFactory {
      */
     private MetadataClass getAttributeTypeFromClass(MetadataClass metadataClass, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){       
         String getterMethod = mapping.getGetMethodName();
-        if (mapping.isAbstractAttributeDirectMapping() && mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
-            return metadataClass.getMetadataClass(((AbstractAttributeDirectMapping)mapping).getAttributeClassificationName());
+        if (mapping.isAbstractDirectMapping() && mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
+            return metadataClass.getMetadataClass(((AbstractDirectMapping)mapping).getAttributeClassificationName());
         } else if (mapping != null && getterMethod != null) {
             MetadataMethod method = metadataClass.getMethod(getterMethod, new ArrayList(), checkSuperclass);
             if (method == null) {

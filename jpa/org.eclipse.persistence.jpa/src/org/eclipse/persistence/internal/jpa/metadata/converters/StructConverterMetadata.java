@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * INTERNAL:
@@ -116,8 +116,8 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
      * INTERNAL: 
      */
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
-        if (mapping.isAbstractAttributeDirectMapping()) {
-            AbstractAttributeDirectMapping directMapping = ((AbstractAttributeDirectMapping) mapping); 
+        if (mapping.isAbstractDirectMapping()) {
+            AbstractDirectMapping directMapping = ((AbstractDirectMapping) mapping); 
             directMapping.setFieldType(Types.STRUCT);
             directMapping.setConverter(null);
             directMapping.setConverterClassName(null);

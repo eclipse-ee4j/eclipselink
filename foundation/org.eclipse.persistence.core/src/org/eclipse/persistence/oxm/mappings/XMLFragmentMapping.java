@@ -102,7 +102,7 @@ public class XMLFragmentMapping extends XMLDirectMapping {
     }
 
     @Override
-    public boolean isAbstractAttributeDirectMapping() {
+    public boolean isAbstractColumnMapping() {
         return false;
     }
 

@@ -45,7 +45,6 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
-import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -469,13 +468,13 @@ public class DynamicTypeBuilder {
         }
 
         // Try to configure the attribute classification if name is available
-        if (mapping.getAttributeClassification() == null && mapping.isAbstractAttributeDirectMapping()) {
-            String typeName = ((AbstractAttributeDirectMapping) mapping).getAttributeClassificationName();
+        if (mapping.getAttributeClassification() == null && mapping.isAbstractDirectMapping()) {
+            String typeName = ((AbstractDirectMapping) mapping).getAttributeClassificationName();
             if (typeName != null) {
                 // Remove any additional padding
                 typeName = typeName.trim();
                 Class<?> attrType = ConversionManager.getDefaultManager().convertClassNameToClass(typeName);
-                ((AbstractAttributeDirectMapping) mapping).setAttributeClassification(attrType);
+                ((AbstractDirectMapping) mapping).setAttributeClassification(attrType);
             }
         }
 

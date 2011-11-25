@@ -54,7 +54,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     }
     
     public void setNullValue(Object object, Session session) {
-        Object value = xmlFragmentMapping.getAttributeValue(null, session);
+        Object value = xmlFragmentMapping.getObjectValue(null, session);
         xmlFragmentMapping.setAttributeValueInObject(object, value);
     }
 

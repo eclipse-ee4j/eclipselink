@@ -956,7 +956,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
 
         // bug 2641228 always ensure that we convert the value to the correct type
         if (mapping.isDirectToFieldMapping()) {
-            value = ((AbstractDirectMapping)mapping).getAttributeValue(value, session);
+            value = ((AbstractDirectMapping)mapping).getObjectValue(value, session);
         }
         if (changeRecord != null) {
             changeRecord.updateChangeRecordWithNewValue(value);

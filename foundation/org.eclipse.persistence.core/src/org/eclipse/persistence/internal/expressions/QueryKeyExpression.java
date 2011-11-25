@@ -23,7 +23,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
@@ -378,8 +378,8 @@ public class QueryKeyExpression extends ObjectExpression {
                 }
                 fieldValue = fieldValues;
             } else {
-                if (mapping.isAbstractDirectMapping()) {
-                    fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(objectValue, session);
+                if (mapping.isAbstractColumnMapping()) {
+                    fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(objectValue, session);
                 } else if (mapping.isDirectCollectionMapping()) {
                     fieldValue = ((DirectCollectionMapping)mapping).getFieldValue(objectValue, session);                    
                 }
@@ -1016,8 +1016,8 @@ public class QueryKeyExpression extends ObjectExpression {
             }
         }
 
-        if (mapping.isAbstractDirectMapping()) {
-            return ((AbstractDirectMapping)mapping).valueFromObject(object, mapping.getField(), session);
+        if (mapping.isAbstractColumnMapping()) {
+            return ((AbstractColumnMapping)mapping).valueFromObject(object, mapping.getField(), session);
         } else if (mapping.isForeignReferenceMapping()) {
             //CR 3677 integration of a ValueHolderPolicy
             Object valueFromMapping = mapping.getAttributeValueFromObject(object);

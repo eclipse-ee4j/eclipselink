@@ -44,7 +44,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
@@ -2888,10 +2888,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
             // PERF: Ensure direct primary key mappings are first.
             for (int index = getObjectBuilder().getPrimaryKeyMappings().size() - 1; index >= 0; index--) {
                 DatabaseMapping mapping = getObjectBuilder().getPrimaryKeyMappings().get(index);
-                if ((mapping != null) && mapping.isAbstractDirectMapping()) {
+                if ((mapping != null) && mapping.isAbstractColumnMapping()) {
                     getMappings().remove(mapping);
                     getMappings().add(0, mapping);
-                    DatabaseField field = ((AbstractDirectMapping)mapping).getField();
+                    DatabaseField field = ((AbstractColumnMapping)mapping).getField();
                     getFields().remove(field);
                     getFields().add(0, field);
                     getAllFields().remove(field);

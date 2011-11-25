@@ -185,10 +185,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<FetchGroupMetadata>();
     private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
     private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
-    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
     private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries = new ArrayList<NamedStoredFunctionQueryMetadata>();
-    private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries = new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>();
+    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
     private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries = new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>();
+    private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries = new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>();
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
     
     private MetadataClass m_idClass;
@@ -370,20 +370,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<NamedQueryMetadata> getNamedQueries() {
-        return m_namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
-        return m_namedStoredProcedureQueries;
-    }
-    
-    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
-        return m_namedStoredFunctionQueries;
+    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
+        return m_namedPLSQLStoredFunctionQueries;
     }
     
     /**
@@ -394,8 +382,28 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         return m_namedPLSQLStoredProcedureQueries;
     }
     
-    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
-        return m_namedPLSQLStoredFunctionQueries;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedQueryMetadata> getNamedQueries() {
+        return m_namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
+        return m_namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
+        return m_namedStoredProcedureQueries;
     }
     
     /**
@@ -604,7 +612,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         initXMLObjects(m_fetchGroups, accessibleObject);
         initXMLObjects(m_namedQueries, accessibleObject);
         initXMLObjects(m_namedNativeQueries, accessibleObject);
+        initXMLObjects(m_namedStoredFunctionQueries, accessibleObject);
         initXMLObjects(m_namedStoredProcedureQueries, accessibleObject);
+        initXMLObjects(m_namedPLSQLStoredFunctionQueries, accessibleObject);
+        initXMLObjects(m_namedPLSQLStoredProcedureQueries, accessibleObject);
         initXMLObjects(m_sqlResultSetMappings, accessibleObject);
         
         // Simple class object
@@ -669,7 +680,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_fetchGroups = mergeORObjectLists(m_fetchGroups, accessor.getFetchGroups());
         m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
         m_namedNativeQueries = mergeORObjectLists(m_namedNativeQueries, accessor.getNamedNativeQueries());
+        m_namedStoredFunctionQueries = mergeORObjectLists(m_namedStoredFunctionQueries, accessor.getNamedStoredFunctionQueries());
         m_namedStoredProcedureQueries = mergeORObjectLists(m_namedStoredProcedureQueries, accessor.getNamedStoredProcedureQueries());
+        m_namedPLSQLStoredFunctionQueries = mergeORObjectLists(m_namedPLSQLStoredFunctionQueries, accessor.getNamedPLSQLStoredFunctionQueries());
+        m_namedPLSQLStoredProcedureQueries = mergeORObjectLists(m_namedPLSQLStoredProcedureQueries, accessor.getNamedPLSQLStoredProcedureQueries());
         m_sqlResultSetMappings = mergeORObjectLists(m_sqlResultSetMappings, accessor.getSqlResultSetMappings());
     }
     
@@ -711,6 +725,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the named stored procedure query metadata
         processNamedStoredProcedureQueries();
+        
+        // Process the named stored function query metadata
+        processNamedStoredFunctionQueries();
+        
+        // Process the named PLSQL stored procedure query metadata
+        processNamedPLSQLStoredProcedureQueries();
+        
+        // Process the named PLSQL stored function query metadata
+        processNamedPLSQLStoredFunctionQueries();
                     
         // Process the sql result set mapping metadata
         processSqlResultSetMappings();
@@ -1212,6 +1235,60 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Process/collect the named PLSQL stored function queries on this accessor 
+     * and  add them to the project for later processing.
+     */
+    protected void processNamedPLSQLStoredFunctionQueries() {
+        // Process the XML named PLSQL stored function queries first.
+        for (NamedPLSQLStoredFunctionQueryMetadata namedPLSQLStoredFunctionQuery : m_namedPLSQLStoredFunctionQueries) {
+            getProject().addQuery(namedPLSQLStoredFunctionQuery);
+        }
+        
+        // Process the named PLSQL stored function query annotations.
+        // Look for a @NamedPLSQLStoredFunctionQueries.
+        MetadataAnnotation namedPLSQLStoredFunctionQueries = getAnnotation(NamedPLSQLStoredFunctionQueries.class);
+        if (namedPLSQLStoredFunctionQueries != null) {
+            for (Object namedPLSQLStoredFunctionQuery : (Object[]) namedPLSQLStoredFunctionQueries.getAttribute("value")) { 
+                getProject().addQuery(new NamedPLSQLStoredFunctionQueryMetadata((MetadataAnnotation) namedPLSQLStoredFunctionQuery, this));
+            }
+        }
+        
+        // Look for a @NamedPLSQLStoredFunctionQuery.
+        MetadataAnnotation namedPLSQLStoredFunctionQuery = getAnnotation(NamedPLSQLStoredFunctionQuery.class);
+        if (namedPLSQLStoredFunctionQuery != null) {
+            getProject().addQuery(new NamedPLSQLStoredFunctionQueryMetadata(namedPLSQLStoredFunctionQuery, this));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process/collect the named PLSQL stored procedure queries on this accessor 
+     * and  add them to the project for later processing.
+     */
+    protected void processNamedPLSQLStoredProcedureQueries() {
+        // Process the XML named PLSQL stored procedure queries queries first.
+        for (NamedPLSQLStoredProcedureQueryMetadata namedPLSQLStoredProcedureQuery : m_namedPLSQLStoredProcedureQueries) {
+            getProject().addQuery(namedPLSQLStoredProcedureQuery);
+        }
+        
+        // Process the named PLSQL stored procedure query annotations.
+        // Look for a @NamedPLSQLStoredProcedureQueries.
+        MetadataAnnotation namedPLSQLStoredProcedureQueries = getAnnotation(NamedPLSQLStoredProcedureQueries.class);
+        if (namedPLSQLStoredProcedureQueries != null) {
+            for (Object namedPLSQLStoredProcedureQuery : (Object[]) namedPLSQLStoredProcedureQueries.getAttribute("value")) { 
+                getProject().addQuery(new NamedPLSQLStoredProcedureQueryMetadata((MetadataAnnotation) namedPLSQLStoredProcedureQuery, this));
+            }
+        }
+        
+        // Look for a @NamedPLSQLStoredProcedureQuery.
+        MetadataAnnotation namedPLSQLStoredProcedureQuery = getAnnotation(NamedPLSQLStoredProcedureQuery.class);
+        if (namedPLSQLStoredProcedureQuery != null) {
+            getProject().addQuery(new NamedPLSQLStoredProcedureQueryMetadata(namedPLSQLStoredProcedureQuery, this));
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process/collect the named queries on this accessor and add them to the 
      * project for later processing.
      */
@@ -1242,8 +1319,35 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process/collect the named stored procedure queries on this accessor and 
      * add them to the project for later processing.
      */
+    protected void processNamedStoredFunctionQueries() {
+        // Process the XML named stored function queries first.
+        for (NamedStoredFunctionQueryMetadata namedStoredFunctionQuery : m_namedStoredFunctionQueries) {
+            getProject().addQuery(namedStoredFunctionQuery);
+        }
+        
+        // Process the named stored function query annotations.
+        // Look for a @NamedStoredFunctionQueries.
+        MetadataAnnotation namedStoredFunctionQueries = getAnnotation(NamedStoredFunctionQueries.class);
+        if (namedStoredFunctionQueries != null) {
+            for (Object namedStoredFunctionQuery : (Object[]) namedStoredFunctionQueries.getAttribute("value")) { 
+                getProject().addQuery(new NamedStoredFunctionQueryMetadata((MetadataAnnotation) namedStoredFunctionQuery, this));
+            }
+        }
+        
+        // Look for a @NamedStoredFunctionQuery.
+        MetadataAnnotation namedStoredFunctionQuery = getAnnotation(NamedStoredFunctionQuery.class);
+        if (namedStoredFunctionQuery != null) {
+            getProject().addQuery(new NamedStoredFunctionQueryMetadata(namedStoredFunctionQuery, this));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process/collect the named stored function queries on this accessor and 
+     * add them to the project for later processing.
+     */
     protected void processNamedStoredProcedureQueries() {
-        // Process the XML named queries first.
+        // Process the XML named stored procedure queries first.
         for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : m_namedStoredProcedureQueries) {
             getProject().addQuery(namedStoredProcedureQuery);
         }
@@ -1261,71 +1365,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MetadataAnnotation namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
         if (namedStoredProcedureQuery != null) {
             getProject().addQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, this));
-        }
-        
-        // Functions
-        
-        // Process the XML named queries first.
-        for (NamedStoredFunctionQueryMetadata namedStoredFunctionQuery : m_namedStoredFunctionQueries) {
-            getProject().addQuery(namedStoredFunctionQuery);
-        }
-        
-        // Process the named stored procedure query annotations.
-        // Look for a @NamedStoredFunctionQueries.
-        MetadataAnnotation namedStoredFunctionQueries = getAnnotation(NamedStoredFunctionQueries.class);
-        if (namedStoredFunctionQueries != null) {
-            for (Object namedStoredFunctionQuery : (Object[]) namedStoredFunctionQueries.getAttribute("value")) { 
-                getProject().addQuery(new NamedStoredFunctionQueryMetadata((MetadataAnnotation)namedStoredFunctionQuery, this));
-            }
-        }
-        
-        // Look for a @NamedStoredFunctionQuery.
-        MetadataAnnotation namedStoredFunctionQuery = getAnnotation(NamedStoredFunctionQuery.class);
-        if (namedStoredFunctionQuery != null) {
-            getProject().addQuery(new NamedStoredFunctionQueryMetadata(namedStoredFunctionQuery, this));
-        }
-        
-        // PLSQL 
-        // Process the XML named queries first.
-        for (NamedPLSQLStoredProcedureQueryMetadata namedPLSQLStoredProcedureQuery : m_namedPLSQLStoredProcedureQueries) {
-            getProject().addQuery(namedPLSQLStoredProcedureQuery);
-        }
-        
-        // Process the named stored procedure query annotations.
-        // Look for a @NamedPLSQLStoredProcedureQueries.
-        MetadataAnnotation namedPLSQLStoredProcedureQueries = getAnnotation(NamedPLSQLStoredProcedureQueries.class);
-        if (namedPLSQLStoredProcedureQueries != null) {
-            for (Object namedPLSQLStoredProcedureQuery : (Object[]) namedPLSQLStoredProcedureQueries.getAttribute("value")) { 
-                getProject().addQuery(new NamedPLSQLStoredProcedureQueryMetadata((MetadataAnnotation) namedPLSQLStoredProcedureQuery, this));
-            }
-        }
-        
-        // Look for a @NamedPLSQLStoredProcedureQuery.
-        MetadataAnnotation namedPLSQLStoredProcedureQuery = getAnnotation(NamedPLSQLStoredProcedureQuery.class);
-        if (namedPLSQLStoredProcedureQuery != null) {
-            getProject().addQuery(new NamedPLSQLStoredProcedureQueryMetadata(namedPLSQLStoredProcedureQuery, this));
-        }
-        
-        // Functions
-        
-        // Process the XML named queries first.
-        for (NamedPLSQLStoredFunctionQueryMetadata namedPLSQLStoredFunctionQuery : m_namedPLSQLStoredFunctionQueries) {
-            getProject().addQuery(namedPLSQLStoredFunctionQuery);
-        }
-        
-        // Process the named stored procedure query annotations.
-        // Look for a @NamedPLSQLStoredFunctionQueries.
-        MetadataAnnotation namedPLSQLStoredFunctionQueries = getAnnotation(NamedPLSQLStoredFunctionQueries.class);
-        if (namedPLSQLStoredFunctionQueries != null) {
-            for (Object namedPLSQLStoredFunctionQuery : (Object[]) namedPLSQLStoredFunctionQueries.getAttribute("value")) { 
-                getProject().addQuery(new NamedPLSQLStoredFunctionQueryMetadata((MetadataAnnotation)namedPLSQLStoredFunctionQuery, this));
-            }
-        }
-        
-        // Look for a @NamedPLSQLStoredFunctionQuery.
-        MetadataAnnotation namedPLSQLStoredFunctionQuery = getAnnotation(NamedPLSQLStoredFunctionQuery.class);
-        if (namedPLSQLStoredFunctionQuery != null) {
-            getProject().addQuery(new NamedPLSQLStoredFunctionQueryMetadata(namedPLSQLStoredFunctionQuery, this));
         }
     }
     
@@ -1592,8 +1631,32 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
+        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
+        m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
         m_namedQueries = namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
+        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
     }
     
     /**
@@ -1604,22 +1667,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_namedStoredProcedureQueries = namedStoredProcedureQueries;
     }
 
-    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
-        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
-        m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
-    }
-
-    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
-        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
-    }
-    
     /**
      * INTERNAL:
      * Used for OX mapping.

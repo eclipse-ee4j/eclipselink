@@ -27,7 +27,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -298,9 +298,9 @@ public class CMPPolicy implements java.io.Serializable {
         } else {
             Object fieldValue = null;
             
-            if (mapping.isAbstractDirectMapping()) {
+            if (mapping.isAbstractColumnMapping()) {
                 fieldValue = keyElements[elementIndex[0]];
-                Converter converter = ((AbstractDirectMapping) mapping).getConverter();
+                Converter converter = ((AbstractColumnMapping) mapping).getConverter();
                 if (converter != null){
                     fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
                 }
@@ -354,8 +354,8 @@ public class CMPPolicy implements java.io.Serializable {
         KeyElementAccessor[] pkElementArray = getKeyClassFields();
         if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[0].getAttributeName());
-            if (mapping.isAbstractDirectMapping()) {    
-                Converter converter = ((AbstractDirectMapping) mapping).getConverter();
+            if (mapping.isAbstractColumnMapping()) {    
+                Converter converter = ((AbstractColumnMapping) mapping).getConverter();
                 if (converter != null){
                     return converter.convertDataValueToObjectValue(keyElements[elementIndex[0]], session);
                 }

@@ -192,7 +192,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     }
 
     public void setNullValue(Object object, Session session) {
-        Object value = xmlDirectMapping.getAttributeValue(null, session);
+        Object value = xmlDirectMapping.getObjectValue(null, session);
         xmlDirectMapping.setAttributeValueInObject(object, value);
     }
 

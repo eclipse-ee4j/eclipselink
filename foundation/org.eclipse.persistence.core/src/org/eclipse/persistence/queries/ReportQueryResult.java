@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 
@@ -172,14 +172,14 @@ public class ReportQueryResult implements Serializable, Map {
             if (descriptor == null && mapping != null){
                 descriptor = mapping.getReferenceDescriptor();
             }
-            if (mapping != null && mapping.isAbstractDirectMapping()) {
+            if (mapping != null && mapping.isAbstractColumnMapping()) {
                 
                 if (itemIndex >= rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
                 }
                 // If mapping is not null then it must be a direct mapping - see Reportitem.init.
                 value = row.getValues().get(itemIndex);
-                value = ((AbstractDirectMapping)mapping).getObjectValue(value, query.getSession());
+                value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
                 // GF_ISSUE_395
                 if (this.key != null) {
                     this.key.append(value);

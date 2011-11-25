@@ -18,7 +18,7 @@ import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -259,10 +259,10 @@ public class RelationExpression extends CompoundExpression {
                     return true;
                 }
 
-                if (!mapping.isAbstractDirectMapping()) {
+                if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractDirectMapping)mapping).getField();
+                field = ((AbstractColumnMapping)mapping).getField();
             } else {
                 // Only get field for the source object.
                 field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
@@ -290,10 +290,10 @@ public class RelationExpression extends CompoundExpression {
                     mapping.writeFromAttributeIntoRow(value, primaryKeyRow, getSession());
                     return true;
                 }
-                if (!mapping.isAbstractDirectMapping()) {
+                if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractDirectMapping)mapping).getField();
+                field = ((AbstractColumnMapping)mapping).getField();
             } else {
                 field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
             }
@@ -355,10 +355,10 @@ public class RelationExpression extends CompoundExpression {
                     return true;
                 }
 
-                if (!mapping.isAbstractDirectMapping()) {
+                if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractDirectMapping)mapping).getField();
+                field = ((AbstractColumnMapping)mapping).getField();
             } else {
                 // Only get field for the source object.
                 field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
@@ -390,10 +390,10 @@ public class RelationExpression extends CompoundExpression {
                     }
                     return true;
                 }
-                if (!mapping.isAbstractDirectMapping()) {
+                if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractDirectMapping)mapping).getField();
+                field = ((AbstractColumnMapping)mapping).getField();
             } else {
                 field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
             }

@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -205,7 +205,7 @@ public class CMP3Policy extends CMPPolicy {
         for (int index = 0; index < pkElementArray.length; index++) {
             DatabaseMapping mapping = pkElementArray[index].getMapping();
             Object fieldValue = null;
-            if (mapping.isAbstractDirectMapping()) {    
+            if (mapping.isAbstractColumnMapping()) {    
                 if (pkElementArray[index].isNestedAccessor()) {
                     // We have nested aggregate(s) in the embedded id pkclass.
                     DatabaseField keyField = pkElementArray[index].getDatabaseField();
@@ -221,13 +221,13 @@ public class CMP3Policy extends CMPPolicy {
                             keyMapping = keyMapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(keyField);
                         }
                         
-                        fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(keyToUse, session), session);
+                        fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(pkElementArray[index].getValue(keyToUse, session), session);
                     } else {
                         // This should never hit but just in case ... better to get a proper exception rather than a NPE etc.
-                        fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(keyToUse, session), session);
+                        fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(pkElementArray[index].getValue(keyToUse, session), session);
                     }
                 } else {
-                    fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key, session), session);
+                    fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(pkElementArray[index].getValue(key, session), session);
                 }
             } else {
                 fieldValue = pkElementArray[index].getValue(key, session);
@@ -410,7 +410,7 @@ public class CMP3Policy extends CMPPolicy {
                         // true when we do have a currentKeyClass. Multitenant primary keys
                         // must still be added.
                         pkAttributes[i] = new KeyIsElementAccessor(fieldName, field, mapping);
-                        if (mapping.isAbstractAttributeDirectMapping()) {
+                        if (mapping.isAbstractDirectMapping()) {
                             setPKClass(ConversionManager.getObjectClass(mapping.getAttributeClassification()));
                         } else if (mapping.isOneToOneMapping()) {
                             ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
@@ -678,8 +678,8 @@ public class CMP3Policy extends CMPPolicy {
         Object fieldValue = null;
         KeyElementAccessor accessor = this.fieldToAccessorMap.get(field);
         DatabaseMapping mapping = accessor.getMapping();
-        if (mapping.isAbstractDirectMapping()) {
-            fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(accessor.getValue(key, session), session);
+        if (mapping.isAbstractColumnMapping()) {
+            fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(accessor.getValue(key, session), session);
         } else {
             fieldValue = accessor.getValue(key, session);
             if (mapping.isOneToOneMapping()){

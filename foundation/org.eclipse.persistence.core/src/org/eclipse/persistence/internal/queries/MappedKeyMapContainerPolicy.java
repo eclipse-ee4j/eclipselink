@@ -555,7 +555,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     @Override
     public boolean isMapKeyAttribute() {
-        return ((DatabaseMapping)keyMapping).isAbstractAttributeDirectMapping();
+        return ((DatabaseMapping)keyMapping).isAbstractDirectMapping();
     }
     
     /**

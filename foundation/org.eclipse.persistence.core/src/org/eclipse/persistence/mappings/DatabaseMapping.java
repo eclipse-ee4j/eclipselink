@@ -1041,7 +1041,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     /**
      * INTERNAL:
      */
-    public boolean isAbstractAttributeDirectMapping() {
+    public boolean isAbstractColumnMapping() {
         return false;
     }
 

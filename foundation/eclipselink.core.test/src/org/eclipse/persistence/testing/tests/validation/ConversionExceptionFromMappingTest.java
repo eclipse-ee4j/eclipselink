@@ -44,7 +44,7 @@ public class ConversionExceptionFromMappingTest extends AutoVerifyTestCase {
         map.setAttributeClassification(Hashtable.class);
 
         try {
-            map.getAttributeValue("foobar", getSession());
+            map.getObjectValue("foobar", getSession());
         } catch (ConversionException e) {
             m_exception = e;
         }

@@ -15,7 +15,7 @@
 package org.eclipse.persistence.mappings;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * @author Sati
  * @since TopLink/Java 1.0
  */
-public class DirectToFieldMapping extends AbstractAttributeDirectMapping implements RelationalMapping {
+public class DirectToFieldMapping extends AbstractDirectMapping implements RelationalMapping {
 
     /**
      * Default constructor.

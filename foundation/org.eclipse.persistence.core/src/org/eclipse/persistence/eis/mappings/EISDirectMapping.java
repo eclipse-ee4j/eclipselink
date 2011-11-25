@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * <p>EIS Direct Mappings map a simple Java attribute to and from an EIS Record according to 
@@ -53,7 +53,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractAttributeDirectMappin
  * 
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class EISDirectMapping extends AbstractAttributeDirectMapping implements EISMapping {
+public class EISDirectMapping extends AbstractDirectMapping implements EISMapping {
     public EISDirectMapping() {
         super();
     }

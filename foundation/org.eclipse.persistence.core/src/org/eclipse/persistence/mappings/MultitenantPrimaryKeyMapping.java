@@ -17,13 +17,15 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.MultitenantPrimaryKeyAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -34,7 +36,7 @@ import org.eclipse.persistence.sessions.Session;
  * @author Guy Pelletier
  * @since EclipseLink 2.4
  */
-public class MultitenantPrimaryKeyMapping extends AbstractDirectMapping {
+public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
     private MultitenantPrimaryKeyAccessor accessor;
     
     /**
@@ -43,6 +45,8 @@ public class MultitenantPrimaryKeyMapping extends AbstractDirectMapping {
     public MultitenantPrimaryKeyMapping() {
         super();
 
+        isInsertable = true;
+        isUpdatable = false;
         setIsOptional(false);
         accessor = new MultitenantPrimaryKeyAccessor();
         setAttributeAccessor(accessor);
@@ -67,6 +71,18 @@ public class MultitenantPrimaryKeyMapping extends AbstractDirectMapping {
      */
     @Override
     public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+        // Mapping is write only so nothing to do.
+    }
+    
+    /**
+     * INTERNAL:
+     * Extract value from the row and set the attribute to this value in the
+     * working copy clone.
+     * In order to bypass the shared cache when in transaction a UnitOfWork must
+     * be able to populate working copies directly from the row.
+     */
+    @Override
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // Mapping is write only so nothing to do.
     }
 
@@ -134,6 +150,15 @@ public class MultitenantPrimaryKeyMapping extends AbstractDirectMapping {
     }
     
     /**
+     * INTERNAL:
+     * Return if this mapping requires its attribute value to be cloned.
+     */
+    @Override
+    public boolean isCloningRequired() {
+        return false;
+    }
+    
+    /**
      * INTERNAL
      */
     @Override
@@ -182,19 +207,6 @@ public class MultitenantPrimaryKeyMapping extends AbstractDirectMapping {
     }
     
     /**
-     * PUBLIC:
-     * Some databases do not properly support all of the base data types. For 
-     * these databases, the base data type must be explicitly specified in the 
-     * mapping to tell EclipseLink to force the instance variable value to that 
-     * data type
-     */
-    @Override
-    public void setAttributeClassification(Class attributeClassification) {
-        // This mapping does not have an attribute so nothing to do. It is
-        // deprecated on the parent so this method should go away eventually.
-    }
-    
-    /**
      * INTERNAL:
      * The context property that is used to write this mapping must be set. It
      * is set as the attribute name (which gets set on the accessor)
@@ -202,7 +214,16 @@ public class MultitenantPrimaryKeyMapping extends AbstractDirectMapping {
     public void setContextProperty(String contextProperty) {
         setAttributeName(contextProperty);
     }
- 
+    
+    /**
+     * INTERNAL:
+     * Get a value from the object and set that in the respective field of the row.
+     */
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
+        writeValueIntoRow(row, getField(), getFieldValue(null, session));
+    }
+    
     /**
      * INTERNAL:
      * Return the Value from the object.
@@ -210,6 +231,15 @@ public class MultitenantPrimaryKeyMapping extends AbstractDirectMapping {
     @Override
     public Object valueFromObject(Object anObject, DatabaseField field, AbstractSession session) {
         return accessor.getValue(session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Write fields needed for insert into the template for with null values.
+     */
+    @Override
+    public void writeInsertFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
+        databaseRow.add(getField(), null);
     }
     
     /**
