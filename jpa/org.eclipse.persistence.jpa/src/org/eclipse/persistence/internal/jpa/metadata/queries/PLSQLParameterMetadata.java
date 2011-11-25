@@ -41,10 +41,9 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
  * @since EclipseLink 2.3
  */
 public class PLSQLParameterMetadata extends ORMetadata {
-    private String m_direction;
     private Boolean m_optional;
+    private String m_direction;
     private String m_databaseType;
-
     private String m_name;
     private String m_queryParameter;
     private Integer m_length;
@@ -118,8 +117,49 @@ public class PLSQLParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getDatabaseType() {
+        return m_databaseType;
+    }
+    
+    /**
+     * Return the DataType enum constant for the String type name.
+     * If not a type defined by the enums, then return a record type.
+     */
+    public static DatabaseType getDatabaseTypeEnum(String type, MetadataProject project) {
+        if (type == null) {
+            return JDBCTypes.VARCHAR_TYPE;
+        }
+        try {
+            return JDBCTypes.valueOf(type);
+        } catch (Exception invalid) {
+            try {
+                return OraclePLSQLTypes.valueOf(type);
+            } catch (Exception alsoInvalid) {
+                PLSQLComplexTypeMetadata typeMetadata = project.getPLSQLComplexType(type);
+                if (typeMetadata != null) {
+                    return typeMetadata.process(project);
+                }
+                PLSQLrecord record = new PLSQLrecord();
+                record.setTypeName(type);
+                return record;
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getDirection() {
         return m_direction;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Integer getLength() {
+        return m_length;
     }
     
     /**
@@ -134,8 +174,32 @@ public class PLSQLParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public Boolean getOptional() {
+        return m_optional;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Integer getPrecision() {
+        return m_precision;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getQueryParameter() {
         return m_queryParameter;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Integer getScale() {
+        return m_scale;
     }
     
     /**
@@ -218,8 +282,24 @@ public class PLSQLParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setDatabaseType(String databaseType) {
+        m_databaseType = databaseType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setDirection(String direction) {
         m_direction = direction;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setLength(Integer length) {
+        m_length = length;
     }
     
     /**
@@ -234,72 +314,31 @@ public class PLSQLParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setQueryParameter(String queryParameter) {
-        m_queryParameter = queryParameter;
-    }
-    
-    public Boolean getOptional() {
-        return m_optional;
-    }
-
     public void setOptional(Boolean optional) {
         m_optional = optional;
     }
     
     /**
-     * Return the DataType enum constant for the String type name.
-     * If not a type defined by the enums, then return a record type.
+     * INTERNAL:
+     * Used for OX mapping.
      */
-    public static DatabaseType getDatabaseTypeEnum(String type, MetadataProject project) {
-        if (type == null) {
-            return JDBCTypes.VARCHAR_TYPE;
-        }
-        try {
-            return JDBCTypes.valueOf(type);
-        } catch (Exception invalid) {
-            try {
-                return OraclePLSQLTypes.valueOf(type);
-            } catch (Exception alsoInvalid) {
-                PLSQLComplexTypeMetadata typeMetadata = project.getPLSQLComplexType(type);
-                if (typeMetadata != null) {
-                    return typeMetadata.process(project);
-                }
-                PLSQLrecord record = new PLSQLrecord();
-                record.setTypeName(type);
-                return record;
-            }
-        }
-    }
-    
-    public String getDatabaseType() {
-        return m_databaseType;
-    }
-
-    public void setDatabaseType(String databaseType) {
-        m_databaseType = databaseType;
-    }
-
-    public Integer getPrecision() {
-        return m_precision;
-    }
-
     public void setPrecision(Integer precision) {
         m_precision = precision;
     }
-
-    public Integer getScale() {
-        return m_scale;
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setQueryParameter(String queryParameter) {
+        m_queryParameter = queryParameter;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setScale(Integer scale) {
         m_scale = scale;
-    }
-
-    public Integer getLength() {
-        return m_length;
-    }
-
-    public void setLength(Integer length) {
-        m_length = length;
     }
 }

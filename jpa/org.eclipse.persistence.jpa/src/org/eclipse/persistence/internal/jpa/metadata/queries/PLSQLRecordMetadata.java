@@ -76,6 +76,15 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     }
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLParameterMetadata> getFields() {
+        return fields;
+    }
+    
+    /**
+     * INTERNAL:
      * Build a runtime record type from the meta-data.
      */
     public PLSQLrecord process(MetadataProject project) {
@@ -99,10 +108,10 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
         return record;
     }
 
-    public List<PLSQLParameterMetadata> getFields() {
-        return fields;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setFields(List<PLSQLParameterMetadata> fields) {
         this.fields = fields;
     }

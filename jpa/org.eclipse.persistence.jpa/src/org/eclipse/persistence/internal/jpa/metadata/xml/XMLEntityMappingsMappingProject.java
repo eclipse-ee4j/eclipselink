@@ -2642,6 +2642,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(PLSQLRecordMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
         XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
         fieldsMapping.setAttributeName("fields");
         fieldsMapping.setGetMethodName("getFields");
@@ -2650,6 +2651,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         fieldsMapping.setXPath("orm:field");
         descriptor.addMapping(fieldsMapping);
         
+        // Attribute mappings
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCompatibleTypeAttributeMapping());
         descriptor.addMapping(getJavaTypeAttributeMapping());

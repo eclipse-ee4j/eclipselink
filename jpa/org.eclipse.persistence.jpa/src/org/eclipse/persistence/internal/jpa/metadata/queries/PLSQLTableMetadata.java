@@ -70,6 +70,15 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
     }
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getNestedType() {
+        return nestedType;
+    }
+    
+    /**
+     * INTERNAL:
      * Build a runtime record type from the meta-data.
      */
     public PLSQLCollection process(MetadataProject project) {
@@ -79,10 +88,10 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
         return table;
     }
 
-    public String getNestedType() {
-        return nestedType;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setNestedType(String nestedType) {
         this.nestedType = nestedType;
     }

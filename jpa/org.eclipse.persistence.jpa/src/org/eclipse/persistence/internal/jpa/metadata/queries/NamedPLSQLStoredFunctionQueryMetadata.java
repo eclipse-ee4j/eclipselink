@@ -33,10 +33,17 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctio
 public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProcedureQueryMetadata {
     private PLSQLParameterMetadata returnParameter;
 
+    /**
+     * INTERNAL:
+     * Used for XML loading.
+     */
     public NamedPLSQLStoredFunctionQueryMetadata() {
         super("<named-plsql-stored-function-query>");
     }
 
+    /**
+     * INTERNAL:
+     */
     public NamedPLSQLStoredFunctionQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
         super(namedStoredProcedureQuery, accessor);
          
@@ -45,17 +52,31 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         setProcedureName((String) namedStoredProcedureQuery.getAttribute("functionName"));
     }
 
+    /**
+     * INTERNAL:
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof NamedPLSQLStoredFunctionQueryMetadata) {
             NamedPLSQLStoredFunctionQueryMetadata query = (NamedPLSQLStoredFunctionQueryMetadata) objectToCompare;                        
             
-            return valuesMatch(this.returnParameter, query.getReturnParameter());
+            return valuesMatch(returnParameter, query.getReturnParameter());
         }
         
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public PLSQLParameterMetadata getReturnParameter() {
+        return returnParameter;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
@@ -64,6 +85,9 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         initXMLObject(this.returnParameter, accessibleObject);
     }
 
+    /**
+     * INTERNAL:
+     */
     @Override
     public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
         // Build the stored procedure call.
@@ -97,10 +121,10 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         }
     }
 
-    public PLSQLParameterMetadata getReturnParameter() {
-        return returnParameter;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setReturnParameter(PLSQLParameterMetadata returnParameter) {
         this.returnParameter = returnParameter;
     }
