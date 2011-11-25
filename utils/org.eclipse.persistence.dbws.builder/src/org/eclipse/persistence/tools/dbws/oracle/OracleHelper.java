@@ -68,7 +68,6 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
-import org.eclipse.persistence.platform.xml.XMLSchemaReference;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.StoredFunctionCall;
@@ -128,10 +127,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * TableType instances in TableType List "dbTables".
      */
     public boolean hasTables() {
-        if (dbTables.size() == 0) {
-            return false;
-        }
-        return true;
+    	return dbTables.size() == 0 ? false : true;
     }
 
     public boolean hasComplexProcedureArgs() {
@@ -142,7 +138,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Builds query operations for a given ProcedureOperationModel.
      */
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
-        String name = procedureOperationModel.getName();
         List<ProcedureType> procs = new ArrayList<ProcedureType>();
         for (Map.Entry<ProcedureType, DbStoredProcedureNameAndModel> me : dbStoredProcedure2QueryName.entrySet()) {
             ProcedureType key = me.getKey();
@@ -363,7 +358,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Builds query operations for a given PLSQLProcedureOperationModel.
      */
     public void buildPLSQLProcedureOperation(ProcedureOperationModel procedureOperationModel, List<ProcedureType> procs) {
-        String name = procedureOperationModel.getName();
         for (ProcedureType storedProcedure : procs) {
             QueryOperation qo = new QueryOperation();
             qo.setName(getNameForQueryOperation(procedureOperationModel, storedProcedure));
@@ -716,11 +710,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         for (ArgumentType arg : arguments) {
             DatabaseType dbType = arg.getDataType();
             String name;
-            String targetTypeName;
             String alias;
             if (dbType instanceof PLSQLType) {
                 name = opModel.getCatalogPattern() + "." + dbType.getTypeName();
-                targetTypeName = opModel.getCatalogPattern() + "_" + dbType.getTypeName();
+                String targetTypeName = opModel.getCatalogPattern() + "_" + dbType.getTypeName();
                 alias = targetTypeName.toLowerCase();
                 // handle PL/SQL record type
                 if (dbType instanceof PLSQLRecordType) {
@@ -757,76 +750,31 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForPLSQLRecordArg(DatabaseType dbType, Project oxProject, String recordName, String recordAlias, String targetTypeName, String catalogPattern) {
-        QName xmlType = buildCustomQName(targetTypeName, dbwsBuilder);
-        String targetNamespace = xmlType.getNamespaceURI();
-
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(recordAlias);
         if (xdesc == null) {
-            xdesc = new XMLDescriptor();
-            xdesc.setAlias(recordAlias);
-            xdesc.setJavaClassName(recordName.toLowerCase());
-            xdesc.setDefaultRootElement(targetTypeName);
-            xdesc.getQueryManager();
-            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
-            schemaReference.setSchemaContext("/" + targetTypeName);
-            schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
-            xdesc.setSchemaReference(schemaReference);
-            NamespaceResolver nr = new NamespaceResolver();
-            nr.setDefaultNamespaceURI(targetNamespace);
-            xdesc.setNamespaceResolver(nr);
-            oxProject.addDescriptor(xdesc);
+            xdesc = buildAndAddNewXMLDescriptor(oxProject, recordAlias, recordName.toLowerCase(), targetTypeName, buildCustomQName(targetTypeName, dbwsBuilder).getNamespaceURI());
         }
         // handle fields
         PLSQLRecordType plsqlRecType = (PLSQLRecordType) dbType;
         for (FieldType fType : plsqlRecType.getFields()) {
-            String fieldName = fType.getFieldName();
-            String lFieldName = fieldName.toLowerCase();
+            String lFieldName = fType.getFieldName().toLowerCase();
             if (xdesc.getMappingForAttributeName(lFieldName) == null) {
                 if (fType.isComposite()) {
                     // handle pl/sql record and pl/sql table fields
                     if (fType.getDataType() instanceof PLSQLRecordType) {
-                        XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
-                        fieldMapping.setAttributeName(lFieldName);
-                        fieldMapping.setXPath(lFieldName);
-                        XMLField xField = (XMLField)fieldMapping.getField();
-                        xField.setRequired(true);
-                        fieldMapping.setReferenceClassName((catalogPattern + "." + fType.getDataType()).toLowerCase());
-                        xdesc.addMapping(fieldMapping);
+                        buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + "." + fType.getDataType()).toLowerCase());
                     }
                     else if (fType.getDataType() instanceof PLSQLCollectionType) {
                         PLSQLCollectionType tableType = (PLSQLCollectionType) fType.getDataType();
                         if (tableType.getNestedType().isComposite()) {
-                            XMLCompositeObjectMapping fieldMapping = new XMLCompositeObjectMapping();
-                            fieldMapping.setAttributeName(lFieldName);
-                            fieldMapping.setXPath(lFieldName);
-                            XMLField xField = (XMLField)fieldMapping.getField();
-                            xField.setRequired(true);
-                            fieldMapping.setReferenceClassName((catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
-                            xdesc.addMapping(fieldMapping);
+                            buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                         } else {
-                            XMLCompositeDirectCollectionMapping fieldMapping = new XMLCompositeDirectCollectionMapping();
+                            Class<?> attributeElementClass = String.class;
                             XMLDescriptor refDesc = (XMLDescriptor) oxProject.getDescriptorForAlias((catalogPattern + "_" + tableType.getTypeName()).toLowerCase());
                             if (refDesc != null) {
-                                XMLCompositeDirectCollectionMapping itemsMapping = (XMLCompositeDirectCollectionMapping)refDesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                                Class<?> attributeElementClass = itemsMapping.getAttributeElementClass();
-                                fieldMapping.setAttributeElementClass(attributeElementClass);
-                            } else {
-                                // TODO - can we default to String here?
-                                fieldMapping.setAttributeElementClass(String.class);
+                                attributeElementClass = ((XMLCompositeDirectCollectionMapping)refDesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME)).getAttributeElementClass();
                             }
-                            fieldMapping.setAttributeName(lFieldName);
-                            fieldMapping.setUsesSingleNode(true);
-                            fieldMapping.setXPath(lFieldName + "/item/text()");
-                            XMLField xField = (XMLField)fieldMapping.getField();
-                            xField.setRequired(true);
-                            fieldMapping.useCollectionClass(ArrayList.class);
-                            AbstractNullPolicy nullPolicy = fieldMapping.getNullPolicy();
-                            nullPolicy.setNullRepresentedByEmptyNode(false);
-                            nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                            nullPolicy.setNullRepresentedByXsiNil(true);
-                            fieldMapping.setNullPolicy(nullPolicy);
-                            xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX, SCHEMA_INSTANCE_URL);  // to support xsi:nil policy
-                            xdesc.addMapping(fieldMapping);
+                            buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + "/item/text()", attributeElementClass);
                         }
                     }
                 } else {
@@ -845,13 +793,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected void addToORProjectForPLSQLRecordArg(DatabaseType dbType, Project orProject, String recordName, String recordAlias, String targetTypeName, String catalogPattern) {
         ObjectRelationalDataTypeDescriptor ordtDesc = (ObjectRelationalDataTypeDescriptor) orProject.getDescriptorForAlias(recordAlias);
         if (ordtDesc == null) {
-            ordtDesc = new ObjectRelationalDataTypeDescriptor();
-            ordtDesc.descriptorIsAggregate();
-            ordtDesc.setAlias(recordAlias);
-            ordtDesc.setJavaClassName(recordName.toLowerCase());
-            ordtDesc.getQueryManager();
-            ordtDesc.setStructureName(targetTypeName);
-            orProject.addDescriptor(ordtDesc);
+            ordtDesc = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, recordAlias, recordName.toLowerCase());
         }
         // handle fields
         PLSQLRecordType plsqlRecType = (PLSQLRecordType) dbType;
@@ -877,29 +819,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             if (ordtDesc.getMappingForAttributeName(lFieldName) == null) {
                 if (fType.isComposite()) {
                     if (fType.getDataType() instanceof PLSQLRecordType) {
-                        StructureMapping structureMapping = new StructureMapping();
-                        structureMapping.setAttributeName(lFieldName);
-                        structureMapping.setFieldName(fieldName);
-                        structureMapping.setReferenceClassName(recordName.toLowerCase());
-                        ordtDesc.addMapping(structureMapping);
+                    	buildAndAddStructureMapping(ordtDesc, lFieldName, fieldName, recordName.toLowerCase());
                     }
                     else if (fType.getDataType() instanceof PLSQLCollectionType) {
                         PLSQLCollectionType tableType = (PLSQLCollectionType) fType.getDataType();
                         if (tableType.getNestedType().isComposite()) {
-                            ObjectArrayMapping objectArrayMapping = new ObjectArrayMapping();
-                            objectArrayMapping.setAttributeName(lFieldName);
-                            objectArrayMapping.setFieldName(fieldName);
-                            objectArrayMapping.setStructureName(getStructureNameForField(fType, catalogPattern));
-                            objectArrayMapping.useCollectionClass(ArrayList.class);
-                            objectArrayMapping.setReferenceClassName((catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
-                            ordtDesc.addMapping(objectArrayMapping);
+                        	buildAndAddObjectArrayMapping(ordtDesc, lFieldName, fieldName, (catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX, getStructureNameForField(fType, catalogPattern));
                         } else {
-                            ArrayMapping arrayMapping = new ArrayMapping();
-                            arrayMapping.setAttributeName(lFieldName);
-                            arrayMapping.setFieldName(fieldName);
-                            arrayMapping.setStructureName(getStructureNameForField(fType, catalogPattern));
-                            arrayMapping.useCollectionClass(ArrayList.class);
-                            ordtDesc.addMapping(arrayMapping);
+                        	buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, getStructureNameForField(fType, catalogPattern));
                         }
                     }
                 } else {
@@ -914,71 +841,27 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForPLSQLTableArg(DatabaseType dbType, Project oxProject, String tableName, String tableAlias, String targetTypeName, String catalogPattern) {
-        QName xmlType = buildCustomQName(targetTypeName, dbwsBuilder);
-        String targetNamespace = xmlType.getNamespaceURI();
-
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(tableAlias);
         if (xdesc == null) {
-            xdesc = new XMLDescriptor();
-            xdesc.setAlias(tableAlias);
-            xdesc.setJavaClassName(tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
-            xdesc.getQueryManager();
-            xdesc.setDefaultRootElement(targetTypeName);
-            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
-            schemaReference.setSchemaContext("/" + targetTypeName);
-            schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
-            xdesc.setSchemaReference(schemaReference);
-            NamespaceResolver nr = new NamespaceResolver();
-            nr.setDefaultNamespaceURI(targetNamespace);
-            xdesc.setNamespaceResolver(nr);
-            oxProject.addDescriptor(xdesc);
+            xdesc = buildAndAddNewXMLDescriptor(oxProject, tableAlias, tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX, targetTypeName, buildCustomQName(targetTypeName, dbwsBuilder).getNamespaceURI());
         }
 
         boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((PLSQLCollectionType) dbType).getNestedType();
             if (nestedType instanceof PLSQLRecordType) {
-                XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
-                itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                itemsMapping.setXPath(ITEM_MAPPING_NAME);
-                XMLField xField = (XMLField)itemsMapping.getField();
-                xField.setRequired(true);
-                itemsMapping.useCollectionClass(ArrayList.class);
                 String referenceClassName = (catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
-                itemsMapping.setReferenceClassName(referenceClassName);
+                buildAndAddXMLCompositeCollectionMapping(xdesc, referenceClassName);
                 if (oxProject.getDescriptorForAlias(referenceClassName) == null) {
                 	String refTypeName = catalogPattern + "_" + ((PLSQLRecordType)nestedType).getTypeName();
-                	String alias = refTypeName.toLowerCase();
-                    addToOXProjectForPLSQLRecordArg(nestedType, oxProject, referenceClassName, alias, refTypeName, catalogPattern);
+                    addToOXProjectForPLSQLRecordArg(nestedType, oxProject, referenceClassName, refTypeName.toLowerCase(), refTypeName, catalogPattern);
                 }
-                xdesc.addMapping(itemsMapping);
             } else {
                 if (nestedType.isComposite()) {
-                    XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
-                    itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                    itemsMapping.setXPath(ITEM_MAPPING_NAME);
-                    XMLField xField = (XMLField)itemsMapping.getField();
-                    xField.setRequired(true);
-                    itemsMapping.useCollectionClass(ArrayList.class);
-                    itemsMapping.setReferenceClassName(tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
-                    xdesc.addMapping(itemsMapping);
+                    buildAndAddXMLCompositeCollectionMapping(xdesc, tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                 }
                 else {
-                    XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
-                    itemsMapping.setAttributeElementClass(getAttributeClassForDatabaseType(nestedType));
-                    itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                    itemsMapping.setUsesSingleNode(true);
-                    itemsMapping.setXPath(ITEM_MAPPING_NAME + "/text()");
-                    XMLField xField = (XMLField)itemsMapping.getField();
-                    xField.setRequired(true);
-                    itemsMapping.useCollectionClass(ArrayList.class);
-                    AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
-                    nullPolicy.setNullRepresentedByEmptyNode(false);
-                    nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                    nullPolicy.setNullRepresentedByXsiNil(true);
-                    itemsMapping.setNullPolicy(nullPolicy);
-                    xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX, SCHEMA_INSTANCE_URL); // to support xsi:nil policy
-                    xdesc.addMapping(itemsMapping);
+                	buildAndAddXMLCompositeDirectCollectionMapping(xdesc, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEM_MAPPING_NAME + "/text()", getAttributeClassForDatabaseType(nestedType));
                 }
             }
         }
@@ -991,36 +874,20 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected void addToORProjectForPLSQLTableArg(DatabaseType dbType, Project orProject, String tableName, String tableAlias, String targetTypeName, String catalogPattern) {
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor) orProject.getDescriptorForAlias(tableAlias);
         if (ordt == null) {
-            ordt = new ObjectRelationalDataTypeDescriptor();
-            ordt.descriptorIsAggregate();
-            ordt.setAlias(tableAlias);
-            ordt.setJavaClassName(tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
-            ordt.getQueryManager();
-            orProject.addDescriptor(ordt);
+            ordt = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, tableAlias, tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
         }
         boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((PLSQLCollectionType) dbType).getNestedType();
             if (nestedType instanceof PLSQLRecordType) {
-                ObjectArrayMapping itemsMapping = new ObjectArrayMapping();
-                itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
-                itemsMapping.setStructureName(targetTypeName);
                 String referenceClassName = (catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
-                itemsMapping.setReferenceClassName(referenceClassName);
+                buildAndAddObjectArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, referenceClassName, targetTypeName);
                 if (orProject.getDescriptorForAlias(referenceClassName) == null) {
                 	String refTypeName = catalogPattern + "_" + ((PLSQLRecordType)nestedType).getTypeName(); 
-                	String alias = refTypeName.toLowerCase();
-                	addToORProjectForPLSQLRecordArg(nestedType, orProject, referenceClassName, alias, refTypeName, catalogPattern);
+                	addToORProjectForPLSQLRecordArg(nestedType, orProject, referenceClassName, refTypeName.toLowerCase(), refTypeName, catalogPattern);
                 }
-                itemsMapping.useCollectionClass(ArrayList.class);
-                ordt.addMapping(itemsMapping);
             } else {
-                ArrayMapping itemsMapping = new ArrayMapping();
-                itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
-                itemsMapping.setStructureName(targetTypeName);
-                ordt.addMapping(itemsMapping);
+            	buildAndAddArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, targetTypeName);
             }
         }
     }
@@ -1030,25 +897,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForVArrayArg(DatabaseType dbType, Project oxProject, String arrayName, String arrayAlias) {
-        QName xmlType = buildCustomQName(arrayName, dbwsBuilder);
-        String targetNamespace = xmlType.getNamespaceURI();
-        String userType = nct.generateSchemaAlias(arrayAlias);
         DatabaseType nestedDbType = ((VArrayType)dbType).getEnclosedType();
         String referenceType = nestedDbType.getTypeName().toLowerCase();
         XMLDescriptor xdesc = (XMLDescriptor)oxProject.getDescriptorForAlias(arrayAlias);
         if (xdesc == null) {
-            xdesc = new XMLDescriptor();
-            xdesc.setAlias(arrayAlias);
-            xdesc.setJavaClassName(arrayAlias + COLLECTION_WRAPPER_SUFFIX);
-            xdesc.getQueryManager();
-            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
-            schemaReference.setSchemaContext("/" + userType);
-            schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
-            xdesc.setSchemaReference(schemaReference);
-            NamespaceResolver nr = new NamespaceResolver();
-            nr.setDefaultNamespaceURI(targetNamespace);
-            xdesc.setNamespaceResolver(nr);
-            xdesc.setDefaultRootElement(userType);
+            xdesc = buildAndAddNewXMLDescriptor(oxProject, arrayAlias, arrayAlias + COLLECTION_WRAPPER_SUFFIX, nct.generateSchemaAlias(arrayAlias), buildCustomQName(arrayName, dbwsBuilder).getNamespaceURI());
             // before we add this descriptor, check if the nested type's descriptor
             // should be built and added first
             XMLDescriptor refXdesc = (XMLDescriptor)oxProject.getDescriptorForAlias(referenceType);
@@ -1057,34 +910,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     addToOXProjectForObjectTypeArg(nestedDbType, oxProject, referenceType, referenceType);
                 }
             }
-            oxProject.addDescriptor(xdesc);
         }
         boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             if (nestedDbType.isComposite()) {
-                XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
-                itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                itemsMapping.setXPath(ITEM_MAPPING_NAME);
-                ((XMLField)itemsMapping.getField()).setRequired(true);
-                itemsMapping.useCollectionClass(ArrayList.class);
-                itemsMapping.setReferenceClassName(referenceType);
-                xdesc.addMapping(itemsMapping);
+                buildAndAddXMLCompositeCollectionMapping(xdesc, referenceType);
             }
             else {
-                XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
-                itemsMapping.setAttributeElementClass(getAttributeClassForDatabaseType(nestedDbType));
-                itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                itemsMapping.setUsesSingleNode(true);
-                itemsMapping.setXPath(ITEM_MAPPING_NAME + "/text()");
-                ((XMLField)itemsMapping.getField()).setRequired(true);
-                itemsMapping.useCollectionClass(ArrayList.class);
-                AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
-                nullPolicy.setNullRepresentedByEmptyNode(false);
-                nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                nullPolicy.setNullRepresentedByXsiNil(true);
-                itemsMapping.setNullPolicy(nullPolicy);
-                xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX, SCHEMA_INSTANCE_URL); // to support xsi:nil policy
-                xdesc.addMapping(itemsMapping);
+            	buildAndAddXMLCompositeDirectCollectionMapping(xdesc, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEM_MAPPING_NAME + "/text()", getAttributeClassForDatabaseType(nestedDbType));
             }
         }
     }
@@ -1098,11 +931,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         String referenceType = nestedDbType.getTypeName().toLowerCase();
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(arrayAlias);
         if (ordt == null) {
-            ordt = new ObjectRelationalDataTypeDescriptor();
-            ordt.descriptorIsAggregate();
-            ordt.setAlias(arrayAlias);
-            ordt.setJavaClassName(arrayAlias + COLLECTION_WRAPPER_SUFFIX);
-            ordt.getQueryManager();
+            ordt = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, arrayAlias, arrayAlias + COLLECTION_WRAPPER_SUFFIX);
             // before we add this descriptor, check if the nested type's descriptor
             // should be built and added first
             ClassDescriptor refdesc = orProject.getDescriptorForAlias(referenceType);
@@ -1111,27 +940,15 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     addToORProjectForObjectTypeArg(nestedDbType, orProject, referenceType);
                 }
             }
-            orProject.addDescriptor(ordt);
         }
         boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((VArrayType) dbType).getEnclosedType();
             if (nestedType.isComposite()) {
-                ObjectArrayMapping itemsMapping = new ObjectArrayMapping();
-                itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
-                itemsMapping.setStructureName(arrayName);
-                itemsMapping.setReferenceClassName(referenceType);
-                itemsMapping.useCollectionClass(ArrayList.class);
-                ordt.addMapping(itemsMapping);
+            	buildAndAddObjectArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, referenceType, arrayName);
             }
             else {
-                ArrayMapping itemsMapping = new ArrayMapping();
-                itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-                itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
-                itemsMapping.useCollectionClass(ArrayList.class);
-                itemsMapping.setStructureName(arrayName);
-                ordt.addMapping(itemsMapping);
+            	buildAndAddArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, arrayName);
             }
         }
     }
@@ -1141,20 +958,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * newly created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForObjectTypeArg(DatabaseType dbType, Project oxProject, String objectName, String objectAlias) {
-        QName xmlType = buildCustomQName(objectName, dbwsBuilder);
-        String targetNamespace = xmlType.getNamespaceURI();
-        String userType = nct.generateSchemaAlias(objectAlias);
-
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(objectAlias);
         if (xdesc == null) {
-            xdesc = buildNewXMLDescriptor(objectAlias, userType, targetNamespace);
-            oxProject.addDescriptor(xdesc);
+            xdesc = buildAndAddNewXMLDescriptor(oxProject, objectAlias, nct.generateSchemaAlias(objectAlias), buildCustomQName(objectName, dbwsBuilder).getNamespaceURI());
         }
 
         ObjectType oType = (ObjectType) dbType;
         for (FieldType field : oType.getFields()) {
-            String fieldName = field.getFieldName();
-            String lFieldName = fieldName.toLowerCase();
+            String lFieldName = field.getFieldName().toLowerCase();
             if (xdesc.getMappingForAttributeName(lFieldName) == null) {
                 if (field.isComposite()) {
                     // handle ObjectType field
@@ -1163,20 +974,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         XMLDescriptor xdesc2 = (XMLDescriptor) oxProject.getDescriptorForAlias(alias);
                         if (xdesc2 == null) {
                             String targetTypeName2 = field.getDataType().getTypeName();
-                            QName xmlType2 = buildCustomQName(targetTypeName2, dbwsBuilder);
-                            String targetNamespace2 = xmlType2.getNamespaceURI();
-                            String userType2 = nct.generateSchemaAlias(alias);
-                            xdesc2 = buildNewXMLDescriptor(alias, userType2, targetNamespace2);
-                            oxProject.addDescriptor(xdesc2);
+                            xdesc2 = buildAndAddNewXMLDescriptor(oxProject, alias, nct.generateSchemaAlias(alias), buildCustomQName(targetTypeName2, dbwsBuilder).getNamespaceURI());
                             addToOXProjectForObjectTypeArg(field.getDataType(), oxProject, targetTypeName2, alias);
                         }
-                        XMLCompositeObjectMapping compMapping = new XMLCompositeObjectMapping();
-                        compMapping.setAttributeName(lFieldName);
-                        compMapping.setReferenceClassName(xdesc2.getJavaClassName());
-                        compMapping.setXPath(lFieldName);
-                        XMLField xField = (XMLField)compMapping.getField();
-                        xField.setRequired(true);
-                        xdesc.addMapping(compMapping);
+                        buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, xdesc2.getJavaClassName());
                     }
                     // TODO - handle VArray field (composite collection mapping)
                 } else {
@@ -1195,8 +996,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected void addToORProjectForObjectTypeArg(DatabaseType dbType, Project orProject, String objectAlias) {
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(objectAlias);
         if (ordt == null) {
-            ordt = buildNewObjectRelationalDataTypeDescriptor(objectAlias);
-            orProject.addDescriptor(ordt);
+            ordt = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, objectAlias);
         }
         ObjectType oType = (ObjectType) dbType;
         for (FieldType fType : oType.getFields()) {
@@ -1228,15 +1028,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         String alias = targetTypeName2.toLowerCase();
                         ObjectRelationalDataTypeDescriptor ordt2 = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(alias);
                         if (ordt2 == null) {
-                            ordt2 = buildNewObjectRelationalDataTypeDescriptor(alias);
-                            orProject.addDescriptor(ordt2);
+                            ordt2 = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, alias);
                             addToORProjectForObjectTypeArg(fType.getDataType(), orProject, alias);
                         }
-                        StructureMapping structMapping = new StructureMapping();
-                        structMapping.setFieldName(fieldName);
-                        structMapping.setAttributeName(lFieldName);
-                        structMapping.setReferenceClassName(ordt2.getJavaClassName());
-                        ordt.addMapping(structMapping);
+                        buildAndAddStructureMapping(ordt, lFieldName, fieldName, ordt2.getJavaClassName());
                     }
                     // TODO - handle VArray field (object array mapping)
                 } else {
@@ -1255,25 +1050,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * newly created descriptor will be added to the given OX project.
      */
     protected void addToOXProjectForObjectTableTypeArg(DatabaseType dbType, Project oxProject, String objectTableName, String objectTableAlias) {
-        QName xmlType = buildCustomQName(objectTableName, dbwsBuilder);
-        String targetNamespace = xmlType.getNamespaceURI();
-        String userType = nct.generateSchemaAlias(objectTableAlias);
-
         XMLDescriptor xdesc = (XMLDescriptor) oxProject.getDescriptorForAlias(objectTableAlias);
         if (xdesc == null) {
-            xdesc = new XMLDescriptor();
-            xdesc.setAlias(objectTableAlias);
-            xdesc.setJavaClassName(objectTableAlias + COLLECTION_WRAPPER_SUFFIX);
-            xdesc.getQueryManager();
-            XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
-            schemaReference.setSchemaContext("/" + userType);
-            schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
-            xdesc.setSchemaReference(schemaReference);
-            NamespaceResolver nr = new NamespaceResolver();
-            nr.setDefaultNamespaceURI(targetNamespace);
-            xdesc.setNamespaceResolver(nr);
-            xdesc.setDefaultRootElement(userType);
-            oxProject.addDescriptor(xdesc);
+            xdesc = buildAndAddNewXMLDescriptor(oxProject, objectTableAlias, objectTableAlias + COLLECTION_WRAPPER_SUFFIX, nct.generateSchemaAlias(objectTableAlias), buildCustomQName(objectTableName, dbwsBuilder).getNamespaceURI());
         }
 
         boolean itemsMappingFound = xdesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
@@ -1282,15 +1061,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             ObjectType nestedType = (ObjectType)((ObjectTableType) dbType).getEnclosedType();
             String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
             addToOXProjectForObjectTypeArg(nestedType, oxProject, nestedType.getTypeName(), nestedTypeAlias);
-            XMLDescriptor nestedTypeDesc = (XMLDescriptor) oxProject.getDescriptorForAlias(nestedTypeAlias);
             // ObjectType is composite
-            XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
-            itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-            itemsMapping.setXPath(ITEM_MAPPING_NAME);
-            ((XMLField)itemsMapping.getField()).setRequired(true);
-            itemsMapping.setReferenceClassName(nestedTypeDesc.getJavaClassName());
-            itemsMapping.useCollectionClass(ArrayList.class);
-            xdesc.addMapping(itemsMapping);
+            buildAndAddXMLCompositeCollectionMapping(xdesc, ((XMLDescriptor) oxProject.getDescriptorForAlias(nestedTypeAlias)).getJavaClassName());
         }
     }
 
@@ -1301,8 +1073,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected void addToORProjectForObjectTableTypeArg(DatabaseType dbType, Project orProject, String objectTableName, String objectTableAlias) {
         ObjectRelationalDataTypeDescriptor ordt = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(objectTableAlias);
         if (ordt == null) {
-            ordt = buildNewObjectRelationalDataTypeDescriptor(objectTableAlias, objectTableAlias + COLLECTION_WRAPPER_SUFFIX);
-            orProject.addDescriptor(ordt);
+            ordt = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, objectTableAlias, objectTableAlias + COLLECTION_WRAPPER_SUFFIX);
         }
         boolean itemsMappingFound = ordt.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME) == null ? false : true;
         if (!itemsMappingFound) {
@@ -1310,15 +1081,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             ObjectType nestedType = (ObjectType)((ObjectTableType) dbType).getEnclosedType();
             String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
             addToORProjectForObjectTypeArg(nestedType, orProject, nestedTypeAlias);
-            ObjectRelationalDataTypeDescriptor nestedTypeDesc = (ObjectRelationalDataTypeDescriptor) orProject.getDescriptorForAlias(nestedTypeAlias);
             // ObjectType is composite
-            ObjectArrayMapping itemsMapping = new ObjectArrayMapping();
-            itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-            itemsMapping.setFieldName(ITEMS_MAPPING_FIELD_NAME);
-            itemsMapping.setStructureName(objectTableName);
-            itemsMapping.setReferenceClassName(nestedTypeDesc.getJavaClassName());
-            itemsMapping.useCollectionClass(ArrayList.class);
-            ordt.addMapping(itemsMapping);
+            buildAndAddObjectArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, ((ObjectRelationalDataTypeDescriptor) orProject.getDescriptorForAlias(nestedTypeAlias)).getJavaClassName(), objectTableName);
         }
     }
 
@@ -1613,13 +1377,176 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
+     * Build an XMLCompositeObjectMapping based on given attribute and reference 
+     * class names, and add the newly created mapping to the given descriptor.
+     */
+    protected void buildAndAddXMLCompositeObjectMapping(XMLDescriptor xdesc, String attributeName, String referenceClassName) {
+    	xdesc.addMapping(buildXMLCompositeObjectMapping(attributeName, referenceClassName));
+    }
+    /**
+     * Build an XMLCompositeObjectMapping based on given attribute
+     * and reference class names.
+     */
+    protected XMLCompositeObjectMapping buildXMLCompositeObjectMapping(String attributeName, String referenceClassName) {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName(attributeName);
+        mapping.setXPath(attributeName);
+        XMLField xField = (XMLField)mapping.getField();
+        xField.setRequired(true);
+        mapping.setReferenceClassName(referenceClassName);
+        return mapping;
+    }
+    
+    /**
+     * Build an XMLCompositeCollectionMapping based on a given reference class 
+     * name, and add the newly created mapping to the given descriptor.
+     */
+    protected void buildAndAddXMLCompositeCollectionMapping(XMLDescriptor xdesc, String referenceClassName) {
+    	xdesc.addMapping(buildXMLCompositeCollectionMapping(referenceClassName));
+    }
+    /**
+     * Build an XMLCompositeCollectionMapping based on a given 
+     * reference class name.
+     */
+    protected XMLCompositeCollectionMapping buildXMLCompositeCollectionMapping(String referenceClassName) {
+        XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
+        itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
+        itemsMapping.setXPath(ITEM_MAPPING_NAME);
+        ((XMLField)itemsMapping.getField()).setRequired(true);
+        itemsMapping.useCollectionClass(ArrayList.class);
+        itemsMapping.setReferenceClassName(referenceClassName);
+        return itemsMapping;
+    }
+  
+    /**
+     * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath, 
+     * and attribute element class.  The newly created mapping will be added to the given
+     * XML descriptor. 
+     */
+    protected XMLCompositeDirectCollectionMapping buildAndAddXMLCompositeDirectCollectionMapping(XMLDescriptor xdesc, String attributeName, String xPath, Class<?> attributeElementClass) {
+        XMLCompositeDirectCollectionMapping itemsMapping = buildXMLCompositeDirectCollectionMapping(attributeName, xPath, attributeElementClass);
+        xdesc.getNamespaceResolver().put(SCHEMA_INSTANCE_PREFIX, SCHEMA_INSTANCE_URL); // to support xsi:nil policy
+        xdesc.addMapping(itemsMapping);
+        return itemsMapping;
+    }
+    /**
+     * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath, 
+     * and attribute element class.
+     */
+    protected XMLCompositeDirectCollectionMapping buildXMLCompositeDirectCollectionMapping(String attributeName, String xPath, Class<?> attributeElementClass) {
+        XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
+        itemsMapping.setAttributeElementClass(attributeElementClass);
+        itemsMapping.setAttributeName(attributeName);
+        itemsMapping.setUsesSingleNode(true);
+        itemsMapping.setXPath(xPath);
+        ((XMLField)itemsMapping.getField()).setRequired(true);
+        itemsMapping.useCollectionClass(ArrayList.class);
+        AbstractNullPolicy nullPolicy = itemsMapping.getNullPolicy();
+        nullPolicy.setNullRepresentedByEmptyNode(false);
+        nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+        nullPolicy.setNullRepresentedByXsiNil(true);
+        itemsMapping.setNullPolicy(nullPolicy);
+        return itemsMapping;
+    }    
+    
+    /**
+     * Builds a StructureMapping based on a given attributeName, fieldName and reference
+     * class name, and adds the newly created mapping to the given OR descriptor.
+     */
+    protected StructureMapping buildAndAddStructureMapping(ObjectRelationalDataTypeDescriptor orDesc, String attributeName, String fieldName, String referenceClassName) {
+        StructureMapping structureMapping = buildStructureMapping(attributeName, fieldName, referenceClassName);
+        orDesc.addMapping(structureMapping);
+        return structureMapping;    	
+    }
+    /**
+     * Builds a StructureMapping based on a given attributeName, fieldName
+     * and reference class name.
+     */
+    protected StructureMapping buildStructureMapping(String attributeName, String fieldName, String referenceClassName) {
+        StructureMapping structureMapping = new StructureMapping();
+        structureMapping.setAttributeName(attributeName);
+        structureMapping.setFieldName(fieldName);
+        structureMapping.setReferenceClassName(referenceClassName);
+        return structureMapping;
+    }
+    
+    /**
+     * Builds an ObjectArrayMapping based on a given attribute name, field name, 
+     * reference class name, field type and package name, and adds the newly
+     * created mapping to the given OR descriptor. 
+     */
+    protected ObjectArrayMapping buildAndAddObjectArrayMapping(ObjectRelationalDataTypeDescriptor orDesc, String attributeName, String fieldName, String referenceClassName, String structureName) {
+        ObjectArrayMapping objectArrayMapping = buildObjectArrayMapping(attributeName, fieldName, referenceClassName, structureName);
+        orDesc.addMapping(objectArrayMapping);
+        return objectArrayMapping;
+    }
+    /**
+     * Builds an ObjectArrayMapping based on a given attribute name, field name, 
+     * reference class name and structureName. 
+     */
+    protected ObjectArrayMapping buildObjectArrayMapping(String attributeName, String fieldName, String referenceClassName, String structureName) {
+        ObjectArrayMapping objectArrayMapping = new ObjectArrayMapping();
+        objectArrayMapping.setAttributeName(attributeName);
+        objectArrayMapping.setFieldName(fieldName);
+        objectArrayMapping.setStructureName(structureName);
+        objectArrayMapping.useCollectionClass(ArrayList.class);
+        objectArrayMapping.setReferenceClassName(referenceClassName);
+        return objectArrayMapping;
+    }
+
+    /**
+     * Build an ArrayMapping based on a given attribute name, field name and structure 
+     * name.  The newly created mapping will be added to the given OR descriptor. 
+     */
+    protected ArrayMapping buildAndAddArrayMapping(ObjectRelationalDataTypeDescriptor orDesc, String attributeName, String fieldName, String structureName) {
+        ArrayMapping arrayMapping = buildArrayMapping(attributeName, fieldName, structureName);
+        orDesc.addMapping(arrayMapping);
+        return arrayMapping;
+    }
+    /**
+     * Build an ArrayMapping based on a given attribute name, field name and structure 
+     * name. 
+     */
+    protected ArrayMapping buildArrayMapping(String attributeName, String fieldName, String structureName) {
+        ArrayMapping arrayMapping = new ArrayMapping();
+        arrayMapping.setAttributeName(attributeName);
+        arrayMapping.setFieldName(fieldName);
+        arrayMapping.setStructureName(structureName);
+        arrayMapping.useCollectionClass(ArrayList.class);
+        return arrayMapping;
+    }
+
+    /**
+     * Build an XMLDescriptor based on a given descriptor alias, schema alias and target 
+     * namespace, and add the newly created descriptor to the given OX Project.
+     */
+    protected XMLDescriptor buildAndAddNewXMLDescriptor(Project oxProject, String objectAlias, String userType, String targetNamespace) {
+        return buildAndAddNewXMLDescriptor(oxProject, objectAlias, objectAlias, userType, targetNamespace);
+    }
+    /**
+     * Build an XMLDescriptor based on a given descriptor alias, schema alias, java class name 
+     * and target namespace, and add the newly created descriptor to the given OX Project.
+     */
+    protected XMLDescriptor buildAndAddNewXMLDescriptor(Project oxProject, String objectAlias, String javaClassName, String userType, String targetNamespace) {
+    	XMLDescriptor xdesc = buildNewXMLDescriptor(objectAlias, javaClassName, userType, targetNamespace);
+        oxProject.addDescriptor(xdesc);
+        return xdesc;
+    }
+    /**
      * Build an XMLDescriptor based on a given descriptor alias,
      * schema alias, and target namespace.
      */
     protected XMLDescriptor buildNewXMLDescriptor(String objectAlias, String userType, String targetNamespace) {
+        return buildNewXMLDescriptor(objectAlias, objectAlias, userType, targetNamespace);
+    }
+    /**
+     * Build an XMLDescriptor based on a given descriptor alias,
+     * java class name schema alias, and target namespace.
+     */
+    protected XMLDescriptor buildNewXMLDescriptor(String objectAlias, String javaClassName, String userType, String targetNamespace) {
         XMLDescriptor xdesc = new XMLDescriptor();
         xdesc.setAlias(objectAlias);
-        xdesc.setJavaClassName(objectAlias);
+        xdesc.setJavaClassName(javaClassName);
         xdesc.getQueryManager();
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
         schemaReference.setSchemaContext("/" + userType);
@@ -1634,11 +1561,31 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     /**
      * Build an ObjectRelationalDataTypeDescriptor based on a given
+     * descriptor alias and add it to the given OR Project.
+     */
+    protected ObjectRelationalDataTypeDescriptor buildAndAddNewObjectRelationalDataTypeDescriptor(Project orProject, String alias) {
+    	return buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, alias, alias);
+    }
+    /**
+     * Build an ObjectRelationalDataTypeDescriptor based on a given descriptor
+     * alias and java class name, and add it to the given OR Project.
+     */
+    protected ObjectRelationalDataTypeDescriptor buildAndAddNewObjectRelationalDataTypeDescriptor(Project orProject, String alias, String javaClassName) {
+    	ObjectRelationalDataTypeDescriptor ordesc = buildNewObjectRelationalDataTypeDescriptor(alias, javaClassName); 
+    	orProject.addDescriptor(ordesc);
+    	return ordesc;
+    }
+    /**
+     * Build an ObjectRelationalDataTypeDescriptor based on a given
      * descriptor alias.
      */
     protected ObjectRelationalDataTypeDescriptor buildNewObjectRelationalDataTypeDescriptor(String alias) {
         return buildNewObjectRelationalDataTypeDescriptor(alias, alias);
     }
+    /**
+     * Build an ObjectRelationalDataTypeDescriptor based on a given
+     * descriptor alias and java class name.
+     */
     protected ObjectRelationalDataTypeDescriptor buildNewObjectRelationalDataTypeDescriptor(String alias, String javaClassName) {
         ObjectRelationalDataTypeDescriptor ordt = new ObjectRelationalDataTypeDescriptor();
         ordt.setStructureName(alias.toUpperCase());
