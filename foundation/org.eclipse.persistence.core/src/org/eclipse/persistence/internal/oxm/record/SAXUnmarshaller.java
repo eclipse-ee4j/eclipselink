@@ -75,13 +75,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-    private int validationMode;
+    private int validationMode = XMLParser.NONVALIDATING;
+    private Schema schema;
     private Object[] schemas;
+    private EntityResolver entityResolver;
+    private ErrorHandler errorHandler = new DefaultErrorHandler();
+
     private SAXParser saxParser;
     private XMLReader xmlReader;
     private XMLUnmarshaller xmlUnmarshaller;
     private XMLParser xmlParser;
-    private boolean isResultAlwaysXMLRoot;
+    private boolean isResultAlwaysXMLRoot, isWhitespacePreserving;
     private SAXParserFactory saxParserFactory;
     private Map<String, Boolean> parserFeatures;
 
@@ -89,10 +93,6 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         super();
         this.parserFeatures = parserFeatures;
         try {
-            xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
-            xmlParser.setNamespaceAware(true);
-            xmlParser.setErrorHandler(new DefaultErrorHandler());
-            xmlParser.setValidationMode(XMLParser.NONVALIDATING);
 
             this.xmlUnmarshaller = xmlUnmarshaller;
         } catch (Exception e) {
@@ -146,6 +146,18 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return saxParser;
     }
 
+    private XMLParser getXMLParser() {
+        xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
+        xmlParser.setNamespaceAware(true);
+        xmlParser.setErrorHandler(errorHandler);
+        if(null != entityResolver) {
+            xmlParser.setEntityResolver(entityResolver);
+        }
+        xmlParser.setValidationMode(validationMode);
+        xmlParser.setWhitespacePreserving(isWhitespacePreserving);
+        return xmlParser;
+    }
+
     private XMLReader getXMLReader() {
         if(null == xmlReader) {
             try {
@@ -165,25 +177,31 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public EntityResolver getEntityResolver() {
-        return xmlParser.getEntityResolver();
+        return entityResolver;
     }
 
     public void setEntityResolver(EntityResolver entityResolver) {
         if(null != xmlReader) {
             xmlReader.setEntityResolver(entityResolver);
         }
-        xmlParser.setEntityResolver(entityResolver);
+        if(null != xmlParser) {
+            xmlParser.setEntityResolver(entityResolver);
+        }
+        this.entityResolver = entityResolver;
     }
 
     public ErrorHandler getErrorHandler() {
-        return xmlParser.getErrorHandler();
+        return errorHandler;
     }
 
     public void setErrorHandler(ErrorHandler errorHandler) {
         if(null != xmlReader) {
             xmlReader.setErrorHandler(errorHandler);
         }
-        xmlParser.setErrorHandler(errorHandler);
+        if(null != xmlParser) {
+            xmlParser.setErrorHandler(errorHandler);
+        }
+        this.errorHandler = errorHandler;
     }
 
     public int getValidationMode() {
@@ -193,7 +211,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     public void setValidationMode(int validationMode) {
         try {
             this.validationMode = validationMode;
-            xmlParser.setValidationMode(validationMode);
+            if(null != xmlParser) {
+                xmlParser.setValidationMode(validationMode);
+            }
             if(null == xmlReader) {
                 return;
             }
@@ -223,7 +243,10 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public void setWhitespacePreserving(boolean isWhitespacePreserving) {
-        xmlParser.setWhitespacePreserving(isWhitespacePreserving);
+        this.isWhitespacePreserving =  isWhitespacePreserving;
+        if(null != xmlParser) {
+            xmlParser.setWhitespacePreserving(isWhitespacePreserving);
+        }
     }
 
     public void setSchemas(Object[] schemas) {
@@ -231,29 +254,25 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public void setSchema(Schema schema) {
-        xmlParser.setXMLSchema(schema);
+        this.schema = schema;
         if(null != saxParserFactory) {
             saxParserFactory.setSchema(schema);
             saxParser = null;
             xmlReader = null;
         }
-        xmlParser.setXMLSchema(schema);
+        if(null != xmlParser) {
+            xmlParser.setXMLSchema(schema);
+        }
     }
     
     public Schema getSchema() {
-        Schema schema = null;
-        try {
-            schema = xmlParser.getXMLSchema();
-        } catch(UnsupportedOperationException ex) {
-            //if this parser doesn't support the setSchema/getSchema API, just return null;
-        }
         return schema;
     }
-    
+
     public Object unmarshal(File file) {
         try {
             if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
-                Node domElement = xmlParser.parse(file).getDocumentElement();
+                Node domElement = getXMLParser().parse(file).getDocumentElement();
                 return unmarshal(domElement);
             }
             FileInputStream inputStream = new FileInputStream(file);
@@ -274,7 +293,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     public Object unmarshal(File file, Class clazz) {
         try {
             if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
-                Node domElement = xmlParser.parse(file).getDocumentElement();
+                Node domElement = getXMLParser().parse(file).getDocumentElement();
                 return unmarshal(domElement, clazz);
             }
             FileInputStream inputStream = new FileInputStream(file);
@@ -294,7 +313,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public Object unmarshal(InputStream inputStream) {
         if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
-            Node domElement = xmlParser.parse(inputStream).getDocumentElement();
+            Node domElement = getXMLParser().parse(inputStream).getDocumentElement();
             return unmarshal(domElement);
         }
         InputSource inputSource = new InputSource(inputStream);
@@ -303,7 +322,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public Object unmarshal(InputStream inputStream, Class clazz) {
         if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
-            Node domElement = xmlParser.parse(inputStream).getDocumentElement();
+            Node domElement = getXMLParser().parse(inputStream).getDocumentElement();
             return unmarshal(domElement, clazz);
         }
         InputSource inputSource = new InputSource(inputStream);
@@ -491,7 +510,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public Object unmarshal(Reader reader) {
         if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
-            Node domElement = xmlParser.parse(reader).getDocumentElement();
+            Node domElement = getXMLParser().parse(reader).getDocumentElement();
             return unmarshal(domElement);
         }
         InputSource inputSource = new InputSource(reader);
@@ -500,7 +519,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public Object unmarshal(Reader reader, Class clazz) {
         if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
-            Node domElement = xmlParser.parse(reader).getDocumentElement();
+            Node domElement = getXMLParser().parse(reader).getDocumentElement();
             return unmarshal(domElement, clazz);
         }
         InputSource inputSource = new InputSource(reader);

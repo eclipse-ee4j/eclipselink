@@ -470,6 +470,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public boolean isNullCapableValue() {
+        if(xmlCompositeObjectMapping.getAttributeAccessor().isInstanceVariableAttributeAccessor() && !xmlCompositeObjectMapping.hasConverter()) {
+            return false;
+        }
         XMLField xmlField = (XMLField)xmlCompositeObjectMapping.getField();
         if (xmlField.getLastXPathFragment().isSelfFragment) {
             return false;

@@ -39,11 +39,14 @@ public class NamespaceInfo {
 	public String getNamespace() {
         return namespace;
     }
-    
+
     public void setNamespace(String ns) {
+        if(ns != null) {
+            ns = ns.intern();
+        }
         this.namespace = ns;
     }
-    
+
     public boolean isAttributeFormQualified() {
         return attributeFormQualified;
     }

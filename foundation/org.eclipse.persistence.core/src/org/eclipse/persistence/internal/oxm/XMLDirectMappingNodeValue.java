@@ -189,6 +189,9 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     }
 
     public boolean isNullCapableValue() {
+        if(xmlDirectMapping.getAttributeAccessor().isInstanceVariableAttributeAccessor() && !xmlDirectMapping.hasConverter() && xmlDirectMapping.getNullValue() == null) {
+             return false;
+        }
         return xmlDirectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
