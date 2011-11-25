@@ -18,7 +18,9 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -225,6 +227,8 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     private boolean isWriteOnly;
     private AbstractNullPolicy nullPolicy;
     protected boolean reuseContainer;
+    private boolean isCollapsingStringValues;
+    private boolean isNormalizingStringValues;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
@@ -336,6 +340,13 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
                     element = ((XMLConverter) getValueConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
                 } else {
                     element = getValueConverter().convertDataValueToObjectValue(element, executionSession);
+                }
+            }
+            if(element != null && element.getClass() == ClassConstants.STRING) {
+                if(isCollapsingStringValues) {
+                    element = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)element);
+                } else if(isNormalizingStringValues) {
+                    element = XMLConversionManager.getDefaultXMLManager().normalizeStringValue((String)element);
                 }
             }
             cp.addInto(element, result, sourceQuery.getSession());
@@ -461,5 +472,51 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
+    
+    /**
+     * PUBLIC: 
+     * Returns true if this mapping is normalizing string values on unmarshal before adding 
+     * them to the collection. Normalize replaces any CR, LF or Tab characters with a 
+     * single space character. 
+     */
+    public boolean isNormalizingStringValues() {
+        return this.isNormalizingStringValues;
+    }
+    
+    /**
+     * PUBLIC:
+     * Indicates that this mapping should normalize all string values before adding them
+     * to the collection on unmarshal. Normalize replaces any CR, LF or Tab characters with a 
+     * single space character. 
+     * @param normalize
+     */
+    public void setNormalizingStringValues(boolean normalize) {
+        this.isNormalizingStringValues = normalize;
+    }
+    
+    
+    /**
+     * PUBLIC:
+     * Indicates that this mapping should collapse all string values before adding them
+     * to the collection on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
+     * any sequence of whitespace characters with a single space. 
+     * @param normalize
+     */
+    public void setCollapsingStringValues(boolean collapse) {
+        this.isCollapsingStringValues = collapse;
+    }
+    
+    /**
+     * PUBLIC:
+     * Returns true if this mapping should collapse all string values before adding them
+     * to the collection. Collapse removes leading and trailing whitespaces, and replaces
+     * any sequence of whitespace characters with a single space. 
+     * @param normalize
+     */
+    public boolean isCollapsingStringValues() {
+        return this.isCollapsingStringValues;
+    }
+    
+
 
 }

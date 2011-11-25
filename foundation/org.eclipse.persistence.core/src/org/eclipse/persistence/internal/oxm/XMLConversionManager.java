@@ -2014,6 +2014,93 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return new QName(namespaceURI, stringValue);
         }
     }
-    
 
+    /**
+     * Replaces any CR, Tab or LF characters in the string with a single ' ' character.
+     */
+    public String normalizeStringValue(String value) {
+        int i = 0;
+        
+        //check for the first whitespace
+        while(i < value.length()) {
+            if(isWhitespace(value.charAt(i), false)) {
+                break;
+            }
+            i++;
+        }
+        if(i == value.length()) {
+            return value;
+        }
+        
+        char[] buffer = value.toCharArray();
+        buffer[i] = ' ';
+        i++;
+        for(; i < value.length(); i++) {
+            if(isWhitespace(buffer[i], false)) {
+                buffer[i] = ' ';
+            }
+        }
+        return new String(buffer);
+    }
+    
+    /**
+     * Removes all leading and trailing whitespaces, and replaces any sequences of whitespaces
+     * that occur in the string with a single ' ' character.
+     */
+    public String collapseStringValue(String value) {
+        int length = value.length();
+        
+        int start = 0;
+        while(start < length) {
+            if(isWhitespace(value.charAt(start), true)) {
+                break;
+            }
+            start++;
+        }
+        if(start == length) {
+            return value;
+        }
+        
+        StringBuffer collapsedString = new StringBuffer(length);
+        if(start != 0) {
+            for(int i = 0; i < start; i++) {
+                collapsedString.append(value.charAt(i));
+            }
+            collapsedString.append(' ');
+        }
+        
+        boolean inSequence = true;
+        for(int i = start + 1; i < length; i++) {
+            char nextCharacter = value.charAt(i);
+            if(!isWhitespace(nextCharacter, true)) {
+                collapsedString.append(nextCharacter);
+                inSequence = false;
+            } else {
+                if(inSequence) {
+                    continue;
+                } else {
+                    collapsedString.append(' ');
+                    inSequence = true;
+                }
+            }
+        }
+        length = collapsedString.length();
+        if(length > 0 && collapsedString.charAt(length -1) == ' ') {
+            collapsedString.setLength(length - 1);
+        }
+        return collapsedString.toString();
+    }
+    
+    private boolean isWhitespace(char character, boolean includeSpace) {
+        if(character > 0x20) {
+            return false;
+        }
+        if(character == 0x9 || character == 0xA || character == 0xD) {
+            return true;
+        }
+        if(includeSpace) {
+            return character == 0x20;
+        }
+        return false;
+    }
 }

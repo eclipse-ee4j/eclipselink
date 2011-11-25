@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -259,7 +261,13 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 value = xmlCompositeDirectCollectionMapping.getValueConverter().convertDataValueToObjectValue(value, unmarshalRecord.getSession());
             }
         }
-        
+        if(value != null && value.getClass() == ClassConstants.STRING) {
+            if(xmlCompositeDirectCollectionMapping.isCollapsingStringValues()) {
+                value = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)value);
+            } else if(xmlCompositeDirectCollectionMapping.isNormalizingStringValues()) {
+                value = XMLConversionManager.getDefaultXMLManager().normalizeStringValue((String)value);
+            }
+        }
         unmarshalRecord.addAttributeValue(this, value, collection);
     }
 

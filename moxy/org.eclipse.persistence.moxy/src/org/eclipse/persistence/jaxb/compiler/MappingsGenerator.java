@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
@@ -451,7 +453,13 @@ public class MappingsGenerator {
                     	((XMLBinaryDataCollectionMapping) mapping).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                     } else{
                 	    mapping = generateDirectCollectionMapping(property, descriptor, namespaceInfo);
-                	    ((XMLCompositeDirectCollectionMapping) mapping).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                        if(adapterClass.getQualifiedName().equals(CollapsedStringAdapter.class.getName())) {
+                            ((XMLCompositeDirectCollectionMapping)mapping).setCollapsingStringValues(true);
+                        } else if(adapterClass.getQualifiedName().equals(NormalizedStringAdapter.class.getName())) {
+                            ((XMLCompositeDirectCollectionMapping)mapping).setNormalizingStringValues(true);
+                        } else {
+                            ((XMLCompositeDirectCollectionMapping) mapping).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                        }
                 	}
                 } else if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
                     mapping = generateBinaryMapping(property, descriptor, namespaceInfo);
@@ -464,7 +472,13 @@ public class MappingsGenerator {
                         return mapping;
                     }
                     mapping = generateDirectMapping(property, descriptor, namespaceInfo);
-                    ((XMLDirectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    if(adapterClass.getQualifiedName().equals(CollapsedStringAdapter.class.getName())) {
+                        ((XMLDirectMapping)mapping).setCollapsingStringValues(true);
+                    } else if(adapterClass.getQualifiedName().equals(NormalizedStringAdapter.class.getName())) {
+                        ((XMLDirectMapping)mapping).setNormalizingStringValues(true);
+                    } else {
+                        ((XMLDirectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    }
                 }
             }
             return mapping;
