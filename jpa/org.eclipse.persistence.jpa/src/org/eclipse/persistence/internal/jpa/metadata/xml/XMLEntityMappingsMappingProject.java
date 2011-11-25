@@ -2147,6 +2147,54 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: named-plsql-stored-function-query
+     */
+    protected ClassDescriptor buildNamedPLSQLStoredFunctionQueryDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedPLSQLStoredFunctionQueryMetadata.class);
+                
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getPLSQLParametersMapping());
+        
+        XMLCompositeObjectMapping returnParameterMapping = new XMLCompositeObjectMapping();
+        returnParameterMapping.setAttributeName("m_returnParameter");
+        returnParameterMapping.setGetMethodName("getReturnParameter");
+        returnParameterMapping.setSetMethodName("setReturnParameter");
+        returnParameterMapping.setReferenceClass(PLSQLParameterMetadata.class);
+        returnParameterMapping.setXPath("orm:return-parameter");
+        descriptor.addMapping(returnParameterMapping);
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getResultClassAttributeMapping());
+        descriptor.addMapping(getResultSetMappingAttributeMapping());
+        descriptor.addMapping(getFunctionNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: named-plsql-stored-procedure-query
+     */
+    protected ClassDescriptor buildNamedPLSQLStoredProcedureQueryDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedPLSQLStoredProcedureQueryMetadata.class);
+                
+        descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getPLSQLParametersMapping());
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getResultClassAttributeMapping());
+        descriptor.addMapping(getResultSetMappingAttributeMapping());
+        descriptor.addMapping(getProcedureNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: named-query
      */
     protected ClassDescriptor buildNamedQueryDescriptor() {
@@ -2161,6 +2209,35 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
     
+    /**
+     * INTERNAL:
+     * XSD: named-stored-function-query
+     */
+    protected ClassDescriptor buildNamedStoredFunctionQueryDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedStoredFunctionQueryMetadata.class);
+
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getParametersMapping());
+        
+        XMLCompositeObjectMapping returnParameterMapping = new XMLCompositeObjectMapping();
+        returnParameterMapping.setAttributeName("m_returnParameter");
+        returnParameterMapping.setGetMethodName("getReturnParameter");
+        returnParameterMapping.setSetMethodName("setReturnParameter");
+        returnParameterMapping.setReferenceClass(StoredProcedureParameterMetadata.class);
+        returnParameterMapping.setXPath("orm:return-parameter");
+        descriptor.addMapping(returnParameterMapping);
+        
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getResultSetMappingAttributeMapping());
+        descriptor.addMapping(getFunctionNameAttributeMapping());
+        descriptor.addMapping(getCallByIndexAttributeMapping());
+        
+        return descriptor;
+    }
+
     /**
      * INTERNAL:
      * XSD: named-stored-procedure-query
@@ -2197,83 +2274,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
     
-    /**
-     * INTERNAL:
-     * XSD: named-plsql-stored-procedure-query
-     */
-    protected ClassDescriptor buildNamedPLSQLStoredProcedureQueryDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(NamedPLSQLStoredProcedureQueryMetadata.class);
-                
-        descriptor.addMapping(getHintMapping());
-        descriptor.addMapping(getPLSQLParametersMapping());
-        
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getResultClassAttributeMapping());
-        descriptor.addMapping(getResultSetMappingAttributeMapping());
-        descriptor.addMapping(getProcedureNameAttributeMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * XSD: named-plsql-stored-function-query
-     */
-    protected ClassDescriptor buildNamedPLSQLStoredFunctionQueryDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(NamedPLSQLStoredFunctionQueryMetadata.class);
-                
-        // Element mappings - must remain in order of definition in XML.
-        descriptor.addMapping(getHintMapping());
-        descriptor.addMapping(getPLSQLParametersMapping());
-        
-        XMLCompositeObjectMapping returnParameterMapping = new XMLCompositeObjectMapping();
-        returnParameterMapping.setAttributeName("m_returnParameter");
-        returnParameterMapping.setGetMethodName("getReturnParameter");
-        returnParameterMapping.setSetMethodName("setReturnParameter");
-        returnParameterMapping.setReferenceClass(PLSQLParameterMetadata.class);
-        returnParameterMapping.setXPath("orm:return-parameter");
-        descriptor.addMapping(returnParameterMapping);
-        
-        // Attribute mappings.
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getResultClassAttributeMapping());
-        descriptor.addMapping(getResultSetMappingAttributeMapping());
-        descriptor.addMapping(getFunctionNameAttributeMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * XSD: named-stored-function-query
-     */
-    protected ClassDescriptor buildNamedStoredFunctionQueryDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(NamedStoredFunctionQueryMetadata.class);
-
-        // Element mappings - must remain in order of definition in XML.
-        descriptor.addMapping(getHintMapping());
-        descriptor.addMapping(getParametersMapping());
-        
-        XMLCompositeObjectMapping returnParameterMapping = new XMLCompositeObjectMapping();
-        returnParameterMapping.setAttributeName("m_returnParameter");
-        returnParameterMapping.setGetMethodName("getReturnParameter");
-        returnParameterMapping.setSetMethodName("setReturnParameter");
-        returnParameterMapping.setReferenceClass(StoredProcedureParameterMetadata.class);
-        returnParameterMapping.setXPath("orm:return-parameter");
-        descriptor.addMapping(returnParameterMapping);
-        
-        // Attribute mappings.
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getResultSetMappingAttributeMapping());
-        descriptor.addMapping(getFunctionNameAttributeMapping());
-        descriptor.addMapping(getCallByIndexAttributeMapping());
-        
-        return descriptor;
-    }
-
     /**
      * INTERNAL:
      * XSD: object-type-converter
