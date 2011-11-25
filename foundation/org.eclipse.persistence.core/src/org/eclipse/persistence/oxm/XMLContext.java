@@ -943,6 +943,12 @@ public class XMLContext {
                 return null;
             }
             int numberOfSessions = sessions.size();
+            if(1 == numberOfSessions) {
+                AbstractSession session = (AbstractSession) sessions.get(0);
+                if(requireUnitOfWork) {
+                    return session.acquireUnitOfWork();
+                }
+            } 
             for (int x = 0; x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
                 XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(clazz);
@@ -975,6 +981,12 @@ public class XMLContext {
                 return null;
             }
             int numberOfSessions = sessions.size();
+            if(1 == numberOfSessions) {
+                AbstractSession session = (AbstractSession) sessions.get(0);
+                if(requireUnitOfWork) {
+                    return session.acquireUnitOfWork();
+                }
+            } 
             for (int x = 0; x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
                 if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
@@ -1005,6 +1017,12 @@ public class XMLContext {
                 return null;
             }
             int numberOfSessions = sessions.size();
+            if(1 == numberOfSessions) {
+                AbstractSession session = (AbstractSession) sessions.get(0);
+                if(requireUnitOfWork) {
+                    return session.acquireUnitOfWork();
+                }
+            } 
             for (int x = 0; x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
                 XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(object);
@@ -1032,6 +1050,12 @@ public class XMLContext {
                 return null;
             }
             int numberOfSessions = sessions.size();
+            if(1 == numberOfSessions) {
+                AbstractSession session = (AbstractSession) sessions.get(0);
+                if(requireUnitOfWork) {
+                    return session.acquireUnitOfWork();
+                }
+            } 
             for (int x = 0; x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
                 if (next.getDescriptor(clazz) != null) {
@@ -1064,6 +1088,12 @@ public class XMLContext {
                 return null;
             }
             int numberOfSessions = sessions.size();
+            if(1 == numberOfSessions) {
+                AbstractSession session = (AbstractSession) sessions.get(0);
+                if(requireUnitOfWork) {
+                    return session.acquireUnitOfWork();
+                }
+            } 
             for (int x = 0; x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
                 if (next.getDescriptor(object) != null) {
@@ -1083,6 +1113,12 @@ public class XMLContext {
                 return null;
             }
             int numberOfSessions = sessions.size();
+            if(1 == numberOfSessions) {
+                AbstractSession session = (AbstractSession) sessions.get(0);
+                if(requireUnitOfWork) {
+                    return session.acquireUnitOfWork();
+                }
+            } 
             for (int x = 0; x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
                 if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
