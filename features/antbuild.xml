@@ -219,7 +219,7 @@
         <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
         <property name="asm.criteria" value="[3.0,4.0)"/>
         <property name="hermes.prefix" value="org.eclipse.persistence.jpa.jpql"/>
-        <property name="hermes.criteria" value="[1.0,2.0)"/>
+        <property name="hermes.criteria" value="[2.0,3.0)"/>
     </target>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2.repos.dir/plugins" dir
@@ -471,7 +471,6 @@
                           *javax.transaction*.jar,
                           javax.xml.bind.source*.jar,
                           *modelgen*.jar,
-                          *servlet*.jar,
                           *soap*.jar,
                           *xml.ws*.jar"
             />

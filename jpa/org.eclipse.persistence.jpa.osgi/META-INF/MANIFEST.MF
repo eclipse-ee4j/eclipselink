@@ -1,9 +1,7 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.jpa.deployment.osgi;version="2.4.0.qualifier",
- org.eclipse.persistence.jpa.osgi;version="2.4.0.qualifier"
+Export-Package: org.eclipse.persistence.internal.jpa.deployment.osgi;version="2.4.0",
+ org.eclipse.persistence.jpa.osgi;version="2.4.0"
 Private-Package: .
-Implementation-Version: 2.4.0.qualifier
-Specification-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Name: EclipseLink OSGi Integration (deprecatated, non Gemini)
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.o
@@ -11,7 +9,6 @@ HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.o
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.4.0",
  org.eclipse.persistence.jpa;bundle-version="2.4.0"
-Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2
@@ -28,6 +25,5 @@ Import-Package: javax.persistence;jpa="2.0";version="[1.1.0,2.1)",
  org.osgi.framework,
  org.osgi.service.jpa,
  org.osgi.service.packageadmin
-Specification-Version: 2.4.0
 Bundle-SymbolicName: org.eclipse.persistence.jpa.osgi
 

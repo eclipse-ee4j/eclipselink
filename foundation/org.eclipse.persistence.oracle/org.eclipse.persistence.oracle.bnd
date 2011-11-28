@@ -1,10 +1,7 @@
-Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
-Implementation-Version: ${version.string}
-Specification-Vendor: ${specification.vendor}
+Export-Package: org.eclipse.persistence*;version="${release.version}";-noimport:=true,
 Bundle-Name: EclipseLink Oracle Extensions
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
-Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
 Fragment-Host: org.eclipse.persistence.core;bundle-version="${release.version}"
 Bundle-Version: ${version.string}
@@ -22,4 +19,3 @@ Import-Package:\
  org.eclipse.persistence.*;version="${release.version}",\
  org.w3c.*;resolution:=optional,\
  org.xml.*;resolution:=optional, *
-Specification-Version: ${release.version}

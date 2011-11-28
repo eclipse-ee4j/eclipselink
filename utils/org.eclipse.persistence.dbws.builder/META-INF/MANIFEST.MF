@@ -1,11 +1,9 @@
 Manifest-Version: 1.0
-Export-Package: _dbws;version="2.4.0.qualifier",
- org.eclipse.persistence.tools.dbws;version="2.4.0.qualifier",
- org.eclipse.persistence.tools.dbws.jdbc;version="2.4.0.qualifier",
- org.eclipse.persistence.tools.dbws.oracle;version="2.4.0.qualifier"
+Export-Package: _dbws;version="2.4.0",
+ org.eclipse.persistence.tools.dbws;version="2.4.0",
+ org.eclipse.persistence.tools.dbws.jdbc;version="2.4.0",
+ org.eclipse.persistence.tools.dbws.oracle;version="2.4.0"
 Bundle-ClassPath: .
-Implementation-Version: 2.4.0.qualifier
-Specification-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Name: EclipseLink DBWS Builder
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -15,7 +13,6 @@ Require-Bundle: org.eclipse.persistence.core;bundle-version="2.4.0",
  org.eclipse.persistence.dbws;bundle-version="2.4.0",
  javax.servlet;bundle-version="2.4.0",
  javax.wsdl;bundle-version="1.6.2"
-Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2
@@ -68,6 +65,5 @@ Import-Package: javax.servlet,
  org.eclipse.persistence.sessions;version="2.4.0",
  org.eclipse.persistence.sessions.factories;version="2.4.0",
  org.w3c.dom;resolution:=optional
-Specification-Version: 2.4.0
 Bundle-SymbolicName: org.eclipse.persistence.dbws.builder
 

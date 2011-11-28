@@ -286,6 +286,7 @@
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
+             <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <arg value="install"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">

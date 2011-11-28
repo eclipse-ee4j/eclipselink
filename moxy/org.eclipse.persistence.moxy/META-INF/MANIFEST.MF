@@ -1,25 +1,22 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.jaxb;version="2.4.0.qualifier",
- org.eclipse.persistence.internal.jaxb.many;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.attachment;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.compiler;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.dynamic;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.dynamic.metadata;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.javamodel;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.javamodel.oxm;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.javamodel.reflection;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.metadata;version="2.4.0.qualifier",
- org.eclipse.persistence.jaxb.xmlmodel;version="2.4.0.qualifier"
-Implementation-Version: 2.4.0.qualifier
-Specification-Vendor: Eclipse.org - EclipseLink Project
+Export-Package: org.eclipse.persistence.internal.jaxb;version="2.4.0",
+ org.eclipse.persistence.internal.jaxb.many;version="2.4.0",
+ org.eclipse.persistence.jaxb;version="2.4.0",
+ org.eclipse.persistence.jaxb.attachment;version="2.4.0",
+ org.eclipse.persistence.jaxb.compiler;version="2.4.0",
+ org.eclipse.persistence.jaxb.dynamic;version="2.4.0",
+ org.eclipse.persistence.jaxb.dynamic.metadata;version="2.4.0",
+ org.eclipse.persistence.jaxb.javamodel;version="2.4.0",
+ org.eclipse.persistence.jaxb.javamodel.oxm;version="2.4.0",
+ org.eclipse.persistence.jaxb.javamodel.reflection;version="2.4.0",
+ org.eclipse.persistence.jaxb.metadata;version="2.4.0",
+ org.eclipse.persistence.jaxb.xmlmodel;version="2.4.0"
 Bundle-Name: EclipseLink MOXy
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.4.0";visibility:=reexport,
  org.eclipse.persistence.asm;bundle-version="3.3.1";resolution:=optional
-Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2
@@ -72,6 +69,5 @@ Import-Package: javax.activation;version="1.1.0";resolution:=optional,
  org.eclipse.persistence.sessions.factories;version="2.4.0",
  org.w3c.dom;resolution:=optional,
  org.xml.sax;resolution:=optional
-Specification-Version: 2.4.0
 Bundle-SymbolicName: org.eclipse.persistence.moxy
 
