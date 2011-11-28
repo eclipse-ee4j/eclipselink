@@ -62,14 +62,6 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public NamedStoredProcedureQueryMetadata(String elementName) {
-        super(elementName);
-    }
-    
-    /**
-     * INTERNAL:
      */
     public NamedStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
         super(namedStoredProcedureQuery, accessor);
@@ -82,6 +74,14 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
         m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttribute("multipleResultSets");
         m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttribute("callByIndex");
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for XML loading.
+     */
+    public NamedStoredProcedureQueryMetadata(String elementName) {
+        super(elementName);
     }
    
     /**
@@ -112,20 +112,20 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         return false;
     }
 
-    public Boolean getCallByIndex() {
-        return m_callByIndex;
-    }
-
-    public void setCallByIndex(Boolean callByIndex) {
-        m_callByIndex = callByIndex;
-    }
-    
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getProcedureName() {
-        return m_procedureName;
+    public Boolean getCallByIndex() {
+        return m_callByIndex;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public Boolean getMultipleResultSets() {
+        return m_multipleResultSets;
     }
     
     /**
@@ -138,17 +138,18 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getProcedureName() {
+        return m_procedureName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
      */
     public Boolean getReturnsResultSet() {
         return m_returnsResultSet;
-    }
-    
-    public Boolean getMultipleResultSets() {
-        return m_multipleResultSets;
-    }
-
-    public void setMultipleResultSets(Boolean multipleResultSets) {
-        m_multipleResultSets = multipleResultSets;
     }
     
     /**
@@ -204,8 +205,16 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setProcedureName(String procedureName) {
-        m_procedureName = procedureName;
+    public void setCallByIndex(Boolean callByIndex) {
+        m_callByIndex = callByIndex;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public void setMultipleResultSets(Boolean multipleResultSets) {
+        m_multipleResultSets = multipleResultSets;
     }
     
     /**
@@ -214,6 +223,14 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      */
     public void setParameters(List<StoredProcedureParameterMetadata> parameters) {
         m_parameters = parameters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setProcedureName(String procedureName) {
+        m_procedureName = procedureName;
     }
     
     /**
