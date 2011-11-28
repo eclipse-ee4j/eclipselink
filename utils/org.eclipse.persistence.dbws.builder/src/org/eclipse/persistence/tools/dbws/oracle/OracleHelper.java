@@ -99,17 +99,31 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Clas
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.COLON;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.DOT;
+import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
+import static org.eclipse.persistence.oxm.XMLConstants.INT;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.TEXT;
 import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
+import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
+import static org.eclipse.persistence.tools.dbws.Util.CURSOR_STR;
+import static org.eclipse.persistence.tools.dbws.Util.CURSOR_OF_STR;
+import static org.eclipse.persistence.tools.dbws.Util.OPEN_PAREN;
+import static org.eclipse.persistence.tools.dbws.Util.CLOSE_PAREN;
+import static org.eclipse.persistence.tools.dbws.Util.SLASH;
 import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
 
@@ -155,55 +169,37 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             //TODO - add to dbStoredProcedure2QueryName map
         }
 
-        // the model may have a mix of procs/funcs that do/do not have complex args
-        List<ProcedureType> procsWithComplexArgs = new ArrayList<ProcedureType>();
-        List<ProcedureType> procsWithSimpleArgs = new ArrayList<ProcedureType>();
-        
         for (ProcedureType storedProcedure : procs) {
-	        List<ArgumentType> args = getArgumentListForProcedureType(storedProcedure);
-	        boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
-	        // TODO: do we care about PL/SQL scalar args?
-	        //boolean hasScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
-	        
-	        if (hasComplexArgs) {
-	        	procsWithComplexArgs.add(storedProcedure);
-	        } else {
-	        	procsWithSimpleArgs.add(storedProcedure);
-	        }
-        }
-                
-        // handle PL/SQL complex args
-        buildPLSQLProcedureOperation(procedureOperationModel, procsWithComplexArgs);
-
-        // handle non-PL/SQL
-        for (ProcedureType storedProcedure : procsWithSimpleArgs) {
+            boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(storedProcedure);
             QueryOperation qo = new QueryOperation();
             qo.setName(getNameForQueryOperation(procedureOperationModel, storedProcedure));
 
             String qualifiedProcName = getQualifiedProcedureName(procedureOperationModel, storedProcedure);
-            dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + qualifiedProcName);
+            dbwsBuilder.logMessage(FINEST, BUILDING_QUERYOP_FOR + qualifiedProcName);
 
-            QueryHandler qh;
-            if (storedProcedure.isFunction()) {
-                qh = new StoredFunctionQueryHandler();
+            QueryHandler qh = null;
+            if (!hasComplexArgs) {
+	            if (storedProcedure.isFunction()) {
+	                qh = new StoredFunctionQueryHandler();
+	            } else {
+	                qh = new StoredProcedureQueryHandler();
+	            }
+	            ((StoredProcedureQueryHandler)qh).setName(qualifiedProcName);
+	
+	            // before assigning queryHandler, check for named query in OR project
+	            List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
+	            if (queries.size() > 0) {
+	                for (DatabaseQuery q : queries) {
+	                    if (q.getName().equals(qo.getName())) {
+	                        qh = new NamedQueryHandler();
+	                        ((NamedQueryHandler)qh).setName(qo.getName());
+	                    }
+	                }
+	            }
+	
+	            qo.setQueryHandler(qh);
             }
-            else {
-                qh = new StoredProcedureQueryHandler();
-            }
-            ((StoredProcedureQueryHandler)qh).setName(qualifiedProcName);
-
-            // before assigning queryHandler, check for named query in OR project
-            List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
-            if (queries.size() > 0) {
-                for (DatabaseQuery q : queries) {
-                    if (q.getName().equals(qo.getName())) {
-                        qh = new NamedQueryHandler();
-                        ((NamedQueryHandler)qh).setName(qo.getName());
-                    }
-                }
-            }
-
-            qo.setQueryHandler(qh);
+            
             String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
@@ -211,21 +207,23 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             Result result = null;
             if (storedProcedure.isFunction()) {
                 result = buildResultForStoredFunction(storedProcedure, returnType);
-            }
-            else {
+            } else if (hasComplexArgs) {
+            	if (Util.noOutArguments(storedProcedure)){
+	                result = new Result();
+	                result.setType(new QName(SCHEMA_URL, INT, SCHEMA_PREFIX)); // rowcount
+            	}
+            } else {  // !hasComplexArgs
                 // if user overrides returnType, assume they're right
                 if (returnType != null) {
                     result = new Result();
                     result.setType(buildCustomQName(returnType, dbwsBuilder));
-                }
-                else {
+                } else {
                     if (isCollection) {
                         result = new CollectionResult();
                         if (isSimpleXMLFormat) {
                             result.setType(SXF_QNAME_CURSOR);
                         }
-                    }
-                    else {
+                    } else {
                         result = new Result();
                         result.setType(SXF_QNAME);
                     }
@@ -233,182 +231,42 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
             if (procedureOperationModel.getBinaryAttachment()) {
                 Attachment attachment = new Attachment();
-                attachment.setMimeType("application/octet-stream");
+                attachment.setMimeType(APP_OCTET_STREAM);
                 result.setAttachment(attachment);
             }
             for (ArgumentType arg : storedProcedure.getArguments()) {
                 String argName = arg.getArgumentName();
-                DatabaseType argDataType = arg.getDataType();
                 if (argName != null) {
-                    ProcedureArgument pa = null;
-                    Parameter parm = null;
-                    ArgumentTypeDirection direction = arg.getDirection();
                     QName xmlType = null;
-                    // handle PL/SQL records and collections
-                    if (arg.getDataType() instanceof PLSQLType) {
-                        hasComplexProcedureArgs = true;
-                        String typeString = storedProcedure.getCatalogName() + "_" + arg.getTypeName();
-                        xmlType = buildCustomQName(typeString, dbwsBuilder);
-                    }
-                    else if (argDataType instanceof VArrayType ||
-                             argDataType instanceof ObjectTableType ||
-                             argDataType instanceof ObjectType) {
-                        // handle advanced JDBC types
-                        hasComplexProcedureArgs = true;
-                        String typeString = arg.getTypeName().toLowerCase().concat("Type");
-                        xmlType = buildCustomQName(typeString, dbwsBuilder);
-                    }
-                    else {
-                        switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
-                            case STRUCT:
-                            case ARRAY:
-                                String typeString = nct.generateSchemaAlias(arg.getTypeName());
-                                xmlType = buildCustomQName(typeString, dbwsBuilder);
-                                break;
-                            default :
-                                xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
-                                break;
-                        }
-                    }
-                    if (direction == IN) {
-                        parm = new Parameter();
-                        parm.setName(argName);
-                        parm.setType(xmlType);
-                        pa = new ProcedureArgument();
-                        pa.setName(argName);
-                        pa.setParameterName(argName);
-                        if (qh instanceof StoredProcedureQueryHandler) {
-                            ((StoredProcedureQueryHandler)qh).getInArguments().add(pa);
-                        }
-                    }
-                    else {
-                        // the first OUT/INOUT arg determines singleResult vs. collectionResult
-                        pa = new ProcedureOutputArgument();
-                        ProcedureOutputArgument pao = (ProcedureOutputArgument)pa;
-                        pao.setName(argName);
-                        pao.setParameterName(argName);
-                        boolean isCursor = arg.getTypeName().contains("CURSOR");
-                        if (isCursor && returnType == null) { // if user overrides returnType, assume they're right
-                            pao.setResultType(SXF_QNAME_CURSOR);
-                            if (result == null) {
-                                result = new CollectionResult();
-                                result.setType(SXF_QNAME_CURSOR);
-                            }
-                        }
-                        else {
-                            // if user overrides returnType, assume they're right
-                            // Hmm, multiple OUT's gonna be a problem - later!
-                            if (returnType != null && !isSimpleXMLFormat) {
-                                xmlType = qNameFromString("{" + dbwsBuilder.getTargetNamespace() + "}" +
-                                    returnType, dbwsBuilder.getSchema());
-                            }
-                            if (isCursor) {
-                                pao.setResultType(new QName("", "cursor of " + returnType));
-                                Result newResult = new CollectionResult();
-                                newResult.setType(result.getType());
-                                result = newResult;
-                            }
-                            else {
-                                pao.setResultType(xmlType);
-                            }
-                            if (result == null) {
-                                if (isCollection) {
-                                    result = new CollectionResult();
-                                }
-                                else {
-                                    result = new Result();
-                                }
-                                result.setType(xmlType);
-                            }
-                        }
-                        if (direction == INOUT) {
-                            parm = new Parameter();
-                            parm.setName(argName);
-                            parm.setType(xmlType);
-                            result.setType(xmlType);
-                            // use of INOUT precludes SimpleXMLFormat
-                            isSimpleXMLFormat = false;
-                            if (qh instanceof StoredProcedureQueryHandler) {
-                                ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
-                            }
-                        }
-                        else {
-                            if (qh instanceof StoredProcedureQueryHandler) {
-                                ((StoredProcedureQueryHandler)qh).getOutArguments().add(pao);
-                            }
-                        }
-                        if (arg.getDataType() instanceof PLSQLType) {
-                            pa.setComplexTypeName(storedProcedure.getCatalogName() + "_" + arg.getTypeName());
-                        }
-                    }
-                    if (parm != null) {
-                        qo.getParameters().add(parm);
-                    }
-                }
-            }
-            // the user may want simpleXMLFormat
-            handleSimpleXMLFormat(isSimpleXMLFormat, result, procedureOperationModel);
-            qo.setResult(result);
-            dbwsBuilder.getXrServiceModel().getOperations().put(qo.getName(), qo);
-        }
-        finishProcedureOperation();
-    }
-
-    /**
-     * Builds query operations for a given PLSQLProcedureOperationModel.
-     */
-    public void buildPLSQLProcedureOperation(ProcedureOperationModel procedureOperationModel, List<ProcedureType> procs) {
-        for (ProcedureType storedProcedure : procs) {
-            QueryOperation qo = new QueryOperation();
-            qo.setName(getNameForQueryOperation(procedureOperationModel, storedProcedure));
-
-            dbwsBuilder.logMessage(FINEST, "Building QueryOperation for " + getQualifiedProcedureName(procedureOperationModel, storedProcedure));
-
-            String returnType = procedureOperationModel.getReturnType();
-            boolean isCollection = procedureOperationModel.isCollection();
-            boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
-
-            Result result = null;
-            if (storedProcedure.isFunction()) {
-                result = buildResultForStoredFunction(storedProcedure, returnType);
-            } else if (Util.noOutArguments(storedProcedure)){
-                result = new Result();
-                result.setType(new QName(SCHEMA_URL, "int", "xsd")); // rowcount
-            }
-            if (procedureOperationModel.getBinaryAttachment()) {
-                Attachment attachment = new Attachment();
-                attachment.setMimeType("application/octet-stream");
-                result.setAttachment(attachment);
-            }
-            for (ArgumentType arg : storedProcedure.getArguments()) {
-                String argName = arg.getArgumentName();
-                if (argName != null) {
                     ProcedureArgument pa = null;
                     ProcedureArgument paShadow = null; // for INOUT's
                     Parameter parm = null;
                     ArgumentTypeDirection direction = arg.getDirection();
-                    QName xmlType = null;
-                    // handle PL/SQL records and collections
-                    if (arg.getDataType() instanceof PLSQLType) {
-                        hasComplexProcedureArgs = true;
-                        String typeString = storedProcedure.getCatalogName() + "_" + arg.getTypeName();
-                        xmlType = buildCustomQName(typeString, dbwsBuilder);
-                    } else if (arg.getDataType() instanceof VArrayType || arg.getDataType() instanceof ObjectType) {
-                        // handle advanced JDBC types
-                        hasComplexProcedureArgs = true;
-                        String typeString = arg.getTypeName().toLowerCase().concat("Type");
-                        xmlType = buildCustomQName(typeString, dbwsBuilder);
+                    if (!hasComplexArgs) {
+                    	xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
                     } else {
-                        switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
-                            case STRUCT:
-                            case ARRAY:
-                                String typeString = nct.generateSchemaAlias(arg.getTypeName());
-                                xmlType = buildCustomQName(typeString, dbwsBuilder);
-                                break;
-                            default :
-                                xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
-                                break;
-                        }
+	                    // handle PL/SQL records and collections
+	                    if (arg.getDataType() instanceof PLSQLType) {
+	                        hasComplexProcedureArgs = true;
+	                        String typeString = storedProcedure.getCatalogName() + "_" + arg.getTypeName();
+	                        xmlType = buildCustomQName(typeString, dbwsBuilder);
+	                    } else if (arg.getDataType() instanceof VArrayType || arg.getDataType() instanceof ObjectType) {
+	                        // handle advanced JDBC types
+	                        hasComplexProcedureArgs = true;
+	                        String typeString = arg.getTypeName().toLowerCase().concat(TYPE_STR);
+	                        xmlType = buildCustomQName(typeString, dbwsBuilder);
+	                    } else {
+	                        switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
+	                            case STRUCT:
+	                            case ARRAY:
+	                                String typeString = nct.generateSchemaAlias(arg.getTypeName());
+	                                xmlType = buildCustomQName(typeString, dbwsBuilder);
+	                                break;
+	                            default :
+	                                xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+	                                break;
+	                        }
+	                    }
                     }
                     if (direction == IN) {
                         parm = new Parameter();
@@ -417,42 +275,41 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         pa = new ProcedureArgument();
                         pa.setName(argName);
                         pa.setParameterName(argName);
-                    }
-                    else {
+                        if (!hasComplexArgs && qh instanceof StoredProcedureQueryHandler) {
+                            ((StoredProcedureQueryHandler)qh).getInArguments().add(pa);
+                        }
+                    } else {
                         // the first OUT/INOUT arg determines singleResult vs. collectionResult
                         pa = new ProcedureOutputArgument();
                         ProcedureOutputArgument pao = (ProcedureOutputArgument)pa;
                         pao.setName(argName);
                         pao.setParameterName(argName);
-                        boolean isCursor = arg.getTypeName().contains("CURSOR");
+                        boolean isCursor = arg.getTypeName().contains(CURSOR_STR);
                         if (isCursor && returnType == null) { // if user overrides returnType, assume they're right
                             pao.setResultType(SXF_QNAME_CURSOR);
                             if (result == null) {
                                 result = new CollectionResult();
                                 result.setType(SXF_QNAME_CURSOR);
                             }
-                        }
-                        else {
+                        } else {
                             // if user overrides returnType, assume they're right
                             // Hmm, multiple OUT's gonna be a problem - later!
                             if (returnType != null && !isSimpleXMLFormat) {
-                                xmlType = qNameFromString("{" + dbwsBuilder.getTargetNamespace() + "}" +
+                                xmlType = qNameFromString(OPEN_PAREN + dbwsBuilder.getTargetNamespace() + CLOSE_PAREN +
                                     returnType, dbwsBuilder.getSchema());
                             }
                             if (isCursor) {
-                                pao.setResultType(new QName("", "cursor of " + returnType));
+                                pao.setResultType(new QName(EMPTY_STRING, CURSOR_OF_STR + returnType));
                                 Result newResult = new CollectionResult();
                                 newResult.setType(result.getType());
                                 result = newResult;
-                            }
-                            else {
+                            } else {
                                 pao.setResultType(xmlType);
                             }
                             if (result == null) {
                                 if (isCollection) {
                                     result = new CollectionResult();
-                                }
-                                else {
+                                } else {
                                     result = new Result();
                                 }
                                 result.setType(xmlType);
@@ -461,18 +318,33 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         if (direction == INOUT) {
                             parm = new Parameter();
                             parm.setName(argName);
-                            // bug 303331 - set type in 'shadow' and 'regular' parameter
-                            parm.setType(getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName())));
-                            result.setType(parm.getType());
+                            if (!hasComplexArgs) {
+	                            parm.setType(xmlType);
+	                            result.setType(xmlType);
+                            } else {  // complex
+	                            // bug 303331 - set type in 'shadow' and 'regular' parameter
+	                            parm.setType(getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName())));
+	                            result.setType(parm.getType());
+                            }
                             // use of INOUT precludes SimpleXMLFormat
                             isSimpleXMLFormat = false;
-                            paShadow = new ProcedureArgument();
-                            paShadow.setName(argName);
-                            paShadow.setParameterName(argName);
+                            if (!hasComplexArgs) {
+                            	if (qh instanceof StoredProcedureQueryHandler) {
+                            		((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
+                                }
+                            } else {   // complex
+	                            paShadow = new ProcedureArgument();
+	                            paShadow.setName(argName);
+	                            paShadow.setParameterName(argName);
+                            }
+                        } else if (!hasComplexArgs) {
+                            if (qh instanceof StoredProcedureQueryHandler) {
+                                ((StoredProcedureQueryHandler)qh).getOutArguments().add(pao);
+                            }
                         }
                     }
-                    if (arg.getDataType() instanceof PLSQLType) {
-                        pa.setComplexTypeName(storedProcedure.getCatalogName() + "_" + arg.getTypeName());
+                    if (hasComplexArgs && arg.getDataType() instanceof PLSQLType) {
+                        pa.setComplexTypeName(storedProcedure.getCatalogName() + UNDERSCORE + arg.getTypeName());
                         if (paShadow != null) {
                             paShadow.setComplexTypeName(pa.getComplexTypeName());
                         }
@@ -484,7 +356,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
             // the user may want simpleXMLFormat
             handleSimpleXMLFormat(isSimpleXMLFormat, result, procedureOperationModel);
-
             qo.setResult(result);
             dbwsBuilder.getXrServiceModel().getOperations().put(qo.getName(), qo);
         }
@@ -500,7 +371,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         FunctionType storedFunction = (FunctionType)storedProcedure;
         ArgumentType rarg = storedFunction.getReturnArgument();
         DatabaseType rargDataType = rarg.getDataType();
-        if (rarg.getTypeName().contains("CURSOR")) {
+        if (rarg.getTypeName().contains(CURSOR_STR)) {
             result = new CollectionResult();
             result.setType(SXF_QNAME_CURSOR);
         }
@@ -526,7 +397,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     }
                     String packageName = storedProcedure.getCatalogName();
                     String returnTypeName = (packageName != null && packageName.length() > 0) ?
-                            packageName + "_" + returnType : returnType;
+                            packageName + UNDERSCORE + returnType : returnType;
                     result.setType(buildCustomQName(returnTypeName, dbwsBuilder));
                     break;
                 case STRUCT:
@@ -574,26 +445,26 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         	sb.append(modelName);
         	// handle pattern matching
         	if (opModel.getProcedurePattern().contains(Util.PERCENT)) {
-	        	sb.append('_');
+	        	sb.append(UNDERSCORE);
 	        	sb.append(storedProcedure.getProcedureName());
         	}
         	// handle overload
         	if (storedProcedure.getOverload() != 0) {
-            	sb.append('_');
+            	sb.append(UNDERSCORE);
             	sb.append(storedProcedure.getOverload());
         	}
         } else {
 	        if (storedProcedure.getOverload() > 0) {
 	            sb.append(storedProcedure.getOverload());
-	            sb.append('_');
+	            sb.append(UNDERSCORE);
 	        }
 	        if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
 	            sb.append(storedProcedure.getCatalogName());
-	            sb.append('_');
+	            sb.append(UNDERSCORE);
 	        }
 	        if (storedProcedure.getSchema() != null && storedProcedure.getSchema().length() > 0) {
 	            sb.append(storedProcedure.getSchema());
-	            sb.append('_');
+	            sb.append(UNDERSCORE);
 	        }
 	        sb.append(storedProcedure.getProcedureName());
         }
@@ -611,14 +482,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         StringBuilder sb = new StringBuilder();
         if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
             sb.append(storedProcedure.getCatalogName());
-            sb.append('.');
+            sb.append(DOT);
         }
         if (procedureOperationModel.getSchemaPattern() != null &&
             procedureOperationModel.getSchemaPattern().length() > 0 &&
             storedProcedure.getSchema() != null &&
             storedProcedure.getSchema().length() > 0) {
             sb.append(storedProcedure.getSchema());
-            sb.append('.');
+            sb.append(DOT);
         }
         sb.append(storedProcedure.getProcedureName());
         return sb.toString();
@@ -712,8 +583,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String name;
             String alias;
             if (dbType instanceof PLSQLType) {
-                name = opModel.getCatalogPattern() + "." + dbType.getTypeName();
-                String targetTypeName = opModel.getCatalogPattern() + "_" + dbType.getTypeName();
+                name = opModel.getCatalogPattern() + DOT + dbType.getTypeName();
+                String targetTypeName = opModel.getCatalogPattern() + UNDERSCORE + dbType.getTypeName();
                 alias = targetTypeName.toLowerCase();
                 // handle PL/SQL record type
                 if (dbType instanceof PLSQLRecordType) {
@@ -762,15 +633,15 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 if (fType.isComposite()) {
                     // handle pl/sql record and pl/sql table fields
                     if (fType.getDataType() instanceof PLSQLRecordType) {
-                        buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + "." + fType.getDataType()).toLowerCase());
+                        buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + DOT + fType.getDataType()).toLowerCase());
                     }
                     else if (fType.getDataType() instanceof PLSQLCollectionType) {
                         PLSQLCollectionType tableType = (PLSQLCollectionType) fType.getDataType();
                         if (tableType.getNestedType().isComposite()) {
-                            buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
+                            buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + DOT + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                         } else {
                             Class<?> attributeElementClass = String.class;
-                            XMLDescriptor refDesc = (XMLDescriptor) oxProject.getDescriptorForAlias((catalogPattern + "_" + tableType.getTypeName()).toLowerCase());
+                            XMLDescriptor refDesc = (XMLDescriptor) oxProject.getDescriptorForAlias((catalogPattern + UNDERSCORE + tableType.getTypeName()).toLowerCase());
                             if (refDesc != null) {
                                 attributeElementClass = ((XMLCompositeDirectCollectionMapping)refDesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME)).getAttributeElementClass();
                             }
@@ -850,10 +721,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((PLSQLCollectionType) dbType).getNestedType();
             if (nestedType instanceof PLSQLRecordType) {
-                String referenceClassName = (catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
+                String referenceClassName = (catalogPattern + DOT + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
                 buildAndAddXMLCompositeCollectionMapping(xdesc, referenceClassName);
                 if (oxProject.getDescriptorForAlias(referenceClassName) == null) {
-                	String refTypeName = catalogPattern + "_" + ((PLSQLRecordType)nestedType).getTypeName();
+                	String refTypeName = catalogPattern + UNDERSCORE + ((PLSQLRecordType)nestedType).getTypeName();
                     addToOXProjectForPLSQLRecordArg(nestedType, oxProject, referenceClassName, refTypeName.toLowerCase(), refTypeName, catalogPattern);
                 }
             } else {
@@ -861,7 +732,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     buildAndAddXMLCompositeCollectionMapping(xdesc, tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
                 }
                 else {
-                	buildAndAddXMLCompositeDirectCollectionMapping(xdesc, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEM_MAPPING_NAME + "/text()", getAttributeClassForDatabaseType(nestedType));
+                	buildAndAddXMLCompositeDirectCollectionMapping(xdesc, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEM_MAPPING_NAME + SLASH + TEXT, getAttributeClassForDatabaseType(nestedType));
                 }
             }
         }
@@ -880,10 +751,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         if (!itemsMappingFound) {
             DatabaseType nestedType = ((PLSQLCollectionType) dbType).getNestedType();
             if (nestedType instanceof PLSQLRecordType) {
-                String referenceClassName = (catalogPattern + "." + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
+                String referenceClassName = (catalogPattern + DOT + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
                 buildAndAddObjectArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, referenceClassName, targetTypeName);
                 if (orProject.getDescriptorForAlias(referenceClassName) == null) {
-                	String refTypeName = catalogPattern + "_" + ((PLSQLRecordType)nestedType).getTypeName(); 
+                	String refTypeName = catalogPattern + UNDERSCORE + ((PLSQLRecordType)nestedType).getTypeName(); 
                 	addToORProjectForPLSQLRecordArg(nestedType, orProject, referenceClassName, refTypeName.toLowerCase(), refTypeName, catalogPattern);
                 }
             } else {
@@ -917,7 +788,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 buildAndAddXMLCompositeCollectionMapping(xdesc, referenceType);
             }
             else {
-            	buildAndAddXMLCompositeDirectCollectionMapping(xdesc, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEM_MAPPING_NAME + "/text()", getAttributeClassForDatabaseType(nestedDbType));
+            	buildAndAddXMLCompositeDirectCollectionMapping(xdesc, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEM_MAPPING_NAME + SLASH + TEXT, getAttributeClassForDatabaseType(nestedDbType));
             }
         }
     }
@@ -1115,16 +986,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
 
         String cat = procType.getCatalogName();
-        String catalogPrefix = (cat == null || cat.length() == 0) ? "" : cat + ".";
+        String catalogPrefix = (cat == null || cat.length() == 0) ? EMPTY_STRING : cat + DOT;
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
         String returnType = opModel.getReturnType();
         boolean hasResponse = returnType != null;
         String typ = null;
         ClassDescriptor xdesc = null;
         if (hasResponse) {
-            int idx = returnType.indexOf(":");
+            int idx = returnType.indexOf(COLON);
             if (idx == -1) {
-                idx = returnType.indexOf("}");
+                idx = returnType.indexOf(CLOSE_PAREN);
             }
             if (idx > 0) {
                 typ = returnType.substring(idx+1);
@@ -1211,7 +1082,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             call = new StoredProcedureCall();
         }
         String cat = procType.getCatalogName();
-        String catalogPrefix = (cat == null || cat.length() == 0) ? "" : cat + ".";
+        String catalogPrefix = (cat == null || cat.length() == 0) ? EMPTY_STRING : cat + DOT;
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
         String returnType = opModel.getReturnType();
         boolean hasResponse = returnType != null;
@@ -1349,7 +1220,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected void addDirectMappingForFieldType(XMLDescriptor xdesc, String attributeName, FieldType fType) {
         XMLDirectMapping fieldMapping = new XMLDirectMapping();
         fieldMapping.setAttributeName(attributeName);
-        XMLField xField = new XMLField(attributeName + "/text()");
+        XMLField xField = new XMLField(attributeName + SLASH + TEXT);
         xField.setRequired(true);
         QName qnameFromDatabaseType = getXMLTypeFromJDBCType(org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName(fType.getTypeName()));
         xField.setSchemaType(qnameFromDatabaseType);
@@ -1549,7 +1420,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         xdesc.setJavaClassName(javaClassName);
         xdesc.getQueryManager();
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference();
-        schemaReference.setSchemaContext("/" + userType);
+        schemaReference.setSchemaContext(SLASH + userType);
         schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
         xdesc.setSchemaReference(schemaReference);
         NamespaceResolver nr = new NamespaceResolver();
@@ -1603,8 +1474,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected String getStructureNameForField(FieldType fType, String packageName) {
     	DatabaseType type = fType.getDataType();
     	String structureName = type.getTypeName();
-    	if (packageName != null && packageName.length() > 0 && !packageName.equals("TOPLEVEL")) {
-    		structureName = packageName + "_" + structureName;
+    	if (packageName != null && packageName.length() > 0 && !packageName.equals(TOPLEVEL)) {
+    		structureName = packageName + UNDERSCORE + structureName;
     	}
     	return structureName;
     }

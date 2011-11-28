@@ -60,10 +60,12 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.COLON;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DECIMAL_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DOUBLE_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
 import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.INTEGER_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
@@ -74,6 +76,7 @@ import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 //DDL parser imports
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
+import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
@@ -91,29 +94,21 @@ public class Util {
         IN, OUT, INOUT, RETURN
     }
 
-    public static final String TOPLEVEL =
-        "TOPLEVEL";
-    public static final String CLASSES =
-        "classes";
+    public static final String TOPLEVEL = "TOPLEVEL";
+    public static final String CLASSES = "classes";
     public static final String DEFAULT_WSDL_LOCATION_URI =
         "REPLACE_WITH_ENDPOINT_ADDRESS";
     public static final String SWAREF_FILENAME =
     	XMLConstants.SWA_REF.toLowerCase() + ".xsd";
     // leave this duplicate as someone may be referencing it...
-    public static final String WSI_SWAREF_XSD_FILE =
-       	SWAREF_FILENAME;
-    public static final String WEB_XML_FILENAME =
-        "web.xml";
+    public static final String WSI_SWAREF_XSD_FILE = SWAREF_FILENAME;
+    public static final String WEB_XML_FILENAME = "web.xml";
     public static final String DEFAULT_PLATFORM_CLASSNAME =
         "org.eclipse.persistence.platform.database.OraclePlatform";
-    public static final String UNDER_DBWS =
-        "_dbws";
-    public static final String WSI_SWAREF =
-        XMLConstants.SWA_REF;
-    public static final String WSI_SWAREF_PREFIX =
-        XMLConstants.REF_PREFIX;
-    public static final String WSI_SWAREF_URI =
-        XMLConstants.REF_URL;
+    public static final String UNDER_DBWS = "_dbws";
+    public static final String WSI_SWAREF = XMLConstants.SWA_REF;
+    public static final String WSI_SWAREF_PREFIX = XMLConstants.REF_PREFIX;
+    public static final String WSI_SWAREF_URI = XMLConstants.REF_URL;
     public static final String WSI_SWAREF_XSD =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
         "<xsd:schema targetNamespace=\"" + WSI_SWAREF_URI + "\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"> \n" +
@@ -121,16 +116,11 @@ public class Util {
         "    <xsd:restriction base=\"xsd:anyURI\"/> \n" +
         "  </xsd:simpleType> \n" +
         "</xsd:schema>";
-    public static final String THE_INSTANCE_NAME =
-        "theInstance";
-    public static final String FINDALL_QUERYNAME =
-        "findAll";
-    public static final String CREATE_OPERATION_NAME =
-        "create";
-    public static final String UPDATE_OPERATION_NAME =
-        "update";
-    public static final String REMOVE_OPERATION_NAME =
-        "delete";
+    public static final String THE_INSTANCE_NAME = "theInstance";
+    public static final String FINDALL_QUERYNAME = "findAll";
+    public static final String CREATE_OPERATION_NAME = "create";
+    public static final String UPDATE_OPERATION_NAME = "update";
+    public static final String REMOVE_OPERATION_NAME = "delete";
     public static final String DBWS_PROVIDER_PACKAGE = "_dbws";
     public static final String DBWS_PROVIDER_NAME = "DBWSProvider";
     public static final String DOT_CLASS = ".class";
@@ -140,87 +130,128 @@ public class Util {
     static final String PROVIDER_LISTENER = "ProviderListener";
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
+    
     public static final String PERCENT = "%";
+    public static final String UNDERSCORE = "_";
+    public static final String BUILDING_QUERYOP_FOR = "Building QueryOperation for ";
+    public static final String APP_OCTET_STREAM = "application/octet-stream";
+    public static final String TYPE_STR = "Type";
+    public static final String CURSOR_STR = "CURSOR";
+    public static final String CURSOR_OF_STR = "cursor of ";
+    public static final String OPEN_PAREN = "{";
+    public static final String CLOSE_PAREN = "}";
+    public static final String SLASH = "/";
 
+    public static final String ARRAY_STR = "ARRAY";
+    public static final String BIGINT_STR = "BIGINT";
+    public static final String BINARY_STR = "BINARY";
+    public static final String BLOB_STR = "BLOB";
+    public static final String BOOLEAN_STR = "BOOLEAN";
+    public static final String CHAR_STR = "CHAR";
+    public static final String CLOB_STR = "CLOB";
+    public static final String DATE_STR = "DATE";
+    public static final String DECIMAL_STR = "DECIMAL";
+    public static final String DOUBLE_STR = "DOUBLE";
+    public static final String FLOAT_STR = "FLOAT";
+    public static final String INTEGER_STR = "INTEGER";
+    public static final String LONG_STR = "LONG";
+    public static final String LONGRAW_STR = "LONG RAW";
+    public static final String LONGVARBINARY_STR = "LONGVARBINARY";
+    public static final String NCHAR_STR = "NCHAR";
+    public static final String NCLOB_STR = "NCLOB";
+    public static final String NUMERIC_STR = "NUMERIC";
+    public static final String OTHER_STR = "OTHER";
+    public static final String RAW_STR = "RAW";
+    public static final String REAL_STR = "REAL";
+    public static final String SMALLINT_STR = "SMALLINT";
+    public static final String STRUCT_STR = "STRUCT";
+    public static final String TIME_STR = "TIME";
+    public static final String TIMESTAMP_STR = "TIMESTAMP";
+    public static final String TINYINT_STR = "TINYINT";
+    public static final String UROWID_STR = "UROWID";
+    public static final String VARBINARY_STR = "VARBINARY";
+    public static final String VARCHAR_STR = "VARCHAR";
+    public static final String VARCHAR2_STR = "VARCHAR2";
+    
     /**
      * Return the JDBC type (as int) for a given type name. 
      */
     public static int getJDBCTypeFromTypeName(String typeName) {
         int jdbcType = Types.OTHER;
-        if (typeName.equals("NUMERIC")) {
+        if (typeName.equals(NUMERIC_STR)) {
             jdbcType = Types.NUMERIC;
         }
-        else if (typeName.equals("VARCHAR")) {
+        else if (typeName.equals(VARCHAR_STR)) {
             jdbcType = Types.VARCHAR;
         }
-        else if (typeName.equals("VARCHAR2")) {
+        else if (typeName.equals(VARCHAR2_STR)) {
             jdbcType = Types.VARCHAR;
         }
-        else if (typeName.equals("DATE")) {
+        else if (typeName.equals(DATE_STR)) {
             jdbcType = Types.DATE;
         }
-        else if (typeName.equals("TIME")) {
+        else if (typeName.equals(TIME_STR)) {
             jdbcType = Types.TIME;
         }
-        else if (typeName.equals("TIMESTAMP")) {
+        else if (typeName.equals(TIMESTAMP_STR)) {
             jdbcType = Types.TIMESTAMP;
         }
-        else if (typeName.equals("DECIMAL")) {
+        else if (typeName.equals(DECIMAL_STR)) {
             jdbcType = Types.DECIMAL;
         }
-        else if (typeName.equals("INTEGER")) {
+        else if (typeName.equals(INTEGER_STR)) {
             jdbcType = Types.INTEGER;
         }
-        else if (typeName.equals("CHAR")) {
+        else if (typeName.equals(CHAR_STR)) {
             jdbcType = Types.CHAR;
         }
-        else if (typeName.equals("NCHAR")) {
+        else if (typeName.equals(NCHAR_STR)) {
             jdbcType = Types.NCHAR;
         }
-        else if (typeName.equals("FLOAT")) {
+        else if (typeName.equals(FLOAT_STR)) {
             jdbcType = Types.FLOAT;
         }
-        else if (typeName.equals("REAL")) {
+        else if (typeName.equals(REAL_STR)) {
             jdbcType = Types.REAL;
         }
-        else if (typeName.equals("DOUBLE")) {
+        else if (typeName.equals(DOUBLE_STR)) {
             jdbcType = Types.DOUBLE;
         }
-        else if (typeName.equals("BINARY") ||
-        		 typeName.equals("LONG")) {
+        else if (typeName.equals(BINARY_STR) ||
+        		 typeName.equals(LONG_STR)) {
             jdbcType = Types.BINARY;
         }
-        else if (typeName.equals("BLOB")) {
+        else if (typeName.equals(BLOB_STR)) {
             jdbcType = Types.BLOB;
         }
-        else if (typeName.equals("CLOB")) {
+        else if (typeName.equals(CLOB_STR)) {
             jdbcType = Types.CLOB;
         }
-        else if (typeName.equals("NCLOB")) {
+        else if (typeName.equals(NCLOB_STR)) {
             jdbcType = Types.NCLOB;
         }
-        else if (typeName.equals("RAW")) {
+        else if (typeName.equals(RAW_STR)) {
             jdbcType = Types.VARBINARY;
         }
-        else if (typeName.equals("LONG RAW")) {
+        else if (typeName.equals(LONGRAW_STR)) {
             jdbcType = Types.LONGVARBINARY;
         }
-        else if (typeName.equals("UROWID")) {
+        else if (typeName.equals(UROWID_STR)) {
             jdbcType = Types.VARCHAR;
         }
-        else if (typeName.equals("BIGINT")) {
+        else if (typeName.equals(BIGINT_STR)) {
             jdbcType = Types.BIGINT;
         }
-        else if (typeName.equals("STRUCT")) {
+        else if (typeName.equals(STRUCT_STR)) {
             jdbcType = Types.STRUCT;
         }
-        else if (typeName.equals("ARRAY")) {
+        else if (typeName.equals(ARRAY_STR)) {
             jdbcType = Types.ARRAY;
         }
-        else if (typeName.equals("BOOLEAN")  || 
-        		 typeName.equals("INTEGER")  ||
-        		 typeName.equals("SMALLINT") ||
-        		 typeName.equals("TINYINT")) {
+        else if (typeName.equals(BOOLEAN_STR)  || 
+        		 typeName.equals(INTEGER_STR)  ||
+        		 typeName.equals(SMALLINT_STR) ||
+        		 typeName.equals(TINYINT_STR)) {
             jdbcType = Types.INTEGER;
         }
         return jdbcType;
@@ -230,67 +261,67 @@ public class Util {
      * Return the JDBC type name for a given JDBC type code. 
      */
     public static String getJDBCTypeNameFromType(int jdbcType) {
-        String typeName = "OTHER";
+        String typeName = OTHER_STR;
         switch (jdbcType) {
             case Types.NUMERIC:
-                typeName = "NUMERIC";
+                typeName = NUMERIC_STR;
                 break;
             case Types.VARCHAR:
-                typeName = "VARCHAR";
+                typeName = VARCHAR_STR;
                 break;
             case Types.DECIMAL:
-                typeName = "DECIMAL";
+                typeName = DECIMAL_STR;
                 break;
             case Types.CHAR:
-                typeName = "CHAR";
+                typeName = CHAR_STR;
                 break;
             case Types.NCHAR:
-                typeName = "NCHAR";
+                typeName = NCHAR_STR;
                 break;
             case Types.FLOAT:
-                typeName = "FLOAT";
+                typeName = FLOAT_STR;
                 break;
             case Types.REAL:
-                typeName = "REAL";
+                typeName = REAL_STR;
                 break;
             case Types.DOUBLE:
-                typeName = "DOUBLE";
+                typeName = DOUBLE_STR;
                 break;
             case Types.BINARY:
-                typeName = "BINARY";
+                typeName = BINARY_STR;
                 break;
             case Types.BLOB:
-                typeName = "BLOB";
+                typeName = BLOB_STR;
                 break;
             case Types.CLOB:
-                typeName = "CLOB";
+                typeName = CLOB_STR;
                 break;
             case Types.NCLOB:
-                typeName = "NCLOB";
+                typeName = NCLOB_STR;
                 break;
             case Types.VARBINARY:
-                typeName = "VARBINARY";
+                typeName = VARBINARY_STR;
                 break;
             case Types.LONGVARBINARY:
-                typeName = "LONGVARBINARY";
+                typeName = LONGVARBINARY_STR;
                 break;
             case Types.DATE:
-                typeName = "DATE";
+                typeName = DATE_STR;
                 break;
             case Types.TIME:
-                typeName = "TIME";
+                typeName = TIME_STR;
                 break;
             case Types.TIMESTAMP:
-                typeName = "TIMESTAMP";
+                typeName = TIMESTAMP_STR;
                 break;
             case Types.BIGINT:
-                typeName = "BIGINT";
+                typeName = BIGINT_STR;
                 break;
             case Types.ARRAY:
-                typeName = "ARRAY";
+                typeName = ARRAY_STR;
                 break;
             case Types.STRUCT:
-                typeName = "STRUCT";
+                typeName = STRUCT_STR;
                 break;
         }
         return typeName;
@@ -487,8 +518,8 @@ public class Util {
         nr.setDefaultNamespaceURI(targetNamespace);
         xdesc.setNamespaceResolver(nr);
         xdesc.setDefaultRootElement(tablenameAlias);
-        XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
-        schemaReference.setSchemaContext("/" + tablenameAlias);
+        XMLSchemaURLReference schemaReference = new XMLSchemaURLReference(EMPTY_STRING);
+        schemaReference.setSchemaContext(SLASH + tablenameAlias);
         schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
         xdesc.setSchemaReference(schemaReference);
         return xdesc;
@@ -499,7 +530,7 @@ public class Util {
         String nsURI = null;
         String prefix = null;
         String localPart = null;
-        int colonIdx = typeString.indexOf(':');
+        int colonIdx = typeString.indexOf(COLON);
         if (colonIdx > 0) {
             prefix = typeString.substring(0, colonIdx);
             nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
@@ -523,8 +554,8 @@ public class Util {
             }
         }
         else {
-            qName = qNameFromString("{" + builder.getTargetNamespace() +
-                "}" + typeString, builder.schema);
+            qName = qNameFromString(OPEN_PAREN + builder.getTargetNamespace() +
+                CLOSE_PAREN + typeString, builder.schema);
         }
         return qName;
     }
@@ -551,6 +582,40 @@ public class Util {
         }
         return false;
     }
+    
+    /**
+     * Indicates if a given ArgumentType is considered 'complex', i.e. it has
+     * a data type that is one of PLSQLRecordType, PLSQLCollectionType, 
+     * VArrayType, ObjectType, or NestedTableType 
+     */
+    public static boolean isArgComplex(ArgumentType argument) {
+        DatabaseType argType = argument.getDataType();
+        return argType instanceof PLSQLType
+                || argType instanceof VArrayType
+                || argType instanceof ObjectType
+                || argType instanceof ObjectTableType;
+    }
+
+    /**
+     * Indicates if a given ProcedureType contains one or more arguments that
+     * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,
+     * VArrayType, ObjectType, or NestedTableType.  
+     * 
+     * Note that for FunctionType the return argument is tested as well.
+     */
+    public static boolean hasComplexArgs(ProcedureType storedProcedure) {
+        for (ArgumentType arg : storedProcedure.getArguments()) {
+        	if (isArgComplex(arg)) {
+        		return true;
+        	}
+        }
+        if (storedProcedure instanceof FunctionType) {
+        	if (isArgComplex(((FunctionType)storedProcedure).getReturnArgument())) {
+        		return true;
+        	}
+        }
+        return false;
+    }
 
     /**
      * Indicates if a given List<DatabaseType> contains one or more arguments that
@@ -559,13 +624,9 @@ public class Util {
      */
     public static boolean hasComplexArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
-            DatabaseType argType = arg.getDataType();
-            if (argType instanceof PLSQLType
-                    || argType instanceof VArrayType
-                    || argType instanceof ObjectType
-                    || argType instanceof ObjectTableType) {
-                return true;
-            }
+        	if (isArgComplex(arg)) {
+        		return true;
+        	}
         }
         return false;
     }

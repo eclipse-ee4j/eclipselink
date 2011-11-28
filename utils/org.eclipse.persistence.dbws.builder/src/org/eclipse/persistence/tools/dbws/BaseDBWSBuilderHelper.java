@@ -1319,10 +1319,7 @@ public abstract class BaseDBWSBuilderHelper {
             // assumes that a function MUST have a return type
             args.add(((FunctionType) pType).getReturnArgument());
         }
-        // IN/OUT/INOUT arguments
-        for (ArgumentType argument : pType.getArguments()) {
-            args.add(argument);
-        }
+        args.addAll(pType.getArguments());
         return args;
     }
 }
