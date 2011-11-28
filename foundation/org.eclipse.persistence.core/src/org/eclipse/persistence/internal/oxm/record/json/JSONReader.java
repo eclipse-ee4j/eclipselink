@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -272,52 +271,53 @@ public class JSONReader extends XMLReaderAdapter {
         }
 
         @Override
-        protected List<Attribute> attributes() {
-            if(null == attributes) {            	
+        protected Attribute[] attributes() {
+            if(null == attributes) {
                 
                 if(tree.getType() == JSONLexer.NULL){
-                	attributes = new ArrayList<Attribute>(1);
-                    attributes.add(new Attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true"));
-                	return attributes;
+                    attributes = new Attribute[1];
+                    attributes[0] = new Attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+                    return attributes;
 
-                }                
+                }
                 if(tree.getType() == JSONLexer.OBJECT) {
-                    attributes = new ArrayList<Attribute>(tree.getChildCount());
+                    ArrayList<Attribute> attributesList = new ArrayList<Attribute>(tree.getChildCount());
                     for(int x=0; x<tree.getChildCount(); x++) {
                         Tree childTree = tree.getChild(x);
                         String attributeLocalName = childTree.getChild(0).getText().substring(1, childTree.getChild(0).getText().length() - 1);
-         
+
                         if(attributePrefix != null){
-                        	if(attributeLocalName.startsWith(attributePrefix)){
-                        	    attributeLocalName = attributeLocalName.substring(attributePrefix.length());
-                        	}else{
-                        		break;
-                        	}
+                            if(attributeLocalName.startsWith(attributePrefix)){
+                                attributeLocalName = attributeLocalName.substring(attributePrefix.length());
+                            }else{
+                                break;
+                            }
                         }
-                        
+
                         String uri = XMLConstants.EMPTY_STRING;
                         if(namespaceAware && namespaces != null){
-                        	int nsIndex = attributeLocalName.indexOf(namespaceSeparator);
-                        	if(nsIndex > -1){
-                        		String prefix = attributeLocalName.substring(0, nsIndex);
-                        		attributeLocalName = attributeLocalName.substring(nsIndex + 1);
-                        		uri = namespaces.resolveNamespacePrefix(prefix);                        
-                        	}
+                            int nsIndex = attributeLocalName.indexOf(namespaceSeparator);
+                            if(nsIndex > -1){
+                                String prefix = attributeLocalName.substring(0, nsIndex);
+                                attributeLocalName = attributeLocalName.substring(nsIndex + 1);
+                                uri = namespaces.resolveNamespacePrefix(prefix);                        
+                            }
                         }
-                        
+
                         Tree childValueTree = childTree.getChild(1);
                         if(childValueTree.getType() == JSONLexer.ARRAY){
-                        	for(int y=0, size=childValueTree.getChildCount(); y<size; y++) {
-                            	CommonTree nextChildTree = (CommonTree) childValueTree.getChild(y);
-                            	addSimpleAttribute(attributes, uri, attributeLocalName, nextChildTree);
-                        	}
+                            for(int y=0, size=childValueTree.getChildCount(); y<size; y++) {
+                                CommonTree nextChildTree = (CommonTree) childValueTree.getChild(y);
+                                addSimpleAttribute(attributesList, uri, attributeLocalName, nextChildTree);
+                            }
                         }else{
-                            addSimpleAttribute(attributes, uri, attributeLocalName, childValueTree);
+                            addSimpleAttribute(attributesList, uri, attributeLocalName, childValueTree);
                         }
                     }
-                    
+
+                    attributes = attributesList.toArray(new Attribute[attributesList.size()]);
                 } else {
-                    attributes = Collections.EMPTY_LIST;
+                    attributes = NO_ATTRIBUTES;
                 }
             }
             return attributes;

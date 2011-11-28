@@ -12,8 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.List;
-
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 
@@ -212,9 +210,11 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     protected static abstract class IndexedAttributeList implements Attributes {
 
-        protected List<Attribute> attributes;
+        protected static final Attribute[] NO_ATTRIBUTES = new Attribute[0];
 
-        protected abstract List<Attribute> attributes();
+        protected Attribute[] attributes;
+
+        protected abstract Attribute[] attributes();
 
         public int getIndex(String qName) {
             if(null == qName) {
@@ -246,15 +246,15 @@ public abstract class XMLReaderAdapter extends XMLReader {
         }
 
         public int getLength() {
-            return attributes().size();
+            return attributes().length;
         }
 
         public String getLocalName(int index) {
-            return attributes().get(index).getLocalName();
+            return attributes()[index].getLocalName();
         }
 
         public String getQName(int index) {
-            return attributes().get(index).getName();
+            return attributes()[index].getName();
         }
 
         public String getType(int index) {
@@ -270,11 +270,11 @@ public abstract class XMLReaderAdapter extends XMLReader {
         }
 
         public String getURI(int index) {
-            return attributes().get(index).getUri();
+            return attributes()[index].getUri();
         }
 
         public String getValue(int index) {
-            return attributes().get(index).getValue();
+            return attributes()[index].getValue();
         }
 
         public String getValue(String qName) {
@@ -282,7 +282,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
             if(-1 == index) {
                 return null;
             }
-            return attributes().get(index).getValue();
+            return attributes()[index].getValue();
         }
 
         public String getValue(String uri, String localName) {
@@ -290,7 +290,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
             if(-1 == index) {
                 return null;
             }
-            return attributes().get(index).getValue();
+            return attributes()[index].getValue();
         }
 
         public IndexedAttributeList reset() {

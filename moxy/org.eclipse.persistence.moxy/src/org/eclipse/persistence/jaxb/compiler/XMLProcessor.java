@@ -1291,6 +1291,7 @@ public class XMLProcessor {
             } else {
                 oldProperty.setType(pType);
             }
+            oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
             if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });

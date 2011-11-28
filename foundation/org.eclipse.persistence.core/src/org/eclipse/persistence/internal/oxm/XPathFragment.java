@@ -153,13 +153,8 @@ public class XPathFragment {
 
         indexValue = hasIndex(xpathString);
         setupNamespaceInformation(shortName);
-        
-        try {
-            shortNameBytes = shortName.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-        }
-
     }
+
     private void setupNamespaceInformation(String xpathString) {
         //int nsindex = xpathString.indexOf(XMLConstants.COLON);
     	int nsindex = xpathString.indexOf(namespaceSeparator);
@@ -185,6 +180,12 @@ public class XPathFragment {
     }
     
     public byte[] getShortNameBytes() {
+        if(null == shortNameBytes) {
+            try {
+                shortNameBytes = shortName.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+            }
+        }
         return shortNameBytes;
     }
 

@@ -2464,19 +2464,23 @@ public class MappingsGenerator {
             schemaType = property.getSchemaType();
         }
         if (schemaType == null) {
-            schemaType = (QName) helper.getXMLToJavaTypeMap().get(property.getActualType().getRawName());
+            String propertyActualTypeRawName = property.getActualType().getRawName();
+            if(QName.class.getCanonicalName().equals(propertyActualTypeRawName)) {
+                 schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyActualTypeRawName);
+            }
         }
-        xmlField.setSchemaType(schemaType);
-
+        if(schemaType !=null && !schemaType.equals (XMLConstants.NORMALIZEDSTRING_QNAME)){
+            xmlField.setSchemaType(schemaType);
+        }
         return xmlField;
     }
 
     public XMLField getXPathForElement(String path, QName elementName, NamespaceInfo namespaceInfo, boolean isText) {
         String namespace = "";
-        if (!elementName.getNamespaceURI().equals("")) {
+        if (!elementName.getNamespaceURI().equals(XMLConstants.EMPTY_STRING)) {
             namespace = elementName.getNamespaceURI();
         }
-        if (namespace.equals("")) {
+        if (namespace.equals(XMLConstants.EMPTY_STRING)) {
             path += elementName.getLocalPart();
             if (isText) {
                 path += TXT;

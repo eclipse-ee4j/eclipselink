@@ -789,52 +789,54 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 }
 
                 //Handle Attributes
-                for (int i = 0, size=atts.getLength(); i < size; i++) {
-                    String attNamespace = atts.getURI(i);
-                    String attLocalName = atts.getLocalName(i);
-                    String value = atts.getValue(i);
-                    NodeValue attributeNodeValue = null;
+                if(xPathNode.getAttributeChildren() != null || xPathNode.getAnyAttributeNodeValue() != null || selfRecords != null) {
+                    for (int i = 0, size=atts.getLength(); i < size; i++) {
+                        String attNamespace = atts.getURI(i);
+                        String attLocalName = atts.getLocalName(i);
+                        String value = atts.getValue(i);
+                        NodeValue attributeNodeValue = null;
 
-                    // Some parsers don't set the URI/local name for namespace
-                    // attributes
-                    if ((attLocalName == null) || (attLocalName.length() == 0)) {
-                        String qname = atts.getQName(i);
-                        if ((qname != null) && (qname.length() > 0)) {
-                            int idx = qname.indexOf(XMLConstants.COLON);
-                            if(idx > 0){
-                            	attLocalName = qname.substring(idx + 1, qname.length());
-                            	String attPrefix = qname.substring(0, idx);
-                            	if (attPrefix.equals(XMLConstants.XMLNS)){
-                                    attNamespace = XMLConstants.XMLNS_URL;
-                                }
-                            }else{
-                            	attLocalName = qname;
-                            	if(attLocalName.equals(XMLConstants.XMLNS)){
-                            		attNamespace = XMLConstants.XMLNS_URL;
-                            	}
-                            }
-                        }
-                    }
-
-                    //Look for any Self-Mapping nodes that may want this attribute.
-                    if (this.selfRecords != null) {
-                        for (int j = 0; j < selfRecords.size(); j++) {
-                            UnmarshalRecord nestedRecord = selfRecords.get(j);
-                            if(nestedRecord != null){
-                                attributeNodeValue = nestedRecord.getAttributeChildNodeValue(attNamespace, attLocalName);
-                                if (attributeNodeValue != null) {
-                                    attributeNodeValue.attribute(nestedRecord, attNamespace, attLocalName, value);
+                        // Some parsers don't set the URI/local name for namespace
+                        // attributes
+                        if ((attLocalName == null) || (attLocalName.length() == 0)) {
+                            String qname = atts.getQName(i);
+                            if ((qname != null) && (qname.length() > 0)) {
+                                int idx = qname.indexOf(XMLConstants.COLON);
+                                if(idx > 0){
+                                    attLocalName = qname.substring(idx + 1, qname.length());
+                                    String attPrefix = qname.substring(0, idx);
+                                    if (attPrefix.equals(XMLConstants.XMLNS)){
+                                        attNamespace = XMLConstants.XMLNS_URL;
+                                    }
+                                }else{
+                                    attLocalName = qname;
+                                    if(attLocalName.equals(XMLConstants.XMLNS)){
+                                        attNamespace = XMLConstants.XMLNS_URL;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (attributeNodeValue == null) {
-                        attributeNodeValue = this.getAttributeChildNodeValue(attNamespace, attLocalName);
-                        if (attributeNodeValue != null) {
-                            attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
-                        } else {
-                            if (xPathNode.getAnyAttributeNodeValue() != null) {
-                                xPathNode.getAnyAttributeNodeValue().attribute(this, attNamespace, attLocalName, value);
+
+                        //Look for any Self-Mapping nodes that may want this attribute.
+                        if (this.selfRecords != null) {
+                            for (int j = 0; j < selfRecords.size(); j++) {
+                                UnmarshalRecord nestedRecord = selfRecords.get(j);
+                                if(nestedRecord != null){
+                                    attributeNodeValue = nestedRecord.getAttributeChildNodeValue(attNamespace, attLocalName);
+                                    if (attributeNodeValue != null) {
+                                        attributeNodeValue.attribute(nestedRecord, attNamespace, attLocalName, value);
+                                    }
+                                }
+                            }
+                        }
+                        if (attributeNodeValue == null) {
+                            attributeNodeValue = this.getAttributeChildNodeValue(attNamespace, attLocalName);
+                            if (attributeNodeValue != null) {
+                                attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
+                            } else {
+                                if (xPathNode.getAnyAttributeNodeValue() != null) {
+                                    xPathNode.getAnyAttributeNodeValue().attribute(this, attNamespace, attLocalName, value);
+                                }
                             }
                         }
                     }

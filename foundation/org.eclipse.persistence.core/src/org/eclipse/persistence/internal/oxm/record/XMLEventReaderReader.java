@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -210,11 +209,11 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         }
 
         @Override
-        protected List<Attribute> attributes() {
+        protected Attribute[] attributes() {
             if(null == attributes) {
             if(attrs.hasNext() || namespaces.hasNext()) {
 
-                this.attributes = new ArrayList<Attribute>();
+                ArrayList<Attribute> attributesList = new ArrayList<Attribute>();
 
                 while(namespaces.hasNext()) {
                     Namespace next = (Namespace)namespaces.next();
@@ -228,7 +227,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                         qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
                     }
                     String value = next.getNamespaceURI();
-                    attributes.add(new Attribute(uri, localName, qName, value));
+                    attributesList.add(new Attribute(uri, localName, qName, value));
                 }
 
                 while(attrs.hasNext()) {
@@ -243,10 +242,12 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                         qName = prefix + XMLConstants.COLON + localName;
                     }
                     String value = next.getValue();
-                    attributes.add(new Attribute(uri, localName, qName, value));
+                    attributesList.add(new Attribute(uri, localName, qName, value));
                 }
+
+                attributes = attributesList.toArray(new Attribute[attributesList.size()]);
             }else{
-                attributes = Collections.EMPTY_LIST;
+                attributes = NO_ATTRIBUTES;
 
                 }
             }

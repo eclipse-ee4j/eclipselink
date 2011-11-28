@@ -12,10 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
@@ -206,14 +202,14 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         }
 
         @Override
-        protected List<Attribute> attributes() {
+        protected Attribute[] attributes() {
             if(null == attributes) {
                 int namespaceCount = xmlStreamReader.getNamespaceCount();
                 int attributeCount = xmlStreamReader.getAttributeCount();
                 if(namespaceCount + attributeCount == 0) {
-                    attributes = Collections.EMPTY_LIST;
+                    attributes = NO_ATTRIBUTES;
                 } else {
-                    attributes = new ArrayList<Attribute>(attributeCount + namespaceCount);
+                    attributes = new Attribute[attributeCount + namespaceCount];
 
                     for(int x=0; x<namespaceCount; x++) {
                         String uri = XMLConstants.XMLNS_URL;
@@ -226,7 +222,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                             qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
                         }
                         String value = xmlStreamReader.getNamespaceURI(x);
-                        attributes.add(new Attribute(uri, localName, qName, value));
+                        attributes[x] = new Attribute(uri, localName, qName, value);
                     }
 
                     for(int x=0; x<attributeCount; x++) {
@@ -240,11 +236,16 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                             qName = prefix + XMLConstants.COLON + localName;
                         }
                         String value = xmlStreamReader.getAttributeValue(x);
-                        attributes.add(new Attribute(uri, localName, qName, value));
+                        attributes[x + namespaceCount] = new Attribute(uri, localName, qName, value);
                     }
                 }
             }
             return attributes;
+        }
+
+        @Override
+        public String getValue(String uri, String localName) {
+            return xmlStreamReader.getAttributeValue(uri, localName);
         }
 
     }
