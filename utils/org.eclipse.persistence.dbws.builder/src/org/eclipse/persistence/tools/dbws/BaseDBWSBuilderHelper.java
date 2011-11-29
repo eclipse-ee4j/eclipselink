@@ -210,7 +210,7 @@ public abstract class BaseDBWSBuilderHelper {
     protected abstract List<ProcedureType> loadProcedures(ProcedureOperationModel procedureModel);
 
     protected abstract void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments, Project orProject, Project oxProject, ProcedureOperationModel opModel);
-    protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel);
+    protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs);
 
     protected void addToOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
         Project orProject, Project oxProject, NamingConventionTransformer nct) {
@@ -935,7 +935,8 @@ public abstract class BaseDBWSBuilderHelper {
                 List<ArgumentType> args = getArgumentListForProcedureType(procType);
                 
                 boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
-                boolean hasScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
+                boolean hasPLSQLArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs(args);
+                boolean hasPLSQLScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);                
                 
                 // set 'complex' flag on model to indicate complex arg processing is required
                 // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
@@ -945,11 +946,11 @@ public abstract class BaseDBWSBuilderHelper {
                 	nameAndModel.procOpModel.setHasComplexArguments(hasComplexArgs);
                 }
                 
-                if (hasComplexArgs || hasScalarArgs) {
+                if (hasComplexArgs || hasPLSQLScalarArgs) {
                     // subclasses are responsible for processing complex arguments
                     addToOROXProjectsForComplexArgs(args, orProject, oxProject, nameAndModel.procOpModel);
                     // build a query for this ProcedureType as it has one or more complex arguments
-                    buildQueryForProcedureType(procType, orProject, oxProject, nameAndModel.procOpModel);
+                    buildQueryForProcedureType(procType, orProject, oxProject, nameAndModel.procOpModel, hasPLSQLArgs);
                 }
             }
         }

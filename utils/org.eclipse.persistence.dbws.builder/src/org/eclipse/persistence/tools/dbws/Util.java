@@ -597,6 +597,30 @@ public class Util {
     }
 
     /**
+     * Indicates if a given ArgumentType is considered a PL/SQL argument,
+     * i.e. it has a data type that is one of PLSQLRecordType, 
+     * PLSQLCollectionType, BOOLEAN_TYPE, BINARY_INTEGER_TYPE, 
+     * or PLS_INTEGER_TYPE 
+     */
+    public static boolean isArgPLSQL(ArgumentType argument) {
+        DatabaseType argType = argument.getDataType();
+        return argType instanceof PLSQLType
+        		|| isArgPLSQLScalar(argument);
+    }
+
+    /**
+     * Indicates if a given ArgumentType is considered a PL/SQL scalar
+     * argument, i.e. it has a data type that is one of BOOLEAN_TYPE, 
+     * BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE 
+     */
+    public static boolean isArgPLSQLScalar(ArgumentType argument) {
+        DatabaseType argType = argument.getDataType();
+        return argType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE
+                || argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE
+                || argType == ScalarDatabaseTypeEnum.PLS_INTEGER_TYPE;
+    }
+
+    /**
      * Indicates if a given ProcedureType contains one or more arguments that
      * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,
      * VArrayType, ObjectType, or NestedTableType.  
@@ -611,6 +635,41 @@ public class Util {
         }
         if (storedProcedure instanceof FunctionType) {
         	if (isArgComplex(((FunctionType)storedProcedure).getReturnArgument())) {
+        		return true;
+        	}
+        }
+        return false;
+    }
+
+    /**
+     * Indicates if a given ProcedureType contains one or more PL/SQL 
+     * arguments, i.e. PLSQLRecordType, PLSQLCollectionType, 
+     * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
+     * 
+     * Note that for FunctionType the return argument is tested as well.
+     */
+    public static boolean hasPLSQLArgs(ProcedureType storedProcedure) {
+        for (ArgumentType arg : storedProcedure.getArguments()) {
+        	if (isArgPLSQL(arg)) {
+        		return true;
+        	}
+        }
+        if (storedProcedure instanceof FunctionType) {
+        	if (isArgPLSQL(((FunctionType)storedProcedure).getReturnArgument())) {
+        		return true;
+        	}
+        }
+        return false;
+    }
+
+    /**
+     * Indicates if a given list of ArgumentTypes contains one or more 
+     * PL/SQL arguments, i.e. PLSQLRecordType, PLSQLCollectionType, 
+     * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
+     */
+    public static boolean hasPLSQLArgs(List<ArgumentType> arguments) {
+        for (ArgumentType arg : arguments) {
+        	if (isArgPLSQL(arg)) {
         		return true;
         	}
         }
@@ -638,10 +697,7 @@ public class Util {
      */
     public static boolean hasPLSQLScalarArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
-            DatabaseType argType = arg.getDataType();
-            if (argType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE
-                    || argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE
-                    || argType == ScalarDatabaseTypeEnum.PLS_INTEGER_TYPE) {
+        	if (isArgPLSQLScalar(arg)) {
                 return true;
             }
         }

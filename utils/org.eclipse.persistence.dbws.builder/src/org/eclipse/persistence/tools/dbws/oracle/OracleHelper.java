@@ -126,6 +126,7 @@ import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
 public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelper {
 
@@ -961,55 +962,50 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Build a Query for the given ProcedureType instance and add
      * it to the given OR project's list of queries.
      */
-    protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
-        if (opModel.isPLSQLProcedureOperation()) {
-            buildQueryForPLSQLProcedureType(procType, orProject, oxProject, opModel);
-        } else {
-            buildQueryForAdvancedJDBCProcedureType(procType, orProject, oxProject, opModel);
-        }
-    }
-    /**
-     * Build a Query for the given ProcedureType instance and add
-     * it to the given OR project's list of queries.
-     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void buildQueryForPLSQLProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
-        PLSQLStoredProcedureCall call;
-        if (procType.isFunction()) {
-            org.eclipse.persistence.internal.helper.DatabaseType returnDatabaseType = opModel.getDbStoredFunctionReturnType();
-            if (returnDatabaseType == null) {
-                returnDatabaseType = buildDatabaseTypeFromMetadataType(((FunctionType)procType).getReturnArgument(), procType.getCatalogName());
+	protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs) {
+    	// if there are one or more PL/SQL args, then we need a PLSQLStoredProcedureCall
+        StoredProcedureCall call;
+    	ArgumentType returnArg = procType.isFunction() ? ((FunctionType)procType).getReturnArgument() : null;
+    	if (hasComplexArgs) {
+            if (procType.isFunction()) {
+                call = new PLSQLStoredFunctionCall(buildDatabaseTypeFromMetadataType(returnArg, procType.getCatalogName()));
+            } else {
+                call = new PLSQLStoredProcedureCall();
             }
-            call = new PLSQLStoredFunctionCall(returnDatabaseType);
-        } else {
-            call = new PLSQLStoredProcedureCall();
-        }
+    	} else {
+            if (procType.isFunction()) {
+                String javaTypeName = returnArg.getTypeName();
+                ClassDescriptor desc = oxProject.getDescriptorForAlias(javaTypeName.toLowerCase());
+                if (desc != null) {
+                    javaTypeName = desc.getJavaClassName();
+                }
 
+                if (returnArg.isComposite()) {
+                    DatabaseType dataType = returnArg.getDataType();
+                    if (dataType instanceof VArrayType || dataType instanceof ObjectTableType) {
+                        call = new StoredFunctionCall(Types.ARRAY, returnArg.getTypeName(), javaTypeName,
+                            buildFieldForNestedType(dataType));
+                    }
+                    else {
+                        // assumes ObjectType
+                        call = new StoredFunctionCall(Types.STRUCT, returnArg.getTypeName(), javaTypeName);
+                    }
+                } else {
+                    call = new StoredFunctionCall();
+                    ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                }
+            } else {
+                call = new StoredProcedureCall();
+            }
+    	}
+    	
         String cat = procType.getCatalogName();
         String catalogPrefix = (cat == null || cat.length() == 0) ? EMPTY_STRING : cat + DOT;
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
         String returnType = opModel.getReturnType();
         boolean hasResponse = returnType != null;
-        String typ = null;
-        ClassDescriptor xdesc = null;
-        if (hasResponse) {
-            int idx = returnType.indexOf(COLON);
-            if (idx == -1) {
-                idx = returnType.indexOf(CLOSE_PAREN);
-            }
-            if (idx > 0) {
-                typ = returnType.substring(idx+1);
-                for (XMLDescriptor xd : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
-                    if (xd.getSchemaReference() != null) {
-                        String context = xd.getSchemaReference().getSchemaContext();
-                        if (context.substring(1).equals(typ)) {
-                            xdesc = xd;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+
         DatabaseQuery dq = null;
         if (hasResponse && opModel.isCollection()) {
             dq = new DataReadQuery();
@@ -1022,17 +1018,102 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
         for (ArgumentType arg : procType.getArguments()) {
             DatabaseType argType = arg.getDataType();
-            org.eclipse.persistence.internal.helper.DatabaseType databaseType = buildDatabaseTypeFromMetadataType(argType, cat);
-
             ArgumentTypeDirection direction = arg.getDirection();
-            if (direction == ArgumentTypeDirection.OUT) {
-                call.addNamedOutputArgument(arg.getArgumentName(), databaseType);
-            } else if (direction == IN) {
-                call.addNamedArgument(arg.getArgumentName(), databaseType);
+            
+            // for PL/SQL
+            org.eclipse.persistence.internal.helper.DatabaseType databaseType = null;
+            // for Advanced JDBC
+            String javaTypeName = null;
+
+            if (hasComplexArgs) {
+            	databaseType = buildDatabaseTypeFromMetadataType(argType, cat);
             } else {
-                call.addNamedInOutputArgument(arg.getArgumentName(), databaseType);
+                javaTypeName = argType.getTypeName();
+                ClassDescriptor desc = oxProject.getDescriptorForAlias(javaTypeName.toLowerCase());
+                if (desc != null) {
+                    javaTypeName = desc.getJavaClassName();
+                }
             }
-            if (direction == IN || direction == INOUT) {
+
+            if (direction == IN) {
+            	if (hasComplexArgs) {
+	            	((PLSQLStoredProcedureCall)call).addNamedArgument(arg.getArgumentName(), databaseType);
+            	} else {
+	                if (argType instanceof VArrayType) {
+	                    dq.addArgument(arg.getArgumentName());
+	                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+	                        Types.ARRAY, argType.getTypeName(), javaTypeName);
+	                } else if (argType instanceof ObjectType) {
+	                    dq.addArgument(arg.getArgumentName());
+	                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+	                        Types.STRUCT, argType.getTypeName(), javaTypeName);
+	                } else if (argType instanceof ObjectTableType) {
+	                    dq.addArgument(arg.getArgumentName(), java.sql.Array.class);
+	                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+	                        Types.ARRAY, argType.getTypeName(), buildFieldForNestedType(argType));
+	                } else {
+	                    dq.addArgument(arg.getArgumentName());
+	                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
+	                        Util.getJDBCTypeFromTypeName(argType.getTypeName()));
+	                }
+            	}
+            } else if (direction == OUT) {
+            	if (hasComplexArgs) {
+            		((PLSQLStoredProcedureCall)call).addNamedOutputArgument(arg.getArgumentName(), databaseType);
+            	} else {
+                    if (argType.isComposite()) {
+                        Class wrapperClass = null; 
+                        try {
+                            // the following call will try and load the collection wrapper class via XRDynamicClassLoader
+                        	wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName);
+                        } catch (ClassNotFoundException e) {
+                        	// TODO:  it is unlikely that we'll get here, however we should
+                        	//        still handle this with an EclipseLink exception
+                        	e.printStackTrace();
+                        }
+                        
+                    	if (argType instanceof VArrayType || argType instanceof ObjectTableType) {
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                                Types.ARRAY, argType.getTypeName(), wrapperClass, buildFieldForNestedType(argType));
+                        } else {
+                            // assumes ObjectType
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                                Types.STRUCT, argType.getTypeName(), wrapperClass);
+                        }
+                    } else {
+                    	call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
+                        	Util.getJDBCTypeFromTypeName(argType.getTypeName()));
+                	}
+            	}
+            } else {  // INOUT
+            	if (hasComplexArgs) {
+            		((PLSQLStoredProcedureCall)call).addNamedInOutputArgument(arg.getArgumentName(), databaseType);
+            	} else {
+                    dq.addArgument(arg.getArgumentName());
+                    call.addNamedInOutputArgument(arg.getArgumentName());
+            	}
+            }
+            if (hasComplexArgs && (direction == IN || direction == INOUT)) {
+                ClassDescriptor xdesc = null;
+                if (hasResponse) {
+                    int idx = returnType.indexOf(COLON);
+                    if (idx == -1) {
+                        idx = returnType.indexOf(CLOSE_PAREN);
+                    }
+                    if (idx > 0) {
+                        String typ = returnType.substring(idx+1);
+                        for (XMLDescriptor xd : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
+                            if (xd.getSchemaReference() != null) {
+                                String context = xd.getSchemaReference().getSchemaContext();
+                                if (context.substring(1).equals(typ)) {
+                                    xdesc = xd;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (xdesc != null) {
                     dq.addArgumentByTypeName(arg.getArgumentName(), xdesc.getJavaClassName());
                 } else {
@@ -1047,142 +1128,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 }
             }
         }
-        orProject.getQueries().add(dq);
-    }
-    /**
-     * Build a Query for the given ProcedureType instance and add
-     * it to the given OR project's list of queries.
-     */
-    @SuppressWarnings("rawtypes")
-    protected void buildQueryForAdvancedJDBCProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
-        StoredProcedureCall call;
-        if (procType.isFunction()) {
-            ArgumentType returnArg = ((FunctionType)procType).getReturnArgument();
-            String javaTypeName = returnArg.getTypeName();
-            ClassDescriptor desc = oxProject.getDescriptorForAlias(javaTypeName.toLowerCase());
-            if (desc != null) {
-                javaTypeName = desc.getJavaClassName();
-            }
-
-            if (returnArg.isComposite()) {
-                DatabaseType dataType = returnArg.getDataType();
-                if (dataType instanceof VArrayType || dataType instanceof ObjectTableType) {
-                    call = new StoredFunctionCall(Types.ARRAY, returnArg.getTypeName(), javaTypeName,
-                        buildFieldForNestedType(dataType));
-                }
-                else {
-                    // assumes ObjectType
-                    call = new StoredFunctionCall(Types.STRUCT, returnArg.getTypeName(), javaTypeName);
-                }
-            } else {
-                call = new StoredFunctionCall();
-                ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
-            }
-        } else {
-            call = new StoredProcedureCall();
-        }
-        String cat = procType.getCatalogName();
-        String catalogPrefix = (cat == null || cat.length() == 0) ? EMPTY_STRING : cat + DOT;
-        call.setProcedureName(catalogPrefix + procType.getProcedureName());
-        String returnType = opModel.getReturnType();
-        boolean hasResponse = returnType != null;
-        DatabaseQuery dq = null;
-        if (hasResponse && opModel.isCollection()) {
-            dq = new DataReadQuery();
-        } else {
-            dq = new ValueReadQuery();
-        }
-        dq.bindAllParameters();
-        dq.setName(getNameForQueryOperation(opModel, procType));
-        dq.setCall(call);
-        for (ArgumentType arg : procType.getArguments()) {
-            DatabaseType argType = arg.getDataType();
-            ArgumentTypeDirection direction = arg.getDirection();
-            String javaTypeName = argType.getTypeName();
-            ClassDescriptor desc = oxProject.getDescriptorForAlias(javaTypeName.toLowerCase());
-            if (desc != null) {
-                javaTypeName = desc.getJavaClassName();
-            }
-            if (direction == ArgumentTypeDirection.IN) {
-                // TODO - set argument class as well as name
-                if (argType instanceof VArrayType) {
-                    dq.addArgument(arg.getArgumentName());
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
-                        Types.ARRAY, argType.getTypeName(), javaTypeName);
-                }
-                else if (argType instanceof ObjectType) {
-                    dq.addArgument(arg.getArgumentName());
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
-                        Types.STRUCT, argType.getTypeName(), javaTypeName);
-                }
-                else if (argType instanceof ObjectTableType) {
-                    dq.addArgument(arg.getArgumentName(), java.sql.Array.class);
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
-                        Types.ARRAY, argType.getTypeName(), buildFieldForNestedType(argType));
-                }
-                else {
-                    dq.addArgument(arg.getArgumentName());
-                    call.addNamedArgument(arg.getArgumentName(), arg.getArgumentName(),
-                        Util.getJDBCTypeFromTypeName(argType.getTypeName()));
-                }
-            }
-            else if (direction == ArgumentTypeDirection.OUT) {
-                if (argType.isComposite()) {
-                    if (argType instanceof VArrayType || argType instanceof ObjectTableType) {
-                        // the following call will try and load the collection wrapper class via XRDynamicClassLoader
-                        try {
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
-                                Types.ARRAY, argType.getTypeName(),
-                                new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName),
-                                buildFieldForNestedType(argType));
-                        }
-                        catch (ClassNotFoundException e) {
-                            // TODO - will we ever get here?
-                            // at this point we can try updating the field's type name manually
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
-                                Types.ARRAY, argType.getTypeName(),
-                                (Class)null, buildFieldForNestedType(argType));
-                            for (Object param : call.getParameters()) {
-                                DatabaseField dbf = (DatabaseField) param;
-                                if (dbf.getName().equals(arg.getArgumentName())) {
-                                    dbf.setTypeName(javaTypeName);
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        // assumes ObjectType
-                        try {
-                            // the following call will try and load the object type class via XRDynamicClassLoader
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
-                                Types.STRUCT, argType.getTypeName(),
-                                new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName));
-                        }
-                        catch (ClassNotFoundException e) {
-                            // TODO - will we ever get here?
-                            // at this point we can try updating the field's type name manually
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
-                                Types.STRUCT, argType.getTypeName(), (Class)null);
-                            for (Object param : call.getParameters()) {
-                                DatabaseField dbf = (DatabaseField) param;
-                                if (dbf.getName().equals(arg.getArgumentName())) {
-                                    dbf.setTypeName(javaTypeName);
-                                }
-                            }
-                        }
-                    }
-                }
-                else {
-                    call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
-                        Util.getJDBCTypeFromTypeName(argType.getTypeName()));
-                }
-            }
-            else if (direction == ArgumentTypeDirection.INOUT) {
-                dq.addArgument(arg.getArgumentName());
-                call.addNamedInOutputArgument(arg.getArgumentName());
-            }
-        }
-
         orProject.getQueries().add(dq);
     }
 
