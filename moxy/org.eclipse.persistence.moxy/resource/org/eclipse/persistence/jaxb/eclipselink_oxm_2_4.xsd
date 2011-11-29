@@ -18,7 +18,7 @@
     targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" 
     elementFormDefault="qualified"
     attributeFormDefault="unqualified"
-    version="2.3">
+    version="2.4">
 
     <xs:element name="xml-bindings">
         <xs:complexType>
