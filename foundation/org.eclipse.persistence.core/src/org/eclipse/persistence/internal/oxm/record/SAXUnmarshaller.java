@@ -21,7 +21,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
@@ -76,11 +75,11 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-    private static SAXParserFactory SHARED_PARSER_FACTORY;
-
     private int validationMode = XMLParser.NONVALIDATING;
     private Schema schema;
     private Object[] schemas;
+    private EntityResolver entityResolver;
+    private ErrorHandler errorHandler = new DefaultErrorHandler();
 
     private SAXParser saxParser;
     private XMLReader xmlReader;
@@ -88,31 +87,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private XMLParser xmlParser;
     private boolean isResultAlwaysXMLRoot, isWhitespacePreserving;
     private SAXParserFactory saxParserFactory;
-    private String systemId = null;
+    private Map<String, Boolean> parserFeatures;
 
-    static {
-        SHARED_PARSER_FACTORY = createSAXParserFactory();        
-    }
-    
     public SAXUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) throws XMLMarshalException {
         super();
+        this.parserFeatures = parserFeatures;
         try {
-            if(null != parserFeatures) {
-                saxParserFactory = createSAXParserFactory();
-            	for(Map.Entry<String, Boolean> parserFeature : parserFeatures.entrySet()) {
-                    try {
-                        saxParserFactory.setFeature(parserFeature.getKey(), parserFeature.getValue());
-                    } catch(org.xml.sax.SAXNotRecognizedException ex) {
-                        //ignore if the parser doesn't recognize or support this feature
-                    } catch(org.xml.sax.SAXNotSupportedException ex) {
-                    }
-                }
-            }
-
-            saxParser = getSAXParserFactory().newSAXParser();
-
-            xmlReader = new XMLReader(saxParser.getXMLReader());
-            xmlReader.setErrorHandler(new DefaultErrorHandler());
 
             this.xmlUnmarshaller = xmlUnmarshaller;
         } catch (Exception e) {
@@ -120,38 +100,108 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
+    private SAXParserFactory getSAXParserFactory() throws XMLMarshalException {
+        if(null == saxParserFactory) {
+            try {
+                saxParserFactory = SAXParserFactory.newInstance();
+                saxParserFactory.setNamespaceAware(true);
+                Schema schema = getSchema();
+                if(null != schema) {
+                    saxParserFactory.setSchema(schema);
+                }
+                saxParserFactory.setFeature(XMLReader.NAMESPACE_PREFIXES_FEATURE, true);
+                try {
+                    saxParserFactory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);
+                } catch(org.xml.sax.SAXNotRecognizedException ex) {
+                    //ignore if the parser doesn't recognize or support this feature
+                } catch(org.xml.sax.SAXNotSupportedException ex) {
+                }
+
+                if(null != parserFeatures) {
+                    for(Map.Entry<String, Boolean> parserFeature : parserFeatures.entrySet()) {
+                        try {
+                            saxParserFactory.setFeature(parserFeature.getKey(), parserFeature.getValue());
+                        } catch(org.xml.sax.SAXNotRecognizedException ex) {
+                            //ignore if the parser doesn't recognize or support this feature
+                        } catch(org.xml.sax.SAXNotSupportedException ex) {
+                        }
+                    }
+                }
+                return saxParserFactory;
+            } catch (Exception e) {
+                throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
+            }
+        }
+        return saxParserFactory;
+    }
+
+    private SAXParser getSAXParser() {
+        if(null == saxParser) {
+            try {
+                saxParser = getSAXParserFactory().newSAXParser();
+            } catch (Exception e) {
+                throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
+            }
+        }
+        return saxParser;
+    }
+
     private XMLParser getXMLParser() {
         xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
         xmlParser.setNamespaceAware(true);
-        xmlParser.setErrorHandler(getErrorHandler());
-        if(null != getEntityResolver()) {
-            xmlParser.setEntityResolver(getEntityResolver());
+        xmlParser.setErrorHandler(errorHandler);
+        if(null != entityResolver) {
+            xmlParser.setEntityResolver(entityResolver);
         }
         xmlParser.setValidationMode(validationMode);
         xmlParser.setWhitespacePreserving(isWhitespacePreserving);
         return xmlParser;
     }
 
+    private XMLReader getXMLReader() {
+        if(null == xmlReader) {
+            try {
+                xmlReader = new XMLReader(getSAXParser().getXMLReader());
+                xmlReader.setErrorHandler(getErrorHandler());
+                xmlReader.setEntityResolver(getEntityResolver());
+                setValidationMode(getValidationMode());
+                if(null != getSchema()) {
+                    xmlReader.setFeature(VALIDATING, xmlReader.getFeature(VALIDATING));
+                }
+                return xmlReader;
+            } catch (Exception e) {
+                throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
+            }
+        }
+        return xmlReader;
+    }
+
     public EntityResolver getEntityResolver() {
-        return xmlReader.getEntityResolver();
+        return entityResolver;
     }
 
     public void setEntityResolver(EntityResolver entityResolver) {
-        xmlReader.setEntityResolver(entityResolver);
+        if(null != xmlReader) {
+            xmlReader.setEntityResolver(entityResolver);
+        }
         if(null != xmlParser) {
             xmlParser.setEntityResolver(entityResolver);
         }
+        this.entityResolver = entityResolver;
     }
 
     public ErrorHandler getErrorHandler() {
-        return xmlReader.getErrorHandler();
+        return errorHandler;
     }
 
     public void setErrorHandler(ErrorHandler errorHandler) {
-        xmlReader.setErrorHandler(errorHandler);
+        if(null != xmlReader) {
+            xmlReader.setErrorHandler(errorHandler);
+        }
         if(null != xmlParser) {
             xmlParser.setErrorHandler(errorHandler);
         }
+        this.errorHandler = errorHandler;
     }
 
     public int getValidationMode() {
@@ -163,6 +213,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             this.validationMode = validationMode;
             if(null != xmlParser) {
                 xmlParser.setValidationMode(validationMode);
+            }
+            if(null == xmlReader) {
+                return;
             }
             switch (validationMode) {
             case XMLParser.NONVALIDATING: {
@@ -202,19 +255,10 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public void setSchema(Schema schema) {
         this.schema = schema;
-        if(saxParserFactory == null) {
-            saxParserFactory = createSAXParserFactory();
-        }
-        saxParserFactory.setSchema(schema);
-        try {
-            saxParser = saxParserFactory.newSAXParser();
-            XMLReader newXmlReader = new XMLReader(saxParser.getXMLReader());
-            newXmlReader.setFeature(VALIDATING, xmlReader.getFeature(VALIDATING));
-            newXmlReader.setEntityResolver(xmlReader.getEntityResolver());
-            newXmlReader.setErrorHandler(xmlReader.getErrorHandler());
-            xmlReader = newXmlReader;
-        } catch (Exception e) {
-            throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
+        if(null != saxParserFactory) {
+            saxParserFactory.setSchema(schema);
+            saxParser = null;
+            xmlReader = null;
         }
         if(null != xmlParser) {
             xmlParser.setXMLSchema(schema);
@@ -224,7 +268,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     public Schema getSchema() {
         return schema;
     }
-    
+
     public Object unmarshal(File file) {
         try {
             if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
@@ -295,7 +339,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (inputSource != null) {
             inputSource.setSystemId(this.systemId);
         }
-        return unmarshal(xmlReader, inputSource);
+        return unmarshal(getXMLReader(), inputSource);
     }
 
     public Object unmarshal(InputSource inputSource, XMLReader xmlReader) {
@@ -326,7 +370,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (inputSource != null) {
             inputSource.setSystemId(this.systemId);
         }
-        return unmarshal(xmlReader, inputSource, clazz);
+        return unmarshal(getXMLReader(), inputSource, clazz);
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz, XMLReader xmlReader) {
@@ -625,6 +669,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public Object unmarshal(String systemId) {
         try {
+            XMLReader xmlReader = getXMLReader();
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             saxUnmarshallerHandler.setXMLReader(xmlReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
@@ -660,9 +705,10 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
            
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             try {
-            	saxUnmarshallerHandler.setXMLReader(xmlReader);
-            	saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-            	saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                XMLReader xmlReader = getXMLReader();
+                saxUnmarshallerHandler.setXMLReader(xmlReader);
+                saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
+                saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 xmlReader.setContentHandler(saxUnmarshallerHandler);
                 xmlReader.parse(systemId);
             } catch (IOException e) {
@@ -684,6 +730,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         }
 
         try {
+            XMLReader xmlReader = getXMLReader();
             unmarshalRecord.setXMLReader(xmlReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
             xmlReader.setContentHandler(unmarshalRecord);
@@ -844,32 +891,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
     
     private void setValidatorHandler(XMLReader xmlReader) {
+        Schema schema = getSchema();
         if (null != schema) {
             ValidatorHandler validatorHandler = schema.newValidatorHandler();
             xmlReader.setValidatorHandler(validatorHandler);
             validatorHandler.setErrorHandler(getErrorHandler());
         }
     }
-    
-    public SAXParserFactory getSAXParserFactory() {
-        if(this.saxParserFactory == null) {
-            return SHARED_PARSER_FACTORY;
-        }
-        return this.saxParserFactory;
-    }
-    
-    private static SAXParserFactory createSAXParserFactory() {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        try {
-            factory.setFeature(XMLReader.NAMESPACE_PREFIXES_FEATURE, true);
-            factory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);
-        } catch(org.xml.sax.SAXNotRecognizedException ex) {
-            //  ignore if the parser doesn't recognize or support this feature
-        } catch(org.xml.sax.SAXNotSupportedException ex) {
-        } catch (ParserConfigurationException e) {
-        }
-        return factory;
-        
-    }
+
 }
