@@ -287,6 +287,7 @@
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
+             <!-- arg value="-X"/ -->
              <arg value="install"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
