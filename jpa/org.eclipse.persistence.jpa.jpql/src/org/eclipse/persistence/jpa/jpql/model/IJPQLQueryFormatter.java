@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model;
 
+import java.util.StringTokenizer;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
+
+import static org.eclipse.persistence.jpa.jpql.model.BaseJPQLQueryFormatter.*;
 
 /**
  * A <code>IJPQLQueryFormatter</code> helps to write a string representation of a {@link StateObject}.
@@ -51,6 +54,44 @@ public interface IJPQLQueryFormatter {
 		/**
 		 * The JPQL identifiers are written out with uppercase letters.
 		 */
-		UPPERCASE
+		UPPERCASE;
+
+		/**
+		 * Returns the given JPQL identifier with the first letter of each word capitalized and the rest
+		 * being lower case.
+		 *
+		 * @param identifier The JPQL identifier to format
+		 * @return The formatted JPQL identifier
+		 */
+		public String capitalizeEachWord(String identifier) {
+
+			StringBuilder sb = new StringBuilder();
+
+			for (StringTokenizer tokenizer = new StringTokenizer(identifier, SPACE); tokenizer.hasMoreTokens(); ) {
+				String token = tokenizer.nextToken();
+				sb.append(Character.toUpperCase(token.charAt(0)));
+				sb.append(token.substring(1).toLowerCase());
+				if (tokenizer.hasMoreTokens()) {
+					sb.append(SPACE);
+				}
+			}
+
+			return sb.toString();
+		}
+
+		/**
+		 * Formats the given JPQL identifier, if it needs to be decorated with more information. Which
+		 * depends on how the string is created.
+		 *
+		 * @param identifier JPQL identifier to format
+		 * @return By default the given identifier is returned
+		 */
+		public String formatIdentifier(String identifier) {
+			switch (this) {
+				case CAPITALIZE_EACH_WORD: return capitalizeEachWord(identifier);
+				case LOWERCASE:            return identifier.toLowerCase();
+				default:                   return identifier.toUpperCase();
+			}
+		}
 	}
 }

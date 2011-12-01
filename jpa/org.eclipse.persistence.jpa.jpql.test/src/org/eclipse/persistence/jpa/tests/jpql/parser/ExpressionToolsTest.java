@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -23,30 +24,14 @@ import static org.junit.Assert.*;
 @SuppressWarnings("nls")
 public final class ExpressionToolsTest {
 
-	private int adjustPosition(String query, int position) {
-		return JPQLQueryBuilder.formatQuery(query.substring(0, position)).length();
+	private int adjustPosition(String query, int position, JPQLGrammar jpqlGrammar) {
+		return JPQLQueryBuilder.toParsedText(query.substring(0, position), jpqlGrammar).length();
 	}
 
 	private JPQLQueryStringFormatter buildQueryFormatter_1() {
 		return new JPQLQueryStringFormatter() {
 			public String format(String query) {
 				return query.replace("+", " + ");
-			}
-		};
-	}
-
-	private JPQLQueryStringFormatter buildQueryFormatter_2() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace(",", ", ");
-			}
-		};
-	}
-
-	private JPQLQueryStringFormatter buildQueryFormatter_3() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace(",A", ", A");
 			}
 		};
 	}
@@ -125,16 +110,13 @@ public final class ExpressionToolsTest {
 	@Test
 	public void testRepositionCursor_01() {
 
+		JPQLGrammar jpqlGrammar = DefaultJPQLGrammar.instance();
 		String actualQuery = "  SELECT  AVG ( mag )    FROM  Magazine   mag";
 
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(
-			actualQuery,
-			DefaultJPQLGrammar.instance(),
-			true
-		);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(actualQuery, jpqlGrammar, true);
 
 		int position = 0;
-		int expectedPosition = adjustPosition(actualQuery, position);
+		int expectedPosition = adjustPosition(actualQuery, position, jpqlGrammar);
 		int newPosition = ExpressionTools.repositionCursor(actualQuery, position, jpqlExpression.toParsedText());
 		assertEquals(expectedPosition, newPosition);
 
@@ -144,17 +126,17 @@ public final class ExpressionToolsTest {
 		assertEquals(expectedPosition, newPosition);
 
 		position = 4;
-		expectedPosition = adjustPosition(actualQuery, position);
+		expectedPosition = adjustPosition(actualQuery, position, jpqlGrammar);
 		newPosition = ExpressionTools.repositionCursor(actualQuery, position, jpqlExpression.toParsedText());
 		assertEquals(expectedPosition, newPosition);
 
 		position = 10;
-		expectedPosition = adjustPosition(actualQuery, position);
+		expectedPosition = adjustPosition(actualQuery, position, jpqlGrammar);
 		newPosition = ExpressionTools.repositionCursor(actualQuery, position, jpqlExpression.toParsedText());
 		assertEquals(expectedPosition, newPosition);
 
 		position = 31;
-		expectedPosition = adjustPosition(actualQuery, position);
+		expectedPosition = adjustPosition(actualQuery, position, jpqlGrammar);
 		newPosition = ExpressionTools.repositionCursor(actualQuery, position, jpqlExpression.toParsedText());
 		assertEquals(expectedPosition, newPosition);
 	}
@@ -348,7 +330,6 @@ public final class ExpressionToolsTest {
 		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(
 			actualQuery,
 			DefaultJPQLGrammar.instance(),
-			buildQueryFormatter_2(),
 			true
 		);
 
@@ -366,7 +347,6 @@ public final class ExpressionToolsTest {
 		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(
 			actualQuery,
 			DefaultJPQLGrammar.instance(),
-			buildQueryFormatter_3(),
 			true
 		);
 

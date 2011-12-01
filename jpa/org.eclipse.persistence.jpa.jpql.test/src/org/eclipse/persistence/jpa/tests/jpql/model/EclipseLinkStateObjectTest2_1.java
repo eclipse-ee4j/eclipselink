@@ -27,15 +27,7 @@ public final class EclipseLinkStateObjectTest2_1 extends EclipseLinkJPQLStateObj
 		//        func('NVL', e.lastName,  'NoLastName')
 		// FROM Employee e
 
-		StateObjectTester selectStatement = selectStatement(
-			select(
-				func("NVL", path("e.firstName"), string("'NoFirstName'")),
-				func("NVL", path("e.lastName"),  string("'NoLastName'"))
-			),
-			from("Employee", "e")
-		);
-
-		testQuery(query_224(), selectStatement);
+		testQuery(query_224(), stateObject_224());
 	}
 
 	@Test

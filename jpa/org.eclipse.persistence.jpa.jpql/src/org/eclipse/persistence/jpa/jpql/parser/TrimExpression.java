@@ -365,7 +365,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 
 		// 'FROM'
 		if (hasFrom) {
-			writer.append(FROM);
+			writer.append(actual ? fromIdentifier : FROM);
 		}
 
 		if (hasSpaceAfterFrom) {

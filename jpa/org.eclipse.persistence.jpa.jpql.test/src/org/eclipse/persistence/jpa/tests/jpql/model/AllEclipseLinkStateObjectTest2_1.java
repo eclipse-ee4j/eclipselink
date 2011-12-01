@@ -13,8 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.model;
 
+import org.eclipse.persistence.jpa.jpql.model.EclipseLinkActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
@@ -41,5 +45,23 @@ public final class AllEclipseLinkStateObjectTest2_1 {
 	@IJPQLQueryBuilderTestHelper
 	static IJPQLQueryBuilder buildJPQLQueryBuilder() {
 		return new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance());
+	}
+
+	@IJPQLQueryFormatterTestHelper
+	static IJPQLQueryFormatter[] buildJPQLQUeryFormatters() {
+		return new IJPQLQueryFormatter[] {
+
+			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
+			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
+
+			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
+			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
+
+			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
+			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE)
+		};
 	}
 }

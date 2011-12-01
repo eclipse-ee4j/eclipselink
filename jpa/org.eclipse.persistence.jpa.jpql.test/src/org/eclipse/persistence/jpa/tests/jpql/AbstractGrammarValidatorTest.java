@@ -32,6 +32,14 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest {
 
+	private JPQLQueryStringFormatter buildFormatter_01() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace(",,", ", ,");
+			}
+		};
+	}
+
 	private JPQLQueryStringFormatter buildFormatter_1() throws Exception {
 		return new JPQLQueryStringFormatter() {
 			public String format(String query) {
@@ -44,14 +52,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		return new JPQLQueryStringFormatter() {
 			public String format(String query) {
 				return query.replace("(DISTINCT)", "(DISTINCT )");
-			}
-		};
-	}
-
-	private JPQLQueryStringFormatter buildFormatter_3() throws Exception {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace("( SELECT", "(SELECT");
 			}
 		};
 	}
@@ -73,14 +73,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	private JPQLQueryStringFormatter buildFormatter_6() throws Exception {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace(",)", ", )");
-			}
-		};
-	}
-
-	private JPQLQueryStringFormatter buildFormatter_7() throws Exception {
 		return new JPQLQueryStringFormatter() {
 			public String format(String query) {
 				return query.replace(",)", ", )");
@@ -733,23 +725,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		);
 	}
 
-	@Test
-	public void test_AvgFunction_InvalidExpression() throws Exception {
-
-		String query = "SELECT AVG(e) FROM Employee e";
-		int startPosition = "SELECT AVG(".length();
-		int endPosition   = "SELECT AVG(e".length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.AvgFunction_InvalidExpression,
-			startPosition,
-			endPosition
-		);
-	}
-
 //	@Test
 //	public void test_ArithmeticExpression_MissingLeftExpression()
 //	{
@@ -768,6 +743,23 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 //			endPosition
 //		);
 //	}
+
+	@Test
+	public void test_AvgFunction_InvalidExpression() throws Exception {
+
+		String query = "SELECT AVG(e) FROM Employee e";
+		int startPosition = "SELECT AVG(".length();
+		int endPosition   = "SELECT AVG(e".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.AvgFunction_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
 
 	@Test
 	public void test_AvgFunction_MissingExpression_1() throws Exception {
@@ -1152,7 +1144,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		int startPosition = "SELECT COALESCE(".length();
 		int endPosition   = "SELECT COALESCE(SELECT e".length();
 
-		List<JPQLQueryProblem> problems = validate(query, buildFormatter_3());
+		List<JPQLQueryProblem> problems = validate(query);
 
 		testHasOnlyOneProblem(
 			problems,
@@ -5161,7 +5153,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		int startPosition = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, ".length();
 		int endPosition   = startPosition;
 
-		List<JPQLQueryProblem> problems = validate(query);
+		List<JPQLQueryProblem> problems = validate(query, buildFormatter_01());
 
 		testHasProblem(
 			problems,
@@ -5174,10 +5166,10 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	@Test
 	public void test_SubstringExpression_MissingThirdExpression_1() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0,";
+//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0,";
 
-		int startPosition = query.length();
-		int endPosition   = startPosition;
+//		int startPosition = query.length();
+//		int endPosition   = startPosition;
 
 		// TODO: Support platform and it should be done through an extension rather than
 		// hard coding it in the unit-tests (like using IPlatform)
@@ -5194,10 +5186,10 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	@Test
 	public void test_SubstringExpression_MissingThirdExpression_2() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, ";
+//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, ";
 
-		int startPosition = query.length();
-		int endPosition   = startPosition;
+//		int startPosition = query.length();
+//		int endPosition   = startPosition;
 
 		// TODO: Support platform and it should be done through an extension rather than
 		// hard coding it in the unit-tests (like using IPlatform)
@@ -5214,10 +5206,10 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	@Test
 	public void test_SubstringExpression_MissingThirdExpression_3() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, )";
+//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, )";
 
-		int startPosition = query.length() - 1;
-		int endPosition   = startPosition;
+//		int startPosition = query.length() - 1;
+//		int endPosition   = startPosition;
 
 		// TODO: Support platform and it should be done through an extension rather than
 		// hard coding it in the unit-tests (like using IPlatform)

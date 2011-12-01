@@ -3551,7 +3551,9 @@ public abstract class AbstractStateObjectTest1_0 extends AbstractStateObjectTest
 
 		// Select e
 		// From Employee e
-		// Where Exists(Where Exists(Select e.name From In e.phoneNumbers Where e.zipCode = 27519))
+		// Where Exists(Select e.name
+		//              From In e.phoneNumbers
+		//              Where e.zipCode = 27519)
 
 		return selectStatement(
 			select(variable("e")),

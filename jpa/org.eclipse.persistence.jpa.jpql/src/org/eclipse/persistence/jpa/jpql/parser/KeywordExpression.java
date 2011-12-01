@@ -100,7 +100,7 @@ public final class KeywordExpression extends AbstractExpression {
 		switch (wordParser.character()) {
 			case 'T': case 't': return TRUE;
 			case 'F': case 'f': return FALSE;
-			default:  return NULL;
+			default:            return NULL;
 		}
 	}
 

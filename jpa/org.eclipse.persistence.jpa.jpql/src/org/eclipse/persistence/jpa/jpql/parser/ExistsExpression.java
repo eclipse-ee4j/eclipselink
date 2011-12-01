@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -26,6 +27,11 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @author Pascal Filion
  */
 public final class ExistsExpression extends AbstractSingleEncapsulatedExpression {
+
+	/**
+	 * The actual <b>NOT</b> identifier found in the string representation of the JPQL query.
+	 */
+	private String notIdentifier;
 
 	/**
 	 * Creates a new <code>ExistsExpression</code>.
@@ -52,6 +58,17 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	}
 
 	/**
+	 * Returns the actual <b>NOT</b> identifier found in the string representation of the JPQL query,
+	 * which has the actual case that was used.
+	 *
+	 * @return The <b>NOT</b> identifier that was actually parsed, or an empty string if it was not
+	 * parsed
+	 */
+	public String getActualNotIdentifier() {
+		return (notIdentifier != null) ? notIdentifier : ExpressionTools.EMPTY_STRING;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -65,7 +82,7 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasNot() {
-		return getText().startsWith(NOT);
+		return (notIdentifier != null);
 	}
 
 	/**
@@ -89,6 +106,8 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	@Override
 	protected String parseIdentifier(WordParser wordParser) {
 		if (wordParser.startsWithIgnoreCase('N')) {
+			int position = wordParser.position();
+			notIdentifier = wordParser.substring(position, position + 3);
 			return NOT_EXISTS;
 		}
 		return EXISTS;

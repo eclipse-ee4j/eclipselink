@@ -210,6 +210,6 @@ public final class DateTime extends AbstractExpression {
 	 */
 	@Override
 	protected void toParsedText(StringBuilder writer, boolean actual) {
-		writer.append(actual ? identifier : getText());
+		writer.append(actual && !isJDBCDate() ? identifier : getText());
 	}
 }

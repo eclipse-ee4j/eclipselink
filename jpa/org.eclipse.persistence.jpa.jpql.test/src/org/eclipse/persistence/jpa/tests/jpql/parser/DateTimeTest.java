@@ -20,6 +20,7 @@ public final class DateTimeTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_01() {
+
 		String query = "SELECT e FROM Employee e WHERE e.startDate < CURRENT_DATE";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -33,6 +34,7 @@ public final class DateTimeTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_02() {
+
 		String query = "SELECT e FROM Employee e WHERE CURRENT_TIME > e.startDate";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -46,6 +48,7 @@ public final class DateTimeTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_03() {
+
 		String query = "SELECT e FROM Employee e WHERE e.startDate + 45 = CURRENT_TIMESTAMP";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -59,6 +62,7 @@ public final class DateTimeTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_04() {
+
 		String query = "SELECT e " +
 		               "FROM Employee e " +
 		               "WHERE e = p.employee AND " +
@@ -80,6 +84,7 @@ public final class DateTimeTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_05() {
+
 		String query = "SELECT o " +
 		               "FROM Customer c JOIN c.orders o " +
 		               "WHERE c.name = 'Smith' AND " +

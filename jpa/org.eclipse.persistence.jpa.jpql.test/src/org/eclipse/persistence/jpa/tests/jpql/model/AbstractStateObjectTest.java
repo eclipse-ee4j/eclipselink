@@ -15,7 +15,12 @@ package org.eclipse.persistence.jpa.tests.jpql.model;
 
 import java.util.Arrays;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.model.AbstractActualJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.BaseJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.DefaultActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
 import org.eclipse.persistence.jpa.jpql.model.query.AbsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractConditionalClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractDoubleEncapsulatedExpressionStateObject;
@@ -119,6 +124,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLCoreTest;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -136,6 +142,9 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
 	@IJPQLQueryBuilderTestHelper
 	private IJPQLQueryBuilder queryBuilder;
+
+	@IJPQLQueryFormatterTestHelper
+	private IJPQLQueryFormatter queryFormatter;
 
 	protected static AbsExpressionStateObjectTester abs(StateObjectTester expression) {
 		return new AbsExpressionStateObjectTester(expression);
@@ -1885,6 +1894,51 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return queryBuilder;
 	}
 
+	protected void test(StateObjectTester tester, JPQLQueryStateObject stateObject, String jpqlQuery) {
+
+		// Test the creation of the StateObject
+		jpqlQuery(tester).test(stateObject);
+
+		// Test the IJPQLQueryFormatter
+		testFormatter(stateObject, jpqlQuery);
+	}
+
+	/**
+	 * Tests the injected {@link IJPQLQueryFormatter} and make sure the generated string will be
+	 * the same as the given JPQL query.
+	 *
+	 * @param jpqlStateObject
+	 * @param jpqlQuery
+	 */
+	protected void testFormatter(JPQLQueryStateObject jpqlStateObject, String jpqlQuery) {
+
+		if (queryFormatter != null) {
+
+			if (queryFormatter instanceof DefaultActualJPQLQueryFormatter &&
+			    ((DefaultActualJPQLQueryFormatter) queryFormatter).getIdentifierStyle() == IdentifierStyle.CAPITALIZE_EACH_WORD &&
+			    ((DefaultActualJPQLQueryFormatter) queryFormatter).isUsingExactMatch()) {
+
+				System.out.println();
+			}
+
+			boolean exactMatch = false;
+			IdentifierStyle stye = ((BaseJPQLQueryFormatter) queryFormatter).getIdentifierStyle();
+
+			if (queryFormatter instanceof AbstractActualJPQLQueryFormatter) {
+				AbstractActualJPQLQueryFormatter formatter = (AbstractActualJPQLQueryFormatter) queryFormatter;
+				exactMatch = formatter.isUsingExactMatch();
+			}
+
+			jpqlQuery = JPQLQueryBuilder.toText(jpqlQuery, jpqlStateObject.getGrammar(), exactMatch, stye);
+
+			assertEquals(
+				"The JPQL query was not generated correctly.",
+				jpqlQuery,
+				queryFormatter.toString(jpqlStateObject)
+			);
+		}
+	}
+
 	/**
 	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
 	 * with the given tester, which is an equivalent representation of the parsed tree.
@@ -1921,7 +1975,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
 	 * with the given tester, which is an equivalent representation of the parsed tree.
 	 *
-	 * @param query The JPQL query to parse and to test the parsed tree representation
+	 * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
 	 * @param queryStatement The tester used to verify the parsed tree is correctly representing the
 	 * JPQL query
 	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
@@ -1929,15 +1983,20 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
 	 * to parse grammatically invalid or incomplete queries
 	 */
-	protected void testQuery(String query, StateObjectTester queryStatement, boolean tolerant) throws Exception {
+	protected void testQuery(String jpqlQuery, StateObjectTester queryStatement, boolean tolerant) throws Exception {
 
-		JPQLQueryStateObject stateObject = buildStateObject(query, tolerant);
+		// Create the StateObject
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, tolerant);
 
 		if (queryStatement.getClass() != JPQLQueryStateObjectTester.class) {
 			queryStatement = jpqlQuery(queryStatement);
 		}
 
+		// Compare the StateObject with the equivalent tree
 		queryStatement.test(stateObject);
+
+		// Now test the formatter
+		testFormatter(stateObject, jpqlQuery);
 	}
 
 	/**

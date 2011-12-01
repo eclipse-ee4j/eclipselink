@@ -191,7 +191,7 @@ public final class OrderByItem extends AbstractExpression {
 	 * @return <code>true</code> if <b>ASC</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean isAscending() {
-		return ordering == Ordering.DESC;
+		return ordering == Ordering.ASC;
 	}
 
 	/**
@@ -200,7 +200,7 @@ public final class OrderByItem extends AbstractExpression {
 	 * @return <code>true</code> if no ordering was parsed; <code>false</code> otherwise
 	 */
 	public boolean isDefault() {
-		return ordering == Ordering.DESC;
+		return ordering == Ordering.DEFAULT;
 	}
 
 	/**

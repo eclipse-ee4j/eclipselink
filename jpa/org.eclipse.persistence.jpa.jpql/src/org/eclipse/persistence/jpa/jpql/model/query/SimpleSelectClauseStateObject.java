@@ -173,7 +173,17 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
 	 */
 	@Override
 	protected void toTextInternal(Appendable writer) throws IOException {
+
+		// 'SELECT'
 		writer.append(SELECT);
+
+		// 'DISTINCT'
+		if (hasDistinct()) {
+			writer.append(SPACE);
+			writer.append(DISTINCT);
+		}
+
+		// Select expression
 		if (stateObject != null) {
 			writer.append(SPACE);
 			stateObject.toString(writer);

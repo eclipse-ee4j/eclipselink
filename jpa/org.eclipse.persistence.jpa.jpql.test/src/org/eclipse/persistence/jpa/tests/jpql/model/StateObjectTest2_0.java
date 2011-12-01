@@ -18,7 +18,8 @@ import org.junit.Test;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 
 /**
- * The abstract definition
+ * This tests the automatic creation by the builder of a {@link StateObject} by converting the
+ * parsed representation of a JPQL query using the JPQL grammar defined in JPA 2.0.
  *
  * @version 2.4
  * @since 2.4

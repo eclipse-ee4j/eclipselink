@@ -18,7 +18,7 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public final class LocateExpressionTest extends JPQLParserTest {
 
-	private JPQLQueryStringFormatter buildFormatter_1() {
+	private JPQLQueryStringFormatter buildFormatter_01() {
 		return new JPQLQueryStringFormatter() {
 			public String format(String query) {
 				return query.replace("LOCATE(AND", "LOCATE( AND");
@@ -26,7 +26,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 		};
 	}
 
-	private JPQLQueryStringFormatter buildFormatter_2() {
+	private JPQLQueryStringFormatter buildFormatter_02() {
 		return new JPQLQueryStringFormatter() {
 			public String format(String query) {
 				return query.substring(0, query.length() - 1);
@@ -34,8 +34,17 @@ public final class LocateExpressionTest extends JPQLParserTest {
 		};
 	}
 
+	private JPQLQueryStringFormatter buildFormatter_12() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace(",,", ", ,");
+			}
+		};
+	}
+
 	@Test
 	public void testBuildExpression_01() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.age)";
 
 		SelectStatementTester selectStatement = selectStatement(
@@ -49,6 +58,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_02() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(AVG(e.name), e.age, 2 + e.startDate)";
 
 		SelectStatementTester selectStatement = selectStatement(
@@ -62,6 +72,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_03() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -83,6 +94,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_04() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -103,6 +115,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_05() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE()";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -122,6 +135,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_06() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(,)";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -141,6 +155,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_07() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(,";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -161,6 +176,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_08() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(,,";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -181,6 +197,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_09() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(,,)";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -200,6 +217,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_10() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE AND e.name = 'Pascal'";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -226,6 +244,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_11() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE( AND e.name = 'Pascal'";
 
 		LocateExpressionTester locate = locate(nullExpression(), nullExpression());
@@ -246,11 +265,12 @@ public final class LocateExpressionTest extends JPQLParserTest {
 			)
 		);
 
-		testInvalidQuery(query, selectStatement, buildFormatter_1());
+		testInvalidQuery(query, selectStatement, buildFormatter_01());
 	}
 
 	@Test
 	public void testBuildExpression_12() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(, , 2 + e.startDate";
 
 		LocateExpressionTester locate = locate(
@@ -271,11 +291,12 @@ public final class LocateExpressionTest extends JPQLParserTest {
 			where(locate)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(query, selectStatement, buildFormatter_12());
 	}
 
 	@Test
 	public void testBuildExpression_13() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(, e.age, ";
 
 		LocateExpressionTester locate = locate(nullExpression(), path("e.age"));
@@ -297,6 +318,7 @@ public final class LocateExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_14() {
+
 		String query = "SELECT e FROM Employee e WHERE LOCATE(, e.age ";
 
 		LocateExpressionTester locate = locate(nullExpression(), path("e.age"));
@@ -313,6 +335,6 @@ public final class LocateExpressionTest extends JPQLParserTest {
 			where(locate)
 		);
 
-		testValidQuery(query, selectStatement, buildFormatter_2());
+		testValidQuery(query, selectStatement, buildFormatter_02());
 	}
 }

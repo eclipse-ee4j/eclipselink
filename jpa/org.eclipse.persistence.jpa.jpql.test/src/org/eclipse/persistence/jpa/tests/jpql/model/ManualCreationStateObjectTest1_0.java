@@ -50,6 +50,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 
 /**
+ * This tests the manual creation of a {@link StateObject} that can be parsed by the JPQL grammar
+ * defined in JPA 1.0.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -71,7 +74,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.addSelectItem("e");
 
-		jpqlQuery(stateObject_001()).test(jpqlStateObject);
+		test(stateObject_001(), jpqlStateObject, query_001());
 	}
 
 	@Test
@@ -84,7 +87,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.addSelectItem("e");
 
-		jpqlQuery(stateObject_002()).test(jpqlStateObject);
+		test(stateObject_002(), jpqlStateObject, query_002());
 	}
 
 	@Test
@@ -108,7 +111,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_003()).test(jpqlStateObject);
+		test(stateObject_003(), jpqlStateObject, query_003());
 	}
 
 	@Test
@@ -125,7 +128,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("e");
 		select.addWhereClause().parse("e.department.name = 'NA42' AND e.address.state IN ('NY', 'CA')");
 
-		jpqlQuery(stateObject_003()).test(jpqlStateObject);
+		test(stateObject_003(), jpqlStateObject, query_003());
 	}
 
 	@Test
@@ -157,7 +160,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		// x AND y
 		whereClause.setConditional(new AndExpressionStateObject(select, comparison, in));
 
-		jpqlQuery(stateObject_003()).test(jpqlStateObject);
+		test(stateObject_003(), jpqlStateObject, query_003());
 	}
 
 	@Test
@@ -187,7 +190,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_004()).test(jpqlStateObject);
+		test(stateObject_004(), jpqlStateObject, query_004());
 	}
 
 	@Test
@@ -207,7 +210,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("p.number");
 		select.addWhereClause().parse("e = p.employee AND e.department.name = 'NA42' AND p.type = 'Cell'");
 
-		jpqlQuery(stateObject_004()).test(jpqlStateObject);
+		test(stateObject_004(), jpqlStateObject, query_004());
 	}
 
 	@Test
@@ -230,7 +233,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addGroupByClause().addGroupByItem("d");
 		select.addHavingClause().getBuilder().count("e").greaterThanOrEqual(5).commit();
 
-		jpqlQuery(stateObject_005()).test(jpqlStateObject);
+		test(stateObject_005(), jpqlStateObject, query_005());
 	}
 
 	@Test
@@ -255,7 +258,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		selectClause.parse("MAX(e.salary)");
 		selectClause.parse("AVG(e.salary)");
 
-		jpqlQuery(stateObject_005()).test(jpqlStateObject);
+		test(stateObject_005(), jpqlStateObject, query_005());
 	}
 
 	@Test
@@ -281,7 +284,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			.append().avg("e.salary").
 		commit();
 
-		jpqlQuery(stateObject_005()).test(jpqlStateObject);
+		test(stateObject_005(), jpqlStateObject, query_005());
 	}
 
 	@Test
@@ -301,7 +304,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addGroupByClause().addGroupByItem("d");
 		select.addHavingClause().parse("COUNT(e) >= 5");
 
-		jpqlQuery(stateObject_005()).test(jpqlStateObject);
+		test(stateObject_005(), jpqlStateObject, query_005());
 	}
 
 	@Test
@@ -326,7 +329,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_006()).test(jpqlStateObject);
+		test(stateObject_006(), jpqlStateObject, query_006());
 	}
 
 	@Test
@@ -351,7 +354,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_007()).test(jpqlStateObject);
+		test(stateObject_007(), jpqlStateObject, query_007());
 	}
 
 	@Test
@@ -376,7 +379,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_008()).test(jpqlStateObject);
+		test(stateObject_008(), jpqlStateObject, query_008());
 	}
 
 	@Test
@@ -401,7 +404,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_009()).test(jpqlStateObject);
+		test(stateObject_009(), jpqlStateObject, query_009());
 	}
 
 	@Test
@@ -433,7 +436,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_010()).test(jpqlStateObject);
+		test(stateObject_010(), jpqlStateObject, query_010());
 	}
 
 	@Test
@@ -453,7 +456,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addWhereClause().getBuilder().path("p.name").equal("?1").commit();
 		select.addOrderByClause().addItem("e.name");
 
-		jpqlQuery(stateObject_011()).test(jpqlStateObject);
+		test(stateObject_011(), jpqlStateObject, query_011());
 	}
 
 	@Test
@@ -470,7 +473,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("e");
 		select.addWhereClause().getBuilder().isEmpty("e.projects").commit();
 
-		jpqlQuery(stateObject_012()).test(jpqlStateObject);
+		test(stateObject_012(), jpqlStateObject, query_012());
 	}
 
 	@Test
@@ -487,7 +490,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("e");
 		select.addWhereClause().getBuilder().isNotEmpty("e.projects").commit();
 
-		jpqlQuery(stateObject_013()).test(jpqlStateObject);
+		test(stateObject_013(), jpqlStateObject, query_013());
 	}
 
 	@Test
@@ -504,7 +507,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		update.addItem("e.manager", "?1");
 		update.addWhereClause().getBuilder().path("e.department").equal("?1").commit();
 
-		jpqlQuery(stateObject_014()).test(jpqlStateObject);
+		test(stateObject_014(), jpqlStateObject, query_014());
 	}
 
 	@Test
@@ -519,7 +522,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		delete.setDeclaration("Project", "p");
 		delete.addWhereClause().getBuilder().isEmpty("p.employees").commit();
 
-		jpqlQuery(stateObject_015()).test(jpqlStateObject);
+		test(stateObject_015(), jpqlStateObject, query_015());
 	}
 
 	@Test
@@ -535,7 +538,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = delete.addWhereClause().getBuilder();
 		builder.path("d.name").in("'CA13'", "'CA19'", "'NY30'").commit();
 
-		jpqlQuery(stateObject_016()).test(jpqlStateObject);
+		test(stateObject_016(), jpqlStateObject, query_016());
 	}
 
 	@Test
@@ -554,7 +557,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			path("e.department.name").in("'CA13'", "'CA19'", "'NY30'")
 		.commit();
 
-		jpqlQuery(stateObject_017()).test(jpqlStateObject);
+		test(stateObject_017(), jpqlStateObject, query_017());
 	}
 
 	@Test
@@ -573,7 +576,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("d.name").like(builder.string("'QA\\_%'"), "'\\'").commit();
 
-		jpqlQuery(stateObject_018()).test(jpqlStateObject);
+		test(stateObject_018(), jpqlStateObject, query_018());
 	}
 
 	@Test
@@ -596,7 +599,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("e.salary").equal(builder.sub(subquery)).commit();
 
-		jpqlQuery(stateObject_019()).test(jpqlStateObject);
+		test(stateObject_019(), jpqlStateObject, query_019());
 	}
 
 	@Test
@@ -626,7 +629,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		jpqlQuery(stateObject_020()).test(jpqlStateObject);
+		test(stateObject_020(), jpqlStateObject, query_020());
 	}
 
 	@Test
@@ -650,7 +653,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		jpqlQuery(stateObject_021()).test(jpqlStateObject);
+		test(stateObject_021(), jpqlStateObject, query_021());
 	}
 
 	@Test
@@ -679,7 +682,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("e.department").in(subquery).commit();
 
-		jpqlQuery(stateObject_022()).test(jpqlStateObject);
+		test(stateObject_022(), jpqlStateObject, query_022());
 	}
 
 	@Test
@@ -696,7 +699,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("p");
 		select.addWhereClause().getBuilder().path("p.type").notIn("'Office'", "'Home'").commit();
 
-		jpqlQuery(stateObject_023()).test(jpqlStateObject);
+		test(stateObject_023(), jpqlStateObject, query_023());
 	}
 
 	@Test
@@ -723,7 +726,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.sub(subquery).greaterThan(0).commit();
 
-		jpqlQuery(stateObject_024()).test(jpqlStateObject);
+		test(stateObject_024(), jpqlStateObject, query_024());
 	}
 
 	@Test
@@ -740,7 +743,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("e");
 		select.addWhereClause().getBuilder().variable("e").memberOf("e.directs").commit();
 
-		jpqlQuery(stateObject_025()).test(jpqlStateObject);
+		test(stateObject_025(), jpqlStateObject, query_025());
 	}
 
 	@Test
@@ -765,7 +768,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 		select.addWhereClause().getBuilder().notExists(subquery).commit();
 
-		jpqlQuery(stateObject_026()).test(jpqlStateObject);
+		test(stateObject_026(), jpqlStateObject, query_026());
 	}
 
 	@Test
@@ -793,7 +796,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_027()).test(jpqlStateObject);
+		test(stateObject_027(), jpqlStateObject, query_027());
 	}
 
 	@Test
@@ -822,7 +825,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			builder.path("e.department").equal(builder.any(subquery))
 		.commit();
 
-		jpqlQuery(stateObject_028()).test(jpqlStateObject);
+		test(stateObject_028(), jpqlStateObject, query_028());
 	}
 
 	@Test
@@ -839,7 +842,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("d");
 		select.addWhereClause().getBuilder().size("d.employees").equal(2).commit();
 
-		jpqlQuery(stateObject_029()).test(jpqlStateObject);
+		test(stateObject_029(), jpqlStateObject, query_029());
 	}
 
 	@Test
@@ -862,7 +865,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 		select.addWhereClause().getBuilder().sub(subquery).equal(2).commit();
 
-		jpqlQuery(stateObject_030()).test(jpqlStateObject);
+		test(stateObject_030(), jpqlStateObject, query_030());
 	}
 
 	@Test
@@ -879,7 +882,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem("e");
 		select.addOrderByClause().addItemDesc("e.name");
 
-		jpqlQuery(stateObject_031()).test(jpqlStateObject);
+		test(stateObject_031(), jpqlStateObject, query_031());
 	}
 
 	@Test
@@ -898,7 +901,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			addItem("d.name").getParent().
 			addItemDesc("e.name");
 
-		jpqlQuery(stateObject_032()).test(jpqlStateObject);
+		test(stateObject_032(), jpqlStateObject, query_032());
 	}
 
 	@Test
@@ -912,7 +915,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.addSelectItem(new AvgFunctionStateObject(select, "e.salary"));
 
-		jpqlQuery(stateObject_033()).test(jpqlStateObject);
+		test(stateObject_033(), jpqlStateObject, query_033());
 	}
 
 	@Test
@@ -926,7 +929,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.getSelectClause().parse("AVG(e.salary");
 
-		jpqlQuery(stateObject_033()).test(jpqlStateObject);
+		test(stateObject_033(), jpqlStateObject, query_033());
 	}
 
 	@Test
@@ -940,7 +943,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.getSelectClause().getBuilder().avg("e.salary").commit();
 
-		jpqlQuery(stateObject_033()).test(jpqlStateObject);
+		test(stateObject_033(), jpqlStateObject, query_033());
 	}
 
 	@Test
@@ -958,7 +961,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem(new AvgFunctionStateObject(select, "e.salary"));
 		select.addGroupByClause().addGroupByItem("d.name");
 
-		jpqlQuery(stateObject_034()).test(jpqlStateObject);
+		test(stateObject_034(), jpqlStateObject, query_034());
 	}
 
 	@Test
@@ -977,7 +980,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		ISelectExpressionStateObjectBuilder builder = select.getSelectClause().getBuilder();
 		builder.path("d.name").append().avg("e.salary").commit();
 
-		jpqlQuery(stateObject_034()).test(jpqlStateObject);
+		test(stateObject_034(), jpqlStateObject, query_034());
 	}
 
 	@Test
@@ -997,7 +1000,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addWhereClause().getBuilder().isEmpty("e.directs").commit();
 		select.addGroupByClause().addGroupByItem("d.name");
 
-		jpqlQuery(stateObject_035()).test(jpqlStateObject);
+		test(stateObject_035(), jpqlStateObject, query_035());
 	}
 
 	@Test
@@ -1019,7 +1022,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addGroupByClause().addGroupByItem("d.name");
 		select.addHavingClause().getBuilder().avg("e.salary").greaterThan(50000).commit();
 
-		jpqlQuery(stateObject_036()).test(jpqlStateObject);
+		test(stateObject_036(), jpqlStateObject, query_036());
 	}
 
 	@Test
@@ -1038,7 +1041,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addSelectItem(new CountFunctionStateObject(select, true, "p.type"));
 		select.addGroupByClause().addGroupByItem("e");
 
-		jpqlQuery(stateObject_037()).test(jpqlStateObject);
+		test(stateObject_037(), jpqlStateObject, query_037());
 	}
 
 	@Test
@@ -1060,7 +1063,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			.countDistinct("p.type")
 		.commit();
 
-		jpqlQuery(stateObject_037()).test(jpqlStateObject);
+		test(stateObject_037(), jpqlStateObject, query_037());
 	}
 
 	@Test
@@ -1082,7 +1085,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addGroupByClause().addGroupByItem("d.name");
 		select.getGroupByClause().addGroupByItem("e.salary");
 
-		jpqlQuery(stateObject_038()).test(jpqlStateObject);
+		test(stateObject_038(), jpqlStateObject, query_038());
 	}
 
 	@Test
@@ -1102,7 +1105,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addHavingClause().getBuilder().count("p").greaterThanOrEqual(2).commit();
 		select.addGroupByClause().addGroupByItem("e");
 
-		jpqlQuery(stateObject_039()).test(jpqlStateObject);
+		test(stateObject_039(), jpqlStateObject, query_039());
 	}
 
 	@Test
@@ -1119,7 +1122,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		update.addItem("e.salary", new NumericLiteralStateObject(update, "60000"));
 		update.addWhereClause().getBuilder().path("e.salary").equal(55000).commit();
 
-		jpqlQuery(stateObject_040()).test(jpqlStateObject);
+		test(stateObject_040(), jpqlStateObject, query_040());
 	}
 
 	@Test
@@ -1151,7 +1154,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 		update.addWhereClause().getBuilder().exists(subquery).commit();
 
-		jpqlQuery(stateObject_041()).test(jpqlStateObject);
+		test(stateObject_041(), jpqlStateObject, query_041());
 	}
 
 	@Test
@@ -1190,8 +1193,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-
-		jpqlQuery(stateObject_042()).test(jpqlStateObject);
+		test(stateObject_042(), jpqlStateObject, query_042());
 	}
 
 	@Test
@@ -1206,7 +1208,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		delete.setDeclaration("Employee", "e");
 		delete.addWhereClause().getBuilder().isNull("e.department").commit();
 
-		jpqlQuery(stateObject_043()).test(jpqlStateObject);
+		test(stateObject_043(), jpqlStateObject, query_043());
 	}
 
 	@Test
@@ -1238,7 +1240,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 				builder.some(subquery))
 		.commit();
 
-		jpqlQuery(stateObject_044()).test(jpqlStateObject);
+		test(stateObject_044(), jpqlStateObject, query_044());
 	}
 
 	@Test
@@ -1270,7 +1272,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 				builder.some(subquery))
 		.commit();
 
-		jpqlQuery(stateObject_045()).test(jpqlStateObject);
+		test(stateObject_045(), jpqlStateObject, query_045());
 	}
 
 	@Test
@@ -1295,7 +1297,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").equal(builder.any(subquery)).commit();
 
-		jpqlQuery(stateObject_046()).test(jpqlStateObject);
+		test(stateObject_046(), jpqlStateObject, query_046());
 	}
 
 	@Test
@@ -1324,7 +1326,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").lowerThan(builder.any(subquery)).commit();
 
-		jpqlQuery(stateObject_047()).test(jpqlStateObject);
+		test(stateObject_047(), jpqlStateObject, query_047());
 	}
 
 	@Test
@@ -1353,7 +1355,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").greaterThan(builder.any(subquery)).commit();
 
-		jpqlQuery(stateObject_048()).test(jpqlStateObject);
+		test(stateObject_048(), jpqlStateObject, query_048());
 	}
 
 	@Test
@@ -1378,7 +1380,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").different(builder.all(subquery)).commit();
 
-		jpqlQuery(stateObject_049()).test(jpqlStateObject);
+		test(stateObject_049(), jpqlStateObject, query_049());
 	}
 
 	@Test
@@ -1407,7 +1409,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").greaterThanOrEqual(builder.all(subquery)).commit();
 
-		jpqlQuery(stateObject_050()).test(jpqlStateObject);
+		test(stateObject_050(), jpqlStateObject, query_050());
 	}
 
 	@Test
@@ -1436,7 +1438,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").lowerThanOrEqual(builder.all(subquery)).commit();
 
-		jpqlQuery(stateObject_051()).test(jpqlStateObject);
+		test(stateObject_051(), jpqlStateObject, query_051());
 	}
 
 	@Test
@@ -1460,7 +1462,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").equal(builder.all(subquery)).commit();
 
-		jpqlQuery(stateObject_052()).test(jpqlStateObject);
+		test(stateObject_052(), jpqlStateObject, query_052());
 	}
 
 	@Test
@@ -1489,7 +1491,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").lowerThan(builder.all(subquery)).commit();
 
-		jpqlQuery(stateObject_053()).test(jpqlStateObject);
+		test(stateObject_053(), jpqlStateObject, query_053());
 	}
 
 	@Test
@@ -1518,7 +1520,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("co.totalPrice").greaterThan(builder.all(subquery)).commit();
 
-		jpqlQuery(stateObject_054()).test(jpqlStateObject);
+		test(stateObject_054(), jpqlStateObject, query_054());
 	}
 
 	@Test
@@ -1545,7 +1547,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		jpqlQuery(stateObject_055()).test(jpqlStateObject);
+		test(stateObject_055(), jpqlStateObject, query_055());
 	}
 
 	@Test
@@ -1573,7 +1575,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		jpqlQuery(stateObject_056()).test(jpqlStateObject);
+		test(stateObject_056(), jpqlStateObject, query_056());
 	}
 
 	//@Test
@@ -1593,7 +1595,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_057()).test(jpqlStateObject);
+		test(stateObject_057(), jpqlStateObject, query_057());
 	}
 
 	//@Test
@@ -1613,7 +1615,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_058()).test(jpqlStateObject);
+		test(stateObject_058(), jpqlStateObject, query_058());
 	}
 
 	//@Test
@@ -1633,7 +1635,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_059()).test(jpqlStateObject);
+		test(stateObject_059(), jpqlStateObject, query_059());
 	}
 
 	//@Test
@@ -1651,7 +1653,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_060()).test(jpqlStateObject);
+		test(stateObject_060(), jpqlStateObject, query_060());
 	}
 
 	//@Test
@@ -1669,7 +1671,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_061()).test(jpqlStateObject);
+		test(stateObject_061(), jpqlStateObject, query_061());
 	}
 
 	//@Test
@@ -1688,7 +1690,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_062()).test(jpqlStateObject);
+		test(stateObject_062(), jpqlStateObject, query_062());
 	}
 
 	//@Test
@@ -1707,7 +1709,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_063()).test(jpqlStateObject);
+		test(stateObject_063(), jpqlStateObject, query_063());
 	}
 
 	//@Test
@@ -1726,7 +1728,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_064()).test(jpqlStateObject);
+		test(stateObject_064(), jpqlStateObject, query_064());
 	}
 
 	//@Test
@@ -1745,7 +1747,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_065()).test(jpqlStateObject);
+		test(stateObject_065(), jpqlStateObject, query_065());
 	}
 
 	//@Test
@@ -1764,7 +1766,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_066()).test(jpqlStateObject);
+		test(stateObject_066(), jpqlStateObject, query_066());
 	}
 
 	//@Test
@@ -1783,7 +1785,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_067()).test(jpqlStateObject);
+		test(stateObject_067(), jpqlStateObject, query_067());
 	}
 
 	//@Test
@@ -1802,7 +1804,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_068()).test(jpqlStateObject);
+		test(stateObject_068(), jpqlStateObject, query_068());
 	}
 
 	//@Test
@@ -1821,7 +1823,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_069()).test(jpqlStateObject);
+		test(stateObject_069(), jpqlStateObject, query_069());
 	}
 
 	//@Test
@@ -1840,7 +1842,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_070()).test(jpqlStateObject);
+		test(stateObject_070(), jpqlStateObject, query_070());
 	}
 
 	//@Test
@@ -1859,7 +1861,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_071()).test(jpqlStateObject);
+		test(stateObject_071(), jpqlStateObject, query_071());
 	}
 
 	//@Test
@@ -1877,7 +1879,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_072()).test(jpqlStateObject);
+		test(stateObject_072(), jpqlStateObject, query_072());
 	}
 
 	//@Test
@@ -1896,7 +1898,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_073()).test(jpqlStateObject);
+		test(stateObject_073(), jpqlStateObject, query_073());
 	}
 
 	//@Test
@@ -1915,7 +1917,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_074()).test(jpqlStateObject);
+		test(stateObject_074(), jpqlStateObject, query_074());
 	}
 
 	//@Test
@@ -1933,7 +1935,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_075()).test(jpqlStateObject);
+		test(stateObject_075(), jpqlStateObject, query_075());
 	}
 
 	//@Test
@@ -1951,7 +1953,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_076()).test(jpqlStateObject);
+		test(stateObject_076(), jpqlStateObject, query_076());
 	}
 
 	//@Test
@@ -1969,7 +1971,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_077()).test(jpqlStateObject);
+		test(stateObject_077(), jpqlStateObject, query_077());
 	}
 
 	//@Test
@@ -1987,7 +1989,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_078()).test(jpqlStateObject);
+		test(stateObject_078(), jpqlStateObject, query_078());
 	}
 
 	//@Test
@@ -2005,7 +2007,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_079()).test(jpqlStateObject);
+		test(stateObject_079(), jpqlStateObject, query_079());
 	}
 
 	//@Test
@@ -2023,7 +2025,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_080()).test(jpqlStateObject);
+		test(stateObject_080(), jpqlStateObject, query_080());
 	}
 
 	//@Test
@@ -2041,7 +2043,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_081()).test(jpqlStateObject);
+		test(stateObject_081(), jpqlStateObject, query_081());
 	}
 
 	//@Test
@@ -2059,7 +2061,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_082()).test(jpqlStateObject);
+		test(stateObject_082(), jpqlStateObject, query_082());
 	}
 
 	//@Test
@@ -2077,7 +2079,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_083()).test(jpqlStateObject);
+		test(stateObject_083(), jpqlStateObject, query_083());
 	}
 
 	//@Test
@@ -2095,7 +2097,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_084()).test(jpqlStateObject);
+		test(stateObject_084(), jpqlStateObject, query_084());
 	}
 
 	//@Test
@@ -2113,7 +2115,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_085()).test(jpqlStateObject);
+		test(stateObject_085(), jpqlStateObject, query_085());
 	}
 
 	//@Test
@@ -2131,7 +2133,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_086()).test(jpqlStateObject);
+		test(stateObject_086(), jpqlStateObject, query_086());
 	}
 
 	//@Test
@@ -2149,7 +2151,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_087()).test(jpqlStateObject);
+		test(stateObject_087(), jpqlStateObject, query_087());
 	}
 
 	//@Test
@@ -2167,7 +2169,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_088()).test(jpqlStateObject);
+		test(stateObject_088(), jpqlStateObject, query_088());
 	}
 
 	//@Test
@@ -2185,7 +2187,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_089()).test(jpqlStateObject);
+		test(stateObject_089(), jpqlStateObject, query_089());
 	}
 
 	//@Test
@@ -2202,7 +2204,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_090()).test(jpqlStateObject);
+		test(stateObject_090(), jpqlStateObject, query_090());
 	}
 
 	//@Test
@@ -2220,7 +2222,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_091()).test(jpqlStateObject);
+		test(stateObject_091(), jpqlStateObject, query_091());
 	}
 
 	//@Test
@@ -2238,7 +2240,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_092()).test(jpqlStateObject);
+		test(stateObject_092(), jpqlStateObject, query_092());
 	}
 
 	//@Test
@@ -2256,7 +2258,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_093()).test(jpqlStateObject);
+		test(stateObject_093(), jpqlStateObject, query_093());
 	}
 
 	//@Test
@@ -2273,7 +2275,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_094()).test(jpqlStateObject);
+		test(stateObject_094(), jpqlStateObject, query_094());
 	}
 
 	//@Test
@@ -2291,7 +2293,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_095()).test(jpqlStateObject);
+		test(stateObject_095(), jpqlStateObject, query_095());
 	}
 
 	public void test_Query_096() throws Exception {
@@ -2308,7 +2310,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_096()).test(jpqlStateObject);
+		test(stateObject_096(), jpqlStateObject, query_096());
 	}
 
 	public void test_Query_097() throws Exception {
@@ -2325,7 +2327,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_097()).test(jpqlStateObject);
+		test(stateObject_097(), jpqlStateObject, query_097());
 	}
 
 	public void test_Query_098() throws Exception {
@@ -2342,7 +2344,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_098()).test(jpqlStateObject);
+		test(stateObject_098(), jpqlStateObject, query_098());
 	}
 
 	public void test_Query_099() throws Exception {
@@ -2360,7 +2362,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_099()).test(jpqlStateObject);
+		test(stateObject_099(), jpqlStateObject, query_099());
 	}
 
 	public void test_Query_100() throws Exception {
@@ -2378,7 +2380,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_100()).test(jpqlStateObject);
+		test(stateObject_100(), jpqlStateObject, query_100());
 	}
 
 	public void test_Query_101() throws Exception {
@@ -2395,7 +2397,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_101()).test(jpqlStateObject);
+		test(stateObject_101(), jpqlStateObject, query_101());
 	}
 
 	public void test_Query_102() throws Exception {
@@ -2411,7 +2413,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_102()).test(jpqlStateObject);
+		test(stateObject_102(), jpqlStateObject, query_102());
 	}
 
 	public void test_Query_103() throws Exception {
@@ -2427,7 +2429,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_103()).test(jpqlStateObject);
+		test(stateObject_103(), jpqlStateObject, query_103());
 	}
 
 	public void test_Query_104() throws Exception {
@@ -2443,7 +2445,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_104()).test(jpqlStateObject);
+		test(stateObject_104(), jpqlStateObject, query_104());
 	}
 
 	public void test_Query_105() throws Exception {
@@ -2459,7 +2461,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_105()).test(jpqlStateObject);
+		test(stateObject_105(), jpqlStateObject, query_105());
 	}
 
 	public void test_Query_106() throws Exception {
@@ -2475,7 +2477,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_106()).test(jpqlStateObject);
+		test(stateObject_106(), jpqlStateObject, query_106());
 	}
 
 	public void test_Query_107() throws Exception {
@@ -2492,7 +2494,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_107()).test(jpqlStateObject);
+		test(stateObject_107(), jpqlStateObject, query_107());
 	}
 
 	public void test_Query_108() throws Exception {
@@ -2509,7 +2511,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_108()).test(jpqlStateObject);
+		test(stateObject_108(), jpqlStateObject, query_108());
 	}
 
 	public void test_Query_109() throws Exception {
@@ -2526,7 +2528,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_109()).test(jpqlStateObject);
+		test(stateObject_109(), jpqlStateObject, query_109());
 	}
 
 	public void test_Query_110() throws Exception {
@@ -2543,7 +2545,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_110()).test(jpqlStateObject);
+		test(stateObject_110(), jpqlStateObject, query_110());
 	}
 
 	public void test_Query_111() throws Exception {
@@ -2560,7 +2562,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_111()).test(jpqlStateObject);
+		test(stateObject_111(), jpqlStateObject, query_111());
 	}
 
 	public void test_Query_112() throws Exception {
@@ -2576,7 +2578,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_112()).test(jpqlStateObject);
+		test(stateObject_112(), jpqlStateObject, query_112());
 	}
 
 	public void test_Query_113() throws Exception {
@@ -2593,7 +2595,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_113()).test(jpqlStateObject);
+		test(stateObject_113(), jpqlStateObject, query_113());
 	}
 
 	public void test_Query_114() throws Exception {
@@ -2610,7 +2612,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_114()).test(jpqlStateObject);
+		test(stateObject_114(), jpqlStateObject, query_114());
 	}
 
 	public void test_Query_115() throws Exception {
@@ -2627,7 +2629,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_115()).test(jpqlStateObject);
+		test(stateObject_115(), jpqlStateObject, query_115());
 	}
 
 	public void test_Query_116() throws Exception {
@@ -2643,7 +2645,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_116()).test(jpqlStateObject);
+		test(stateObject_116(), jpqlStateObject, query_116());
 	}
 
 	public void test_Query_117() throws Exception {
@@ -2660,7 +2662,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_117()).test(jpqlStateObject);
+		test(stateObject_117(), jpqlStateObject, query_117());
 	}
 
 	public void test_Query_118() throws Exception {
@@ -2677,7 +2679,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_118()).test(jpqlStateObject);
+		test(stateObject_118(), jpqlStateObject, query_118());
 	}
 
 	public void test_Query_119() throws Exception {
@@ -2694,7 +2696,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_119()).test(jpqlStateObject);
+		test(stateObject_119(), jpqlStateObject, query_119());
 	}
 
 	public void test_Query_120() throws Exception {
@@ -2711,7 +2713,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_120()).test(jpqlStateObject);
+		test(stateObject_120(), jpqlStateObject, query_120());
 	}
 
 	public void test_Query_121() throws Exception {
@@ -2728,7 +2730,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_121()).test(jpqlStateObject);
+		test(stateObject_121(), jpqlStateObject, query_121());
 	}
 
 	public void test_Query_122() throws Exception {
@@ -2745,7 +2747,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_122()).test(jpqlStateObject);
+		test(stateObject_122(), jpqlStateObject, query_122());
 	}
 
 	public void test_Query_123() throws Exception {
@@ -2762,7 +2764,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_123()).test(jpqlStateObject);
+		test(stateObject_123(), jpqlStateObject, query_123());
 	}
 
 	public void test_Query_124() throws Exception {
@@ -2779,7 +2781,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_124()).test(jpqlStateObject);
+		test(stateObject_124(), jpqlStateObject, query_124());
 	}
 
 	public void test_Query_125() throws Exception {
@@ -2797,7 +2799,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_125()).test(jpqlStateObject);
+		test(stateObject_125(), jpqlStateObject, query_125());
 	}
 
 	public void test_Query_126() throws Exception {
@@ -2814,7 +2816,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_126()).test(jpqlStateObject);
+		test(stateObject_126(), jpqlStateObject, query_126());
 	}
 
 	public void test_Query_127() throws Exception {
@@ -2831,7 +2833,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_127()).test(jpqlStateObject);
+		test(stateObject_127(), jpqlStateObject, query_127());
 	}
 
 	public void test_Query_128() throws Exception {
@@ -2848,7 +2850,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_128()).test(jpqlStateObject);
+		test(stateObject_128(), jpqlStateObject, query_128());
 	}
 
 	public void test_Query_129() throws Exception {
@@ -2865,7 +2867,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_129()).test(jpqlStateObject);
+		test(stateObject_129(), jpqlStateObject, query_129());
 	}
 
 	public void test_Query_130() throws Exception {
@@ -2882,7 +2884,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_130()).test(jpqlStateObject);
+		test(stateObject_130(), jpqlStateObject, query_130());
 	}
 
 	public void test_Query_131() throws Exception {
@@ -2899,7 +2901,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_131()).test(jpqlStateObject);
+		test(stateObject_131(), jpqlStateObject, query_131());
 	}
 
 	public void test_Query_132() throws Exception {
@@ -2916,7 +2918,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_132()).test(jpqlStateObject);
+		test(stateObject_132(), jpqlStateObject, query_132());
 	}
 
 	public void test_Query_133() throws Exception {
@@ -2933,7 +2935,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_133()).test(jpqlStateObject);
+		test(stateObject_133(), jpqlStateObject, query_133());
 	}
 
 	public void test_Query_134() throws Exception {
@@ -2950,7 +2952,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_134()).test(jpqlStateObject);
+		test(stateObject_134(), jpqlStateObject, query_134());
 	}
 
 	public void test_Query_135() throws Exception {
@@ -2967,7 +2969,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_135()).test(jpqlStateObject);
+		test(stateObject_135(), jpqlStateObject, query_135());
 	}
 
 	public void test_Query_136() throws Exception {
@@ -2984,7 +2986,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_136()).test(jpqlStateObject);
+		test(stateObject_136(), jpqlStateObject, query_136());
 	}
 
 	public void test_Query_137() throws Exception {
@@ -3001,7 +3003,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_137()).test(jpqlStateObject);
+		test(stateObject_137(), jpqlStateObject, query_137());
 	}
 
 	public void test_Query_138() throws Exception {
@@ -3018,7 +3020,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_138()).test(jpqlStateObject);
+		test(stateObject_138(), jpqlStateObject, query_138());
 	}
 
 	public void test_Query_140() throws Exception {
@@ -3035,7 +3037,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_140()).test(jpqlStateObject);
+		test(stateObject_140(), jpqlStateObject, query_140());
 	}
 
 	public void test_Query_141() throws Exception {
@@ -3052,7 +3054,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_141()).test(jpqlStateObject);
+		test(stateObject_141(), jpqlStateObject, query_141());
 	}
 
 	public void test_Query_142() throws Exception {
@@ -3069,7 +3071,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_142()).test(jpqlStateObject);
+		test(stateObject_142(), jpqlStateObject, query_142());
 	}
 
 	public void test_Query_143() throws Exception {
@@ -3086,7 +3088,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_143()).test(jpqlStateObject);
+		test(stateObject_143(), jpqlStateObject, query_143());
 	}
 
 	public void test_Query_144() throws Exception {
@@ -3103,7 +3105,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_144()).test(jpqlStateObject);
+		test(stateObject_144(), jpqlStateObject, query_144());
 	}
 
 	public void test_Query_145() throws Exception {
@@ -3120,7 +3122,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_145()).test(jpqlStateObject);
+		test(stateObject_145(), jpqlStateObject, query_145());
 	}
 
 	public void test_Query_146() throws Exception {
@@ -3137,7 +3139,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_146()).test(jpqlStateObject);
+		test(stateObject_146(), jpqlStateObject, query_146());
 	}
 
 	public void test_Query_147() throws Exception {
@@ -3154,7 +3156,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_147()).test(jpqlStateObject);
+		test(stateObject_147(), jpqlStateObject, query_147());
 	}
 
 	public void test_Query_148() throws Exception {
@@ -3171,7 +3173,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_148()).test(jpqlStateObject);
+		test(stateObject_148(), jpqlStateObject, query_148());
 	}
 
 	public void test_Query_149() throws Exception {
@@ -3188,7 +3190,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_149()).test(jpqlStateObject);
+		test(stateObject_149(), jpqlStateObject, query_149());
 	}
 
 	public void test_Query_150() throws Exception {
@@ -3205,7 +3207,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_150()).test(jpqlStateObject);
+		test(stateObject_150(), jpqlStateObject, query_150());
 	}
 
 	public void test_Query_151() throws Exception {
@@ -3222,7 +3224,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_151()).test(jpqlStateObject);
+		test(stateObject_151(), jpqlStateObject, query_151());
 	}
 
 	public void test_Query_152() throws Exception {
@@ -3239,7 +3241,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_152()).test(jpqlStateObject);
+		test(stateObject_152(), jpqlStateObject, query_152());
 	}
 
 	public void test_Query_153() throws Exception {
@@ -3256,7 +3258,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_153()).test(jpqlStateObject);
+		test(stateObject_153(), jpqlStateObject, query_153());
 	}
 
 	public void test_Query_154() throws Exception {
@@ -3273,7 +3275,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_154()).test(jpqlStateObject);
+		test(stateObject_154(), jpqlStateObject, query_154());
 	}
 
 	public void test_Query_155() throws Exception {
@@ -3290,7 +3292,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_155()).test(jpqlStateObject);
+		test(stateObject_155(), jpqlStateObject, query_155());
 	}
 
 	public void test_Query_156() throws Exception {
@@ -3307,7 +3309,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_156()).test(jpqlStateObject);
+		test(stateObject_156(), jpqlStateObject, query_156());
 	}
 
 	public void test_Query_157() throws Exception {
@@ -3324,7 +3326,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_157()).test(jpqlStateObject);
+		test(stateObject_157(), jpqlStateObject, query_157());
 	}
 
 	public void test_Query_158() throws Exception {
@@ -3341,7 +3343,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_158()).test(jpqlStateObject);
+		test(stateObject_158(), jpqlStateObject, query_158());
 	}
 
 	public void test_Query_159() throws Exception {
@@ -3358,7 +3360,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_159()).test(jpqlStateObject);
+		test(stateObject_159(), jpqlStateObject, query_159());
 	}
 
 	public void test_Query_160() throws Exception {
@@ -3375,7 +3377,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_160()).test(jpqlStateObject);
+		test(stateObject_160(), jpqlStateObject, query_160());
 	}
 
 	public void test_Query_161() throws Exception {
@@ -3392,7 +3394,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_161()).test(jpqlStateObject);
+		test(stateObject_161(), jpqlStateObject, query_161());
 	}
 
 	public void test_Query_162() throws Exception {
@@ -3409,7 +3411,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_162()).test(jpqlStateObject);
+		test(stateObject_161(), jpqlStateObject, query_161());
 	}
 
 	public void test_Query_163() throws Exception {
@@ -3426,7 +3428,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_163()).test(jpqlStateObject);
+		test(stateObject_163(), jpqlStateObject, query_163());
 	}
 
 	public void test_Query_164() throws Exception {
@@ -3443,7 +3445,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_164()).test(jpqlStateObject);
+		test(stateObject_164(), jpqlStateObject, query_164());
 	}
 
 	public void test_Query_165() throws Exception {
@@ -3460,7 +3462,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_165()).test(jpqlStateObject);
+		test(stateObject_165(), jpqlStateObject, query_165());
 	}
 
 	public void test_Query_166() throws Exception {
@@ -3477,7 +3479,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_166()).test(jpqlStateObject);
+		test(stateObject_166(), jpqlStateObject, query_166());
 	}
 
 	public void test_Query_167() throws Exception {
@@ -3494,7 +3496,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_167()).test(jpqlStateObject);
+		test(stateObject_167(), jpqlStateObject, query_167());
 	}
 
 	public void test_Query_168() throws Exception {
@@ -3511,7 +3513,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_168()).test(jpqlStateObject);
+		test(stateObject_168(), jpqlStateObject, query_168());
 	}
 
 	public void test_Query_169() throws Exception {
@@ -3527,7 +3529,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_169()).test(jpqlStateObject);
+		test(stateObject_169(), jpqlStateObject, query_169());
 	}
 
 	public void test_Query_170() throws Exception {
@@ -3544,7 +3546,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_170()).test(jpqlStateObject);
+		test(stateObject_170(), jpqlStateObject, query_170());
 	}
 
 	public void test_Query_171() throws Exception {
@@ -3561,7 +3563,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_172()).test(jpqlStateObject);
+		test(stateObject_171(), jpqlStateObject, query_171());
 	}
 
 	public void test_Query_172() throws Exception {
@@ -3578,7 +3580,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_172()).test(jpqlStateObject);
+		test(stateObject_172(), jpqlStateObject, query_172());
 	}
 
 	public void test_Query_173() throws Exception {
@@ -3595,7 +3597,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_173()).test(jpqlStateObject);
+		test(stateObject_173(), jpqlStateObject, query_173());
 	}
 
 	public void test_Query_174() throws Exception {
@@ -3611,7 +3613,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_174()).test(jpqlStateObject);
+		test(stateObject_174(), jpqlStateObject, query_174());
 	}
 
 	public void test_Query_175() throws Exception {
@@ -3628,7 +3630,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_175()).test(jpqlStateObject);
+		test(stateObject_175(), jpqlStateObject, query_175());
 	}
 
 	public void test_Query_176() throws Exception {
@@ -3644,7 +3646,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_176()).test(jpqlStateObject);
+		test(stateObject_176(), jpqlStateObject, query_176());
 	}
 
 	public void test_Query_177() throws Exception {
@@ -3658,7 +3660,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_177()).test(jpqlStateObject);
+		test(stateObject_177(), jpqlStateObject, query_177());
 	}
 
 	public void test_Query_178() throws Exception {
@@ -3676,7 +3678,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_178()).test(jpqlStateObject);
+		test(stateObject_178(), jpqlStateObject, query_178());
 	}
 
 	public void test_Query_179() throws Exception {
@@ -3691,7 +3693,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_179()).test(jpqlStateObject);
+		test(stateObject_179(), jpqlStateObject, query_179());
 	}
 
 	public void test_Query_180() throws Exception {
@@ -3707,7 +3709,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_180()).test(jpqlStateObject);
+		test(stateObject_180(), jpqlStateObject, query_180());
 	}
 
 	public void test_Query_181() throws Exception {
@@ -3723,7 +3725,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_181()).test(jpqlStateObject);
+		test(stateObject_181(), jpqlStateObject, query_181());
 	}
 
 	public void test_Query_182() throws Exception {
@@ -3739,7 +3741,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_182()).test(jpqlStateObject);
+		test(stateObject_182(), jpqlStateObject, query_182());
 	}
 
 	public void test_Query_183() throws Exception {
@@ -3755,7 +3757,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_183()).test(jpqlStateObject);
+		test(stateObject_183(), jpqlStateObject, query_183());
 	}
 
 	public void test_Query_184() throws Exception {
@@ -3771,7 +3773,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_184()).test(jpqlStateObject);
+		test(stateObject_184(), jpqlStateObject, query_184());
 	}
 
 	public void test_Query_185() throws Exception {
@@ -3788,7 +3790,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_185()).test(jpqlStateObject);
+		test(stateObject_185(), jpqlStateObject, query_185());
 	}
 
 	public void test_Query_186() throws Exception {
@@ -3805,7 +3807,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_186()).test(jpqlStateObject);
+		test(stateObject_186(), jpqlStateObject, query_186());
 	}
 
 	public void test_Query_187() throws Exception {
@@ -3822,7 +3824,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_187()).test(jpqlStateObject);
+		test(stateObject_187(), jpqlStateObject, query_187());
 	}
 
 	public void test_Query_188() throws Exception {
@@ -3839,7 +3841,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_188()).test(jpqlStateObject);
+		test(stateObject_188(), jpqlStateObject, query_188());
 	}
 
 	public void test_Query_189() throws Exception {
@@ -3856,7 +3858,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_189()).test(jpqlStateObject);
+		test(stateObject_189(), jpqlStateObject, query_189());
 	}
 
 	public void test_Query_190() throws Exception {
@@ -3873,7 +3875,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_190()).test(jpqlStateObject);
+		test(stateObject_190(), jpqlStateObject, query_190());
 	}
 
 	public void test_Query_191() throws Exception {
@@ -3890,7 +3892,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_191()).test(jpqlStateObject);
+		test(stateObject_191(), jpqlStateObject, query_191());
 	}
 
 	public void test_Query_192() throws Exception {
@@ -3907,7 +3909,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_192()).test(jpqlStateObject);
+		test(stateObject_192(), jpqlStateObject, query_192());
 	}
 
 	public void test_Query_193() throws Exception {
@@ -3924,7 +3926,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_193()).test(jpqlStateObject);
+		test(stateObject_193(), jpqlStateObject, query_193());
 	}
 
 	public void test_Query_194() throws Exception {
@@ -3943,7 +3945,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_194()).test(jpqlStateObject);
+		test(stateObject_194(), jpqlStateObject, query_194());
 	}
 
 	public void test_Query_195() throws Exception {
@@ -3963,7 +3965,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_195()).test(jpqlStateObject);
+		test(stateObject_196(), jpqlStateObject, query_196());
 	}
 
 	public void test_Query_196() throws Exception {
@@ -3982,7 +3984,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_196()).test(jpqlStateObject);
+		test(stateObject_196(), jpqlStateObject, query_196());
 	}
 
 	public void test_Query_197() throws Exception {
@@ -3999,7 +4001,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_197()).test(jpqlStateObject);
+		test(stateObject_197(), jpqlStateObject, query_197());
 	}
 
 	public void test_Query_198() throws Exception {
@@ -4017,7 +4019,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_198()).test(jpqlStateObject);
+		test(stateObject_198(), jpqlStateObject, query_198());
 	}
 
 	public void test_Query_199() throws Exception {
@@ -4034,7 +4036,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_199()).test(jpqlStateObject);
+		test(stateObject_199(), jpqlStateObject, query_199());
 	}
 
 	public void test_Query_200() throws Exception {
@@ -4052,7 +4054,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_200()).test(jpqlStateObject);
+		test(stateObject_200(), jpqlStateObject, query_200());
 	}
 
 	//@Test
@@ -4071,7 +4073,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 
 
-		jpqlQuery(stateObject_201()).test(jpqlStateObject);
+		test(stateObject_201(), jpqlStateObject, query_201());
 	}
 
 	@Test
@@ -4096,7 +4098,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.numeric(100000).lowerThan(builder.sub(subquery)).commit();
 
-		jpqlQuery(stateObject_202()).test(jpqlStateObject);
+		test(stateObject_202(), jpqlStateObject, query_202());
 	}
 
 	@Test
@@ -4121,7 +4123,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.numeric(0).lowerThan(builder.all(subquery)).commit();
 
-		jpqlQuery(stateObject_203()).test(jpqlStateObject);
+		test(stateObject_203(), jpqlStateObject, query_203());
 	}
 
 	@Test
@@ -4154,7 +4156,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 		update.addWhereClause().getBuilder().exists(subquery).commit();
 
-		jpqlQuery(stateObject_204()).test(jpqlStateObject);
+		test(stateObject_204(), jpqlStateObject, query_204());
 	}
 
 	@Test
@@ -4177,7 +4179,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addOrderByClause().addItemDesc("o.quantity");
 		select.getOrderByClause().addItem("o.totalcost");
 
-		jpqlQuery(stateObject_215()).test(jpqlStateObject);
+		test(stateObject_215(), jpqlStateObject, query_215());
 	}
 
 	@Test
@@ -4203,7 +4205,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			addItem("o.quantity").getParent().
 			addItem("a.zipcode");
 
-		jpqlQuery(stateObject_216()).test(jpqlStateObject);
+		test(stateObject_216(), jpqlStateObject, query_216());
 	}
 
 	@Test
@@ -4220,7 +4222,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = delete.addWhereClause().getBuilder();
 		builder.path("c.status").equal("'inactive'").commit();
 
-		jpqlQuery(stateObject_219()).test(jpqlStateObject);
+		test(stateObject_219(), jpqlStateObject, query_219());
 	}
 
 	@Test
@@ -4244,7 +4246,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_220()).test(jpqlStateObject);
+		test(stateObject_220(), jpqlStateObject, query_220());
 	}
 
 	@Test
@@ -4264,7 +4266,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		where.parse("c.status = 'inactive'");
 		where.andParse("c.orders IS EMPTY");
 
-		jpqlQuery(stateObject_220()).test(jpqlStateObject);
+		test(stateObject_220(), jpqlStateObject, query_220());
 	}
 
 	@Test
@@ -4283,7 +4285,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = update.addWhereClause().getBuilder();
 		builder.path("c.balance").lowerThan(10000).commit();
 
-		jpqlQuery(stateObject_221()).test(jpqlStateObject);
+		test(stateObject_221(), jpqlStateObject, query_221());
 	}
 
 	@Test
@@ -4300,7 +4302,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		update.addItem("c.status", "'outstanding'");
 		update.addWhereClause().parse("c.balance < 10000");
 
-		jpqlQuery(stateObject_221()).test(jpqlStateObject);
+		test(stateObject_221(), jpqlStateObject, query_221());
 	}
 
 	@Test
@@ -4332,7 +4334,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		jpqlQuery(stateObject_228()).test(jpqlStateObject);
+		test(stateObject_228(), jpqlStateObject, query_228());
 	}
 
 	@Test
@@ -4353,7 +4355,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			addJoin("e.phoneNumbers", "p");
 		select.addWhereClause("e.firstName = 'Bob' and e.lastName like 'Smith%' and e.address.city = 'Toronto' and p.areaCode <> '2'");
 
-		jpqlQuery(stateObject_228()).test(jpqlStateObject);
+		test(stateObject_228(), jpqlStateObject, query_228());
 	}
 
 	@Test
@@ -4374,7 +4376,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			addJoin("e.phoneNumbers", "p");
 		select.addWhereClause().parse("e.firstName = 'Bob' and e.lastName like 'Smith%' and e.address.city = 'Toronto' and p.areaCode <> '2'");
 
-		jpqlQuery(stateObject_228()).test(jpqlStateObject);
+		test(stateObject_228(), jpqlStateObject, query_228());
 	}
 
 	@Test
@@ -4400,7 +4402,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		where.andParse("e.address.city = 'Toronto'");
 		where.andParse("p.areaCode <> '2'");
 
-		jpqlQuery(stateObject_228()).test(jpqlStateObject);
+		test(stateObject_228(), jpqlStateObject, query_228());
 	}
 
 	@Test
@@ -4424,7 +4426,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		jpqlQuery(stateObject_229()).test(jpqlStateObject);
+		test(stateObject_229(), jpqlStateObject, query_229());
 	}
 
 	@Test
@@ -4441,13 +4443,13 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 
 		SimpleSelectStatementStateObject subquery = new SimpleSelectStatementStateObject(select);
-		subquery.setSelectItem("e");
+		subquery.setSelectItem("e.name");
 		subquery.addDerivedCollectionDeclaration("e.phoneNumbers");
-		subquery.addWhereClause("a.zipCode = 27519");
+		subquery.addWhereClause("e.zipCode = 27519");
 
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		testQuery(query_230(), stateObject_230());
+		test(stateObject_230(), jpqlStateObject, query_230());
 	}
 }

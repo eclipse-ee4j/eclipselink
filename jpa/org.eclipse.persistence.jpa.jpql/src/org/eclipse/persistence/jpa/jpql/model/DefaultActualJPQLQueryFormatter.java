@@ -56,7 +56,7 @@ public final class DefaultActualJPQLQueryFormatter extends AbstractActualJPQLQue
 	 * {@link StateObject} was modified after its creation
 	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
 	 */
-	protected DefaultActualJPQLQueryFormatter(boolean exactMatch, IdentifierStyle style) {
+	public DefaultActualJPQLQueryFormatter(boolean exactMatch, IdentifierStyle style) {
 		super(exactMatch, style);
 	}
 }

@@ -197,6 +197,33 @@ public class OrderByItemStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * Determines whether the ordering was specified as being ascendant.
+	 *
+	 * @return <code>true</code> if <b>ASC</b> was parsed; <code>false</code> otherwise
+	 */
+	public boolean isAscending() {
+		return ordering == Ordering.ASC;
+	}
+
+	/**
+	 * Determines whether the ordering was not specified.
+	 *
+	 * @return <code>true</code> if no ordering was parsed; <code>false</code> otherwise
+	 */
+	public boolean isDefault() {
+		return ordering == Ordering.DEFAULT;
+	}
+
+	/**
+	 * Determines whether the ordering was specified as being descendant.
+	 *
+	 * @return <code>true</code> if <b>DESC</b> was parsed; <code>false</code> otherwise
+	 */
+	public boolean isDescending() {
+		return ordering == Ordering.DESC;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which represents either a state-field pathe expression or a
 	 * result variable, and creates the {@link StateObject}.
 	 *
@@ -262,7 +289,7 @@ public class OrderByItemStateObject extends AbstractStateObject {
 			stateObject.toString(writer);
 		}
 
-		if (ordering != Ordering.DEFAULT) {
+		if (!isDefault()) {
 			writer.append(SPACE);
 			writer.append(ordering.name());
 		}

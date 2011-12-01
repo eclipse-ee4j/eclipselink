@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.model;
 
 import java.util.ListIterator;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.model.query.AbsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractDoubleEncapsulatedExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractFromClauseStateObject;
@@ -26,6 +27,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.AbstractSelectStatementState
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractSingleEncapsulatedExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractTripleEncapsulatedExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AdditionExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AggregateFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AllOrAnyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AndExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ArithmeticFactorStateObject;
@@ -116,6 +118,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTripleEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
@@ -124,9 +127,11 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
@@ -140,12 +145,12 @@ import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
-import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
@@ -223,16 +228,64 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 */
 	protected void appendIdentifier(String actualIdentifier, String identifier) {
 
-		// Revert to use the constant
-		if ((actualIdentifier == null) || (actualIdentifier.length() == 0)) {
+		if (!exactMatch || ExpressionTools.stringIsEmpty(actualIdentifier)) {
 			actualIdentifier = formatIdentifier(identifier);
 		}
 
 		writer.append(actualIdentifier);
 	}
 
+	/**
+	 * Determines whether the string representation of any given {@link StateObject} should reflect
+	 * the exact string that was parsed.
+	 *
+	 * @return <code>true</code> will use every bit of information contained in the corresponding
+	 * {@link Expression} to perfectly match what was parsed; <code>false</code> will only match the
+	 * case sensitivity of the JPQL identifiers
+	 */
+	public boolean isUsingExactMatch() {
+		return exactMatch;
+	}
+
 	protected boolean shouldOutput(Expression expression) {
 		return !exactMatch || (expression == null);
+	}
+
+	protected void toStringAggregateFunction(AggregateFunctionStateObject stateObject) {
+
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
+		}
+		else {
+			AggregateFunction expression = stateObject.getExpression();
+
+			// Identifier
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getIdentifier(), stateObject.getIdentifier());
+
+			// '('
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
+				writer.append(formatIdentifier(LEFT_PARENTHESIS));
+			}
+
+			// 'DISTINCT'
+			if (stateObject.hasDistinct()) {
+				appendIdentifier((expression != null) ? expression.getActualDistinctIdentifier() : DISTINCT, DISTINCT);
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterDistinct()) {
+					writer.append(SPACE);
+				}
+			}
+
+			// Encapsulated expression
+			if (stateObject.hasStateObject()) {
+				stateObject.getStateObject().accept(this);
+			}
+
+			// ')'
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
+				writer.append(formatIdentifier(RIGHT_PARENTHESIS));
+			}
+		}
 	}
 
 	protected void toStringChildren(ListHolderStateObject<? extends StateObject> stateObject,
@@ -249,7 +302,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringCompound(CompoundExpressionStateObject stateObject, String identifier) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			CompoundExpression expression = stateObject.getExpression();
@@ -277,13 +330,13 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringDoubleEncapsulated(AbstractDoubleEncapsulatedExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			AbstractDoubleEncapsulatedExpression expression = stateObject.getExpression();
 
 			// Identifier
-			writer.append(stateObject.getIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getIdentifier(), stateObject.getIdentifier());
 
 			// '('
 			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
@@ -322,13 +375,13 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringEncapsulatedIdentificationVariable(EncapsulatedIdentificationVariableExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			EncapsulatedIdentificationVariableExpression expression = stateObject.getExpression();
 
 			// Identifier
-			writer.append(stateObject.getIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getIdentifier(), stateObject.getIdentifier());
 
 			// '('
 			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
@@ -350,7 +403,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringFromClause(AbstractFromClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			AbstractFromClause expression = stateObject.getExpression();
@@ -372,7 +425,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringIdentificationVariableDeclaration(AbstractIdentificationVariableDeclarationStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			IdentificationVariableDeclaration expression = stateObject.getExpression();
@@ -395,7 +448,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringModifyStatement(AbstractModifyStatementStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			stateObject.getModifyClause().accept(this);
@@ -411,7 +464,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringPathExpression(AbstractPathExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			stateObject.toText(writer);
@@ -421,7 +474,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringRangeVariableDeclaration(AbstractRangeVariableDeclarationStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			RangeVariableDeclaration expression = stateObject.getExpression();
@@ -429,93 +482,110 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// "Root" object (abstract schema name or derived declaration)
 			stateObject.getRootStateObject().accept(this);
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterAbstractSchemaName()) {
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterAbstractSchemaName()) {
 				writer.append(SPACE);
 			}
 
 			// 'AS'
 			if (stateObject.hasAs()) {
-				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
 
-				if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
+				if (!exactMatch || (expression == null)) {
 					writer.append(SPACE);
 				}
+
+				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
+			}
+
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterAs()) {
+				writer.append(SPACE);
 			}
 
 			// Identification variable
 			if (stateObject.hasIdentificationVariable() &&
 			   !stateObject.isIdentificationVariableVirtual()) {
 
+				if (!exactMatch || (expression == null)) {
+					writer.append(SPACE);
+				}
+
 				writer.append(stateObject.getIdentificationVariable());
 			}
 		}
 	}
 
-	protected void toStringSelectStatement(AbstractSelectStatementStateObject stateObject) {
+	protected boolean toStringSelectStatement(AbstractSelectStatementStateObject stateObject) {
 
-		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+		AbstractSelectStatement expression = stateObject.getExpression();
+		boolean spaceAdded = false;
+
+		// SELECT clause
+		stateObject.getSelectClause().accept(this);
+
+		// If no select items were parsed by they got added later, make sure a space is added
+		if (shouldOutput(expression) ||
+		    expression.hasSpaceAfterSelect() ||
+		    (!expression.getSelectClause().hasSelectExpression() &&
+		     stateObject.getSelectClause().hasSelectItem())) {
+
+			writer.append(SPACE);
 		}
-		else {
-			AbstractSelectStatement expression = stateObject.getExpression();
 
-			// SELECT clause
-			stateObject.getSelectClause().accept(this);
+		// FROM clause
+		stateObject.getFromClause().accept(this);
 
-			// If no select items were parsed by they got added later, make sure a space is added
-			if (shouldOutput(expression) ||
-			    expression.hasSpaceAfterSelect() ||
-			    (!expression.getSelectClause().hasSelectExpression() &&
-			     stateObject.getSelectClause().hasSelectItem())) {
+		// If no WHERE clause was parsed but was added later, make sure a space is added
+		if (exactMatch && (expression != null) && expression.hasSpaceAfterFrom() ||
+		    stateObject.hasWhereClause()) {
 
+			writer.append(SPACE);
+			spaceAdded = true;
+		}
+
+		// WHERE clause
+		if (stateObject.hasWhereClause()) {
+			stateObject.getWhereClause().accept(this);
+			spaceAdded = false;
+		}
+
+		// If no GROUP BY clause was parsed but was added later, make sure a space is added
+		if (exactMatch && (expression != null) && expression.hasSpaceAfterWhere() ||
+		    stateObject.hasGroupByClause()) {
+
+			if (!spaceAdded) {
 				writer.append(SPACE);
-			}
-
-			// FROM clause
-			stateObject.getFromClause().accept(this);
-
-			// If no WHERE clause was parsed but was added later, make sure a space is added
-			if (exactMatch && (expression != null) && expression.hasSpaceAfterFrom() ||
-			    stateObject.hasWhereClause()) {
-
-				writer.append(SPACE);
-			}
-
-			// WHERE clause
-			if (stateObject.hasWhereClause()) {
-				stateObject.getWhereClause().accept(this);
-			}
-
-			// If no GROUP BY clause was parsed but was added later, make sure a space is added
-			if (exactMatch && (expression != null) && expression.hasSpaceAfterWhere() ||
-			    stateObject.hasGroupByClause()) {
-
-				writer.append(SPACE);
-			}
-
-			// GROUP BY clause
-			if (stateObject.hasGroupByClause()) {
-				stateObject.getGroupByClause().accept(this);
-			}
-
-			// If no HAVING clause was parsed but was added later, make sure a space is added
-			if (exactMatch && (expression != null) && expression.hasSpaceAfterGroupBy() ||
-			    stateObject.hasHavingClause()) {
-
-				writer.append(SPACE);
-			}
-
-			// HAVING clause
-			if (stateObject.hasHavingClause()) {
-				stateObject.getHavingClause().accept(this);
+				spaceAdded = true;
 			}
 		}
+
+		// GROUP BY clause
+		if (stateObject.hasGroupByClause()) {
+			stateObject.getGroupByClause().accept(this);
+			spaceAdded = false;
+		}
+
+		// If no HAVING clause was parsed but was added later, make sure a space is added
+		if (exactMatch && (expression != null) && expression.hasSpaceAfterGroupBy() ||
+		    stateObject.hasHavingClause()) {
+
+			if (!spaceAdded) {
+				writer.append(SPACE);
+				spaceAdded = true;
+			}
+		}
+
+		// HAVING clause
+		if (stateObject.hasHavingClause()) {
+			stateObject.getHavingClause().accept(this);
+			spaceAdded = true;
+		}
+
+		return spaceAdded;
 	}
 
 	protected void toStringSimpleStateObject(SimpleStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else if (stateObject.hasText()) {
 			writer.append(stateObject.getText());
@@ -525,13 +595,13 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringSingleEncapsulated(AbstractSingleEncapsulatedExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			AbstractSingleEncapsulatedExpression expression = stateObject.getExpression();
 
 			// Identifier
-			appendIdentifier((expression != null) ? expression.getActualIdentifier() : ABS, ABS);
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getIdentifier(), stateObject.getIdentifier());
 
 			// '('
 			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
@@ -552,13 +622,13 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringTripleEncapsulated(AbstractTripleEncapsulatedExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			AbstractTripleEncapsulatedExpression expression = stateObject.getExpression();
 
 			// Identifier
-			writer.append(stateObject.getIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getIdentifier(), stateObject.getIdentifier());
 
 			// '('
 			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
@@ -583,16 +653,17 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 				stateObject.getSecond().accept(this);
 			}
 
-			if (shouldOutput(expression) || expression.hasSecondComma()) {
-				writer.append(COMMA);
-			}
-
-			if (shouldOutput(expression) || expression.hasSpaceAfterSecondComma()) {
-				writer.append(SPACE);
-			}
-
 			// Third expression
 			if (stateObject.hasThird()) {
+
+				if (shouldOutput(expression) || expression.hasSecondComma()) {
+					writer.append(COMMA);
+				}
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterSecondComma()) {
+					writer.append(SPACE);
+				}
+
 				stateObject.getThird().accept(this);
 			}
 
@@ -600,32 +671,6 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
-		}
-	}
-
-	/**
-	 * Visits the given {@link StateObject} and prevents its decorator to be called, which will
-	 * prevent any possible recursion when the decorator is outputting the information.
-	 *
-	 * @param stateObject The decorated {@link stateObject} to traverse without going through the
-	 * decorator
-	 */
-	protected void toText(StateObject stateObject) {
-
-		if (stateObject.isDecorated()) {
-
-			StateObject decorator = stateObject.getDecorator();
-			stateObject.decorate(null);
-
-			try {
-				stateObject.accept(this);
-			}
-			finally {
-				stateObject.decorate(decorator);
-			}
-		}
-		else {
-			stateObject.accept(this);
 		}
 	}
 
@@ -670,7 +715,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(ArithmeticFactorStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			writer.append(stateObject.getArithmeticSign());
@@ -685,7 +730,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 * {@inheritDoc}
 	 */
 	public void visit(AvgFunctionStateObject stateObject) {
-		toStringSingleEncapsulated(stateObject);
+		toStringAggregateFunction(stateObject);
 	}
 
 	/**
@@ -701,7 +746,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(BetweenExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			BetweenExpression expression = stateObject.getExpression();
@@ -756,7 +801,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(CaseExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			CaseExpression expression = stateObject.getExpression();
@@ -771,10 +816,10 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// Case operand
 			if (stateObject.hasCaseOperand()) {
 				stateObject.getCaseOperand().accept(this);
-			}
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterCaseOperand()) {
-				writer.append(SPACE);
+				if (shouldOutput(expression) || expression.hasSpaceAfterCaseOperand()) {
+					writer.append(SPACE);
+				}
 			}
 
 			// WHEN clauses
@@ -817,7 +862,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(CoalesceExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			CoalesceExpression expression = stateObject.getExpression();
@@ -848,7 +893,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(CollectionMemberDeclarationStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			CollectionMemberDeclaration expression = stateObject.getExpression();
@@ -857,10 +902,10 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			appendIdentifier((expression != null) ? expression.getActualInIdentifier() : IN, IN);
 
 			// '('
-			if (!stateObject.isDerived()) {
+			if (!stateObject.isDerived() && (shouldOutput(expression) || expression.hasLeftParenthesis())) {
 				writer.append(LEFT_PARENTHESIS);
 			}
-			else if (expression.hasSpaceAfterIn()) {
+			else if (stateObject.isDerived() && (shouldOutput(expression) || expression.hasSpaceAfterIn())) {
 				writer.append(SPACE);
 			}
 
@@ -868,20 +913,27 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			stateObject.getCollectionValuedPath().accept(this);
 
 			// ')'
-			if (!stateObject.isDerived()) {
+			if (!stateObject.isDerived() && (shouldOutput(expression) || expression.hasRightParenthesis())) {
 				writer.append(RIGHT_PARENTHESIS);
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterRightParenthesis()) {
+					writer.append(SPACE);
+				}
 			}
-			else if (expression.hasSpaceAfterRightParenthesis()) {
+			else if (stateObject.isDerived() &&
+			         stateObject.hasAs() &&
+			         (shouldOutput(expression) || expression.hasSpaceAfterRightParenthesis())) {
+
 				writer.append(SPACE);
 			}
 
 			// 'AS'
 			if (stateObject.hasAs()) {
 				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
-			}
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
-				writer.append(SPACE);
+				if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
+					writer.append(SPACE);
+				}
 			}
 
 			// Identification variable
@@ -897,7 +949,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(CollectionMemberExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			CollectionMemberExpression expression = stateObject.getExpression();
@@ -924,12 +976,13 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// 'OF'
 			if (stateObject.hasOf()) {
 				appendIdentifier((expression != null) ? expression.getActualOfIdentifier() : OF, OF);
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterOf()) {
+					writer.append(SPACE);
+				}
 			}
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterOf()) {
-				writer.append(SPACE);
-			}
-
+			// Collection-valued path expression
 			stateObject.getCollectionValuedPath().accept(this);
 		}
 	}
@@ -954,7 +1007,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(ConcatExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			ConcatExpression expression = stateObject.getExpression();
@@ -982,7 +1035,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(ConstructorExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			ConstructorExpression expression = stateObject.getExpression();
@@ -1015,7 +1068,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 * {@inheritDoc}
 	 */
 	public void visit(CountFunctionStateObject stateObject) {
-		toStringSingleEncapsulated(stateObject);
+		toStringAggregateFunction(stateObject);
 	}
 
 	/**
@@ -1024,10 +1077,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(DateTimeStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
-			writer.append(stateObject.getText());
+			DateTime expression = stateObject.getExpression();
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getText(), stateObject.getText());
 		}
 	}
 
@@ -1037,7 +1091,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(DeleteClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			DeleteClause expression = stateObject.getExpression();
@@ -1058,7 +1112,8 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 				writer.append(SPACE);
 			}
 
-			stateObject.getDeclaration().accept(this);
+			// Range variable declaration
+			stateObject.getRangeVariableDeclaration().accept(this);
 		}
 	}
 
@@ -1096,7 +1151,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(EmptyCollectionComparisonExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			EmptyCollectionComparisonExpression expression = stateObject.getExpression();
@@ -1144,7 +1199,43 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 * {@inheritDoc}
 	 */
 	public void visit(ExistsExpressionStateObject stateObject) {
-		toStringSingleEncapsulated(stateObject);
+
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
+		}
+		else {
+			ExistsExpression expression = stateObject.getExpression();
+
+			// 'NOT'
+			if (stateObject.hasNot()) {
+				appendIdentifier((expression != null) ? expression.getActualNotIdentifier() : NOT, NOT);
+				writer.append(SPACE);
+			}
+
+			// 'EXISTS'
+			String actualIdentifier = (expression != null) ? expression.getActualIdentifier() : null;
+
+			if ((actualIdentifier != null) && actualIdentifier.startsWith(NOT)) {
+				actualIdentifier = actualIdentifier.substring(4);
+			}
+
+			appendIdentifier(actualIdentifier, EXISTS);
+
+			// '('
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
+				writer.append(formatIdentifier(LEFT_PARENTHESIS));
+			}
+
+			// Subquery
+			if (stateObject.hasStateObject()) {
+				stateObject.getStateObject().accept(this);
+			}
+
+			// ')'
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
+				writer.append(formatIdentifier(RIGHT_PARENTHESIS));
+			}
+		}
 	}
 
 	/**
@@ -1160,7 +1251,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(GroupByClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			GroupByClause expression = stateObject.getExpression();
@@ -1185,7 +1276,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(HavingClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			HavingClause expression = stateObject.getExpression();
@@ -1233,7 +1324,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(InExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			InExpression expression = stateObject.getExpression();
@@ -1282,7 +1373,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(JoinFetchStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			JoinFetch expression = stateObject.getExpression();
@@ -1305,7 +1396,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(JoinStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			Join expression = stateObject.getExpression();
@@ -1345,7 +1436,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(JPQLQueryStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else if (stateObject.hasQueryStatement()) {
 			stateObject.getQueryStatement().accept(this);
@@ -1365,17 +1456,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(KeywordExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			KeywordExpression expression = stateObject.getExpression();
-
-			if (expression != null) {
-				writer.append(expression.getActualIdentifier());
-			}
-			else {
-				writer.append(stateObject.getText());
-			}
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getText(), stateObject.getText());
 		}
 	}
 
@@ -1392,7 +1477,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(LikeExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			LikeExpression expression = stateObject.getExpression();
@@ -1464,14 +1549,14 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 * {@inheritDoc}
 	 */
 	public void visit(MaxFunctionStateObject stateObject) {
-		toStringSingleEncapsulated(stateObject);
+		toStringAggregateFunction(stateObject);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(MinFunctionStateObject stateObject) {
-		toStringSingleEncapsulated(stateObject);
+		toStringAggregateFunction(stateObject);
 	}
 
 	/**
@@ -1494,7 +1579,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(NotExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			NotExpression expression = stateObject.getExpression();
@@ -1519,7 +1604,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(NullComparisonExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			NullComparisonExpression expression = stateObject.getExpression();
@@ -1572,7 +1657,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(OrderByClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			OrderByClause expression = stateObject.getExpression();
@@ -1597,7 +1682,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(OrderByItemStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			OrderByItem expression = stateObject.getExpression();
@@ -1607,18 +1692,21 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 				stateObject.getStateObject().accept(this);
 			}
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterExpression()) {
-				writer.append(SPACE);
-			}
-
 			// ASC/DESC
-			if (stateObject.getOrdering() != Ordering.DEFAULT) {
-				if (expression != null) {
-					writer.append(expression.getActualOrdering());
+			if (!stateObject.isDefault()) {
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterExpression()) {
+					writer.append(SPACE);
 				}
-				else {
-					formatIdentifier(stateObject.getOrdering().name());
+
+				String ordering = stateObject.getOrdering().name();
+				String actualOrdering = (expression != null) ? expression.getActualOrdering() : null;
+
+				if (!ordering.equalsIgnoreCase(actualOrdering)) {
+					actualOrdering = ordering;
 				}
+
+				appendIdentifier(actualOrdering, ordering);
 			}
 		}
 	}
@@ -1643,7 +1731,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(ResultVariableStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			ResultVariable expression = stateObject.getExpression();
@@ -1653,17 +1741,27 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 				stateObject.getStateObject().accept(this);
 			}
 
+			if (exactMatch && (expression != null) && expression.hasSelectExpression()) {
+				writer.append(SPACE);
+			}
+
 			// 'AS'
 			if (stateObject.hasAs()) {
+				if (!exactMatch || (expression == null)) {
+					writer.append(SPACE);
+				}
 				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
 			}
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterAs()) {
 				writer.append(SPACE);
 			}
 
 			// Result variable
 			if (stateObject.hasResultVariable()) {
+				if (!exactMatch || (expression == null)) {
+					writer.append(SPACE);
+				}
 				writer.append(stateObject.getResultVariable());
 			}
 		}
@@ -1675,7 +1773,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(SelectClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			SelectClause expression = stateObject.getExpression();
@@ -1708,20 +1806,26 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 */
 	public void visit(SelectStatementStateObject stateObject) {
 
-		toStringSelectStatement(stateObject);
-
-		SelectStatement expression = stateObject.getExpression();
-
-		// If no ORDER BY clause was parsed but was added later, make sure a space is added
-		if (exactMatch && (expression != null) && expression.hasSpaceBeforeOrderBy() ||
-		    stateObject.hasOrderByClause() && (writer.charAt(writer.length() - 1) != ' ')) {
-
-			writer.append(SPACE);
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
 		}
+		else {
+			boolean endWithSpace = toStringSelectStatement(stateObject);
+			SelectStatement expression = stateObject.getExpression();
 
-		// ORDER BY clause
-		if (stateObject.hasOrderByClause()) {
-			stateObject.getOrderByClause().accept(this);
+			// If no ORDER BY clause was parsed but was added later, make sure a space is added
+			if (exactMatch && (expression != null) && expression.hasSpaceBeforeOrderBy() ||
+			    stateObject.hasOrderByClause()) {
+
+				if (!endWithSpace) {
+					writer.append(SPACE);
+				}
+			}
+
+			// ORDER BY clause
+			if (stateObject.hasOrderByClause()) {
+				stateObject.getOrderByClause().accept(this);
+			}
 		}
 	}
 
@@ -1738,7 +1842,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(SimpleSelectClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			SimpleSelectClause expression = stateObject.getExpression();
@@ -1753,10 +1857,10 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// DISTINCT
 			if (stateObject.hasDistinct()) {
 				appendIdentifier((expression != null) ? expression.getActualDistinctIdentifier() : DISTINCT, DISTINCT);
-			}
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterDistinct()) {
-				writer.append(SPACE);
+				if (shouldOutput(expression) || expression.hasSpaceAfterDistinct()) {
+					writer.append(SPACE);
+				}
 			}
 
 			// Select expression
@@ -1770,7 +1874,13 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 * {@inheritDoc}
 	 */
 	public void visit(SimpleSelectStatementStateObject stateObject) {
-		toStringSelectStatement(stateObject);
+
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
+		}
+		else {
+			toStringSelectStatement(stateObject);
+		}
 	}
 
 	/**
@@ -1826,14 +1936,77 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 * {@inheritDoc}
 	 */
 	public void visit(SumFunctionStateObject stateObject) {
-		toStringSingleEncapsulated(stateObject);
+		toStringAggregateFunction(stateObject);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(TrimExpressionStateObject stateObject) {
-		toStringSingleEncapsulated(stateObject);
+
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
+		}
+		else {
+			TrimExpression expression = stateObject.getExpression();
+
+			// 'TRIM'
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getIdentifier(), stateObject.getIdentifier());
+
+			// '('
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
+				writer.append(LEFT_PARENTHESIS);
+			}
+			else if ((expression != null) && expression.hasSpaceAfterIdentifier()) {
+				writer.append(SPACE);
+			}
+
+			// Trim specification
+			if (stateObject.hasSpecification()) {
+				String specification = stateObject.getSpecification().name();
+				String actualSpecification = (expression != null) ? expression.getActualSpecificationIdentifier() : null;
+
+				if (!specification.equalsIgnoreCase(actualSpecification)) {
+					actualSpecification = specification;
+				}
+
+				appendIdentifier(actualSpecification, specification);
+			}
+
+			if (shouldOutput(expression) || expression.hasSpaceAfterSpecification()) {
+				writer.append(SPACE);
+			}
+
+			// Trim character
+			if (stateObject.hasTrimCharacter()) {
+				stateObject.getTrimCharacter().accept(this);
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterTrimCharacter()) {
+					writer.append(SPACE);
+				}
+			}
+
+			// 'FROM'
+			if (stateObject.hasSpecification() ||
+			    stateObject.hasTrimCharacter()) {
+
+				appendIdentifier((expression != null) ? expression.getActualFromIdentifier() : FROM, FROM);
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterFrom()) {
+					writer.append(SPACE);
+				}
+			}
+
+			// String primary
+			if (stateObject.hasStateObject()) {
+				stateObject.getStateObject().accept(this);
+			}
+
+			// ')'
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
+				writer.append(RIGHT_PARENTHESIS);
+			}
+		}
 	}
 
 	/**
@@ -1856,7 +2029,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(UpdateClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			UpdateClause expression = stateObject.getExpression();
@@ -1878,10 +2051,10 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// 'SET'
 			if (shouldOutput(expression) || expression.hasSet()) {
 				appendIdentifier((expression != null) ? expression.getActualSetIdentifier() : SET, SET);
-			}
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterSet()) {
-				writer.append(SPACE);
+				if (shouldOutput(expression) || expression.hasSpaceAfterSet()) {
+					writer.append(SPACE);
+				}
 			}
 
 			// Update items
@@ -1897,7 +2070,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(UpdateItemStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			UpdateItem expression = stateObject.getExpression();
@@ -1952,7 +2125,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(WhenClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			WhenClause expression = stateObject.getExpression();
@@ -1995,7 +2168,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	public void visit(WhereClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			WhereClause expression = stateObject.getExpression();

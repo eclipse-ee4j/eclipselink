@@ -328,15 +328,17 @@ public final class InExpression extends AbstractExpression {
 		if (singleInputParameter == null) {
 
 			if (hasLeftParenthesis || hasRightParenthesis)  {
-				singleInputParameter = false;
+				singleInputParameter = Boolean.FALSE;
 			}
+			else {
+				WordParser wordParser = new WordParser(getInItems().toActualText());
+				String word = wordParser.word();
+				wordParser.moveForward(word);
 
-			WordParser wordParser = new WordParser(getInItems().toActualText());
-			String word = wordParser.word();
-
-			singleInputParameter = (word.length() > 0) &&
-			                       ExpressionTools.isParameter(word.charAt(0)) &&
-			                       wordParser.isTail();
+				singleInputParameter = (word.length() > 0) &&
+				                       ExpressionTools.isParameter(word.charAt(0)) &&
+				                       wordParser.isTail();
+			}
 		}
 
 		return singleInputParameter;

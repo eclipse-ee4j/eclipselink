@@ -64,4 +64,46 @@ public final class StringLiteralTest extends JPQLParserTest {
 
 		testQuery(query, selectStatement);
 	}
+
+	@Test
+	public void testBuildExpression_04() {
+
+		String query = "SELECT e FROM Employee e WHERE e.name = '''  JPQL  From wHeRe '' '";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.name").equal(string("'''  JPQL  From wHeRe '' '")))
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_05() {
+
+		String query = "SELECT e FROM Employee e WHERE e.name = 'JPQL";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.name").equal(string("'JPQL")))
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_06() {
+
+		String query = "SELECT e FROM Employee e WHERE e.name = \"JPQL";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.name").equal(string("\"JPQL")))
+		);
+
+		testQuery(query, selectStatement);
+	}
 }

@@ -39,6 +39,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("null")
 public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQLQueryFormatter
                                                        implements EclipseLinkStateObjectVisitor {
 
@@ -66,7 +67,7 @@ public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQ
 	 * {@link StateObject} was modified after its creation
 	 * @exception NullPointerException The IdentifierStyle cannot be <code>null</code>
 	 */
-	protected EclipseLinkActualJPQLQueryFormatter(boolean exactMatch, IdentifierStyle style) {
+	public EclipseLinkActualJPQLQueryFormatter(boolean exactMatch, IdentifierStyle style) {
 		super(exactMatch, style);
 	}
 
@@ -76,16 +77,16 @@ public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQ
 	public void visit(FuncExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			FuncExpression expression = stateObject.getExpression();
 
 			// FUNC
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : FUNC, FUNC);
 
 			// (
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 			else if (exactMatch && expression.hasSpaceAfterIdentifier()) {
@@ -95,13 +96,13 @@ public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQ
 			// Function name
 			if (stateObject.hasFunctionName()) {
 
-				writer.append(stateObject.getFunctionName());
+				writer.append(stateObject.getQuotedFunctionName());
 
-				if (!exactMatch | expression.hasComma()) {
+				if (shouldOutput(expression) || expression.hasComma()) {
 					writer.append(COMMA);
 				}
 
-				if (!exactMatch | expression.hasSpaceAFterComma()) {
+				if (shouldOutput(expression) || expression.hasSpaceAFterComma()) {
 					writer.append(SPACE);
 				}
 			}
@@ -110,7 +111,7 @@ public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQ
 			toStringChildren(stateObject, true);
 
 			// )
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}
@@ -122,32 +123,32 @@ public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQ
 	public void visit(TreatExpressionStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
-			stateObject.getDecorator().accept(this);
+			toText(stateObject);
 		}
 		else {
 			TreatExpression expression = stateObject.getExpression();
 
 			// TREAT
-			writer.append(expression.getActualIdentifier());
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : TREAT, TREAT);
 
 			// (
-			if (!exactMatch | expression.hasLeftParenthesis()) {
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
 				writer.append(LEFT_PARENTHESIS);
 			}
 
 			// Join association path expression
-			toText(stateObject.getJoinAssociationPathStateObject());
+			stateObject.getJoinAssociationPathStateObject().accept(this);
 
-			if (!exactMatch | expression.hasSpaceAfterCollectionValuedPathExpression()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterCollectionValuedPathExpression()) {
 				writer.append(SPACE);
 			}
 
 			// AS
 			if (stateObject.hasAs()) {
 
-				appendIdentifier(expression.getActualAsIdentifier(), AS);
+				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
 
-				if (!exactMatch | expression.hasSpaceAfterAs()) {
+				if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
 					writer.append(SPACE);
 				}
 			}
@@ -156,7 +157,7 @@ public final class EclipseLinkActualJPQLQueryFormatter extends AbstractActualJPQ
 			writer.append(stateObject.getEntityTypeName());
 
 			// )
-			if (!exactMatch | expression.hasRightParenthesis()) {
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
 				writer.append(RIGHT_PARENTHESIS);
 			}
 		}

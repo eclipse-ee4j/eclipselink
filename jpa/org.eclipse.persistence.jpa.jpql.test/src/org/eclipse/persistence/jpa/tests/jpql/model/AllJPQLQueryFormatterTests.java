@@ -17,6 +17,7 @@ import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_0;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
+import org.eclipse.persistence.jpa.tests.jpql.HermesBugsTest;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
@@ -30,7 +31,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	DefaultActualJPQLQueryFormatterTest.class
+	DefaultActualJPQLQueryFormatterTest.class,
+	HermesBugsTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllJPQLQueryFormatterTests {

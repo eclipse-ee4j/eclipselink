@@ -54,7 +54,7 @@ public class EclipseLinkJPQLQueryFormatter extends AbstractJPQLQueryFormatter
 			writer.append(formatIdentifier(LEFT_PARENTHESIS));
 
 			if (stateObject.hasFunctionName()) {
-				writer.append(stateObject.getFunctionName());
+				writer.append(stateObject.getQuotedFunctionName());
 
 				if (stateObject.hasItems()) {
 					writer.append(COMMA_SPACE);
@@ -88,7 +88,7 @@ public class EclipseLinkJPQLQueryFormatter extends AbstractJPQLQueryFormatter
 
 			// AS
 			if (stateObject.hasAs()) {
-				writer.append(AS);
+				writer.append(formatIdentifier(AS));
 				writer.append(SPACE);
 			}
 

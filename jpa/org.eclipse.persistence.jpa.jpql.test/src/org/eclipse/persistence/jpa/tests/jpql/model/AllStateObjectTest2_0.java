@@ -13,15 +13,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.model;
 
+import org.eclipse.persistence.jpa.jpql.model.DefaultActualJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.DefaultJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.EclipseLinkActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
 import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-import org.eclipse.persistence.jpa.tests.jpql.HermesBugsTest;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
@@ -35,7 +40,6 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @SuiteClasses({
 	StateObjectTest2_0.class,
-	HermesBugsTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllStateObjectTest2_0 {
@@ -53,6 +57,37 @@ public final class AllStateObjectTest2_0 {
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_3.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance())
+		};
+	}
+
+	@IJPQLQueryFormatterTestHelper
+	static IJPQLQueryFormatter[] buildJPQLQUeryFormatters() {
+
+		return new IJPQLQueryFormatter[] {
+
+			new DefaultJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new DefaultJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
+			new DefaultJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
+
+			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.LOWERCASE),
+			new EclipseLinkJPQLQueryFormatter(IdentifierStyle.UPPERCASE),
+
+			new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
+			new DefaultActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
+
+			new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
+			new DefaultActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE),
+
+			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.LOWERCASE),
+			new EclipseLinkActualJPQLQueryFormatter(true, IdentifierStyle.UPPERCASE),
+
+			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.CAPITALIZE_EACH_WORD),
+			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.LOWERCASE),
+			new EclipseLinkActualJPQLQueryFormatter(false, IdentifierStyle.UPPERCASE)
 		};
 	}
 }

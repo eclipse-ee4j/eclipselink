@@ -13,12 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.model;
 
+import java.io.IOException;
+import org.eclipse.persistence.jpa.jpql.model.AbstractActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.DefaultActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.query.AbsExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateObjectVisitor;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -111,7 +115,7 @@ public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObje
 		StateObject stateObject = buildStateObject(jpqlQuery, true);
 
 		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
-		assertEquals("SeLeCt AbS() FrOm Employee e", formatter.toString(stateObject));
+		assertEquals("SELECT ABS() FROM Employee e", formatter.toString(stateObject));
 	}
 
 	/**
@@ -124,7 +128,7 @@ public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObje
 		StateObject stateObject = buildStateObject(jpqlQuery, true);
 
 		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
-		assertEquals("SeLeCt AbS() FrOm Employee e", formatter.toString(stateObject));
+		assertEquals("SELECT ABS() FROM Employee e", formatter.toString(stateObject));
 	}
 
 	/**
@@ -141,6 +145,154 @@ public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObje
 
 		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
 		assertEquals("SELECT ABS(e.age) FROM Employee e", formatter.toString(stateObject));
+	}
+
+	/**
+	 * Test decorated StateObject.
+	 */
+	@Test
+	public void testDecorated() throws Exception {
+
+		String jpqlQuery = "Select e From Employee e";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+		SelectStatementStateObject select = (SelectStatementStateObject) stateObject.getQueryStatement();
+		select.decorate(new DecoratedSelectStatementStateObject(select));
+
+		DecoratedActualJPQLQueryFormatter formatter = new DecoratedActualJPQLQueryFormatter(false);
+		assertEquals("Decorated SELECT e FROM Employee e", formatter.toString(stateObject));
+	}
+
+	/**
+	 * Exact match, Expression available, which is invalid.
+	 */
+	@Test
+	public void testHavingClause_ExactMatch1() throws Exception {
+
+		String jpqlQuery = "SELECT e fRom Employee e hAvInG";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(true);
+		assertEquals("SELECT e fRom Employee e hAvInG", formatter.toString(stateObject));
+	}
+
+	/**
+	 * Exact match, Expression available, which is invalid.
+	 */
+	@Test
+	public void testHavingClause_ExactMatch2() throws Exception {
+
+		String jpqlQuery = "SELECT e fRom Employee e hAvInG ";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(true);
+		assertEquals("SELECT e fRom Employee e hAvInG ", formatter.toString(stateObject));
+	}
+
+	/**
+	 * Exact match, Expression available, which invalid.
+	 */
+	@Test
+	public void testHavingClause_ExactMatch3() throws Exception {
+
+		String jpqlQuery = "SELECT e fRom Employee e hAvInG e.name = 'JPQL'";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(true);
+		assertEquals("SELECT e fRom Employee e hAvInG e.name = 'JPQL'", formatter.toString(stateObject));
+	}
+
+	/**
+	 * Exact match, no Expression available.
+	 */
+	@Test
+	public void testHavingClause_ExactMatch4() throws Exception {
+
+		String jpqlQuery = "SELECT e fRom Employee e";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+		SelectStatementStateObject select = (SelectStatementStateObject) stateObject.getQueryStatement();
+		select.addHavingClause();
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(true);
+		assertEquals("SELECT e fRom Employee e HAVING", formatter.toString(stateObject));
+	}
+
+	/**
+	 * Exact match, no Expression available.
+	 */
+	@Test
+	public void testHavingClause_ExactMatch5() throws Exception {
+
+		String jpqlQuery = "SELECT e fRom Employee e";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+		SelectStatementStateObject select = (SelectStatementStateObject) stateObject.getQueryStatement();
+		select.addHavingClause("e.name = 'JPQL'");
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(true);
+		assertEquals("SELECT e fRom Employee e HAVING e.name = 'JPQL'", formatter.toString(stateObject));
+	}
+
+	/**
+	 * No exact match.
+	 */
+	@Test
+	public void testHavingClause_NoExactMatch1() throws Exception {
+
+		String jpqlQuery = "sELect e fRom Employee e HavinG e.name = 'JPQL'";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
+		assertEquals("SELECT e FROM Employee e HAVING e.name = 'JPQL'", formatter.toString(stateObject));
+	}
+
+	/**
+	 * No exact match.
+	 */
+	@Test
+	public void testHavingClause_NoExactMatch2() throws Exception {
+
+		String jpqlQuery = "sELect e fRom Employee e HavinG";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
+		assertEquals("SELECT e FROM Employee e HAVING", formatter.toString(stateObject));
+	}
+
+	/**
+	 * No exact match.
+	 */
+	@Test
+	public void testHavingClause_NoExactMatch3() throws Exception {
+
+		String jpqlQuery = "sELect e fRom Employee e HavinG ";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
+		assertEquals("SELECT e FROM Employee e HAVING", formatter.toString(stateObject));
+	}
+
+	/**
+	 * No exact match.
+	 */
+	@Test
+	public void testHavingClause_NoExactMatch4() throws Exception {
+
+		String jpqlQuery = "sELect e fRom Employee e";
+
+		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
+		SelectStatementStateObject select = (SelectStatementStateObject) stateObject.getQueryStatement();
+		select.addHavingClause("e.name = 'JPQL'");
+
+		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
+		assertEquals("SELECT e FROM Employee e HAVING e.name = 'JPQL'", formatter.toString(stateObject));
 	}
 
 	/**
@@ -228,7 +380,7 @@ public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObje
 		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
 
 		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
-		assertEquals("sELect e fRom Employee e WheRe e.name = 'JPQL'", formatter.toString(stateObject));
+		assertEquals("SELECT e FROM Employee e WHERE e.name = 'JPQL'", formatter.toString(stateObject));
 	}
 
 	/**
@@ -242,7 +394,7 @@ public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObje
 		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
 
 		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
-		assertEquals("sELect e fRom Employee e WheRe", formatter.toString(stateObject));
+		assertEquals("SELECT e FROM Employee e WHERE", formatter.toString(stateObject));
 	}
 
 	/**
@@ -256,7 +408,7 @@ public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObje
 		JPQLQueryStateObject stateObject = buildStateObject(jpqlQuery, true);
 
 		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
-		assertEquals("sELect e fRom Employee e WheRe", formatter.toString(stateObject));
+		assertEquals("SELECT e FROM Employee e WHERE", formatter.toString(stateObject));
 	}
 
 	/**
@@ -272,6 +424,41 @@ public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObje
 		select.addWhereClause("e.name = 'JPQL'");
 
 		DefaultActualJPQLQueryFormatter formatter = new DefaultActualJPQLQueryFormatter(false);
-		assertEquals("sELect e fRom Employee e WHERE e.name = 'JPQL'", formatter.toString(stateObject));
+		assertEquals("SELECT e FROM Employee e WHERE e.name = 'JPQL'", formatter.toString(stateObject));
+	}
+
+	private static class DecoratedActualJPQLQueryFormatter extends AbstractActualJPQLQueryFormatter {
+
+		DecoratedActualJPQLQueryFormatter(boolean exactMatch) {
+			super(exactMatch);
+		}
+
+		@SuppressWarnings("unused")
+		public void visit(DecoratedSelectStatementStateObject stateObject) {
+			writer.append("Decorated ");
+			stateObject.getParent().accept(this);
+		}
+	}
+
+	private static class DecoratedSelectStatementStateObject extends AbstractStateObject {
+
+		DecoratedSelectStatementStateObject(SelectStatementStateObject parent) {
+			super(parent);
+		}
+
+		public void accept(StateObjectVisitor visitor) {
+			acceptUnknownVisitor(visitor);
+		}
+
+		@Override
+		public SelectStatementStateObject getParent() {
+			return (SelectStatementStateObject) super.getParent();
+		}
+
+		@Override
+		protected void toTextInternal(Appendable writer) throws IOException {
+			writer.append("Decorated ");
+			getParent().toText(writer);
+		}
 	}
 }

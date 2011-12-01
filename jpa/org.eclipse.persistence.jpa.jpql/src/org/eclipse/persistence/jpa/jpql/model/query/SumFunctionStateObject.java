@@ -119,7 +119,7 @@ public class SumFunctionStateObject extends AggregateFunctionStateObject {
 	 */
 	@Override
 	public String getIdentifier() {
-		return MAX;
+		return SUM;
 	}
 
 	/**

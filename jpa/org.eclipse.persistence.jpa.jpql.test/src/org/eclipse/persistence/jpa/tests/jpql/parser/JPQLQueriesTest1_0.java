@@ -28,22 +28,6 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 @SuppressWarnings("nls")
 public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 
-	private JPQLQueryStringFormatter buildQueryStringFormatter_042() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace("'NEW", "'New");
-			}
-		};
-	}
-
-	private JPQLQueryStringFormatter buildQueryStringFormatter_191() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace("1,3,5,7", "1, 3, 5, 7");
-			}
-		};
-	}
-
 	@Test
 	public void test_Query_001() {
 
@@ -950,7 +934,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_042(), updateStatement, buildQueryStringFormatter_042());
+		testQuery(query_042(), updateStatement);
 	}
 
 	@Test
@@ -3733,7 +3717,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_191(), selectStatement, buildQueryStringFormatter_191());
+		testQuery(query_191(), selectStatement);
 	}
 
 	@Test

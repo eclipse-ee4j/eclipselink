@@ -13,21 +13,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.WordParser;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
+import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
 
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
 
 /**
- * This builder creates the parsed tree representation of a JPQL query and verify {@link
- * Expression#toParsedText()} represents the same thing than.
+ * This builder creates the parsed tree representation of a JPQL query and verifies the generated
+ * strings ({@link org.eclipse.persistence.jpa.jpql.parser.Expression#toActualText()
+ * Expression.toActualText()} and {@link org.eclipse.persistence.jpa.jpql.parser.Expression#toParsedText()
+ * Expression.toParsedText()}) were generated correctly.
  *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls", "unused" /* For the extra import statement, see bug 330740 */})
 public final class JPQLQueryBuilder {
 
 	/**
@@ -86,9 +94,9 @@ public final class JPQLQueryBuilder {
 
 	/**
 	 * Parses the given JPQL query and tests its generated string with the given query, which will be
-	 * formatted first.
+	 * formatted first. Both the parsed and actual generated strings will be tested.
 	 *
-	 * @param query The JPQL query to parse into a parsed tree
+	 * @param jpqlQuery The JPQL query to parse into a parsed tree
 	 * @param jpqlGrammar The JPQL grammar that defines how to parse the given JPQL query
 	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
 	 * parser.JPQLQueryBNF JPQLQueryBNF}
@@ -105,20 +113,31 @@ public final class JPQLQueryBuilder {
 	                                        boolean tolerant) {
 
 		// Remove any extra whitespace and make all identifiers upper case
-		String realQuery = formatQuery(jpqlQuery);
+		String parsedJPQLQuery = toParsedText(jpqlQuery, jpqlGrammar);
+		String actualJPQLQuery = toActualText(jpqlQuery, jpqlGrammar);
 
-		// For the JPQL query with this formatter so the invoker can tweak the default formatting
-		realQuery = formatter.format(realQuery);
+		// Format the JPQL query with this formatter so the invoker can tweak the default formatting
+		String parsedJPQLQuery2 = formatter.format(parsedJPQLQuery);
+		if (formatter != JPQLQueryStringFormatter.DEFAULT &&
+		    parsedJPQLQuery.equals(parsedJPQLQuery2)) {
+
+			System.out.println();
+		}
+		else {
+			parsedJPQLQuery = parsedJPQLQuery2;
+		}
+		actualJPQLQuery = formatter.format(actualJPQLQuery);
 
 		// Parse the JPQL query
 		JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar, jpqlQueryBNFId, tolerant);
 
 		// Make sure the JPQL query was correctly parsed and the generation
 		// of the string representation matches the original JPQL query
-		assertEquals(realQuery, jpqlExpression.toParsedText());
+		assertEquals(parsedJPQLQuery, jpqlExpression.toParsedText());
+		assertEquals(actualJPQLQuery, jpqlExpression.toActualText());
 
-		// If the JPQL query is parsed in a non-tolerant mode, then the query should be completely
-		// parsed and there should not be any unknown ending statement
+		// If the JPQL query is parsed with tolerance turned off, then the query should
+		// be completely parsed and there should not be any unknown ending statement
 		if (!tolerant && (jpqlQueryBNFId == JPQLStatementBNF.ID)) {
 			assertFalse(
 				"A valid JPQL query cannot have an unknown ending fragment:" + jpqlQueryBNFId,
@@ -129,220 +148,323 @@ public final class JPQLQueryBuilder {
 		return jpqlExpression;
 	}
 
-	public static String formatMinusSign(String jpqlQuery) {
-		return jpqlQuery.replaceAll("\\s*\\-\\s*", " - ");
-	}
-
-	public static String formatPlusSign(String jpqlQuery) {
-		return jpqlQuery.replaceAll("\\s*\\+\\s*", " + ");
+	/**
+	 * Formats the given JPQL query by converting it to what {@link org.eclipse.persistence.jpa.jpql.
+	 * parser.Expression#toActualText() Expression.toActualText()} would return.
+	 * <p>
+	 * For instance, "Select e   From Employee e" will be converted to "Select e From Employee e".
+	 *
+	 * @param jpqlQuery The string to format
+	 * @param jpqlGrammar The {@link JPQLGrammar} is used to properly format the string
+	 * @return The converted string
+	 * @see #toParsedText(String, JPQLGrammar)
+	 * @see #toText(String, JPQLGrammar)
+	 */
+	public static String toActualText(String jpqlQuery, JPQLGrammar jpqlGrammar) {
+		return toText(jpqlQuery, jpqlGrammar, true, IdentifierStyle.UPPERCASE);
 	}
 
 	/**
-	 * Formats the given query by converting it to what JPQLExpression would returned. For instance,
-	 * Select would be converted to SELECT.
+	 * Formats the given JPQL query by converting it to what {@link org.eclipse.persistence.jpa.jpql.
+	 * parser.Expression#toParsedText() Expression.toParsedText()} would return.
 	 * <p>
-	 * <b>Note:</b> If JPQL identifiers are used inside of strings then they might be converted. For
-	 * instance e.name = 'Pascal Null' will be converted to e.name = 'Pascal NULL'.
+	 * For instance, "Select e   From Employee e" will be converted to "SELECT e FROM Employee e".
 	 *
-	 * @param query A JPA query to be formatted
+	 * @param jpqlQuery The string to format
+	 * @param jpqlGrammar The {@link JPQLGrammar} is used to properly format the string
 	 * @return The formatted JPQL query
+	 * @see #toActualText(String, JPQLGrammar)
+	 * @see #toText(String, JPQLGrammar)
 	 */
-	public static String formatQuery(String jpqlQuery) {
+	public static String toParsedText(String jpqlQuery, JPQLGrammar jpqlGrammar) {
+		return toText(jpqlQuery, jpqlGrammar, false, IdentifierStyle.UPPERCASE);
+	}
 
-		jpqlQuery = jpqlQuery.replaceAll("\r\n?",                                   " ");
-		jpqlQuery = jpqlQuery.replaceAll("\\s+",                                    " ");
-		jpqlQuery = jpqlQuery.replaceAll("\\',\\'",                                 "', '");
-		jpqlQuery = jpqlQuery.replaceAll("[Ss][Ee][Ll][Ee][Cc][Tt] ",               "SELECT ");
-		jpqlQuery = jpqlQuery.replaceAll("[Oo][Bb][Jj][Ee][Cc][Tt]",                "OBJECT");
-		jpqlQuery = jpqlQuery.replaceAll("[Cc][Oo][Nn][Cc][Aa][Tt]",                "CONCAT");
-		jpqlQuery = jpqlQuery.replaceAll("[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt]",        "DISTINCT");
-		jpqlQuery = jpqlQuery.replaceAll("[Gg][Rr][Oo][Uu][Pp]\\s+[Bb][Yy]",        "GROUP BY");
-		jpqlQuery = jpqlQuery.replaceAll("[Oo][Rr][Dd][Ee][Rr]\\s+[Bb][Yy]",        "ORDER BY");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ff][Rr][Oo][Mm] ",                      " FROM ");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ww][Hh][Ee][Rr][Ee] ",                  " WHERE ");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ss][Uu][Mm]",                           " SUM");
-		jpqlQuery = jpqlQuery.replaceAll(" [Hh][Aa][Vv][Ii][Nn][Gg] ",              " HAVING ");
-		jpqlQuery = jpqlQuery.replaceAll(" [Aa][Nn][Dd] ",                          " AND ");
-		jpqlQuery = jpqlQuery.replaceAll(" [Oo][Rr] ",                              " OR ");
-		jpqlQuery = jpqlQuery.replaceAll(" [Cc][Oo][Uu][Nn][Tt]",                   " COUNT");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ee][Ss][Cc][Aa][Pp][Ee]",               " ESCAPE");
-		jpqlQuery = jpqlQuery.replaceAll(" [Tt][Rr][Ii][Mm]",                       " TRIM");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ii][Nn]\\s?\\(",                        " IN(");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ii][Nn] ",                              " IN ");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ii][Ss]\\s\\[Nn][Uu][Ll][Ll]",          " IS NULL");
-		jpqlQuery = jpqlQuery.replaceAll(" [Nn][Uu][Ll][Ll]",                       " NULL");
-		jpqlQuery = jpqlQuery.replaceAll(" [Bb][Ee][Tt][Ww][Ee][Ee][Nn]",           " BETWEEN");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ll][Ee][Ff][Tt]",                       " LEFT");
-		jpqlQuery = jpqlQuery.replaceAll(" [Oo][Uu][Tt][Ee][Rr]",                   " OUTER");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ii][Nn][Nn][Ee][Rr]",                   " INNER");
-		jpqlQuery = jpqlQuery.replaceAll(" [Jj][Oo][Ii][Nn]",                       " JOIN");
-		jpqlQuery = jpqlQuery.replaceAll(" [Nn][Oo][Tt]",                           " NOT");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ll][Ii][Kk][Ee]",                       " LIKE");
-		jpqlQuery = jpqlQuery.replaceAll(" [Ii][Ss]",                               " IS");
-		jpqlQuery = jpqlQuery.replaceAll(" [Aa][Ss] ",                              " AS ");
-		jpqlQuery = jpqlQuery.replaceAll("[Aa][Ll][Ll]\\s?\\(",                     "ALL(");
-		jpqlQuery = jpqlQuery.replaceAll("[Aa][Nn][Yy]\\s?\\(",                     "ANY(");
-		jpqlQuery = jpqlQuery.replaceAll("[Aa][Vv][Gg]\\s?\\(",                     "AVG(");
-		jpqlQuery = jpqlQuery.replaceAll("[Cc][Oo][Uu][Nn][Tt]\\s?\\(",             "COUNT(");
-		jpqlQuery = jpqlQuery.replaceAll("[Ee][Xx][Ii][Ss][Tt][Ss]\\s?\\(",         "EXISTS(");
-		jpqlQuery = jpqlQuery.replaceAll("[Ii][Nn]\\s?\\(",                         "IN(");
-		jpqlQuery = jpqlQuery.replaceAll("[Ll][Oo][Ww][Ee][Rr]\\s?\\(",             "LOWER(");
-		jpqlQuery = jpqlQuery.replaceAll("[Mm][Ii][Nn]\\s?\\(",                     "MIN(");
-		jpqlQuery = jpqlQuery.replaceAll("[Mm][Aa][Xx]\\s?\\(",                     "MAX(");
-		jpqlQuery = jpqlQuery.replaceAll("[Nn][Ee][Ww] ",                           "NEW ");
-		jpqlQuery = jpqlQuery.replaceAll("[Ss][Oo][Mm][Ee]\\s?\\(",                 "SOME(");
-		jpqlQuery = jpqlQuery.replaceAll("[Ss][Uu][Bb][Ss][Tt][Rr][Ii][Nn][Gg]",    "SUBSTRING");
-		jpqlQuery = jpqlQuery.replaceAll("[Ss][Uu][Mm]\\s?\\(",                     "SUM(");
-		jpqlQuery = jpqlQuery.replaceAll("OBJECT\\s\\(",                            "OBJECT(");
-		jpqlQuery = jpqlQuery.replaceAll("[Tt][Rr][Ii][Mm]\\s\\(",                  "TRIM(");
-		jpqlQuery = jpqlQuery.replaceAll("[Uu][Pp][Pp][Ee][Rr]\\s?\\(",             "UPPER(");
-		jpqlQuery = jpqlQuery.replaceAll("[Nn][uU][lL][lL][iI][Ff]\\s?\\(",         "NULLIF(");
-		jpqlQuery = jpqlQuery.replaceAll("[Kk][Ee][Yy]\\s?\\(",                     "KEY(");
-		jpqlQuery = jpqlQuery.replaceAll("[Vv][Aa][Ll][Uu][Ee]\\s?\\(",             "VALUE(");
-		jpqlQuery = jpqlQuery.replaceAll("[Cc][Oo][Aa][Ll][Ee][Ss][Cc][Ee]\\s?\\(", "COALESCE(");
-		jpqlQuery = jpqlQuery.replaceAll("[Ff][Uu][Nn][Cc]\\s?\\(",                 "FUNC(");
-		jpqlQuery = jpqlQuery.replaceAll("[Tr][Ee][Aa][Tt]\\s?\\(",                 "TREAT(");
-		jpqlQuery = jpqlQuery.replaceAll("\\s?/\\s?",                               " / ");
-		jpqlQuery = jpqlQuery.replaceAll("\\s?\\*\\s?",                             " * ");
-		jpqlQuery = jpqlQuery.replaceAll("\\)\\s,",                                 "),");
-		jpqlQuery = jpqlQuery.replaceAll("\\(\\s?",                                 "(");
-		jpqlQuery = jpqlQuery.replaceAll("\\s?\\)",                                 ")");
+	/**
+	 * Formats the given JPQL query by replacing multiple whitespace with a single whitespace. The
+	 * JPQL identifiers will be converted to uppercase if <em>exactMatch</em> is <code>true</code>
+	 * otherwise they will remain unchanged.
+	 *
+	 * @param jpqlQuery The string to format
+	 * @param jpqlGrammar The {@link JPQLGrammar} is used to properly format the string
+	 * @param exactMatch
+	 * @param style
+	 * @return The formatted JPQL query
+	 * @see #toActualText(String, JPQLGrammar)
+	 * @see #toParsedText(String, JPQLGrammar)
+	 */
+	public static String toText(String jpqlQuery,
+	                            JPQLGrammar jpqlGrammar,
+	                            boolean exactMatch,
+	                            IdentifierStyle style) {
 
-		jpqlQuery = jpqlQuery.replaceAll("\\)AND",       ") AND");
-		jpqlQuery = jpqlQuery.replaceAll("\\)OR",        ") OR");
-		jpqlQuery = jpqlQuery.replaceAll("AND\\(",       "AND (");
-		jpqlQuery = jpqlQuery.replaceAll("OR\\(",        "OR (");
-		jpqlQuery = jpqlQuery.replaceAll("WHERE\\(",     "WHERE (");
-		jpqlQuery = jpqlQuery.replaceAll("\\)GROUP BY",  ") GROUP BY");
-		jpqlQuery = jpqlQuery.replaceAll("\\)ORDER BY",  ") ORDER BY");
-		jpqlQuery = jpqlQuery.replaceAll("\\)HAVING",    ") HAVING");
-		jpqlQuery = jpqlQuery.replaceAll("\\)FROM",      ") FROM");
-		jpqlQuery = jpqlQuery.replaceAll("\\)WHERE",     ") WHERE");
-		jpqlQuery = jpqlQuery.replaceAll("\\(GROUP BY",  "( GROUP BY");
-		jpqlQuery = jpqlQuery.replaceAll("\\(ORDER BY",  "( ORDER BY");
-		jpqlQuery = jpqlQuery.replaceAll("\\(HAVING",    "( HAVING");
-		jpqlQuery = jpqlQuery.replaceAll("\\(FROM",      "( FROM");
-		jpqlQuery = jpqlQuery.replaceAll("\\(WHERE",     "( WHERE");
+		ExpressionRegistry registry = jpqlGrammar.getExpressionRegistry();
+		StringBuilder sb = new StringBuilder();
+		WordParser wordParser = new WordParser(jpqlQuery);
+		boolean singleQuoteParsed = false;
+		Boolean fromClause = null;
+		int whitespaceParsed = 0;
 
-		StringBuilder sb = new StringBuilder(jpqlQuery);
+		for (int index = 0, count = jpqlQuery.length(); index < count; index++) {
 
-		spaceOutEqualBefore(sb);
-		spaceOutEqualAfter(sb);
+			char character = jpqlQuery.charAt(index);
 
-		// Handle trailing and ending whitespace
-		boolean endsWithWhiteSpace = false;
+			// '
+			if (character == SINGLE_QUOTE) {
 
-		if (sb.length() > 0) {
-			endsWithWhiteSpace = sb.charAt(sb.length() - 1) == ' ';
-		}
+				// Entering string literal
+				if (!singleQuoteParsed) {
+					singleQuoteParsed = true;
+				}
+				else {
+					// Make sure the single quote is not escaped
+					char nextCharacter = (index + 1 < count) ? jpqlQuery.charAt(index + 1) : '\0';
 
-		trimWhitespace(sb);
+					// Exiting the string literal
+					if (nextCharacter != SINGLE_QUOTE) {
+						singleQuoteParsed = false;
+					}
+					// Skip the escaped '
+					else {
+						sb.append(character);
+						index++;
+					}
+				}
 
-		if (endsWithWhiteSpace) {
-			sb.append(' ');
+				whitespaceParsed  = 0;
+			}
+			// Anything outside of string literal
+			else if (!singleQuoteParsed) {
+
+				// Will skip whitespace after the first one but not inside string literals
+				if (Character.isWhitespace(character)) {
+
+					// Leading whitespace is always removed
+					if (sb.length() == 0) {
+						continue;
+					}
+
+					// Make sure the whitespace is a real space
+					character = SPACE;
+
+					// '( " will always be converted to '('
+					char previousCharacter = (index > 0) ? jpqlQuery.charAt(index - 1) : '\0';
+
+					if (previousCharacter == LEFT_PARENTHESIS) {
+
+						// Skip any subsequent whitespace
+						while (index < count) {
+							previousCharacter = jpqlQuery.charAt(index + 1);
+							if (!Character.isWhitespace(previousCharacter)) {
+								break;
+							}
+							index++;
+						}
+
+						// Function without a closing parenthesis should have a whitespace after (
+						// Example: "... ABS( FROM Employee e"
+						if (!wordParser.startsWithIdentifier(FROM,     index + 1) &&
+						    !wordParser.startsWithIdentifier(WHERE,    index + 1) &&
+						    !wordParser.startsWithIdentifier(GROUP_BY, index + 1) &&
+						    !wordParser.startsWithIdentifier(ORDER_BY, index + 1)) {
+
+							continue;
+						}
+					}
+
+					whitespaceParsed++;
+
+					// Capitalize JPQL identifiers
+					if (!exactMatch && (whitespaceParsed == 1)) {
+						String identifier = wordParser.partialWord(index);
+						int length = identifier.length();
+
+						if ((length > 0) && registry.isIdentifier(identifier)) {
+
+							// The word "ORDER" is not the entity name by the identifier ORDER BY
+							if ((fromClause == Boolean.TRUE) &&
+							    identifier.equalsIgnoreCase("ORDER") &&
+							    wordParser.startsWithIgnoreCase(ORDER_BY, index - 5)) {
+
+								fromClause = null;
+							}
+
+							// Special case where Order should not be capitalized when it's the entity name
+							if (!((fromClause == Boolean.TRUE) && identifier.equalsIgnoreCase("ORDER"))) {
+								identifier = style.formatIdentifier(identifier);
+								int offset = sb.length();
+								sb.replace(offset - length, offset, identifier);
+							}
+
+							// The FROM clause should be parsed soon
+							if ((fromClause == null) && SELECT.equalsIgnoreCase(identifier)) {
+								fromClause = Boolean.FALSE;
+							}
+							// Entering the FROM clause
+							else if ((fromClause == Boolean.FALSE) && FROM.equalsIgnoreCase(identifier)) {
+								fromClause = Boolean.TRUE;
+							}
+							// Exiting the FROM clause
+							else if ((fromClause == Boolean.TRUE) &&
+							         (WHERE  .equalsIgnoreCase(identifier) ||
+							          HAVING .equalsIgnoreCase(identifier) ||
+							          "GROUP".equalsIgnoreCase(identifier))) {
+
+								fromClause = null;
+							}
+						}
+					}
+
+					// Skip any subsequent whitespace
+					if (whitespaceParsed > 1) {
+						continue;
+					}
+				}
+				// '('
+				else if (character == LEFT_PARENTHESIS) {
+					String previousWord = wordParser.partialWord(index - whitespaceParsed);
+
+					// Remove the previous character, which is a whitespace and only if
+					// it's after a function like "ABS (", which will be converted to "ABS("
+					// but "WHERE (" will remain "WHERE (" (same with NEW)
+					if (!NEW.equalsIgnoreCase(previousWord)) {
+
+						if ((whitespaceParsed > 0) && !previousWord.equalsIgnoreCase(NEW)) {
+							IdentifierRole role = registry.getIdentifierRole(previousWord);
+
+							if ((role == IdentifierRole.FUNCTION) || IN.equalsIgnoreCase(previousWord)) {
+								int offset = sb.length();
+								sb.delete(offset - 1, offset);
+							}
+						}
+						else {
+							int length = previousWord.length();
+
+							// Capitalize JPQL identifiers
+							if (!exactMatch && (length > 0) && registry.isIdentifier(previousWord)) {
+								previousWord = style.formatIdentifier(previousWord);
+								int offset = sb.length();
+								sb.replace(offset - length, offset, previousWord);
+							}
+						}
+					}
+
+					whitespaceParsed = 0;
+				}
+				// ')'
+				// ','
+				// Remove any whitespace before ')' or ','
+				else if (character == RIGHT_PARENTHESIS ||
+				         character == COMMA) {
+
+					if (whitespaceParsed > 0) {
+						int offset = sb.length();
+						sb.delete(offset - 1, offset);
+					}
+					// Capitalize JPQL identifiers
+					else if (!exactMatch) {
+						String identifier = wordParser.partialWord(index);
+						int length = identifier.length();
+
+						if ((length > 0) && registry.isIdentifier(identifier)) {
+							identifier = style.formatIdentifier(identifier);
+							int offset = sb.length();
+							sb.replace(offset - length, offset, identifier);
+						}
+					}
+
+					// Add a whitespace after ','
+					if ((character == COMMA) && (index + 1 < count)) {
+						char nextCharacter = jpqlQuery.charAt(index + 1);
+
+						// But not if the next character is ')' or ','
+						if ((nextCharacter != COMMA) &&
+						    (nextCharacter != RIGHT_PARENTHESIS) &&
+						    !Character.isWhitespace(nextCharacter)) {
+
+							sb.append(character);
+							character = SPACE;
+						}
+					}
+
+					whitespaceParsed = 0;
+				}
+				// Add a whitespace before and after *, /
+				else if ((character == '*') ||
+				         (character == '/')) {
+
+					// Add a whitespace before
+					if (whitespaceParsed == 0) {
+						sb.append(' ');
+					}
+
+					// Add a whitespace after
+					if (index + 1 < count) {
+						char nextCharacter = jpqlQuery.charAt(index + 1);
+						if (!Character.isWhitespace(nextCharacter)) {
+							sb.append(character);
+							character = SPACE;
+						}
+					}
+
+					whitespaceParsed = 0;
+				}
+				// Add a whitespace before and after <, <=, =, >=, >, <>
+				else if ((character == '=') ||
+				         (character == '<') ||
+				         (character == '>')) {
+
+					char previousCharacter = jpqlQuery.charAt(index - 1);
+
+					// Add a whitespace before
+					if ((previousCharacter != '>') &&
+					    (previousCharacter != '<') &&
+					    (whitespaceParsed == 0)) {
+
+						sb.append(' ');
+					}
+
+					// Add a whitespace after
+					if (index + 1 < count) {
+						char nextCharacter = jpqlQuery.charAt(index + 1);
+
+						// Don't add a whitespace if it's <=, >= or <>
+						if ((nextCharacter != '=') &&
+						    (nextCharacter != '>') &&
+						    !Character.isWhitespace(nextCharacter)) {
+
+							sb.append(character);
+							character = SPACE;
+						}
+					}
+
+					whitespaceParsed = 0;
+				}
+				else {
+					whitespaceParsed = 0;
+				}
+			}
+
+			sb.append(character);
+
+			// At the end of the query, make sure the last JPQL identifier is capitalized if required
+			if (!exactMatch &&
+			    (index + 1 == count) &&
+			    (character != SINGLE_QUOTE) &&
+			    (whitespaceParsed == 0)) {
+
+				String previousWord = wordParser.partialWord(index + 1);
+				int length = previousWord.length();
+
+				// Capitalize JPQL identifiers
+				if ((length > 0) && registry.isIdentifier(previousWord)) {
+					previousWord = style.formatIdentifier(previousWord);
+					int offset = sb.length();
+					sb.replace(offset - length, offset, previousWord);
+				}
+			}
 		}
 
 		return sb.toString();
-	}
-
-	private static void spaceOutEqualAfter(StringBuilder sb) {
-
-		// Replace "=\\S" to "= \\S"
-		int index = sb.indexOf("=");
-
-		while (index > -1) {
-			// The previous character is a non-whitespace character and not an operator
-			if (index + 1 < sb.length()) {
-				char character = sb.charAt(index + 1);
-
-				if ((character != '=') &&
-				    !Character.isWhitespace(character)) {
-					sb.insert(index + 1, ' ');
-				}
-			}
-
-			index = sb.indexOf("=", index + 2);
-		}
-	}
-
-	private static void spaceOutEqualBefore(StringBuilder sb) {
-
-		// Replace "\\S=" to "\\S ="
-		int index = sb.indexOf("=");
-
-		while (index > -1) {
-			// The previous character is a non-whitespace character and not an operator
-			if (index > 0) {
-				char character = sb.charAt(index - 1);
-
-				if ((character != '=') &&
-				    (character != '<') &&
-				    (character != '>') &&
-				    !Character.isWhitespace(character)) {
-					sb.insert(index, ' ');
-				}
-			}
-
-			index = sb.indexOf("=", index + 2);
-		}
-	}
-
-	/**
-	 * Removes the whitespace that starts the given text.
-	 *
-	 * @param text The text to have the whitespace removed from the beginning of the string
-	 * @return The number of whitespace removed
-	 */
-	public static int trimLeadingWhitespace(StringBuilder text) {
-
-		int count = 0;
-
-		for (int index = 0; index < text.length(); index++) {
-
-			if (!Character.isWhitespace(text.charAt(index))) {
-				break;
-			}
-
-			text.delete(index, index + 1);
-			index--;
-			count++;
-		}
-
-		return count;
-	}
-
-	/**
-	 * Removes the whitespace that ends the given text.
-	 *
-	 * @param text The text to have the whitespace removed from the end of the string
-	 * @return The number of whitespace removed
-	 */
-	public static int trimTrailingWhitespace(StringBuilder sb) {
-
-		int count = 0;
-
-		for (int index = sb.length(); --index >= 0; ) {
-
-			if (!Character.isWhitespace(sb.charAt(index))) {
-				break;
-			}
-
-			sb.delete(index, index + 1);
-			count++;
-		}
-
-		return count;
-	}
-
-	/**
-	 * Removes the whitespace that starts and ends the given text.
-	 *
-	 * @param text The text to have the whitespace removed from the beginning and end of the string
-	 * @return The number of whitespace removed
-	 */
-	public static int trimWhitespace(StringBuilder text) {
-		int count = trimLeadingWhitespace(text);
-		count += trimTrailingWhitespace(text);
-		return count;
 	}
 }

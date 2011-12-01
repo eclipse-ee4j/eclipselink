@@ -19,12 +19,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.persistence.jpa.jpql.model.AbstractActualJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.BaseJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryFormatterTestHelper;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.junit.internal.builders.AllDefaultPossibilitiesBuilder;
 import org.junit.internal.runners.ErrorReportingRunner;
@@ -79,17 +84,61 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	 * The list of registered helpers that inject values from the test suite into the unit-tests
 	 * before they are running.
 	 */
-	private static final List<Class<? extends Annotation>> testRunnerHelpers;
+	private static final Map<Class<? extends Annotation>, ToStringWriter> testRunnerHelpers;
 
 	/**
 	 * Registers the supported test runner helpers.
 	 */
 	static {
-		testRunnerHelpers = new ArrayList<Class<? extends Annotation>>();
-		testRunnerHelpers.add(IJPQLQueryBuilderTestHelper.class);
-		testRunnerHelpers.add(JPQLGrammarTestHelper.class);
-		testRunnerHelpers.add(JPQLQueryHelperTestHelper.class);
-		testRunnerHelpers.add(JPQLQueryTestHelperTestHelper.class);
+
+		testRunnerHelpers = new HashMap<Class<? extends Annotation>, ToStringWriter>();
+
+		testRunnerHelpers.put(IJPQLQueryBuilderTestHelper.class, new ToStringWriter() {
+			public String toString(Object object) {
+				IJPQLQueryBuilder builder = (IJPQLQueryBuilder) object;
+				StringBuilder sb = new StringBuilder();
+				sb.append(builder.getClass().getSimpleName());
+				sb.append("[");
+				sb.append(builder.getGrammar().toString());
+				sb.append("]");
+				return sb.toString();
+			}
+		});
+
+		testRunnerHelpers.put(IJPQLQueryFormatterTestHelper.class, new ToStringWriter() {
+			public String toString(Object object) {
+				BaseJPQLQueryFormatter formatter = (BaseJPQLQueryFormatter) object;
+				StringBuilder sb = new StringBuilder();
+				sb.append(formatter.getClass().getSimpleName());
+				sb.append("[");
+				sb.append(formatter.getIdentifierStyle().name());
+				if (object instanceof AbstractActualJPQLQueryFormatter) {
+					AbstractActualJPQLQueryFormatter actualFormatter = (AbstractActualJPQLQueryFormatter) object;
+					sb.append("|");
+					sb.append(actualFormatter.isUsingExactMatch());
+				}
+				sb.append("]");
+				return sb.toString();
+			}
+		});
+
+		testRunnerHelpers.put(JPQLGrammarTestHelper.class, new ToStringWriter() {
+			public String toString(Object object) {
+				return object.toString();
+			}
+		});
+
+		testRunnerHelpers.put(JPQLQueryHelperTestHelper.class, new ToStringWriter() {
+			public String toString(Object object) {
+				return object.getClass().getSimpleName();
+			}
+		});
+
+		testRunnerHelpers.put(JPQLQueryTestHelperTestHelper.class, new ToStringWriter() {
+			public String toString(Object object) {
+				return object.getClass().getSimpleName();
+			}
+		});
 	}
 
 	/**
@@ -188,26 +237,53 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	private List<SuiteHelper> buildSuiteHelpers() {
 
 		List<SuiteHelper> suiteHelpers = new ArrayList<SuiteHelper>();
-		Class<? extends Annotation> primaryKey = findPrimaryKey();
-
-		Map<Class<? extends Annotation>, Object> helpers = new HashMap<Class<? extends Annotation>, Object>();
+		Map<Class<? extends Annotation>, Object> singleHelpers = new HashMap<Class<? extends Annotation>, Object>();
+		Collection<Class<? extends Annotation>> multipleHelpers = retrieveMultipleHelpers();
 
 		for (Map.Entry<Class<? extends Annotation>, Object[]> helper : descriptionHelper.helpers.entrySet()) {
-			if (helper.getKey() != primaryKey) {
-				helpers.put(helper.getKey(), helper.getValue()[0]);
+			if (!multipleHelpers.contains(helper.getKey())) {
+				singleHelpers.put(helper.getKey(), helper.getValue()[0]);
 			}
 		}
 
-		if (primaryKey != null) {
-			for (Object helper : descriptionHelper.helpers.get(primaryKey)) {
-				Map<Class<? extends Annotation>, Object> copy = new HashMap<Class<? extends Annotation>, Object>();
-				copy.putAll(helpers);
-				copy.put(primaryKey, helper);
-				suiteHelpers.add(new SuiteHelper(suiteHelper, copy, primaryKey));
+		if (multipleHelpers.size() > 1) {
+			for (Class<? extends Annotation> firstHelperKey : multipleHelpers) {
+				for (Class<? extends Annotation> secondHelperKey : multipleHelpers) {
+					if (firstHelperKey != secondHelperKey) {
+						for (Object firstHelper : descriptionHelper.helpers.get(firstHelperKey)) {
+							for (Object secondHelper : descriptionHelper.helpers.get(secondHelperKey)) {
+								Map<Class<? extends Annotation>, Object> copy = new HashMap<Class<? extends Annotation>, Object>();
+								copy.putAll(singleHelpers);
+								copy.put(firstHelperKey,  firstHelper);
+								copy.put(secondHelperKey, secondHelper);
+
+								List<Class<? extends Annotation>> keys = new ArrayList<Class<? extends Annotation>>();
+								keys.add(firstHelperKey);
+								keys.add(secondHelperKey);
+
+								suiteHelpers.add(new SuiteHelper(suiteHelper, copy, keys));
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (multipleHelpers.size() == 1) {
+			for (Class<? extends Annotation> firstHelperKey : multipleHelpers) {
+				for (Object firstHelper : descriptionHelper.helpers.get(firstHelperKey)) {
+					Map<Class<? extends Annotation>, Object> copy = new HashMap<Class<? extends Annotation>, Object>();
+					copy.putAll(singleHelpers);
+					copy.put(firstHelperKey, firstHelper);
+
+					List<Class<? extends Annotation>> keys = new ArrayList<Class<? extends Annotation>>();
+					keys.add(firstHelperKey);
+
+					suiteHelpers.add(new SuiteHelper(suiteHelper, copy, keys));
+				}
 			}
 		}
 		else {
-			suiteHelpers.add(new SuiteHelper(suiteHelper, helpers));
+			suiteHelpers.add(new SuiteHelper(suiteHelper, singleHelpers));
 		}
 
 		return suiteHelpers;
@@ -228,17 +304,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	@Override
 	protected Description describeChild(Runner child) {
 		return child.getDescription();
-	}
-
-	private Class<? extends Annotation> findPrimaryKey() {
-
-		for (Map.Entry<Class<? extends Annotation>, Object[]> helper : descriptionHelper.helpers.entrySet()) {
-			if (helper.getValue().length > 1) {
-				return helper.getKey();
-			}
-		}
-
-		return null;
 	}
 
 	/**
@@ -282,7 +347,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 			if (isHelperMethod(method)) {
 
-				for (Class<? extends Annotation> annotation : testRunnerHelpers) {
+				for (Class<? extends Annotation> annotation : testRunnerHelpers.keySet()) {
 
 					if (method.isAnnotationPresent(annotation)) {
 
@@ -309,6 +374,19 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 	private boolean isHelperMethod(Method method) {
 		return Modifier.isStatic(method.getModifiers());
+	}
+
+	private Collection<Class<? extends Annotation>> retrieveMultipleHelpers() {
+
+		Collection<Class<? extends Annotation>> keys = new ArrayList<Class<? extends Annotation>>();
+
+		for (Map.Entry<Class<? extends Annotation>, Object[]> helper : descriptionHelper.helpers.entrySet()) {
+			if (helper.getValue().length > 1) {
+				keys.add(helper.getKey());
+			}
+		}
+
+		return keys;
 	}
 
 	/**
@@ -557,27 +635,29 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 		private Map<Class<? extends Annotation>, Object> helpers;
 		private SuiteHelper parent;
-		private Class<? extends Annotation> primaryKey;
+		private List<Class<? extends Annotation>> primaryKeys;
 
 		SuiteHelper(SuiteHelper parent, Map<Class<? extends Annotation>, Object> helpers) {
-			super();
-			this.parent  = parent;
-			this.helpers = helpers;
+			this(parent, helpers, Collections.<Class<? extends Annotation>>emptyList());
 		}
 
 		SuiteHelper(SuiteHelper parent,
 		            Map<Class<? extends Annotation>, Object> helpers,
-		            Class<? extends Annotation> primaryKey) {
+		            List<Class<? extends Annotation>> primaryKeys) {
 
-			this(parent, helpers);
-			this.primaryKey = primaryKey;
+			super();
+			this.parent      = parent;
+			this.helpers     = helpers;
+			this.primaryKeys = primaryKeys;
 		}
 
 		void addAdditionalInfo(StringBuilder writer) {
 
-			if (primaryKey != null) {
+			for (Class<? extends Annotation> primaryKey : primaryKeys) {
 				writer.append(" - ");
-				writer.append(helpers.get(primaryKey).toString());
+				Object helper = helpers.get(primaryKey);
+				ToStringWriter toStringWriter = testRunnerHelpers.get(primaryKey);
+				writer.append(toStringWriter.toString(helper));
 			}
 
 			if (parent != null) {
@@ -613,5 +693,9 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 				parent.injectValues(test);
 			}
 		}
+	}
+
+	private static interface ToStringWriter {
+		String toString(Object object);
 	}
 }

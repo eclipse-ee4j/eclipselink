@@ -13,12 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model;
 
-import java.util.StringTokenizer;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObjectVisitor;
 
 /**
+ * An abstract implementation of a {@link IJPQLQueryFormatter}.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -80,26 +81,6 @@ public abstract class BaseJPQLQueryFormatter implements StateObjectVisitor,
 	}
 
 	/**
-	 * Returns the given JPQL identifier with the first letter of each word capitalized and the rest
-	 * being lower case.
-	 *
-	 * @param identifier The JPQL identifier to format
-	 * @return The formatted JPQL identifier
-	 */
-	protected String capitalizeEachWord(String identifier) {
-
-		StringBuilder sb = new StringBuilder();
-
-		for (StringTokenizer tokenizer = new StringTokenizer(identifier, SPACE); tokenizer.hasMoreTokens(); ) {
-			String token = tokenizer.nextToken();
-			sb.append(Character.toUpperCase(token.charAt(0)));
-			sb.append(token.substring(1).toLowerCase());
-		}
-
-		return sb.toString();
-	}
-
-	/**
 	 * Formats the given JPQL identifier, if it needs to be decorated with more information. Which
 	 * depends on how the string is created.
 	 *
@@ -107,11 +88,7 @@ public abstract class BaseJPQLQueryFormatter implements StateObjectVisitor,
 	 * @return By default the given identifier is returned
 	 */
 	protected String formatIdentifier(String identifier) {
-		switch (style) {
-			case CAPITALIZE_EACH_WORD: return capitalizeEachWord(identifier);
-			case LOWERCASE:            return identifier.toLowerCase();
-			default:                   return identifier.toUpperCase();
-		}
+		return style.formatIdentifier(identifier);
 	}
 
 	/**
@@ -119,7 +96,7 @@ public abstract class BaseJPQLQueryFormatter implements StateObjectVisitor,
 	 *
 	 * @return One of the possible ways to format the JPQL identifiers
 	 */
-	protected IdentifierStyle getIdentifierStyle() {
+	public IdentifierStyle getIdentifierStyle() {
 		return style;
 	}
 
@@ -135,13 +112,34 @@ public abstract class BaseJPQLQueryFormatter implements StateObjectVisitor,
 	 * {@inheritDoc}
 	 */
 	public String toString(StateObject stateObject) {
-
-		if (writer.length() > 0) {
-			writer.delete(0, writer.length());
-		}
-
+		writer.delete(0, writer.length());
 		stateObject.accept(this);
+		return writer.toString();
+	}
 
-		return toString();
+	/**
+	 * Visits the given {@link StateObject} and prevents its decorator to be called, which will
+	 * prevent any possible recursion when the decorator is outputting the information.
+	 *
+	 * @param stateObject The decorated {@link stateObject} to traverse without going through the
+	 * decorator
+	 */
+	protected void toText(StateObject stateObject) {
+
+		if (stateObject.isDecorated()) {
+
+			StateObject decorator = stateObject.getDecorator();
+			stateObject.decorate(null);
+
+			try {
+				decorator.accept(this);
+			}
+			finally {
+				stateObject.decorate(decorator);
+			}
+		}
+		else {
+			stateObject.accept(this);
+		}
 	}
 }

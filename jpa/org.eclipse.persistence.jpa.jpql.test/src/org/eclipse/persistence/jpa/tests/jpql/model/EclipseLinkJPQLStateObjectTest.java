@@ -26,8 +26,23 @@ import static org.junit.Assert.*;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings("unused") // For the import statement: see bug 330740
+@SuppressWarnings({"nls", "unused"}) // For the import statement: see bug 330740
 public abstract class EclipseLinkJPQLStateObjectTest extends AbstractStateObjectTest {
+
+	public static StateObjectTester stateObject_224() throws Exception {
+
+		// SELECT FUNC('NVL', e.firstName, 'NoFirstName'),
+		//        func('NVL', e.lastName,  'NoLastName')
+		// FROM Employee e
+
+		return selectStatement(
+			select(
+				func("NVL", path("e.firstName"), string("'NoFirstName'")),
+				func("NVL", path("e.lastName"),  string("'NoLastName'"))
+			),
+			from("Employee", "e")
+		);
+	}
 
 	protected static FuncExpressionStateObjectTester func(String functionName,
 	                                                      StateObjectTester... funcItems) {
