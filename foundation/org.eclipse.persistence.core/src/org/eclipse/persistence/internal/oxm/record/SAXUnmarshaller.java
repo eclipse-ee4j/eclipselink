@@ -87,6 +87,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private XMLParser xmlParser;
     private boolean isResultAlwaysXMLRoot, isWhitespacePreserving;
     private SAXParserFactory saxParserFactory;
+    private String systemId = null;
     private Map<String, Boolean> parserFeatures;
 
     public SAXUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) throws XMLMarshalException {
