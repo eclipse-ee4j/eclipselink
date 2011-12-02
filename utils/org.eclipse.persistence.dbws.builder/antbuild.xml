@@ -74,8 +74,11 @@
     <property name="bndtool.separator" value="-"/>
     <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
 
-    <!-- Primary Targets: "jar" separate for dev use -->
+    <!-- Dependency variables -->
+    <property name="ddlparser.prefix" value="org.eclipse.persistence.tools.oracleddl"/>
+    <property name="ddlparser.criteria" value="[1.0.0,2.0.0)"/>
 
+    <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
     <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
@@ -125,6 +128,9 @@
         <property name="servlet.lib"      value="${dbwsbldr.2.common.plugins.dir}/${servlet.jar}"/>
         <property name="asm.lib"          value="${dbwsbldr.2.common.plugins.dir}/${asm.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldr.2.plugins.dir}/${wsdl.jar}"/>
+        <selectbundle basename="${ddlparser.prefix}" directory="${dbwsbldr.2.plugins.dir}"
+                     criterion="${ddlparser.criteria}" property="ddlparser.jar"
+        />
         <property name="ddlparser.lib"    value="${dbwsbldr.2.plugins.dir}/${ddlparser.jar}"/>
 
         <!-- dependency tests -->
