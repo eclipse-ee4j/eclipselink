@@ -150,7 +150,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private XMLParser getXMLParser() {
         xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
         xmlParser.setNamespaceAware(true);
-        xmlParser.setErrorHandler(errorHandler);
+        if(null != errorHandler) {
+            xmlParser.setErrorHandler(errorHandler);
+        }
         if(null != entityResolver) {
             xmlParser.setEntityResolver(entityResolver);
         }
@@ -163,8 +165,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if(null == xmlReader) {
             try {
                 xmlReader = new XMLReader(getSAXParser().getXMLReader());
-                xmlReader.setErrorHandler(getErrorHandler());
-                xmlReader.setEntityResolver(getEntityResolver());
+                if(null != errorHandler) {
+                    xmlReader.setErrorHandler(errorHandler);
+                }
+                if(null != entityResolver) {
+                    xmlReader.setEntityResolver(entityResolver);
+                }
                 setValidationMode(getValidationMode());
                 if(null != getSchema()) {
                     xmlReader.setFeature(VALIDATING, xmlReader.getFeature(VALIDATING));
