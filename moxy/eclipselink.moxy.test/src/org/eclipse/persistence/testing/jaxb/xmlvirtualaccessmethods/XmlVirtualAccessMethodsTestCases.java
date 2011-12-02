@@ -226,7 +226,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
         // Build javax.xml.validation.Schema
         Schema schema;
         Source[] schemaSources = new StreamSource[sor.getSchemas().size()];
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         for (int i = 0; i < sor.getSchemas().size() ; i++) {
             StringReader r = new StringReader(sor.getSchemas().get(i));
             schemaSources[i] = new StreamSource(r);

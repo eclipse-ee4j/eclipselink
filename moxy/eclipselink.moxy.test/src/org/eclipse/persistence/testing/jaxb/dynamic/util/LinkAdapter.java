@@ -40,7 +40,7 @@ public class LinkAdapter extends XmlAdapter<Object, DynamicEntity> {
 
         DynamicEntity address = jc.newDynamicEntity("mynamespace.Address");
 
-        StringTokenizer tokenizer = new StringTokenizer(link.get("href").toString(), "&", false);
+        StringTokenizer tokenizer = new StringTokenizer(((Object)link.get("href")).toString(), "&", false);
 
         String street = tokenizer.nextToken();
         street = street.substring(street.lastIndexOf("=") + 1);

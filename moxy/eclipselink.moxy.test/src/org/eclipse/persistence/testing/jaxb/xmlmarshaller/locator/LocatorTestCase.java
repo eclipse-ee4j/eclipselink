@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.jaxb.xmlmarshaller.locator;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.ValidationEvent;
@@ -24,6 +23,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public abstract class LocatorTestCase extends OXTestCase {
@@ -44,7 +44,7 @@ public abstract class LocatorTestCase extends OXTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(XSD_RESOURCE);
         Schema s = sf.newSchema(new StreamSource(schemaStream));
 
