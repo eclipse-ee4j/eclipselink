@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:root xmlns:ns0="rootNamespace">
+   <baseTypeThing xmlns:ns1="someNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:subType"/>
+</ns0:root>
