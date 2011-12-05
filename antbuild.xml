@@ -325,7 +325,7 @@
 
     <target name="build-core" depends="clean-runtime-checkedin, build-core-maven, build-core-ant">
         <!-- temporarily force dbws.builder build from ant -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
+        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
@@ -342,9 +342,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="jar"/>
-		<!-- 11/10/27 MWN
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="jar"/>
-		-->
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa}"              target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.osgi}"             target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.weaving}"          target="jar"/>
@@ -368,9 +366,7 @@
     </target>
 
     <target name="build-dbws-utils" unless="java_is_v5">
-	    <!--11/10/27 MWN
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"      target="build"/>
-		-->
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
@@ -399,9 +395,7 @@
 
     <target name="build-dbws-test" unless="java_is_v5">
         <!-- Compiling dbws tests requires JDK 1.6 -->
-		<!-- 11/10/27 MWN
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="build"/>
-		-->
     </target>
 
     <!-- Compiles all tests (excluding Oracle extensions) -->
@@ -413,9 +407,7 @@
 
     <target name="build-dbws-utils-test"  unless="java_is_v5">
         <!-- Compiling dbws tests requires JDK 1.6 -->
-		<!-- 11/10/27 MWN
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="build"/>
-		-->
     </target>
 
     <target name="test-host" description="verify host is defined">
@@ -493,13 +485,6 @@
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
             </zipgroupfileset>
-            <!-- zipgroupfileset dir="${target dir}">
-                <include name="org.eclipse.persistence*.jar"/>
-                <exclude name="*source*.jar"/>
-                <exclude name="*jpa.jpql*.jar"/>
-                <exclude name="*equinox*.jar"/>
-                <exclude name="*builder*.jar"/>
-            </zipgroupfileset -->
             <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
             <fileset
                 dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
@@ -954,14 +939,10 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
     <target name="test-dbws-builder" description="run the DBWS builder tests"  unless="java_is_v5">
-	    <!-- 11/10/27 MWN
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
-		-->
     </target>
     <target name="test-dbws-builder-srg" description="run the DBWS builder srg tests"  unless="java_is_v5">
-	    <!-- 11/10/27 MWN
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
-		-->
     </target>
 
 </project>
