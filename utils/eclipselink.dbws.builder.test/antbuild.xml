@@ -115,8 +115,6 @@
     <available file="${jdbc.driver.jar}"  property="jdbc.jar.exist"/>
     <available file="./${dbwsutils.test.jar}" property="dbwsbldrtest.common.jar.exist"/>
 
-<!--
-11/10/27 MWN: temporarily turn off build & tests while moving 'sandbox' DBWS+DDL code into svn
     <condition property="support.test">
         <and>
             <isset property="is.java.version.16"/>
@@ -130,9 +128,6 @@
     </condition>
     <target name="build" depends="clean, compile, package" description="build dbwsbldrtests jar"/>
     <target name="test" depends="compile-common, run-tests" description="run tests after building"/>
--->
-    <target name="build"/>
-    <target name="test"/>
 
     <!-- MACRO and SCRIPT definitions -->
   <presetdef name="javac">
@@ -289,8 +284,6 @@
         </delete>
     </target>
 
-<!--
-11/10/27 MWN
     <target name="compile" description="Compile DBWS Util test Common classes">
         <fail unless="eclipselink.jar.exist" message="EclipseLink cannot be found. Exiting..."/>
         <fail unless="dbwsbldr.jar.exist"    message="DBWS Builder cannot be found. Exiting..."/>
@@ -304,12 +297,7 @@
                classpathref="dbwsbldrtest.compile.path"
         />
     </target>
--->
-    <!-- compile -->
-    <target name="compile"/>
 
-<!--
-11/10/27 MWN
     <target name="package" description="package DBWS Util Test Common jar">
         <jar jarfile="./${dbwsutils.test.jar}">
             <fileset dir="${classes.dir}">
@@ -317,9 +305,6 @@
             </fileset>
         </jar>
     </target>
--->
-    <!-- package -->
-    <target name="package"/>
 
     <!-- *** Test execution targets *** -->
     <target name="compile-common" unless="dbwsbldrtest.common.jar.exist">
