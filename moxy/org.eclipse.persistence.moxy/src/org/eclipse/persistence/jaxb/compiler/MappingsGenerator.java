@@ -1297,6 +1297,7 @@ public class MappingsGenerator {
                 mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream", mapping));
             }
         }
+        mapping.setAttributeClassificationName(property.getActualType().getQualifiedName());
         return mapping;
     }
 
@@ -1349,18 +1350,13 @@ public class MappingsGenerator {
         }
 
         JavaClass collectionType = property.getType();
+        JavaClass itemType = property.getActualType();
         if(collectionType != null && isCollectionType(collectionType)){
-        	if(collectionType.hasActualTypeArguments()){
-        		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
-        		try{
-        			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getQualifiedName(), false, helper.getClassLoader());
-        			mapping.setAttributeElementClass(declaredClass);
-        		}catch (Exception e) {
-
-        		}
-        	}
-        }else{
-        	mapping.setAttributeElementClass(Byte[].class);
+            try{
+                Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getQualifiedName(), false, helper.getClassLoader());
+                mapping.setAttributeElementClass(declaredClass);
+            }catch (Exception e) {
+            }
         }
         if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
