@@ -55,240 +55,161 @@
     </condition>
     <echo message="dbwsbldrtest.2.base.dir = '${dbwsbldrtest.2.base.dir}'"/>
     <property name="dbwsbldrtest.2.common.plugins.dir" value="${dbwsbldrtest.2.base.dir}/plugins"/>
+    <property name="dbwsbldrtest.2.plugins.dir" value="${dbwsbldrtest.build.location}/../plugins"/>
+    <property name="dbwsbldrtest.2.buildsys.dir" value="${dbwsbldrtest.2.base.dir}/buildsystem"/>
     <property name="dbwsbldrtest.2.dbwsbldr.dir" value="../org.eclipse.persistence.dbws.builder"/>
-
-    <property name="custom.tasks.lib" value="${dbwsbldrtest.build.location}/${dbwsbldrtest.2.base.dir}/buildsystem/ant_customizations.jar"/>
-    <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
-    <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
-    <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
-    <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
 
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
     <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <!-- properties checked into SVN -->
     <property file="${dbwsbldrtest.build.location}/antbuild.properties"/>
-    <!-- local testing properties overrides -->
+    <condition property="custom.test.properties.message" value="Loading ${user.home}/test.properties..."
+                                                          else="Custom properties file '${user.home}/test.properties' not found to load.">
+        <available file="${user.home}/test.properties"/>
+    </condition>
+    <echo message="${custom.test.properties.message}"/>
     <property file="${user.home}/test.properties"/>
-    <!-- testing properties checked into SVN -->
     <property file="${dbwsbldrtest.build.location}/test.properties"/>
 
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
-    <property name="version.string" value="${release.version}.qualifier"/>
-    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
-
-    <!-- Set Compile Path-->
-    <path id="dbwsbldrtest.compile.path">
-        <pathelement path="${junit.lib}"/>
-        <pathelement path="${dbwsbldrtest.2.base.dir}/${eclipselink.jar}"/>
-        <pathelement path="${dbwsbldrtest.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${dbwsbldrtest.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder_${version.string}.jar"/>
-        <fileset
-            dir="../plugins"
-            includes="${eclipselink.dbws.builder.depend}"
-        />
-        <fileset
-            dir="${dbwsbldrtest.2.common.plugins.dir}"
-            includes="${eclipselink.dbws.core.depend}"
-        />
-    </path>
-    <echo message="junit.lib='${junit.lib}'"/>
-    <!-- Set Run Path-->
-    <path id="dbwsbldrtest.run.path">
-        <path refid="dbwsbldrtest.compile.path"/>
-        <pathelement path="${jdbc.driver.jar}"/>
-        <pathelement path="./${dbwsutils.test.jar}"/>
-    </path>
-    <!-- Test dependencies -->
-    <available file="${dbwsbldrtest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
-    <available file="${dbwsbldrtest.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder_${version.string}.jar" property="dbwsbldr.jar.exist"/>
-    <available file="${dbwsbldrtest.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
-    <available file="../plugins/${wsdl.jar}" property="wsdl.exist"/>
-    <available file="${jdbc.driver.jar}"  property="jdbc.jar.exist"/>
-    <available file="./${dbwsutils.test.jar}" property="dbwsbldrtest.common.jar.exist"/>
-
-    <condition property="support.test">
-        <and>
-            <isset property="is.java.version.16"/>
-            <isset property="jdbc.jar.exist"/>
-            <isset property="db.platform"/>
-            <matches
-              pattern="org.eclipse.persistence.platform.database.MySQLPlatform"
-              string="${db.platform}"
-            />
-        </and>
-    </condition>
+    <!-- Dependency variables -->
+    <property name="ddlparser.prefix"   value="org.eclipse.persistence.tools.oracleddl"/>
+    <property name="ddlparser.criteria" value="[1.0.0,2.0.0)"/>
+    <property name="dbwsbldr.prefix"    value="org.eclipse.persistence.dbws.builder"/>
+    <property name="dbwsbldr.criteria"  value="[2.4.0,5.0.0)"/>
+    <property name="servlet.prefix"    value="javax.servlet"/>
+    <property name="servlet.criteria"  value="[1.0.0,5.0.0)"/>
+    
+    <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbwsbldrtests jar"/>
     <target name="test" depends="compile-common, run-tests" description="run tests after building"/>
 
-    <!-- MACRO and SCRIPT definitions -->
-  <presetdef name="javac">
-    <javac
-      debug="${javac.debug}"
-      debuglevel="${javac.debuglevel}"
-      optimize="${javac.optimize}"
-      source="1.6"
-      target="1.6"
-      deprecation="${javac.deprecation}"
-      failonerror="true"
-      memoryMaximumSize="512m"
-    />
-  </presetdef>
-  <presetdef
-    name="DeleteDirQuietly"
-    >
-    <delete
-      dir="_tmp_"
-      quiet="true"
-      failonerror="false"
-    />
-  </presetdef>
-  <presetdef
-    name="DeleteFileQuietly"
-    >
-    <delete
-      file="_tmp_"
-      quiet="true"
-      failonerror="false"
-    />
-  </presetdef>
-  <macrodef
-    name="CompileTestsuite"
-    >
-    <attribute name="testsuite-name"/>
-    <attribute name="package-name"/>
-    <sequential>
-      <mkdir
-        dir="./${classes.dir}"
-      />
-      <javac
-        fork="true"
-        srcdir="./${src.dir}"
-        destdir="./${classes.dir}"
-        includes="dbws/testing/@{package-name}/@{testsuite-name}TestSuite.java"
-        classpathref="dbwsbldrtest.run.path"
-      />
-    </sequential>
-  </macrodef>
-  <macrodef
-    name="RunTestsuite"
-    >
-    <attribute name="testsuite-name"/>
-    <attribute name="package-name"/>
-    <sequential>
-      <junit
-        printsummary="withOutAndErr"
-        fork="yes"
-        forkmode="once"
-        maxmemory="512m"
-        >
-        <formatter
-          type="xml"
-        />
-        <classpath>
-          <path
-            refid="dbwsbldrtest.run.path"
-          />
-          <pathelement
-            path="./${classes.dir}"
-          />
-          <pathelement
-            path="./${dbwsutils.test.jar}"
-          />
-          <pathelement
-            path="dbws@{package-name}.jar"
-          />
-        </classpath>
-        <sysproperty
-          key="eclipselink.logging.level"
-          value="${logging.level}"
-        />
-        <sysproperty
-          key="db.driver"
-          value="${db.driver}"
-        />
-        <sysproperty
-          key="db.url"
-          value="${db.url}"
-        />
-        <sysproperty
-          key="db.user"
-          value="${db.user}"
-        />
-        <sysproperty
-          key="db.pwd"
-          value="${db.pwd}"
-        />
-        <sysproperty
-          key="db.platform"
-          value="${db.platform}"
-        />
-        <sysproperty
-          key="release.version"
-          value="${release.version}"
-        />
-        <test
-          name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
-        />
-      </junit>
-      <junitreport
-        todir="./${report.dir}"
-        >
-        <fileset
-          dir="."
-          >
-          <include
-            name="TEST-*TestSuite.xml"
-          />
-        </fileset>
-        <report
-          format="noframes"
-          todir="./${report.dir}"
-        />
-      </junitreport>
-    </sequential>
-  </macrodef>
-  <macrodef
-    name="SetupCompileRunTeardown"
-    >
-    <attribute name="testsuite-name"/>
-    <sequential>
-      <toLower
-        input="@{testsuite-name}"
-        property="package-name"
-      />
-      <CompileTestsuite
-        testsuite-name="@{testsuite-name}"
-        package-name="${package-name}"
-      />
-      <RunTestsuite
-        testsuite-name="@{testsuite-name}"
-        package-name="${package-name}"
-      />
-    </sequential>
-  </macrodef>
-
     <!-- clean -->
-    <target name="clean" description="Clean generated files for common content">
+    <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
             <fileset dir="." includes="${dbwsutils.test.jar}"/>
         </delete>
     </target>
 
-    <target name="compile" description="Compile DBWS Util test Common classes">
-        <fail unless="eclipselink.jar.exist" message="EclipseLink cannot be found. Exiting..."/>
-        <fail unless="dbwsbldr.jar.exist"    message="DBWS Builder cannot be found. Exiting..."/>
-        <fail unless="asm.exist"             message="ASM Bundle cannot be found. Exiting..."/>
-        <fail unless="wsdl.exist"            message="WSDL Library cannot be found. Exiting..."/>
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <property name="custom.tasks.lib" value="${dbwsbldrtest.2.buildsys.dir}/ant_customizations.jar"/>
+        <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
+        <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
+        
+        <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
+        <taskdef  name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef  name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${dbwsbldrtest.2.base.dir}/../extension.lib.external"
+                                                    else="${dbwsbldr.build.location}">
+            <available file="${dbwsbldrtest.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type" value="SNAPSHOT"/>
+        <property name="svn.revision" value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        
+        <echo message="junit.lib='${junit.lib}'"/>
+    
+        <!-- dependency properties -->
+        <selectbundle basename="${dbwsbldr.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
+                     criterion="${dbwsbldr.criteria}" property="dbwsbldr.jar"
+        />
+        <echo message="dbwsbldr.jar='${dbwsbldr.jar}'"/>
+        <selectbundle basename="${servlet.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
+                     criterion="${servlet.criteria}" property="servlet.jar"
+        />
+        <echo message="servlet.jar='${servlet.jar}'"/>
+        <selectbundle basename="${ddlparser.prefix}" directory="${dbwsbldrtest.2.plugins.dir}"
+                     criterion="${ddlparser.criteria}" property="ddlparser.jar"
+        />
+        <property name="eclipselink.lib"  value="${dbwsbldrtest.2.base.dir}/${eclipselink.jar}"/>
+        <property name="asm.lib"          value="${dbwsbldrtest.2.common.plugins.dir}/${asm.jar}"/>
+        <property name="dbwsbldr.lib"     value="${dbwsbldrtest.2.common.plugins.dir}/${dbwsbldr.jar}"/>
+        <property name="servlet.lib"      value="${dbwsbldrtest.2.common.plugins.dir}/${servlet.jar}"/>
+        <property name="ddlparser.lib"    value="${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}"/>
+        <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>
+
+        <!-- dependency tests -->
+        <available file="${eclipselink.lib}"      property="eclipselink.exist"/>
+        <available file="${asm.lib}"              property="asm.bundle.exist"/>
+        <available file="${servlet.lib}"          property="servlet.lib.exist"/>
+        <available file="${wsdl.lib}"             property="wsdl.lib.exist"/>
+        <available file="${ddlparser.lib}"        property="ddlparser.lib.exist"/>
+        <available file="${dbwsbldr.lib}"         property="dbwsbldr.lib.exist"/>
+        <fail message="Cannot find: '${eclipselink.lib}'" unless="eclipselink.exist"/>
+        <fail message="Cannot find: '${asm.lib}'"         unless="asm.bundle.exist"/>
+        <fail message="Cannot find: '${servlet.lib}'"     unless="servlet.lib.exist"/>
+        <fail message="Cannot find: '${wsdl.lib}'"        unless="wsdl.lib.exist"/>
+        <fail message="Cannot find: '${ddlparser.lib}'"   unless="ddlparser.lib.exist"/>
+        <fail message="Cannot find: '${dbwsbldr.lib}'"    unless="dbwsbldr.lib.exist"/>
+                                                                                                      
+        <!-- Set Compile Path                                                                         
+        -->                                                                                           
+        <path id="dbwsbldrtest.compile.path">
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${eclipselink.lib}"/>
+            <pathelement path="${asm.lib}"/>
+            <pathelement path="${servlet.lib}"/>
+            <pathelement path="${wsdl.lib}"/>
+            <pathelement path="${ddlparser.lib}"/>
+            <pathelement path="${dbwsbldr.lib}"/>
+        </path>
+    </target>    
+        
+    <target name="init-tests" depends="init">
+        <!-- Test dependencies -->
+        <property name="soap.lib"         value="${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}"/>
+        <available file="${jdbc.driver.jar}"          property="jdbc.jar.exist"/>
+        <available file="./${dbwsutils.test.jar}"     property="dbwsbldrtest.common.jar.exist"/>
+        <available file="${soap.lib}"                 property="soap.lib.exist"/>
+        <fail message="Cannot find: '${jdbc.driver.jar}'"      unless="jdbc.jar.exist"/>
+        <fail message="Cannot find: './${dbwsutils.test.jar}'" unless="dbwsbldrtest.common.jar.exist"/>
+        <fail message="Cannot find: '${soap.lib}'"             unless="soap.lib.exist"/>
+    
+        <!-- Set Run Path-->
+        <path id="dbwsbldrtest.run.path">
+            <path refid="dbwsbldrtest.compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="./${dbwsutils.test.jar}"/>
+        </path>
+        
+        <condition property="support.test">
+            <and>
+                <isset property="is.java.version.16"/>
+                <isset property="jdbc.jar.exist"/>
+                <isset property="db.platform"/>
+                <matches
+                  pattern="org.eclipse.persistence.platform.database.MySQLPlatform"
+                  string="${db.platform}"
+                />
+            </and>
+        </condition>
+    </target>    
+
+    <target name="compile" depends="init" description="Compile DBWS Util test Common classes">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -312,7 +233,7 @@
         <available file="./${dbwsutils.test.jar}" property="dbwsbldrtest.common.jar.exist"/>
     </target>
 
-    <target name="run-tests" if="support.test" description="setup, compile, and run dbws util testsuites">
+    <target name="run-tests" if="support.test" depends="init-tests" description="setup, compile, and run dbws util testsuites">
         <DeleteDirQuietly dir="./${report.dir}"/>
         <mkdir dir="./${report.dir}"/>
         <SetupCompileRunTeardown testsuite-name="AttachedBinary"/>
@@ -331,5 +252,152 @@
         <SetupCompileRunTeardown testsuite-name="BatchSQL"/>
         <SetupCompileRunTeardown testsuite-name="LogLevelValidation"/>
     </target>
+
+    <!-- MACRO and SCRIPT definitions -->
+    <presetdef name="javac">
+      <javac
+        debug="${javac.debug}"
+        debuglevel="${javac.debuglevel}"
+        optimize="${javac.optimize}"
+        source="1.6"
+        target="1.6"
+        deprecation="${javac.deprecation}"
+        failonerror="true"
+        memoryMaximumSize="512m"
+      />
+    </presetdef>
+    <presetdef
+      name="DeleteDirQuietly"
+      >
+      <delete
+        dir="_tmp_"
+        quiet="true"
+        failonerror="false"
+      />
+    </presetdef>
+    <presetdef
+      name="DeleteFileQuietly"
+      >
+      <delete
+        file="_tmp_"
+        quiet="true"
+        failonerror="false"
+      />
+    </presetdef>
+    <macrodef
+      name="CompileTestsuite"
+      >
+      <attribute name="testsuite-name"/>
+      <attribute name="package-name"/>
+      <sequential>
+        <mkdir
+          dir="./${classes.dir}"
+        />
+        <javac
+          fork="true"
+          srcdir="./${src.dir}"
+          destdir="./${classes.dir}"
+          includes="dbws/testing/@{package-name}/@{testsuite-name}TestSuite.java"
+          classpathref="dbwsbldrtest.run.path"
+        />
+      </sequential>
+    </macrodef>
+    <macrodef
+      name="RunTestsuite"
+      >
+      <attribute name="testsuite-name"/>
+      <attribute name="package-name"/>
+      <sequential>
+        <junit
+          printsummary="withOutAndErr"
+          fork="yes"
+          forkmode="once"
+          maxmemory="512m"
+          >
+          <formatter
+            type="xml"
+          />
+          <classpath>
+            <path
+              refid="dbwsbldrtest.run.path"
+            />
+            <pathelement
+              path="./${classes.dir}"
+            />
+            <pathelement
+              path="./${dbwsutils.test.jar}"
+            />
+            <pathelement
+              path="dbws@{package-name}.jar"
+            />
+          </classpath>
+          <sysproperty
+            key="eclipselink.logging.level"
+            value="${logging.level}"
+          />
+          <sysproperty
+            key="db.driver"
+            value="${db.driver}"
+          />
+          <sysproperty
+            key="db.url"
+            value="${db.url}"
+          />
+          <sysproperty
+            key="db.user"
+            value="${db.user}"
+          />
+          <sysproperty
+            key="db.pwd"
+            value="${db.pwd}"
+          />
+          <sysproperty
+            key="db.platform"
+            value="${db.platform}"
+          />
+          <sysproperty
+            key="release.version"
+            value="${release.version}"
+          />
+          <test
+            name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
+          />
+        </junit>
+        <junitreport
+          todir="./${report.dir}"
+          >
+          <fileset
+            dir="."
+            >
+            <include
+              name="TEST-*TestSuite.xml"
+            />
+          </fileset>
+          <report
+            format="noframes"
+            todir="./${report.dir}"
+          />
+        </junitreport>
+      </sequential>
+    </macrodef>
+    <macrodef
+      name="SetupCompileRunTeardown"
+      >
+      <attribute name="testsuite-name"/>
+      <sequential>
+        <toLower
+          input="@{testsuite-name}"
+          property="package-name"
+        />
+        <CompileTestsuite
+          testsuite-name="@{testsuite-name}"
+          package-name="${package-name}"
+        />
+        <RunTestsuite
+          testsuite-name="@{testsuite-name}"
+          package-name="${package-name}"
+        />
+      </sequential>
+    </macrodef>
 
 </project>

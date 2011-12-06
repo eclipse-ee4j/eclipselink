@@ -94,6 +94,9 @@
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init">
         <property name="custom.tasks.lib" value="${dbwsbldr.2.buildsys.dir}/ant_customizations.jar"/>
+        <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
+        <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
+        
         <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
         <taskdef  name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
@@ -134,13 +137,13 @@
         <property name="ddlparser.lib"    value="${dbwsbldr.2.plugins.dir}/${ddlparser.jar}"/>
 
         <!-- dependency tests -->
-        <available file="${dbwsbldr.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
+        <available file="${asm.lib}"                property="asm.bundle.exist"/>
         <available file="${core.lib}"               property="core.bundle.exist"/>
         <available file="${dbws.lib}"               property="dbws.bundle.exist"/>
         <available file="${servlet.lib}"            property="servlet.lib.exist"/>
         <available file="${wsdl.lib}"               property="wsdl.lib.exist"/>
         <available file="${ddlparser.lib}"          property="ddlparser.lib.exist"/>
-        <fail message="Cannot find: '${asm}'"           unless="asm.exist"/>
+        <fail message="Cannot find: '${asm.lib}'"       unless="asm.bundle.exist"/>
         <fail message="Cannot find: '${core.lib}'"      unless="core.bundle.exist"/>
         <fail message="Cannot find: '${dbws.lib}'"      unless="dbws.bundle.exist"/>
         <fail message="Cannot find: '${servlet.lib}'"   unless="servlet.lib.exist"/>
@@ -149,7 +152,7 @@
 
         <!-- Set Compile Path-->
         <path id="dbwsbldr.compile.path">
-            <pathelement path="${dbwsbldr.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${asm.lib}"/>
             <pathelement path="${servlet.lib}"/>
             <pathelement path="${core.lib}"/>
             <pathelement path="${dbws.lib}"/>

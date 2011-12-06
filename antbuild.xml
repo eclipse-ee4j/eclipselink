@@ -191,6 +191,9 @@
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
 
+    <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
+    <target name="build-no-test" depends="build-eclipselink-jar, build-util, package-all" description="build all EclipseLink distribution files except docs"/>
+
     <!-- Compiles all components and tests (excluding extensions). -->
     <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
 
