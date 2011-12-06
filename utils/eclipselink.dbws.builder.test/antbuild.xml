@@ -79,7 +79,7 @@
     
     <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbwsbldrtests jar"/>
-    <target name="test" depends="compile-common, run-tests" description="run tests after building"/>
+    <target name="test" depends="build, run-tests" description="run tests after building"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -184,16 +184,30 @@
         
     <target name="init-tests" depends="init">
         <!-- Test dependencies -->
+        <selectbundle basename="${activation.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
+                     criterion="${activation.criteria}" property="activation.jar"
+        />
+        <selectbundle basename="${mail.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
+                     criterion="${mail.criteria}" property="mail.jar"
+        />
         <selectbundle basename="${soap.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
                      criterion="${soap.criteria}" property="soap.jar"
         />
-        <echo message="soap.jar  ='${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}'"/>
-        <property name="soap.lib"         value="${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}"/>
+        <echo message="activation.jar ='${dbwsbldrtest.2.common.plugins.dir}/${activation.jar}'"/>
+        <echo message="mail.jar       ='${dbwsbldrtest.2.common.plugins.dir}/${mail.jar}'"/>
+        <echo message="soap.jar       ='${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}'"/>
+        <property name="activation.lib" value="${dbwsbldrtest.2.common.plugins.dir}/${activation.jar}"/>
+        <property name="mail.lib"       value="${dbwsbldrtest.2.common.plugins.dir}/${mail.jar}"/>
+        <property name="soap.lib"       value="${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}"/>
         <available file="${jdbc.driver.jar}"          property="jdbc.jar.exist"/>
         <available file="./${dbwsutils.test.jar}"     property="dbwsbldrtest.common.jar.exist"/>
+        <available file="${activation.lib}"           property="activation.lib.exist"/>
+        <available file="${mail.lib}"                 property="mail.lib.exist"/>
         <available file="${soap.lib}"                 property="soap.lib.exist"/>
         <fail message="Cannot find: '${jdbc.driver.jar}'"      unless="jdbc.jar.exist"/>
         <fail message="Cannot find: './${dbwsutils.test.jar}'" unless="dbwsbldrtest.common.jar.exist"/>
+        <fail message="Cannot find: '${activation.lib}'"       unless="activation.lib.exist"/>
+        <fail message="Cannot find: '${mail.lib}'"             unless="mail.lib.exist"/>
         <fail message="Cannot find: '${soap.lib}'"             unless="soap.lib.exist"/>
     
         <!-- Set Run Path-->
@@ -201,6 +215,9 @@
             <path refid="dbwsbldrtest.compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="./${dbwsutils.test.jar}"/>
+            <pathelement path="${activation.lib}"/>
+            <pathelement path="${mail.lib}"/>
+            <pathelement path="${soap.lib}"/>
         </path>
         
         <condition property="support.test">
@@ -220,7 +237,7 @@
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
-               includes="dbws/testing/*.java"
+               includes="**/*.java"
                fork="true"
                classpathref="dbwsbldrtest.compile.path"
         />
@@ -229,35 +246,131 @@
     <target name="package" description="package DBWS Util Test Common jar">
         <jar jarfile="./${dbwsutils.test.jar}">
             <fileset dir="${classes.dir}">
-                <include name="dbws/testing/*.class"/>
+                <include name="**/*.class"/>
             </fileset>
         </jar>
-    </target>
-
-    <!-- *** Test execution targets *** -->
-    <target name="compile-common" unless="dbwsbldrtest.common.jar.exist">
-        <antcall target="build" inheritAll="true" inheritRefs="true"/>
-        <available file="./${dbwsutils.test.jar}" property="dbwsbldrtest.common.jar.exist"/>
     </target>
 
     <target name="run-tests" if="support.test" depends="init-tests" description="setup, compile, and run dbws util testsuites">
         <DeleteDirQuietly dir="./${report.dir}"/>
         <mkdir dir="./${report.dir}"/>
-        <SetupCompileRunTeardown testsuite-name="AttachedBinary"/>
-        <SetupCompileRunTeardown testsuite-name="CRUD"/>
-        <SetupCompileRunTeardown testsuite-name="CustomSQL"/>
-        <SetupCompileRunTeardown testsuite-name="InlineBinary"/>
-        <SetupCompileRunTeardown testsuite-name="SimpleTable"/>
-        <SetupCompileRunTeardown testsuite-name="SimpleSP"/>
-        <SetupCompileRunTeardown testsuite-name="SimpleTableWithNestedSQL"/>
-        <SetupCompileRunTeardown testsuite-name="UpdateFault"/>
-        <SetupCompileRunTeardown testsuite-name="RootCause"/>
-        <SetupCompileRunTeardown testsuite-name="OptLock"/>
-        <SetupCompileRunTeardown testsuite-name="MTOM"/>
-        <SetupCompileRunTeardown testsuite-name="SecondarySQL"/>
-        <SetupCompileRunTeardown testsuite-name="SQLAsCollection"/>
-        <SetupCompileRunTeardown testsuite-name="BatchSQL"/>
-        <SetupCompileRunTeardown testsuite-name="LogLevelValidation"/>
+        <junit
+          printsummary="withOutAndErr"
+          fork="yes"
+          forkmode="once"
+          maxmemory="512m"
+          >
+          <formatter
+            type="xml"
+          />
+          <classpath>
+            <path
+              refid="dbwsbldrtest.run.path"
+            />
+            <pathelement
+              path="./${dbwsutils.test.jar}"
+            />
+          </classpath>
+          <sysproperty
+            key="eclipselink.logging.level"
+            value="${logging.level}"
+          />
+          <sysproperty
+            key="db.driver"
+            value="${db.driver}"
+          />
+          <sysproperty
+            key="db.url"
+            value="${db.url}"
+          />
+          <sysproperty
+            key="db.user"
+            value="${db.user}"
+          />
+          <sysproperty
+            key="db.pwd"
+            value="${db.pwd}"
+          />
+          <sysproperty
+            key="db.platform"
+            value="${db.platform}"
+          />
+          <sysproperty
+            key="db.ddl.create"
+            value="true"
+          />
+          <sysproperty
+            key="db.ddl.drop"
+            value="false"
+          />
+          <sysproperty
+            key="release.version"
+            value="${release.version}"
+          />
+          <test
+            name="dbws.testing.attachedbinary.AttachedBinaryTestSuite"
+          />
+          <test
+            name="dbws.testing.batchsql.BatchSQLTestSuite"
+          />
+          <test
+            name="dbws.testing.bindingmodel.BindingModelTestSuite"
+          />
+          <test
+            name="dbws.testing.crud.CRUDTestSuite"
+          />
+          <test
+            name="dbws.testing.customsql.CustomSQLTestSuite"
+          />
+          <test
+            name="dbws.testing.inlinebinary.InlineBinaryTestSuite"
+          />
+          <test
+            name="dbws.testing.loglevelvalidation.LogLevelValidationTestSuite"
+          />
+          <test
+            name="dbws.testing.mtom.MTOMTestSuite"
+          />
+          <test
+            name="dbws.testing.optlock.OptLockTestSuite"
+          />
+          <test
+            name="dbws.testing.rootcause.RootCauseTestSuite"
+          />
+          <test
+            name="dbws.testing.secondarysql.SecondarySQLTestSuite"
+          />
+          <test
+            name="dbws.testing.simplesp.SimpleSPTestSuite"
+          />
+          <test
+            name="dbws.testing.simpletable.SimpleTableTestSuite"
+          />
+          <test
+            name="dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite"
+          />
+          <test
+            name="dbws.testing.sqlascollection.SQLAsCollectionTestSuite"
+          />
+          <test
+            name="dbws.testing.updatefault.UpdateFaultTestSuite"
+          />
+        </junit>
+        <junitreport
+          todir="./${report.dir}"
+          >
+          <fileset
+            dir="."
+            >
+            <include
+              name="TEST-*.xml"
+            />
+          </fileset>
+          <report
+            format="noframes"
+            todir="./${report.dir}"
+          />
+        </junitreport>
     </target>
 
     <!-- MACRO and SCRIPT definitions -->
@@ -291,120 +404,5 @@
         failonerror="false"
       />
     </presetdef>
-    <macrodef
-      name="CompileTestsuite"
-      >
-      <attribute name="testsuite-name"/>
-      <attribute name="package-name"/>
-      <sequential>
-        <mkdir
-          dir="./${classes.dir}"
-        />
-        <javac
-          fork="true"
-          srcdir="./${src.dir}"
-          destdir="./${classes.dir}"
-          includes="dbws/testing/@{package-name}/@{testsuite-name}TestSuite.java"
-          classpathref="dbwsbldrtest.run.path"
-        />
-      </sequential>
-    </macrodef>
-    <macrodef
-      name="RunTestsuite"
-      >
-      <attribute name="testsuite-name"/>
-      <attribute name="package-name"/>
-      <sequential>
-        <junit
-          printsummary="withOutAndErr"
-          fork="yes"
-          forkmode="once"
-          maxmemory="512m"
-          >
-          <formatter
-            type="xml"
-          />
-          <classpath>
-            <path
-              refid="dbwsbldrtest.run.path"
-            />
-            <pathelement
-              path="./${classes.dir}"
-            />
-            <pathelement
-              path="./${dbwsutils.test.jar}"
-            />
-            <pathelement
-              path="dbws@{package-name}.jar"
-            />
-          </classpath>
-          <sysproperty
-            key="eclipselink.logging.level"
-            value="${logging.level}"
-          />
-          <sysproperty
-            key="db.driver"
-            value="${db.driver}"
-          />
-          <sysproperty
-            key="db.url"
-            value="${db.url}"
-          />
-          <sysproperty
-            key="db.user"
-            value="${db.user}"
-          />
-          <sysproperty
-            key="db.pwd"
-            value="${db.pwd}"
-          />
-          <sysproperty
-            key="db.platform"
-            value="${db.platform}"
-          />
-          <sysproperty
-            key="release.version"
-            value="${release.version}"
-          />
-          <test
-            name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
-          />
-        </junit>
-        <junitreport
-          todir="./${report.dir}"
-          >
-          <fileset
-            dir="."
-            >
-            <include
-              name="TEST-*TestSuite.xml"
-            />
-          </fileset>
-          <report
-            format="noframes"
-            todir="./${report.dir}"
-          />
-        </junitreport>
-      </sequential>
-    </macrodef>
-    <macrodef
-      name="SetupCompileRunTeardown"
-      >
-      <attribute name="testsuite-name"/>
-      <sequential>
-        <toLower
-          input="@{testsuite-name}"
-          property="package-name"
-        />
-        <CompileTestsuite
-          testsuite-name="@{testsuite-name}"
-          package-name="${package-name}"
-        />
-        <RunTestsuite
-          testsuite-name="@{testsuite-name}"
-          package-name="${package-name}"
-        />
-      </sequential>
-    </macrodef>
 
 </project>
