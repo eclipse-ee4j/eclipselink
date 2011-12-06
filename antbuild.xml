@@ -328,7 +328,7 @@
 
     <target name="build-core" depends="clean-runtime-checkedin, build-core-maven, build-core-ant">
         <!-- temporarily force dbws.builder build from ant -->
-        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/ -->
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
