@@ -54,7 +54,7 @@
         <contains string="${dbwsbldrtest.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
     <echo message="dbwsbldrtest.2.base.dir = '${dbwsbldrtest.2.base.dir}'"/>
-    <property name="dbwsbldrtest.2.common.plugins.dir" value="${dbwsbldrtest.2.base.dir}/plugins"/>
+    <property name="dbwsbldrtest.2.common.plugins.dir" value="${dbwsbldrtest.build.location}/${dbwsbldrtest.2.base.dir}/plugins"/>
     <property name="dbwsbldrtest.2.plugins.dir" value="${dbwsbldrtest.build.location}/../plugins"/>
     <property name="dbwsbldrtest.2.buildsys.dir" value="${dbwsbldrtest.2.base.dir}/buildsystem"/>
     <property name="dbwsbldrtest.2.dbwsbldr.dir" value="../org.eclipse.persistence.dbws.builder"/>
@@ -187,7 +187,7 @@
         <selectbundle basename="${soap.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
                      criterion="${soap.criteria}" property="soap.jar"
         />
-        <echo message="soap.jar  ='${dbwsbldrtest.2.common.plugins.dir}/${servlet.jar}'"/>
+        <echo message="soap.jar  ='${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}'"/>
         <property name="soap.lib"         value="${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}"/>
         <available file="${jdbc.driver.jar}"          property="jdbc.jar.exist"/>
         <available file="./${dbwsutils.test.jar}"     property="dbwsbldrtest.common.jar.exist"/>
