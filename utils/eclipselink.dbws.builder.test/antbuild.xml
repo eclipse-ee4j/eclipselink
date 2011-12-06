@@ -214,7 +214,6 @@
                 <isset property="db.url"/>
                 <isset property="db.user"/>
                 <isset property="db.pwd"/>
-                <isset property="db.platform"/>
                 <isset property="db.ddl.create"/>
                 <isset property="db.ddl.drop"/>
                 <matches
