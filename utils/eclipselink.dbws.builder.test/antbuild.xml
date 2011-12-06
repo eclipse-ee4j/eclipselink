@@ -138,6 +138,8 @@
                      criterion="${dbwsbldr.criteria}" property="dbwsbldr.jar"
         />
         <echo message="dbwsbldr.jar='${dbwsbldr.jar}'"/>
+        <property name="dbwsbldr.jar"  value="${dbwsbldr.prefix}_${version.string}.jar"/>
+        <echo message="dbwsbldr.jar='${dbwsbldr.jar}'"/>
         <selectbundle basename="${servlet.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
                      criterion="${servlet.criteria}" property="servlet.jar"
         />
