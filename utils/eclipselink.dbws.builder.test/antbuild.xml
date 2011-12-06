@@ -76,14 +76,6 @@
     <echo message="${custom.test.properties.message}"/>
     <property file="${user.home}/test.properties"/>
     <property file="${dbwsbldrtest.build.location}/test.properties"/>
-
-    <!-- Dependency variables -->
-    <property name="ddlparser.prefix"   value="org.eclipse.persistence.tools.oracleddl"/>
-    <property name="ddlparser.criteria" value="[1.0.0,2.0.0)"/>
-    <property name="dbwsbldr.prefix"    value="org.eclipse.persistence.dbws.builder"/>
-    <property name="dbwsbldr.criteria"  value="[2.4.0,5.0.0)"/>
-    <property name="servlet.prefix"    value="javax.servlet"/>
-    <property name="servlet.criteria"  value="[1.0.0,5.0.0)"/>
     
     <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbwsbldrtests jar"/>
@@ -134,23 +126,32 @@
         <echo message="junit.lib='${junit.lib}'"/>
     
         <!-- dependency properties -->
+        <selectbundle basename="${asm.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
+                     criterion="${asm.criteria}" property="asm.jar"
+        />
         <selectbundle basename="${dbwsbldr.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
                      criterion="${dbwsbldr.criteria}" property="dbwsbldr.jar"
         />
-        <echo message="dbwsbldr.jar='${dbwsbldr.jar}'"/>
-        <property name="dbwsbldr.jar"  value="${dbwsbldr.prefix}_${version.string}.jar"/>
-        <echo message="dbwsbldr.jar='${dbwsbldr.jar}'"/>
         <selectbundle basename="${servlet.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
                      criterion="${servlet.criteria}" property="servlet.jar"
         />
-        <echo message="servlet.jar='${servlet.jar}'"/>
         <selectbundle basename="${ddlparser.prefix}" directory="${dbwsbldrtest.2.plugins.dir}"
                      criterion="${ddlparser.criteria}" property="ddlparser.jar"
         />
+        <selectbundle basename="${wsdl.prefix}" directory="${dbwsbldrtest.2.plugins.dir}"
+                     criterion="${wsdl.criteria}" property="wsdl.jar"
+        />
+        <echo message="asm.jar      ='${dbwsbldrtest.2.common.plugins.dir}/${asm.jar}'"/>
+        <echo message="dbwsbldr.jar ='${dbwsbldrtest.2.common.plugins.dir}/${dbwsbldr.jar}'"/>
+        <property name="dbwsbldr.jar"  value="${dbwsbldr.prefix}_${version.string}.jar"/>
+        <echo message="dbwsbldr.jar ='${dbwsbldr.jar}'"/>
+        <echo message="servlet.jar  ='${dbwsbldrtest.2.common.plugins.dir}/${servlet.jar}'"/>
+        <echo message="ddlparser.jar='${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}'"/>
+        <echo message="wsdl.jar     ='${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}'"/>
         <property name="eclipselink.lib"  value="${dbwsbldrtest.2.base.dir}/${eclipselink.jar}"/>
         <property name="asm.lib"          value="${dbwsbldrtest.2.common.plugins.dir}/${asm.jar}"/>
-        <property name="dbwsbldr.lib"     value="${dbwsbldrtest.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="servlet.lib"      value="${dbwsbldrtest.2.common.plugins.dir}/${servlet.jar}"/>
+        <property name="dbwsbldr.lib"     value="${dbwsbldrtest.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="ddlparser.lib"    value="${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>
 
@@ -175,14 +176,18 @@
             <pathelement path="${eclipselink.lib}"/>
             <pathelement path="${asm.lib}"/>
             <pathelement path="${servlet.lib}"/>
-            <pathelement path="${wsdl.lib}"/>
-            <pathelement path="${ddlparser.lib}"/>
             <pathelement path="${dbwsbldr.lib}"/>
+            <pathelement path="${ddlparser.lib}"/>
+            <pathelement path="${wsdl.lib}"/>
         </path>
     </target>    
         
     <target name="init-tests" depends="init">
         <!-- Test dependencies -->
+        <selectbundle basename="${soap.prefix}" directory="${dbwsbldrtest.2.common.plugins.dir}"
+                     criterion="${soap.criteria}" property="soap.jar"
+        />
+        <echo message="soap.jar  ='${dbwsbldrtest.2.common.plugins.dir}/${servlet.jar}'"/>
         <property name="soap.lib"         value="${dbwsbldrtest.2.common.plugins.dir}/${soap.jar}"/>
         <available file="${jdbc.driver.jar}"          property="jdbc.jar.exist"/>
         <available file="./${dbwsutils.test.jar}"     property="dbwsbldrtest.common.jar.exist"/>
