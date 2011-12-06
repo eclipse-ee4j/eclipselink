@@ -103,7 +103,7 @@
         <property name="custom.tasks.lib" value="${dbwsbldrorcltst.2.buildsys.dir}/ant_customizations.jar"/>
         <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
         <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
-        
+
         <property name="custom.tolower.task.class"      value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
         <property name="custom.echo.task.class"         value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
@@ -163,7 +163,7 @@
         <fail message="Cannot find: '${ddlparser.lib}'"   unless="ddlparser.lib.exist"/>
         <fail message="Cannot find: '${dbwsbldr.lib}'"    unless="dbwsbldr.lib.exist"/>
 
-        <!-- Set Compile Path -->                                                                                           
+        <!-- Set Compile Path -->
         <path id="dbwsbldrorcltst.compile.path">
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.lib}"/>
@@ -174,7 +174,7 @@
             <pathelement path="${wsdl.lib}"/>
         </path>
     </target>
-        
+
     <target name="init-tests" depends="init">
         <!-- Test dependencies -->
         <selectbundle basename="${activation.prefix}"  directory="${dbwsbldrorcltst.2.common.plugins.dir}"
@@ -183,23 +183,17 @@
         <selectbundle basename="${mail.prefix}"  directory="${dbwsbldrorcltst.2.common.plugins.dir}"
                      criterion="${mail.criteria}" property="mail.jar"
         />
-        <selectbundle basename="${soap.prefix}"  directory="${dbwsbldrorcltst.2.common.plugins.dir}"
-                     criterion="${soap.criteria}" property="soap.jar"
-        />
         <echo message="jdbc.driver.jar  ='${jdbc.driver.jar}'"/>
         <echo message="dbwsbldrorcltst.jar ='./${dbwsbldrorcltst.jar}'"/>
         <echo message="activation.jar   ='${dbwsbldrorcltst.2.common.plugins.dir}/${activation.jar}'"/>
         <echo message="mail.jar         ='${dbwsbldrorcltst.2.common.plugins.dir}/${mail.jar}'"/>
-        <echo message="soap.jar         ='${dbwsbldrorcltst.2.common.plugins.dir}/${soap.jar}'"/>
         <property name="activation.lib" value="${dbwsbldrorcltst.2.common.plugins.dir}/${activation.jar}"/>
         <property name="mail.lib"       value="${dbwsbldrorcltst.2.common.plugins.dir}/${mail.jar}"/>
-        <property name="soap.lib"       value="${dbwsbldrorcltst.2.common.plugins.dir}/${soap.jar}"/>
         <available file="${jdbc.driver.jar}"          property="jdbc.jar.exist"/>
         <available file="./${dbwsbldrorcltst.jar}"    property="dbwsbldrorcltst.jar.exist"/>
         <available file="${activation.lib}"           property="activation.lib.exist"/>
         <available file="${mail.lib}"                 property="mail.lib.exist"/>
-        <available file="${soap.lib}"                 property="soap.lib.exist"/>
-        
+
         <!-- Set Run Path-->
         <path id="dbwsbldrorcltst.run.path">
             <path refid="dbwsbldrorcltst.compile.path"/>
@@ -208,11 +202,18 @@
             <pathelement path="${activation.lib}"/>
             <pathelement path="${mail.lib}"/>
         </path>
-        
+
         <!-- Set Run Condition -->
+        <condition property="is.oracle.platform">
+            <matches
+              pattern="org.eclipse.persistence.platform.database.oracle.Oracle[0-9]{1,2}Platform"
+              string="${db.platform}"
+            />
+        </condition>
         <condition property="support.test">
             <and>
                 <isset property="is.java.version.16"/>
+                <isset property="is.oracle.platform"/>
                 <isset property="jdbc.jar.exist"/>
                 <isset property="dbwsbldrorcltst.jar.exist"/>
                 <isset property="activation.lib.exist"/>
@@ -224,13 +225,24 @@
                 <isset property="db.pwd"/>
                 <isset property="db.ddl.create"/>
                 <isset property="db.ddl.drop"/>
-                <matches
-                  pattern="org.eclipse.persistence.platform.database.oracle.Oracle[0-9]{1,2}Platform"
-                  string="${db.platform}"
-                />
             </and>
         </condition>
-    </target>    
+        <!-- Report unmet Run conditions -->
+        <say message="Conditions not met to execute tests!" unless="support.test"/>
+        <say message="     Not JDK 6!"                      unless="is.java.version.16"/>
+        <say message="     DB platform not set to Oracle!"  unless="is.oracle.platform"/>
+        <say message="     jdbc.jar not found!"             unless="jdbc.jar.exist"/>
+        <say message="     dbwsbldrorcltst.jar not found!"  unless="dbwsbldrorcltst.jar.exist"/>
+        <say message="     activation.lib not found!"       unless="activation.lib.exist"/>
+        <say message="     mail.lib not found!"             unless="mail.lib.exist"/>
+        <say message="     db.platform not set!"            unless="db.platform"/>
+        <say message="     db.driver not set!"              unless="db.driver"/>
+        <say message="     db.url not set!"                 unless="db.url"/>
+        <say message="     db.user not set!"                unless="db.user"/>
+        <say message="     db.pwd not set!"                 unless="db.pwd"/>
+        <say message="     db.ddl not set!"                 unless="db.ddl.create"/>
+        <say message="     db.ddl not set!"                 unless="db.ddl.drop"/>
+    </target>
 
     <target name="compile" depends="init" description="Compile DBWS Util test Common classes">
         <mkdir dir="${classes.dir}"/>

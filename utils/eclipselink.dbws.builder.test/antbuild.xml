@@ -44,6 +44,7 @@
     <!-- Test to make certain that build is run from component dir -->
     <available file="../${ant.project.name}" type="dir" property="dbwsbldrtest.is.local"/>
     <fail unless="dbwsbldrtest.is.local" message="Not running from '${ant.project.name}' directory"/>
+
     <condition property="is.java.version.16">
         <equals arg1="${ant.java.version}" arg2="1.6"/>
     </condition>
@@ -101,7 +102,7 @@
         <property name="custom.tasks.lib" value="${dbwsbldrtest.2.buildsys.dir}/ant_customizations.jar"/>
         <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
         <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
-        
+
         <property name="custom.tolower.task.class"      value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
         <property name="custom.echo.task.class"         value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
@@ -160,8 +161,8 @@
         <fail message="Cannot find: '${wsdl.lib}'"        unless="wsdl.lib.exist"/>
         <fail message="Cannot find: '${ddlparser.lib}'"   unless="ddlparser.lib.exist"/>
         <fail message="Cannot find: '${dbwsbldr.lib}'"    unless="dbwsbldr.lib.exist"/>
-                                                                                                      
-        <!-- Set Compile Path -->                                                                                           
+
+        <!-- Set Compile Path -->
         <path id="dbwsbldrtest.compile.path">
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.lib}"/>
@@ -171,8 +172,8 @@
             <pathelement path="${ddlparser.lib}"/>
             <pathelement path="${wsdl.lib}"/>
         </path>
-    </target>    
-        
+    </target>
+
     <target name="init-tests" depends="init">
         <!-- Test dependencies -->
         <selectbundle basename="${activation.prefix}"  directory="${dbwsbldrtest.2.common.plugins.dir}"
@@ -191,7 +192,7 @@
         <available file="./${dbwsbldrtest.jar}"       property="dbwsbldrtest.jar.exist"/>
         <available file="${activation.lib}"           property="activation.lib.exist"/>
         <available file="${mail.lib}"                 property="mail.lib.exist"/>
-    
+
         <!-- Set Run Path -->
         <path id="dbwsbldrtest.run.path">
             <path refid="dbwsbldrtest.compile.path"/>
@@ -200,11 +201,18 @@
             <pathelement path="${activation.lib}"/>
             <pathelement path="${mail.lib}"/>
         </path>
-        
+
         <!-- Set Run Condition -->
+        <condition property="is.mysql.platform">
+            <matches
+              pattern="org.eclipse.persistence.platform.database.MySQLPlatform"
+              string="${db.platform}"
+            />
+        </condition>
         <condition property="support.test">
             <and>
                 <isset property="is.java.version.16"/>
+                <isset property="is.mysql.platform"/>
                 <isset property="jdbc.jar.exist"/>
                 <isset property="dbwsbldrtest.jar.exist"/>
                 <isset property="activation.lib.exist"/>
@@ -216,13 +224,24 @@
                 <isset property="db.pwd"/>
                 <isset property="db.ddl.create"/>
                 <isset property="db.ddl.drop"/>
-                <matches
-                  pattern="org.eclipse.persistence.platform.database.MySQLPlatform"
-                  string="${db.platform}"
-                />
             </and>
         </condition>
-    </target>    
+        <!-- Report unmet Run conditions -->
+        <say message="Conditions not met to execute tests!" unless="support.test"/>
+        <say message="     Not JDK 6!"                      unless="is.java.version.16"/>
+        <say message="     DB platform not set to MySQL!"   unless="is.mysql.platform"/>
+        <say message="     jdbc.jar not found!"             unless="jdbc.jar.exist"/>
+        <say message="     dbwsbldrtest.jar not found!"     unless="dbwsbldrtest.jar.exist"/>
+        <say message="     activation.lib not found!"       unless="activation.lib.exist"/>
+        <say message="     mail.lib not found!"             unless="mail.lib.exist"/>
+        <say message="     db.platform not set!"            unless="db.platform"/>
+        <say message="     db.driver not set!"              unless="db.driver"/>
+        <say message="     db.url not set!"                 unless="db.url"/>
+        <say message="     db.user not set!"                unless="db.user"/>
+        <say message="     db.pwd not set!"                 unless="db.pwd"/>
+        <say message="     db.ddl not set!"                 unless="db.ddl.create"/>
+        <say message="     db.ddl not set!"                 unless="db.ddl.drop"/>
+    </target>
 
     <target name="compile" depends="init" description="Compile DBWS Util test Common classes">
         <mkdir dir="${classes.dir}"/>
