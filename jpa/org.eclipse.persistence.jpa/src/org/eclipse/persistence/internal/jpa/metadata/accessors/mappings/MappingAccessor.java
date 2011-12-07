@@ -193,6 +193,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return true is this accessor is a derived id accessor.
+     * @see ObjectAccessor
+     */
+    public boolean derivesId() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -202,15 +213,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
             return valuesMatch(getAttributeType(), mappingAccessor.getAttributeType());
         }
         
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true is this accessor is a derived id accessor.
-     * @see ObjectAccessor
-     */
-    public boolean derivesId() {
         return false;
     }
     
@@ -652,7 +654,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // with is needed for dynamic persistence.
         if (isMappedKeyMapAccessor()) {
             MetadataClass mapKeyClass = ((MappedKeyMapAccessor) this).getMapKeyClass();
-            if (mapKeyClass != null && ! mapKeyClass.equals(void.class)) {
+            if (mapKeyClass != null && ! mapKeyClass.isVoid()) {
                 return mapKeyClass;
             }
         }

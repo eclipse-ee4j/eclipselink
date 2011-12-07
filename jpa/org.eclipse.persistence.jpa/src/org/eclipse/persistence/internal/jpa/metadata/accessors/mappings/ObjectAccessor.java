@@ -162,6 +162,17 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Return true is this accessor is a derived id accessor.
+     */
+    @Override
+    public boolean derivesId() {
+        return hasId() || hasMapsId();
+    }
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -184,15 +195,6 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         }
         
         return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true is this accessor is a derived id accessor.
-     */
-    @Override
-    public boolean derivesId() {
-        return hasId() || hasMapsId();
     }
     
     /**

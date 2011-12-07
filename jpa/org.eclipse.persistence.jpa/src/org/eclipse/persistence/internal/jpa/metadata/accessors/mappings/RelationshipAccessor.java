@@ -232,6 +232,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -613,13 +615,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * holders, we should ignore the processing of this mapping. 
      */
     public boolean isValueHolderInterface() {
-        return getTargetEntity().getName().equals(ValueHolderInterface.class.getName()) || (getTargetEntity().getName().equals(void.class.getName()) && getReferenceClass().getName().equals(ValueHolderInterface.class.getName()));
+        return getTargetEntity().getName().equals(ValueHolderInterface.class.getName()) || (getTargetEntity().isVoid() && getReferenceClass().getName().equals(ValueHolderInterface.class.getName()));
     }
     
     /**
      * INTERNAL:
      * Common validation done by all relationship accessors.
      */
+    @Override
     public void process() {
         // The processing of this accessor may have been fast tracked through a 
         // non-owning relationship. If so, no processing is required.

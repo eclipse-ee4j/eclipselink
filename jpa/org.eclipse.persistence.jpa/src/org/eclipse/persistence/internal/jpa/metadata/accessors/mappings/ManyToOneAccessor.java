@@ -69,6 +69,8 @@ public class ManyToOneAccessor extends ObjectAccessor {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -79,6 +81,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      * Return the logging context for this accessor.
      */
+    @Override
     protected String getLoggingContext() {
         return MetadataLogger.MANY_TO_ONE_MAPPING_REFERENCE_CLASS;
     }
@@ -109,6 +112,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
      * INTERNAL:
      * Process a many to one setting into an EclipseLink OneToOneMapping.
      */
+    @Override
     public void process() {
         super.process();
         

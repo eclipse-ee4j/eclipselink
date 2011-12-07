@@ -269,22 +269,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     
     /**
      * INTERNAL:
-     */
-    protected void addAssociationOverride(AssociationOverrideMetadata associationOverride) {
-        if (associationOverride.getName().startsWith(KEY_DOT_NOTATION)) {
-            associationOverride.setName(associationOverride.getName().substring(KEY_DOT_NOTATION.length()));
-            m_mapKeyAssociationOverrides.add(associationOverride);
-        } else {
-            if (associationOverride.getName().startsWith(VALUE_DOT_NOTATION)) {
-                associationOverride.setName(associationOverride.getName().substring(VALUE_DOT_NOTATION.length()));
-            }
-            
-            m_associationOverrides.add(associationOverride);
-        }
-    }
-    
-    /**
-     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -355,6 +341,22 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         }
         
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void addAssociationOverride(AssociationOverrideMetadata associationOverride) {
+        if (associationOverride.getName().startsWith(KEY_DOT_NOTATION)) {
+            associationOverride.setName(associationOverride.getName().substring(KEY_DOT_NOTATION.length()));
+            m_mapKeyAssociationOverrides.add(associationOverride);
+        } else {
+            if (associationOverride.getName().startsWith(VALUE_DOT_NOTATION)) {
+                associationOverride.setName(associationOverride.getName().substring(VALUE_DOT_NOTATION.length()));
+            }
+            
+            m_associationOverrides.add(associationOverride);
+        }
     }
     
     /**
@@ -673,7 +675,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     @Override
     protected boolean hasMapKeyClass() {
-        return m_mapKeyClass != null && ! m_mapKeyClass.equals(void.class);
+        return m_mapKeyClass != null && ! m_mapKeyClass.isVoid();
     }
     
     /**

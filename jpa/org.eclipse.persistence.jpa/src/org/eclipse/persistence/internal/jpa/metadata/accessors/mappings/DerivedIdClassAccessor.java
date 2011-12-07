@@ -47,12 +47,14 @@ public class DerivedIdClassAccessor extends EmbeddedAccessor {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof DerivedIdClassAccessor;
     }
-
+    
     /**
      * INTERNAL:
      * Return true if this accessor is a derived id class accessor. That is,

@@ -65,12 +65,14 @@ public class VersionAccessor extends BasicAccessor {
 
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof VersionAccessor;
     }
-
+    
     /**
      * INTERNAL:
      * Returns true if the given class is a valid timestamp locking type.

@@ -88,14 +88,15 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         setValueColumn(new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("valueColumn"), this));
         setFetch((String) basicMap.getAttribute("fetch"));
     }
-   
+    
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof BasicMapAccessor) {
-            
             BasicMapAccessor basicMapAccessor = (BasicMapAccessor) objectToCompare;
             
             if (! valuesMatch(m_keyColumn, basicMapAccessor.getKeyColumn())) {

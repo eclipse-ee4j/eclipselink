@@ -176,6 +176,8 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -350,6 +352,7 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      * Process a basic accessor.
      */
+    @Override
     public void process() {
         // Process a DirectToFieldMapping, that is a Basic that could
         // be used in conjunction with a Lob, Temporal, Enumerated

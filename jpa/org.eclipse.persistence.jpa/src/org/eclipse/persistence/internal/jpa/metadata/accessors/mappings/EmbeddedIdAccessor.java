@@ -152,12 +152,15 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
 
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof EmbeddedIdAccessor;
     }
-
+    
+    
     /**
      * INTERNAL:
      */
@@ -165,7 +168,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
     public boolean isEmbeddedId() {
         return true;
     }
-        
+
     /**
      * INTERNAL:
      * Process an EmbeddedId metadata.

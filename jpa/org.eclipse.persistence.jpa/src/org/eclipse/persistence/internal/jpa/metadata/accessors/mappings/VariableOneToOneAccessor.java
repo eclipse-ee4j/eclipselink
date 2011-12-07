@@ -159,6 +159,8 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -237,6 +239,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      * Process a variable one to one setting into an EclipseLink 
      * VariableOneToOneMapping.
      */
+    @Override
     public void process() {
         super.process();
         

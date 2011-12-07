@@ -128,9 +128,11 @@ public class EmbeddedAccessor extends MappingAccessor {
     public void addMapsIdAccessor(MappingAccessor mapsIdAccessor) {
         ((AggregateObjectMapping) getMapping()).addMapsIdMapping(mapsIdAccessor.getMapping());
     }
-    
+     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -146,7 +148,6 @@ public class EmbeddedAccessor extends MappingAccessor {
         
         return false;
     }
-    
     
     /**
      * INTERNAL:
@@ -187,7 +188,8 @@ public class EmbeddedAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      * Process an embedded.
-     */    
+     */
+    @Override
     public void process() {
         // Build and aggregate object mapping and add it to the descriptor.
         AggregateObjectMapping mapping = new AggregateObjectMapping();

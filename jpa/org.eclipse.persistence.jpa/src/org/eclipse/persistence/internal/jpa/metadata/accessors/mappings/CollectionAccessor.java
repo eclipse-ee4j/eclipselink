@@ -255,6 +255,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -525,15 +527,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         return (isForMapKey) ? m_mapKeyTemporal != null : super.hasTemporal(isForMapKey);  
     }
     
-    /** 
-     * INTERNAL:
-     * Return true if this accessor represents a collection accessor.
-     */
-    @Override
-    public boolean isCollectionAccessor() {
-        return true;
-    }
-    
     /**
      * INTERNAL:
      */
@@ -554,6 +547,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Initialize the map key class name we read from XML.
         m_mapKeyClass = initXMLClassName(m_mapKeyClassName);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents a collection accessor.
+     */
+    @Override
+    public boolean isCollectionAccessor() {
+        return true;
     }
     
     /**

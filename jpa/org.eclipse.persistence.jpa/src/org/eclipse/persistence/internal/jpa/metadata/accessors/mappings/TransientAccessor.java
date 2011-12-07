@@ -47,16 +47,19 @@ public class TransientAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof TransientAccessor;
     }
-
+    
     /**
      * INTERNAL:
      * Return true if this accessor represents a transient mapping.
      */
+    @Override
     public boolean isTransient() {
         return true;
     }
@@ -64,6 +67,7 @@ public class TransientAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public void process() {
         // Does nothing ...
     }
