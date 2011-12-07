@@ -55,6 +55,11 @@ public class ValuePartitionMetadata extends ORMetadata {
         this.value = (String)annotation.getAttribute("value");
     }
     
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof ValuePartitionMetadata) {
@@ -67,18 +72,34 @@ public class ValuePartitionMetadata extends ORMetadata {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getConnectionPool() {
         return connectionPool;
     }
-
-    public void setConnectionPool(String connectionPool) {
-        this.connectionPool = connectionPool;
-    }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setConnectionPool(String connectionPool) {
+        this.connectionPool = connectionPool;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setValue(String value) {
         this.value = value;
     }

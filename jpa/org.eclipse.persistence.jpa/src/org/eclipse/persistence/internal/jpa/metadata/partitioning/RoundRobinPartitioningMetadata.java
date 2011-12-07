@@ -55,17 +55,9 @@ public class RoundRobinPartitioningMetadata extends ReplicationPartitioningMetad
         this.replicateWrites = (Boolean)annotation.getAttribute("replicateWrites");
     }
 
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof RoundRobinPartitioningMetadata)) {
-            RoundRobinPartitioningMetadata policy = (RoundRobinPartitioningMetadata) objectToCompare;
-            
-            return valuesMatch(this.replicateWrites, policy.getReplicateWrites());
-        }
-        
-        return false;
-    }
-
+    /**
+     * INTERNAL:
+     */
     @Override
     public PartitioningPolicy buildPolicy() {
         RoundRobinPartitioningPolicy policy = new RoundRobinPartitioningPolicy();
@@ -76,10 +68,34 @@ public class RoundRobinPartitioningMetadata extends ReplicationPartitioningMetad
         return policy;
     }
     
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && (objectToCompare instanceof RoundRobinPartitioningMetadata)) {
+            RoundRobinPartitioningMetadata policy = (RoundRobinPartitioningMetadata) objectToCompare;
+            
+            return valuesMatch(this.replicateWrites, policy.getReplicateWrites());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public Boolean getReplicateWrites() {
         return replicateWrites;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setReplicateWrites(Boolean replicateWrites) {
         this.replicateWrites = replicateWrites;
     }

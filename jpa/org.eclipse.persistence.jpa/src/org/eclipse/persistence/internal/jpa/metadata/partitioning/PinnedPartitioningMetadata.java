@@ -55,6 +55,22 @@ public class PinnedPartitioningMetadata extends AbstractPartitioningMetadata {
         this.connectionPool = (String)annotation.getAttribute("connectionPool");
     }
 
+    /**
+     * INTENAL:
+     */
+    @Override
+    public PartitioningPolicy buildPolicy() {
+        PinnedPartitioningPolicy policy = new PinnedPartitioningPolicy();
+        super.buildPolicy(policy);
+        policy.setConnectionPool(getConnectionPool());
+        return policy;
+    }
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && (objectToCompare instanceof PinnedPartitioningMetadata)) {
@@ -65,19 +81,19 @@ public class PinnedPartitioningMetadata extends AbstractPartitioningMetadata {
         
         return false;
     }
-
+    
+    /**
+     * INTENAL:
+     * Used for OX mapping.
+     */
     public String getConnectionPool() {
         return connectionPool;
     }
-
-    @Override
-    public PartitioningPolicy buildPolicy() {
-        PinnedPartitioningPolicy policy = new PinnedPartitioningPolicy();
-        super.buildPolicy(policy);
-        policy.setConnectionPool(getConnectionPool());
-        return policy;
-    }
-
+    
+    /**
+     * INTENAL:
+     * Used for OX mapping.
+     */
     public void setConnectionPool(String connectionPool) {
         this.connectionPool = connectionPool;
     }

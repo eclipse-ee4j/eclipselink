@@ -46,8 +46,6 @@ import org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy;
  * @since EclipseLink 2.2
  */
 public class RangePartitioningMetadata extends FieldPartitioningMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected List<RangePartitionMetadata> partitions;
 
     /**
@@ -70,40 +68,9 @@ public class RangePartitioningMetadata extends FieldPartitioningMetadata {
         }
     }
 
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof RangePartitioningMetadata)) {
-            RangePartitioningMetadata policy = (RangePartitioningMetadata) objectToCompare;
-            
-            return valuesMatch(this.partitions, policy.getPartitions());
-        }
-        
-        return false;
-    }
-    
     /**
-     * TODO: this needs to be done at runtime.
-     */    
-    private Object initObject(Class type, String value) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
-                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
-            } catch (PrivilegedActionException exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
-        } else {
-            try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
-                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
-            } catch (Exception exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
-        }
-        
-        return value;
-    }
-
+     * INTERNAL:
+     */
     @Override
     public PartitioningPolicy buildPolicy() {
         RangePartitioningPolicy policy = new RangePartitioningPolicy();
@@ -126,10 +93,58 @@ public class RangePartitioningMetadata extends FieldPartitioningMetadata {
         return policy;
     }
     
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && (objectToCompare instanceof RangePartitioningMetadata)) {
+            RangePartitioningMetadata policy = (RangePartitioningMetadata) objectToCompare;
+            
+            return valuesMatch(this.partitions, policy.getPartitions());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<RangePartitionMetadata> getPartitions() {
         return partitions;
     }
 
+    /**
+     * INTERNAL:
+     * TODO: this needs to be done at runtime.
+     */    
+    private Object initObject(Class type, String value) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            try {
+                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
+                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
+            } catch (PrivilegedActionException exception) {
+                //throwInitObjectException(exception, type, value, isData);
+            }
+        } else {
+            try {
+                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
+                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
+            } catch (Exception exception) {
+                //throwInitObjectException(exception, type, value, isData);
+            }
+        }
+        
+        return value;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setPartitions(List<RangePartitionMetadata> partitions) {
         this.partitions = partitions;
     }

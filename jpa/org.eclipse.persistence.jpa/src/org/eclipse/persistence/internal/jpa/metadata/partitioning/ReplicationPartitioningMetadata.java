@@ -68,6 +68,30 @@ public class ReplicationPartitioningMetadata extends AbstractPartitioningMetadat
         super(elementName);
     }
 
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public PartitioningPolicy buildPolicy() {
+        ReplicationPartitioningPolicy policy = new ReplicationPartitioningPolicy();
+        super.buildPolicy(policy);
+        return policy;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void buildPolicy(PartitioningPolicy policy) {
+        super.buildPolicy(policy);
+        ((ReplicationPartitioningPolicy)policy).setConnectionPools(getConnectionPools());
+    }
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && (objectToCompare instanceof ReplicationPartitioningMetadata)) {
@@ -78,24 +102,19 @@ public class ReplicationPartitioningMetadata extends AbstractPartitioningMetadat
         
         return false;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<String> getConnectionPools() {
         return connectionPools;
     }
 
-    @Override
-    public PartitioningPolicy buildPolicy() {
-        ReplicationPartitioningPolicy policy = new ReplicationPartitioningPolicy();
-        super.buildPolicy(policy);
-        return policy;
-    }
-
-    @Override
-    public void buildPolicy(PartitioningPolicy policy) {
-        super.buildPolicy(policy);
-        ((ReplicationPartitioningPolicy)policy).setConnectionPools(getConnectionPools());
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setConnectionPools(List<String> connectionPools) {
         this.connectionPools = connectionPools;
     }

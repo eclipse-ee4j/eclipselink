@@ -60,7 +60,20 @@ public class PartitioningMetadata extends AbstractPartitioningMetadata {
     }
     
     /**
+     * Cannot instantiate policy until the correct class loader is available.
+     */
+    @Override
+    public PartitioningPolicy buildPolicy() {
+        CustomPartitioningPolicy policy = new CustomPartitioningPolicy();
+        super.buildPolicy(policy);
+        policy.setPartitioningClasName(this.className);
+        return policy;
+    }
+    
+    /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -97,16 +110,5 @@ public class PartitioningMetadata extends AbstractPartitioningMetadata {
      */
     public void setClassName(String className) {
         this.className = className;
-    }
-    
-    /**
-     * Cannot instantiate policy until the correct class loader is available.
-     */
-    @Override
-    public PartitioningPolicy buildPolicy() {
-        CustomPartitioningPolicy policy = new CustomPartitioningPolicy();
-        super.buildPolicy(policy);
-        policy.setPartitioningClasName(this.className);
-        return policy;
     }
 }

@@ -64,26 +64,10 @@ public class ValuePartitioningMetadata extends FieldPartitioningMetadata {
             this.partitions.add(new ValuePartitionMetadata((MetadataAnnotation)partitionAnnotation, accessor));
         }
     }
-
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof ValuePartitioningMetadata)) {
-            ValuePartitioningMetadata policy = (ValuePartitioningMetadata) objectToCompare;
-            
-            return valuesMatch(this.partitions, policy.getPartitions());
-        }
-        
-        return false;
-    }
     
     /**
-     * Convert the string value to the class type.
-     * This will handle numbers, string, dates, and most other classes.
-     */    
-    private Object initObject(Class type, String value) {
-        return ConversionManager.getDefaultManager().convertObject(value, type);
-    }
-
+     * INTERNAL:
+     */
     @Override
     public PartitioningPolicy buildPolicy() {
         ValuePartitioningPolicy policy = new ValuePartitioningPolicy();
@@ -103,18 +87,59 @@ public class ValuePartitioningMetadata extends FieldPartitioningMetadata {
         return policy;
     }
     
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && (objectToCompare instanceof ValuePartitioningMetadata)) {
+            ValuePartitioningMetadata policy = (ValuePartitioningMetadata) objectToCompare;
+            
+            return valuesMatch(this.partitions, policy.getPartitions());
+        }
+        
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDefaultConnectionPool() {
+        return defaultConnectionPool;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<ValuePartitionMetadata> getPartitions() {
         return partitions;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Convert the string value to the class type.
+     * This will handle numbers, string, dates, and most other classes.
+     */    
+    private Object initObject(Class type, String value) {
+        return ConversionManager.getDefaultManager().convertObject(value, type);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setPartitions(List<ValuePartitionMetadata> partitions) {
         this.partitions = partitions;
     }
     
-    public String getDefaultConnectionPool() {
-        return defaultConnectionPool;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setDefaultConnectionPool(String defaultConnectionPool) {
         this.defaultConnectionPool = defaultConnectionPool;
     }

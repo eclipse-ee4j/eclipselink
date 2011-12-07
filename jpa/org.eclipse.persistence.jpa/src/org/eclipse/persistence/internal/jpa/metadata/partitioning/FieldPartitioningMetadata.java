@@ -38,8 +38,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 2.2
  */
 public abstract class FieldPartitioningMetadata extends AbstractPartitioningMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected ColumnMetadata partitionColumn;
     protected String partitionValueType;
     protected Boolean unionUnpartitionableQueries;
@@ -73,19 +71,6 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
     protected FieldPartitioningMetadata(String elementName) {
         super(elementName);
     }
-
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof FieldPartitioningMetadata)) {
-            FieldPartitioningMetadata policy = (FieldPartitioningMetadata) objectToCompare;
-            
-            return valuesMatch(this.partitionColumn, policy.getPartitionColumn())
-                    && valuesMatch(this.unionUnpartitionableQueries, policy.getUnionUnpartitionableQueries())
-                    && valuesMatch(this.partitionValueType, policy.getPartitionValueType());
-        }
-        
-        return false;
-    }
     
     /**
      * Set common fields into policy.
@@ -102,8 +87,46 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
         }
     }
     
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && (objectToCompare instanceof FieldPartitioningMetadata)) {
+            FieldPartitioningMetadata policy = (FieldPartitioningMetadata) objectToCompare;
+            
+            return valuesMatch(this.partitionColumn, policy.getPartitionColumn())
+                    && valuesMatch(this.unionUnpartitionableQueries, policy.getUnionUnpartitionableQueries())
+                    && valuesMatch(this.partitionValueType, policy.getPartitionValueType());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
     public ColumnMetadata getPartitionColumn() {
         return partitionColumn;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public String getPartitionValueType() {
+        return partitionValueType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public Boolean getUnionUnpartitionableQueries() {
+        return unionUnpartitionableQueries;
     }
 
     /**
@@ -115,22 +138,26 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
         initXMLObject(partitionColumn, accessibleObject);
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
     public void setPartitionColumn(ColumnMetadata partitionColumn) {
         this.partitionColumn = partitionColumn;
     }
-
-    public String getPartitionValueType() {
-        return partitionValueType;
-    }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
     public void setPartitionValueType(String partitionValueType) {
         this.partitionValueType = partitionValueType;
     }
 
-    public Boolean getUnionUnpartitionableQueries() {
-        return unionUnpartitionableQueries;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
     public void setUnionUnpartitionableQueries(Boolean unionUnpartitionableQueries) {
         this.unionUnpartitionableQueries = unionUnpartitionableQueries;
     }

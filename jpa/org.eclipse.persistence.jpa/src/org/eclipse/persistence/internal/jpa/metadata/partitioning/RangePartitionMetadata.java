@@ -34,8 +34,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 2.2
  */
 public class RangePartitionMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected String connectionPool;
     protected String startValue;
     protected String endValue;
@@ -59,6 +57,11 @@ public class RangePartitionMetadata extends ORMetadata {
         this.endValue = (String)annotation.getAttribute("endValue");
     }
     
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof RangePartitionMetadata) {
@@ -72,27 +75,51 @@ public class RangePartitionMetadata extends ORMetadata {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getConnectionPool() {
         return connectionPool;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getEndValue() {
+        return endValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getStartValue() {
+        return startValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setConnectionPool(String connectionPool) {
         this.connectionPool = connectionPool;
     }
 
-    public String getStartValue() {
-        return startValue;
-    }
-
-    public void setStartValue(String startValue) {
-        this.startValue = startValue;
-    }
-
-    public String getEndValue() {
-        return endValue;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setEndValue(String endValue) {
         this.endValue = endValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setStartValue(String startValue) {
+        this.startValue = startValue;
     }
 }

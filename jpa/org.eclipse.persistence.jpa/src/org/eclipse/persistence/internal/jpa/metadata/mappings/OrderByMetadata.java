@@ -68,6 +68,8 @@ public class OrderByMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -86,7 +88,7 @@ public class OrderByMetadata extends ORMetadata {
     public String getValue() {
         return m_value;
     }
-
+    
     /**
      * INTERNAL:
      * Process an order by value (if specified) for the given collection 

@@ -60,14 +60,8 @@ public class ReturnInsertMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Boolean getReturnOnly() {
-        return m_returnOnly;
-    }
-
-    /**
-     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -77,6 +71,14 @@ public class ReturnInsertMetadata extends ORMetadata {
         }
         
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getReturnOnly() {
+        return m_returnOnly;
     }
     
     /**

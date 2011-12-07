@@ -56,16 +56,23 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
         super(elementName);
     }
     
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Require subclass to build policy.
+     */
+    public abstract PartitioningPolicy buildPolicy();
+    
+    /**
+     * Set common fields into policy.
+     * Should be called by subclasses.
+     */
+    public void buildPolicy(PartitioningPolicy policy) {
+        policy.setName(this.name);
     }
     
     /**
-     * Equals is used for processing overrides from XML.
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -79,15 +86,18 @@ public abstract class AbstractPartitioningMetadata extends ORMetadata {
     }
     
     /**
-     * Require subclass to build policy.
+     * INTERNAL:
+     * Used for OX mapping.
      */
-    public abstract PartitioningPolicy buildPolicy();
+    public String getName() {
+        return name;
+    }
     
     /**
-     * Set common fields into policy.
-     * Should be called by subclasses.
+     * INTERNAL:
+     * Used for OX mapping.
      */
-    public void buildPolicy(PartitioningPolicy policy) {
-        policy.setName(this.name);
+    public void setName(String name) {
+        this.name = name;
     }
 }

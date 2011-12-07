@@ -62,6 +62,8 @@ public class HashPartitioningMetadata extends FieldPartitioningMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -75,12 +77,16 @@ public class HashPartitioningMetadata extends FieldPartitioningMetadata {
     }
     
     /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public List<String> getConnectionPools() {
         return connectionPools;
     }
 
+    /**
+     * INTERNAL:
+     */
     @Override
     public PartitioningPolicy buildPolicy() {
         HashPartitioningPolicy policy = new HashPartitioningPolicy();
@@ -90,6 +96,7 @@ public class HashPartitioningMetadata extends FieldPartitioningMetadata {
     }
     
     /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setConnectionPools(List<String> connectionPools) {

@@ -54,7 +54,25 @@ public class UnionPartitioningMetadata extends ReplicationPartitioningMetadata {
         super(annotation, accessor);
         this.replicateWrites = (Boolean)annotation.getAttribute("replicateWrites");
     }
-
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public PartitioningPolicy buildPolicy() {
+        UnionPartitioningPolicy policy = new UnionPartitioningPolicy();
+        super.buildPolicy(policy);
+        if (this.replicateWrites != null) {
+            policy.setReplicateWrites(this.replicateWrites);
+        }
+        return policy;
+    }
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && (objectToCompare instanceof UnionPartitioningMetadata)) {
@@ -66,20 +84,18 @@ public class UnionPartitioningMetadata extends ReplicationPartitioningMetadata {
         return false;
     }
 
-    @Override
-    public PartitioningPolicy buildPolicy() {
-        UnionPartitioningPolicy policy = new UnionPartitioningPolicy();
-        super.buildPolicy(policy);
-        if (this.replicateWrites != null) {
-            policy.setReplicateWrites(this.replicateWrites);
-        }
-        return policy;
-    }
-    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public Boolean getReplicateWrites() {
         return replicateWrites;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setReplicateWrites(Boolean replicateWrites) {
         this.replicateWrites = replicateWrites;
     }
