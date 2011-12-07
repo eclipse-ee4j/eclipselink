@@ -32,6 +32,14 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * INTERNAL:
  * PropertyMetadata. Each mapping may be assigned user-defined properties.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   matches method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0 
  */
@@ -60,28 +68,6 @@ public class PropertyMetadata extends ORMetadata {
         m_name = (String)property.getAttributeString("name");
         m_value = (String)property.getAttributeString("value");
         m_valueType = getMetadataClass((String)property.getAttributeString("valueType"));
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PropertyMetadata) {
-            PropertyMetadata property = (PropertyMetadata) objectToCompare;
-            
-            if (! valuesMatch(m_name, property.getName())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_value, property.getValue())) {
-                return false;
-            }
-            
-            return valuesMatch(m_valueTypeName, property.getValueTypeName());
-        }
-        
-        return false;
     }
     
     /**
@@ -143,6 +129,30 @@ public class PropertyMetadata extends ORMetadata {
         super.initXMLObject(accessibleObject, entityMappings);
 
         m_valueType = initXMLClassName(m_valueTypeName);
+    }
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof PropertyMetadata) {
+            PropertyMetadata property = (PropertyMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, property.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_value, property.getValue())) {
+                return false;
+            }
+            
+            return valuesMatch(m_valueTypeName, property.getValueTypeName());
+        }
+        
+        return false;
     }
     
     /**

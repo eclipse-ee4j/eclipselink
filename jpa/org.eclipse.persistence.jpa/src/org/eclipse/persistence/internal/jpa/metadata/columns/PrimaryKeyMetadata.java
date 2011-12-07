@@ -78,9 +78,11 @@ public class PrimaryKeyMetadata extends ORMetadata {
             m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessor));
         }
     }
-
+    
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -131,7 +133,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public boolean hasColumns() {
         return ! m_columns.isEmpty();
     }
-
+    
     /**
      * Process the meta-data, configure primary key and idValidation in descriptor.
      */

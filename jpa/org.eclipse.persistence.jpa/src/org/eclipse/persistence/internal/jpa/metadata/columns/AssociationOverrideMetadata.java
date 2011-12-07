@@ -74,6 +74,8 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -127,6 +129,7 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
         }
         initXMLObject(m_joinTable, accessibleObject);
     }
+
     /**
      * INTERNAL:
      * Used for OX mapping.

@@ -60,9 +60,11 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
 
         m_column = new ColumnMetadata((MetadataAnnotation) attributeOverride.getAttribute("column"), accessor);
     }
-
+    
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {

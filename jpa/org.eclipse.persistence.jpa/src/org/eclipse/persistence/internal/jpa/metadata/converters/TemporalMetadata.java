@@ -69,6 +69,8 @@ public class TemporalMetadata extends MetadataConverter {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {

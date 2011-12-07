@@ -63,6 +63,8 @@ public abstract class CopyPolicyMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -72,14 +74,14 @@ public abstract class CopyPolicyMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
+    public abstract CopyPolicy getCopyPolicy();
+    
+    /**
+     * INTERNAL:
+     */
     public void process(MetadataDescriptor descriptor) {
         descriptor.setHasCopyPolicy();
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();       
         classDescriptor.setCopyPolicy(getCopyPolicy());
     }
-    
-    /**
-     * INTERNAL:
-     */
-    public abstract CopyPolicy getCopyPolicy();
 }

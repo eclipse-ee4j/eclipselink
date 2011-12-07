@@ -65,15 +65,17 @@ public class LobMetadata extends MetadataConverter {
         
         // Nothing to read off a lob.
     }
-    
+
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof LobMetadata;
     }
-
+    
     /**
      * INTERNAL:
      * Returns true if the given class is a valid blob type.

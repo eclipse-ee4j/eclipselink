@@ -82,9 +82,11 @@ public class ColumnMetadata extends DirectColumnMetadata {
             setColumnDefinition((String) column.getAttributeString("columnDefinition"));
         }
     }
-
+    
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -160,7 +162,7 @@ public class ColumnMetadata extends DirectColumnMetadata {
     public Boolean getUnique() {
         return m_unique;
     }
-
+    
     /**
      * INTERNAL: Used for OX mapping.
      */

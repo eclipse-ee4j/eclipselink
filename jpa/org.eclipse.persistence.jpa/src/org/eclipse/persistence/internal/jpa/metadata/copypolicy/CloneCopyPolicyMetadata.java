@@ -66,6 +66,8 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -85,6 +87,7 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
     /**
      * INTERNAL:
      */
+    @Override
     public CopyPolicy getCopyPolicy() {
         if (methodName == null && workingCopyMethodName == null){
             throw ValidationException.copyPolicyMustSpecifyEitherMethodOrWorkingCopyMethod(getLocation());

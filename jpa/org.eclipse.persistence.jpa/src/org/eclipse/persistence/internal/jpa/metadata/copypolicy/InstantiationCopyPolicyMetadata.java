@@ -58,15 +58,18 @@ public class InstantiationCopyPolicyMetadata extends CopyPolicyMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
         return super.equals(objectToCompare) && objectToCompare instanceof InstantiationCopyPolicyMetadata;
     }
-
+    
     /**
      * INTERNAL:
      */
+    @Override
     public CopyPolicy getCopyPolicy() {
         return new InstantiationCopyPolicy();
     }

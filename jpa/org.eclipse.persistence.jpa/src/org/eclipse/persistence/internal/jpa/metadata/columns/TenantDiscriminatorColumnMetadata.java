@@ -77,9 +77,11 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
         m_contextProperty = (String) tenantDiscriminator.getAttribute("contextProperty");
     }
     
+
     /**
      * INTERNAL:
-     * Required ORMetadata method used for XML merging.
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -142,7 +144,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public String getTable() {
         return m_table;
     }
-
+    
     /**
      * INTERNAL:
      */
