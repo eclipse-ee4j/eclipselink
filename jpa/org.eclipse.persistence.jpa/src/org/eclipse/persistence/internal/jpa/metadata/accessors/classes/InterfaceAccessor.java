@@ -39,8 +39,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  *  - query keys
  * 
  * Key notes:
- * - any metadata mapped from XML to this class must be compared in the
- *   equals method.
+ * - ClassAccessors are compared by java class name only (for equals) and must
+ *   handle merging.
  * - any metadata mapped from XML to this class must be handled in the merge
  *   method. (merging is done at the accessor/mapping level)
  * - any metadata mapped from XML to this class must be initialized in the
