@@ -154,8 +154,8 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  * need to be added to the merge method.
  * 
  * Key notes:
- * - any metadata mapped from XML to this class must be compared in the
- *   equals method.
+ * - ClassAccessors are compared by java class name only (for equals) and MUST
+ *   handle merging.
  * - any metadata mapped from XML to this class must be handled in the merge
  *   method. (merging is done at the accessor/mapping level)
  * - any metadata mapped from XML to this class must be initialized in the
@@ -358,20 +358,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<NamedQueryMetadata> getNamedQueries() {
-        return m_namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
-        return m_namedStoredProcedureQueries;
-    }
-    
-    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
-        return m_namedStoredFunctionQueries;
+    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
+        return m_namedPLSQLStoredFunctionQueries;
     }
     
     /**
@@ -382,8 +370,28 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         return m_namedPLSQLStoredProcedureQueries;
     }
     
-    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
-        return m_namedPLSQLStoredFunctionQueries;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedQueryMetadata> getNamedQueries() {
+        return m_namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
+        return m_namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
+        return m_namedStoredProcedureQueries;
     }
     
     /**
@@ -549,7 +557,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * reference an id class type.
      */
     protected void initIdClass() {
-        if (m_idClass == null || m_idClass.equals(void.class)) {
+        if (m_idClass == null || m_idClass.isVoid()) {
             // Check for an IdClass annotation.
             if (isAnnotationPresent(IdClass.class)) {
                 m_idClass = getMetadataClass((String)getAnnotation(IdClass.class).getAttribute("value"));
@@ -562,7 +570,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
         
         // Add the id class to the known list of id classes for this project.
-        if (m_idClass != null && ! m_idClass.equals(void.class)) {
+        if (m_idClass != null && ! m_idClass.isVoid()) {
             getProject().addIdClass(m_idClass.getName());
             // 266912: We store the IdClass (not an EmbeddableId) for use by the Metamodel API
             getProject().getProject().addMetamodelIdClassMapEntry(getAccessibleObject().getName(), m_idClass.getName());
@@ -655,8 +663,11 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // ORMetadata list merging.
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
         m_fetchGroups = mergeORObjectLists(m_fetchGroups, accessor.getFetchGroups());
-        m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
         m_namedNativeQueries = mergeORObjectLists(m_namedNativeQueries, accessor.getNamedNativeQueries());
+        m_namedPLSQLStoredFunctionQueries = mergeORObjectLists(m_namedPLSQLStoredFunctionQueries, accessor.getNamedPLSQLStoredFunctionQueries());
+        m_namedPLSQLStoredProcedureQueries = mergeORObjectLists(m_namedPLSQLStoredProcedureQueries, accessor.getNamedPLSQLStoredProcedureQueries());
+        m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
+        m_namedStoredFunctionQueries = mergeORObjectLists(m_namedStoredFunctionQueries, accessor.getNamedStoredFunctionQueries());
         m_namedStoredProcedureQueries = mergeORObjectLists(m_namedStoredProcedureQueries, accessor.getNamedStoredProcedureQueries());
         m_sqlResultSetMappings = mergeORObjectLists(m_sqlResultSetMappings, accessor.getSqlResultSetMappings());
     }
@@ -1083,7 +1094,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * type of the entity for which it is the primary key.
      */
     protected void processIdClass() {
-        if (m_idClass != null && !m_idClass.equals(void.class)) {
+        if (m_idClass != null && !m_idClass.isVoid()) {
             getDescriptor().setPKClass(m_idClass);
             
             if (getDescriptor().usesDefaultPropertyAccess()) {
@@ -1547,20 +1558,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
-        m_namedQueries = namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
-        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
-    }
-
-    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
-        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
+    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
+        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
     }
     
     /**
@@ -1570,9 +1569,29 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
         m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
     }
-
-    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
-        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
+        m_namedQueries = namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
+        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
+        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
     }
     
     /**
