@@ -18,9 +18,11 @@ import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMSource;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 import junit.framework.TestCase;
@@ -57,7 +59,15 @@ public class ContentTypeTestCases extends TestCase {
         Root root = new Root();
         root.setMimeType(IMAGE_GIF);
         root.setImage(IMAGE);
-        marshaller.marshal(root, new StringWriter());
+        try {
+            marshaller.marshal(root, new StringWriter());
+        } catch(MarshalException ex) {
+            if(!(((XMLMarshalException)ex.getLinkedException()).getErrorCode() == XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE)) {
+                throw ex;
+            } else {
+                return;
+            }
+        }
         assertEquals(IMAGE_GIF, attachmentMarshaller.getMimeType());
     }
 
@@ -73,7 +83,15 @@ public class ContentTypeTestCases extends TestCase {
         RootImageStar root = new RootImageStar();
         root.setMimeType(IMAGE_GIF);
         root.setImage(IMAGE);
-        marshaller.marshal(root, new StringWriter());
+        try {
+            marshaller.marshal(root, new StringWriter());
+        } catch(MarshalException ex) {
+            if(!(((XMLMarshalException)ex.getLinkedException()).getErrorCode() == XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE)) {
+                throw ex;
+            } else {
+                return;
+            }
+        }
         assertEquals(IMAGE_GIF, attachmentMarshaller.getMimeType());
     }
 
@@ -89,7 +107,15 @@ public class ContentTypeTestCases extends TestCase {
         RootImageJpeg root = new RootImageJpeg();
         root.setMimeType(IMAGE_GIF);
         root.setImage(IMAGE);
-        marshaller.marshal(root, new StringWriter());
+        try {
+            marshaller.marshal(root, new StringWriter());
+        } catch(MarshalException ex) {
+            if(!(((XMLMarshalException)ex.getLinkedException()).getErrorCode() == XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE)) {
+                throw ex;
+            } else {
+                return;
+            }
+        }
         assertEquals(IMAGE_GIF, attachmentMarshaller.getMimeType());
     }
 
