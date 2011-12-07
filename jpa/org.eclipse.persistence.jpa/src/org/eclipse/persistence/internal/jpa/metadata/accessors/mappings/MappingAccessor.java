@@ -210,6 +210,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (super.equals(objectToCompare) && objectToCompare instanceof MappingAccessor) {
             MappingAccessor mappingAccessor = (MappingAccessor) objectToCompare;
             
+            // For extra safety compare that the owning class accessors of these
+            // mapping accessors are the same.
+            if (! valuesMatch(getClassAccessor(), mappingAccessor.getClassAccessor())) {
+                return false;
+            }
+            
             return valuesMatch(getAttributeType(), mappingAccessor.getAttributeType());
         }
         

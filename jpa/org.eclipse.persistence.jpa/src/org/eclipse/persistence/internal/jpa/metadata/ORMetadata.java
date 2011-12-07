@@ -121,8 +121,10 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
-     * For merging to work properly, all ORMetadata must be able to compare
-     * themselves for equality.
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     * 
+     * equals plays a big role in the shouldOverride() method from this class.
      */
     public abstract boolean equals(Object objectToCompare);
     
