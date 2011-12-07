@@ -70,22 +70,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     
     /**
      * INTERNAL:
-     */
-    public NamedStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
-        super(namedStoredProcedureQuery, accessor);
-         
-        for (Object storedProcedureParameter : (Object[]) namedStoredProcedureQuery.getAttributeArray("parameters")) {
-           m_parameters.add(new StoredProcedureParameterMetadata((MetadataAnnotation)storedProcedureParameter, accessor));
-        }
-        
-        m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
-        m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
-        m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttribute("multipleResultSets");
-        m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttribute("callByIndex");
-    }
-   
-    /**
-     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -111,13 +97,45 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public NamedStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
+        super(namedStoredProcedureQuery, accessor);
+         
+        for (Object storedProcedureParameter : (Object[]) namedStoredProcedureQuery.getAttributeArray("parameters")) {
+           m_parameters.add(new StoredProcedureParameterMetadata((MetadataAnnotation)storedProcedureParameter, accessor));
+        }
+        
+        m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
+        m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
+        m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttribute("multipleResultSets");
+        m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttribute("callByIndex");
+    }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public Boolean getCallByIndex() {
         return m_callByIndex;
     }
 
-    public void setCallByIndex(Boolean callByIndex) {
-        m_callByIndex = callByIndex;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getMultipleResultSets() {
+        return m_multipleResultSets;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<StoredProcedureParameterMetadata> getParameters() {
+        return m_parameters;
     }
     
     /**
@@ -132,23 +150,8 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<StoredProcedureParameterMetadata> getParameters() {
-        return m_parameters;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public Boolean getReturnsResultSet() {
         return m_returnsResultSet;
-    }
-    
-    public Boolean getMultipleResultSets() {
-        return m_multipleResultSets;
-    }
-
-    public void setMultipleResultSets(Boolean multipleResultSets) {
-        m_multipleResultSets = multipleResultSets;
     }
     
     /**
@@ -198,6 +201,22 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         } else {
             session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, hints, loader, session));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCallByIndex(Boolean callByIndex) {
+        m_callByIndex = callByIndex;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMultipleResultSets(Boolean multipleResultSets) {
+        m_multipleResultSets = multipleResultSets;
     }
     
     /**

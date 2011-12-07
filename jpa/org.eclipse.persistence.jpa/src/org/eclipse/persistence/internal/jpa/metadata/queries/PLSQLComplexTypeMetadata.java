@@ -40,14 +40,6 @@ public abstract class PLSQLComplexTypeMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for XML loading.
-     */
-    public PLSQLComplexTypeMetadata(String element) {
-        super(element);
-    }
-    
-    /**
-     * INTERNAL:
      * Used for annotation loading.
      */
     public PLSQLComplexTypeMetadata(MetadataAnnotation record, MetadataAccessor accessor) {
@@ -60,6 +52,16 @@ public abstract class PLSQLComplexTypeMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for XML loading.
+     */
+    public PLSQLComplexTypeMetadata(String element) {
+        super(element);
+    }
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -81,7 +83,30 @@ public abstract class PLSQLComplexTypeMetadata extends ORMetadata {
         
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getCompatibleType() {
+        return compatibleType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getJavaType() {
+        return javaType;
+    }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getName() {
+        return name;
+    }
     
     /**
      * Build a runtime type from the meta-data.
@@ -99,27 +124,27 @@ public abstract class PLSQLComplexTypeMetadata extends ORMetadata {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCompatibleType() {
-        return compatibleType;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setCompatibleType(String compatibleType) {
         this.compatibleType = compatibleType;
     }
 
-    public String getJavaType() {
-        return javaType;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setJavaType(String javaType) {
         this.javaType = javaType;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }

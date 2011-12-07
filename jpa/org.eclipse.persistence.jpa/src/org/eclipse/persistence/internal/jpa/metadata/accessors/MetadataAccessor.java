@@ -177,48 +177,6 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     */
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof MetadataAccessor) {
-            MetadataAccessor accessor = (MetadataAccessor) objectToCompare;
-                        
-            if (! valuesMatch(m_accessMethods, accessor.getAccessMethods())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_converters, accessor.getConverters())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_objectTypeConverters, accessor.getObjectTypeConverters())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_structConverters, accessor.getStructConverters())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_typeConverters, accessor.getTypeConverters())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_properties, accessor.getProperties())) {
-                return false;
-            }
-           
-            if (! valuesMatch(m_access, accessor.getAccess())) {
-                return false;
-            }
-            
-            return valuesMatch(m_name, accessor.getName());
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public String getAccess() {
@@ -648,6 +606,50 @@ public abstract class MetadataAccessor extends ORMetadata {
      * @return
      */
     public abstract boolean isProcessed();
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof MetadataAccessor) {
+            MetadataAccessor accessor = (MetadataAccessor) objectToCompare;
+                        
+            if (! valuesMatch(m_accessMethods, accessor.getAccessMethods())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_converters, accessor.getConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_objectTypeConverters, accessor.getObjectTypeConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_structConverters, accessor.getStructConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_typeConverters, accessor.getTypeConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_properties, accessor.getProperties())) {
+                return false;
+            }
+           
+            if (! valuesMatch(m_access, accessor.getAccess())) {
+                return false;
+            }
+            
+            return valuesMatch(m_name, accessor.getName());
+        }
+        
+        return false;
+    }
     
     /**
      * INTERNAL:

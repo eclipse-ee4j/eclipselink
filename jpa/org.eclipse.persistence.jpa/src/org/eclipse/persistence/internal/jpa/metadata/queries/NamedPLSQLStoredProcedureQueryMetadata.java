@@ -77,9 +77,11 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
         
         m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
     }
-   
+    
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -100,16 +102,16 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getProcedureName() {
-        return m_procedureName;
+    public List<PLSQLParameterMetadata> getParameters() {
+        return m_parameters;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<PLSQLParameterMetadata> getParameters() {
-        return m_parameters;
+    public String getProcedureName() {
+        return m_procedureName;
     }
     
     /**
@@ -159,15 +161,15 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setProcedureName(String procedureName) {
-        m_procedureName = procedureName;
+    public void setParameters(List<PLSQLParameterMetadata> parameters) {
+        m_parameters = parameters;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setParameters(List<PLSQLParameterMetadata> parameters) {
-        m_parameters = parameters;
+    public void setProcedureName(String procedureName) {
+        m_procedureName = procedureName;
     }
 }

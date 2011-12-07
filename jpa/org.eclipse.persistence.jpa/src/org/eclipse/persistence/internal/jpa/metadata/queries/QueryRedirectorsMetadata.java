@@ -84,9 +84,11 @@ public class QueryRedirectorsMetadata extends ORMetadata {
         defaultUpdateObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("update"));
         defaultReportQueryRedirector = getMetadataClass((String) redirectors.getAttribute("report"));
     }
-
+    
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {

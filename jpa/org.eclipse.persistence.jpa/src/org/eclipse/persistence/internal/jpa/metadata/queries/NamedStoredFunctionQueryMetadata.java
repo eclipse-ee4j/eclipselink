@@ -27,6 +27,14 @@ import org.eclipse.persistence.queries.StoredFunctionCall;
  * INTERNAL:
  * Object to hold onto a named stored function query.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   matches method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author James
  * @since EclipseLink 2.3
  */
@@ -44,7 +52,12 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
         
         setProcedureName((String) namedStoredProcedureQuery.getAttribute("functionName"));
     }
-
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredFunctionQueryMetadata) {
@@ -56,6 +69,17 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public StoredProcedureParameterMetadata getReturnParameter() {
+        return returnParameter;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
@@ -64,6 +88,9 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
         initXMLObject(this.returnParameter, accessibleObject);
     }
 
+    /**
+     * INTERNAL:
+     */
     @Override
     public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
         // Build the stored procedure call.
@@ -98,10 +125,10 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
         }
     }
 
-    public StoredProcedureParameterMetadata getReturnParameter() {
-        return returnParameter;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setReturnParameter(StoredProcedureParameterMetadata returnParameter) {
         this.returnParameter = returnParameter;
     }

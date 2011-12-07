@@ -60,6 +60,8 @@ public class FetchAttributeMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -78,7 +80,7 @@ public class FetchAttributeMetadata extends ORMetadata {
     public String getName() {
         return m_name;
     }
-
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

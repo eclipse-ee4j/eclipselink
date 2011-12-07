@@ -61,6 +61,8 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -73,6 +75,14 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
         }
         
         return super.equals(objectToCompare);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLParameterMetadata> getFields() {
+        return fields;
     }
     
     /**
@@ -99,10 +109,10 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
         return record;
     }
 
-    public List<PLSQLParameterMetadata> getFields() {
-        return fields;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setFields(List<PLSQLParameterMetadata> fields) {
         this.fields = fields;
     }
