@@ -34,6 +34,14 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
  * An array accessor.
  * Used to support ArrayMapping and ObjectArrayMapping.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
@@ -65,7 +73,12 @@ public class ArrayAccessor extends DirectAccessor {
             m_column = new ColumnMetadata(getAnnotation(Column.class), this);
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof ArrayAccessor) {
@@ -84,20 +97,47 @@ public class ArrayAccessor extends DirectAccessor {
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public ColumnMetadata getColumn() {
         return m_column;
     }
 
+    /**
+     * INTERNAL:
+     */
     @Override
     protected ColumnMetadata getColumn(String loggingCtx) {
         return m_column == null ? super.getColumn(loggingCtx) : m_column;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDatabaseType() {
+        return m_databaseType;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String getDefaultFetchType() {
+        return FetchType.EAGER.name(); 
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public EmbeddableAccessor getEmbeddableAccessor() {
         return getProject().getEmbeddableAccessor(getReferenceClass());
     }
     
     /**
+     * INTERNAL:
      * If a targetClass is specified in metadata, it will be set as the 
      * reference class, otherwise we will look to extract one from generics.
      * <p>
@@ -133,6 +173,7 @@ public class ArrayAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
      * In an element collection case, when the collection is not an embeddable
      * collection, there is no notion of a reference descriptor, therefore we
      * return this accessors descriptor
@@ -147,16 +188,24 @@ public class ArrayAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
      * Return the target class for this accessor.
      */
     protected MetadataClass getTargetClass() {
         return m_targetClass;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     protected String getTargetClassName() {
         return m_targetClassName;
     }
 
+    /**
+     * INTERNAL:
+     */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);        
@@ -169,6 +218,7 @@ public class ArrayAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
      * Return true if this element collection contains embeddable objects.
      */
     @Override
@@ -177,6 +227,7 @@ public class ArrayAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
      * Process the ArrayMapping or ObjectArrayMapping.
      */
     @Override
@@ -223,23 +274,27 @@ public class ArrayAccessor extends DirectAccessor {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setColumn(ColumnMetadata column) {
         m_column = column;
     }
 
-    public void setTargetClassName(String targetClassName) {
-        m_targetClassName = targetClassName;
-    }
-
-    public String getDefaultFetchType() {
-        return FetchType.EAGER.name(); 
-    }
-
-    public String getDatabaseType() {
-        return m_databaseType;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setDatabaseType(String databaseType) {
         m_databaseType = databaseType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTargetClassName(String targetClassName) {
+        m_targetClassName = targetClassName;
     }
 }

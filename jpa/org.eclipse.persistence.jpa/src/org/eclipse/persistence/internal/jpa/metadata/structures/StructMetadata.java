@@ -26,6 +26,14 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
  * Defines the metadata for the @Struct annotation for mapping
  * ObjectRelationshipDataTypeDescriptor and StructureMappings.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
@@ -51,7 +59,12 @@ public class StructMetadata extends ORMetadata {
             this.fields.add((String)field);
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof StructMetadata) {
@@ -63,6 +76,22 @@ public class StructMetadata extends ORMetadata {
         }
         
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<String> getFields() {
+        return fields;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getName() {
+        return name;
     }
     
     /**
@@ -89,20 +118,20 @@ public class StructMetadata extends ORMetadata {
         descriptor.getProject().getProject().getOrderedDescriptors().add(newDescriptor);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getFields() {
-        return fields;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setFields(List<String> fields) {
         this.fields = fields;
-    }    
+    }  
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }  
 }
     

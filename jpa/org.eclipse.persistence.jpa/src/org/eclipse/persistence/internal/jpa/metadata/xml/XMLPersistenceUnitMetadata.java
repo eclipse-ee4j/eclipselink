@@ -31,6 +31,11 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
  * INTERNAL:
  * Object to hold onto the XML persistence unit metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
@@ -48,7 +53,8 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * If equals returns false, call getConflict() for a finer grain reason why.
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof XMLPersistenceUnitMetadata) {

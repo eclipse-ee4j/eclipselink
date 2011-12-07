@@ -85,6 +85,11 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMe
 /**
  * Object to hold onto the XML entity mappings metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
@@ -149,6 +154,8 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -327,20 +334,8 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<NamedQueryMetadata> getNamedQueries() {
-        return m_namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
-        return m_namedStoredProcedureQueries;
-    }
-
-    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
-        return m_namedStoredFunctionQueries;
+    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
+        return m_namedPLSQLStoredFunctionQueries;
     }
     
     /**
@@ -350,9 +345,29 @@ public class XMLEntityMappings extends ORMetadata {
     public List<NamedPLSQLStoredProcedureQueryMetadata> getNamedPLSQLStoredProcedureQueries() {
         return m_namedPLSQLStoredProcedureQueries;
     }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedQueryMetadata> getNamedQueries() {
+        return m_namedQueries;
+    }
 
-    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
-        return m_namedPLSQLStoredFunctionQueries;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
+        return m_namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
+        return m_namedStoredProcedureQueries;
     }
     
     /**
@@ -393,6 +408,22 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public List<PinnedPartitioningMetadata> getPinnedPartitioning() {
         return m_pinnedPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLRecordMetadata> getPLSQLRecords() {
+        return m_plsqlRecords;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLTableMetadata> getPLSQLTables() {
+        return m_plsqlTables;
     }
     
     /**
@@ -1002,20 +1033,8 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
-        m_namedQueries = namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
-        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
-    }
-
-    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
-        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
+    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
+        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
     }
     
     /**
@@ -1025,9 +1044,29 @@ public class XMLEntityMappings extends ORMetadata {
     public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
         m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
     }
-
-    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
-        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
+        m_namedQueries = namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
+        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
+        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
     }
     
     /**
@@ -1069,6 +1108,22 @@ public class XMLEntityMappings extends ORMetadata {
     public void setPinnedPartitioning(List<PinnedPartitioningMetadata> pinnedPartitioning) {
         m_pinnedPartitioning = pinnedPartitioning;
     }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
+        m_plsqlRecords = records;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
+        m_plsqlTables = tables;
+    }  
     
     /**
      * INTERNAL:
@@ -1180,22 +1235,5 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setVersion(String version) {
         m_version = version;
-    }
-
-    public List<PLSQLRecordMetadata> getPLSQLRecords() {
-        return m_plsqlRecords;
-    }
-
-    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
-        m_plsqlRecords = records;
-    }
-
-    public List<PLSQLTableMetadata> getPLSQLTables() {
-        return m_plsqlTables;
-    }
-
-    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
-        m_plsqlTables = tables;
-    }
-    
+    }  
 }

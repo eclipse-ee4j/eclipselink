@@ -43,9 +43,6 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetad
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
- * - when loading from annotations, the constructor accepts the metadata
- *   accessor this metadata was loaded from. Used it to look up any 
- *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
@@ -73,6 +70,8 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof XMLPersistenceUnitDefaults) {

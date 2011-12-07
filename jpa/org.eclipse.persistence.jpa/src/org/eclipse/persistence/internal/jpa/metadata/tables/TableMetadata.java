@@ -90,9 +90,11 @@ public class TableMetadata extends ORMetadata {
     protected TableMetadata(String xmlElement) {
         super(xmlElement);
     }
-
+    
     /**
      * INTERNAL:
+     * For merging and overriding to work properly, all ORMetadata must be able 
+     * to compare themselves for metadata equality.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -201,7 +203,7 @@ public class TableMetadata extends ORMetadata {
             initXMLObject(jcm, accessibleObject);
         }
     }
-
+    
     /**
      * INTERNAL:
      * Add the unique constraints to the database table.
