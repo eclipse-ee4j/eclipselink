@@ -161,6 +161,16 @@ import org.eclipse.persistence.sessions.Project;
  * A MetadataProject stores metadata and also helps to facilitate the metadata
  * processing.
  * 
+ * Key notes:
+ * - Care should be taken when using Sets to hold metadata and checking their
+ *   equality. In most cases you should be able to us a List or Map since most
+ *   additions to those lists should not occur multiple times for the same
+ *   object. Just be aware of what you are gathering and how. For example, for
+ *   ClassAccessors, they can always be stored in a map keyed on 
+ *   accessor.getJavaClassName(). List of mapping accessors is ok as well since
+ *   in most cases we check isProcessed() before calling process on them etc.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
@@ -187,7 +197,18 @@ public class MetadataProject {
     
     // Boolean to specify if we should weave lazy relationships.
     private boolean m_isWeavingLazyEnabled;
-        
+    
+    // Boolean to specify if we should uppercase all field names.
+    // @see PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES
+    private boolean m_forceFieldNamesToUpperCase = true;
+    
+    // Cache the shared cache mode
+    private SharedCacheMode m_sharedCacheMode;
+    private boolean m_isSharedCacheModeInitialized;
+    
+    // A composite PU processor.
+    private MetadataProcessor m_compositeProcessor;
+    
     // Persistence unit info that is represented by this project.
     private PersistenceUnitInfo m_persistenceUnitInfo;
 
@@ -200,6 +221,21 @@ public class MetadataProject {
     // Persistence unit metadata for this project.
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
 
+    // All owning relationship accessors.
+    private List<RelationshipAccessor> m_owningRelationshipAccessors;
+    
+    // All non-owning (mappedBy) relationship accessors.
+    private List<RelationshipAccessor> m_nonOwningRelationshipAccessors;
+    
+    // Accessors that map to an Embeddable class
+    private List<MappingAccessor> m_embeddableMappingAccessors;
+    
+    // All direct collection accessors.
+    private List<DirectCollectionAccessor> m_directCollectionAccessors;
+    
+    // Class accessors that have a customizer.
+    private List<ClassAccessor> m_accessorsWithCustomizer;
+    
     // A linked map of all the entity mappings (XML file representation)
     private Map<String, XMLEntityMappings> m_entityMappings;
     
@@ -207,16 +243,27 @@ public class MetadataProject {
     private Map<String, MappedSuperclassAccessor> m_mappedSuperclasseAccessors;
 
     // All the class accessors for this project (Entities and Embeddables).
-    private HashMap<String, ClassAccessor> m_allAccessors;
+    private Map<String, ClassAccessor> m_allAccessors;
     
     // The entity accessors for this project
     private Map<String, EntityAccessor> m_entityAccessors;
     
+    // Contains those embeddables and entities that are VIRTUAL (do not exist)
+    private Map<String, ClassAccessor> m_virtualClasses;
+    
     // The embeddable accessors for this project
     private Map<String, EmbeddableAccessor> m_embeddableAccessors;
     
+    // Root level embeddable accessors. When we pre-process embeddable
+    // accessors we need to process them from the root down so as to set
+    // the correct owning descriptor.
+    private Map<String, EmbeddableAccessor> m_rootEmbeddableAccessors;
+    
     // The interface accessors for this project
     private Map<String, InterfaceAccessor> m_interfaceAccessors;
+    
+    // Class accessors that have their id derived from a relationship.
+    private Map<String, ClassAccessor> m_accessorsWithDerivedId;
     
     // Query metadata.
     private Map<String, NamedQueryMetadata> m_queries;
@@ -238,55 +285,20 @@ public class MetadataProject {
     // Store partitioning policies by name, to allow reuse.
     private Map<String, AbstractPartitioningMetadata> m_partitioningPolicies;
     
-    // All id classes (IdClass and EmbeddedId classes) used through-out the 
-    // persistence unit. We need this list to determine derived id accessors.
-    private Set<String> m_idClasses;
-    
-    // Default listeners that need to be applied to each entity in the
-    // persistence unit (unless they exclude them).
-    private Set< EntityListenerMetadata> m_defaultListeners;
-    
-    // Class accessors that have a customizer.
-    private Set<ClassAccessor> m_accessorsWithCustomizer;
-    
-    // Class accessors that have their id derived from a relationship.
-    private Set<ClassAccessor> m_accessorsWithDerivedId;
-    
-    // All direct collection accessors.
-    private HashSet<DirectCollectionAccessor> m_directCollectionAccessors;
-    
-    // Accessors that map to an Embeddable class
-    private Set<MappingAccessor> m_embeddableMappingAccessors;
-    
-    // All owning relationship accessors.
-    private Set<RelationshipAccessor> m_owningRelationshipAccessors;
-    // All non-owning (mappedBy) relationship accessors.
-    private Set<RelationshipAccessor> m_nonOwningRelationshipAccessors;
-    
-    // Root level embeddable accessors. When we pre-process embeddable
-    // accessors we need to process them from the root down so as to set
-    // the correct owning descriptor.
-    private Set<EmbeddableAccessor> m_rootEmbeddableAccessors;
-    
-    // Cache the shared cache mode
-    private SharedCacheMode m_sharedCacheMode;
-    private boolean m_isSharedCacheModeInitialized;
-    
     // All mappedSuperclass accessors, identity is handled by keying on className.
     private Map<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
     
-    // Boolean to specify if we should uppercase all field names.
-    // @see PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES
-    private boolean m_forceFieldNamesToUpperCase = true;
-    
-    // Contains those embeddables and entities that are VIRTUAL (do not exist)
-    private Set<ClassAccessor> m_virtualClasses;
+    // All id classes (IdClass and EmbeddedId classes) used through-out the 
+    // persistence unit. We need this list to determine derived id accessors.
+    private Set<String> m_idClasses;
     
     // Contains a list of all interfaces that are implemented by entities in
     // this project/pu.
     private Set<String> m_interfacesImplementedByEntities;
     
-    private MetadataProcessor m_compositeProcessor;
+    // Default listeners that need to be applied to each entity in the
+    // persistence unit (unless they exclude them).
+    private Set<EntityListenerMetadata> m_defaultListeners;
     
     /**
      * INTERNAL:
@@ -308,39 +320,36 @@ public class MetadataProject {
         m_multitenantSharedEmf = multitenantSharedEmf;
         m_multitenantSharedCache = multitenantSharedCache;
         
+        m_owningRelationshipAccessors = new ArrayList<RelationshipAccessor>();
+        m_nonOwningRelationshipAccessors = new ArrayList<RelationshipAccessor>();
+        m_embeddableMappingAccessors = new ArrayList<MappingAccessor>();
+        m_directCollectionAccessors = new ArrayList<DirectCollectionAccessor>();
+        m_accessorsWithCustomizer = new ArrayList<ClassAccessor>();
+        
         // Using linked collections since their ordering needs to be preserved.
         m_entityMappings = new LinkedHashMap<String, XMLEntityMappings>();
         m_defaultListeners = new LinkedHashSet<EntityListenerMetadata>();
-
+        
         m_queries = new HashMap<String, NamedQueryMetadata>();
         m_sqlResultSetMappings = new HashMap<String, SQLResultSetMappingMetadata>();
-
         m_allAccessors = new HashMap<String, ClassAccessor>();
         m_entityAccessors = new HashMap<String, EntityAccessor>();
         m_embeddableAccessors = new HashMap<String, EmbeddableAccessor>();
+        m_rootEmbeddableAccessors = new HashMap<String, EmbeddableAccessor>();
         m_interfaceAccessors = new HashMap<String, InterfaceAccessor>();
         m_mappedSuperclasseAccessors = new HashMap<String, MappedSuperclassAccessor>();
-        
-        m_idClasses = new HashSet<String>();
-        m_virtualClasses = new HashSet<ClassAccessor>();
-        m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
-        m_owningRelationshipAccessors = new HashSet<RelationshipAccessor>();
-        m_nonOwningRelationshipAccessors = new HashSet<RelationshipAccessor>();
-        m_rootEmbeddableAccessors = new HashSet<EmbeddableAccessor>();
-        m_embeddableMappingAccessors = new HashSet<MappingAccessor>();
-        m_directCollectionAccessors = new HashSet<DirectCollectionAccessor>();
-
         m_generatedValues = new HashMap<MetadataClass, GeneratedValueMetadata>();
         m_tableGenerators = new HashMap<String, TableGeneratorMetadata>();
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
-        
         m_converters = new HashMap<String, AbstractConverterMetadata>();
         m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
         m_plsqlComplexTypes = new HashMap<String, PLSQLComplexTypeMetadata>();
-        m_accessorsWithDerivedId = new HashSet<ClassAccessor>();
-        m_interfacesImplementedByEntities = new HashSet<String>();
-        
         m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
+        m_virtualClasses = new HashMap<String, ClassAccessor>();
+        m_accessorsWithDerivedId = new HashMap<String, ClassAccessor>();
+        
+        m_idClasses = new HashSet<String>();
+        m_interfacesImplementedByEntities = new HashSet<String>();
     }
     
     /**
@@ -376,7 +385,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public void addAccessorWithDerivedId(ClassAccessor accessor) {
-        m_accessorsWithDerivedId.add(accessor);
+        m_accessorsWithDerivedId.put(accessor.getJavaClassName(), accessor);
     }
     
     /**
@@ -647,7 +656,7 @@ public class MetadataProject {
      * Add a root level embeddable accessor.
      */
     public void addRootEmbeddableAccessor(EmbeddableAccessor accessor) {
-        m_rootEmbeddableAccessors.add(accessor);
+        m_rootEmbeddableAccessors.put(accessor.getJavaClassName(), accessor);
     }
     
     /**
@@ -766,7 +775,7 @@ public class MetadataProject {
      * has VIRTUAL access and the class does not exist on the classpath. 
      */
     public void addVirtualClass(ClassAccessor accessor) {
-        m_virtualClasses.add(accessor);
+        m_virtualClasses.put(accessor.getJavaClassName(), accessor);
     }
     
     /**
@@ -809,7 +818,7 @@ public class MetadataProject {
             
                 // Create the dynamic classes.
                 Map<String, MetadataDescriptor> dynamicClasses = new HashMap<String, MetadataDescriptor>();
-                for (ClassAccessor accessor : m_virtualClasses) {
+                for (ClassAccessor accessor : m_virtualClasses.values()) {
                     createDynamicClass(accessor.getDescriptor(), dynamicClasses, dcl);
                 }
             
@@ -890,7 +899,7 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public Set<ClassAccessor> getAccessorsWithCustomizer() {
+    public List<ClassAccessor> getAccessorsWithCustomizer() {
         return m_accessorsWithCustomizer;
     }
     
@@ -1130,8 +1139,8 @@ public class MetadataProject {
      * pre-processed from their roots down.
      * @see processStage1()
      */
-    public Set<EmbeddableAccessor> getRootEmbeddableAccessors() {
-        return m_rootEmbeddableAccessors;
+    public Collection<EmbeddableAccessor> getRootEmbeddableAccessors() {
+        return m_rootEmbeddableAccessors.values();
     }
     
     /**
@@ -1390,7 +1399,7 @@ public class MetadataProject {
         HashSet<ClassAccessor> processed = new HashSet();
         HashSet<ClassAccessor> processing = new HashSet();
         
-        for (ClassAccessor classAccessor : m_accessorsWithDerivedId) {
+        for (ClassAccessor classAccessor : m_accessorsWithDerivedId.values()) {
             classAccessor.processDerivedId(processing, processed);
         }
     }
