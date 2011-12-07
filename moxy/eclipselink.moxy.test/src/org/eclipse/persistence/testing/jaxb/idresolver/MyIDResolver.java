@@ -25,8 +25,8 @@ import org.eclipse.persistence.jaxb.IDResolver;
 import org.xml.sax.SAXException;
 
 public class MyIDResolver extends IDResolver {
-    Map<String, Apple> apples = new LinkedHashMap<String, Apple>();
-    Map<String, Orange> oranges = new LinkedHashMap<String, Orange>();
+    Map<Map<String, Object>, Apple> apples = new LinkedHashMap();
+    Map<Map<String, Object>, Orange> oranges = new LinkedHashMap();
 
     public boolean hitStartDocument = false;
     public boolean hitEndDocument = false;
@@ -52,26 +52,24 @@ public class MyIDResolver extends IDResolver {
     @Override
     public void bind(Map<String, Object> idWrapper, Object obj) throws SAXException {
         hitBind = true;
-        String id = idWrapper.values().toArray()[0].toString();
         if (obj instanceof Apple) {
             ((Apple) obj).processed = true;
-            apples.put(id, (Apple) obj);
+            apples.put(idWrapper, (Apple) obj);
         } else {
             ((Orange) obj).processed = true;
-            oranges.put(id, (Orange) obj);
+            oranges.put(idWrapper, (Orange) obj);
         }
     }
 
     @Override
-    public Callable<Object> resolve(Map<String, Object> idWrapper, final Class type) throws SAXException {
+    public Callable<Object> resolve(final Map<String, Object> idWrapper, final Class type) throws SAXException {
         hitResolve = true;
-        final String id = idWrapper.values().toArray()[0].toString();
         return new Callable<Object>() {
             public Object call() {
                 if (type == Apple.class) {
-                    return apples.get(id);
+                    return apples.get(idWrapper);
                 } else {
-                    return oranges.get(id);
+                    return oranges.get(idWrapper);
                 }
             }
         };
@@ -80,7 +78,7 @@ public class MyIDResolver extends IDResolver {
     @Override
     public void bind(Object id, Object obj) throws SAXException {
         hitBindSingle = true;
-        HashMap<String, Object> idMap = new HashMap<String, Object>(1);
+        Map<String, Object> idMap = new LinkedHashMap<String, Object>(1);
         idMap.put("stringId", id);
         bind(idMap, obj);
     }
@@ -88,7 +86,7 @@ public class MyIDResolver extends IDResolver {
     @Override
     public Callable<?> resolve(Object id, Class type) throws SAXException {
         hitResolveSingle = true;
-        HashMap<String, Object> idMap = new HashMap<String, Object>(1);
+        Map<String, Object> idMap = new LinkedHashMap<String, Object>(1);
         idMap.put("stringId", id);
         return resolve(idMap, type);
     }
