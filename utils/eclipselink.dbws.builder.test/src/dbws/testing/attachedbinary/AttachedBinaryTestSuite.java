@@ -70,6 +70,8 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
     static final String DROP_GETBLOBBYID_FUNCTION =
         "DROP FUNCTION getBLOBById";
 
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -81,18 +83,26 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             }
         }
         String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
         if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_ATTACHEDBINARY_TABLE);
             }
             catch (SQLException e) {
-                //ignore
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
             }
             try {
                 createDbArtifact(conn, CREATE_GETBLOBBYID_FUNCTION);
             }
             catch (SQLException e) {
-                //ignore
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
             }
             try {
                 Statement stmt = conn.createStatement();
@@ -102,7 +112,9 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-                //ignore
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
             }
         }
         DBWS_BUILDER_XML_USERNAME =
@@ -145,8 +157,22 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_ATTACHEDBINARY_TABLE);
-            dropDbArtifact(conn, DROP_GETBLOBBYID_FUNCTION);
+            try {
+                dropDbArtifact(conn, DROP_ATTACHEDBINARY_TABLE);
+            }
+            catch (SQLException e) {
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                dropDbArtifact(conn, DROP_GETBLOBBYID_FUNCTION);
+            }
+            catch (SQLException e) {
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

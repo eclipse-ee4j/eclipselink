@@ -92,6 +92,7 @@ import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //testing imports
 import static dbws.testing.DBWSTestSuite.DATABASE_DDL_CREATE_KEY;
+import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DEBUG_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DROP_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
 import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
@@ -99,6 +100,7 @@ import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
 import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_CREATE;
+import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_DEBUG;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_DROP;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
 import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
@@ -136,6 +138,8 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
     static final String DROP_SQLCOLLECTION_TABLE =
         "DROP TABLE sqlascollection";
 
+    static boolean ddlDebug = false;
+
 	static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SQLCOLLECTION + "Test";
 
     // JUnit test fixtures
@@ -162,12 +166,18 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
             e.printStackTrace();
         }
         String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
         if ("true".equalsIgnoreCase(ddlCreate)) {
             try {
                 createDbArtifact(conn, CREATE_SQLCOLLECTION_TABLE);
             }
             catch (SQLException e) {
-                //ignore
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
             }
             try {
                 Statement stmt = conn.createStatement();
@@ -177,7 +187,9 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-                //ignore
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
             }
         }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
@@ -218,7 +230,14 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
         }
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_SQLCOLLECTION_TABLE);
+            try {
+                dropDbArtifact(conn, DROP_SQLCOLLECTION_TABLE);
+            }
+            catch (SQLException e) {
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
     @PreDestroy

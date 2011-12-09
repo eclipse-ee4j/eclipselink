@@ -79,6 +79,8 @@ public class DBWSTestSuite {
     public static final String DEFAULT_DATABASE_DDL_CREATE = "false";
     public static final String DATABASE_DDL_DROP_KEY = "db.ddl.drop";
     public static final String DEFAULT_DATABASE_DDL_DROP = "false";
+    public static final String DATABASE_DDL_DEBUG_KEY = "db.ddl.debug";
+    public static final String DEFAULT_DATABASE_DDL_DEBUG = "false";
 
     public static final String SFAULT = "sfault_table";
     public static final String SFAULT_TEST = SFAULT + "Test";
@@ -326,13 +328,8 @@ public class DBWSTestSuite {
         pStmt.execute();
     }
 
-    public static void dropDbArtifact(Connection conn, String dropTableDDL) {
-        try {
-            PreparedStatement pStmt = conn.prepareStatement(dropTableDDL);
-            pStmt.execute();
-        }
-        catch (Exception e) {
-            // ignore
-        }
+    public static void dropDbArtifact(Connection conn, String dropTableDDL) throws SQLException {
+        PreparedStatement pStmt = conn.prepareStatement(dropTableDDL);
+        pStmt.execute();
     }
 }
