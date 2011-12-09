@@ -44,50 +44,52 @@ public class JAXPTransformer implements XMLTransformer {
     private static final String NO = "no";
     private static final String YES = "yes";
     private Transformer transformer;
-
-    public JAXPTransformer() {
-        super();
-        try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformer = transformerFactory.newTransformer();
-        } catch (TransformerConfigurationException e) {
-            throw XMLPlatformException.xmlPlatformTransformException(e);
-        }
-    }
+    private String encoding;
+    private boolean formatted;
+    private String version;
 
     public String getEncoding() {
-        return transformer.getOutputProperty(OutputKeys.ENCODING);
+    	return encoding;
     }
 
     public void setEncoding(String encoding) {
-        transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+    	this.encoding = encoding;
+    	if(transformer != null){
+            transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+    	}
     }
 
     public boolean isFormattedOutput() {
-        return transformer.getOutputProperty(OutputKeys.INDENT).equals(YES);
+    	return formatted;
     }
 
     public void setFormattedOutput(boolean shouldFormat) {
-        if (shouldFormat) {
-            transformer.setOutputProperty(OutputKeys.INDENT, YES);
-        } else {
-            transformer.setOutputProperty(OutputKeys.INDENT, NO);
-        }
+    	this.formatted = shouldFormat;
+    	if(transformer != null){
+            if (shouldFormat) {
+                transformer.setOutputProperty(OutputKeys.INDENT, YES);
+            } else {
+                transformer.setOutputProperty(OutputKeys.INDENT, NO);
+            }
+    	}
     }
 
-    public String getVersion() {
-        return transformer.getOutputProperty(OutputKeys.VERSION);
+    public String getVersion() {    
+    	return version;
     }
 
     public void setVersion(String version) {
-        transformer.setOutputProperty(OutputKeys.VERSION, version);
+    	this.version = version;
+    	if(transformer != null){
+            transformer.setOutputProperty(OutputKeys.VERSION, version);
+    	}
     }
 
     public void transform(Node sourceNode, OutputStream resultOutputStream) throws XMLPlatformException {
         DOMSource source = new DOMSource(sourceNode);
         StreamResult result = new StreamResult(resultOutputStream);
         if (isFragment()) {
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         }
         transform(source, result);
     }
@@ -116,7 +118,7 @@ public class JAXPTransformer implements XMLTransformer {
         StreamResult result = new StreamResult(resultWriter);
 
         if (isFragment()) {
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        	getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         }
         transform(source, result);
     }
@@ -124,9 +126,9 @@ public class JAXPTransformer implements XMLTransformer {
     public void transform(Source source, Result result) throws XMLPlatformException {
         try {
             if ((result instanceof StreamResult) && (isFragment())) {
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            	getTransformer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             }
-            transformer.transform(source, result);
+            getTransformer().transform(source, result);
         } catch (TransformerException e) {
             throw XMLPlatformException.xmlPlatformTransformException(e);
         }
@@ -152,6 +154,30 @@ public class JAXPTransformer implements XMLTransformer {
 
     public boolean isFragment() {
         return fragment;
+    }
+    
+    public Transformer getTransformer(){
+    	if(transformer == null){
+   			try {
+    	            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    	            transformer = transformerFactory.newTransformer();
+    	            if (formatted) {
+    	                transformer.setOutputProperty(OutputKeys.INDENT, YES);
+    	            } else {
+    	                transformer.setOutputProperty(OutputKeys.INDENT, NO);
+    	            }
+    	            if(encoding != null){
+        	            transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+    	            }
+    	            if(version != null){
+    	                transformer.setOutputProperty(OutputKeys.VERSION, version);
+    	            }
+
+    	        } catch (TransformerConfigurationException e) {
+    	            throw XMLPlatformException.xmlPlatformTransformException(e);
+    	        }
+    	}
+    	return transformer;
     }
 
     private static class TransformErrorListener implements ErrorListener {
