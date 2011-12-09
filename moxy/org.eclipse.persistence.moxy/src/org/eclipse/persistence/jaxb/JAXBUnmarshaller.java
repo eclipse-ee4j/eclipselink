@@ -524,10 +524,16 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
                 return unmarshal(streamReader, type.getType());
             }
-            RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-            Class unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
-            if(unmarshalClass != null){
-
+            RootLevelXmlAdapter adapter= null;
+            if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
+            	adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+            }
+            Class unmarshalClass = null;
+            if(jaxbContext.getTypeMappingInfoToGeneratedType().size() >0){
+            	unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);	
+            }
+            
+            if(unmarshalClass != null){   
                 JAXBElement unmarshalled = unmarshal(streamReader, unmarshalClass);
                 Class declaredClass = null;
                 if(type.getType() instanceof Class){
@@ -900,13 +906,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     private Class getClassToUnmarshalTo(Class originalClass) {
         Class classToUnmarshalTo = originalClass;
-        if(jaxbContext.getArrayClassesToGeneratedClasses() != null) {
+        if(jaxbContext.getArrayClassesToGeneratedClasses() != null && jaxbContext.getArrayClassesToGeneratedClasses().size() >0) {
             Class generatedClass = jaxbContext.getArrayClassesToGeneratedClasses().get(originalClass.getCanonicalName());
             if(generatedClass != null){
                 classToUnmarshalTo = generatedClass;
             }
         }
-        if(jaxbContext.getCollectionClassesToGeneratedClasses() != null){
+        if(jaxbContext.getCollectionClassesToGeneratedClasses() != null && jaxbContext.getCollectionClassesToGeneratedClasses().size() >0){
             Class generatedClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(originalClass);
             if(generatedClass != null){
                 classToUnmarshalTo = generatedClass;
