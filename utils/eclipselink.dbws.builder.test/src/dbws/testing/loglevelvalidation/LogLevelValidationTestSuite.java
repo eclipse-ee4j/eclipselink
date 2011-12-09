@@ -15,7 +15,6 @@ package dbws.testing.loglevelvalidation;
 //javase imports
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -59,8 +58,6 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     static final String DROP_LOGLEVEL_TABLE =
         "DROP TABLE loglevel";
 
-    static boolean ddlDebug = false;
-
     // JUnit test fixtures
     final static String username =
         System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
@@ -73,6 +70,10 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     final static String off_level = "off";
     final static String stageDir = "./";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -83,20 +84,20 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_LOGLEVEL_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_LOGLEVEL_TABLE, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -165,16 +166,8 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_LOGLEVEL_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlDrop) {
+            runDdl(conn, DROP_LOGLEVEL_TABLE, ddlDebug);
         }
     }
 

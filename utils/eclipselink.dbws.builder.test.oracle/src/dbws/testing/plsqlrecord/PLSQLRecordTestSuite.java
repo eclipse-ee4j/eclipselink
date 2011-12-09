@@ -14,8 +14,6 @@ package dbws.testing.plsqlrecord;
 
 //javase imports
 import java.io.StringReader;
-import java.sql.SQLException;
-
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -109,6 +107,10 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     static final String DROP_PACKAGE1_MRECORD_TYPE =
         "DROP TYPE PACKAGE1_MRECORD";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -119,18 +121,24 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_PACKAGE1_MTAB1_TYPE);
-                createDbArtifact(conn, CREATE_PACKAGE1_NRECORD_TYPE);
-                createDbArtifact(conn, CREATE_PACKAGE1_MRECORD_TYPE);
-                createDbArtifact(conn, CREATE_PACKAGE1_PACKAGE);
-                createDbArtifact(conn, CREATE_PACKAGE1_BODY);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_PACKAGE1_MTAB1_TYPE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE1_NRECORD_TYPE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE1_MRECORD_TYPE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE1_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE1_BODY, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -184,10 +192,10 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_PACKAGE1_PACKAGE);
-            dropDbArtifact(conn, DROP_PACKAGE1_MRECORD_TYPE);
-            dropDbArtifact(conn, DROP_PACKAGE1_NRECORD_TYPE);
-            dropDbArtifact(conn, DROP_PACKAGE1_MTAB1_TYPE);
+            runDdl(conn, DROP_PACKAGE1_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_PACKAGE1_MRECORD_TYPE, ddlDebug);
+            runDdl(conn, DROP_PACKAGE1_NRECORD_TYPE, ddlDebug);
+            runDdl(conn, DROP_PACKAGE1_MTAB1_TYPE, ddlDebug);
         }
     }
 

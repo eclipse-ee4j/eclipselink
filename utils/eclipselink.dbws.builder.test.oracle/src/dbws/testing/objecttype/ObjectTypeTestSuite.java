@@ -106,6 +106,10 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     static final String DROP_ADD_EMP_TYPE2_FUNC =
         "DROP FUNCTION ADD_EMP_TYPE2_FUNC";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -116,20 +120,26 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_PHONE_TYPE);
-                createDbArtifact(conn, CREATE_EMP_TYPE);
-                createDbArtifact(conn, CREATE_EMP_TYPE_TABLE);
-                createDbArtifact(conn, CREATE_GET_EMP_TYPE_BY_ID_PROC);
-                createDbArtifact(conn, CREATE_GET_EMP_TYPE_BY_ID_2_FUNC);
-                createDbArtifact(conn, CREATE_ADD_EMP_TYPE_PROC);
-                createDbArtifact(conn, CREATE_ADD_EMP_TYPE2_FUNC);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_PHONE_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_TYPE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_GET_EMP_TYPE_BY_ID_PROC, ddlDebug);
+            runDdl(conn, CREATE_GET_EMP_TYPE_BY_ID_2_FUNC, ddlDebug);
+            runDdl(conn, CREATE_ADD_EMP_TYPE_PROC, ddlDebug);
+            runDdl(conn, CREATE_ADD_EMP_TYPE2_FUNC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_EMP_TYPE_TABLE.length; i++) {
@@ -194,15 +204,14 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_ADD_EMP_TYPE2_FUNC);
-            dropDbArtifact(conn, DROP_ADD_EMP_TYPE_PROC);
-            dropDbArtifact(conn, DROP_GET_EMP_TYPE_BY_ID_2_FUNC);
-            dropDbArtifact(conn, DROP_GET_EMP_TYPE_BY_ID_PROC);
-            dropDbArtifact(conn, DROP_EMP_TYPE_TABLE);
-            dropDbArtifact(conn, DROP_EMP_TYPE);
-            dropDbArtifact(conn, DROP_PHONE_TYPE);
+        if (ddlDrop) {
+            runDdl(conn, DROP_ADD_EMP_TYPE2_FUNC, ddlDebug);
+            runDdl(conn, DROP_ADD_EMP_TYPE_PROC, ddlDebug);
+            runDdl(conn, DROP_GET_EMP_TYPE_BY_ID_2_FUNC, ddlDebug);
+            runDdl(conn, DROP_GET_EMP_TYPE_BY_ID_PROC, ddlDebug);
+            runDdl(conn, DROP_EMP_TYPE_TABLE, ddlDebug);
+            runDdl(conn, DROP_EMP_TYPE, ddlDebug);
+            runDdl(conn, DROP_PHONE_TYPE, ddlDebug);
         }
     }
 

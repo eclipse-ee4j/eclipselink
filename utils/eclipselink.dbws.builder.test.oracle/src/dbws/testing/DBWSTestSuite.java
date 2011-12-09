@@ -78,6 +78,8 @@ public class DBWSTestSuite {
     public static final String DEFAULT_DATABASE_DDL_CREATE = "false";
     public static final String DATABASE_DDL_DROP_KEY = "db.ddl.drop";
     public static final String DEFAULT_DATABASE_DDL_DROP = "false";
+    public static final String DATABASE_DDL_DEBUG_KEY = "db.ddl.debug";
+    public static final String DEFAULT_DATABASE_DDL_DEBUG = "false";
     public static final String RELEASE_VERSION_KEY = "release.version";
     public static final String DEFAULT_RELEASE_VERSION= "2.4.0";
     public static String releaseVersion =
@@ -268,18 +270,15 @@ public class DBWSTestSuite {
         return DriverManager.getConnection(url, username, password);
     }
 
-    public static void createDbArtifact(Connection conn, String createTableDDL) throws SQLException {
-        PreparedStatement pStmt = conn.prepareStatement(createTableDDL);
-        pStmt.execute();
-    }
-
-    public static void dropDbArtifact(Connection conn, String dropTableDDL) {
+    public static void runDdl(Connection conn, String ddl, boolean printStackTrace) {
         try {
-            PreparedStatement pStmt = conn.prepareStatement(dropTableDDL);
+            PreparedStatement pStmt = conn.prepareStatement(ddl);
             pStmt.execute();
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (SQLException e) {
+            if (printStackTrace) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -84,6 +84,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     static final String DROP_TABLETYPE_TABLE =
         "DROP TABLE TABLETYPE";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException, SecurityException, NoSuchFieldException,
         IllegalArgumentException, IllegalAccessException {
@@ -97,12 +101,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         }
         String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_TABLETYPE_TABLE);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+            runDdl(conn, CREATE_TABLETYPE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_TABLETYPE_TABLE.length; i++) {
@@ -160,9 +159,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_TABLETYPE_TABLE);
+        if (ddlDrop) {
+            runDdl(conn, DROP_TABLETYPE_TABLE, ddlDebug);
         }
     }
 

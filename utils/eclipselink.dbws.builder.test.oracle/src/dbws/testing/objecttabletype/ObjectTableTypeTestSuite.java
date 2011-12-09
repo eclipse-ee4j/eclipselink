@@ -15,7 +15,6 @@ package dbws.testing.objecttabletype;
 
 //javase imports
 import java.io.StringReader;
-import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -102,6 +101,10 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static final String DROP_PERSONTYPE =
         "DROP TYPE PERSONTYPE";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -112,19 +115,25 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_PERSONTYPE);
-                createDbArtifact(conn, CREATE_PERSONTYPE_TABLE);
-                createDbArtifact(conn, CREATE_GET_PERSONTYPE_PROC);
-                createDbArtifact(conn, CREATE_GET_PERSONTYPE2_FUNC);
-                createDbArtifact(conn, CREATE_ADD_PERSONTYPE_TO_TABLE_PROC);
-                createDbArtifact(conn, CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_PERSONTYPE, ddlDebug);
+            runDdl(conn, CREATE_PERSONTYPE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_GET_PERSONTYPE_PROC, ddlDebug);
+            runDdl(conn, CREATE_GET_PERSONTYPE2_FUNC, ddlDebug);
+            runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
+            runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -179,14 +188,13 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_GET_PERSONTYPE_TABLE);
-            dropDbArtifact(conn, DROP_GET_PERSONTYPE2_FUNC);
-            dropDbArtifact(conn, DROP_ADD_PERSONTYPE_TO_TABLE_PROC);
-            dropDbArtifact(conn, DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC);
-            dropDbArtifact(conn, DROP_PERSONTYPE_TABLE);
-            dropDbArtifact(conn, DROP_PERSONTYPE);
+        if (ddlDrop) {
+            runDdl(conn, DROP_GET_PERSONTYPE_TABLE, ddlDebug);
+            runDdl(conn, DROP_GET_PERSONTYPE2_FUNC, ddlDebug);
+            runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
+            runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC, ddlDebug);
+            runDdl(conn, DROP_PERSONTYPE_TABLE, ddlDebug);
+            runDdl(conn, DROP_PERSONTYPE, ddlDebug);
         }
     }
 

@@ -323,13 +323,15 @@ public class DBWSTestSuite {
         return DriverManager.getConnection(url, username, password);
     }
 
-    public static void createDbArtifact(Connection conn, String createTableDDL) throws SQLException {
-        PreparedStatement pStmt = conn.prepareStatement(createTableDDL);
-        pStmt.execute();
-    }
-
-    public static void dropDbArtifact(Connection conn, String dropTableDDL) throws SQLException {
-        PreparedStatement pStmt = conn.prepareStatement(dropTableDDL);
-        pStmt.execute();
+    public static void runDdl(Connection conn, String ddl, boolean printStackTrace) {
+        try {
+            PreparedStatement pStmt = conn.prepareStatement(ddl);
+            pStmt.execute();
+        }
+        catch (SQLException e) {
+            if (printStackTrace) {
+                e.printStackTrace();
+            }
+        }
     }
 }

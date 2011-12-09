@@ -13,7 +13,6 @@
 package dbws.testing.ordescriptor;
 
 //javase imports
-import java.sql.SQLException;
 import java.util.Vector;
 
 //java eXtension imports
@@ -52,12 +51,12 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     public static final String TBL2_DATABASETYPE = "ORPACKAGE.TBL2";
     public static final String TBL2_DESCRIPTOR_ALIAS = TBL2_COMPATIBLETYPE.toLowerCase();
     public static final String TBL2_DESCRIPTOR_JAVACLASSNAME = TBL2_DATABASETYPE.toLowerCase() + COLLECTION_WRAPPER_SUFFIX;
-    
+
     public static final String TBL3_COMPATIBLETYPE = "ORPACKAGE_TBL3";
     public static final String TBL3_DATABASETYPE = "ORPACKAGE.TBL3";
     public static final String TBL3_DESCRIPTOR_ALIAS = TBL3_COMPATIBLETYPE.toLowerCase();
     public static final String TBL3_DESCRIPTOR_JAVACLASSNAME = TBL3_DATABASETYPE.toLowerCase() + COLLECTION_WRAPPER_SUFFIX;
-    
+
     public static final String TBL4_COMPATIBLETYPE = "ORPACKAGE_TBL4";
     public static final String TBL4_DATABASETYPE = "ORPACKAGE.TBL4";
     public static final String TBL4_DESCRIPTOR_ALIAS = TBL4_COMPATIBLETYPE.toLowerCase();
@@ -69,7 +68,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     public static final String ARECORD_DESCRIPTOR_JAVACLASSNAME = ARECORD_DATABASETYPE.toLowerCase();
 
     static final String CREATE_PACKAGE_ORPACKAGE =
-    	"CREATE OR REPLACE PACKAGE ORPACKAGE AS" + 
+    	"CREATE OR REPLACE PACKAGE ORPACKAGE AS" +
             "\nTYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
     	    "\nTYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
             "\nTYPE ARECORD IS RECORD (" +
@@ -92,7 +91,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     	    "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2;" +
     	    "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
     	"\nEND ORPACKAGE;";
-	
+
     static final String CREATE_PACKAGE_BODY_ORPACKAGE =
         "\nCREATE OR REPLACE PACKAGE BODY ORPACKAGE AS" +
             "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
@@ -132,7 +131,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
              "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
              "\nBEGIN" +
                  "\nRETURN OLD;" +
-             "\nEND F2;" +     
+             "\nEND F2;" +
              "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS" +
              "\nBEGIN" +
                  "\nRETURN RECARRAY;" +
@@ -169,6 +168,10 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     static final String DROP_TYPE_ORPACKAGE_TBL4=
        	"DROP TYPE ORPACKAGE_TBL4 FORCE";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -179,22 +182,28 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_TYPE_ORPACKAGE_TBL1);
-                createDbArtifact(conn, CREATE_TYPE_ORPACKAGE_TBL2);
-                createDbArtifact(conn, CREATE_TYPE_ORPACKAGE_ARECORD);
-                createDbArtifact(conn, CREATE_TYPE_ORPACKAGE_TBL3);
-                createDbArtifact(conn, CREATE_TYPE_ORPACKAGE_TBL4);
-                createDbArtifact(conn, CREATE_PACKAGE_ORPACKAGE);
-                createDbArtifact(conn, CREATE_PACKAGE_BODY_ORPACKAGE);
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
         }
-        
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_TYPE_ORPACKAGE_TBL1, ddlDebug);
+            runDdl(conn, CREATE_TYPE_ORPACKAGE_TBL2, ddlDebug);
+            runDdl(conn, CREATE_TYPE_ORPACKAGE_ARECORD, ddlDebug);
+            runDdl(conn, CREATE_TYPE_ORPACKAGE_TBL3, ddlDebug);
+            runDdl(conn, CREATE_TYPE_ORPACKAGE_TBL4, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE_ORPACKAGE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE_BODY_ORPACKAGE, ddlDebug);
+        }
+
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -232,16 +241,16 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_PACKAGE_BODY_ORPACKAGE);
-            dropDbArtifact(conn, DROP_PACKAGE_ORPACKAGE);
-            dropDbArtifact(conn, DROP_TYPE_ORPACKAGE_TBL4);
-            dropDbArtifact(conn, DROP_TYPE_ORPACKAGE_TBL3);
-            dropDbArtifact(conn, DROP_TYPE_ORPACKAGE_ARECORD);
-            dropDbArtifact(conn, DROP_TYPE_ORPACKAGE_TBL2);
-            dropDbArtifact(conn, DROP_TYPE_ORPACKAGE_TBL1);
+            runDdl(conn, DROP_PACKAGE_BODY_ORPACKAGE, ddlDebug);
+            runDdl(conn, DROP_PACKAGE_ORPACKAGE, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL4, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL3, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_ARECORD, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL2, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL1, ddlDebug);
         }
     }
-    
+
     // TEST METHODS
     @Test
     public void p1Test() {
@@ -255,7 +264,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         tbl1Asserts(tbl1Desc);
     }
-    
+
     @Test
     public void p2test() {
     	ClassDescriptor tbl2Desc = null;
@@ -268,7 +277,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         tbl2Asserts(tbl2Desc);
     }
-    
+
     @Test
     public void p4test() {
     	ClassDescriptor tbl1Desc = null;
@@ -287,12 +296,12 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         assertNotNull("No descriptor was found with alias [" + ARECORD_DESCRIPTOR_ALIAS + "]", aRecDesc);
-        
+
         aRecordAsserts(aRecDesc);
         tbl1Asserts(tbl1Desc);
         tbl2Asserts(tbl2Desc);
     }
-    
+
     @Test
     public void p5test() {
     	ClassDescriptor tbl1Desc = null;
@@ -311,7 +320,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         assertNotNull("No descriptor was found with alias [" + ARECORD_DESCRIPTOR_ALIAS + "]", aRecDesc);
-        
+
         aRecordAsserts(aRecDesc);
         tbl1Asserts(tbl1Desc);
         tbl2Asserts(tbl2Desc);
@@ -344,12 +353,12 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         }
         assertNotNull("No descriptor was found with alias [" + TBL4_DESCRIPTOR_ALIAS + "]", tbl4Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
-    	
+
         tbl2Asserts(tbl2Desc);
         tbl4Asserts(tbl4Desc);
     }
-    
-    @Test 
+
+    @Test
     public void f4Test() {
     	ClassDescriptor tbl1Desc = null;
     	ClassDescriptor tbl2Desc = null;
@@ -371,7 +380,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         assertNotNull("No descriptor was found with alias [" + TBL3_DESCRIPTOR_ALIAS + "]", tbl3Desc);
         assertNotNull("No descriptor was found with alias [" + ARECORD_DESCRIPTOR_ALIAS + "]", aRecDesc);
-        
+
         tbl3Asserts(tbl3Desc);
         aRecordAsserts(aRecDesc);
         tbl1Asserts(tbl1Desc);
@@ -390,7 +399,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         ArrayMapping arrayMapping = (ArrayMapping)mapping;
         assertTrue("Wrong structure name for mapping.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", arrayMapping.getStructureName().equals(TBL1_COMPATIBLETYPE));
     }
-    
+
     protected void tbl2Asserts(ClassDescriptor tbl2Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName().equals(TBL2_DESCRIPTOR_JAVACLASSNAME));
         Vector<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
@@ -402,7 +411,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
         ArrayMapping arrayMapping = (ArrayMapping)mapping;
         assertTrue("Wrong structure name for mapping.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", arrayMapping.getStructureName().equals(TBL2_COMPATIBLETYPE));
     }
-    
+
     protected void tbl3Asserts(ClassDescriptor tbl3Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName().equals(TBL3_DESCRIPTOR_JAVACLASSNAME));
         Vector<DatabaseMapping> mappings = tbl3Descriptor.getMappings();

@@ -117,8 +117,7 @@ import static dbws.testing.DBWSTestSuite.SECONDARY_SERVICE;
 import static dbws.testing.DBWSTestSuite.SECONDARY_SERVICE_NAMESPACE;
 import static dbws.testing.DBWSTestSuite.SECONDARY_TEST;
 import static dbws.testing.DBWSTestSuite.buildConnection;
-import static dbws.testing.DBWSTestSuite.createDbArtifact;
-import static dbws.testing.DBWSTestSuite.dropDbArtifact;
+import static dbws.testing.DBWSTestSuite.runDdl;
 
 @WebServiceProvider(
     targetNamespace = SECONDARY_SERVICE_NAMESPACE,
@@ -159,8 +158,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
     };
     static final String DROP_SECONDARY_TABLE =
         "DROP TABLE secondary";
-
-    static boolean ddlDebug = false;
 
     static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SECONDARY_TEST;
     static final String DBWS_BUILDER_XML_USERNAME =
@@ -214,6 +211,10 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
     public static Service testService = null;
     public static DBWSBuilder builder = new DBWSBuilder();
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         try {
@@ -222,20 +223,20 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         catch (Exception e) {
             e.printStackTrace();
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_SECONDARY_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_SECONDARY_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SECONDARY_TABLE.length; i++) {
@@ -288,16 +289,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         if (endpoint != null) {
             endpoint.stop();
         }
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_SECONDARY_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlDrop) {
+            runDdl(conn, DROP_SECONDARY_TABLE, ddlDebug);
         }
     }
 

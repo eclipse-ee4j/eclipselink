@@ -114,6 +114,8 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
     static final String DROP_GETSALARYBYID_PROC =
             "DROP PROCEDURE GetSalaryById";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
     static boolean ddlDebug = false;
 
     @BeforeClass
@@ -126,68 +128,26 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_SIMPLESP_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                createDbArtifact(conn, CREATE_NOARGSP_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                createDbArtifact(conn, CREATE_VARCHARSP_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                createDbArtifact(conn, CREATE_GETALL_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                createDbArtifact(conn, CREATE_FINDBYJOB_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                createDbArtifact(conn, CREATE_INOUTARGSP_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                createDbArtifact(conn, CREATE_GETSALARYBYID_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_SIMPLESP_TABLE, ddlDebug);
+            runDdl(conn, CREATE_NOARGSP_PROC, ddlDebug);
+            runDdl(conn, CREATE_VARCHARSP_PROC, ddlDebug);
+            runDdl(conn, CREATE_GETALL_PROC, ddlDebug);
+            runDdl(conn, CREATE_FINDBYJOB_PROC, ddlDebug);
+            runDdl(conn, CREATE_INOUTARGSP_PROC, ddlDebug);
+            runDdl(conn, CREATE_GETSALARYBYID_PROC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SIMPLESP_TABLE.length; i++) {
@@ -263,62 +223,13 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_SIMPLESP_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                dropDbArtifact(conn, DROP_NOARGSP_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                dropDbArtifact(conn, DROP_VARCHARSP_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                dropDbArtifact(conn, DROP_GETALL_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                dropDbArtifact(conn, DROP_FINDBYJOB_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                dropDbArtifact(conn, DROP_INOUTARGSP_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                dropDbArtifact(conn, DROP_GETSALARYBYID_PROC);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+            runDdl(conn, DROP_SIMPLESP_TABLE, ddlDebug);
+            runDdl(conn, DROP_NOARGSP_PROC, ddlDebug);
+            runDdl(conn, DROP_VARCHARSP_PROC, ddlDebug);
+            runDdl(conn, DROP_GETALL_PROC, ddlDebug);
+            runDdl(conn, DROP_FINDBYJOB_PROC, ddlDebug);
+            runDdl(conn, DROP_INOUTARGSP_PROC, ddlDebug);
+            runDdl(conn, DROP_GETSALARYBYID_PROC, ddlDebug);
         }
     }
 

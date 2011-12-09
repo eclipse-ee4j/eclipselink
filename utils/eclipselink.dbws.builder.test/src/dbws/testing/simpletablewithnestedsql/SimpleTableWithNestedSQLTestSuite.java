@@ -70,10 +70,12 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
     static final String DROP_SIMPLE2_TABLE =
         "DROP TABLE simpletable2";
 
-    static boolean ddlDebug = false;
-
     public final static String FINDBYNAME_RESPONSETYPE = "findByNameResponseType";
     public final static String TABLE_ALIAS ="ns1:simpletable2Type";
+
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
 
     @BeforeClass
     public static void setUp() {
@@ -85,20 +87,20 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_SIMPLE2_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_SIMPLE2_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SIMPLE2_TABLE.length; i++) {
@@ -116,16 +118,8 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_SIMPLE2_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlDrop) {
+            runDdl(conn, DROP_SIMPLE2_TABLE, ddlDebug);
         }
     }
 

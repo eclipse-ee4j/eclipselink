@@ -111,9 +111,8 @@ import static dbws.testing.DBWSTestSuite.SQLCOLLECTION_SERVICE_NAMESPACE;
 import static dbws.testing.DBWSTestSuite.SQLCOLLECTION_SERVICE;
 import static dbws.testing.DBWSTestSuite.SQLCOLLECTION_SERVICE_PORT;
 import static dbws.testing.DBWSTestSuite.buildConnection;
-import static dbws.testing.DBWSTestSuite.createDbArtifact;
 import static dbws.testing.DBWSTestSuite.documentToString;
-import static dbws.testing.DBWSTestSuite.dropDbArtifact;
+import static dbws.testing.DBWSTestSuite.runDdl;
 
 @WebServiceProvider(
     targetNamespace = SQLCOLLECTION_SERVICE_NAMESPACE,
@@ -138,8 +137,6 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
     static final String DROP_SQLCOLLECTION_TABLE =
         "DROP TABLE sqlascollection";
 
-    static boolean ddlDebug = false;
-
 	static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SQLCOLLECTION + "Test";
 
     // JUnit test fixtures
@@ -157,6 +154,10 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
     static Service testService = null;
     static DBWSBuilder builder = new DBWSBuilder();
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         try {
@@ -165,20 +166,20 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
         catch (Exception e) {
             e.printStackTrace();
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_SQLCOLLECTION_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_SQLCOLLECTION_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SQLCOLLECTION_TABLE.length; i++) {
@@ -228,16 +229,8 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
         if (endpoint != null) {
             endpoint.stop();
         }
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_SQLCOLLECTION_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlDrop) {
+            runDdl(conn, DROP_SQLCOLLECTION_TABLE, ddlDebug);
         }
     }
     @PreDestroy

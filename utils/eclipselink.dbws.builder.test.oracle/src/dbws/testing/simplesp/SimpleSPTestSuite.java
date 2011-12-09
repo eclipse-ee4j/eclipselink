@@ -131,6 +131,10 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
     static final String DROP_GETSALARYBYID_PROC =
         "DROP PROCEDURE GETSALARYBYID";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -141,20 +145,26 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_SIMPLESP_TABLE);
-                createDbArtifact(conn, CREATE_VARCHARSP_PROC);
-                createDbArtifact(conn, CREATE_NOARGSP_PROC);
-                createDbArtifact(conn, CREATE_INOUTARGSSP_PROC);
-                createDbArtifact(conn, CREATE_FINDBYJOB_PROC);
-                createDbArtifact(conn, CREATE_GETALL_PROC);
-                createDbArtifact(conn, CREATE_GETSALARYBYID_PROC);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_SIMPLESP_TABLE, ddlDebug);
+            runDdl(conn, CREATE_VARCHARSP_PROC, ddlDebug);
+            runDdl(conn, CREATE_NOARGSP_PROC, ddlDebug);
+            runDdl(conn, CREATE_INOUTARGSSP_PROC, ddlDebug);
+            runDdl(conn, CREATE_FINDBYJOB_PROC, ddlDebug);
+            runDdl(conn, CREATE_GETALL_PROC, ddlDebug);
+            runDdl(conn, CREATE_GETSALARYBYID_PROC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SIMPLESP_TABLE.length; i++) {
@@ -235,15 +245,14 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_VARCHARSP_PROC);
-            dropDbArtifact(conn, DROP_NOARGSP_PROC);
-            dropDbArtifact(conn, DROP_INOUTARGSSP_PROC);
-            dropDbArtifact(conn, DROP_FINDBYJOB_PROC);
-            dropDbArtifact(conn, DROP_GETALL_PROC);
-            dropDbArtifact(conn, DROP_GETSALARYBYID_PROC);
-            dropDbArtifact(conn, DROP_SIMPLESP_TABLE);
+        if (ddlDrop) {
+            runDdl(conn, DROP_VARCHARSP_PROC, ddlDebug);
+            runDdl(conn, DROP_NOARGSP_PROC, ddlDebug);
+            runDdl(conn, DROP_INOUTARGSSP_PROC, ddlDebug);
+            runDdl(conn, DROP_FINDBYJOB_PROC, ddlDebug);
+            runDdl(conn, DROP_GETALL_PROC, ddlDebug);
+            runDdl(conn, DROP_GETSALARYBYID_PROC, ddlDebug);
+            runDdl(conn, DROP_SIMPLESP_TABLE, ddlDebug);
         }
     }
 

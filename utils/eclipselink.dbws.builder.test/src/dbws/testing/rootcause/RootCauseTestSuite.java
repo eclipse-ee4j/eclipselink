@@ -103,8 +103,7 @@ import static dbws.testing.DBWSTestSuite.ROOTCAUSE_PORT;
 import static dbws.testing.DBWSTestSuite.ROOTCAUSE_SERVICE;
 import static dbws.testing.DBWSTestSuite.ROOTCAUSE_TEST;
 import static dbws.testing.DBWSTestSuite.buildConnection;
-import static dbws.testing.DBWSTestSuite.createDbArtifact;
-import static dbws.testing.DBWSTestSuite.dropDbArtifact;
+import static dbws.testing.DBWSTestSuite.runDdl;
 
 @WebServiceProvider(
   targetNamespace = ROOTCAUSE_SERVICE_NAMESPACE,
@@ -125,8 +124,6 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
     };
     static final String DROP_ROOTCAUSE_TABLE =
         "DROP TABLE rootcause_table";
-
-    static boolean ddlDebug = false;
 
     public static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + ROOTCAUSE;
     static final String SOAP_UPDATE_REQUEST =
@@ -159,6 +156,10 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
     static Service testService = null;
     static DBWSBuilder builder = new DBWSBuilder();
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         try {
@@ -167,20 +168,20 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         catch (Exception e) {
             e.printStackTrace();
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_ROOTCAUSE_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_ROOTCAUSE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_ROOTCAUSE_TABLE.length; i++) {
@@ -233,16 +234,8 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         if (endpoint != null) {
             endpoint.stop();
         }
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_ROOTCAUSE_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlDrop) {
+            runDdl(conn, DROP_ROOTCAUSE_TABLE, ddlDebug);
         }
     }
 

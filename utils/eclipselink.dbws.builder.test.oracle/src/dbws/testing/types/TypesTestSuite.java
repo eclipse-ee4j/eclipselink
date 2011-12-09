@@ -149,13 +149,17 @@ public class TypesTestSuite extends DBWSTestSuite {
             "\nRETURN PRAW;" +
           "\nEND ECHO_RAW;" +
         "\nEND;" ;
-    
+
     static final String DROP_PACKAGE_TEST_TYPES =
         "DROP PACKAGE TEST_TYPES";
-    
+
     static final String DROP_PACKAGE_BODY_TEST_TYPES =
         "DROP PACKAGE BODY TEST_TYPES";
-    
+
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -166,15 +170,21 @@ public class TypesTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_PACKAGE_TEST_TYPES);
-                createDbArtifact(conn, CREATE_PACKAGE_BODY_TEST_TYPES);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_PACKAGE_TEST_TYPES, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE_BODY_TEST_TYPES, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -317,11 +327,11 @@ public class TypesTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_PACKAGE_BODY_TEST_TYPES);
-            dropDbArtifact(conn, DROP_PACKAGE_TEST_TYPES);
+            runDdl(conn, DROP_PACKAGE_BODY_TEST_TYPES, ddlDebug);
+            runDdl(conn, DROP_PACKAGE_TEST_TYPES, ddlDebug);
         }
     }
-    
+
     @Test
     public void echoInteger() {
         Invocation invocation = new Invocation("echoInteger");
@@ -342,7 +352,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>128</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void echoSmallint() {
         Invocation invocation = new Invocation("echoSmallint");
@@ -384,7 +394,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>123.45</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void echoDec() {
         Invocation invocation = new Invocation("echoDec");
@@ -405,7 +415,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>543.21</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void echoDecimal() {
         Invocation invocation = new Invocation("echoDecimal");
@@ -469,7 +479,7 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>this is a varchar test</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
-    
+
     @Test
     public void echoVarchar2() {
         Invocation invocation = new Invocation("echoVarchar2");

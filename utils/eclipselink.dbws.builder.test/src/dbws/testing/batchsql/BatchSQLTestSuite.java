@@ -86,6 +86,8 @@ public class BatchSQLTestSuite extends DBWSTestSuite {
     static final String DROP_BATCH2_TABLE =
         "DROP TABLE BATCH2";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
     static boolean ddlDebug = false;
 
     @BeforeClass
@@ -98,28 +100,21 @@ public class BatchSQLTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_BATCH1_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                createDbArtifact(conn, CREATE_BATCH2_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_BATCH1_TABLE, ddlDebug);
+            runDdl(conn, CREATE_BATCH2_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_BATCH1_TABLE.length; i++) {
@@ -195,24 +190,9 @@ public class BatchSQLTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_BATCH1_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }  
-            try {
-                dropDbArtifact(conn, DROP_BATCH2_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }  
+        if (ddlDrop) {
+            runDdl(conn, DROP_BATCH1_TABLE, ddlDebug);
+            runDdl(conn, DROP_BATCH2_TABLE, ddlDebug);
         }
     }
 

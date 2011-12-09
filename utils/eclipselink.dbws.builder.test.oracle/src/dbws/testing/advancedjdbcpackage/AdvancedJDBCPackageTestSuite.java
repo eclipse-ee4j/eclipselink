@@ -15,7 +15,6 @@ package dbws.testing.advancedjdbcpackage;
 
 //javase imports
 import java.io.StringReader;
-import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -110,6 +109,10 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     static final String DROP_ADVANCED_OBJECT_DEMO_PACKAGE =
         "DROP PACKAGE ADVANCED_OBJECT_DEMO";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -120,20 +123,26 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_REGION_TYPE);
-                createDbArtifact(conn, CREATE_EMP_ADDRESS_TYPE);
-                createDbArtifact(conn, CREATE_EMP_OBJECT_TYPE);
-                createDbArtifact(conn, CREATE_EMP_INFO_TYPE);
-                createDbArtifact(conn, CREATE_EMP_INFO_ARRAY_TYPE);
-                createDbArtifact(conn, CREATE_ADVANCED_OBJECT_DEMO_PACKAGE);
-                createDbArtifact(conn, CREATE_ADVANCED_OBJECT_DEMO_BODY);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_REGION_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_ADDRESS_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_OBJECT_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_INFO_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_INFO_ARRAY_TYPE, ddlDebug);
+            runDdl(conn, CREATE_ADVANCED_OBJECT_DEMO_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_ADVANCED_OBJECT_DEMO_BODY, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -188,14 +197,13 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_ADVANCED_OBJECT_DEMO_PACKAGE);
-            dropDbArtifact(conn, DROP_EMP_INFO_ARRAY_TYPE);
-            dropDbArtifact(conn, DROP_EMP_INFO_TYPE);
-            dropDbArtifact(conn, DROP_EMP_OBJECT_TYPE);
-            dropDbArtifact(conn, DROP_EMP_ADDRESS_TYPE);
-            dropDbArtifact(conn, DROP_REGION_TYPE);
+        if (ddlDrop) {
+            runDdl(conn, DROP_ADVANCED_OBJECT_DEMO_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_EMP_INFO_ARRAY_TYPE, ddlDebug);
+            runDdl(conn, DROP_EMP_INFO_TYPE, ddlDebug);
+            runDdl(conn, DROP_EMP_OBJECT_TYPE, ddlDebug);
+            runDdl(conn, DROP_EMP_ADDRESS_TYPE, ddlDebug);
+            runDdl(conn, DROP_REGION_TYPE, ddlDebug);
         }
     }
 

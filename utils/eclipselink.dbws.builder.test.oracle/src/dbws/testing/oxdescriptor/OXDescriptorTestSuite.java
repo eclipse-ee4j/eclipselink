@@ -14,7 +14,6 @@ package dbws.testing.oxdescriptor;
 
 //javase imports
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.Vector;
 
 //java eXtension imports
@@ -55,12 +54,12 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     public static final String TBL2_DATABASETYPE = "OXPACKAGE.TBL2";
     public static final String TBL2_DESCRIPTOR_ALIAS = TBL2_COMPATIBLETYPE.toLowerCase();
     public static final String TBL2_DESCRIPTOR_JAVACLASSNAME = TBL2_DATABASETYPE.toLowerCase() + COLLECTION_WRAPPER_SUFFIX;
-    
+
     public static final String TBL3_COMPATIBLETYPE = "OXPACKAGE_TBL3";
     public static final String TBL3_DATABASETYPE = "OXPACKAGE.TBL3";
     public static final String TBL3_DESCRIPTOR_ALIAS = TBL3_COMPATIBLETYPE.toLowerCase();
     public static final String TBL3_DESCRIPTOR_JAVACLASSNAME = TBL3_DATABASETYPE.toLowerCase() + COLLECTION_WRAPPER_SUFFIX;
-    
+
     public static final String TBL4_COMPATIBLETYPE = "OXPACKAGE_TBL4";
     public static final String TBL4_DATABASETYPE = "OXPACKAGE.TBL4";
     public static final String TBL4_DESCRIPTOR_ALIAS = TBL4_COMPATIBLETYPE.toLowerCase();
@@ -72,7 +71,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     public static final String ARECORD_DESCRIPTOR_JAVACLASSNAME = ARECORD_DATABASETYPE.toLowerCase();
 
     static final String CREATE_PACKAGE_OXPACKAGE =
-    	"CREATE OR REPLACE PACKAGE OXPACKAGE AS" + 
+    	"CREATE OR REPLACE PACKAGE OXPACKAGE AS" +
             "\nTYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
     	    "\nTYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
             "\nTYPE ARECORD IS RECORD (" +
@@ -95,7 +94,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     	    "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2;" +
     	    "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
     	"\nEND OXPACKAGE;";
-	
+
     static final String CREATE_PACKAGE_BODY_OXPACKAGE =
         "\nCREATE OR REPLACE PACKAGE BODY OXPACKAGE AS" +
             "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
@@ -135,7 +134,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
              "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
              "\nBEGIN" +
                  "\nRETURN OLD;" +
-             "\nEND F2;" +     
+             "\nEND F2;" +
              "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS" +
              "\nBEGIN" +
                  "\nRETURN RECARRAY;" +
@@ -172,6 +171,10 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     static final String DROP_TYPE_OXPACKAGE_TBL4=
        	"DROP TYPE OXPACKAGE_TBL4 FORCE";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -184,20 +187,15 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         }
         String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
         if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_TYPE_OXPACKAGE_TBL1);
-                createDbArtifact(conn, CREATE_TYPE_OXPACKAGE_TBL2);
-                createDbArtifact(conn, CREATE_TYPE_OXPACKAGE_ARECORD);
-                createDbArtifact(conn, CREATE_TYPE_OXPACKAGE_TBL3);
-                createDbArtifact(conn, CREATE_TYPE_OXPACKAGE_TBL4);
-                createDbArtifact(conn, CREATE_PACKAGE_OXPACKAGE);
-                createDbArtifact(conn, CREATE_PACKAGE_BODY_OXPACKAGE);
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
+            runDdl(conn, CREATE_TYPE_OXPACKAGE_TBL1, ddlDebug);
+            runDdl(conn, CREATE_TYPE_OXPACKAGE_TBL2, ddlDebug);
+            runDdl(conn, CREATE_TYPE_OXPACKAGE_ARECORD, ddlDebug);
+            runDdl(conn, CREATE_TYPE_OXPACKAGE_TBL3, ddlDebug);
+            runDdl(conn, CREATE_TYPE_OXPACKAGE_TBL4, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE_OXPACKAGE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE_BODY_OXPACKAGE, ddlDebug);
         }
-        
+
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -233,18 +231,17 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_PACKAGE_BODY_OXPACKAGE);
-            dropDbArtifact(conn, DROP_PACKAGE_OXPACKAGE);
-            dropDbArtifact(conn, DROP_TYPE_OXPACKAGE_TBL4);
-            dropDbArtifact(conn, DROP_TYPE_OXPACKAGE_TBL3);
-            dropDbArtifact(conn, DROP_TYPE_OXPACKAGE_ARECORD);
-            dropDbArtifact(conn, DROP_TYPE_OXPACKAGE_TBL2);
-            dropDbArtifact(conn, DROP_TYPE_OXPACKAGE_TBL1);
+        if (ddlDrop) {
+            runDdl(conn, DROP_PACKAGE_BODY_OXPACKAGE, ddlDebug);
+            runDdl(conn, DROP_PACKAGE_OXPACKAGE, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL4, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL3, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_ARECORD, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL2, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL1, ddlDebug);
         }
     }
-    
+
     // TEST METHODS
     @Test
     public void p1Test() {
@@ -258,7 +255,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         tbl1Asserts(tbl1Desc);
     }
-    
+
     @Test
     public void p2test() {
     	XMLDescriptor tbl2Desc = null;
@@ -271,7 +268,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         tbl2Asserts(tbl2Desc);
     }
-    
+
     @Test
     public void p4test() {
     	XMLDescriptor tbl1Desc = null;
@@ -290,12 +287,12 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         assertNotNull("No descriptor was found with alias [" + ARECORD_DESCRIPTOR_ALIAS + "]", aRecDesc);
-        
+
         aRecordAsserts(aRecDesc);
         tbl1Asserts(tbl1Desc);
         tbl2Asserts(tbl2Desc);
     }
-    
+
     @Test
     public void p5test() {
     	XMLDescriptor tbl1Desc = null;
@@ -314,7 +311,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         assertNotNull("No descriptor was found with alias [" + ARECORD_DESCRIPTOR_ALIAS + "]", aRecDesc);
-        
+
         aRecordAsserts(aRecDesc);
         tbl1Asserts(tbl1Desc);
         tbl2Asserts(tbl2Desc);
@@ -348,12 +345,12 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         }
         assertNotNull("No descriptor was found with alias [" + TBL4_DESCRIPTOR_ALIAS + "]", tbl4Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
-    	
+
         tbl2Asserts(tbl2Desc);
         tbl4Asserts(tbl4Desc);
     }
-    
-    @Test 
+
+    @Test
     public void f4Test() {
     	XMLDescriptor tbl1Desc = null;
     	XMLDescriptor tbl2Desc = null;
@@ -375,7 +372,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
         assertNotNull("No descriptor was found with alias [" + TBL3_DESCRIPTOR_ALIAS + "]", tbl3Desc);
         assertNotNull("No descriptor was found with alias [" + ARECORD_DESCRIPTOR_ALIAS + "]", aRecDesc);
-        
+
         tbl3Asserts(tbl3Desc);
         aRecordAsserts(aRecDesc);
         tbl1Asserts(tbl1Desc);
@@ -394,7 +391,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         assertTrue("Incorrect mapping XPath.  Expected [item/text()] but was [" + xdcm.getXPath() + "]", xdcm.getXPath().equals("item/text()"));
         assertTrue("Wrong component class for mapping.  Expected [" + String.class + "] but was [" + xdcm.getAttributeElementClass() + "]", xdcm.getAttributeElementClass().equals(String.class));
     }
-    
+
     protected void tbl2Asserts(XMLDescriptor tbl2Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName().equals(TBL2_DESCRIPTOR_JAVACLASSNAME));
         Vector<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
@@ -406,7 +403,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
         assertTrue("Incorrect mapping XPath.  Expected [item/text()] but was [" + xdcm.getXPath() + "]", xdcm.getXPath().equals("item/text()"));
         assertTrue("Wrong component class for mapping.  Expected [" + BigDecimal.class + "] but was [" + xdcm.getAttributeElementClass() + "]", xdcm.getAttributeElementClass().equals(BigDecimal.class));
     }
-    
+
     protected void tbl3Asserts(XMLDescriptor tbl3Descriptor) {
         assertTrue("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName().equals(TBL3_DESCRIPTOR_JAVACLASSNAME));
         Vector<DatabaseMapping> mappings = tbl3Descriptor.getMappings();

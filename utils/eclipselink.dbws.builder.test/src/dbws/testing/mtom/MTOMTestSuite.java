@@ -18,7 +18,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.xml.sax.InputSource;
@@ -107,8 +106,7 @@ import static dbws.testing.DBWSTestSuite.MTOM_SERVICE;
 import static dbws.testing.DBWSTestSuite.MTOM_SERVICE_NAMESPACE;
 import static dbws.testing.DBWSTestSuite.MTOM_TEST;
 import static dbws.testing.DBWSTestSuite.buildConnection;
-import static dbws.testing.DBWSTestSuite.createDbArtifact;
-import static dbws.testing.DBWSTestSuite.dropDbArtifact;
+import static dbws.testing.DBWSTestSuite.runDdl;
 
 @WebServiceProvider(
     targetNamespace = MTOM_SERVICE_NAMESPACE,
@@ -127,8 +125,6 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         "\n)";
     static final String DROP_MTOM_TABLE =
         "DROP TABLE mtom";
-
-    static boolean ddlDebug = false;
 
     //lorem ipsum is the name given to commonly used placeholder filler text
     //this copy is exactly 5000 bytes long
@@ -258,6 +254,10 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
     @Resource
     protected WebServiceContext wsContext;
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         try {
@@ -266,20 +266,20 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         catch (Exception e) {
             e.printStackTrace();
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;
         }
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_MTOM_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_MTOM_TABLE, ddlDebug);
         }
         String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
@@ -326,16 +326,8 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         if (endpoint != null) {
             endpoint.stop();
         }
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            try {
-                dropDbArtifact(conn, DROP_MTOM_TABLE);
-            }
-            catch (SQLException e) {
-                if (ddlDebug) {
-                    e.printStackTrace();
-                }
-            }
+        if (ddlDrop) {
+            runDdl(conn, DROP_MTOM_TABLE, ddlDebug);
         }
     }
 

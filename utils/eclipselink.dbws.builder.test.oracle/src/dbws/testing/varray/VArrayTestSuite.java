@@ -14,7 +14,6 @@ package dbws.testing.varray;
 
 //javase imports
 import java.io.StringReader;
-import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -105,6 +104,10 @@ public class VArrayTestSuite extends DBWSTestSuite {
     static final String DROP_GETVALUEFROMVCARRAY2_FUNC =
         "DROP FUNCTION GETVALUEFROMVCARRAY2";
 
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {
@@ -115,20 +118,26 @@ public class VArrayTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
-            try {
-                createDbArtifact(conn, CREATE_VCARRAY_VARRAY);
-                createDbArtifact(conn, CREATE_GETVCARRAY_PROC);
-                createDbArtifact(conn, CREATE_GETVCARRAY2_FUNC);
-                createDbArtifact(conn, CREATE_COPYVCARRAY_PROC);
-                createDbArtifact(conn, CREATE_COPYVCARRAY2_FUNC);
-                createDbArtifact(conn, CREATE_GETVALUEFROMVCARRAY_PROC);
-                createDbArtifact(conn, CREATE_GETVALUEFROMVCARRAY2_FUNC);
-            }
-            catch (SQLException e) {
-                //e.printStackTrace();
-            }
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
+            runDdl(conn, CREATE_VCARRAY_VARRAY, ddlDebug);
+            runDdl(conn, CREATE_GETVCARRAY_PROC, ddlDebug);
+            runDdl(conn, CREATE_GETVCARRAY2_FUNC, ddlDebug);
+            runDdl(conn, CREATE_COPYVCARRAY_PROC, ddlDebug);
+            runDdl(conn, CREATE_COPYVCARRAY2_FUNC, ddlDebug);
+            runDdl(conn, CREATE_GETVALUEFROMVCARRAY_PROC, ddlDebug);
+            runDdl(conn, CREATE_GETVALUEFROMVCARRAY2_FUNC, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -201,13 +210,13 @@ public class VArrayTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
-            dropDbArtifact(conn, DROP_GETVCARRAY_PROC);
-            dropDbArtifact(conn, DROP_GETVCARRAY2_FUNC);
-            dropDbArtifact(conn, DROP_COPYVCARRAY_PROC);
-            dropDbArtifact(conn, DROP_COPYVCARRAY2_FUNC);
-            dropDbArtifact(conn, DROP_GETVALUEFROMVCARRAY_PROC);
-            dropDbArtifact(conn, DROP_GETVALUEFROMVCARRAY2_FUNC);
-            dropDbArtifact(conn, DROP_VCARRAY_VARRAY);
+            runDdl(conn, DROP_GETVCARRAY_PROC, ddlDebug);
+            runDdl(conn, DROP_GETVCARRAY2_FUNC, ddlDebug);
+            runDdl(conn, DROP_COPYVCARRAY_PROC, ddlDebug);
+            runDdl(conn, DROP_COPYVCARRAY2_FUNC, ddlDebug);
+            runDdl(conn, DROP_GETVALUEFROMVCARRAY_PROC, ddlDebug);
+            runDdl(conn, DROP_GETVALUEFROMVCARRAY2_FUNC, ddlDebug);
+            runDdl(conn, DROP_VCARRAY_VARRAY, ddlDebug);
         }
     }
 
