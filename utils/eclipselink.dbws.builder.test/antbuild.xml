@@ -315,6 +315,10 @@
             value="${db.ddl.drop}"
           />
           <sysproperty
+            key="db.ddl.debug"
+            value="${db.ddl.debug}"
+          />
+          <sysproperty
             key="release.version"
             value="${release.version}"
           />
