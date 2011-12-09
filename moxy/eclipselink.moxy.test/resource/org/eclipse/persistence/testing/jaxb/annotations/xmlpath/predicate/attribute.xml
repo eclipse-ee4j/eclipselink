@@ -1,0 +1,5 @@
+<root>
+    <link rel="address" href="http://wwww.example.com/address/1"/>
+    <link rel="phone-number" href="http://wwww.example.com/phone-number/2"/>
+    <link rel="phone-number" href="http://wwww.example.com/phone-number/3"/>
+</root>

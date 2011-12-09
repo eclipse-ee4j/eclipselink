@@ -324,7 +324,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             }
             XPathFragment nextFragment = xPathFragment.getNextFragment();
             if (nextFragment != null && nextFragment.isAttribute()) {
-            	marshalRecord.attribute(nextFragment, namespaceResolver, value,schemaType);
+                marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
+                marshalRecord.attribute(nextFragment, namespaceResolver, value,schemaType);
                 marshalRecord.closeStartElement();
             } else {
                 if (xmlField.isTypedTextField()) {
