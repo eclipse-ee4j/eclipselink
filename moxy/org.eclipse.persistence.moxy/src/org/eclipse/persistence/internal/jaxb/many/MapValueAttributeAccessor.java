@@ -12,8 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jaxb.many;
 
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -46,19 +47,20 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
             return null;
         }
     
-        Object results = containerPolicy.containerInstance(((Map)value).size());            
-        Iterator iter =  ((Map)value).keySet().iterator();
-        while(iter.hasNext()){
-            Object nextKey = iter.next();
-            Object nextValue = ((Map)value).get(nextKey);
+        Object results = containerPolicy.containerInstance(((Map)value).size());
+        Set<Entry> entrySet = ((Map)value).entrySet();
+        if(null == entrySet) {
+            return results;
+        }
+        for(Entry entry : entrySet) {
             MapEntry nextEntry;
             try {
                 nextEntry = (MapEntry)generatedEntryClass.newInstance();
             } catch (Exception e) {     
                 return null;
             } 
-            nextEntry.setKey(nextKey);
-            nextEntry.setValue(nextValue);
+            nextEntry.setKey(entry.getKey());
+            nextEntry.setValue(entry.getValue());
             containerPolicy.addInto(nextEntry, results, null);
         }
         return results; 
