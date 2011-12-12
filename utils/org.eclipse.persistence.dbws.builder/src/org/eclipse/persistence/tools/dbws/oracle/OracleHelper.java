@@ -33,6 +33,7 @@ import javax.xml.namespace.QName;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.xr.Attachment;
@@ -969,7 +970,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     	ArgumentType returnArg = procType.isFunction() ? ((FunctionType)procType).getReturnArgument() : null;
     	if (hasComplexArgs) {
             if (procType.isFunction()) {
-                call = new PLSQLStoredFunctionCall(buildDatabaseTypeFromMetadataType(returnArg, procType.getCatalogName()));
+            	org.eclipse.persistence.internal.helper.DatabaseType dType = buildDatabaseTypeFromMetadataType(returnArg, procType.getCatalogName());
+            	Class wrapperClass = getWrapperClass(dType);
+            	if (wrapperClass != null) {
+            		((ComplexDatabaseType) dType).setJavaType(wrapperClass);
+            	}
+                call = new PLSQLStoredFunctionCall(dType);
             } else {
                 call = new PLSQLStoredProcedureCall();
             }
@@ -1059,18 +1065,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             	}
             } else if (direction == OUT) {
             	if (hasComplexArgs) {
+                    Class wrapperClass = getWrapperClass(databaseType);
+                    if (wrapperClass != null) {
+                    	((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
+                    }
             		((PLSQLStoredProcedureCall)call).addNamedOutputArgument(arg.getArgumentName(), databaseType);
             	} else {
                     if (argType.isComposite()) {
-                        Class wrapperClass = null; 
-                        try {
-                            // the following call will try and load the collection wrapper class via XRDynamicClassLoader
-                        	wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(javaTypeName);
-                        } catch (ClassNotFoundException e) {
-                        	// TODO:  it is unlikely that we'll get here, however we should
-                        	//        still handle this with an EclipseLink exception
-                        	e.printStackTrace();
-                        }
+                        Class wrapperClass = getWrapperClass(javaTypeName); 
                         
                     	if (argType instanceof VArrayType || argType instanceof ObjectTableType) {
                             call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
@@ -1117,7 +1119,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 if (xdesc != null) {
                     dq.addArgumentByTypeName(arg.getArgumentName(), xdesc.getJavaClassName());
                 } else {
-                    if (databaseType instanceof PLSQLCollection) {
+                    if (databaseType instanceof PLSQLCollection || databaseType instanceof VArrayType) {
                         dq.addArgument(arg.getArgumentName(), Array.class);
                     } else if (databaseType instanceof PLSQLrecord || databaseType instanceof OracleObjectType) {
                         dq.addArgument(arg.getArgumentName(), Struct.class);
@@ -1133,7 +1135,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     /**
      * Build an OR database field for a given type's nested type.
-     * This method assumes that owningType is an VArrayType.
      */
     protected ObjectRelationalDatabaseField buildFieldForNestedType(DatabaseType owningType) {
         ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField("");
@@ -1423,5 +1424,42 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     		structureName = packageName + UNDERSCORE + structureName;
     	}
     	return structureName;
+    }
+    
+    /**
+     * Return the wrapper class for a given DatabaseType.  The class will be loaded by the
+     * XRDynamicClassloader, based on the DatabaseType's javaTypeName.  If the class 
+     * cannot be loaded, or the given DatabaseType is not a ComplexDatabaseType, null
+     * will be returned.
+     * 
+     */
+    @SuppressWarnings("rawtypes")
+	protected Class getWrapperClass(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
+		if (databaseType instanceof ComplexDatabaseType) {
+        	return getWrapperClass(((ComplexDatabaseType) databaseType).getJavaTypeName());
+		}
+		return null;
+    }
+
+    /**
+     * Return the wrapper class for a wrapper class name.  The wrapper class name would
+     * typically be an argument type name, descriptor java class name, or a
+     * DatabaseType's javaTypeName.
+     * 
+     * The class will be loaded by the XRDynamicClassloader;  if the class cannot be 
+     * loaded, null will be returned.
+     * 
+     */
+    @SuppressWarnings("rawtypes")
+	protected Class getWrapperClass(String wrapperClassName) {
+        Class wrapperClass = null; 
+        try {
+            // the following call will try and load the collection wrapper class via XRDynamicClassLoader
+        	wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(wrapperClassName);
+        } catch (ClassNotFoundException e) {
+        	// TODO:  it is unlikely that we'll get here, so is there any need 
+        	//        to handle this with an EclipseLink exception
+        }
+		return wrapperClass;
     }
 }

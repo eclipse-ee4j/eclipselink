@@ -40,6 +40,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
@@ -533,11 +534,13 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         for (PLSQLargument outArg : outArguments) {
             DatabaseType type = outArg.databaseType;
             if (!type.isComplexDatabaseType()) {
-                super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
+        		super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
             } else {
                 ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                 if (outArg.outIndex != MIN_VALUE) {
-                    if (complexType instanceof PLSQLCollection) {
+                    if (complexType instanceof OracleArrayType) {
+                    	super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getTypeName(), complexType.getJavaType());
+                    } else if (complexType instanceof PLSQLCollection) {
                         DatabaseType nestedType = ((PLSQLCollection) complexType).getNestedType();
                         if (nestedType != null) {
                             ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField(outArg.name);
@@ -894,7 +897,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         Set<DatabaseType> processed = new HashSet<DatabaseType>();
         for (PLSQLargument arg : arguments) {
             DatabaseType type = arg.databaseType;
-            addNestedFunctionsForArgument(nestedFunctions, arg, type, processed);
+        	addNestedFunctionsForArgument(nestedFunctions, arg, type, processed);
         }
         if (!nestedFunctions.isEmpty()) {
             for (String function : nestedFunctions) {
@@ -911,7 +914,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> inArguments = getArguments(arguments, IN);
         inArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : inArguments) {
-            arg.databaseType.buildBeginBlock(sb, arg, this);
+    		arg.databaseType.buildBeginBlock(sb, arg, this);
         }
     }
 
@@ -944,7 +947,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);
         outArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : outArguments) {
-            arg.databaseType.buildOutAssignment(sb, arg, this);
+    		arg.databaseType.buildOutAssignment(sb, arg, this);
         }
     }
 
