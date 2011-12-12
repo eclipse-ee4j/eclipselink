@@ -74,7 +74,7 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
 
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
@@ -107,7 +107,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X> {
 
     /** Native RelationalDescriptor that contains all the mappings of this type **/
-    private RelationalDescriptor descriptor;
+    private ClassDescriptor descriptor;
 
     /** The map of attributes keyed on attribute string name **/
     private Map<String, Attribute<X,?>> members;
@@ -123,7 +123,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param metamodel - the metamodel that this managedType is associated with
      * @param descriptor - the RelationalDescriptor that defines this managedType
      */
-    protected ManagedTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
+    protected ManagedTypeImpl(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         // A valid descriptor will always have a javaClass set except in bug# 303063
         super(descriptor.getJavaClass(), descriptor.getJavaClassName());
         this.descriptor = descriptor;
@@ -410,7 +410,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param descriptor
      * @return
      */
-    protected static ManagedTypeImpl<?> create(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
+    protected static ManagedTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         // Get the ManagedType property on the descriptor if it exists
         ManagedTypeImpl<?> managedType = (ManagedTypeImpl<?>) descriptor.getProperty(ManagedTypeImpl.class.getName());
         // Create an Entity, Embeddable or MappedSuperclass
@@ -642,7 +642,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * Return the RelationalDescriptor associated with this ManagedType
      * @return
      */
-    public RelationalDescriptor getDescriptor() {
+    public ClassDescriptor getDescriptor() {
         return this.descriptor;
     }
 
@@ -1418,7 +1418,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         
         // 303063: secondary check for case where descriptor has no java class set - should never happen but this will show on code coverage
         if(null == this.getJavaType()) {
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, this);
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, this);
         }
         
         return aType;

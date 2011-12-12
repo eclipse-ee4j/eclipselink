@@ -134,7 +134,7 @@ public class SessionManager {
             }
         } catch (Throwable ignore) {
             // EL Bug 321843 - Must handle errors from logout.
-            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, ignore);
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
         }
 
         sessions.remove(session.getName());
@@ -394,7 +394,7 @@ public class SessionManager {
                             try {
                                 ((DatabaseSession)session).logout();
                             } catch (Throwable ignore) {
-                                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, ignore);
+                                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
                             }
                         }        
                         getSessions().remove(loader.getSessionName());
@@ -428,7 +428,7 @@ public class SessionManager {
      * Log exceptions to the default log then throw them.
      */
     private void logAndThrowException(int level, RuntimeException exception) throws RuntimeException {
-        AbstractSessionLog.getLog().logThrowable(level, exception);
+        AbstractSessionLog.getLog().logThrowable(level, AbstractSessionLog.CONNECTION, exception);
         throw exception;
     }
 

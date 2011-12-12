@@ -35,7 +35,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.CMPPolicy;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -74,7 +74,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      */
     private SingularAttribute<? super X, ?> versionAttribute;
     
-    protected IdentifiableTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
+    protected IdentifiableTypeImpl(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         super(metamodel, descriptor);        
         /* The superType field cannot be set until all ManagedType instances 
          * have been instantiated for this metamodel.

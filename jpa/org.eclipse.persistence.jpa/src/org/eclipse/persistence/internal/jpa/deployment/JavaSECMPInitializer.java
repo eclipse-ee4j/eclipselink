@@ -84,7 +84,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
                     if(!isInitialized) {
                         initializeTopLinkLoggingFile();
                         if(fromAgent) {
-                            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize_from_agent", (Object[])null);
+                            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_initialize_from_agent", (Object[])null);
                         }
                         usesAgent = true;
                         initializer = new JavaSECMPInitializer(classLoader);
@@ -160,8 +160,8 @@ public class JavaSECMPInitializer extends JPAInitializer {
         URL[] urlPath = ((URLClassLoader)currentLoader).getURLs();
         ClassLoader tempLoader = new TempEntityLoader(urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers);
 
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_tempLoader_created", tempLoader);
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", Boolean.valueOf(shouldOverrideLoadClassForCollectionMembers));
+        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_tempLoader_created", tempLoader);
+        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", Boolean.valueOf(shouldOverrideLoadClassForCollectionMembers));
 
         return tempLoader;
     }
@@ -217,7 +217,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
      */
     public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties){
         if ((transformer != null) && (globalInstrumentation != null)) {
-            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_register_transformer", persistenceUnitInfo.getPersistenceUnitName());
+            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_register_transformer", persistenceUnitInfo.getPersistenceUnitName());
             globalInstrumentation.addTransformer(new ClassFileTransformer() {
                 // adapt ClassTransformer to ClassFileTransformer interface
                 public byte[] transform(
@@ -229,9 +229,9 @@ public class JavaSECMPInitializer extends JPAInitializer {
                 }
             });
         } else if (transformer == null) {
-            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_transformer_is_null");
+            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_transformer_is_null", null, true);
         } else if (globalInstrumentation == null) {
-            AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_globalInstrumentation_is_null");
+            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_globalInstrumentation_is_null", null, true);
         }
     }
     

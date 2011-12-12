@@ -207,7 +207,7 @@ public class EISPlatform extends DatasourcePlatform {
     }
 
     /**
-     * Allow the platform to create the appropiate type of record for the interaction.
+     * Allow the platform to create the appropriate type of record for the interaction.
      * If an output record is not required then null is returned.
      */
     public Record createOutputRecord(EISInteraction interaction, EISAccessor accessor) {

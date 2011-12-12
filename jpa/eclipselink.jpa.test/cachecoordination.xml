@@ -158,6 +158,21 @@
         </sequential>
     </target>
 
+    <target name="undeploy-concurrency-wls">
+        <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="jpa-performance-server1"/>
+        <property name="target.server" value="${rcm.wls.server1.name}"/>
+        </ant>
+        <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="jpa-performance-server2"/>
+        <property name="target.server" value="${rcm.wls.server2.name}"/>
+        </ant>
+        <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="jpa-performance-server3"/>
+        <property name="target.server" value="${rcm.wls.server3.name}"/>
+        </ant>
+    </target>
+
     <target name="set-app-name-cachecoordination">
         <property name="APP_NAME" value="${MODEL_NAME}"/>
         <property name="DS_NAME" value="jdbc/EclipseLinkDS"/>

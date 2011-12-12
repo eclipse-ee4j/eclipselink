@@ -37,7 +37,6 @@ import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -124,7 +123,7 @@ public class Project implements Serializable, Cloneable {
      * These descriptors are only to be used by Metamodel generation.
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
-    protected Map<String, RelationalDescriptor> mappedSuperclassDescriptors;
+    protected Map<String, ClassDescriptor> mappedSuperclassDescriptors;
 
     /**
      * Store the IdClass Id attributes for exclusive use by the Metamodel API
@@ -158,7 +157,7 @@ public class Project implements Serializable, Cloneable {
         this.hasProxyIndirection = false;
         this.jpqlParseCache = new ConcurrentFixedCache(200);
         this.queries = new ArrayList<DatabaseQuery>();
-        this.mappedSuperclassDescriptors = new HashMap<String, RelationalDescriptor>(2);
+        this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
         this.metamodelIdClassMap = new HashMap<String, List<String>>();
     }
 
@@ -1230,10 +1229,10 @@ public class Project implements Serializable, Cloneable {
      * @param value (RelationalDescriptor)
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
-    public void addMappedSuperclass(String key, RelationalDescriptor value) {
+    public void addMappedSuperclass(String key, ClassDescriptor value) {
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
-            this.mappedSuperclassDescriptors = new HashMap<String, RelationalDescriptor>(2);
+            this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
         }
         // Avoid replacing the current RelationalDescriptor that may have mappings set
         if(!this.mappedSuperclassDescriptors.containsKey(key)) {
@@ -1248,12 +1247,12 @@ public class Project implements Serializable, Cloneable {
      * @param key - theMetadata class
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
-    public RelationalDescriptor getMappedSuperclass(String key) {
+    public ClassDescriptor getMappedSuperclass(String key) {
         // TODO: this implementation may have side effects when we have the same class 
         // in different class loaders - however currently there is only one classLoader per project
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
-            this.mappedSuperclassDescriptors = new HashMap<String, RelationalDescriptor>(2);
+            this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
             return null;
         }
         return this.mappedSuperclassDescriptors.get(key);
@@ -1265,10 +1264,10 @@ public class Project implements Serializable, Cloneable {
      * keyed by className of the metadata class.
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
-    public Map<String, RelationalDescriptor> getMappedSuperclassDescriptors() {        
+    public Map<String, ClassDescriptor> getMappedSuperclassDescriptors() {        
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
-            this.mappedSuperclassDescriptors = new HashMap<String, RelationalDescriptor>(2);
+            this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
         }
         return this.mappedSuperclassDescriptors;
     }

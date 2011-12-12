@@ -26,7 +26,7 @@ import java.util.Map;
 
 import javax.persistence.metamodel.MappedSuperclassType;
 
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p>
@@ -57,7 +57,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      **/
     private Map<Class, IdentifiableTypeImpl> inheritingIdentifiableTypes;
     
-    protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {        
+    protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {        
         super(metamodel, relationalDescriptor);
         inheritingIdentifiableTypes = new HashMap<Class, IdentifiableTypeImpl>();
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
@@ -80,7 +80,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @param relationalDescriptor
      * @return
      */
-    protected static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, RelationalDescriptor relationalDescriptor) {
+    protected static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
         /**
          * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
          * This will ensure the class is both set and is in the right classLoader - even if the class is already set.

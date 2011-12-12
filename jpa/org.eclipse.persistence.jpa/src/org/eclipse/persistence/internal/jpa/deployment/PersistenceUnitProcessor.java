@@ -509,14 +509,14 @@ public class PersistenceUnitProcessor {
         } catch (NullPointerException npe) {
             // Bug 227630: If any weavable class is not found in the temporary 
             // classLoader - disable weaving 
-            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class_weaving_disabled", loader, project.getPersistenceUnitInfo().getPersistenceUnitName(), className);
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, "persistence_unit_processor_error_loading_class_weaving_disabled", loader, project.getPersistenceUnitInfo().getPersistenceUnitName(), className);
             // Disable weaving (for 1->1 and many->1)only if the classLoader 
             // returns a NPE on loadClass()
             project.disableWeaving();
         } catch (Exception exception){
-            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exception.getClass().getName(), exception.getLocalizedMessage() , className);
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, "persistence_unit_processor_error_loading_class", exception.getClass().getName(), exception.getLocalizedMessage() , className);
         } catch (Error error){
-            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", error.getClass().getName(), error.getLocalizedMessage() , className);
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, "persistence_unit_processor_error_loading_class", error.getClass().getName(), error.getLocalizedMessage() , className);
             throw error;
         }
         

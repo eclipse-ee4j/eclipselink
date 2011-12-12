@@ -32,7 +32,7 @@ import org.eclipse.persistence.annotations.MultitenantType;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumns;
 import org.eclipse.persistence.config.CacheIsolationType;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SingleTableMultitenantPolicy;
 import org.eclipse.persistence.descriptors.VPDMultitenantPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -165,7 +165,7 @@ public class MultitenantMetadata extends ORMetadata {
      * INTERNAL:
      */
     public void process(MetadataDescriptor descriptor)  {
-        RelationalDescriptor classDescriptor = descriptor.getClassDescriptor();
+        ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         
         if (m_type == null || m_type.equals(MultitenantType.SINGLE_TABLE.name()) || m_type.equals(MultitenantType.VPD.name())) {
             // Initialize the policy.

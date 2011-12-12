@@ -17,6 +17,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
@@ -213,7 +214,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
     public Class getTypeOfDirectToField(GenerationContext context) {
         DatabaseMapping mapping = resolveMapping(context);
         if ((mapping != null) && mapping.isDirectToFieldMapping()) {
-            return ((DirectToFieldMapping)mapping).getAttributeClassification();
+            return ((AbstractDirectMapping)mapping).getAttributeClassification();
         }
         return null;
     }

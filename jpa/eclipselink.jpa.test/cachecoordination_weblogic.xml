@@ -152,10 +152,6 @@
                 <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
                 <sysproperty key="weblogic.Stdout" value="${rcm.wls.admin.name}.log"/>
                 <sysproperty key="weblogic.Stderr" value="${rcm.wls.admin.name}.err"/>
-                <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
-                <sysproperty key="tangosol.coherence.cacheconfig" value="tang-perf-grid.xml"/>
-                <!--sysproperty key="tangosol.coherence.log.level" value="9"/-->
-                <sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/"/>
                 <classpath refid="build.wls.path"/>
             </java>
             <sequential>
@@ -186,7 +182,7 @@
                         <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
                         <sysproperty key="tangosol.coherence.cacheconfig" value="/tang-perf-grid.xml"/>
                         <!--sysproperty key="tangosol.coherence.log.level" value="1"/-->
-                        <sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server1.httphost}:${rcm.wls.server1.port}/"/>
+                        <!--sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server1.httphost}:${rcm.wls.server1.port}/"/-->
                         <classpath refid="build.wls.path"/>
                     </java>
                     <echo message="*** starting managed server: Server2 "/>
@@ -212,7 +208,7 @@
                         <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
                         <sysproperty key="tangosol.coherence.cacheconfig" value="/tang-perf-grid.xml"/>
                         <!--sysproperty key="tangosol.coherence.log.level" value="1"/-->
-                        <sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server2.httphost}:${rcm.wls.server2.port}/"/>
+                        <!--sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server2.httphost}:${rcm.wls.server2.port}/"/-->
                         <classpath refid="build.wls.path"/>
                     </java>
                     <echo message="*** starting managed server: Server3 "/>
@@ -237,7 +233,7 @@
                         <sysproperty key="weblogic.Stderr" value="${rcm.wls.server3.name}.err"/>
                         <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
                         <sysproperty key="tangosol.coherence.cacheconfig" value="tang-perf-grid.xml"/>
-                        <sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server3.httphost}:${rcm.wls.server3.port}/"/>
+                        <!--sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server3.httphost}:${rcm.wls.server3.port}/"/-->
                         <classpath refid="build.wls.path"/>
                     </java>
                     <sequential>

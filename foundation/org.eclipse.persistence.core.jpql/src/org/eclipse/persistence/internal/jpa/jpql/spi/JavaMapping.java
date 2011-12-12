@@ -35,9 +35,9 @@ import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * The concrete implementation of {@link IMapping} that is wrapping the runtime representation of a
@@ -246,7 +246,7 @@ final class JavaMapping extends AbstractMapping {
 				return IEclipseLinkMappingType.ID;
 			}
 
-			DirectToFieldMapping directToFieldMapping = (DirectToFieldMapping) mapping;
+			AbstractDirectMapping directToFieldMapping = (AbstractDirectMapping) mapping;
 
 			if (directToFieldMapping.getDescriptor().getOptimisticLockingPolicy() instanceof VersionLockingPolicy) {
 				VersionLockingPolicy policy = (VersionLockingPolicy) directToFieldMapping.getDescriptor().getOptimisticLockingPolicy();

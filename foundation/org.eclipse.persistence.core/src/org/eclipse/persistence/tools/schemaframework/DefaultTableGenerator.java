@@ -167,7 +167,7 @@ public class DefaultTableGenerator {
 
             if ((descriptor instanceof XMLDescriptor) || (descriptor instanceof EISDescriptor) || (descriptor instanceof ObjectRelationalDataTypeDescriptor)) {
                 //default table generator does not support ox, eis and object-relational descriptor
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, "relational_descriptor_support_only", (Object[])null, true);
+                AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.DDL, "relational_descriptor_support_only", (Object[])null, true);
 
                 return tblCreator;
             }
@@ -247,7 +247,7 @@ public class DefaultTableGenerator {
             }
 
             if (!existedTableNames.isEmpty()) {
-                session.getSessionLog().log(SessionLog.FINEST, "skip_create_existing_tables", existedTableNames);
+                session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "skip_create_existing_tables", existedTableNames);
 
                 //remove the existed tables, won't create them.
                 tblCreator.getTableDefinitions().removeAll(existedTables);

@@ -542,7 +542,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		// Register the EclipseLink Expression with the state field name
 		String name = expression.getPath(expression.pathSize() - 1);
 		query.addAttribute(name, queryExpression);
-      query.dontRetrievePrimaryKeys();
+		query.dontRetrievePrimaryKeys();
 	}
 
 	/**

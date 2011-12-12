@@ -100,7 +100,7 @@
             <delete file="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence.xml"/>
             <antcall target="config-persistence-xml"/>
             <antcall target="cachecoordination-build-and-deploy-cluster" inheritRefs="true">
-                <param name="PERSISTENCE_UNIT_NAME" value="jpa-performance"/>
+                <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
                 <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/performance"/>
                 <param name="MODEL_NAME" value="jpa-performance"/>

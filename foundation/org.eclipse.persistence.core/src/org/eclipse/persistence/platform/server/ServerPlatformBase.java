@@ -30,7 +30,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
-import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -257,7 +256,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         }
         //BUG 3975114: display a warning if JTA is disabled and we're in CMP
         if (!isJTAEnabled() && isCMP()) {
-            AbstractSessionLog.getLog().warning("jta_cannot_be_disabled_in_cmp");
+            getDatabaseSession().getSessionLog().log(SessionLog.WARNING, SessionLog.EJB, "jta_cannot_be_disabled_in_cmp", null, true);
         }
 
         //check if the transaction controller class is overridden by a preLogin or equivalent,

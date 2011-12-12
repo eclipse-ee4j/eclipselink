@@ -26,7 +26,7 @@ import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Type;
 
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p>
@@ -47,7 +47,7 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
     private static final long serialVersionUID = 7970950485096018114L;
 
-    protected EntityTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
+    protected EntityTypeImpl(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         super(metamodel, descriptor);
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
     }

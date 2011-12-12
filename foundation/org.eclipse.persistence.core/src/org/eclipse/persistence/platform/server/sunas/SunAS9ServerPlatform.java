@@ -127,7 +127,7 @@ public class SunAS9ServerPlatform extends JMXServerPlatformBase implements JMXEn
                 unwrappedConnection = (Connection) unwrapMethod.invoke(connection);
             }
         } catch (Exception e) {
-            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, e);
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, e);
         }
 
         return unwrappedConnection;

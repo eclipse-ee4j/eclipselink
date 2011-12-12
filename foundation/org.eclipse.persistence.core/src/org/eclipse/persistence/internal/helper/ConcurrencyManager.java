@@ -207,7 +207,7 @@ public class ConcurrencyManager implements Serializable {
             } else {
                 lockManager.addDeferredLock(this);
                 if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER)) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINER, "acquiring_deferred_lock", getOwnerCacheKey().getObject(), currentThread.getName());
+                    AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "acquiring_deferred_lock", getOwnerCacheKey().getObject(), currentThread.getName());
                 }
             }
         }
@@ -459,20 +459,20 @@ public class ConcurrencyManager implements Serializable {
                 if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
                     lockManager.releaseActiveLocksOnThread();
                     removeDeferredLockManager(currentThread);
-                    AbstractSessionLog.getLog().log(SessionLog.FINER, "deferred_locks_released", currentThread.getName());
+                    AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "deferred_locks_released", currentThread.getName());
                     return;
                 } else {// Not done yet, wait and check again.
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException interrupted) {
-                        AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, interrupted);
+                        AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
                         lockManager.releaseActiveLocksOnThread();
                         removeDeferredLockManager(currentThread);
                         throw ConcurrencyException.waitWasInterrupted(interrupted.getMessage());
                     }
                 }
-            }catch (Error error){
-                AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, error);
+            } catch (Error error) {
+                AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, error);
                 lockManager.releaseActiveLocksOnThread();
                 removeDeferredLockManager(currentThread);
                 throw error;

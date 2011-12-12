@@ -91,7 +91,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
             try {
                 this.websphereUtilClass = (Class) getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcUtil", Class.class);
             } catch (Throwable exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 this.websphereUtilClass = void.class;
             }
         }
@@ -106,7 +106,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
             try {
                 this.websphereConnectionClass = (Class) getDatabaseSession().getPlatform().convertObject("com.ibm.ws.rsadapter.jdbc.WSJdbcConnection", Class.class);
             } catch (Throwable exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 this.websphereConnectionClass = void.class;
             }
         }
@@ -123,7 +123,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
                 args[0] = getWebsphereConnectionClass();
                 this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebsphereUtilClass(), "getNativeConnection", args);
             } catch (NoSuchMethodException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }
 
@@ -139,9 +139,9 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
             try {
                 return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), null, new Object[]{connection});
             } catch (IllegalAccessException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             } catch (InvocationTargetException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }
 

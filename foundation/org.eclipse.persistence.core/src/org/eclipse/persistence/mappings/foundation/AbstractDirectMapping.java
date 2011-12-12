@@ -247,7 +247,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             } else if (attributeValue instanceof Calendar) {
                 newAttributeValue = ((Calendar)attributeValue).clone();
             } else {
-                newAttributeValue = getObjectValue(getFieldValue(attributeValue, (AbstractSession) session), session);
+                newAttributeValue = getObjectValue(getFieldValue(attributeValue, session), session);
             }
         }
         return newAttributeValue;

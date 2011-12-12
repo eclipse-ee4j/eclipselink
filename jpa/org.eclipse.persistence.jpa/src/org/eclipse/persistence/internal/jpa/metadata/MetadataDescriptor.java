@@ -106,6 +106,7 @@ import javax.persistence.AccessType;
 import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
@@ -210,7 +211,7 @@ public class MetadataDescriptor {
     // an entity accessor. Therefore, if this descriptor is to a mapped super
     // class, the child entity accessor will (and must) be set.
     private MetadataDescriptor m_metamodelMappedSuperclassChildDescriptor;
-    private RelationalDescriptor m_descriptor;
+    private ClassDescriptor m_descriptor;
     
     // This is the default access type for the class accessor of this 
     // descriptor. The default access type is needed for those embeddables and 
@@ -574,7 +575,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Return the RelationalDescriptor instance associated with this MetadataDescriptor
      */
-    public RelationalDescriptor getClassDescriptor() {
+    public ClassDescriptor getClassDescriptor() {
         return m_descriptor;
     }
     
@@ -1480,7 +1481,7 @@ public class MetadataDescriptor {
      * modify the behavior of some of our weaving features
      */
     public void setAccessTypeOnClassDescriptor(String accessType){
-        if (accessType.equals(MetadataConstants.PROPERTY)){
+        if (accessType.equals(MetadataConstants.PROPERTY)) {
             m_descriptor.usePropertyAccessForWeaving();
         }
     }
@@ -1557,7 +1558,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Set the RelationalDescriptor instance associated with this MetadataDescriptor
      */
-    public void setDescriptor(RelationalDescriptor descriptor) {
+    public void setDescriptor(ClassDescriptor descriptor) {
         m_descriptor = descriptor;
     }
     

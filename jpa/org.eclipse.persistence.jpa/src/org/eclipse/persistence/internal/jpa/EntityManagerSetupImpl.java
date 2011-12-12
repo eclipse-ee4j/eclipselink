@@ -403,7 +403,7 @@ public class EntityManagerSetupImpl {
             throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
         // state is PREDEPLOYED or DEPLOYED
-        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+        session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         
         try {
             Map deployProperties = mergeMaps(additionalProperties, persistenceUnitInfo.getProperties());
@@ -520,7 +520,7 @@ public class EntityManagerSetupImpl {
             session.logThrowable(SessionLog.SEVERE, SessionLog.EJB, exception);
             throw persistenceException;
         } finally {
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         }
     }
 
@@ -990,30 +990,30 @@ public class EntityManagerSetupImpl {
                     pool = serverSession.getReadConnectionPool();
                     // By default there is no connection pool, so if the default, create a new one.
                     if ((pool == null) || (pool == serverSession.getDefaultConnectionPool())) {
-                        if (this.session.getLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, serverSession.getLogin(), serverSession);                            
+                        if (this.session.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
+                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);                            
                         } else {
-                            pool = new ConnectionPool(poolName, serverSession.getLogin(), serverSession);
+                            pool = new ConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         }
                         serverSession.setReadConnectionPool(pool);
                     }
                 } else if (poolName.equals("sequence")) {
                     pool = this.session.getSequencingControl().getConnectionPool();
                     if (pool == null) {
-                        if (this.session.getLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, serverSession.getLogin(), serverSession);                            
+                        if (this.session.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
+                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);                            
                         } else {
-                            pool = new ConnectionPool(poolName, serverSession.getLogin(), serverSession);
+                            pool = new ConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         }
                         this.session.getSequencingControl().setConnectionPool(pool);
                     }
                 } else {
                     pool = serverSession.getConnectionPool(poolName);
                     if (pool == null) {
-                        if (this.session.getLogin().shouldUseExternalConnectionPooling()) {
-                            pool = new ExternalConnectionPool(poolName, serverSession.getLogin(), serverSession);                            
+                        if (this.session.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
+                            pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);                            
                         } else {
-                            pool = new ConnectionPool(poolName, serverSession.getLogin(), serverSession);
+                            pool = new ConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         }
                         serverSession.addConnectionPool(pool);
                     }
@@ -1054,7 +1054,7 @@ public class EntityManagerSetupImpl {
                 } else if (poolName.equals("read") && attribute.equals(PersistenceUnitProperties.CONNECTION_POOL_SHARED)) {
                     boolean shared = Boolean.parseBoolean((String)entry.getValue());
                     if (shared) {
-                        ReadConnectionPool readPool = new ReadConnectionPool(poolName, serverSession.getLogin(), serverSession);
+                        ReadConnectionPool readPool = new ReadConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         readPool.setInitialNumberOfConnections(pool.getInitialNumberOfConnections());
                         readPool.setMinNumberOfConnections(pool.getMinNumberOfConnections());
                         readPool.setMaxNumberOfConnections(pool.getMaxNumberOfConnections());
@@ -1120,9 +1120,9 @@ public class EntityManagerSetupImpl {
             throw new PersistenceException(EntityManagerSetupException.cannotPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
         if (state == STATE_PREDEPLOYED || state == STATE_DEPLOYED) {
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             factoryCount++;
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             return null;
         } else if (state == STATE_INITIAL) {
             persistenceUnitInfo = info;
@@ -1137,7 +1137,7 @@ public class EntityManagerSetupImpl {
                 }
             }
         } else if (state == STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER) {
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode, factoryCount});
         }
         
         // state is INITIAL or PREDEPLOY_FAILED or STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
@@ -1201,7 +1201,7 @@ public class EntityManagerSetupImpl {
                 }
                 
                 // Cannot start logging until session and log and initialized, so log start of predeploy here.
-                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+                session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
     
                 if (isSessionLoadedFromSessionsXML) {
                     // Loading session from sessions-xml.
@@ -1357,11 +1357,11 @@ public class EntityManagerSetupImpl {
                     
                     if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
                         mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE;
-                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode , factoryCount});
+                        session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode , factoryCount});
                         return null;
                     } else if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE) {
                         mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_FINAL;
-                        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode , factoryCount});
+                        session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state + " " + mode , factoryCount});
                         return null;
                     }
                     // mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_FINAL
@@ -1406,7 +1406,7 @@ public class EntityManagerSetupImpl {
                 }
             }
             state = STATE_PREDEPLOYED;
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             //gf3146: if static weaving is used, we should not return a transformer.  Transformer should still be created though as it modifies descriptors 
             if (isWeavingStatic) {
                 return null;
@@ -1415,7 +1415,7 @@ public class EntityManagerSetupImpl {
             }
         } catch (RuntimeException ex) {
             state = STATE_PREDEPLOY_FAILED;
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             session = null;
             mode = null;
             throw new PersistenceException(EntityManagerSetupException.predeployFailed(persistenceUnitInfo.getPersistenceUnitName(), ex));
@@ -1902,7 +1902,7 @@ public class EntityManagerSetupImpl {
             if (transTypeString != null) {
                 transactionType = PersistenceUnitTransactionType.valueOf(transTypeString);
             }
-            session.getLogin().setUsesExternalTransactionController(transactionType == PersistenceUnitTransactionType.JTA);
+            ((DatasourceLogin)session.getDatasourceLogin()).setUsesExternalTransactionController(transactionType == PersistenceUnitTransactionType.JTA);
         } else {
             String shouldBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, m, session);
             if (shouldBindString != null) {
@@ -1910,7 +1910,7 @@ public class EntityManagerSetupImpl {
             }
             updateLogins(m);
         }
-        if (!session.getLogin().shouldUseExternalTransactionController()) {
+        if (!session.getDatasourceLogin().shouldUseExternalTransactionController()) {
             session.getServerPlatform().disableJTA();
         }
         
@@ -2154,7 +2154,7 @@ public class EntityManagerSetupImpl {
             return;
         }
         // state is PREDEPLOYED, DEPLOYED or DEPLOY_FAILED
-        session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+        session.log(SessionLog.FINEST, SessionLog.JPA, "undeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         try {
             factoryCount--;
             if(factoryCount > 0) {
@@ -2169,7 +2169,7 @@ public class EntityManagerSetupImpl {
                 }
             }
         } finally {
-            session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            session.log(SessionLog.FINEST, SessionLog.JPA, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             if(state == STATE_UNDEPLOYED) {
                 session = null;
             }

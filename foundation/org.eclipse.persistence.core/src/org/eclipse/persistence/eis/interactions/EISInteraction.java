@@ -311,7 +311,7 @@ public abstract class EISInteraction extends DatasourceCall {
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         setInputRow(modifyRow);
         if (hasArguments()) {
-            Vector parametersValues = new Vector(getArguments().size());
+            List parametersValues = new ArrayList(getArguments().size());
             for (int index = 0; index < getArguments().size(); index++) {
                 Object argument = getArguments().elementAt(index);
 
@@ -324,9 +324,9 @@ public abstract class EISInteraction extends DatasourceCall {
                     if ((value == null) && (modifyRow != null)) {
                         value = modifyRow.get(field);
                     }
-                    parametersValues.addElement(value);
+                    parametersValues.add(value);
                 } else {
-                    parametersValues.addElement(argument);
+                    parametersValues.add(argument);
                 }
             }
             setParameters(parametersValues);

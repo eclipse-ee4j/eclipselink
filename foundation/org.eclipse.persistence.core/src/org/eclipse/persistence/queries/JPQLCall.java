@@ -12,12 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.sql.*;
-import java.io.*;
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.jpa.parsing.jpql.*;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
+import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -64,10 +66,6 @@ public class JPQLCall implements Serializable, Call {
     public DatabaseQueryMechanism buildNewQueryMechanism(DatabaseQuery query) {
         return new JPQLCallQueryMechanism(query, this);
     }
-
-	//bug4324564: removed buildParserFor to remove Antlr.jar compile dependency -CD
-	//   See class org.eclipse.persistence.internal.parsing.ejbql.JPQLParserFactory.buildParserFor
-
 
     /**
      * INTERNAL:
@@ -167,16 +165,15 @@ public class JPQLCall implements Serializable, Call {
         return getIsParsed();
     }
 
-	//bug4324564: removed parseEJBQLString to remove Antlr.jar compile dependency -CD
-	//  See class org.eclipse.persistence.internal.parsing.ejbql.JPQLParserFactory.parseEJBQLString
-
     /**
      * Populate the query using the information retrieved from parsing the EJBQL.
      */
     public void populateQuery(AbstractSession session) {
         if (!isParsed()) {
-			//bug4324564: moved code to JPQLParserFactory.populateQuery -CD
-            (new JPQLParserFactory()).populateQuery(getEjbqlString(), (ObjectLevelReadQuery)getQuery(), session);
+            
+            JPAQueryBuilder queryBuilder = JPAQueryBuilderManager.getQueryBuilder();
+            queryBuilder.populateQuery(getEjbqlString(), getQuery(), session);
+
             // Make sure we don't parse and prepare again.
             this.setIsParsed(true);
         }

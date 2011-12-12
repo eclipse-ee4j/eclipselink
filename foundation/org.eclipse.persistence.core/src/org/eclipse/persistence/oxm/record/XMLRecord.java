@@ -70,6 +70,24 @@ public abstract class XMLRecord extends AbstractRecord {
         namespaceAware = true;
         // Required for subclasses.
     }
+
+    /**
+     * PUBLIC:
+     * Add the field-value pair to the row.
+     */
+    @Override
+    public Object get(String key) {
+        return get(new XMLField(key));
+    }
+
+    /**
+     * PUBLIC:
+     * Add the field-value pair to the row.
+     */
+    @Override
+    public Object put(String key, Object value) {
+        return put(new XMLField(key), value);
+    }
     
     /**
      * Return true is this record can support the usesSingleNode option on 

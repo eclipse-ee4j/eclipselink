@@ -106,6 +106,7 @@ public interface SessionLog extends Cloneable {
     public static final String CACHE = "cache";
     public static final String PROPAGATION = "propagation";
     public static final String SEQUENCING = "sequencing";
+    public static final String JPA = "jpa";
     public static final String EJB = "ejb";
     public static final String DMS = "dms";
     public static final String EJB_OR_METADATA = "ejb_or_metadata";
@@ -113,6 +114,7 @@ public interface SessionLog extends Cloneable {
     public static final String WEAVER = "weaver";
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";
+    public static final String DDL = "ddl";
     
     public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER};
 
@@ -425,6 +427,25 @@ public interface SessionLog extends Cloneable {
      * </table>
      */
     public void log(int level, String message, Object param);
+    
+    /**
+     * PUBLIC:
+     * Log a message with one parameter that needs to be translated.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void log(int level, String category, String message, Object param);
 
     /**
      * PUBLIC:
@@ -444,6 +465,25 @@ public interface SessionLog extends Cloneable {
      * </table>
      */
     public void log(int level, String message, Object param1, Object param2);
+    
+    /**
+     * PUBLIC:
+     * Log a message with two parameters that needs to be translated.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void log(int level, String category, String message, Object param1, Object param2);
 
     /**
      * PUBLIC:
@@ -463,6 +503,25 @@ public interface SessionLog extends Cloneable {
      * </table>
      */
     public void log(int level, String message, Object param1, Object param2, Object param3);
+    
+    /**
+     * PUBLIC:
+     * Log a message with three parameters that needs to be translated.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void log(int level, String category, String message, Object param1, Object param2, Object param3);
 
     /**
      * PUBLIC:
@@ -485,6 +544,25 @@ public interface SessionLog extends Cloneable {
     
     /**
      * PUBLIC:
+     * Log a message with four parameters that needs to be translated.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4);
+    
+    /**
+     * PUBLIC:
      * This method is called when the log request is from somewhere session is not available.
      * The message needs to be translated.
      * <p>
@@ -502,6 +580,26 @@ public interface SessionLog extends Cloneable {
      * </table>
      */
     public void log(int level, String message, Object[] arguments);
+    
+    /**
+     * PUBLIC:
+     * This method is called when the log request is from somewhere session is not available.
+     * The message needs to be translated.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void log(int level, String category, String message, Object[] arguments);
 
     /**
      * PUBLIC:
@@ -523,6 +621,26 @@ public interface SessionLog extends Cloneable {
      */
     public void log(int level, String message, Object[] arguments, boolean shouldTranslate);
 
+    /**
+     * PUBLIC:
+     * This method is called when the log request is from somewhere session is not available.
+     * shouldTranslate flag determines if the message needs to be translated.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void log(int level, String category, String message, Object[] arguments, boolean shouldTranslate);
+    
     /**
      * PUBLIC:
      * This method is called when a throwable at finer level needs to be logged.
@@ -596,6 +714,25 @@ public interface SessionLog extends Cloneable {
      * </table>
      */
     public void logThrowable(int level, Throwable throwable);
+    
+    /**
+     * PUBLIC:
+     * Log a throwable with level.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td> 
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void logThrowable(int level, String category, Throwable throwable);
 
     /**
      * PUBLIC:

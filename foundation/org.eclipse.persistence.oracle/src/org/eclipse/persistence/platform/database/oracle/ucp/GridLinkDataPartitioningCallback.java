@@ -64,7 +64,7 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
             PrivilegedAccessHelper.invokeMethod(registerDataAffinityCallback, service, arguments);
             isRegistered = true;
         } catch (Exception exception) {
-            session.getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            session.getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.CONNECTION, exception);
         }
     }
     

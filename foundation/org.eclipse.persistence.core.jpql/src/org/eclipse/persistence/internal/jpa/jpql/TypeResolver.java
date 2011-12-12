@@ -126,8 +126,8 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -450,7 +450,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		}
 
 		if (mapping.isDirectToFieldMapping()) {
-			DirectToFieldMapping directMapping = (DirectToFieldMapping) mapping;
+		        AbstractDirectMapping directMapping = (AbstractDirectMapping) mapping;
 			Class<?> type = directMapping.getAttributeClassification();
 			if (type != null) {
 				return type;
@@ -1515,7 +1515,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 				mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);
 				if (mapping == null) {
 					queryKey = descriptor.getQueryKeyNamed(path);
-					if (queryKey.isForeignReferenceQueryKey()) {
+					if ((queryKey != null) && queryKey.isForeignReferenceQueryKey()) {
 						ForeignReferenceQueryKey referenceQueryKey = (ForeignReferenceQueryKey) queryKey;
 						descriptor = queryContext.getDescriptor(referenceQueryKey.getReferenceClass());
 					}

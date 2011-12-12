@@ -371,14 +371,14 @@ public abstract class JUnitTestCase extends TestCase {
     }
     
     /**
-     * Create a new entity manager for the "default" persistence unit.
+     * Create a new entity manager for the test suites default persistence unit.
      * If in JEE this will create or return the active managed entity manager.
      */
     public EntityManager createEntityManager() {
         if (isOnServer() && isJTA()) {
             return getServerPlatform().getEntityManager(getPersistenceUnitName());
         } else {
-            return getEntityManagerFactory().createEntityManager();
+            return getEntityManagerFactory(getPersistenceUnitName(), getPersistenceProperties()).createEntityManager();
         }
     }
 
@@ -458,6 +458,9 @@ public abstract class JUnitTestCase extends TestCase {
         return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();        
     }
     
+    public Map getPersistenceProperties() {
+        return JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName());
+    }
     
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
         return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties(persistenceUnitName), null);

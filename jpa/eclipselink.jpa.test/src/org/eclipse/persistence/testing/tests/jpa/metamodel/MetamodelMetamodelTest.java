@@ -56,6 +56,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl;
@@ -4500,11 +4501,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //Map<Class, MappedSuperclassTypeImpl<?>> mappedSuperclasses = ((MetamodelImpl)metamodel).getMappedSuperclasses();        
             Set<MappedSuperclassTypeImpl<?>> mappedSuperclasses = ((MetamodelImpl)metamodel).getMappedSuperclasses();
             int count = 0;
-            for(MappedSuperclassTypeImpl msType_ : mappedSuperclasses) {            
-            RelationalDescriptor descriptor = msType_.getDescriptor();
-            for(DatabaseMapping mapping : descriptor.getMappings()) {
-                count++;
-            }            
+            for (MappedSuperclassTypeImpl msType_ : mappedSuperclasses) {            
+                ClassDescriptor descriptor = msType_.getDescriptor();
+                for (DatabaseMapping mapping : descriptor.getMappings()) {
+                    count++;
+                }
             }
             
             // we should have had a non-zero number of mappings on the descriptors

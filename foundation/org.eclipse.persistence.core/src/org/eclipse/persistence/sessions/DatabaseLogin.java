@@ -1163,7 +1163,7 @@ public class DatabaseLogin extends DatasourceLogin {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
         writer.println("DatabaseLogin(");
-        writer.println("\t" + ToStringLocalization.buildMessage("platform", (Object[])null) + "=>" + getPlatform());
+        writer.println("\t" + ToStringLocalization.buildMessage("platform", (Object[])null) + "=>" + getDatasourcePlatform());
         writer.println("\t" + ToStringLocalization.buildMessage("user_name", (Object[])null) + "=> \"" + getUserName() + "\"");
         writer.print("\t");
         getConnector().toString(writer);

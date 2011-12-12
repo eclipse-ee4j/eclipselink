@@ -389,7 +389,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                 try {
                     this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class[0]);
                 } catch (NoSuchMethodException exception) {
-                    getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                    getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 }
             }
         }

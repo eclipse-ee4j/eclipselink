@@ -15,18 +15,37 @@ package org.eclipse.persistence.testing.models.jpa.performance;
 import java.sql.Date;
 import java.io.*;
 
+//import com.tangosol.io.pof.*;
+
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization
  * <p><b>Description</b>: The period holds the start date and optionally the end date if the employee has left (null otherwise).
  * Maintained in an aggregate relationship of Employee
  * @see Employee
  */
+//public class EmploymentPeriod implements Serializable, PortableObject {
 public class EmploymentPeriod implements Serializable {
     protected Date startDate;
     protected Date endDate;
 
     public EmploymentPeriod() {
     }
+
+	/*public void readExternal(PofReader in) throws IOException {
+		java.util.Date start = in.readDate(0);
+		java.util.Date end = in.readDate(1);
+		if (start != null) {
+			this.startDate = new Date(start.getTime());
+		}
+		if (end != null) {
+			this.endDate = new Date(end.getTime());
+		}
+    }
+ 
+	public void writeExternal(PofWriter out) throws IOException {
+		out.writeDate(0, this.startDate);
+		out.writeDate(1, this.endDate);
+    }*/
 
     /**
      * Return a new employment period instance.

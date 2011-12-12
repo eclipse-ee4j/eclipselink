@@ -88,6 +88,24 @@ public class EISDirectMapping extends AbstractDirectMapping implements EISMappin
     public void setFieldName(String fieldName) {
         setField(new DatabaseField(fieldName));
     }
+    
+    /**
+     * Fix field names for XML data descriptors.
+     */
+    @Override
+    public void preInitialize(AbstractSession session) {
+        super.preInitialize(session);
+        if (((EISDescriptor)this.descriptor).getDataFormat().equals(EISDescriptor.XML)) {
+            if (!(this.field instanceof XMLField)) {
+                String xPath = this.field.getName();
+                // Moxy requires /text on elements.
+                if ((xPath.indexOf('@') == -1) && (xPath.indexOf("/text()") == -1)) {
+                    xPath = xPath + "/text()";
+                }
+                this.field = new XMLField(xPath);
+            }
+        }
+    }
 
     protected void writeValueIntoRow(AbstractRecord row, DatabaseField field, Object fieldValue) {
         if (((EISDescriptor)this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {

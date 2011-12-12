@@ -45,6 +45,7 @@ import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
@@ -253,6 +254,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** caches if this descriptor has any non cacheable mappings */
     protected boolean hasNoncacheableMappings = false;
     
+    /** This flag stores whether this descriptor is using Property access based on JPA semantics.  It is used to modify
+     * the behavior of our weaving functionality as it pertains to adding annotations to fields
+     */
+    protected boolean weavingUsesPropertyAccess = false;
+    
+    /** A list of methods that are used by virtual mappings.  This list is used to control weaving of methods
+     * used for virtual access*/
+    protected List<VirtualAttributeMethodInfo> virtualAttributeMethods = null;
+    
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -354,6 +364,20 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
     
     /**
+     * Return a new direct/basic mapping for this type of descriptor.
+     */
+    public AbstractDirectMapping newDirectMapping() {
+        return new DirectToFieldMapping();
+    }
+    
+    /**
+     * Return a new aggregate/embedded mapping for this type of descriptor.
+     */
+    public AggregateMapping newAggregateMapping() {
+        return new AggregateObjectMapping();
+    }
+    
+    /**
      * PUBLIC:
      * Add a direct to field mapping to the receiver. The new mapping specifies that
      * an instance variable of the class of objects which the receiver describes maps in
@@ -366,10 +390,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * @return The newly created DatabaseMapping is returned.
      */
     public DatabaseMapping addDirectMapping(String attributeName, String fieldName) {
-        DirectToFieldMapping mapping = new DirectToFieldMapping();
+        AbstractDirectMapping mapping = newDirectMapping();
 
         mapping.setAttributeName(attributeName);
-        mapping.setFieldName(fieldName);
+        mapping.setField(new DatabaseField(fieldName));
 
         return addMapping(mapping);
     }
@@ -382,14 +406,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * database field.
      */
     public DatabaseMapping addDirectMapping(String attributeName, String getMethodName, String setMethodName, String fieldName) {
-        DirectToFieldMapping mapping = new DirectToFieldMapping();
+        AbstractDirectMapping mapping = (AbstractDirectMapping)addDirectMapping(attributeName, fieldName);
 
-        mapping.setAttributeName(attributeName);
         mapping.setSetMethodName(setMethodName);
         mapping.setGetMethodName(getMethodName);
-        mapping.setFieldName(fieldName);
 
-        return addMapping(mapping);
+        return mapping;
     }
 
     /**
@@ -6144,6 +6166,46 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setHasMultipleTableConstraintDependecy(boolean hasMultipleTableConstraintDependecy) {
         this.hasMultipleTableConstraintDependecy = hasMultipleTableConstraintDependecy;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether this descriptor uses property access. This information is used to
+     * modify the behavior of some of our weaving features
+     */
+    public boolean usesPropertyAccessForWeaving(){
+        return weavingUsesPropertyAccess;
+    }
+    
+
+    /**
+     * INTERNAL:
+     * Record that this descriptor uses property access. This information is used to
+     * modify the behavior of some of our weaving features
+     */
+    public void usePropertyAccessForWeaving(){
+        weavingUsesPropertyAccess = true;
+    }
+
+    /** 
+     * INTERNAL:
+     * Return the list of virtual methods sets for this Entity.
+     * This list is used to control which methods are weaved
+     **/
+    public List<VirtualAttributeMethodInfo> getVirtualAttributeMethods() {
+        if (this.virtualAttributeMethods == null) {
+            this.virtualAttributeMethods = new ArrayList<VirtualAttributeMethodInfo>();
+        }
+        return this.virtualAttributeMethods;
+    }    
+
+    /** 
+     * INTERNAL:
+     * Set the list of methods used my mappings with virtual access
+     * this list is used to determine which methods to weave
+     */
+    public void setVirtualAttributeMethods(List<VirtualAttributeMethodInfo> virtualAttributeMethods) {
+        this.virtualAttributeMethods = virtualAttributeMethods;
     }
     
 }

@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -402,15 +403,35 @@ public class FunctionExpression extends BaseExpression {
             base.getBaseExpression().normalize(normalizer);
         }
 
-        // Check for IN with objects.
+        // Check for IN with objects, "e IN (Select e2 from Employee e2)".
         if ((this.operator.getSelector() == ExpressionOperator.InSubQuery)
                 || (this.operator.getSelector() == ExpressionOperator.NotInSubQuery)) {
             // Switch object comparison to compare on primary key.
-            ClassDescriptor descriptor = base.getDescriptor();
             if (this.children.size() != 2) {
                 throw QueryException.invalidExpression(this);
             }
-            if (descriptor.getPrimaryKeyFields().size() != 1) {
+            // Check if the left is for a 1-1 mapping, then optimize to compare on foreign key to avoid join.
+            DatabaseMapping mapping = null;
+            if (base.isQueryKeyExpression()) {
+                mapping = base.getMapping();
+            }
+            ClassDescriptor descriptor = null;
+            List<DatabaseField> sourceFields = null;
+            List<DatabaseField> targetFields = null;
+            if ((mapping != null) && mapping.isOneToOneMapping()
+                    && (!((OneToOneMapping)mapping).hasCustomSelectionQuery())) {
+                base = (ObjectExpression)base.getBaseExpression();
+                descriptor = mapping.getReferenceDescriptor();
+                sourceFields = new ArrayList(((OneToOneMapping)mapping).getTargetToSourceKeyFields().values());
+                targetFields = new ArrayList(((OneToOneMapping)mapping).getTargetToSourceKeyFields().keySet());
+            } else {
+                mapping = null;
+                descriptor = base.getDescriptor();
+                sourceFields = descriptor.getPrimaryKeyFields();
+                targetFields = sourceFields;
+            }
+            if (sourceFields.size() != 1) {
+                base = (ObjectExpression)getBaseExpression();
                 // For composite ids an exists and subselect is used.
                 SubSelectExpression subSelectExp = (SubSelectExpression)this.children.get(1);
                 ReportQuery subQuery = subSelectExp.getSubQuery();
@@ -432,8 +453,7 @@ public class FunctionExpression extends BaseExpression {
                 newExp = builder.exists(subQuery);
                 return newExp.normalize(normalizer);
             }
-            DatabaseField primaryKey = descriptor.getPrimaryKeyFields().get(0);
-            Expression newBase = base.getField(primaryKey);
+            Expression newBase = base.getField(sourceFields.get(0));
             setBaseExpression(newBase);
             this.children.set(0, newBase);
             Expression right = (Expression)this.children.get(1);
@@ -444,7 +464,7 @@ public class FunctionExpression extends BaseExpression {
                     throw QueryException.invalidExpression(this);                    
                 }
                 ReportItem item = query.getItems().get(0);
-                item.setAttributeExpression(item.getAttributeExpression().getField(primaryKey));
+                item.setAttributeExpression(item.getAttributeExpression().getField(targetFields.get(0)));
             } else {
                 throw QueryException.invalidExpression(this);
             }
@@ -454,10 +474,18 @@ public class FunctionExpression extends BaseExpression {
             }
             return this;
         }
+        // else isNull/notNull
         
-        // Switch to null foreign key comparison (i.e. get('c').isNull() to getField('C_ID').isNull()).
-        // For bug 3105559 also must handle aggregates: get("period").isNull();
-        Expression foreignKeyJoin = base.getMapping().buildObjectJoinExpression(base, (Object)null, getSession());
+        Expression foreignKeyJoin = null;
+        if (base.getMapping() == null) {
+            // Is an expression builder, transform to a null primary key expression.
+            foreignKeyJoin = base.getDescriptor().getObjectBuilder().buildPrimaryKeyExpressionFromKeys(null, getSession());
+            foreignKeyJoin = foreignKeyJoin.rebuildOn(base);
+        } else {
+            // Switch to null foreign key comparison (i.e. get('c').isNull() to getField('C_ID').isNull()).
+            // For bug 3105559 also must handle aggregates: get("period").isNull();
+            foreignKeyJoin = base.getMapping().buildObjectJoinExpression(base, (Object)null, getSession());
+        }
 
         if (this.operator.getSelector() == ExpressionOperator.NotNull) {
             foreignKeyJoin = foreignKeyJoin.not();

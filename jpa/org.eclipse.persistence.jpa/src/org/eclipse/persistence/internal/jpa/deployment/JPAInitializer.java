@@ -82,7 +82,7 @@ public abstract class JPAInitializer {
      * transformer returned to be used for weaving.
      */
     public EntityManagerSetupImpl callPredeploy(SEPersistenceUnitInfo persistenceUnitInfo, Map m, String persistenceUnitUniqueName, String sessionName) {
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_invoke_predeploy", persistenceUnitInfo.getPersistenceUnitName());
+        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.JPA, "cmp_init_invoke_predeploy", persistenceUnitInfo.getPersistenceUnitName());
         Map mergedProperties = EntityManagerFactoryProvider.mergeMaps(m, persistenceUnitInfo.getProperties());
         // Bug#4452468  When globalInstrumentation is null, there is no weaving
         checkWeaving(mergedProperties);
@@ -196,7 +196,7 @@ public abstract class JPAInitializer {
         Set entityClasses = new HashSet();
 
         // Load the classes using the loader passed in
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_loading_entities_using_loader", classLoader);
+        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.JPA, "cmp_loading_entities_using_loader", classLoader);
         for (Iterator iter = entityNames.iterator(); iter.hasNext();) {
             String entityClassName = (String)iter.next();
             try {
@@ -261,7 +261,7 @@ public abstract class JPAInitializer {
         }
         try {
             for (Archive archive: pars) {
-                AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize", archive);
+                AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.JPA, "cmp_init_initialize", archive);
                 initPersistenceUnits(archive, m);
             }
         } finally {

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -101,7 +100,7 @@ public class TransformerFactory {
      * We assume that if a mapping exists, the attribute must either be mapped from the owning
      * class or from a superclass.
      */
-    public void addClassDetailsForMappedSuperClasses(MetadataClass clz, RelationalDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
+    public void addClassDetailsForMappedSuperClasses(MetadataClass clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
         // This class has inheritance to a mapped entity rather than a MappedSuperClass
         if (initialDescriptor.getInheritancePolicyOrNull() != null && initialDescriptor.getInheritancePolicyOrNull().getParentClass() != null){
             return;
@@ -148,7 +147,7 @@ public class TransformerFactory {
             for (MetadataClass metaClass : entityClasses) {
                 // check to ensure that class is present in project
                 // this will be a relational descriptor because MetadataClass only describes relational descriptors
-                RelationalDescriptor descriptor = (RelationalDescriptor)findDescriptor(session.getProject(), metaClass.getName());
+                ClassDescriptor descriptor = findDescriptor(session.getProject(), metaClass.getName());
                 if (descriptor == null) {
                     log(SessionLog.FINER, WEAVER_CLASS_NOT_IN_PROJECT, new Object[]{metaClass.getName()});
                 } else {

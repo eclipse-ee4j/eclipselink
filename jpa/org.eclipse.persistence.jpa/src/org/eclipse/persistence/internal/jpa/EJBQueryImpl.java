@@ -47,8 +47,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
-import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -64,6 +62,8 @@ import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
+import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -186,7 +186,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *            the session to get the descriptors for this query for.
      * @return a DatabaseQuery representing the given jpql.
      */
-    public static DatabaseQuery buildEJBQLDatabaseQuery(String jpql, Session session) {
+    public static DatabaseQuery buildEJBQLDatabaseQuery(String jpql, AbstractSession session) {
         return buildEJBQLDatabaseQuery(null, jpql, session, null, null, session.getDatasourcePlatform().getConversionManager().getLoader());
     }
 
@@ -203,20 +203,18 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      *            a list of hints to be applied to the query.
      * @return a DatabaseQuery representing the given jpql.
      */
-    public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpql, Session session, Enum lockMode, Map<String, Object> hints, ClassLoader classLoader) {
+    public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpqlQuery, AbstractSession session, Enum lockMode, Map<String, Object> hints, ClassLoader classLoader) {
         // PERF: Check if the JPQL has already been parsed.
         // Only allow queries with default properties to be parse cached.
         boolean isCacheable = (queryName == null) && (hints == null);
         DatabaseQuery databaseQuery = null;
         if (isCacheable) {
-            databaseQuery = (DatabaseQuery) session.getProject().getJPQLParseCache().get(jpql);
+            databaseQuery = (DatabaseQuery) session.getProject().getJPQLParseCache().get(jpqlQuery);
         }
         if ((databaseQuery == null) || (!databaseQuery.isPrepared())) {
-            JPQLParseTree parseTree = JPQLParser.buildParseTree(queryName, jpql);
-            parseTree.setClassLoader(classLoader);
-            databaseQuery = parseTree.createDatabaseQuery();
-            databaseQuery.setJPQLString(jpql);
-            parseTree.populateQuery(databaseQuery, (AbstractSession) session);
+            JPAQueryBuilder queryBuilder = JPAQueryBuilderManager.getQueryBuilder();
+            databaseQuery = queryBuilder.buildQuery(jpqlQuery, session);
+            
             // If the query uses fetch joins, need to use JPA default of not
             // filtering duplicates.
             if (databaseQuery.isReadAllQuery()) {
@@ -225,9 +223,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                     readAllQuery.setShouldFilterDuplicates(false);
                 }
             }
-            // Bug#4646580 Add arguments to query.
-            parseTree.addParametersToQuery(databaseQuery);
-
+         
             ((JPQLCallQueryMechanism) databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 
             // Apply the lock mode.
@@ -235,7 +231,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 if (databaseQuery.isObjectLevelReadQuery()) {
                     // If setting the lock mode returns true, we were unable to
                     // set the lock mode, throw an exception.
-                    if (((ObjectLevelReadQuery) databaseQuery).setLockModeType(lockMode.name(), (AbstractSession)session)) {
+                    if (((ObjectLevelReadQuery) databaseQuery).setLockModeType(lockMode.name(), session)) {
                         throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
                     }
                 } else {
@@ -244,17 +240,17 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             }
 
             // Apply any query hints.
-            databaseQuery = applyHints(hints, databaseQuery, classLoader, (AbstractSession)session);
+            databaseQuery = applyHints(hints, databaseQuery, classLoader, session);
 
             // If a primary key query, switch to read-object to allow cache hit.
             if (databaseQuery.isReadAllQuery() && !databaseQuery.isReportQuery() && ((ReadAllQuery)databaseQuery).shouldCheckCache()) {
                 ReadAllQuery readQuery = (ReadAllQuery)databaseQuery;
                 if ((readQuery.getContainerPolicy().getContainerClass() == ContainerPolicy.getDefaultContainerClass())
                         && (!readQuery.hasHierarchicalExpressions())) {
-                    databaseQuery.checkDescriptor((AbstractSession)session);
+                    databaseQuery.checkDescriptor(session);
                     Expression selectionCriteria = databaseQuery.getSelectionCriteria();
                     if ((selectionCriteria) != null
-                            && databaseQuery.getDescriptor().getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, (AbstractSession)session)) {
+                            && databaseQuery.getDescriptor().getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, session)) {
                         ReadObjectQuery newQuery = new ReadObjectQuery();
                         newQuery.copyFromQuery(databaseQuery);
                         databaseQuery = newQuery;
@@ -266,7 +262,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 // Prepare query as hint may cause cloning (but not un-prepare
                 // as in read-only).
                 databaseQuery.prepareCall(session, new DatabaseRecord());
-                session.getProject().getJPQLParseCache().put(jpql, databaseQuery);
+                session.getProject().getJPQLParseCache().put(jpqlQuery, databaseQuery);
             }
         }
 

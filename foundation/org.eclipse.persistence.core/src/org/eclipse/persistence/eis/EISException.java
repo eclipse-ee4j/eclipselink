@@ -48,15 +48,15 @@ public class EISException extends org.eclipse.persistence.exceptions.DatabaseExc
     public static final int EIS_EXCEPTION = 91000;
     public static final int RESOURCE_EXCEPTION = 90000;
 
-    protected EISException(Exception exception) {
+    public EISException(Exception exception) {
         this(exception, exception.toString());
     }
 
-    protected EISException(String message) {
+    public EISException(String message) {
         super(message);
     }
 
-    protected EISException(Exception exception, String message) {
+    public EISException(Exception exception, String message) {
         this(message);
         setInternalException(exception);
     }

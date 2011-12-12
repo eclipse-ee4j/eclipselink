@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -34,7 +32,7 @@ import java.lang.annotation.Target;
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
-@Target({TYPE, METHOD, FIELD})
+@Target({TYPE})
 @Retention(RUNTIME)
 public @interface Struct {
     /**

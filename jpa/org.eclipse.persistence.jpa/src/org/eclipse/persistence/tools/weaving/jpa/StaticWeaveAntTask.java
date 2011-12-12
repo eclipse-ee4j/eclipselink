@@ -214,7 +214,7 @@ public class StaticWeaveAntTask extends Task{
            weave.setLogLevel(this.logLevel);
            weave.performWeaving();
        } catch (Exception e) {
-           AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.SEVERE, e);
+           AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.SEVERE, AbstractSessionLog.WEAVER, e);
            throw StaticWeaveException.exceptionPerformWeaving(e, source);
        }
     }

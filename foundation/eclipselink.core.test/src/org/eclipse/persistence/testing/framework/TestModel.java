@@ -405,7 +405,7 @@ public class TestModel extends TestCollection {
         }
         if (getSession() != null) {
             // Force field names to uppercase for postgres.
-            if (getSession().getPlatform().isPostgreSQL()) {
+            if (getSession().getDatasourcePlatform().isPostgreSQL()) {
                 getSession().getPlatform().setShouldForceFieldNamesToUpperCase(true);
             }
             this.login = getSession().getDatasourceLogin().clone();

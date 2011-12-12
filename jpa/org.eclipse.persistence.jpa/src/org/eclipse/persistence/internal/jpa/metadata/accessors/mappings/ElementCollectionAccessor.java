@@ -94,9 +94,9 @@ import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * An element collection accessor.
@@ -856,7 +856,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                     // Regardless if we have an attribute override or not we
                     // add field name translations for every mapping to ensure
                     // we have the correct table name set for each field.
-                    DirectToFieldMapping directMapping = (DirectToFieldMapping) mapping;
+                    AbstractDirectMapping directMapping = (AbstractDirectMapping) mapping;
                     
                     DatabaseField overrideField;
                     if (attributeOverrides.containsKey(overrideName)) {

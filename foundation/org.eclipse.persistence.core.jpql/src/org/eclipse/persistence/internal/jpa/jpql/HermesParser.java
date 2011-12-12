@@ -37,6 +37,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -55,7 +56,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class HermesParser /*implements JPAQueryBuilder*/ {
+public final class HermesParser implements JPAQueryBuilder {
 
 	/**
 	 * The visitor used to populate an existing {@link DatabaseQuery}.
@@ -91,7 +92,13 @@ public final class HermesParser /*implements JPAQueryBuilder*/ {
 	 * Indicates whether this query builder should have validation mode on for JPQL queries.
 	 */
 	private boolean validateQueries;
-
+	
+	public HermesParser() {
+                this(true);
+                //this(true);
+                //this.queryHelper = new DefaultJPQLQueryHelper(EclipseLinkJPQLGrammar2_4.instance());
+        }
+	
 	/**
 	 * Creates a new {@link HermesParser}.
 	 *

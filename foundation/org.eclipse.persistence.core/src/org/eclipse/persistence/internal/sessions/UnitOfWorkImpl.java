@@ -5867,8 +5867,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 ArrayList<CacheKey> locks = this.getMergeManager().getAcquiredLocks();        
                 if (null != locks) {                
                     Iterator<CacheKey> locksIterator = locks.iterator();
-                    AbstractSessionLog.getLog().log(SessionLog.FINER, "active_thread_is_different_from_current_thread", 
-                            lockThread, this.getMergeManager(), currentThread);
+                    log(SessionLog.FINER, AbstractSessionLog.CACHE, "active_thread_is_different_from_current_thread", 
+                            lockThread, getMergeManager(), currentThread);
                     while (locksIterator.hasNext()) {
                         ConcurrencyManager lockMutex = locksIterator.next().getMutex();
                         if (null != lockMutex) {

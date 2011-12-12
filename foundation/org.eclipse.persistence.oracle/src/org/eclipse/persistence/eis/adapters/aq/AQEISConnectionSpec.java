@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.eis.adapters.aq.*;
 import org.eclipse.persistence.exceptions.*;
 
 /**
- * Provides the behavior of instantiating a XML file adapter ConnectionSpec.
+ * Provides connection information to an Oracle AQ data source.
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)

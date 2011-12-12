@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p><b>Purpose</b>: This annotation indicates that a specific property should be flagged as read-only
+ * <p><b>Purpose</b>: This annotation indicates that a specific property should be flagged as write-only
  * by EclipseLink. The value for this property will be written out to XML during
  * a marshal, but ignored during unmarshal if flagged as write-only.
  * 

@@ -41,6 +41,11 @@ public class EmployeeServiceBean implements EmployeeService {
     public Employee findById(long id) {
         Employee employee = this.entityManager.find(Employee.class, id);
         employee.getAddress();
+        // Used to test impact of caching with more complex objects.
+        //employee.getProjects().size();
+        //employee.getManagedEmployees().size();
+        //employee.getManager();
+        //employee.getPhoneNumbers().size();
         return employee;
     }
     
@@ -61,11 +66,15 @@ public class EmployeeServiceBean implements EmployeeService {
         return employee.getId();
     }
     
-    public void setup() {
-        // Populate database.
+    public void createTables() {
         new EmployeeTableCreator().replaceTables(((JpaEntityManager)this.entityManager.getDelegate()).getServerSession());
-        
-        for (int j = 0; j < 1000; j++) {
+        //((JpaEntityManager)this.entityManager.getDelegate()).getServerSession().logout();
+        //((JpaEntityManager)this.entityManager.getDelegate()).getServerSession().login();
+    }
+    
+    public void populate() {
+        // Populate database.
+        for (int j = 0; j < 1000; j++) { //1000
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
             empInsert.setMale();
@@ -88,7 +97,7 @@ public class EmployeeServiceBean implements EmployeeService {
             this.entityManager.persist(empInsert);
         }
 
-        for (int j = 0; j < 50; j++) {
+        for (int j = 0; j < 50; j++) { //50
             Project project = new SmallProject();
             project.setName("Tracker");
             this.entityManager.persist(project);

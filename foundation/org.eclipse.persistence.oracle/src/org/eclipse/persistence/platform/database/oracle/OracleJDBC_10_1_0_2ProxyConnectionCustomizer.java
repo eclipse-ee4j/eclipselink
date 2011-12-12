@@ -96,7 +96,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
                     oracleConnection.close(OracleConnection.PROXY_SESSION);
                 } catch (SQLException exception) {
                     // Ignore
-                    this.session.getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                    this.session.getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.CONNECTION, exception);
                 }
             }
             oracleConnection.openProxySession(proxyType, proxyProperties); 
@@ -143,7 +143,7 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
             oracleConnection.close(OracleConnection.PROXY_SESSION);
         } catch (SQLException exception) {
             // Ignore
-            this.session.getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            this.session.getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.CONNECTION, exception);
         } finally {
             oracleConnection = null;
         }

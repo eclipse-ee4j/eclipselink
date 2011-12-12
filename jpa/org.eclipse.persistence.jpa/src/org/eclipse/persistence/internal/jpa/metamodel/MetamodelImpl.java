@@ -53,6 +53,7 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
@@ -162,7 +163,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
     private void entityEmbeddableManagedTypeNotFound(Map typeMap, Object aType, Class clazz, String metamodelType, String metamodelTypeName) {
     	// 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
     	if(typeMap.isEmpty()) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty_during_lookup", clazz, metamodelTypeName);    	    
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.METAMODEL, "metamodel_type_collection_empty_during_lookup", clazz, metamodelTypeName);    	    
     	}
     	// A null type will mean either the metamodel type does not exist because it was not found/processed, or the clazz is not part of the model
     	if(null == clazz) {
@@ -360,10 +361,10 @@ public class MetamodelImpl implements Metamodel, Serializable {
         // Process all Entity and Embeddable types (MappedSuperclasses are handled later)
         for (Object descriptor : this.getSession().getDescriptors().values()) {
             // The ClassDescriptor is always of type RelationalDescriptor - the cast is safe
-            ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, (RelationalDescriptor)descriptor);
+            ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, (ClassDescriptor)descriptor);
             Class descriptorJavaType = managedType.getJavaType();
             if(null == descriptorJavaType) {
-                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, managedType);
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, managedType);
             }            
             putType(descriptorJavaType, managedType);
             this.managedTypes.put(descriptorJavaType, managedType);
@@ -385,7 +386,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
         
         // Handle all MAPPED_SUPERCLASS types
         // Get mapped superclass types (separate from descriptors on the session from the native project (not a regular descriptor)
-        for(RelationalDescriptor descriptor : this.getSession().getProject().getMappedSuperclassDescriptors().values()) {
+        for (ClassDescriptor descriptor : this.getSession().getProject().getMappedSuperclassDescriptors().values()) {
             MappedSuperclassTypeImpl<?> mappedSuperclassType = (MappedSuperclassTypeImpl)ManagedTypeImpl.create(this, descriptor);
             
             // Add the MappedSuperclass to our Set of MappedSuperclasses
@@ -393,7 +394,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
 
             Class descriptorJavaType = mappedSuperclassType.getJavaType();
             if(null == descriptorJavaType) {
-                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", 
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_relationaldescriptor_javaclass_null_on_managedType", 
                         descriptor, mappedSuperclassType);
             }            
 
@@ -423,7 +424,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
             // 303063: secondary check for a null javaType (metadata processing should never allow this to happen - however we must handle it here in case
             // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_101:_20100218:_Descriptor.javaClass_is_null_on_a_container_EM_for_a_specific_case
             if(null == aClass) {
-                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", 
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", 
                         potentialIdentifiableType.getDescriptor(), this);
             } else { 
                 Class superclass = aClass.getSuperclass();
@@ -470,7 +471,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
         if((null == this.embeddables || this.embeddables.isEmpty()) && 
                 (null == this.managedTypes || this.managedTypes.isEmpty()) && 
                 (null == this.entities || this.entities.isEmpty())) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty");
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.METAMODEL, "metamodel_type_collection_empty", null, true);
         }
     }
 
@@ -499,7 +500,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
     public void printAllTypes() {
         if(null == types || types.isEmpty()) {
             // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "metamodel_type_collection_empty");           
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.METAMODEL, "metamodel_type_collection_empty", null, true);           
         } else {
             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
                 "metamodel_print_type_header",this.types.size());

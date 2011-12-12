@@ -85,7 +85,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
                     if (mappingFileURLs.hasMoreElements()) {
                         // Switched to warning, same file can be on the classpath twice in some deployments,
                         // should not be an error.
-                        log.logThrowable(SessionLog.FINER, ValidationException.nonUniqueRepositoryFileName(mappingFileName));
+                        log.logThrowable(SessionLog.FINER, SessionLog.EJB_OR_METADATA, ValidationException.nonUniqueRepositoryFileName(mappingFileName));
                     }
 
                     reader = new InputStreamReader(nextURL.openStream());

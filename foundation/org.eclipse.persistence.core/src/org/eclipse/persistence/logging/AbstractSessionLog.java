@@ -379,7 +379,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level)) {
             return;
         }
-		//Bug#4566524  Pass in false for external use
+        //Bug#4566524  Pass in false for external use
         log(level, message, (Object[])null, false);
     }
 
@@ -406,6 +406,26 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
+     * Log a message with one parameter that needs to be translated.
+     * </p><p>
+     *
+     * @param level  the log request level value
+     * </p><p>
+     * @param message  the string message
+     * </p><p>
+     * @param param  a parameter of the message
+     * </p>
+     */
+    public void log(int level, String category, String message, Object param) {
+        if (!shouldLog(level, category)) {
+            return;
+        }
+        log(level, category, message, new Object[] { param }, true);
+    }
+
+    /**
+     * PUBLIC:
+     * <p>
      * Log a message with two parameters that needs to be translated.
      * </p><p>
      *
@@ -423,6 +443,28 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return;
         }
         log(level, message, new Object[] { param1, param2 });
+    }
+
+    /**
+     * PUBLIC:
+     * <p>
+     * Log a message with two parameters that needs to be translated.
+     * </p><p>
+     *
+     * @param level the log request level value
+     * </p><p>
+     * @param message the string message
+     * </p><p>
+     * @param param1  a parameter of the message
+     * </p><p>
+     * @param param2  second parameter of the message
+     * </p>
+     */
+    public void log(int level, String category, String message, Object param1, Object param2) {
+        if (!shouldLog(level)) {
+            return;
+        }
+        log(level, category, message, new Object[] { param1, param2 }, true);
     }
 
     /**
@@ -452,6 +494,30 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
+     * Log a message with three parameters that needs to be translated.
+     * </p><p>
+     *
+     * @param level the log request level value
+     * </p><p>
+     * @param message the string message
+     * </p><p>
+     * @param param1  a parameter of the message
+     * </p><p>
+     * @param param2  second parameter of the message
+     * </p><p>
+     * @param param3  third parameter of the message
+     * </p>
+     */
+    public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
+        if (!shouldLog(level)) {
+            return;
+        }
+        log(level, category, message, new Object[] { param1, param2, param3 }, true);
+    }
+
+    /**
+     * PUBLIC:
+     * <p>
      * Log a message with four parameters that needs to be translated.
      * </p><p>
      *
@@ -474,6 +540,32 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
         log(level, message, new Object[] { param1, param2, param3, param4 });
     }
+
+    /**
+     * PUBLIC:
+     * <p>
+     * Log a message with four parameters that needs to be translated.
+     * </p><p>
+     *
+     * @param level the log request level value
+     * </p><p>
+     * @param message the string message
+     * </p><p>
+     * @param param1  a parameter of the message
+     * </p><p>
+     * @param param2  second parameter of the message
+     * </p><p>
+     * @param param3  third parameter of the message
+     * </p><p>
+     * @param param4  third parameter of the message
+     * </p>
+     */
+    public void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4) {
+        if (!shouldLog(level)) {
+            return;
+        }
+        log(level, category, message, new Object[] { param1, param2, param3, param4 }, true);
+    }
     
     /**
      * PUBLIC:
@@ -490,6 +582,23 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     public void log(int level, String message, Object[] params) {
         log(level, message, params, true);
+    }
+    
+    /**
+     * PUBLIC:
+     * <p>
+     * Log a message with an array of parameters that needs to be translated.
+     * </p><p>
+     *
+     * @param level the log request level value
+     * </p><p>
+     * @param message the string message
+     * </p><p>
+     * @param params array of parameters to the message
+     * </p>
+     */
+    public void log(int level, String category, String message, Object[] params) {
+        log(level, category, message, params, true);
     }
 
     /**
@@ -512,6 +621,30 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return;
         }
         log(new SessionLogEntry(level, null, message, params, null, shouldTranslate));
+    }
+    
+    /**
+     * PUBLIC:
+     * <p>
+     * Log a message.  shouldTranslate determines if the message needs to be translated.
+     * </p><p>
+     *
+     * @param level the log request level
+     * </p><p>
+     * @param message the string message
+     * </p><p>
+     * @param category the log category
+     * </p><p>
+     * @param params array of parameters to the message
+     * </p><p>
+     * @param shouldTranslate true if the message needs to be translated
+     * </p>
+     */
+    public void log(int level, String category, String message, Object[] params, boolean shouldTranslate) {
+        if (!shouldLog(level, category)) {
+            return;
+        }
+        log(new SessionLogEntry(level, category, null, message, params, null, shouldTranslate));
     }
 
     /**
@@ -1036,6 +1169,24 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level)) {
             log(new SessionLogEntry(null, level, null, throwable));
+        }
+    }
+
+    /**
+     * PUBLIC:
+     * <p>
+     * Log a throwable with level.
+     * </p><p>
+     *
+     * @param level  the log request level value
+     * </p><p>
+     * @param throwable  a Throwable
+     * </p>
+     */
+    public void logThrowable(int level, String category, Throwable throwable) {
+        // Must not create the log if not logging as is a performance issue.
+        if (shouldLog(level, category)) {
+            log(new SessionLogEntry(null, level, category, throwable));
         }
     }
 

@@ -540,23 +540,45 @@ public class RelationExpression extends CompoundExpression {
         if ((this.operator.getSelector() == ExpressionOperator.In) || (this.operator.getSelector() == ExpressionOperator.NotIn)) {
             // Switch object comparison to compare on primary key.
             Expression left = this.firstChild;
-            left = left.normalize(normalizer);
             if (!left.isObjectExpression()) {
                 throw QueryException.invalidExpression(this);
             }
-            ClassDescriptor descriptor = ((ObjectExpression)left).getDescriptor();
-            boolean composite = descriptor.getPrimaryKeyFields().size() > 1;
-            DatabaseField primaryKey = descriptor.getPrimaryKeyFields().get(0);
+            // Check if the left is for a 1-1 mapping, then optimize to compare on foreign key to avoid join.
+            DatabaseMapping mapping = null;
+            if (left.isQueryKeyExpression()) {
+                ((ObjectExpression)left).getBaseExpression().normalize(normalizer);
+                mapping = ((ObjectExpression)left).getMapping();
+            }
+            ClassDescriptor descriptor = null;
+            List<DatabaseField> sourceFields = null;
+            List<DatabaseField> targetFields = null;
+            if ((mapping != null) && mapping.isOneToOneMapping()
+                    && (!((OneToOneMapping)mapping).hasCustomSelectionQuery())) {
+                left = ((ObjectExpression)left).getBaseExpression();
+                descriptor = mapping.getReferenceDescriptor();
+                left = left.normalize(normalizer);
+                sourceFields = new ArrayList(((OneToOneMapping)mapping).getTargetToSourceKeyFields().values());
+                targetFields = new ArrayList(((OneToOneMapping)mapping).getTargetToSourceKeyFields().keySet());
+            } else {
+                mapping = null;
+                left = left.normalize(normalizer);
+                descriptor = ((ObjectExpression)left).getDescriptor();
+                sourceFields = descriptor.getPrimaryKeyFields();
+                targetFields = sourceFields;
+            }
+            boolean composite = sourceFields.size() > 1;
+            DatabaseField sourceField = sourceFields.get(0);
+            DatabaseField targetField = targetFields.get(0);
             Expression newLeft = null;
             if (composite) {
                 // For composite ids an array comparison is used, this only works on some databases.
-                List fields = new ArrayList();
-                for (DatabaseField field : descriptor.getPrimaryKeyFields()) {
-                    fields.add(left.getField(field));
+                List fieldExpressions = new ArrayList();
+                for (DatabaseField field : sourceFields) {
+                    fieldExpressions.add(left.getField(field));
                 }
-                newLeft = getBuilder().value(fields);
+                newLeft = getBuilder().value(sourceFields);
             } else {
-                newLeft = left.getField(primaryKey);
+               newLeft = left.getField(sourceField);
             }
             setFirstChild(newLeft);
             Expression right = this.secondChild;
@@ -571,23 +593,23 @@ public class RelationExpression extends CompoundExpression {
                             if (composite) {
                                 // For composite ids an array comparison is used, this only works on some databases.
                                 List values = new ArrayList();
-                                for (DatabaseField field : descriptor.getPrimaryKeyFields()) {
+                                for (DatabaseField field : targetFields) {
                                     values.add(((Expression)object).getField(field));
                                 }
                                 object = getBuilder().value(values);
                             } else {
-                                object = ((Expression)object).getField(primaryKey);
+                                object = ((Expression)object).getField(targetField);
                             }
                         } else if (descriptor.getJavaClass().isInstance(object)) {
                             if (composite) {
                                 // For composite ids an array comparison is used, this only works on some databases.
                                 List values = new ArrayList();
-                                for (Object value : ((CacheId)descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, normalizer.getSession())).getPrimaryKey()) {
-                                    values.add(value);
+                                for (DatabaseField field : targetFields) {
+                                    values.add(descriptor.getObjectBuilder().extractValueFromObjectForField(object, field, normalizer.getSession()));
                                 }
                                 object = getBuilder().value(values);
                             } else {
-                                object = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, normalizer.getSession());
+                                object = descriptor.getObjectBuilder().extractValueFromObjectForField(object, targetField, normalizer.getSession());
                             }
                         } else {
                             // Assume it is an id, so leave it.
@@ -698,7 +720,7 @@ public class RelationExpression extends CompoundExpression {
 
             // If FK joins go in the WHERE clause, want to get hold of it and
             // not put it in normalizer.additionalExpressions.
-            Vector foreignKeyJoinPointer = new Vector(1);
+            List<Expression> foreignKeyJoinPointer = new ArrayList(1);
             QueryKeyExpression second = (QueryKeyExpression)this.secondChild;
 
             // If inside an OR the foreign key join must be on both sides.
@@ -707,7 +729,7 @@ public class RelationExpression extends CompoundExpression {
             }
             second = (QueryKeyExpression)second.normalize(normalizer, first, foreignKeyJoinPointer);
             if (!foreignKeyJoinPointer.isEmpty()) {
-                foreignKeyJoin = (Expression)foreignKeyJoinPointer.firstElement();
+                foreignKeyJoin = foreignKeyJoinPointer.get(0);
                 // Will make left and right identical in the SQL.
                 if (first.getTableAliases() == null) {
                     TableAliasLookup tableAliases = new TableAliasLookup();

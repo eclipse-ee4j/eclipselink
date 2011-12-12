@@ -25,7 +25,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.DatabaseException; 
 import org.eclipse.persistence.exceptions.OptimisticLockException;
@@ -412,8 +411,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     public void writeChanges() {
         // Check for a nested flush and return early if we are in one
         if (this.isWithinFlush()) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING,
-                "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", this.getClass().getSimpleName());
+            log(SessionLog.WARNING, SessionLog.TRANSACTION, "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", getClass().getSimpleName());
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");

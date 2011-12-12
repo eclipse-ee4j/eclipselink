@@ -100,7 +100,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                 // Note: a call to managedType.getTypeClassFromAttributeOrMethodLevelAccesso will only return the class of the collection on the method accessor
                 if (null == attributeClass) {
                     //attributeClass = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", this);
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", this);
                 }
             } else if(mapping.isMapKeyMapping()) {                   
                 ContainerPolicy policy = mapping.getContainerPolicy();
@@ -122,7 +122,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
             // TODO: refactor exception handling
             if (null == attributeClass && validationEnabled) {
                 attributeClass = Object.class;
-                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);                    
             }
             this.elementType = (Type<V>)getMetamodel().getType(attributeClass);            
         }

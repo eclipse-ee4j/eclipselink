@@ -23,6 +23,7 @@ import oracle.AQ.*;
 
 /**
  * Platform for Oracle AQ JCA adapter.
+ * This allows for Oracle AQ to be treated as a data source and accessed through EclipseLink.
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)

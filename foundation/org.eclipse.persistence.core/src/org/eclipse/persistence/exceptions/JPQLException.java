@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
-import java.util.*;
-import org.eclipse.persistence.exceptions.i18n.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 /**
  * <P><B>Purpose</B>: EJBQL parsing and resolution problems will raise this exception
@@ -78,7 +81,7 @@ public class JPQLException extends EclipseLinkException {
     * INTERNAL
     * Only TopLink can throw and create these excpetions
     */
-    protected JPQLException(String theMessage) {
+    public JPQLException(String theMessage) {
         super(theMessage);
     }
 
@@ -216,7 +219,7 @@ public class JPQLException extends EclipseLinkException {
         Object[] args = { query, line, column, attributeName };
 
         String message = ExceptionMessageGenerator.buildMessage(
-        		JPQLException.class, invalidCollectionMemberDecl, args);
+                JPQLException.class, invalidCollectionMemberDecl, args);
         JPQLException exception = new JPQLException(message);
         exception.setErrorCode(invalidCollectionMemberDecl);
         return exception;
@@ -226,7 +229,7 @@ public class JPQLException extends EclipseLinkException {
         Object[] args = { query, detail };
 
         String message = ExceptionMessageGenerator.buildMessage(
-        		JPQLException.class, notYetImplemented, args);
+                JPQLException.class, notYetImplemented, args);
         JPQLException exception = new JPQLException(message);
         exception.setErrorCode(notYetImplemented);
         return exception;

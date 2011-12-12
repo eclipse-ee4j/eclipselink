@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import javax.persistence.metamodel.EmbeddableType;
 
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p>
@@ -39,7 +39,7 @@ public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements Embedda
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
     private static final long serialVersionUID = 8089664013641473274L;
 
-    protected EmbeddableTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
+    protected EmbeddableTypeImpl(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         super(metamodel, descriptor);
     }
 

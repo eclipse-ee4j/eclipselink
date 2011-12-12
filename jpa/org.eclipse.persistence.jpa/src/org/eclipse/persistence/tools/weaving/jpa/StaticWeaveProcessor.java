@@ -199,7 +199,7 @@ public class StaticWeaveProcessor {
         //2. Both source and target are specified as a same jar -  
         //   User was trying to perform weaving in same Jar which is not supported, an Exception will be thrown.
         if(isDirectory(source) && targetURI.toString().endsWith(".jar")){
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, ToStringLocalization.buildMessage("staticweave_processor_unknown_outcome", new Object[]{null}));
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.WEAVER, ToStringLocalization.buildMessage("staticweave_processor_unknown_outcome", new Object[]{null}), null, false);
         }
         
         if(!isDirectory(source) && target.toString().equals(source.toString())){
@@ -318,13 +318,13 @@ public class StaticWeaveProcessor {
                             swoh.addEntry(entryInputStream, newEntry);
                         }
                     } catch (IllegalClassFormatException e) {
-                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, e);
+                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, e);
                         // Anything went wrong, we need log a warning message, copy the entry to the target and
                         // process next entry.
                         swoh.addEntry(entryInputStream, newEntry);
                         continue;
                     } catch (ClassNotFoundException e) {
-                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, e);
+                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, e);
                         swoh.addEntry(entryInputStream, newEntry);
                         continue;
                     } finally {

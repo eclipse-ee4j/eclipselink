@@ -63,11 +63,11 @@ public class DBPlatformHelper {
             detectedDbPlatform = matchVendorNameInProperties(vendorName, _nameToVendorPlatform, logger);
         }
         if (logger.shouldLog(SessionLog.FINE) ) {
-            logger.log(SessionLog.FINE, "dbPlatformHelper_detectedVendorPlatform", detectedDbPlatform ); // NOI18N
+            logger.log(SessionLog.FINE, SessionLog.CONNECTION, "dbPlatformHelper_detectedVendorPlatform", detectedDbPlatform ); // NOI18N
         }
         if (detectedDbPlatform == null) {
             if(logger.shouldLog(SessionLog.INFO)) {
-                logger.log(SessionLog.INFO, "dbPlatformHelper_defaultingPlatform",  vendorName, DEFAULTPLATFORM); // NOI18N
+                logger.log(SessionLog.INFO, SessionLog.CONNECTION, "dbPlatformHelper_defaultingPlatform",  vendorName, DEFAULTPLATFORM); // NOI18N
             }
             detectedDbPlatform = DEFAULTPLATFORM;
         }
@@ -85,7 +85,7 @@ public class DBPlatformHelper {
                     loadFromResource(_nameToVendorPlatform, VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME,
                                             DBPlatformHelper.class.getClassLoader() );
                 } catch (IOException e) {
-                    logger.log(SessionLog.WARNING, "dbPlatformHelper_noMappingFound", VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME);
+                    logger.log(SessionLog.WARNING, SessionLog.CONNECTION, "dbPlatformHelper_noMappingFound", VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME);
                 }
             }
         }
@@ -128,7 +128,7 @@ public class DBPlatformHelper {
             matches = Pattern.matches(regExp,target);
         } catch (PatternSyntaxException e){
             if(logger.shouldLog(SessionLog.FINE)) {
-                logger.log(SessionLog.FINE, "dbPlatformHelper_patternSyntaxException", e); // NOI18N
+                logger.log(SessionLog.FINE, SessionLog.CONNECTION, "dbPlatformHelper_patternSyntaxException", e); // NOI18N
             }
         }
         return matches;

@@ -132,9 +132,9 @@ public class TableCreator {
             if (!table.getName().equals(sequenceTableName)) {
                 try {
                     schemaManager.createObject(table);
-                    session.getSessionLog().log(SessionLog.FINEST, "default_tables_created", table.getFullName());
+                    session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_created", table.getFullName());
                 } catch (DatabaseException ex) {
-                    session.getSessionLog().log(SessionLog.FINEST, "default_tables_already_existed", table.getFullName());
+                    session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_already_existed", table.getFullName());
                     if (!shouldIgnoreDatabaseException()) {
                         throw ex;
                     }

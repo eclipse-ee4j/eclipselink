@@ -33,7 +33,6 @@ import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -212,7 +211,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
     private Class getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
         Class<?> javaClass = null;;
         MapKeyMapping mapKeyMapping = policy.getKeyMapping();
-        RelationalDescriptor descriptor = (RelationalDescriptor)((DatabaseMapping)mapKeyMapping).getDescriptor();
+        ClassDescriptor descriptor = ((DatabaseMapping)mapKeyMapping).getDescriptor();
         // If the reference descriptor is null then we are on a direct mapping
         if(null != descriptor) {
             javaClass = ((DatabaseMapping)mapKeyMapping).getAttributeClassification();

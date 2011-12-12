@@ -38,7 +38,7 @@ import java.security.PrivilegedActionException;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
 
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -100,7 +100,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      * Return the Descriptor associated with this attribute 
      * @return
      */
-    protected RelationalDescriptor getDescriptor() {
+    protected ClassDescriptor getDescriptor() {
         return getManagedTypeImpl().getDescriptor();
     }
 
@@ -182,7 +182,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
         
         // 303063: secondary check for attribute override case - this will show on code coverage
         if(null == aMember) {
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_getmember_is_null", this, this.getManagedTypeImpl(), this.getDescriptor());
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, AbstractSessionLog.METAMODEL, "metamodel_attribute_getmember_is_null", this, this.getManagedTypeImpl(), this.getDescriptor());
         }
         
         return aMember;

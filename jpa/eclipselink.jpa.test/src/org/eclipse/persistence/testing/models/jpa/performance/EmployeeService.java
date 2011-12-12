@@ -28,5 +28,7 @@ public interface EmployeeService {
     
     long insert(Employee employee);
     
-    void setup();
+    void createTables();
+
+    void populate();
 }

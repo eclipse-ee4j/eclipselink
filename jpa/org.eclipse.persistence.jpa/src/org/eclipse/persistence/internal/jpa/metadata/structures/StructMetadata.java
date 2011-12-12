@@ -24,7 +24,7 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
 
 /**
  * Defines the metadata for the @Struct annotation for mapping
- * ObjectRelationshipDataTypeDescriptor and StructureMappings.
+ * ObjectRelationshipDataTypeDescriptor.
  * 
  * @author James Sutherland
  * @since EclipseLink 2.3

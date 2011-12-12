@@ -36,10 +36,13 @@ import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -315,6 +318,20 @@ public class XMLDescriptor extends ClassDescriptor {
             return new Vector(0);
         }
         return (Vector) fieldValue;
+    }
+    
+    /**
+     * Return a new direct/basic mapping for this type of descriptor.
+     */
+    public AbstractDirectMapping newDirectMapping() {
+        return new XMLDirectMapping();
+    }
+    
+    /**
+     * Return a new aggregate/embedded mapping for this type of descriptor.
+     */
+    public AggregateMapping newAggregateMapping() {
+        return new XMLCompositeObjectMapping();
     }
 
     /**

@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.jpa;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
 import java.util.Map;
 
 import javax.persistence.LockModeType;
@@ -104,7 +106,7 @@ public class JPAQuery extends DatabaseQuery  {
             // Ignore JPA 2.0 in JPA 1.0, reverts to no lock.
         }
         DatabaseQuery ejbquery = EJBQueryImpl.buildEJBQLDatabaseQuery(
-            this.getName(), this.jpqlString, session, lockModeEnum, this.hints, classloader);
+            this.getName(), this.jpqlString, (AbstractSession)session, lockModeEnum, this.hints, classloader);
         ejbquery.setName(this.getName());
         return ejbquery;
     }    

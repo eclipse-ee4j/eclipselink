@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
@@ -562,7 +563,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         Object aggregateClone = buildClonePart(original, cacheKey, attributeValue, cloningSession);
 
         if (aggregateClone != null && cloningSession.isUnitOfWork()) {
-            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, (AbstractSession)cloningSession);
+            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, cloningSession);
             descriptor.getObjectChangePolicy().setAggregateChangeListener(clone, aggregateClone, (UnitOfWorkImpl)cloningSession, descriptor, getAttributeName());
         }
 
@@ -580,7 +581,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object buildElementClone(Object attributeValue, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting){
         Object aggregateClone = buildClonePart(attributeValue, parentCacheKey, cloningSession, isExisting);
         if (aggregateClone != null && cloningSession.isUnitOfWork()) {
-            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, (AbstractSession)cloningSession);
+            ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, cloningSession);
             descriptor.getObjectChangePolicy().setAggregateChangeListener(parent, aggregateClone, (UnitOfWorkImpl)cloningSession, descriptor, getAttributeName());
         }
         return aggregateClone;
@@ -1680,7 +1681,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 			// the mapping can't be null and can't be anything but a direct to field mapping.
             if (mapping != null && mapping.isDirectToFieldMapping()) {
                 // Translate the mapping field with the override field.
-                translateField(nestedFieldTranslations.get(attributeName), ((DirectToFieldMapping) mapping).getField(), clonedDescriptor);
+                translateField(nestedFieldTranslations.get(attributeName), ((AbstractDirectMapping) mapping).getField(), clonedDescriptor);
             }
         }
         

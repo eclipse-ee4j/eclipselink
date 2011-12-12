@@ -50,7 +50,7 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
     protected TypeImpl(Class<X> javaClass, String javaClassName) {
         // 303063: secondary check for case where descriptor has no java class set - should never happen but should be warned about
         if(null == javaClass) { 
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_typeImpl_javaClass_should_not_be_null", this, javaClassName); // exporting (this) outside the constructor breaks concurrency
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_typeImpl_javaClass_should_not_be_null", this, javaClassName); // exporting (this) outside the constructor breaks concurrency
             // Default to Object to avoid a NPE - in the case where javaClass is not set or not set yet via Project.convertClassNamesToClasses() 
             this.javaClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
         } else {        

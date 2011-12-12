@@ -32,7 +32,7 @@
             </many-to-one>
             <one-to-many name="phoneNumbers" target-entity="org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber" mapped-by="owner">
                 <cascade>
-                    <cascade-all/>
+                    <cascade-persist/>
                 </cascade>
             </one-to-many>
             <one-to-many name="managedEmployees" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Employee" mapped-by="manager">
@@ -43,7 +43,7 @@
             <one-to-one name="address" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Address" fetch="LAZY">
                 <join-column name="ADDR_ID"/>
                 <cascade>
-                    <cascade-all/>
+                    <cascade-persist/>
                 </cascade>
             </one-to-one>
             <many-to-many name="projects" target-entity="org.eclipse.persistence.testing.models.jpa.performance.Project">

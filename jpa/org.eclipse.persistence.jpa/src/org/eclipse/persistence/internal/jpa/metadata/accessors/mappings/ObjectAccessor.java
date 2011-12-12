@@ -88,12 +88,12 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ManyToOneMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * INTERNAL:
@@ -509,7 +509,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             updatePrimaryKeyField(idAccessor, foreignKeyField);
             
             // Update the field on the mapping.
-            ((DirectToFieldMapping) idMapping).setField(foreignKeyField);
+            ((AbstractDirectMapping) idMapping).setField(foreignKeyField);
             
             // Set the primary key mapping as read only.
             idMapping.setIsReadOnly(true);

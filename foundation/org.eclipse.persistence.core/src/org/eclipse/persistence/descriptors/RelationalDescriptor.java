@@ -16,7 +16,6 @@ package org.eclipse.persistence.descriptors;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 
 /**
  * <p><b>Purpose</b>: EclipseLink has been designed to take advantage of the similarities between
@@ -50,22 +49,12 @@ import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
  */
 public class RelationalDescriptor extends ClassDescriptor {
     
-    /** This flag stores whether this descriptor is using Property access based on JPA semantics.  It is used to modify
-     * the behavior of our weaving functionality as it pertains to adding annotations to fields
-     */
-    protected boolean weavingUsesPropertyAccess = false;
-    
-    /** A list of methods that are used by virtual mappings.  This list is used to control weaving of methods
-     * used for virtual access*/
-    protected List<VirtualAttributeMethodInfo> virtualAttributeMethods = null;
-    
     /**
      * PUBLIC:
      * Return a new descriptor.
      */
     public RelationalDescriptor() {
         super();
-        this.virtualAttributeMethods = new ArrayList<VirtualAttributeMethodInfo>();
     }
 
     /**
@@ -93,15 +82,6 @@ public class RelationalDescriptor extends ClassDescriptor {
      */
     public Vector getTableNames() {
         return super.getTableNames();
-    }
-
-    /** 
-     * INTERNAL:
-     * Return the list of virtual methods sets for this Entity.
-     * This list is used to control which methods are weaved
-     **/
-    public List<VirtualAttributeMethodInfo> getVirtualAttributeMethods() {
-        return virtualAttributeMethods;
     }
     
     /**
@@ -138,35 +118,6 @@ public class RelationalDescriptor extends ClassDescriptor {
      */
     public void setTableQualifier(String tableQualifier) {
         super.setTableQualifier(tableQualifier);
-    }
-    
-
-    /** 
-     * INTERNAL:
-     * Set the list of methods used my mappings with virtual access
-     * this list is used to determine which methods to weave
-     */
-    public void setVirtualAttributeMethods(List<VirtualAttributeMethodInfo> virtualAttributeMethods) {
-        this.virtualAttributeMethods = virtualAttributeMethods;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return whether this descriptor uses property access. This information is used to
-     * modify the behavior of some of our weaving features
-     */
-    public boolean usesPropertyAccessForWeaving(){
-        return weavingUsesPropertyAccess;
-    }
-    
-
-    /**
-     * INTERNAL:
-     * Record that this descriptor uses property access. This information is used to
-     * modify the behavior of some of our weaving features
-     */
-    public void usePropertyAccessForWeaving(){
-        weavingUsesPropertyAccess = true;
     }
     
 }

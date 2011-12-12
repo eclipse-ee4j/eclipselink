@@ -81,7 +81,7 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * INTERNAL:
@@ -362,7 +362,7 @@ public class BasicAccessor extends DirectAccessor {
         // Process a DirectToFieldMapping, that is a Basic that could
         // be used in conjunction with a Lob, Temporal, Enumerated
         // or inferred to be used with a serialized mapping.
-        DirectToFieldMapping mapping = new DirectToFieldMapping();
+        AbstractDirectMapping mapping = getOwningDescriptor().getClassDescriptor().newDirectMapping();
         setMapping(mapping);
         
         // Process the @Column or column element if there is one.

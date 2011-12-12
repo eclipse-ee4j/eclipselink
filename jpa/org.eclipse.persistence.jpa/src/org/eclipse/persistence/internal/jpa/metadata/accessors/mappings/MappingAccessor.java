@@ -134,6 +134,7 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 
@@ -1426,8 +1427,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
-    protected DirectToFieldMapping processDirectMapKeyClass(MappedKeyMapAccessor mappedKeyMapAccessor) {
-        DirectToFieldMapping keyMapping = new DirectToFieldMapping();
+    protected AbstractDirectMapping processDirectMapKeyClass(MappedKeyMapAccessor mappedKeyMapAccessor) {
+        AbstractDirectMapping keyMapping = new DirectToFieldMapping();
 
         // Get the map key field, defaulting and looking for attribute 
         // overrides. Set the field before applying a converter.

@@ -699,7 +699,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 getCommandManager().initialize();
             }
         }
-        log(SessionLog.INFO, null, "login_successful", this.getName());
+        log(SessionLog.INFO, SessionLog.CONNECTION, "login_successful", this.getName());
         // postLogin event should not be risen before descriptors have been initialized 
         if (!hasBroker()) {
             postLogin();
@@ -804,7 +804,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (this.eventManager != null) {
             this.eventManager.postLogout(this);
         }
-        log(SessionLog.INFO, null, "logout_successful", this.getName());
+        log(SessionLog.INFO, SessionLog.CONNECTION, "logout_successful", this.getName());
 	   
     }
 

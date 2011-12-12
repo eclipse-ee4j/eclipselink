@@ -1132,7 +1132,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
         Expression expression = null;
         int size = primaryKeyFields.size();
-        Object[] primaryKeyValues = ((CacheId)primaryKey).getPrimaryKey();
+        Object[] primaryKeyValues = null;
+        if (primaryKey == null) {
+            primaryKeyValues = new Object[size];
+        } else {
+            primaryKeyValues = ((CacheId)primaryKey).getPrimaryKey();
+        }
         for (int index = 0; index < size; index++) {
             Object value = primaryKeyValues[index];
             DatabaseField field = primaryKeyFields.get(index);

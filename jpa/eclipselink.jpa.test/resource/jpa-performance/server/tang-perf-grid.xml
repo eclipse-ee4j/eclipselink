@@ -5,24 +5,28 @@
   <caching-scheme-mapping>
     <cache-mapping>
       <cache-name>Employee</cache-name>
-      <scheme-name>perf-local</scheme-name>
+      <!--scheme-name>perf-local</scheme-name-->
+      <scheme-name>perf</scheme-name>
     </cache-mapping>
     <cache-mapping>
       <cache-name>Address</cache-name>
-      <scheme-name>perf-local</scheme-name>
+      <!--scheme-name>perf-near</scheme-name-->
+      <scheme-name>perf</scheme-name>
     </cache-mapping>
     <cache-mapping>
       <cache-name>Project</cache-name>
-      <scheme-name>perf-local</scheme-name>
+      <!--scheme-name>perf-near</scheme-name-->
+      <scheme-name>perf</scheme-name>
     </cache-mapping>
     <cache-mapping>
       <cache-name>PhoneNumber</cache-name>
-      <scheme-name>perf-local</scheme-name>
+      <!--scheme-name>perf-near</scheme-name-->
+      <scheme-name>perf</scheme-name>
     </cache-mapping>
   </caching-scheme-mapping>
   <caching-schemes>
 
-    <local-scheme>
+    <!--local-scheme>
       <scheme-name>perf-local</scheme-name>
     </local-scheme>
 
@@ -38,7 +42,7 @@
           <scheme-ref>perf</scheme-ref>
         </distributed-cache-scheme>
       </back-scheme>
-    </near-scheme>
+    </near-scheme-->
 
     <distributed-scheme>
       <scheme-name>perf</scheme-name>
@@ -46,6 +50,15 @@
         <serializer>
           <class-name>oracle.eclipselink.coherence.integrated.cache.WrapperSerializer</class-name>
         </serializer>
+		<!--serializer>
+		  <class-name>com.tangosol.io.pof.ConfigurablePofContext</class-name>
+		  <init-params>
+			<init-param>
+			  <param-value>performance-pof-config.xml</param-value>
+			  <param-type>String</param-type>
+			</init-param>
+		  </init-params>
+		</serializer-->
       <backing-map-scheme>
         <read-write-backing-map-scheme>
           <internal-cache-scheme>

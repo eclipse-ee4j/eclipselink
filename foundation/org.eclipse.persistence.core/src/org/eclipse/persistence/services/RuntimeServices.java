@@ -1275,7 +1275,6 @@ public abstract class RuntimeServices {
          Class registeredClass;
 
          if (classesRegistered.isEmpty()) {
-             getSession().getSessionLog().info("There are no Identity Maps in this session");
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");            
          }
 

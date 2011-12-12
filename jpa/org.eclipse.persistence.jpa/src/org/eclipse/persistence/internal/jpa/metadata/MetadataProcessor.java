@@ -226,7 +226,7 @@ public class MetadataProcessor {
             // to properly handle the exception. As a result we log an error. 
             // The same code will be called later in the bootstrapping code 
             // and the error will be handled then.
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
         } else if (!throwException) {
             // fail quietly
             m_session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mappingFile, e});
@@ -446,9 +446,9 @@ public class MetadataProcessor {
      */
     protected void logMessage(String message) {
         if (m_session == null) {
-            AbstractSessionLog.getLog().log(SessionLog.FINER, message);
+            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.EJB_OR_METADATA, message, null, false);
         } else {
-            m_session.logMessage(message);
+            m_session.log(SessionLog.FINER, SessionLog.EJB_OR_METADATA, message, false);
         }
     }
     
@@ -459,9 +459,9 @@ public class MetadataProcessor {
      */
     protected void logThrowable(Throwable exception) {
         if (m_session == null) {
-            AbstractSessionLog.getLog().logThrowable(SessionLog.FINER, exception);
+            AbstractSessionLog.getLog().logThrowable(SessionLog.FINER, SessionLog.EJB_OR_METADATA, exception);
         } else {
-            m_session.getSessionLog().logThrowable(SessionLog.FINER, exception);
+            m_session.getSessionLog().logThrowable(SessionLog.FINER, SessionLog.EJB_OR_METADATA, exception);
         }
     }
     

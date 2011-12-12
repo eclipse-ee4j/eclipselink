@@ -22,8 +22,8 @@ package org.eclipse.persistence.internal.jpa.metadata.converters;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -104,7 +104,7 @@ public abstract class MetadataConverter extends ORMetadata {
             // TODO: Be nice to support converters on AggregateCollections keys.
             // For now they are silently ignored.
         } else if (mapping.isDirectToFieldMapping()) {
-            ((DirectToFieldMapping) mapping).setConverter(converter);
+            ((AbstractDirectMapping) mapping).setConverter(converter);
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class MetadataConverter extends ORMetadata {
             // TODO: Be nice to support converters on AggregateCollections keys.
             // For now they are silently ignored.
         } else if (mapping.isDirectToFieldMapping()) {
-            ((DirectToFieldMapping) mapping).setConverterClassName(converterClassName);    
+            ((AbstractDirectMapping) mapping).setConverterClassName(converterClassName);    
         }
     }
 
@@ -136,7 +136,7 @@ public abstract class MetadataConverter extends ORMetadata {
             // TODO: Future and AggregateCollections should only be able to get 
             // in here for a key converter
         } else if (mapping.isDirectToFieldMapping()) {
-            ((DirectToFieldMapping) mapping).setFieldClassificationClassName(classification.getName());
+            ((AbstractDirectMapping) mapping).setFieldClassificationClassName(classification.getName());
         }
     }
 }

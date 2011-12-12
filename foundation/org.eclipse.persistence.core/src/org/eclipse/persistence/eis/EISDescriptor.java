@@ -17,13 +17,16 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.eis.mappings.EISCompositeObjectMapping;
 import org.eclipse.persistence.eis.mappings.EISDirectMapping;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.oxm.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -74,6 +77,7 @@ public class EISDescriptor extends ClassDescriptor {
         this.dataFormat = XML;
     }
 
+    @Override
     protected void validateMappingType(DatabaseMapping mapping) {
         if (!(mapping.isEISMapping())) {
             throw DescriptorException.invalidMappingType(mapping);
@@ -105,6 +109,7 @@ public class EISDescriptor extends ClassDescriptor {
      * Caution must be used in using this method as it lazy initializes an inheritance policy.
      * Calling this on a descriptor that does not use inheritance will cause problems, #hasInheritance() must always first be called.
      */
+    @Override
     public InheritancePolicy getInheritancePolicy() {
         if (inheritancePolicy == null) {
             if(getDataFormat() == EISDescriptor.XML) {
@@ -130,6 +135,7 @@ public class EISDescriptor extends ClassDescriptor {
      * INTERNAL:
      * Avoid SDK initialization.
      */
+    @Override
     public void setQueryManager(DescriptorQueryManager queryManager) {
         this.queryManager = queryManager;
         if (queryManager != null) {
@@ -141,6 +147,7 @@ public class EISDescriptor extends ClassDescriptor {
      * INTERNAL:
      * Configure the object builder for the correct dataFormat.
      */
+    @Override
     public void preInitialize(AbstractSession session) {
         // Must not initialize if already done.
         if (isInitialized(PREINITIALIZED)) {
@@ -211,6 +218,7 @@ public class EISDescriptor extends ClassDescriptor {
      * INTERNAL:
      * Build the nested row.
      */
+    @Override
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) {
         if (!getDataFormat().equals(XML)) {
             if (!(fieldValue instanceof List)) {
@@ -252,6 +260,7 @@ public class EISDescriptor extends ClassDescriptor {
      * INTERNAL:
      * Build the nested rows.
      */
+    @Override
     public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
         if (!getDataFormat().equals(XML)) {
             if (!(fieldValue instanceof List)) {
@@ -273,6 +282,7 @@ public class EISDescriptor extends ClassDescriptor {
      * Return them in a vector.
      * The field value could be a vector or could be a text value if only a single value.
      */
+    @Override
     public Vector buildDirectValuesFromFieldValue(Object fieldValue) {
         if (!getDataFormat().equals(XML)) {
             return super.buildDirectValuesFromFieldValue(fieldValue);
@@ -292,6 +302,7 @@ public class EISDescriptor extends ClassDescriptor {
      * set of direct values.
      * The database better be expecting a Vector.
      */
+    @Override
     public Object buildFieldValueFromDirectValues(Vector directValues, String elementDataTypeName, AbstractSession session) {
         if (!getDataFormat().equals(XML)) {
             return super.buildFieldValueFromDirectValues(directValues, elementDataTypeName, session);
@@ -304,6 +315,7 @@ public class EISDescriptor extends ClassDescriptor {
      * Build and return the field value from the specified nested database row.
      * The database better be expecting an SDKFieldValue.
      */
+    @Override
     public Object buildFieldValueFromNestedRow(AbstractRecord nestedRow, AbstractSession session) throws DatabaseException {
         Vector nestedRows = new Vector(1);
         nestedRows.addElement(nestedRow);
@@ -315,6 +327,7 @@ public class EISDescriptor extends ClassDescriptor {
      * Build and return the appropriate field value for the specified
      * set of nested rows.
      */
+    @Override
     public Object buildFieldValueFromNestedRows(Vector nestedRows, String structureName, AbstractSession session) throws DatabaseException {
         return nestedRows;
     }
@@ -323,6 +336,7 @@ public class EISDescriptor extends ClassDescriptor {
     * INTERNAL:
     * XML type descriptors should use XMLFields.
     */
+    @Override
     public DatabaseField buildField(String fieldName) {
         if (getDataFormat().equals(XML)) {
             XMLField xmlField = new XMLField(fieldName);
@@ -339,6 +353,7 @@ public class EISDescriptor extends ClassDescriptor {
      * If the field is an XMLField then set the namespace resolver from the descriptor.
      * This allows the resolver to only be set in the descriptor.
      */
+    @Override
     public DatabaseField buildField(DatabaseField field) {
         if(getDataFormat().equals(XML)) {
             if(!(field instanceof XMLField)) {
@@ -349,19 +364,36 @@ public class EISDescriptor extends ClassDescriptor {
         }
         return super.buildField(field);
     }
+    
+    /**
+     * Return a new direct/basic mapping for this type of descriptor.
+     */
+    public AbstractDirectMapping newDirectMapping() {
+        return new EISDirectMapping();
+    }
+    
+    /**
+     * Return a new aggregate/embedded mapping for this type of descriptor.
+     */
+    public AggregateMapping newAggregateMapping() {
+        return new EISCompositeObjectMapping();
+    }
 
     /**
-        * PUBLIC:
-        * Add a direct mapping to the receiver. The new mapping specifies that
-        * an instance variable of the class of objects which the receiver describes maps in
-        * the default manner for its type to the indicated database field.
-        *
-        * @param String instanceVariableName is the name of an instance variable of the
-        * class which the receiver describes.
-        * @param String fieldName is the name of the xml element or attribute which corresponds
-        * with the designated instance variable.
-        * @return The newly created DatabaseMapping is returned.
-        */
+     * PUBLIC: Add a direct mapping to the receiver. The new mapping specifies
+     * that an instance variable of the class of objects which the receiver
+     * describes maps in the default manner for its type to the indicated
+     * database field.
+     * 
+     * @param String
+     *            instanceVariableName is the name of an instance variable of
+     *            the class which the receiver describes.
+     * @param String
+     *            fieldName is the name of the xml element or attribute which
+     *            corresponds with the designated instance variable.
+     * @return The newly created DatabaseMapping is returned.
+     */
+    @Override
     public DatabaseMapping addDirectMapping(String attributeName, String fieldName) {
         EISDirectMapping mapping = new EISDirectMapping();
         mapping.setAttributeName(attributeName);
@@ -376,12 +408,13 @@ public class EISDescriptor extends ClassDescriptor {
     }
 
     /**
-    * PUBLIC:
-    * Add a direct to node mapping to the receiver. The new mapping specifies that
-    * a variable accessed by the get and set methods of the class of objects which
-    * the receiver describes maps in  the default manner for its type to the indicated
-    * database field.
-    */
+     * PUBLIC:
+     * Add a direct to node mapping to the receiver. The new mapping specifies that
+     * a variable accessed by the get and set methods of the class of objects which
+     * the receiver describes maps in  the default manner for its type to the indicated
+     * database field.
+     */
+    @Override
     public DatabaseMapping addDirectMapping(String attributeName, String getMethodName, String setMethodName, String fieldName) {
         EISDirectMapping mapping = new EISDirectMapping();
 
@@ -403,6 +436,7 @@ public class EISDescriptor extends ClassDescriptor {
      * For EIS XML Descriptors use the addPrimaryKeyField(DatabaseField) API
      * and supply an org.eclipse.persistence.oxm.XMLField parameter instead of using this method
      */
+    @Override
     public void addPrimaryKeyFieldName(String fieldName) {
         if (getDataFormat() == EISDescriptor.XML) {
             addPrimaryKeyField(new XMLField(fieldName));
@@ -419,19 +453,22 @@ public class EISDescriptor extends ClassDescriptor {
      * For EIS XML Descriptors use the setSequenceNumberFieldName(DatabaseField) API
      * and supply an org.eclipse.persistence.oxm.XMLField parameter instead of using this method
      */
+    @Override
     public void setSequenceNumberFieldName(String fieldName) {
         super.setSequenceNumberFieldName(fieldName);
     }
 
     /**
-      *INTERNAL:
-      * Override this method to throw an exception. SQL should not be generated for
-      * EIS Calls.
-      */
+     * INTERNAL:
+     * Override this method to throw an exception. SQL should not be generated for
+     * EIS Calls.
+     */
+    @Override
     public DatabaseCall buildCallFromStatement(SQLStatement statement, AbstractSession session) {
         throw QueryException.noCallOrInteractionSpecified();
     }
 
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (getDataFormat().equals(XML)) {
             for(int x = 0, primaryKeyFieldsSize = this.primaryKeyFields.size(); x<primaryKeyFieldsSize; x++) {
@@ -444,10 +481,10 @@ public class EISDescriptor extends ClassDescriptor {
     }
 
     /**
-        * INTERNAL:
-        * This is needed by regular aggregate descriptors
-        * * but not by EIS aggregate descriptors.
-        */
+     * INTERNAL: This is needed by regular aggregate descriptors * but not by
+     * EIS aggregate descriptors.
+     */
+    @Override
     public void initializeAggregateInheritancePolicy(AbstractSession session) {
         // do nothing, since the parent descriptor was already modified during pre-initialize
     }
@@ -457,6 +494,7 @@ public class EISDescriptor extends ClassDescriptor {
      * XML descriptors are initialized normally, since they do
      * not need to be cloned by ESI aggregate mappings.
      */
+    @Override
     public boolean requiresInitialization() {
         return (!isDescriptorForInterface());
     }
@@ -464,6 +502,7 @@ public class EISDescriptor extends ClassDescriptor {
     /**
      * Aggregates use a dummy table as default.
      */
+    @Override
     protected DatabaseTable extractDefaultTable() {
         if (this.isAggregateDescriptor()) {
             return new DatabaseTable();
@@ -477,6 +516,7 @@ public class EISDescriptor extends ClassDescriptor {
      * returning policy.  For EIS descriptors, this should always
      * return false.
      */
+    @Override
     public boolean isReturnTypeRequiredForReturningPolicy() {
         return false;
     }
@@ -485,8 +525,9 @@ public class EISDescriptor extends ClassDescriptor {
      * INTERNAL:
      * Return if change sets are required for new objects.
      */
+    @Override
     public boolean shouldUseFullChangeSetsForNewObjects() {
-        // This is currently set to allow EIS tests to pass the same a before.
+        // This is currently set to allow EIS tests to pass the same as before.
         // TODO: It should be removed, and the test issues fixed (bug was logged).
         return true;
     }

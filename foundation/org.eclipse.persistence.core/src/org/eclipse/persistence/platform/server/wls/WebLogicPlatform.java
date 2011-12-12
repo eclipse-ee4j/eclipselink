@@ -87,7 +87,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             this.serverNameAndVersion = (String) PrivilegedAccessHelper.invokeMethod(method, null, null);
             this.shouldClearStatementCache = Helper.compareVersions(this.serverNameAndVersion, "10.3.4") < 0;
         } catch (Exception exception) {
-            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
         }
     }
 
@@ -117,7 +117,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             try {
                 this.weblogicConnectionClass = (Class) getDatabaseSession().getPlatform().convertObject("weblogic.jdbc.extensions.WLConnection", Class.class);
             } catch (Throwable exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 this.weblogicConnectionClass = void.class;
             }
         }
@@ -132,7 +132,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             try {
                 this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class[0]);
             } catch (NoSuchMethodException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }
 
@@ -148,9 +148,9 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             try {
                 return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
             } catch (IllegalAccessException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             } catch (InvocationTargetException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }
 
@@ -165,7 +165,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             try {
                 this.clearStatementCacheMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "clearStatementCache", new Class[0]);
             } catch (NoSuchMethodException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }
 
@@ -189,9 +189,9 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             try {
                 PrivilegedAccessHelper.invokeMethod(getClearStatementCacheMethod(), connection);
             } catch (IllegalAccessException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             } catch (InvocationTargetException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }
     }

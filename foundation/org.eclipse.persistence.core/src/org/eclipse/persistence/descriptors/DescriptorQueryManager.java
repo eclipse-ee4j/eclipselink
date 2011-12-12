@@ -31,8 +31,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
-import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
@@ -932,12 +930,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             
             String jpql = "select this from " + descriptor.getAlias() + " this where " + additionalCriteria.trim();
             
-            JPQLParseTree parseTree = JPQLParser.buildParseTree(jpql);
-            parseTree.setClassLoader(session.getLoader());
-            DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
-            databaseQuery.setJPQLString(jpql);
-            parseTree.populateQuery(databaseQuery, (AbstractSession) session);
-            parseTree.addParametersToQuery(databaseQuery);
+            JPAQueryBuilder queryBuilder = JPAQueryBuilderManager.getQueryBuilder();
+            DatabaseQuery databaseQuery = queryBuilder.buildQuery(jpql, session);
             
             updatePropertyParameterExpression(databaseQuery.getSelectionCriteria());
                  

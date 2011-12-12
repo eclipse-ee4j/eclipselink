@@ -21,6 +21,8 @@ import javax.persistence.QueryHint;
 
 import org.eclipse.persistence.config.QueryHints;
 
+//import com.tangosol.io.pof.*;
+
 /**
  * <p><b>Purpose</b>: Represent a employee of an organization.
  * <p><b>Description</b>: An Employee is a root object in the Employee Demo.
@@ -51,6 +53,7 @@ import org.eclipse.persistence.config.QueryHints;
                     @QueryHint(name=QueryHints.BATCH_TYPE, value="IN")})
 })
 //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+//public class Employee implements Serializable, PortableObject {
 public class Employee implements Serializable {
 
     protected long id;    
@@ -73,6 +76,26 @@ public class Employee implements Serializable {
         this.projects = new HashSet();
         this.phoneNumbers = new HashSet();
     }
+
+	/*public void readExternal(PofReader in) throws IOException {
+		this.id = in.readLong(0);
+		this.version = in.readLong(1);
+		this.firstName = in.readString(2);
+		this.lastName = in.readString(3);
+		this.gender = in.readString(4);
+		this.salary = in.readInt(5);
+		this.period = (EmploymentPeriod)in.readObject(6);
+    }
+ 
+	public void writeExternal(PofWriter out) throws IOException {
+		out.writeLong(0, this.id);
+		out.writeLong(1, this.version);
+		out.writeString(2, this.firstName);
+		out.writeString(3, this.lastName);
+		out.writeString(4, this.gender);
+		out.writeInt(5, this.salary);
+		out.writeObject(6, this.period);
+    }*/
 
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.

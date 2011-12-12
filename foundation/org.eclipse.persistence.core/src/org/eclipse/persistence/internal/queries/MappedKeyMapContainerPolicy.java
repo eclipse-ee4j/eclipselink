@@ -50,6 +50,7 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -472,7 +473,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
     @Override
     public DatabaseField getDirectKeyField(CollectionMapping baseMapping) {
         if ((keyMapping != null) && ((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
-            return ((DirectToFieldMapping)keyMapping).getField();
+            return ((AbstractDirectMapping)keyMapping).getField();
         }
         return null;
     }
@@ -494,7 +495,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     public Converter getKeyConverter() {
         if ((keyMapping != null) && ((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
-            return ((DirectToFieldMapping)keyMapping).getConverter();
+            return ((AbstractDirectMapping)keyMapping).getConverter();
         }
         return null;
     }
@@ -761,13 +762,13 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     public void setKeyField(DatabaseField keyField, ClassDescriptor descriptor) {
         if (keyMapping == null) {
-            DirectToFieldMapping newKeyMapping = new DirectToFieldMapping();
+            AbstractDirectMapping newKeyMapping = new DirectToFieldMapping();
             newKeyMapping.setField(keyField);
             newKeyMapping.setDescriptor(descriptor);
             setKeyMapping(newKeyMapping);
         }
         if (((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
-            ((DirectToFieldMapping)keyMapping).setField(keyField);;
+            ((AbstractDirectMapping)keyMapping).setField(keyField);;
         }
     }
     
@@ -786,7 +787,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     public void setKeyConverter(Converter keyConverter, DirectMapMapping mapping){
         if (((DatabaseMapping)keyMapping).isDirectToFieldMapping()){
-            ((DirectToFieldMapping)keyMapping).setConverter(keyConverter);
+            ((AbstractDirectMapping)keyMapping).setConverter(keyConverter);
         } else {
             throw DescriptorException.cannotSetConverterForNonDirectMapping(mapping.getDescriptor(), mapping, keyConverter.getClass().getName());
         }
@@ -798,7 +799,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     public void setKeyConverterClassName(String keyConverterClassName, DirectMapMapping mapping){
         if (((DatabaseMapping)keyMapping).isDirectToFieldMapping()){
-            ((DirectToFieldMapping)keyMapping).setConverterClassName(keyConverterClassName);
+            ((AbstractDirectMapping)keyMapping).setConverterClassName(keyConverterClassName);
         } else {
             throw DescriptorException.cannotSetConverterForNonDirectMapping(mapping.getDescriptor(), mapping, keyConverterClassName);
         }

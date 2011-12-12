@@ -30,9 +30,9 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.structures.ReferenceMapping;
 
 /**
@@ -102,7 +102,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                 attributeClass = ((AggregateMapping)mapping).getReferenceClass();
             } else if (mapping.isVariableOneToOneMapping()) { // interfaces are unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
                 // see JUnitCriteriaUnitTestSuite.testSelectPhoneNumberAreaCode() line: 246
                 // VariableOneToOne mappings are unsupported - default to referenceClass (Interface) anyway
@@ -110,11 +110,11 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                 attributeClass = ((VariableOneToOneMapping)mapping).getReferenceClass();
             } else if (mapping.isEISMapping() || mapping.isTransformationMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
             } else if ( mapping.isReferenceMapping()) { // unsupported in the JPA 2.0 spec for the Metamodel API
                 if(validationEnabled) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_mapping_type_is_unsupported", mapping, this);                    
+                    AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_mapping_type_is_unsupported", mapping, this);                    
                 }
                 // Reference mappings are unsupported - default to referenceClass anyway
                 attributeClass = ((ReferenceMapping)mapping).getReferenceClass();
@@ -124,7 +124,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         if(null == attributeClass && validationEnabled) {
             // TODO: refactor
             attributeClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);                    
         }        
         elementType = getMetamodel().getType(attributeClass);
     }
@@ -187,7 +187,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         if (getDescriptor().usesOptimisticLocking() && getMapping().isDirectToFieldMapping()) {
             OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();
             
-            return policy.getWriteLockField().equals(((DirectToFieldMapping) getMapping()).getField());
+            return policy.getWriteLockField().equals(((AbstractDirectMapping) getMapping()).getField());
         }
         return false;
     }
@@ -217,7 +217,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
                     } catch (NoSuchFieldException nsfe) {
                         // This exception will be warned about below
                         if(null == aJavaType) {
-                            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);
+                            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
                             return MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
                         }
                     }                    

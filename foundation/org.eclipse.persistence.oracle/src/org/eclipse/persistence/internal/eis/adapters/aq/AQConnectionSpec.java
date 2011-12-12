@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.eis.adapters.aq;
 import javax.resource.cci.*;
 
 /**
- * Provides the behavior of instantiating a XML file adapter ConnectionSpec.
+ * Connection spec for AQ JCA adapter.
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
