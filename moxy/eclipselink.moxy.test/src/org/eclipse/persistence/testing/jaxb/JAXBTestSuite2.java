@@ -97,6 +97,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nullpolicy.BinderWithNullPolicyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nullpolicy.BinderWithNullPolicyCompositeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.hashcode.BinderWithHashCodeTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.jaxbelement.BinderWithJAXBElementTestCases.class);
 
         return suite;
     }
