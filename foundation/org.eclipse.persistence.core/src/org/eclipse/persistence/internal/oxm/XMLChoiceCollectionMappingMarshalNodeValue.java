@@ -93,7 +93,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         }
         ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(value);
-        if (cp.hasNext(iterator)) {
+        if (null != iterator && cp.hasNext(iterator)) {
             if(xPathFragment != null) {
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 marshalRecord.closeStartGroupingElements(groupingFragment);

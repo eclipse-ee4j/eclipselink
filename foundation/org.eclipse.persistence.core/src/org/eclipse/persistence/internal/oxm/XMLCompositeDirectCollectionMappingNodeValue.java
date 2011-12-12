@@ -70,7 +70,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             return false;
         }
         Object iterator = cp.iteratorFor(collection);
-        if (cp.hasNext(iterator)) {
+        if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {

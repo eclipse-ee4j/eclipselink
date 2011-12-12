@@ -402,27 +402,30 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         ContainerPolicy cp = this.getContainerPolicy();
 
         Vector nestedRows = new Vector(cp.sizeFor(attributeValue));
-        for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
-            Object element = cp.next(iter, session);
-            // convert the value - if necessary
-            if (hasConverter()) {
-                if (getConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter) getConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
+        Object iter = cp.iteratorFor(attributeValue);
+        if(null != iter) {
+            while(cp.hasNext(iter)) {
+                Object element = cp.next(iter, session);
+                // convert the value - if necessary
+                if (hasConverter()) {
+                    if (getConverter() instanceof XMLConverter) {
+                        element = ((XMLConverter) getConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
+                    } else {
+                        element = getConverter().convertObjectValueToDataValue(element, session);
+                    }
+                }
+                if(element == null) {
+                    XMLNullRepresentationType nullRepresentation = getNullPolicy().getMarshalNullRepresentation();
+                    if(nullRepresentation == XMLNullRepresentationType.XSI_NIL) {
+                        nestedRows.add(XMLRecord.NIL);
+                    } else if(nullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
+                        Node emptyNode = XPathEngine.getInstance().createUnownedElement(((XMLRecord)row).getDOM(), (XMLField)field);
+                        DOMRecord nestedRow = new DOMRecord(emptyNode);
+                        nestedRows.add(nestedRow);
+                    }
                 } else {
-                    element = getConverter().convertObjectValueToDataValue(element, session);
+                    nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
                 }
-            }
-            if(element == null) {
-                XMLNullRepresentationType nullRepresentation = getNullPolicy().getMarshalNullRepresentation();
-                if(nullRepresentation == XMLNullRepresentationType.XSI_NIL) {
-                    nestedRows.add(XMLRecord.NIL);
-                } else if(nullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
-                    Node emptyNode = XPathEngine.getInstance().createUnownedElement(((XMLRecord)row).getDOM(), (XMLField)field);
-                    DOMRecord nestedRow = new DOMRecord(emptyNode);
-                    nestedRows.add(nestedRow);
-                }
-            } else {
-                nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
             }
         }
 

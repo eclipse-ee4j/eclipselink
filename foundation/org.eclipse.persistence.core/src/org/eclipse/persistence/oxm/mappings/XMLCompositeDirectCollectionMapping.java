@@ -372,28 +372,31 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         ContainerPolicy cp = this.getContainerPolicy();
 
         Vector elements = new Vector(cp.sizeFor(attributeValue));
-        for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
-            Object element = cp.next(iter, session);
-            if (hasValueConverter()) {
-                if (getValueConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter) getValueConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
-                } else {
-                    element = getValueConverter().convertObjectValueToDataValue(element, session);
-                }
-            }
-
-            if (element != null) {
-                elements.addElement(element);
-            } else {
-                if (getNullPolicy() == null) {
-                    elements.addElement(null);
-                } else {
-                    if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
-                        elements.addElement(XMLRecord.NIL);
-                    } else if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
-                        // Do nothing
+        Object iter = cp.iteratorFor(attributeValue);
+        if(null != iter) {
+            while(cp.hasNext(iter)) {
+                Object element = cp.next(iter, session);
+                if (hasValueConverter()) {
+                    if (getValueConverter() instanceof XMLConverter) {
+                        element = ((XMLConverter) getValueConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
                     } else {
-                        elements.addElement(XMLConstants.EMPTY_STRING);
+                        element = getValueConverter().convertObjectValueToDataValue(element, session);
+                    }
+                }
+    
+                if (element != null) {
+                    elements.addElement(element);
+                } else {
+                    if (getNullPolicy() == null) {
+                        elements.addElement(null);
+                    } else {
+                        if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
+                            elements.addElement(XMLRecord.NIL);
+                        } else if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
+                            // Do nothing
+                        } else {
+                            elements.addElement(XMLConstants.EMPTY_STRING);
+                        }
                     }
                 }
             }

@@ -68,7 +68,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             return false;
         }
         Object iterator = cp.iteratorFor(collection);
-        if (cp.hasNext(iterator)) {
+        if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {

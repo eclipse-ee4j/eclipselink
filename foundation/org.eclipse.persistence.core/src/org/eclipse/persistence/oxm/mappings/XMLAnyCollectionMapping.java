@@ -451,82 +451,84 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         Object iter = cp.iteratorFor(attributeValue);
         int childNodeCount = 0;
         boolean wasXMLRoot = false;
-        while (cp.hasNext(iter) && (childNodeCount < childNodes.size())) {
-            Object element = cp.next(iter, session);
-            if(this.getConverter() != null) {
-                element = getConverter().convertObjectValueToDataValue(element, session, record.getMarshaller());
-            }
-            Object originalObject = element;
-            Node nextChild = null;
-            while (childNodeCount < childNodes.size()) {
-                Node nextPossible = (Node) childNodes.get(childNodeCount);
-                if ((nextPossible.getNodeType() == Node.ELEMENT_NODE) || (nextPossible.getNodeType() == Node.TEXT_NODE) || (nextPossible.getNodeType() == Node.CDATA_SECTION_NODE)) {
-                    nextChild = nextPossible;
+        if(null != iter) {
+            while (cp.hasNext(iter) && (childNodeCount < childNodes.size())) {
+                Object element = cp.next(iter, session);
+                if(this.getConverter() != null) {
+                    element = getConverter().convertObjectValueToDataValue(element, session, record.getMarshaller());
+                }
+                Object originalObject = element;
+                Node nextChild = null;
+                while (childNodeCount < childNodes.size()) {
+                    Node nextPossible = (Node) childNodes.get(childNodeCount);
+                    if ((nextPossible.getNodeType() == Node.ELEMENT_NODE) || (nextPossible.getNodeType() == Node.TEXT_NODE) || (nextPossible.getNodeType() == Node.CDATA_SECTION_NODE)) {
+                        nextChild = nextPossible;
+                        childNodeCount++;
+                        break;
+                    }
                     childNodeCount++;
+                }
+                if (nextChild == null) {
                     break;
                 }
-                childNodeCount++;
-            }
-            if (nextChild == null) {
-                break;
-            }
-            if (usesXMLRoot() && (element instanceof XMLRoot)) {
-                xmlRootField = new XMLField();
-                wasXMLRoot = true;
-                XPathFragment frag = new XPathFragment();
-
-                if ((((XMLRoot) element)).getRootFragment().getNamespaceURI() != null) {
-                    frag.setNamespaceURI(((XMLRoot) element).getNamespaceURI());
-                } else {
-                    frag.setXPath(((XMLRoot) element).getLocalName());
-                }
-                xmlRootField.setXPathFragment(frag);
-
-                xmlRootField.setNamespaceResolver(record.getNamespaceResolver());
-                element = ((XMLRoot) element).getObject();
-            }
-            if (element instanceof String) {
-                if (wasXMLRoot) {
-                    if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
-                        String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
-                        if ((prefix == null) || prefix.length() == 0) {
-                            xmlRootField.getXPathFragment().setGeneratedPrefix(true);
-                            prefix = record.getNamespaceResolver().generatePrefix();
-                        }
-                        xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
+                if (usesXMLRoot() && (element instanceof XMLRoot)) {
+                    xmlRootField = new XMLField();
+                    wasXMLRoot = true;
+                    XPathFragment frag = new XPathFragment();
+    
+                    if ((((XMLRoot) element)).getRootFragment().getNamespaceURI() != null) {
+                        frag.setNamespaceURI(((XMLRoot) element).getNamespaceURI());
+                    } else {
+                        frag.setXPath(((XMLRoot) element).getLocalName());
                     }
+                    xmlRootField.setXPathFragment(frag);
+    
+                    xmlRootField.setNamespaceResolver(record.getNamespaceResolver());
+                    element = ((XMLRoot) element).getObject();
                 }
-
-                if (xmlRootField != null) {
-                    XPathEngine.getInstance().create(xmlRootField, root, element, session);
-                } else {
-                    Text textNode = doc.createTextNode((String) element);
-                    root.replaceChild(textNode, nextChild);
-                }
-            } else if (element instanceof org.w3c.dom.Node) {
-                Node importedCopy = doc.importNode((Node) element, true);
-                root.replaceChild(importedCopy, nextChild);
-            } else {
-                XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(element.getClass());
-
-                if (wasXMLRoot) {
-                    if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
-                        String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                        if ((prefix == null) || prefix.length() == 0) {
-                            prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+                if (element instanceof String) {
+                    if (wasXMLRoot) {
+                        if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
+                            String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+                            if ((prefix == null) || prefix.length() == 0) {
+                                xmlRootField.getXPathFragment().setGeneratedPrefix(true);
+                                prefix = record.getNamespaceResolver().generatePrefix();
+                            }
+                            xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
                         }
-                        if ((prefix == null) || prefix.length() == 0) {
-                            xmlRootField.getXPathFragment().setGeneratedPrefix(true);
-                            prefix = record.getNamespaceResolver().generatePrefix();
-                        }
-                        xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
                     }
-                }
-
-                DOMRecord nestedRecord = (DOMRecord) buildCompositeRow(element, session, referenceDescriptor, row, xmlRootField, element, wasXMLRoot);
-                if (nestedRecord != null) {
-                    if (nestedRecord.getDOM() != nextChild) {
-                        root.replaceChild(nestedRecord.getDOM(), nextChild);
+    
+                    if (xmlRootField != null) {
+                        XPathEngine.getInstance().create(xmlRootField, root, element, session);
+                    } else {
+                        Text textNode = doc.createTextNode((String) element);
+                        root.replaceChild(textNode, nextChild);
+                    }
+                } else if (element instanceof org.w3c.dom.Node) {
+                    Node importedCopy = doc.importNode((Node) element, true);
+                    root.replaceChild(importedCopy, nextChild);
+                } else {
+                    XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(element.getClass());
+    
+                    if (wasXMLRoot) {
+                        if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
+                            String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
+                            if ((prefix == null) || prefix.length() == 0) {
+                                prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+                            }
+                            if ((prefix == null) || prefix.length() == 0) {
+                                xmlRootField.getXPathFragment().setGeneratedPrefix(true);
+                                prefix = record.getNamespaceResolver().generatePrefix();
+                            }
+                            xmlRootField.getXPathFragment().setXPath(prefix + XMLConstants.COLON + ((XMLRoot) originalObject).getLocalName());
+                        }
+                    }
+    
+                    DOMRecord nestedRecord = (DOMRecord) buildCompositeRow(element, session, referenceDescriptor, row, xmlRootField, element, wasXMLRoot);
+                    if (nestedRecord != null) {
+                        if (nestedRecord.getDOM() != nextChild) {
+                            root.replaceChild(nestedRecord.getDOM(), nextChild);
+                        }
                     }
                 }
             }
@@ -540,7 +542,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                 }
             }
         }
-        if (cp.hasNext(iter)) {
+        if (null != iter && cp.hasNext(iter)) {
             while (cp.hasNext(iter)) {
                 //add in extras
                 Object element = cp.next(iter, session);

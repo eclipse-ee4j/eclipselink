@@ -14,10 +14,14 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import java.io.StringWriter;
 
+import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
 
@@ -27,10 +31,27 @@ public class NullIteratorListTestCases extends TestCase {
         JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullIteratorListRoot.class}, null);
 
         NullIteratorListRoot nilr = new NullIteratorListRoot();
-        nilr.setNullIteratorList(new NullIteratorList());
+        nilr.setElementList(new NullIteratorList());
+        nilr.setChoiceList(new NullIteratorList());
+        nilr.setAnyList(new NullIteratorList());
 
         Marshaller marshaller = jc.createMarshaller();
         marshaller.marshal(nilr, new StringWriter());
+    }
+
+    public void testBinderMarshal() throws Exception {
+        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullIteratorListRoot.class}, null);
+
+        NullIteratorListRoot nilr = new NullIteratorListRoot();
+        nilr.setElementList(new NullIteratorList());
+        nilr.setChoiceList(new NullIteratorList());
+        nilr.setAnyList(new NullIteratorList());
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document document = db.newDocument();
+        Binder binder = jc.createBinder();
+        binder.marshal(nilr, document);
     }
 
 }

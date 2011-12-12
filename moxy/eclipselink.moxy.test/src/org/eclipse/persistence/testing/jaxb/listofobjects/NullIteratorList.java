@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class NullIteratorList implements List {
+public class NullIteratorList<T> implements List<T> {
 
     public int size() {
         return 0;
@@ -74,7 +74,7 @@ public class NullIteratorList implements List {
     public void clear() {
     }
 
-    public Object get(int index) {
+    public T get(int index) {
         return null;
     }
 
@@ -85,7 +85,7 @@ public class NullIteratorList implements List {
     public void add(int index, Object element) {
     }
 
-    public Object remove(int index) {
+    public T remove(int index) {
         return null;
     }
 
