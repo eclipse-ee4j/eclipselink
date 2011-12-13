@@ -1537,13 +1537,15 @@ public class AnnotationsProcessor {
                     }
                 }
             }
-            if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null && !property.isSetXmlJavaTypeAdapter()) {
-                adapterClass = info.getPackageLevelAdapterClass(ptype);
+            if(info.hasPackageLevelAdaptersByClass()) {
+                if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null && !property.isSetXmlJavaTypeAdapter()) {
+                    adapterClass = info.getPackageLevelAdapterClass(ptype);
 
-                org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
-                xja.setValue(adapterClass.getQualifiedName());
-                xja.setType(ptype.getQualifiedName());
-                property.setXmlJavaTypeAdapter(xja);
+                    org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+                    xja.setValue(adapterClass.getQualifiedName());
+                    xja.setType(ptype.getQualifiedName());
+                    property.setXmlJavaTypeAdapter(xja);
+                }
             }
         }
     }

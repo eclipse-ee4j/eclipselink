@@ -1232,4 +1232,13 @@ public class Property implements Cloneable {
         this.isVirtual = value;
     }
 
+    /**
+     * This event is called when all of the metadata for this property has been 
+     * processed and provides a chance to deference anything that is no longer 
+     * needed to reduce the memory footprint of this object.
+     */
+    void postInitialize() {
+        this.element = null;
+    }
+
 }
