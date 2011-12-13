@@ -276,56 +276,58 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         List<XMLEntry> nestedRows = new ArrayList<XMLEntry>();
         XMLRecord record = (XMLRecord)row;
         //First determine which Field is associated with each value:
-        ContainerPolicy cp = getContainerPolicy();
-        Object iterator = cp.iteratorFor(attributeValue);
-        if(null != iterator) {
-            while(cp.hasNext(iterator)) {
-                Object value = cp.next(iterator, session);
-                if (null != converter) {
-                    if (converter instanceof XMLConverter) {
-                        value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, record.getMarshaller());
-                    } else {
-                        value = converter.convertObjectValueToDataValue(value, session);
-                    }
-                }
-                NodeValue associatedNodeValue = null;
-                XMLField associatedField = null;
-                Object fieldValue = value;
-                if(value instanceof XMLRoot) {
-                    XMLRoot rootValue = (XMLRoot)value;
-                    String localName = rootValue.getLocalName();
-                    String namespaceUri = rootValue.getNamespaceURI();
-                    fieldValue = rootValue.getObject();
-                    associatedField = getFieldForName(localName, namespaceUri);
-                    if(associatedField == null) {
-                        associatedField = getClassToFieldMappings().get(fieldValue.getClass());
-                    }
-                } else {
-                    associatedField = getClassToFieldMappings().get(value.getClass());
-                }
-                if(associatedField == null) {
-                    //this may be a reference mapping
-                    List<XMLField> sourceFields = classToSourceFieldsMappings.get(value.getClass());
-                    if(sourceFields != null && sourceFields.size() > 0) {
-                        DatabaseMapping xmlMapping = (DatabaseMapping)this.choiceElementMappings.get(sourceFields.get(0));
-                        for(XMLField next:sourceFields) {
-                            fieldValue = ((XMLCollectionReferenceMapping)xmlMapping).buildFieldValue(value, next, session);
-                            XMLEntry entry = new XMLEntry();
-                            entry.setValue(fieldValue);
-                            entry.setXMLField(next);
-                            nestedRows.add(entry);
+        if(null != attributeValue) {
+            ContainerPolicy cp = getContainerPolicy();
+            Object iterator = cp.iteratorFor(attributeValue);
+            if(null != iterator) {
+                while(cp.hasNext(iterator)) {
+                    Object value = cp.next(iterator, session);
+                    if (null != converter) {
+                        if (converter instanceof XMLConverter) {
+                            value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, record.getMarshaller());
+                        } else {
+                            value = converter.convertObjectValueToDataValue(value, session);
                         }
                     }
-                } else {
-                    DatabaseMapping xmlMapping = (DatabaseMapping)this.choiceElementMappings.get(associatedField);
-                    if(xmlMapping.isAbstractCompositeCollectionMapping()) {
-                        fieldValue = ((XMLCompositeCollectionMapping)xmlMapping).buildCompositeRow(fieldValue, session, row, writeType);
+                    NodeValue associatedNodeValue = null;
+                    XMLField associatedField = null;
+                    Object fieldValue = value;
+                    if(value instanceof XMLRoot) {
+                        XMLRoot rootValue = (XMLRoot)value;
+                        String localName = rootValue.getLocalName();
+                        String namespaceUri = rootValue.getNamespaceURI();
+                        fieldValue = rootValue.getObject();
+                        associatedField = getFieldForName(localName, namespaceUri);
+                        if(associatedField == null) {
+                            associatedField = getClassToFieldMappings().get(fieldValue.getClass());
+                        }
+                    } else {
+                        associatedField = getClassToFieldMappings().get(value.getClass());
                     }
-                
-                    XMLEntry entry = new XMLEntry();
-                    entry.setValue(fieldValue);
-                    entry.setXMLField(associatedField);
-                    nestedRows.add(entry);
+                    if(associatedField == null) {
+                        //this may be a reference mapping
+                        List<XMLField> sourceFields = classToSourceFieldsMappings.get(value.getClass());
+                        if(sourceFields != null && sourceFields.size() > 0) {
+                            DatabaseMapping xmlMapping = (DatabaseMapping)this.choiceElementMappings.get(sourceFields.get(0));
+                            for(XMLField next:sourceFields) {
+                                fieldValue = ((XMLCollectionReferenceMapping)xmlMapping).buildFieldValue(value, next, session);
+                                XMLEntry entry = new XMLEntry();
+                                entry.setValue(fieldValue);
+                                entry.setXMLField(next);
+                                nestedRows.add(entry);
+                            }
+                        }
+                    } else {
+                        DatabaseMapping xmlMapping = (DatabaseMapping)this.choiceElementMappings.get(associatedField);
+                        if(xmlMapping.isAbstractCompositeCollectionMapping()) {
+                            fieldValue = ((XMLCompositeCollectionMapping)xmlMapping).buildCompositeRow(fieldValue, session, row, writeType);
+                        }
+                    
+                        XMLEntry entry = new XMLEntry();
+                        entry.setValue(fieldValue);
+                        entry.setXMLField(associatedField);
+                        nestedRows.add(entry);
+                    }
                 }
             }
         }
