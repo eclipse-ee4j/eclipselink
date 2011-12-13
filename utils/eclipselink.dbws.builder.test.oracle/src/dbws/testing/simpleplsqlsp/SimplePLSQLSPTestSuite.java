@@ -102,6 +102,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_SIMPLEPACKAGE1_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_SIMPLEPACKAGE1_BODY, ddlDebug);
         }
+        username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
@@ -141,6 +142,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
               "<plsql-procedure " +
                   "name=\"InOutArgTest\" " +
                   "catalogPattern=\"SIMPLEPACKAGE1\" " +
+                  "schemaPattern=\"" + username.toUpperCase() + "\" " +
                   "procedurePattern=\"INOUTARGPLSQLSP\" " +
               "/>" +
             "</dbws-builder>";

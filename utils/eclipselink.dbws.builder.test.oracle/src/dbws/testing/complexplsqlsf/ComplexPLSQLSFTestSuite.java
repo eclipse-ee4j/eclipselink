@@ -14,7 +14,6 @@ package dbws.testing.complexplsqlsf;
 
 //javase imports
 import java.io.StringReader;
-import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -67,8 +66,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nNEWVARRAY(2) := OLDTAB(2);" +
                 "\nNEWVARRAY.EXTEND;" +
                 "\nNEWVARRAY(3) := OLDTAB(3);" +
-                "\nRETURN NEWVARRAY;" + 
-            "\nEND TABLETOVARRAY;" +            
+                "\nRETURN NEWVARRAY;" +
+            "\nEND TABLETOVARRAY;" +
             "\nFUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY AS" +
             "\nNEWVARRAY VARCHAR2ARRAY;" +
             "\nBEGIN" +
@@ -85,18 +84,18 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nNEWVARRAY(5) := OLDTAB2(2);" +
                 "\nNEWVARRAY.EXTEND;" +
                 "\nNEWVARRAY(6) := OLDTAB2(3);" +
-                "\nRETURN NEWVARRAY;" + 
-            "\nEND TABLESTOVARRAY;" +            
+                "\nRETURN NEWVARRAY;" +
+            "\nEND TABLESTOVARRAY;" +
             "\nFUNCTION VARRAYTOTABLE(OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" + 
+            "\nNEWTAB TAB1;" +
             "\nBEGIN" +
                 "\nNEWTAB(1) := OLDVARRAY(1);" +
                 "\nNEWTAB(2) := OLDVARRAY(2);" +
                 "\nNEWTAB(3) := OLDVARRAY(3);" +
-                "\nRETURN NEWTAB;" + 
+                "\nRETURN NEWTAB;" +
             "\nEND VARRAYTOTABLE;" +
             "\nFUNCTION VARRAYSTOTABLE(OLDVARRAY IN VARCHAR2ARRAY, OLDVARRAY2 IN VARCHAR2ARRAY) RETURN TAB1 AS" +
-            "\nNEWTAB TAB1;" + 
+            "\nNEWTAB TAB1;" +
             "\nBEGIN" +
                 "\nNEWTAB(1) := OLDVARRAY(1);" +
                 "\nNEWTAB(2) := OLDVARRAY(2);" +
@@ -104,7 +103,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nNEWTAB(4) := OLDVARRAY2(1);" +
                 "\nNEWTAB(5) := OLDVARRAY2(2);" +
                 "\nNEWTAB(6) := OLDVARRAY2(3);" +
-                "\nRETURN NEWTAB;" + 
+                "\nRETURN NEWTAB;" +
             "\nEND VARRAYSTOTABLE;" +
         "\nEND COMPLEXPKG2;";
     static final String DROP_COMPLEXPKG2_PACKAGE =
@@ -252,7 +251,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(TABLE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void vArraysToTableTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -270,7 +269,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(TABLE3_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -297,7 +296,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
         "</COMPLEXPKG2_TAB1>";
-    
+
 
     public static final String VARRAY_XML =
         STANDALONE_XML_HEADER +
@@ -314,7 +313,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
         "</varchar2arrayType>";
-    
+
     public static final String VARRAY3_XML =
         STANDALONE_XML_HEADER +
         "<varchar2arrayType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +

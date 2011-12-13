@@ -133,7 +133,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     protected DatabaseTypeBuilder dtBuilder = new DatabaseTypeBuilder();
     protected boolean hasComplexProcedureArgs = false;
-    
+
     public OracleHelper(DBWSBuilder dbwsBuilder) {
         super(dbwsBuilder);
     }
@@ -187,7 +187,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                qh = new StoredProcedureQueryHandler();
 	            }
 	            ((StoredProcedureQueryHandler)qh).setName(qualifiedProcName);
-	
+
 	            // before assigning queryHandler, check for named query in OR project
 	            List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
 	            if (queries.size() > 0) {
@@ -198,10 +198,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                    }
 	                }
 	            }
-	
+
 	            qo.setQueryHandler(qh);
             }
-            
+
             String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
@@ -422,27 +422,27 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Returns the name to be used for a QueryOperation (or Query) based on a 
+     * Returns the name to be used for a QueryOperation (or Query) based on a
      * given ProcedureType and ProcedureOperationModel.
      *
      * The returned string will be:
-     * 
+     *
      * 1) If the given ProcedureOperationModel 'name' is a non-null & non-empty
      * string, the returned string will be one of the following:
      *   a) 'modelName' if no pattern matching or overloading
      *   b) 'modelName_procedureName' if pattern matching and no overloading
      *   c) 'modelName_overload' if overloading and no pattern matching
      *   d) 'modelName_procedureName_overload' if pattern matching & overloading
-     * 
+     *
      * OR
-     *  
+     *
      * 2) If the given ProcedureOperationModel 'name' is a null or empty string, the
      * returned string will be in the format: 'overload_catalog_schema_procedureName'
      */
     protected String getNameForQueryOperation(ProcedureOperationModel opModel, ProcedureType storedProcedure) {
     	StringBuilder sb = new StringBuilder();
     	String modelName = opModel.getName();
-    	
+
         if (modelName != null && modelName.length() > 0) {
         	sb.append(modelName);
         	// handle pattern matching
@@ -477,20 +477,20 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Returns the qualified stored procedure name based on a given ProcedureType
      * and ProcedureOperationModel.
      *
-     * The returned string will be in the format: 'catalog.schema.procedureName'
+     * The returned string will be in the format: 'schema.catalog.procedureName'
      *
      */
     protected String getQualifiedProcedureName(ProcedureOperationModel procedureOperationModel, ProcedureType storedProcedure) {
         StringBuilder sb = new StringBuilder();
-        if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
-            sb.append(storedProcedure.getCatalogName());
-            sb.append(DOT);
-        }
         if (procedureOperationModel.getSchemaPattern() != null &&
             procedureOperationModel.getSchemaPattern().length() > 0 &&
             storedProcedure.getSchema() != null &&
             storedProcedure.getSchema().length() > 0) {
             sb.append(storedProcedure.getSchema());
+            sb.append(DOT);
+        }
+        if (storedProcedure.getCatalogName() != null && storedProcedure.getCatalogName().length() > 0) {
+            sb.append(storedProcedure.getCatalogName());
             sb.append(DOT);
         }
         sb.append(storedProcedure.getProcedureName());
@@ -756,7 +756,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 String referenceClassName = (catalogPattern + DOT + ((PLSQLRecordType)nestedType).getTypeName()).toLowerCase();
                 buildAndAddObjectArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, referenceClassName, targetTypeName);
                 if (orProject.getDescriptorForAlias(referenceClassName) == null) {
-                	String refTypeName = catalogPattern + UNDERSCORE + ((PLSQLRecordType)nestedType).getTypeName(); 
+                	String refTypeName = catalogPattern + UNDERSCORE + ((PLSQLRecordType)nestedType).getTypeName();
                 	addToORProjectForPLSQLRecordArg(nestedType, orProject, referenceClassName, refTypeName.toLowerCase(), refTypeName, catalogPattern);
                 }
             } else {
@@ -1005,7 +1005,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 call = new StoredProcedureCall();
             }
     	}
-    	
+
         String cat = procType.getCatalogName();
         String catalogPrefix = (cat == null || cat.length() == 0) ? EMPTY_STRING : cat + DOT;
         call.setProcedureName(catalogPrefix + procType.getProcedureName());
@@ -1025,7 +1025,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         for (ArgumentType arg : procType.getArguments()) {
             DatabaseType argType = arg.getDataType();
             ArgumentTypeDirection direction = arg.getDirection();
-            
+
             // for PL/SQL
             org.eclipse.persistence.internal.helper.DatabaseType databaseType = null;
             // for Advanced JDBC
@@ -1072,8 +1072,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             		((PLSQLStoredProcedureCall)call).addNamedOutputArgument(arg.getArgumentName(), databaseType);
             	} else {
                     if (argType.isComposite()) {
-                        Class wrapperClass = getWrapperClass(javaTypeName); 
-                        
+                        Class wrapperClass = getWrapperClass(javaTypeName);
+
                     	if (argType instanceof VArrayType || argType instanceof ObjectTableType) {
                             call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(),
                                 Types.ARRAY, argType.getTypeName(), wrapperClass, buildFieldForNestedType(argType));
@@ -1194,7 +1194,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build an XMLCompositeObjectMapping based on given attribute and reference 
+     * Build an XMLCompositeObjectMapping based on given attribute and reference
      * class names, and add the newly created mapping to the given descriptor.
      */
     protected void buildAndAddXMLCompositeObjectMapping(XMLDescriptor xdesc, String attributeName, String referenceClassName) {
@@ -1213,16 +1213,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         mapping.setReferenceClassName(referenceClassName);
         return mapping;
     }
-    
+
     /**
-     * Build an XMLCompositeCollectionMapping based on a given reference class 
+     * Build an XMLCompositeCollectionMapping based on a given reference class
      * name, and add the newly created mapping to the given descriptor.
      */
     protected void buildAndAddXMLCompositeCollectionMapping(XMLDescriptor xdesc, String referenceClassName) {
     	xdesc.addMapping(buildXMLCompositeCollectionMapping(referenceClassName));
     }
     /**
-     * Build an XMLCompositeCollectionMapping based on a given 
+     * Build an XMLCompositeCollectionMapping based on a given
      * reference class name.
      */
     protected XMLCompositeCollectionMapping buildXMLCompositeCollectionMapping(String referenceClassName) {
@@ -1234,11 +1234,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         itemsMapping.setReferenceClassName(referenceClassName);
         return itemsMapping;
     }
-  
+
     /**
-     * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath, 
+     * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath,
      * and attribute element class.  The newly created mapping will be added to the given
-     * XML descriptor. 
+     * XML descriptor.
      */
     protected XMLCompositeDirectCollectionMapping buildAndAddXMLCompositeDirectCollectionMapping(XMLDescriptor xdesc, String attributeName, String xPath, Class<?> attributeElementClass) {
         XMLCompositeDirectCollectionMapping itemsMapping = buildXMLCompositeDirectCollectionMapping(attributeName, xPath, attributeElementClass);
@@ -1247,7 +1247,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         return itemsMapping;
     }
     /**
-     * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath, 
+     * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath,
      * and attribute element class.
      */
     protected XMLCompositeDirectCollectionMapping buildXMLCompositeDirectCollectionMapping(String attributeName, String xPath, Class<?> attributeElementClass) {
@@ -1264,8 +1264,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         nullPolicy.setNullRepresentedByXsiNil(true);
         itemsMapping.setNullPolicy(nullPolicy);
         return itemsMapping;
-    }    
-    
+    }
+
     /**
      * Builds a StructureMapping based on a given attributeName, fieldName and reference
      * class name, and adds the newly created mapping to the given OR descriptor.
@@ -1273,7 +1273,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     protected StructureMapping buildAndAddStructureMapping(ObjectRelationalDataTypeDescriptor orDesc, String attributeName, String fieldName, String referenceClassName) {
         StructureMapping structureMapping = buildStructureMapping(attributeName, fieldName, referenceClassName);
         orDesc.addMapping(structureMapping);
-        return structureMapping;    	
+        return structureMapping;
     }
     /**
      * Builds a StructureMapping based on a given attributeName, fieldName
@@ -1286,11 +1286,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         structureMapping.setReferenceClassName(referenceClassName);
         return structureMapping;
     }
-    
+
     /**
-     * Builds an ObjectArrayMapping based on a given attribute name, field name, 
+     * Builds an ObjectArrayMapping based on a given attribute name, field name,
      * reference class name, field type and package name, and adds the newly
-     * created mapping to the given OR descriptor. 
+     * created mapping to the given OR descriptor.
      */
     protected ObjectArrayMapping buildAndAddObjectArrayMapping(ObjectRelationalDataTypeDescriptor orDesc, String attributeName, String fieldName, String referenceClassName, String structureName) {
         ObjectArrayMapping objectArrayMapping = buildObjectArrayMapping(attributeName, fieldName, referenceClassName, structureName);
@@ -1298,8 +1298,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         return objectArrayMapping;
     }
     /**
-     * Builds an ObjectArrayMapping based on a given attribute name, field name, 
-     * reference class name and structureName. 
+     * Builds an ObjectArrayMapping based on a given attribute name, field name,
+     * reference class name and structureName.
      */
     protected ObjectArrayMapping buildObjectArrayMapping(String attributeName, String fieldName, String referenceClassName, String structureName) {
         ObjectArrayMapping objectArrayMapping = new ObjectArrayMapping();
@@ -1312,8 +1312,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build an ArrayMapping based on a given attribute name, field name and structure 
-     * name.  The newly created mapping will be added to the given OR descriptor. 
+     * Build an ArrayMapping based on a given attribute name, field name and structure
+     * name.  The newly created mapping will be added to the given OR descriptor.
      */
     protected ArrayMapping buildAndAddArrayMapping(ObjectRelationalDataTypeDescriptor orDesc, String attributeName, String fieldName, String structureName) {
         ArrayMapping arrayMapping = buildArrayMapping(attributeName, fieldName, structureName);
@@ -1321,8 +1321,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         return arrayMapping;
     }
     /**
-     * Build an ArrayMapping based on a given attribute name, field name and structure 
-     * name. 
+     * Build an ArrayMapping based on a given attribute name, field name and structure
+     * name.
      */
     protected ArrayMapping buildArrayMapping(String attributeName, String fieldName, String structureName) {
         ArrayMapping arrayMapping = new ArrayMapping();
@@ -1334,14 +1334,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Build an XMLDescriptor based on a given descriptor alias, schema alias and target 
+     * Build an XMLDescriptor based on a given descriptor alias, schema alias and target
      * namespace, and add the newly created descriptor to the given OX Project.
      */
     protected XMLDescriptor buildAndAddNewXMLDescriptor(Project oxProject, String objectAlias, String userType, String targetNamespace) {
         return buildAndAddNewXMLDescriptor(oxProject, objectAlias, objectAlias, userType, targetNamespace);
     }
     /**
-     * Build an XMLDescriptor based on a given descriptor alias, schema alias, java class name 
+     * Build an XMLDescriptor based on a given descriptor alias, schema alias, java class name
      * and target namespace, and add the newly created descriptor to the given OX Project.
      */
     protected XMLDescriptor buildAndAddNewXMLDescriptor(Project oxProject, String objectAlias, String javaClassName, String userType, String targetNamespace) {
@@ -1388,7 +1388,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * alias and java class name, and add it to the given OR Project.
      */
     protected ObjectRelationalDataTypeDescriptor buildAndAddNewObjectRelationalDataTypeDescriptor(Project orProject, String alias, String javaClassName) {
-    	ObjectRelationalDataTypeDescriptor ordesc = buildNewObjectRelationalDataTypeDescriptor(alias, javaClassName); 
+    	ObjectRelationalDataTypeDescriptor ordesc = buildNewObjectRelationalDataTypeDescriptor(alias, javaClassName);
     	orProject.addDescriptor(ordesc);
     	return ordesc;
     }
@@ -1412,10 +1412,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         ordt.getQueryManager();
         return ordt;
     }
-    
+
     /**
      * Return the structure name to be set on a mapping based on a given
-     * FieldType and packageName. 
+     * FieldType and packageName.
      */
     protected String getStructureNameForField(FieldType fType, String packageName) {
     	DatabaseType type = fType.getDataType();
@@ -1425,13 +1425,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     	}
     	return structureName;
     }
-    
+
     /**
      * Return the wrapper class for a given DatabaseType.  The class will be loaded by the
-     * XRDynamicClassloader, based on the DatabaseType's javaTypeName.  If the class 
+     * XRDynamicClassloader, based on the DatabaseType's javaTypeName.  If the class
      * cannot be loaded, or the given DatabaseType is not a ComplexDatabaseType, null
      * will be returned.
-     * 
+     *
      */
     @SuppressWarnings("rawtypes")
 	protected Class getWrapperClass(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
@@ -1445,19 +1445,19 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Return the wrapper class for a wrapper class name.  The wrapper class name would
      * typically be an argument type name, descriptor java class name, or a
      * DatabaseType's javaTypeName.
-     * 
-     * The class will be loaded by the XRDynamicClassloader;  if the class cannot be 
+     *
+     * The class will be loaded by the XRDynamicClassloader;  if the class cannot be
      * loaded, null will be returned.
-     * 
+     *
      */
     @SuppressWarnings("rawtypes")
 	protected Class getWrapperClass(String wrapperClassName) {
-        Class wrapperClass = null; 
+        Class wrapperClass = null;
         try {
             // the following call will try and load the collection wrapper class via XRDynamicClassLoader
         	wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(wrapperClassName);
         } catch (ClassNotFoundException e) {
-        	// TODO:  it is unlikely that we'll get here, so is there any need 
+        	// TODO:  it is unlikely that we'll get here, so is there any need
         	//        to handle this with an EclipseLink exception
         }
 		return wrapperClass;

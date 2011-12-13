@@ -631,6 +631,13 @@ public abstract class BaseDBWSBuilderHelper {
     public void generateDBWSProvider(OutputStream sourceProviderStream,
         OutputStream classProviderStream, OutputStream sourceProviderListenerStream,
         OutputStream classProviderListenerStream) {
+
+        if (isNullStream(sourceProviderStream) && isNullStream(classProviderStream) &&
+            isNullStream(sourceProviderListenerStream) && isNullStream(classProviderListenerStream)) {
+            //no work to do
+            return;
+        }
+
         if (!isNullStream(sourceProviderStream)) {
             dbwsBuilder.logMessage(FINEST, "generating " + DBWS_PROVIDER_SOURCE_FILE);
         }
@@ -933,19 +940,19 @@ public abstract class BaseDBWSBuilderHelper {
                     || nameAndModel.procOpModel.isAdvancedJDBCProcedureOperation())) {
                 // build list of arguments to process (i.e. build descriptors for)
                 List<ArgumentType> args = getArgumentListForProcedureType(procType);
-                
+
                 boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
                 boolean hasPLSQLArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs(args);
-                boolean hasPLSQLScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);                
-                
+                boolean hasPLSQLScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
+
                 // set 'complex' flag on model to indicate complex arg processing is required
                 // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
-                //       model necessarily have complex args, but we will need to know to 
+                //       model necessarily have complex args, but we will need to know to
                 //       process the ones that do
                 if (!nameAndModel.procOpModel.hasComplexArguments) {
                 	nameAndModel.procOpModel.setHasComplexArguments(hasComplexArgs);
                 }
-                
+
                 if (hasComplexArgs || hasPLSQLScalarArgs) {
                     // subclasses are responsible for processing complex arguments
                     addToOROXProjectsForComplexArgs(args, orProject, oxProject, nameAndModel.procOpModel);
@@ -1079,7 +1086,7 @@ public abstract class BaseDBWSBuilderHelper {
     /**
      * Return the type name to be used for a given database type.  The given
      * DatabaseType's typeName attribute is typically returned, however, in
-     * some cases special handling may be required.  For example, in the 
+     * some cases special handling may be required.  For example, in the
      * case of a NumericType instance, "DECIMAL" should be used for the
      * type name.
      */
@@ -1269,7 +1276,7 @@ public abstract class BaseDBWSBuilderHelper {
         }
         return STRING;
     }
-    
+
     /**
      * Apply SimpleXMLFormat if 'isSimpleXMLFormat' is true.  The SimpleXMLFormat is
      * configured based on the given ProcedureOperationModel's simpleXMLFormatTag
@@ -1296,7 +1303,7 @@ public abstract class BaseDBWSBuilderHelper {
             }
         }
     }
-    
+
     /**
      * Perform any additional actions required for operation creation
      * for both PL/SQL and non-PL/SQL operation models.
@@ -1308,7 +1315,7 @@ public abstract class BaseDBWSBuilderHelper {
             addSimpleXMLFormat(dbwsBuilder.getSchema());
         }
     }
-    
+
     /**
      * Return a list of ArgumentTypes for a given Procedure Type.  This will include
      * a return argument if pType is a FunctionType.

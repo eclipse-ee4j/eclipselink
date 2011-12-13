@@ -14,7 +14,6 @@ package dbws.testing.complexplsqlsp;
 
 //javase imports
 import java.io.StringReader;
-import java.sql.SQLException;
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -242,7 +241,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(TABLE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void vArraysToTableTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -260,7 +259,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(TABLE3_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG_TAB1 xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -287,7 +286,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
         "</COMPLEXPKG_TAB1>";
-    
+
 
     public static final String VARRAY_XML =
         STANDALONE_XML_HEADER +
@@ -304,7 +303,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
         "</varchararrayType>";
-    
+
     public static final String VARRAY3_XML =
         STANDALONE_XML_HEADER +
         "<varchararrayType xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
