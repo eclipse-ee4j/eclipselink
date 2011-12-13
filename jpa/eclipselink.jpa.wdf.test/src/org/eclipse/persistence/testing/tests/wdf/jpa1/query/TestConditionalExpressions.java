@@ -656,7 +656,7 @@ public class TestConditionalExpressions extends QueryTest {
 
     @Test
     public void testIsNullHandling2() {
-        assertInvalidQuery("select p from Person as p where p is null");
+        assertValidQuery("select p from Person as p where p is null");
     }
 
     @Test
@@ -682,7 +682,7 @@ public class TestConditionalExpressions extends QueryTest {
 
     @Test
     public void testIsNullHandling7() {
-        assertInvalidQuery("select p from Person as p where p is not null");
+        assertValidQuery("select p from Person as p where p is not null");
     }
 
     @Test

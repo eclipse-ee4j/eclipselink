@@ -307,6 +307,7 @@
             <pathelement path="${oracle_test.build.location}/${eclipselink.oracle.depend.test.jar}"/>
             <pathelement path="${oracle_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${oracle_test.resource.dir}"/>
             <pathelement path="${oracle_test.2.core.test.dir}/resource"/>
         </path>
         <!-- Classpath used for compiling tests. -->
