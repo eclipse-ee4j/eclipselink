@@ -2121,6 +2121,7 @@ public class MappingsGenerator {
                     }                    
                 }
             }
+            info.postInitialize();
         }
     }
 
@@ -2173,6 +2174,7 @@ public class MappingsGenerator {
                     mapping.setProperties(next.getUserProperties());
                 }
             }
+            next.postInitialize();
         }
     }
 

@@ -129,7 +129,6 @@ public class TypeInfo {
         properties = new HashMap<String, Property>();
         originalProperties = new HashMap<String, Property>();
         propertyList = new ArrayList<Property>();
-        packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
         xmlNameTransformer = DEFAULT_NAME_TRANSFORMER;
         isSetXmlTransient = false;
         isPreBuilt = false;
@@ -359,7 +358,10 @@ public class TypeInfo {
      * @return
      */
     public JavaClass getPackageLevelAdapterClass(JavaClass boundType) {
-        return getPackageLevelAdaptersByClass().get(boundType.getQualifiedName());
+        if(hasPackageLevelAdaptersByClass()) {
+            return getPackageLevelAdaptersByClass().get(boundType.getQualifiedName());
+        }
+        return null;
     }
     
     public boolean isAnonymousComplexType() {
@@ -373,7 +375,10 @@ public class TypeInfo {
      * @return
      */
     public JavaClass getPackageLevelAdapterClass(String boundTypeName) {
-        return getPackageLevelAdaptersByClass().get(boundTypeName);
+        if(hasPackageLevelAdaptersByClass()) {
+            return getPackageLevelAdaptersByClass().get(boundTypeName);
+        }
+        return null;
     }
 
     /**
@@ -382,7 +387,14 @@ public class TypeInfo {
      * @return
      */
     public HashMap<String, JavaClass> getPackageLevelAdaptersByClass() {
+        if(!hasPackageLevelAdaptersByClass()) {
+            packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
+        }
         return packageLevelAdaptersByClass;
+    }
+
+    boolean hasPackageLevelAdaptersByClass() {
+        return null != packageLevelAdaptersByClass;
     }
 
     /**
@@ -392,7 +404,7 @@ public class TypeInfo {
      * @param boundType
      */
     public void addPackageLevelAdapterClass(JavaClass adapterClass, JavaClass boundType) {
-    	packageLevelAdaptersByClass.put(boundType.getQualifiedName(), adapterClass);
+        getPackageLevelAdaptersByClass().put(boundType.getQualifiedName(), adapterClass);
     }
 
     public boolean hasRootElement() {
@@ -535,11 +547,13 @@ public class TypeInfo {
             }
             propertiesInOrder.add(next);
             // check for additional properties (i.e. multiple mappings to the same field)
-            List<Property> addProps = getAdditionalProperties().get(propertyName);
-            if (addProps != null) {
-                for (Property addProp : addProps) {
-                    if (!addProp.isTransient()) {
-                        propertiesInOrder.add(addProp);
+            if(hasAdditionalProperties()) {
+                List<Property> addProps = getAdditionalProperties().get(propertyName);
+                if (addProps != null) {
+                    for (Property addProp : addProps) {
+                        if (!addProp.isTransient()) {
+                            propertiesInOrder.add(addProp);
+                        }
                     }
                 }
             }
@@ -1026,10 +1040,14 @@ public class TypeInfo {
      * 
      */
     public Map<String, List<Property>> getAdditionalProperties() {
-        if (additionalProperties == null) {
+        if (!hasAdditionalProperties()) {
             additionalProperties = new HashMap<String, List<Property>>();
         }
         return additionalProperties;
+    }
+
+    boolean hasAdditionalProperties() {
+        return null != additionalProperties;
     }
 
     /**
@@ -1120,6 +1138,15 @@ public class TypeInfo {
 
     public void setLocationAware(boolean value) {
         this.isLocationAware = value;
+    }
+
+    /**
+     * This event is called when all of the metadata for this type has been 
+     * processed and provides a chance to deference anything that is no longer 
+     * needed to reduce the memory footprint of this object.
+     */
+    void postInitialize() {
+        this.originalProperties = null;
     }
 
 }

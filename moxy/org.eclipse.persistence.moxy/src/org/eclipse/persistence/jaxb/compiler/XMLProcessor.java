@@ -481,7 +481,10 @@ public class XMLProcessor {
                 // if we are dealing with multiple mappings for the same attribute, leave the existing
                 // property as-is and update the additionalProperties list on the owning TypeInfo
                 if (alreadyProcessed) {
-                    List<Property> additionalProps = typeInfo.getAdditionalProperties().get(javaAttribute.getJavaAttribute());
+                    List<Property> additionalProps = null;
+                    if(typeInfo.hasAdditionalProperties()) {
+                        additionalProps = typeInfo.getAdditionalProperties().get(javaAttribute.getJavaAttribute());
+                    }
                     if (additionalProps == null) {
                         additionalProps = new ArrayList<Property>();
                     }
@@ -1827,15 +1830,17 @@ public class XMLProcessor {
         }
 
         //check for package level adapter. Don't overwrite class level
-        JavaClass packageLevelAdapter = owningInfo.getPackageLevelAdaptersByClass().get(type.getQualifiedName()); 
-        if(packageLevelAdapter != null && prop.getXmlJavaTypeAdapter() == null) {
-            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
-            xja.setValue(packageLevelAdapter.getQualifiedName());
-            xja.setType(type.getQualifiedName());
-            prop.setXmlJavaTypeAdapter(xja);
+        if(owningInfo.hasPackageLevelAdaptersByClass()) {
+            JavaClass packageLevelAdapter = owningInfo.getPackageLevelAdaptersByClass().get(type.getQualifiedName()); 
+            if(packageLevelAdapter != null && prop.getXmlJavaTypeAdapter() == null) {
+                org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
+                xja.setValue(packageLevelAdapter.getQualifiedName());
+                xja.setType(type.getQualifiedName());
+               prop.setXmlJavaTypeAdapter(xja);
+            }
         }
     }
-    
+
     /**
      * This method is used to merge several bindings files into one XMLBindings object.
      * @param bindings the list of XmlBindings objects to merge.
