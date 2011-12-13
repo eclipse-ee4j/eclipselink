@@ -39,6 +39,7 @@ import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
@@ -1225,14 +1226,21 @@ public class MappingsGenerator {
         }
 
         if (property.getType() != null) {
-            Class theClass = null;
-            if(property.isSetXmlJavaTypeAdapter()) {
-                theClass = helper.getClassForJavaClass(property.getOriginalType());
+            String theClass = null;
+            if (property.isSetXmlJavaTypeAdapter()) {
+                theClass = property.getOriginalType().getQualifiedName();
             } else {
-                theClass = helper.getClassForJavaClass(property.getType());
+                theClass = property.getType().getQualifiedName();
                 
             }
-            mapping.setAttributeClassification(theClass);
+            mapping.setAttributeClassificationName(theClass);
+            // Try to get the actual class as well
+            try {
+                JavaClass actualJavaClass = helper.getJavaClass(theClass);
+                Class actualClass = helper.getClassForJavaClass(actualJavaClass);
+                mapping.setAttributeClassification(actualClass);
+            } catch (Exception e) {
+            }
         }
 
         if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){

@@ -473,8 +473,11 @@ public class DynamicTypeBuilder {
             if (typeName != null) {
                 // Remove any additional padding
                 typeName = typeName.trim();
-                Class<?> attrType = ConversionManager.getDefaultManager().convertClassNameToClass(typeName);
-                ((AbstractDirectMapping) mapping).setAttributeClassification(attrType);
+                try {
+                    Class<?> attrType = ConversionManager.getDefaultManager().convertClassNameToClass(typeName);
+                    ((AbstractDirectMapping) mapping).setAttributeClassification(attrType);
+                } catch (Exception e) {
+                }
             }
         }
 
