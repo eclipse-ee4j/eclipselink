@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model.query;
 
+import org.eclipse.persistence.jpa.jpql.parser.InternalSimpleFromClauseBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 
 /**
@@ -83,8 +84,8 @@ public class SimpleFromClauseStateObject extends AbstractFromClauseStateObject {
 	/**
 	 * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
 	 *
-	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
-	 * declaration
+	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
+	 * path declaration
 	 */
 	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration() {
 		DerivedPathIdentificationVariableDeclarationStateObject stateObject = new DerivedPathIdentificationVariableDeclarationStateObject(this);
@@ -97,8 +98,8 @@ public class SimpleFromClauseStateObject extends AbstractFromClauseStateObject {
 	 *
 	 * @param path Either the derived singled-valued object field or the collection-valued path expression
 	 * @param identificationVariable The identification variable defining the given path
-	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
-	 * declaration
+	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
+	 * path declaration
 	 */
 	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration(String path,
 	                                                                                         String identificationVariable) {
@@ -111,6 +112,14 @@ public class SimpleFromClauseStateObject extends AbstractFromClauseStateObject {
 
 		addItem(stateObject);
 		return stateObject;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String declarationBNF() {
+		return InternalSimpleFromClauseBNF.ID;
 	}
 
 	/**

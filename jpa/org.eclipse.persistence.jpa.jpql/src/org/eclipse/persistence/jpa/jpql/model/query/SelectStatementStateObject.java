@@ -130,7 +130,7 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
 	 * Adds the given path as a select item, which can either be an identification variable or a
 	 * state-field path expression.
 	 *
-	 * @param path Either an identification variable or a state-field path expression
+	 * @param jpqlFragment The select expression to parse as a select item
 	 * @return The {@link StateObject} encapsulating the given path
 	 */
 	public StateObject addSelectItem(String path) {
@@ -140,12 +140,12 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
 	/**
 	 * Adds the given expression as a select item.
 	 *
-	 * @param expression The select expression
+	 * @param jpqlFragment The select expression to parse as a select item
 	 * @param resultVariable The result variable identifying the select expression
 	 * @return The newly created {@link ResultVariableStateObject}
 	 */
-	public ResultVariableStateObject addSelectItem(String expression, String resultVariable) {
-		return getSelectClause().addItem(expression, resultVariable);
+	public ResultVariableStateObject addSelectItem(String jpqlFragment, String resultVariable) {
+		return getSelectClause().addItem(jpqlFragment, resultVariable);
 	}
 
 	/**

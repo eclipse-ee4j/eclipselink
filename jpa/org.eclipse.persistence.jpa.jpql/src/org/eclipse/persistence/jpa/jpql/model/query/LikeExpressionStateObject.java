@@ -132,6 +132,21 @@ public class LikeExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * Creates a new <code>LikeExpressionStateObject</code>.
+	 *
+	 * @param parent The parent of this state object, which cannot be <code>null</code>
+	 * @param stringStateObject The {@link StateObject} representing the string expression
+	 * @param patternValue
+	 * @exception NullPointerException The given parent cannot be <code>null</code>
+	 */
+	public LikeExpressionStateObject(StateObject parent,
+	                                 StateObject stringStateObject,
+	                                 StateObject patternValue) {
+
+		this(parent, stringStateObject, false, patternValue, null);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public void accept(StateObjectVisitor visitor) {

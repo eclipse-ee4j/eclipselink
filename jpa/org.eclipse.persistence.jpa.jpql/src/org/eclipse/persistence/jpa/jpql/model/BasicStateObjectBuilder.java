@@ -24,6 +24,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.AbstractIdentificationVariab
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractRangeVariableDeclarationStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractSchemaNameStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractSelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractStateObjectVisitor;
 import org.eclipse.persistence.jpa.jpql.model.query.AdditionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AllOrAnyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AndExpressionStateObject;
@@ -88,6 +89,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SizeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SqrtExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateObjectVisitor;
 import org.eclipse.persistence.jpa.jpql.model.query.StringLiteralStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
@@ -990,9 +992,20 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final void visit(IdentificationVariableDeclaration expression) {
-		// Not done here
-		stateObject = null;
+	public final void visit(final IdentificationVariableDeclaration expression) {
+
+		StateObjectVisitor visitor = new AbstractStateObjectVisitor() {
+			@Override
+			public void visit(FromClauseStateObject stateObject) {
+				getRangeDeclarationBuilder().buildStateObject(stateObject, expression);
+			}
+			@Override
+			public void visit(SimpleFromClauseStateObject stateObject) {
+				getSimpleRangeDeclarationBuilder().buildStateObject(stateObject, expression);
+			}
+		};
+
+		stateObject.accept(visitor);
 	}
 
 	/**
@@ -1401,9 +1414,19 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final void visit(ResultVariable expression) {
-		// Done by SelectStatementBuilder
-		stateObject = null;
+	public final void visit(final ResultVariable expression) {
+
+		StateObjectVisitor visitor = new AbstractStateObjectVisitor() {
+			@Override
+			public void visit(SelectClauseStateObject stateObject) {
+				BasicStateObjectBuilder.this.stateObject = getSelectItemBuilder().buildStateObject(
+					stateObject,
+					expression
+				);
+			}
+		};
+
+		stateObject.accept(visitor);
 	}
 
 	/**
@@ -1748,9 +1771,7 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 		/**
 		 * {@inheritDoc}
 		 */
-		public AbstractIdentificationVariableDeclarationStateObject buildStateObject(S parent,
-		                                                                             Expression expression) {
-
+		public AbstractIdentificationVariableDeclarationStateObject buildStateObject(S parent, Expression expression) {
 			try {
 				this.parent = parent;
 				expression.accept(this);

@@ -221,22 +221,11 @@ public abstract class AbstractStateObject implements StateObject {
 	}
 
 	/**
-	 * Adds
-	 *
-	 * @param identificationVariable
-	 * @return
-	 */
-//	protected IdentificationVariableStateObject addUndefinedIdentificationVariable(String identificationVariable) {
-//		return getDeclaration().addUndefinedIdentificationVariable(identificationVariable);
-//	}
-
-	/**
 	 * Parses the given JPQL fragment using the given JPQL query BNF.
 	 *
-	 * @param jpqlFragment A portion of a JPQL query that will be parsed in order to create its
-	 * {@link StateObject} equivalent
-	 * @param queryBNFId The unique identifier of the query BNF that will be used to parse the JPQL
-	 * fragment
+	 * @param jpqlFragment A portion of a JPQL query that will be parsed and converted into a {@link
+	 * StateObject}
+	 * @param queryBNFId The unique identifier of the BNF that determines how to parse the fragment
 	 * @return A {@link StateObject} representation of the given JPQL fragment
 	 */
 	@SuppressWarnings("unchecked")
@@ -247,17 +236,18 @@ public abstract class AbstractStateObject implements StateObject {
 	/**
 	 * Parses the given JPQL fragment using the given JPQL query BNF.
 	 *
-	 * @param jpqlFragment A portion of a JPQL query that will be parsed in order to create a list of
-	 * {@link StateObject StateObjects}
-	 * @param queryBNFId The unique identifier of the query BNF that will be used to parse the JPQL
-	 * fragment
-	 * @return The list of {@link StateObject} representation of the given JPQL fragment, which
-	 * means the list may contain a single {@link StateObject} or multiple if the fragment contains
-	 * more than one expression of the same type. Example: "JOIN e.employees e LEFT JOIN e.address a",
-	 * this would be parsed in two state objects
+	 * @param jpqlFragment A portion of a JPQL query that will be parsed and converted into either a
+	 * single {@link StateObject} or a list of {@link StateObject}, which happens when the fragment
+	 * contains a collection of items separated by either a comma or a space
+	 * @param queryBNFId The unique identifier of the BNF that will be used to parse the fragment
+	 * @return A list of {@link StateObject StateObjects} representing the given JPQL fragment, which
+	 * means the list may contain a single {@link StateObject} or a multiple {@link StateObject
+	 * StateObjects} if the fragment contains more than one expression of the same type. Example:
+	 * "JOIN e.employees e LEFT JOIN e.address a", this would be parsed in two state objects
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T extends StateObject> List<T> buildStateObjects(CharSequence jpqlFragment, String queryBNFId) {
+	protected <T extends StateObject> List<T> buildStateObjects(CharSequence jpqlFragment,
+	                                                            String queryBNFId) {
 
 		VirtualJPQLQueryBNF queryBNF = new VirtualJPQLQueryBNF(getGrammar());
 		queryBNF.setHandleCollection(true);

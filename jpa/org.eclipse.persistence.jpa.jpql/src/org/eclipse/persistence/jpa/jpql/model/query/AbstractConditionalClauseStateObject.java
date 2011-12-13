@@ -95,10 +95,11 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
 	 * current conditional expression will become the left side of the <code><b>AND</b></code>
 	 * expression.
 	 *
-	 * @param jpqlFragment The portion of the query representing the right side of the <code><b>AND</b></code>
-	 * expression
+	 * @param jpqlFragment The portion of the query representing the right side of the
+	 * <code><b>AND</b></code> expression
+	 * @return The newly created {@link AndExpressionStateObject}
 	 */
-	public void andParse(String jpqlFragment) {
+	public AndExpressionStateObject andParse(String jpqlFragment) {
 
 		StateObject stateObject = buildStateObject(jpqlFragment, ConditionalExpressionBNF.ID);
 
@@ -116,8 +117,14 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
 			stateObject = new SubExpressionStateObject(this, stateObject);
 		}
 
-		stateObject = new AndExpressionStateObject(this, conditionalStateObject, stateObject);
-		setConditional(stateObject);
+		AndExpressionStateObject andStateObject = new AndExpressionStateObject(
+			this,
+			conditionalStateObject,
+			stateObject
+		);
+
+		setConditional(andStateObject);
+		return andStateObject;
 	}
 
 	/**
@@ -167,13 +174,20 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
 	 * current conditional expression will become the left side of the <code><b>OR</b></code>
 	 * expression.
 	 *
-	 * @param jpqlFragment The portion of the query representing the right side of the <code><b>OR</b></code>
-	 * expression
+	 * @param jpqlFragment The portion of the query representing the right side of the
+	 * <code><b>OR</b></code> expression
+	 * @return The newly created {@link OrExpressionStateObject}
 	 */
-	public void orParse(String jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, ConditionalExpressionBNF.ID);
-		stateObject = new OrExpressionStateObject(this, conditionalStateObject, stateObject);
-		setConditional(stateObject);
+	public OrExpressionStateObject orParse(String jpqlFragment) {
+
+		OrExpressionStateObject orStateObject = new OrExpressionStateObject(
+			this,
+			conditionalStateObject,
+			buildStateObject(jpqlFragment, ConditionalExpressionBNF.ID)
+		);
+
+		setConditional(orStateObject);
+		return orStateObject;
 	}
 
 	/**

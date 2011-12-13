@@ -17,17 +17,27 @@ import org.eclipse.persistence.jpa.jpql.model.ICaseExpressionStateObjectBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IConditionalExpressionStateObjectBuilder;
 import org.eclipse.persistence.jpa.jpql.model.INewValueStateObjectBuilder;
 import org.eclipse.persistence.jpa.jpql.model.ISelectExpressionStateObjectBuilder;
+import org.eclipse.persistence.jpa.jpql.model.query.AndExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.AvgFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.CaseExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ComparisonExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ConcatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IndexExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.InputParameterStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.JoinStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ModExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NumericLiteralStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StringLiteralStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TypeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.UpdateStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.WhenClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.WhereClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
@@ -47,7 +57,8 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		return new JPQLQueryStateObject(getQueryBuilder(), getPersistenceUnit());
 	}
 
-	public void test_Query_139() throws Exception {
+	@Test
+	public void test_Query_139_a() throws Exception {
 
 		// SELECT p
 		// FROM Employee e JOIN e.projects p
@@ -56,16 +67,101 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.addRangeDeclaration("Employee", "e").addJoin("e.projects", "p");
+		select.addSelectItem("p");
+		select.addWhereClause("e.id = :id AND INDEX(p) = 1");
 
 		test(stateObject_139(), jpqlStateObject, query_139());
 	}
 
 	@Test
-	public void test_Query_205() throws Exception {
+	public void test_Query_139_b() throws Exception {
+
+		// SELECT p
+		// FROM Employee e JOIN e.projects p
+		// WHERE e.id = :id AND INDEX(p) = 1
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addRangeDeclaration("Employee", "e").addJoin("e.projects", "p");
+		select.addSelectItem("p");
+
+		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
+				builder.path("e.id").equal(builder.parameter(":id"))
+			.and(
+				builder.index("p").equal(builder.numeric(1))
+		).commit();
+
+		test(stateObject_139(), jpqlStateObject, query_139());
+	}
+
+	@Test
+	public void test_Query_139_c() throws Exception {
+
+		// SELECT p
+		// FROM Employee e JOIN e.projects p
+		// WHERE e.id = :id AND INDEX(p) = 1
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addRangeDeclaration("Employee", "e").addJoin("e.projects", "p");
+		select.addSelectItem("p");
+
+		WhereClauseStateObject where = select.addWhereClause();
+		where.parse("e.id = :id");
+		where.andParse("INDEX(p) = 1");
+
+		test(stateObject_139(), jpqlStateObject, query_139());
+	}
+
+	@Test
+	public void test_Query_139_d() throws Exception {
+
+		// SELECT p
+		// FROM Employee e JOIN e.projects p
+		// WHERE e.id = :id AND INDEX(p) = 1
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+
+		IdentificationVariableDeclarationStateObject rangeDeclaration = select.addRangeDeclaration();
+		select.addSelectItem(new IdentificationVariableStateObject(select, "p"));
+		rangeDeclaration.setEntityName("Employee");
+		rangeDeclaration.setIdentificationVariable("e");
+
+		JoinStateObject join = rangeDeclaration.addItem(
+			new JoinStateObject(rangeDeclaration, Expression.JOIN, false)
+		);
+		join.setJoinAssociationPath("e.projects");
+		join.setIdentificationVariable("p");
+
+		WhereClauseStateObject where = select.addWhereClause();
+
+		AndExpressionStateObject and = new AndExpressionStateObject(where);
+		where.setConditional(and);
+
+		and.setLeft(new ComparisonExpressionStateObject(
+			and,
+			new StateFieldPathExpressionStateObject(and, "e.id"),
+			Expression.EQUAL,
+			new InputParameterStateObject(and, ":id")
+		));
+
+		and.setRight(new ComparisonExpressionStateObject(
+			and,
+			new IndexExpressionStateObject(and, "p"),
+			Expression.EQUAL,
+			new NumericLiteralStateObject(and, 1)
+		));
+
+		test(stateObject_139(), jpqlStateObject, query_139());
+	}
+
+	@Test
+	public void test_Query_205_a() throws Exception {
 
 		// UPDATE Employee e
 		// SET e.salary =
@@ -95,7 +191,26 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_206() throws Exception {
+	public void test_Query_205_b() throws Exception {
+
+		// UPDATE Employee e
+		// SET e.salary =
+		//    CASE WHEN e.rating = 1 THEN e.salary * 1.1
+		//         WHEN e.rating = 2 THEN e.salary * 1.05
+		//         ELSE e.salary * 1.01
+		//    END
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		UpdateStatementStateObject update = jpqlStateObject.addUpdateStatement();
+		update.setDeclaration("Employee", "e");
+		update.addItem("e.salary", "CASE WHEN e.rating = 1 THEN e.salary * 1.1 WHEN e.rating = 2 THEN e.salary * 1.05 ELSE e.salary * 1.01 END");
+
+		test(stateObject_205(), jpqlStateObject, query_205());
+	}
+
+	@Test
+	public void test_Query_206_a() throws Exception {
 
 		// SELECT e.name,
 		//        CASE TYPE(e) WHEN Exempt THEN 'Exempt'
@@ -129,6 +244,29 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addSelectItem("e.name");
 		select.addSelectItem(case_);
 		select.addWhereClause().getBuilder().path("e.dept.name").equal("'Engineering'").commit();
+
+		test(stateObject_206(), jpqlStateObject, query_206());
+	}
+
+	@Test
+	public void test_Query_206_b() throws Exception {
+
+		// SELECT e.name,
+		//        CASE TYPE(e) WHEN Exempt THEN 'Exempt'
+		//                     WHEN Contractor THEN 'Contractor'
+		//                     WHEN Intern THEN 'Intern'
+		//                     ELSE 'NonExempt'
+		//        END
+		// FROM Employee e
+		// WHERE e.dept.name = 'Engineering'
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addRangeDeclaration("Employee", "e");
+		select.addSelectItem("e.name");
+		select.getSelectClause().parse("CASE TYPE(e) WHEN Exempt THEN 'Exempt' WHEN Contractor THEN 'Contractor' WHEN Intern THEN 'Intern' ELSE 'NonExempt' END");
+		select.addWhereClause("e.dept.name = 'Engineering'");
 
 		test(stateObject_206(), jpqlStateObject, query_206());
 	}
@@ -228,7 +366,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_208() throws Exception {
+	public void test_Query_208_a() throws Exception {
 
 		// SELECT e
 		// FROM Employee e
@@ -250,7 +388,24 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_209() throws Exception {
+	public void test_Query_208_b() throws Exception {
+
+		// SELECT e
+		// FROM Employee e
+		// WHERE TYPE(e) IN (Exempt, Contractor)
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addRangeDeclaration("Employee", "e");
+		select.addSelectItem("e");
+		select.addWhereClause("TYPE(e) IN (Exempt, Contractor)");
+
+		test(stateObject_208(), jpqlStateObject, query_208());
+	}
+
+	@Test
+	public void test_Query_209_a() throws Exception {
 
 		// SELECT e
 		// FROM Employee e
@@ -269,7 +424,24 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_210() throws Exception {
+	public void test_Query_209_b() throws Exception {
+
+		// SELECT e
+		// FROM Employee e
+		// WHERE TYPE(e) IN (:empType1, :empType2)
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem("e");
+		select.addRangeDeclaration("Employee", "e");
+		select.addWhereClause("TYPE(e) IN (:empType1, :empType2)");
+
+		test(stateObject_209(), jpqlStateObject, query_209());
+	}
+
+	@Test
+	public void test_Query_210_a() throws Exception {
 
 		// SELECT e
 		// FROM Employee e
@@ -288,7 +460,24 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_211() throws Exception {
+	public void test_Query_210_b() throws Exception {
+
+		// SELECT e
+		// FROM Employee e
+		// WHERE TYPE(e) IN :empTypes
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem("e");
+		select.addRangeDeclaration("Employee", "e");
+		select.addWhereClause("TYPE(e) IN :empTypes");
+
+		test(stateObject_210(), jpqlStateObject, query_210());
+	}
+
+	@Test
+	public void test_Query_211_a() throws Exception {
 
 		// SELECT TYPE(e)
 		// FROM Employee e
@@ -307,7 +496,24 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_212() throws Exception {
+	public void test_Query_211_b() throws Exception {
+
+		// SELECT TYPE(e)
+		// FROM Employee e
+		// WHERE TYPE(e) <> Exempt
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem(new TypeExpressionStateObject(select, "e"));
+		select.addRangeDeclaration("Employee", "e");
+		select.addWhereClause("TYPE(e) <> Exempt");
+
+		test(stateObject_211(), jpqlStateObject, query_211());
+	}
+
+	@Test
+	public void test_Query_212_a() throws Exception {
 
 		// SELECT t
 		// FROM CreditCard c JOIN c.transactionHistory t
@@ -333,7 +539,24 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_213() throws Exception {
+	public void test_Query_212_b() throws Exception {
+
+		// SELECT t
+		// FROM CreditCard c JOIN c.transactionHistory t
+		// WHERE c.holder.name = 'John Doe' AND INDEX(t) BETWEEN 0 AND 9
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem("t");
+		select.addRangeDeclaration("CreditCard", "c").addJoin("c.transactionHistory", "t");
+		select.addWhereClause("c.holder.name = 'John Doe' AND INDEX(t) BETWEEN 0 AND 9");
+
+		test(stateObject_212(), jpqlStateObject, query_212());
+	}
+
+	@Test
+	public void test_Query_213_a() throws Exception {
 
 		// SELECT w.name
 		// FROM Course c JOIN c.studentWaitlist w
@@ -356,6 +579,26 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 				builder.index("w").equal(builder.numeric(0))
 			)
 		.commit();
+
+		test(stateObject_213(), jpqlStateObject, query_213());
+	}
+
+	@Test
+	public void test_Query_213_b() throws Exception {
+
+		// SELECT w.name
+		// FROM Course c JOIN c.studentWaitlist w
+		// WHERE c.name = 'Calculus'
+		//       AND
+		//       INDEX(w) = 0
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem("w.name");
+		select.addRangeDeclaration("Course", "c").
+			addJoin("c.studentWaitlist", "w");
+		select.addWhereClause("c.name = 'Calculus' AND INDEX(w) = 0");
 
 		test(stateObject_213(), jpqlStateObject, query_213());
 	}
@@ -419,7 +662,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_217() throws Exception {
+	public void test_Query_217_a() throws Exception {
 
 		// SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -447,6 +690,25 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 				builder.path("a.counry").equal(builder.string("'Santa Clara'"))
 			)
 		.commit();
+
+		test(stateObject_217(), jpqlStateObject, query_217());
+	}
+
+	@Test
+	public void test_Query_217_b() throws Exception {
+
+		// SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode
+		// FROM Customer c JOIN c.orders o JOIN c.address a
+		// WHERE a.state = 'CA' AND a.county = 'Santa Clara'
+		// ORDER BY o.quantity, taxedCost, a.zipcode
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.getSelectClause().parse("o.quantity, o.cost*1.08 AS taxedCost, a.zipcode");
+		select.getFromClause().parse("Customer c JOIN c.orders o JOIN c.address a");
+		select.addWhereClause("a.state = 'CA' AND a.county = 'Santa Clara'");
+		select.addOrderByClause("o.quantity, taxedCost, a.zipcode");
 
 		test(stateObject_217(), jpqlStateObject, query_217());
 	}

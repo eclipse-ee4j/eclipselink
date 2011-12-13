@@ -152,6 +152,13 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	}
 
 	/**
+	 * Returns the BNF of the declaration part of this clause.
+	 *
+	 * @return The BNF of the declaration part of this clause
+	 */
+	protected abstract String declarationBNF();
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public IterableListIterator<? extends VariableDeclarationStateObject> declarations() {
@@ -225,6 +232,17 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	@Override
 	protected String listName() {
 		return VARIABLE_DECLARATIONS_LIST;
+	}
+
+	/**
+	 * Parses the given JPQL fragment and create the select item. For the top-level query, the
+	 * fragment can contain several select items but for a subquery, it can represent only one.
+	 *
+	 * @param jpqlFragment The portion of the query representing one or several select items
+	 */
+	public void parse(String jpqlFragment) {
+		// No need to add the items, they are automatically added by the builder
+		buildStateObjects(jpqlFragment, declarationBNF());
 	}
 
 	/**

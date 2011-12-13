@@ -117,15 +117,7 @@ public final class JPQLQueryBuilder {
 		String actualJPQLQuery = toActualText(jpqlQuery, jpqlGrammar);
 
 		// Format the JPQL query with this formatter so the invoker can tweak the default formatting
-		String parsedJPQLQuery2 = formatter.format(parsedJPQLQuery);
-		if (formatter != JPQLQueryStringFormatter.DEFAULT &&
-		    parsedJPQLQuery.equals(parsedJPQLQuery2)) {
-
-			System.out.println();
-		}
-		else {
-			parsedJPQLQuery = parsedJPQLQuery2;
-		}
+		parsedJPQLQuery = formatter.format(parsedJPQLQuery);
 		actualJPQLQuery = formatter.format(actualJPQLQuery);
 
 		// Parse the JPQL query

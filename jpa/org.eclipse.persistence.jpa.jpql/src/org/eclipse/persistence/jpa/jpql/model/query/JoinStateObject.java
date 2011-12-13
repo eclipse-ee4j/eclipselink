@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
@@ -228,5 +229,13 @@ public class JoinStateObject extends AbstractJoinStateObject {
 		}
 		writer.append(SPACE);
 		identificationVariable.toString(writer);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateJoinType(String joinType) {
+		Assert.isValid(joinType, "The join type is not valid", JOIN, LEFT_JOIN, LEFT_OUTER_JOIN, INNER_JOIN);
 	}
 }

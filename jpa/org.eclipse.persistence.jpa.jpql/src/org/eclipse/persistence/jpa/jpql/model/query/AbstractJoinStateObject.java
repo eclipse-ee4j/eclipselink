@@ -58,6 +58,7 @@ public abstract class AbstractJoinStateObject extends AbstractStateObject {
 	                                  String joinType) {
 
 		super(parent);
+		validateJoinType(joinType);
 		this.joinType = joinType;
 	}
 
@@ -192,6 +193,7 @@ public abstract class AbstractJoinStateObject extends AbstractStateObject {
 	 * @param joinType One of the joining types
 	 */
 	public void setJoinType(String joinType) {
+		validateJoinType(joinType);
 		String oldJoinType = this.joinType;
 		this.joinType = joinType;
 		firePropertyChanged(JOIN_TYPE_PROPERTY, oldJoinType, joinType);
@@ -206,4 +208,11 @@ public abstract class AbstractJoinStateObject extends AbstractStateObject {
 		writer.append(SPACE);
 		joinAssociationPath.toString(writer);
 	}
+
+	/**
+	 * Validates the given join type.
+	 *
+	 * @param joinType One of the possible joining types
+	 */
+	protected abstract void validateJoinType(String joinType);
 }

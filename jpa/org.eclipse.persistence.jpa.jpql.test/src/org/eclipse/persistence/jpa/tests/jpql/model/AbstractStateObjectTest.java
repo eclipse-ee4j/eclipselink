@@ -17,7 +17,6 @@ import java.util.Arrays;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.model.AbstractActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.BaseJPQLQueryFormatter;
-import org.eclipse.persistence.jpa.jpql.model.DefaultActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
@@ -1913,13 +1912,6 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 	protected void testFormatter(JPQLQueryStateObject jpqlStateObject, String jpqlQuery) {
 
 		if (queryFormatter != null) {
-
-			if (queryFormatter instanceof DefaultActualJPQLQueryFormatter &&
-			    ((DefaultActualJPQLQueryFormatter) queryFormatter).getIdentifierStyle() == IdentifierStyle.CAPITALIZE_EACH_WORD &&
-			    ((DefaultActualJPQLQueryFormatter) queryFormatter).isUsingExactMatch()) {
-
-				System.out.println();
-			}
 
 			boolean exactMatch = false;
 			IdentifierStyle stye = ((BaseJPQLQueryFormatter) queryFormatter).getIdentifierStyle();

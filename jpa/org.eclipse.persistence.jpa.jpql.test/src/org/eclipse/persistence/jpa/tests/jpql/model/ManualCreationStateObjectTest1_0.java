@@ -24,11 +24,14 @@ import org.eclipse.persistence.jpa.jpql.model.query.ComparisonExpressionStateObj
 import org.eclipse.persistence.jpa.jpql.model.query.ConcatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.CountFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.DeleteStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DerivedPathIdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ExistsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableDeclarationStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.InExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.KeywordExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LikeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.LocateExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.MaxFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.MinFunctionStateObject;
@@ -44,6 +47,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObje
 import org.eclipse.persistence.jpa.jpql.model.query.SumFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.UpdateStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.WhereClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -1578,8 +1582,8 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		test(stateObject_056(), jpqlStateObject, query_056());
 	}
 
-	//@Test
-	public void test_Query_057() throws Exception {
+	@Test
+	public void test_Query_057_a() throws Exception {
 
 		// SELECT DISTINCT c
 		// from Customer c
@@ -1590,16 +1594,78 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.getSelectClause().setDistinct(true);
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c");
+		select.addWhereClause("c.home.state IN(Select distinct w.state from c.work w where w.state = :state)");
 
 		test(stateObject_057(), jpqlStateObject, query_057());
 	}
 
-	//@Test
-	public void test_Query_058() throws Exception {
+	@Test
+	public void test_Query_057_b() throws Exception {
+
+		// SELECT DISTINCT c
+		// from Customer c
+		// WHERE c.home.state IN(Select distinct w.state
+		//                       from c.work w
+		//                       where w.state = :state)
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SimpleSelectStatementStateObject subquery = new SimpleSelectStatementStateObject(jpqlStateObject);
+		subquery.getSelectClause().setDistinct(true);
+		subquery.setSelectItem("w.state");
+		subquery.addDerivedPathDeclaration("c.work", "w");
+		subquery.addWhereClause().getBuilder().path("w.state").equal(":state").commit();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.getSelectClause().setDistinct(true);
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c");
+
+		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
+		builder.path("c.home.state").in(subquery).commit();
+
+		test(stateObject_057(), jpqlStateObject, query_057());
+	}
+
+	@Test
+	public void test_Query_058_a() throws Exception {
+
+		// Select Object(o)
+		// from Order o
+		// WHERE EXISTS (Select c
+		//               From o.customer c
+		//               WHERE c.name LIKE '%Caruso')
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SimpleSelectStatementStateObject subquery = new SimpleSelectStatementStateObject(jpqlStateObject);
+		subquery.setSelectItem(new IdentificationVariableStateObject(subquery, "c"));
+
+		WhereClauseStateObject where = subquery.addWhereClause();
+		where.setConditional(new LikeExpressionStateObject(
+			where,
+			new StateFieldPathExpressionStateObject(where, "c.name"),
+			new StringLiteralStateObject(where, "'%Caruso'")
+		));
+
+		DerivedPathIdentificationVariableDeclarationStateObject derivedPath = subquery.addDerivedPathDeclaration();
+		derivedPath.setRootPath("o.customer");
+		derivedPath.setIdentificationVariable("c");
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addRangeDeclaration("Order", "o");
+		select.addSelectItem(new ObjectExpressionStateObject(select, "o"));
+		where = select.addWhereClause();
+		where.setConditional(new ExistsExpressionStateObject(where, subquery));
+
+		test(stateObject_058(), jpqlStateObject, query_058());
+	}
+
+	@Test
+	public void test_Query_058_b() throws Exception {
 
 		// Select Object(o)
 		// from Order o
@@ -1610,16 +1676,56 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.addSelectItem("Object(o)");
+		select.getFromClause().parse("Order o");
+		select.addWhereClause("EXISTS (Select c From o.customer c WHERE c.name LIKE '%Caruso')");
 
 		test(stateObject_058(), jpqlStateObject, query_058());
 	}
 
-	//@Test
-	public void test_Query_059() throws Exception {
+	@Test
+	public void test_Query_058_c() throws Exception {
+
+		// Select Object(o)
+		// from Order o
+		// WHERE EXISTS (Select c
+		//               From o.customer c
+		//               WHERE c.name LIKE '%Caruso')
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem("Object(o)");
+		select.addRangeDeclaration("Order", "o");
+		select.addWhereClause().parse("EXISTS (Select c From o.customer c WHERE c.name LIKE '%Caruso')");
+
+		test(stateObject_058(), jpqlStateObject, query_058());
+	}
+
+	@Test
+	public void test_Query_058_d() throws Exception {
+
+		// Select Object(o)
+		// from Order o
+		// WHERE EXISTS (Select c
+		//               From o.customer c
+		//               WHERE c.name LIKE '%Caruso')
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem("OBJECT(o)");
+		select.getFromClause().parse("Order o");
+
+		ExistsExpressionStateObject exists = new ExistsExpressionStateObject(select);
+		exists.parse("Select c From o.customer c WHERE c.name LIKE '%Caruso'");
+		select.addWhereClause().setConditional(exists);
+
+		test(stateObject_058(), jpqlStateObject, query_058());
+	}
+
+	@Test
+	public void test_Query_059_a() throws Exception {
 
 		// SELECT DISTINCT c
 		// FROM Customer c
@@ -1630,15 +1736,41 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.getSelectClause().setDistinct(true);
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c");
+		select.addWhereClause("EXISTS (SELECT o FROM c.orders o where o.totalPrice > 1500)");
 
 		test(stateObject_059(), jpqlStateObject, query_059());
 	}
 
-	//@Test
+	@Test
+	public void test_Query_059_b() throws Exception {
+
+		// SELECT DISTINCT c
+		// FROM Customer c
+		// WHERE EXISTS (SELECT o
+		//               FROM c.orders o
+		//               where o.totalPrice > 1500)
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.getSelectClause().setDistinct(true);
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c");
+
+		SimpleSelectStatementStateObject subquery = new SimpleSelectStatementStateObject(select);
+		subquery.setSelectItem("o");
+		subquery.addDerivedPathDeclaration("c.orders", "o");
+		subquery.addWhereClause().getBuilder().path("o.totalPrice").greaterThan(1500).commit();
+
+		select.addWhereClause().getBuilder().exists(subquery).commit();
+
+		test(stateObject_059(), jpqlStateObject, query_059());
+	}
+
+	@Test
 	public void test_Query_060() throws Exception {
 
 		// SELECT c
@@ -1651,12 +1783,16 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Customer", "c");
 		select.addSelectItem("c");
 
+		SimpleSelectStatementStateObject subquery = new SimpleSelectStatementStateObject(select);
+		subquery.setSelectItem("o1");
+		subquery.addDerivedPathDeclaration("c.orders", "o1");
 
+		select.addWhereClause().getBuilder().notExists(subquery).commit();
 
 		test(stateObject_060(), jpqlStateObject, query_060());
 	}
 
-	//@Test
+	@Test
 	public void test_Query_061() throws Exception {
 
 		// select object(o)
@@ -1667,14 +1803,15 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
 		select.addRangeDeclaration("Order", "o");
-		select.addSelectItem("e");
+		select.addSelectItem(new ObjectExpressionStateObject(select, "o"));
 
-
+		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
+		builder.sqrt(builder.path("o.totalPrice")).greaterThan(builder.parameter(":doubleValue")).commit();
 
 		test(stateObject_061(), jpqlStateObject, query_061());
 	}
 
-	//@Test
+	@Test
 	public void test_Query_062() throws Exception {
 
 		// select sum(o.totalPrice)
@@ -1685,15 +1822,17 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
+		select.getSelectBuilder().sum("o.totalPrice").commit();
+		select.addRangeDeclaration("Order", "o");
+		select.addGroupByClause().addGroupByItem("o.totalPrice");
 
-
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+		builder.abs(builder.path("o.totalPrice")).greaterThan(builder.parameter(":doubleValue")).commit();
 
 		test(stateObject_062(), jpqlStateObject, query_062());
 	}
 
-	//@Test
+	@Test
 	public void test_Query_063() throws Exception {
 
 		// select c.name
@@ -1704,15 +1843,20 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c.name");
+		select.addGroupByClause().addGroupByItem("c.name");
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+				builder.trim(Specification.TRAILING, builder.path("c.name"))
+			.equal(
+				builder.string("' David R. Vincent'")
+			)
+		.commit();
 
 		test(stateObject_063(), jpqlStateObject, query_063());
 	}
 
-	//@Test
+	@Test
 	public void test_Query_064() throws Exception {
 
 		// select c.name
@@ -1723,34 +1867,44 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c.name");
+		select.addGroupByClause().addGroupByItem("c.name");
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+				builder.trim(Specification.LEADING, builder.path("c.name"))
+			.equal(
+				builder.string("'David R. Vincent '")
+			)
+		.commit();
 
 		test(stateObject_064(), jpqlStateObject, query_064());
 	}
 
-	//@Test
+	@Test
 	public void test_Query_065() throws Exception {
 
 		// select c.name
 		// FROM  Customer c
 		// Group by c.name
-		// HAVING trim(BOTH from c.name) = 'David R. Vincent'
+		// HAVING trim(BOTH from c.name) = ' David R. Vincent'
 
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c.name");
+		select.addGroupByClause().addGroupByItem("c.name");
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+				builder.trim(Specification.BOTH, builder.path("c.name"))
+			.equal(
+				builder.string("'David R. Vincent'")
+			)
+		.commit();
 
 		test(stateObject_065(), jpqlStateObject, query_065());
 	}
 
-	//@Test
+	@Test
 	public void test_Query_066() throws Exception {
 
 		// select c.name
@@ -1761,15 +1915,17 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c.name");
+		select.addGroupByClause().addGroupByItem("c.name");
 
-
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+		builder.locate(builder.string("'Frechette'"), builder.path("c.name")).greaterThan(0).commit();
 
 		test(stateObject_066(), jpqlStateObject, query_066());
 	}
 
-	//@Test
+	@Test
 	public void test_Query_067() throws Exception {
 
 		// select a.city
@@ -1780,16 +1936,18 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
+		select.addRangeDeclaration("Customer", "c").addJoin("c.home", "a");
+		select.addSelectItem("a.city");
+		select.addGroupByClause("a.city");
 
-
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+		builder.length(builder.path("a.city")).equal(10).commit();
 
 		test(stateObject_067(), jpqlStateObject, query_067());
 	}
 
-	//@Test
-	public void test_Query_068() throws Exception {
+	@Test
+	public void test_Query_068_a() throws Exception {
 
 		// select count(cc.country)
 		// FROM  Customer c JOIN c.country cc
@@ -1799,15 +1957,35 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.addRangeDeclaration("Customer", "c").addJoin("c.country", "cc");
+		select.addSelectItem(new CountFunctionStateObject(select, "cc.country"));
+		select.addGroupByClause("cc.country");
+		select.addHavingClause("UPPER(cc.country) = 'ENGLAND'");
 
 		test(stateObject_068(), jpqlStateObject, query_068());
 	}
 
-	//@Test
+	@Test
+	public void test_Query_068_b() throws Exception {
+
+		// select count(cc.country)
+		// FROM  Customer c JOIN c.country cc
+		// GROUP BY cc.country
+		// HAVING UPPER(cc.country) = 'ENGLAND'
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addRangeDeclaration("Customer", "c").addJoin("c.country", "cc");
+		select.addSelectItem(new CountFunctionStateObject(select, "cc.country"));
+		select.addGroupByClause("cc.country");
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+		builder.upper(builder.path("cc.country")).equal(builder.string("'ENGLAND'")).commit();
+
+		test(stateObject_068(), jpqlStateObject, query_068());
+	}
+
+	@Test
 	public void test_Query_069() throws Exception {
 
 		// select count(cc.country)
@@ -1818,16 +1996,17 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
-
-
+		select.addSelectItem(new CountFunctionStateObject(select, "cc.code"));
+		select.addRangeDeclaration("Customer", "c").addJoin("c.country", "cc");
+		select.addGroupByClause("cc.code");
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+		builder.lower(builder.path("cc.code")).equal(builder.string("'gbr'")).commit();
 
 		test(stateObject_069(), jpqlStateObject, query_069());
 	}
 
-	//@Test
-	public void test_Query_070() throws Exception {
+	@Test
+	public void test_Query_070_a() throws Exception {
 
 		// select c.name
 		// FROM  Customer c
@@ -1837,10 +2016,34 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addRangeDeclaration("Employee", "e");
-		select.addSelectItem("e");
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c.name");
+		select.addGroupByClause().addGroupByItem("c.name");
+		select.addHavingClause("c.name = concat(:fmname, :lname)");
 
+		test(stateObject_070(), jpqlStateObject, query_070());
+	}
 
+	@Test
+	public void test_Query_070_b() throws Exception {
+
+		// select c.name
+		// FROM  Customer c
+		// Group By c.name
+		// HAVING c.name = concat(:fmname, :lname)
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addRangeDeclaration("Customer", "c");
+		select.addSelectItem("c.name");
+		select.addGroupByClause().addGroupByItem("c.name");
+		IConditionalExpressionStateObjectBuilder builder = select.addHavingClause().getBuilder();
+				builder.path("c.name")
+			.equal(
+				builder.concat(builder.parameter(":fmname"), builder.parameter(":lname"))
+			)
+		.commit();
 
 		test(stateObject_070(), jpqlStateObject, query_070());
 	}

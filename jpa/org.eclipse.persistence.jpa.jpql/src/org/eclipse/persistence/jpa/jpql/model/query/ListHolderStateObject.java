@@ -34,7 +34,7 @@ public interface ListHolderStateObject<T> extends StateObject {
 	 * @param item The child {@link StateObject} to become a child of this one
 	 * return The given item
 	 */
-	T addItem(T item);
+	<S extends T> S addItem(S item);
 
 	/**
 	 * Adds the given list of {@link StateObject StateObjects} as children of this one.

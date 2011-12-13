@@ -85,7 +85,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
 	/**
 	 * {@inheritDoc}
 	 */
-	public T addItem(T item) {
+	public <S extends T> S addItem(S item) {
 		getChangeSupport().addItem(this, this.items, listName(), parent(item));
 		return item;
 	}

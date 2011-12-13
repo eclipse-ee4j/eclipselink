@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model.query;
 
+import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
+
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * A <code><b>JOIN FETCH</b></code> enables the fetching of an association as a side effect of the
@@ -28,6 +31,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public class JoinFetchStateObject extends AbstractJoinStateObject {
 
 	/**
@@ -73,5 +77,17 @@ public class JoinFetchStateObject extends AbstractJoinStateObject {
 	 */
 	public void setExpression(JoinFetch expression) {
 		super.setExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateJoinType(String joinType) {
+		Assert.isValid(
+			joinType,
+			"The join type is not valid",
+			JOIN_FETCH, LEFT_JOIN_FETCH, LEFT_OUTER_JOIN_FETCH, INNER_JOIN_FETCH
+		);
 	}
 }

@@ -698,7 +698,7 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
 		stateObject = new TrimExpressionStateObject(
 			getParent(),
 			specification,
-			literal(trimCharacter),
+			ExpressionTools.stringIsNotEmpty(trimCharacter) ? literal(trimCharacter) : null,
 			stateObject
 		);
 

@@ -50,6 +50,16 @@ public class SimpleSelectStatementStateObject extends AbstractSelectStatementSta
 	/**
 	 * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
 	 *
+	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
+	 * declaration
+	 */
+	public CollectionMemberDeclarationStateObject addDerivedCollectionDeclaration() {
+		return getFromClause().addDerivedCollectionDeclaration();
+	}
+
+	/**
+	 * Adds a new derived collection declaration to the <code><b>FROM</b></code> clause.
+	 *
 	 * @param collectionValuedPath The collection-valued path expression
 	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
 	 * declaration
@@ -61,10 +71,20 @@ public class SimpleSelectStatementStateObject extends AbstractSelectStatementSta
 	/**
 	 * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
 	 *
+	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the collection
+	 * declaration
+	 */
+	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration() {
+		return getFromClause().addDerivedPathDeclaration();
+	}
+
+	/**
+	 * Adds a new derived identification variable declaration to the <code><b>FROM</b></code> clause.
+	 *
 	 * @param path Either the derived singled-valued object field or the collection-valued path expression
 	 * @param identificationVariable The identification variable defining the given path
-	 * @return The {@link CollectionMemberDeclarationStateObject} representing the collection
-	 * declaration
+	 * @return The {@link DerivedPathIdentificationVariableDeclarationStateObject} representing the
+	 * path declaration
 	 */
 	public DerivedPathIdentificationVariableDeclarationStateObject addDerivedPathDeclaration(String path,
 	                                                                                         String identificationVariable) {

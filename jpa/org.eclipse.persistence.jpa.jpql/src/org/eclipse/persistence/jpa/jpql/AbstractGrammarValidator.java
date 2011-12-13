@@ -3298,7 +3298,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(JPQLExpression expression) {
 
-		// Invalid query: does not start with either SELECT, UPDATE or DELETE FROM
+		// Invalid query
 		if (!expression.hasQueryStatement()) {
 			int startPosition = 0;
 			int endPosition   = getQueryExpression().length();

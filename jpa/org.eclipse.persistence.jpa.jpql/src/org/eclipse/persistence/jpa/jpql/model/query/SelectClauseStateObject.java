@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.model.ISelectExpressionStateObjectBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SelectClauseInternalBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
@@ -113,7 +114,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	/**
 	 * {@inheritDoc}
 	 */
-	public StateObject addItem(StateObject item) {
+	public <T extends StateObject> T addItem(T item) {
 		getChangeSupport().addItem(this, items, SELECT_ITEMS_LIST, parent(item));
 		return item;
 	}
@@ -140,7 +141,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	 * Adds the given path as a select item, which can either be an identification variable or a
 	 * state-field path expression.
 	 *
-	 * @param path Either an identification variable or a state-field path expression
+	 * @param jpqlFragment The select expression to parse as a select item
 	 * @return The {@link StateObject} encapsulating the given path
 	 */
 	public StateObject addItem(String jpqlFragment) {
@@ -152,7 +153,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	/**
 	 * Adds the given expression as a select item.
 	 *
-	 * @param jpqlFragment The select expression
+	 * @param jpqlFragment The select expression to parse as a select item
 	 * @param resultVariable The result variable identifying the select expression
 	 * @return The newly created {@link ResultVariableStateObject}
 	 */
@@ -323,7 +324,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	 */
 	@Override
 	public void parse(String jpqlFragment) {
-		List<StateObject> stateObjects = buildStateObjects(jpqlFragment, SelectExpressionBNF.ID);
+		List<StateObject> stateObjects = buildStateObjects(jpqlFragment, SelectClauseInternalBNF.ID);
 		addItems(stateObjects);
 	}
 
