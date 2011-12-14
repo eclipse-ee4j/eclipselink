@@ -1233,13 +1233,14 @@ public class MappingsGenerator {
                 theClass = property.getType().getQualifiedName();
                 
             }
-            mapping.setAttributeClassificationName(theClass);
-            // Try to get the actual class as well
+            // Try to get the actual Class
             try {
                 JavaClass actualJavaClass = helper.getJavaClass(theClass);
                 Class actualClass = helper.getClassForJavaClass(actualJavaClass);
                 mapping.setAttributeClassification(actualClass);
             } catch (Exception e) {
+                // Couldn't find Class (Dynamic?), so set class name instead.
+                mapping.setAttributeClassificationName(theClass);
             }
         }
 
