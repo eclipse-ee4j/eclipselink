@@ -150,8 +150,12 @@ public class XMLBinder {
                 transformer.setVersion(((XMLRoot) obj).getXMLVersion());
             }
             transformer.transform(n, result);
-            transformer.setEncoding(oldEncoding);
-            transformer.setVersion(oldVersion);
+            if(oldEncoding != null){
+                transformer.setEncoding(oldEncoding);
+            }
+            if(oldVersion != null){
+                transformer.setVersion(oldVersion);
+            }
         } else {
             transformer.transform(n, result);
            

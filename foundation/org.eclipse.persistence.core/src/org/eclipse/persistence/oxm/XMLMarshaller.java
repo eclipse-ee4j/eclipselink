@@ -771,8 +771,12 @@ public class XMLMarshaller implements Cloneable {
                     transformer.setVersion(((XMLRoot) object).getXMLVersion());
                 }
                 transformer.transform(doc, result);
-                transformer.setEncoding(oldEncoding);
-                transformer.setVersion(oldVersion);
+                if(oldEncoding != null){
+                    transformer.setEncoding(oldEncoding);
+                }
+                if(oldVersion !=null){
+                    transformer.setVersion(oldVersion);
+                }
             } else {
                 transformer.transform(doc, result);
             }
