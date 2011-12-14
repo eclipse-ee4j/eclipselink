@@ -104,7 +104,7 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     static final String DROP_ADD_EMP_TYPE_PROC =
         "DROP PROCEDURE ADD_EMP_TYPE";
     static final String DROP_ADD_EMP_TYPE2_FUNC =
-        "DROP FUNCTION ADD_EMP_TYPE2_FUNC";
+        "DROP FUNCTION ADD_EMP_TYPE2";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -120,14 +120,10 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreateProp)) {
-            ddlCreate = true;
-        }
-        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDropProp)) {
-            ddlDrop = true;
-        }
+        //because of behaviour of EMP_TYPE_TABLE w.r.t. identity, force create/drop
+        //no matter what the external properties say
+        ddlCreate = true;
+        ddlDrop = true;
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
             ddlDebug = true;

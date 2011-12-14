@@ -189,10 +189,10 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
-            runDdl(conn, DROP_GET_PERSONTYPE_TABLE, ddlDebug);
-            runDdl(conn, DROP_GET_PERSONTYPE2_FUNC, ddlDebug);
-            runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
             runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC, ddlDebug);
+            runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
+            runDdl(conn, DROP_GET_PERSONTYPE2_FUNC, ddlDebug);
+            runDdl(conn, DROP_GET_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE, ddlDebug);
         }

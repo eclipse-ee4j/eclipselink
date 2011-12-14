@@ -78,8 +78,6 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
             "\n);" +
     	    "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
             "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
-    	    "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
-    	    "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
     	    "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
     	    "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2);" +
     	    "\nPROCEDURE P4(REC IN ARECORD);" +
@@ -88,7 +86,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     	    "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);" +
     	    "\nPROCEDURE P8(FOO IN VARCHAR2);" +
     	    "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-    	    "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2;" +
+    	    "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;" +
     	    "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
     	"\nEND ORPACKAGE;";
 
@@ -128,7 +126,7 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
              "\nBEGIN" +
                  "\nNULL;" +
              "\nEND P8;" +
-             "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
+             "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
              "\nBEGIN" +
                  "\nRETURN OLD;" +
              "\nEND F2;" +
@@ -155,8 +153,6 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
 
     static final String DROP_PACKAGE_ORPACKAGE =
         "DROP PACKAGE ORPACKAGE";
-    static final String DROP_PACKAGE_BODY_ORPACKAGE =
-        "DROP PACKAGE BODY ORPACKAGE";
     static final String DROP_TYPE_ORPACKAGE_TBL1=
     	"DROP TYPE ORPACKAGE_TBL1 FORCE";
     static final String DROP_TYPE_ORPACKAGE_TBL2=
@@ -239,15 +235,13 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
-            runDdl(conn, DROP_PACKAGE_BODY_ORPACKAGE, ddlDebug);
-            runDdl(conn, DROP_PACKAGE_ORPACKAGE, ddlDebug);
-            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL4, ddlDebug);
-            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL3, ddlDebug);
-            runDdl(conn, DROP_TYPE_ORPACKAGE_ARECORD, ddlDebug);
-            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL2, ddlDebug);
+        if (ddlDrop) {
             runDdl(conn, DROP_TYPE_ORPACKAGE_TBL1, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL2, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_ARECORD, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL3, ddlDebug);
+            runDdl(conn, DROP_TYPE_ORPACKAGE_TBL4, ddlDebug);
+            runDdl(conn, DROP_PACKAGE_ORPACKAGE, ddlDebug);
         }
     }
 
@@ -341,21 +335,20 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void f2test() {
-    	ClassDescriptor tbl2Desc = null;
-    	ClassDescriptor tbl4Desc = null;
+        ClassDescriptor tbl1Desc = null;
+        ClassDescriptor tbl2Desc = null;
         for (ClassDescriptor cDesc : builder.getOrProject().getOrderedDescriptors()) {
-        	String alias = cDesc.getAlias();
-        	if (alias.equals(TBL4_DESCRIPTOR_ALIAS)) {
-        		tbl4Desc = cDesc;
-        	} else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
-        		tbl2Desc = cDesc;
-        	}
+            String alias = cDesc.getAlias();
+            if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
+                tbl1Desc = cDesc;
+            } else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
+                tbl2Desc = cDesc;
+            }
         }
-        assertNotNull("No descriptor was found with alias [" + TBL4_DESCRIPTOR_ALIAS + "]", tbl4Desc);
+        assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
-
+        tbl1Asserts(tbl1Desc);
         tbl2Asserts(tbl2Desc);
-        tbl4Asserts(tbl4Desc);
     }
 
     @Test

@@ -99,8 +99,19 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
             runDdl(conn, CREATE_TABLETYPE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();

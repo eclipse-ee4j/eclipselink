@@ -81,8 +81,6 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
             "\n);" +
     	    "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
             "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
-    	    "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
-    	    "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
     	    "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
     	    "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2);" +
     	    "\nPROCEDURE P4(REC IN ARECORD);" +
@@ -91,7 +89,7 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     	    "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);" +
     	    "\nPROCEDURE P8(FOO IN VARCHAR2);" +
     	    "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-    	    "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2;" +
+    	    "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;" +
     	    "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
     	"\nEND OXPACKAGE;";
 
@@ -114,31 +112,31 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
                 "\nNEWREC.T1 := OLDREC.T1;" +
                 "\nNEWREC.T2 := OLDREC.T2;" +
                 "\nNEWREC.T3 := OLDREC.T3;" +
-             "\nEND P5;" +
-             "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P7;" +
-             "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P7;" +
-             "\nPROCEDURE P8(FOO IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P8;" +
-             "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P8;" +
-             "\nFUNCTION F2(OLD IN TBL4, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
-             "\nBEGIN" +
-                 "\nRETURN OLD;" +
-             "\nEND F2;" +
-             "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS" +
-             "\nBEGIN" +
-                 "\nRETURN RECARRAY;" +
-             "\nEND F4;" +
+            "\nEND P5;" +
+            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
+            "\nBEGIN" +
+                "\nNULL;" +
+            "\nEND P7;" +
+            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
+            "\nBEGIN" +
+                "\nNULL;" +
+            "\nEND P7;" +
+            "\nPROCEDURE P8(FOO IN VARCHAR2) AS" +
+            "\nBEGIN" +
+                "\nNULL;" +
+            "\nEND P8;" +
+            "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
+            "\nBEGIN" +
+                "\nNULL;" +
+            "\nEND P8;" +
+            "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
+            "\nBEGIN" +
+                "\nRETURN OLD;" +
+            "\nEND F2;" +
+            "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS" +
+            "\nBEGIN" +
+                "\nRETURN RECARRAY;" +
+            "\nEND F4;" +
          "\nEND OXPACKAGE;";
 
     static final String CREATE_TYPE_OXPACKAGE_TBL1 =
@@ -158,8 +156,6 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     static final String DROP_PACKAGE_OXPACKAGE =
         "DROP PACKAGE OXPACKAGE";
-    static final String DROP_PACKAGE_BODY_OXPACKAGE =
-        "DROP PACKAGE BODY OXPACKAGE";
     static final String DROP_TYPE_OXPACKAGE_TBL1=
     	"DROP TYPE OXPACKAGE_TBL1 FORCE";
     static final String DROP_TYPE_OXPACKAGE_TBL2=
@@ -185,8 +181,19 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        String ddlCreate = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
-        if ("true".equalsIgnoreCase(ddlCreate)) {
+        String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+        if (ddlCreate) {
             runDdl(conn, CREATE_TYPE_OXPACKAGE_TBL1, ddlDebug);
             runDdl(conn, CREATE_TYPE_OXPACKAGE_TBL2, ddlDebug);
             runDdl(conn, CREATE_TYPE_OXPACKAGE_ARECORD, ddlDebug);
@@ -232,13 +239,12 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
-            runDdl(conn, DROP_PACKAGE_BODY_OXPACKAGE, ddlDebug);
-            runDdl(conn, DROP_PACKAGE_OXPACKAGE, ddlDebug);
-            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL4, ddlDebug);
-            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL3, ddlDebug);
-            runDdl(conn, DROP_TYPE_OXPACKAGE_ARECORD, ddlDebug);
-            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL2, ddlDebug);
             runDdl(conn, DROP_TYPE_OXPACKAGE_TBL1, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL2, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_ARECORD, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL3, ddlDebug);
+            runDdl(conn, DROP_TYPE_OXPACKAGE_TBL4, ddlDebug);
+            runDdl(conn, DROP_PACKAGE_OXPACKAGE, ddlDebug);
         }
     }
 
@@ -333,21 +339,20 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     @Test
     public void f2test() {
+    	XMLDescriptor tbl1Desc = null;
     	XMLDescriptor tbl2Desc = null;
-    	XMLDescriptor tbl4Desc = null;
         for (ClassDescriptor cDesc : builder.getOxProject().getOrderedDescriptors()) {
         	String alias = cDesc.getAlias();
-        	if (alias.equals(TBL4_DESCRIPTOR_ALIAS)) {
-        		tbl4Desc = (XMLDescriptor) cDesc;
+        	if (alias.equals(TBL1_DESCRIPTOR_ALIAS)) {
+        		tbl1Desc = (XMLDescriptor) cDesc;
         	} else if (alias.equals(TBL2_DESCRIPTOR_ALIAS)) {
         		tbl2Desc = (XMLDescriptor) cDesc;
         	}
         }
-        assertNotNull("No descriptor was found with alias [" + TBL4_DESCRIPTOR_ALIAS + "]", tbl4Desc);
+        assertNotNull("No descriptor was found with alias [" + TBL1_DESCRIPTOR_ALIAS + "]", tbl1Desc);
         assertNotNull("No descriptor was found with alias [" + TBL2_DESCRIPTOR_ALIAS + "]", tbl2Desc);
-
+        tbl1Asserts(tbl1Desc);
         tbl2Asserts(tbl2Desc);
-        tbl4Asserts(tbl4Desc);
     }
 
     @Test
