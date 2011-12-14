@@ -126,7 +126,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         super();
         this.xPathFragment = new XPathFragment();
         this.childRecordPool = new ArrayList<UnmarshalRecord>();
-        this.prefixesForFragment = new HashMap<String, String>();
         initialize(treeObjectBuilder);
     }
 
@@ -616,7 +615,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         getUnmarshalNamespaceResolver().push(prefix, uri);
-        prefixesForFragment.put(prefix, uri);
+        getPrefixesForFragment().put(prefix, uri);
     }
 
     public void endPrefixMapping(String prefix) throws SAXException {
@@ -760,7 +759,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 	                }
                 }
             }
-            this.prefixesForFragment.clear();
+            if(prefixesForFragment != null){
+                this.prefixesForFragment.clear();
+            }
         } catch (EclipseLinkException e) {
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;
@@ -1199,6 +1200,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
      * as a Node.
      */
     public Map<String, String> getPrefixesForFragment() {
+    	if(prefixesForFragment == null){
+    		prefixesForFragment = new HashMap<String, String>();
+    	}
+    	
         return prefixesForFragment;
     }
 }
