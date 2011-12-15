@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -81,6 +82,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
@@ -117,7 +119,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         if (databaseType.isComplexDatabaseType()) {
             ComplexDatabaseType complexType = (ComplexDatabaseType)databaseType;
             if (complexType.isJDBCType()) {
-            	return new OracleArrayTypeWrapper(databaseType);
+            	if (complexType.isCollection()) {
+            		return new OracleArrayTypeWrapper(databaseType);
+            	}
+            	return new OracleObjectTypeWrapper(databaseType);
             } else if (complexType.isRecord()) {
             	return new PLSQLRecordWrapper(databaseType);
             } else if (complexType.isCollection()) {
@@ -175,16 +180,19 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         addDescriptor(buildIsSetNullPolicyDescriptor());
 
         // 6029568 -- add metadata support for PLSQLStoredProcedureCall
+        addDescriptor(buildObjectTypeFieldAssociationDescriptor());
         addDescriptor(buildDatabaseTypeWrapperDescriptor());
         addDescriptor(buildJDBCTypeWrapperDescriptor());
         addDescriptor(buildSimplePLSQLTypeWrapperDescriptor());
         addDescriptor(buildOracleArrayTypeWrapperDescriptor());
+        addDescriptor(buildOracleObjectTypeWrapperDescriptor());
         addDescriptor(buildPLSQLrecordWrapperDescriptor());
         addDescriptor(buildPLSQLCollectionWrapperDescriptor());
         addDescriptor(buildPLSQLargumentDescriptor());
         addDescriptor(buildPLSQLStoredProcedureCallDescriptor());
         addDescriptor(buildPLSQLStoredFunctionCallDescriptor());
         addDescriptor(buildOracleArrayTypeDescriptor());
+        addDescriptor(buildOracleObjectTypeDescriptor());
         addDescriptor(buildPLSQLrecordDescriptor());
         addDescriptor(buildPLSQLCollectionDescriptor());
 
@@ -1521,6 +1529,19 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          return descriptor;
      }
+     protected ClassDescriptor buildOracleObjectTypeWrapperDescriptor() {
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(OracleObjectTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+
+         XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath(".");
+         wrappedDatabaseTypeMapping.setReferenceClass(OracleObjectType.class);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
      protected ClassDescriptor buildPLSQLrecordWrapperDescriptor() {
 
          XMLDescriptor descriptor = new XMLDescriptor();
@@ -1624,7 +1645,130 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          return descriptor;
      }
+     /**
+      * Builds a descriptor for the OracleObjectType class.
+      */
+     protected ClassDescriptor buildOracleObjectTypeDescriptor() {
 
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(OracleObjectType.class);
+
+         XMLDirectMapping typeNameMapping = new XMLDirectMapping();
+         typeNameMapping.setAttributeName("typeName");
+         typeNameMapping.setXPath(getPrimaryNamespaceXPath() + "type-name/text()");
+         descriptor.addMapping(typeNameMapping);
+
+         XMLDirectMapping compatibleTypeMapping = new XMLDirectMapping();
+         compatibleTypeMapping.setAttributeName("compatibleType");
+         compatibleTypeMapping.setXPath(getPrimaryNamespaceXPath() + "compatible-type/text()");
+         descriptor.addMapping(compatibleTypeMapping);
+
+         XMLDirectMapping javaTypeMapping = new XMLDirectMapping();
+         javaTypeMapping.setAttributeName("javaType");
+         javaTypeMapping.setXPath(getPrimaryNamespaceXPath() + "java-type/text()");
+         descriptor.addMapping(javaTypeMapping);
+
+         XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
+         fieldsMapping.setAttributeName("fields");
+         fieldsMapping.setReferenceClass(ObjectTypeFieldAssociation.class);
+         // handle translation of 'field' LinkedHashMap
+         fieldsMapping.setAttributeAccessor(new AttributeAccessor() {
+             public Object getAttributeValueFromObject(Object object) {
+                 Map fields = ((OracleObjectType) object).getFields();
+                 List associations = new ArrayList(fields.size());
+                 Iterator iterator = fields.entrySet().iterator();
+                 while (iterator.hasNext()) {
+                     Map.Entry entry = (Map.Entry)iterator.next();
+                     associations.add(new ObjectTypeFieldAssociation(entry.getKey().toString(),  wrapType((DatabaseType) entry.getValue())));
+                 }
+                 return associations;
+             }
+             public void setAttributeValueInObject(Object object, Object value) {
+            	 OracleObjectType objectType = (OracleObjectType) object;
+                 List associations = (List) value;
+                 Map fieldMap = new LinkedHashMap<String, DatabaseType>(associations.size() + 1);
+                 Iterator iterator = associations.iterator();
+                 while (iterator.hasNext()) {
+                	 ObjectTypeFieldAssociation association = (ObjectTypeFieldAssociation)iterator.next();
+                     fieldMap.put(association.getKey(), unwrapType((DatabaseTypeWrapper)association.getValue()));
+                 }
+                 objectType.setFields(fieldMap);
+             }
+         });
+         fieldsMapping.setXPath(getPrimaryNamespaceXPath() + "fields/" + getPrimaryNamespaceXPath() + "field");
+         descriptor.addMapping(fieldsMapping);
+         
+         return descriptor;
+     }
+     
+     /**
+      * Inner class used to map Map containers where the key is String and
+      * the value is a DatabaseType.  The value must be wrapped/unwrapped
+      * using the wrap/unwrap type methods on the outer class.
+      */
+     public class ObjectTypeFieldAssociation implements Map.Entry {
+    	 String key;
+    	 DatabaseTypeWrapper value;
+    	 
+    	 public ObjectTypeFieldAssociation() {
+    		 super();
+    	 }
+    	 
+    	 public ObjectTypeFieldAssociation(String key, DatabaseTypeWrapper value) {
+    		 this.key = key;
+    		 this.value = value;
+    	 }
+
+		public Object getKey() {
+			return key;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+
+		public Object setValue(Object arg0) {
+	        Object oldValue = this.value;
+	        this.value = (DatabaseTypeWrapper) arg0;
+	        return oldValue;
+		}
+     }
+     /**
+      * Builds a descriptor for the ObjectTypeFieldAssociation class.
+      */
+     protected ClassDescriptor buildObjectTypeFieldAssociationDescriptor() {
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(ObjectTypeFieldAssociation.class);
+         descriptor.setInstantiationPolicy(new ObjectTypeFieldAssociationInstantiationPolicy(this));
+    	 
+         XMLDirectMapping keyMapping = new XMLDirectMapping();
+         keyMapping.setAttributeName("key");
+         keyMapping.setXPath(getPrimaryNamespaceXPath() + "key/text()");
+         descriptor.addMapping(keyMapping);
+         
+         XMLCompositeObjectMapping valueMapping = new XMLCompositeObjectMapping();
+         valueMapping.setAttributeName("value");
+         valueMapping.setReferenceClass(DatabaseTypeWrapper.class);
+         valueMapping.setXPath(getPrimaryNamespaceXPath() + "value");
+         descriptor.addMapping(valueMapping);
+         
+         return descriptor;
+     }
+     /**
+      * Instantiation policy for ObjectTypeFieldAssociation class.  This policy
+      * enables the default constructor of the inner class to be accessed.
+      */
+     class ObjectTypeFieldAssociationInstantiationPolicy extends InstantiationPolicy {
+         ObjectPersistenceRuntimeXMLProject_11_1_1 outer;
+         ObjectTypeFieldAssociationInstantiationPolicy(
+             ObjectPersistenceRuntimeXMLProject_11_1_1 outer) {
+             this.outer = outer;
+         }
+         @Override
+         public Object buildNewInstance() throws DescriptorException {
+             return outer.new ObjectTypeFieldAssociation();
+         }
+     }
      protected ClassDescriptor buildPLSQLrecordDescriptor() {
 
          XMLDescriptor descriptor = new XMLDescriptor();
@@ -1710,7 +1854,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          descriptor.getInheritancePolicy().addClassIndicator(
              PLSQLCollectionWrapper.class, getPrimaryNamespaceXPath() + "plsql-collection");
          descriptor.getInheritancePolicy().addClassIndicator(
-                 OracleArrayTypeWrapper.class, getPrimaryNamespaceXPath() + "varray");
+             OracleArrayTypeWrapper.class, getPrimaryNamespaceXPath() + "varray");
+         descriptor.getInheritancePolicy().addClassIndicator(
+             OracleObjectTypeWrapper.class, getPrimaryNamespaceXPath() + "object-type");
 
          return descriptor;
      }

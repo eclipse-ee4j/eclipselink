@@ -44,6 +44,11 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 
     static final String CREATE_VARCHARARRAY_VARRAY =
         "CREATE OR REPLACE TYPE VARCHARARRAY AS VARRAY(10) OF VARCHAR2(20)";
+    static final String CREATE_A_PHONE_TYPE =
+        "CREATE OR REPLACE TYPE A_PHONE_TYPE AS OBJECT (" +
+            "\nHOME VARCHAR2(20)," +
+            "\nCELL VARCHAR2(20)" +
+        "\n)";
     static final String CREATE_COMPLEXPKG_TAB1_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG_TAB1 AS TABLE OF VARCHAR2(20)";
     static final String CREATE_COMPLEXPKG_PACKAGE =
@@ -53,6 +58,12 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             "\nPROCEDURE TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1, NEWVARRAY OUT VARCHARARRAY);" +
             "\nPROCEDURE VARRAYTOTABLE(OLDVARRAY IN VARCHARARRAY, NEWTAB OUT TAB1);" +
             "\nPROCEDURE VARRAYSTOTABLE(OLDVARRAY IN VARCHARARRAY, OLDVARRAY2 IN VARCHARARRAY, NEWTAB OUT TAB1);" +
+            "\nPROCEDURE PHONETOTABLE(APHONE IN A_PHONE_TYPE, NEWTAB OUT TAB1);" +
+            "\nPROCEDURE PHONEANDVARRAYTOTABLE(APHONE IN A_PHONE_TYPE, OLDVARRAY IN VARCHARARRAY, NEWTAB OUT TAB1);" +
+            "\nPROCEDURE TABLETOPHONE(OLDTAB IN TAB1, APHONE OUT A_PHONE_TYPE);" +
+            "\nPROCEDURE TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHARARRAY, APHONE OUT A_PHONE_TYPE);" +
+            "\nPROCEDURE TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHARARRAY, NEWVARRAY OUT VARCHARARRAY);" +
+            "\nPROCEDURE TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHARARRAY, NEWTAB OUT TAB1);" +
         "\nEND COMPLEXPKG;";
     static final String CREATE_COMPLEXPKG_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG AS" +
@@ -97,6 +108,51 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
                 "\nNEWTAB(5) := OLDVARRAY2(2);" +
                 "\nNEWTAB(6) := OLDVARRAY2(3);" +
             "\nEND VARRAYSTOTABLE;" +
+            "\nPROCEDURE PHONETOTABLE(APHONE IN A_PHONE_TYPE, NEWTAB OUT TAB1) AS" +
+            "\nBEGIN" +
+                "\nNEWTAB(1) := APHONE.HOME;" +
+                "\nNEWTAB(2) := APHONE.CELL;" +
+            "\nEND PHONETOTABLE;" +
+            "\nPROCEDURE PHONEANDVARRAYTOTABLE(APHONE IN A_PHONE_TYPE, OLDVARRAY IN VARCHARARRAY, NEWTAB OUT TAB1) AS" +
+            "\nBEGIN" +
+                "\nNEWTAB(1) := APHONE.HOME;" +
+                "\nNEWTAB(2) := APHONE.CELL;" +
+                "\nNEWTAB(3) := OLDVARRAY(1);" +
+                "\nNEWTAB(4) := OLDVARRAY(2);" +
+            "\nEND PHONEANDVARRAYTOTABLE;" +
+            "\nPROCEDURE TABLETOPHONE(OLDTAB IN TAB1, APHONE OUT A_PHONE_TYPE) AS" +
+            "\nBEGIN" +
+                "\nAPHONE := A_PHONE_TYPE(OLDTAB(1), OLDTAB(2));" +
+            "\nEND TABLETOPHONE;" +
+            "\nPROCEDURE TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHARARRAY, APHONE OUT A_PHONE_TYPE) AS" +
+            "\nBEGIN" +
+                "\nAPHONE := A_PHONE_TYPE(OLDTAB(1), OLDVARRAY(1));" +
+            "\nEND TABLEANDVARRAYTOPHONE;" +
+            "\nPROCEDURE TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHARARRAY, NEWVARRAY OUT VARCHARARRAY) AS" +
+            "\nBEGIN" +
+                "\nNEWVARRAY := VARCHARARRAY();" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(1) := OLDTAB(1);" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(2) := OLDTAB(2);" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(3) := OLDTAB(3);" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(4) := OLDVARRAY(1);" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(5) := OLDVARRAY(2);" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(6) := OLDVARRAY(3);" +
+            "\nEND TABLEANDVARRAYTOVARRAY;" +
+            "\nPROCEDURE TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHARARRAY, NEWTAB OUT TAB1) AS" +
+            "\nBEGIN" +
+                "\nNEWTAB(1) := OLDTAB(1);" +
+                "\nNEWTAB(2) := OLDTAB(2);" +
+                "\nNEWTAB(3) := OLDTAB(3);" +
+                "\nNEWTAB(4) := OLDVARRAY(1);" +
+                "\nNEWTAB(5) := OLDVARRAY(2);" +
+                "\nNEWTAB(6) := OLDVARRAY(3);" +
+            "\nEND TABLEANDVARRAYTOTABLE;" +
         "\nEND COMPLEXPKG;";
     static final String DROP_COMPLEXPKG_PACKAGE =
         "DROP PACKAGE COMPLEXPKG";
@@ -106,6 +162,8 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         "DROP TYPE COMPLEXPKG_TAB1";
     static final String DROP_VARCHARARRAY_TYPE =
         "DROP TYPE VARCHARARRAY";
+    static final String DROP_A_PHONE_TYPE = "DROP TYPE A_PHONE_TYPE";
+
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -135,6 +193,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         }
         if (ddlCreate) {
         	runDdl(conn, CREATE_VARCHARARRAY_VARRAY, ddlDebug);
+        	runDdl(conn, CREATE_A_PHONE_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_PACKAGE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_BODY, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_TAB1_TYPE, ddlDebug);
@@ -177,6 +236,36 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"COMPLEXPKG\" " +
                   "procedurePattern=\"VARRAYSTOTABLE\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"PhoneToTableTest\" " +
+                  "catalogPattern=\"COMPLEXPKG\" " +
+                  "procedurePattern=\"PHONETOTABLE\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"PhoneAndVArrayToTableTest\" " +
+                  "catalogPattern=\"COMPLEXPKG\" " +
+                  "procedurePattern=\"PHONEANDVARRAYTOTABLE\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TableToPhoneTest\" " +
+                  "catalogPattern=\"COMPLEXPKG\" " +
+                  "procedurePattern=\"TABLETOPHONE\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TableAndVArrayToPhoneTest\" " +
+                  "catalogPattern=\"COMPLEXPKG\" " +
+                  "procedurePattern=\"TABLEANDVARRAYTOPHONE\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TableAndVArrayToVArrayTest\" " +
+                  "catalogPattern=\"COMPLEXPKG\" " +
+                  "procedurePattern=\"TABLEANDVARRAYTOVARRAY\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TableAndVArrayToTableTest\" " +
+                  "catalogPattern=\"COMPLEXPKG\" " +
+                  "procedurePattern=\"TABLEANDVARRAYTOTABLE\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -185,9 +274,10 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
-        	runDdl(conn, DROP_COMPLEXPKG_PACKAGE_BODY, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG_PACKAGE_BODY, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG_PACKAGE, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG_TAB1_TYPE, ddlDebug);
+            runDdl(conn, DROP_A_PHONE_TYPE, ddlDebug);
             runDdl(conn, DROP_VARCHARARRAY_TYPE, ddlDebug);
         }
     }
@@ -260,6 +350,109 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void objectTypeToTableTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPhone1 = unmarshaller.unmarshal(new StringReader(APHONE_XML));
+        Invocation invocation = new Invocation("PhoneToTableTest");
+        invocation.setParameter("APHONE", inputPhone1);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(PHONE_TABLE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void objectTypeAndVArrayToTableTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPhone = unmarshaller.unmarshal(new StringReader(APHONE_XML));
+        Object inputVArray = unmarshaller.unmarshal(new StringReader(PHONE_VARRAY_XML));
+        Invocation invocation = new Invocation("PhoneAndVArrayToTableTest");
+        invocation.setParameter("APHONE", inputPhone);
+        invocation.setParameter("OLDVARRAY", inputVArray);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(PHONE_AND_VARRAY_TABLE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void tableToObjectTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputTable1 = unmarshaller.unmarshal(new StringReader(PHONE_TABLE_XML));
+        Invocation invocation = new Invocation("TableToPhoneTest");
+        invocation.setParameter("OLDTAB", inputTable1);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(APHONE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void tableAndVArrayToObjectTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputTab = unmarshaller.unmarshal(new StringReader(PHONE_TABLE_XML));
+        Object inputVArray = unmarshaller.unmarshal(new StringReader(PHONE_VARRAY_XML));
+        Invocation invocation = new Invocation("TableAndVArrayToPhoneTest");
+        invocation.setParameter("OLDTAB", inputTab);
+        invocation.setParameter("OLDVARRAY", inputVArray);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(APHONE2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void tableAndVArrayToVArrayTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputTab = unmarshaller.unmarshal(new StringReader(TABLE_XML));
+        Object inputVArray = unmarshaller.unmarshal(new StringReader(VARRAY2_XML));
+        Invocation invocation = new Invocation("TableAndVArrayToVArrayTest");
+        invocation.setParameter("OLDTAB", inputTab);
+        invocation.setParameter("OLDVARRAY", inputVArray);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(VARRAY3_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    
+    @Test
+    public void tableAndVArrayToTableTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputTab = unmarshaller.unmarshal(new StringReader(TABLE_XML));
+        Object inputVArray = unmarshaller.unmarshal(new StringReader(VARRAY2_XML));
+        Invocation invocation = new Invocation("TableAndVArrayToTableTest");
+        invocation.setParameter("OLDTAB", inputTab);
+        invocation.setParameter("OLDVARRAY", inputVArray);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(TABLE3_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG_TAB1 xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -286,7 +479,28 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
         "</COMPLEXPKG_TAB1>";
+    public static final String PHONE_TABLE_XML =
+        STANDALONE_XML_HEADER +
+        "<COMPLEXPKG_TAB1 xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<item>(613)111-2222</item>" +
+          "<item>(613)222-3333</item>" +
+        "</COMPLEXPKG_TAB1>";
 
+    public static final String PHONE_VARRAY_XML =
+        STANDALONE_XML_HEADER +
+        "<varchararrayType xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<item>(613)333-4444</item>" +
+          "<item>(613)444-5555</item>" +
+        "</varchararrayType>";
+
+    public static final String PHONE_AND_VARRAY_TABLE_XML =
+        STANDALONE_XML_HEADER +
+        "<COMPLEXPKG_TAB1 xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<item>(613)111-2222</item>" +
+          "<item>(613)222-3333</item>" +
+          "<item>(613)333-4444</item>" +
+          "<item>(613)444-5555</item>" +
+        "</COMPLEXPKG_TAB1>";
 
     public static final String VARRAY_XML =
         STANDALONE_XML_HEADER +
@@ -314,4 +528,17 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
         "</varchararrayType>";
+    public static final String APHONE_XML =
+        STANDALONE_XML_HEADER +
+        "<a_phone_typeType xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<home>(613)111-2222</home>" +
+          "<cell>(613)222-3333</cell>" +
+        "</a_phone_typeType>";
+    
+    public static final String APHONE2_XML =
+        STANDALONE_XML_HEADER +
+        "<a_phone_typeType xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<home>(613)111-2222</home>" +
+          "<cell>(613)333-4444</cell>" +
+        "</a_phone_typeType>";
 }

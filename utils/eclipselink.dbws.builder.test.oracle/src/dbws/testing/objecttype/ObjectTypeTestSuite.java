@@ -44,59 +44,59 @@ import dbws.testing.DBWSTestSuite;
 public class ObjectTypeTestSuite extends DBWSTestSuite {
 
     static final String CREATE_PHONE_TYPE =
-        "CREATE OR REPLACE TYPE PHONE_TYPE AS OBJECT (" +
+        "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (" +
             "\nHOME VARCHAR2(20)," +
             "\nCELL VARCHAR2(20)" +
         "\n)";
     static final String CREATE_EMP_TYPE =
-        "CREATE OR REPLACE TYPE EMP_TYPE AS OBJECT (" +
+        "CREATE OR REPLACE TYPE DBWS_EMP_TYPE AS OBJECT (" +
             "\nID NUMBER," +
             "\nNAME VARCHAR2(20)," +
-            "\nPHONE PHONE_TYPE" +
+            "\nPHONE DBWS_PHONE_TYPE" +
         "\n)";
     static final String CREATE_EMP_TYPE_TABLE =
-        "CREATE TABLE EMP_TYPE_TABLE OF EMP_TYPE";
+        "CREATE TABLE DBWS_EMP_TYPE_TABLE OF DBWS_EMP_TYPE";
     static final String[] POPULATE_EMP_TYPE_TABLE = new String[] {
-        "INSERT INTO EMP_TYPE_TABLE VALUES (" +
-            "EMP_TYPE(66, 'BUBBLES', PHONE_TYPE('(613) 234-4567', '(613) 858-3434')))",
-        "INSERT INTO EMP_TYPE_TABLE VALUES (" +
-            "EMP_TYPE(69, 'RICKY', PHONE_TYPE('(613) 344-1232', '(613) 823-2323')))",
-        "INSERT INTO EMP_TYPE_TABLE VALUES (" +
-            "EMP_TYPE(99, 'JULIAN', PHONE_TYPE('(613) 424-0987', '(613) 555-8888')))"
+        "INSERT INTO DBWS_EMP_TYPE_TABLE VALUES (" +
+            "DBWS_EMP_TYPE(66, 'BUBBLES', DBWS_PHONE_TYPE('(613) 234-4567', '(613) 858-3434')))",
+        "INSERT INTO DBWS_EMP_TYPE_TABLE VALUES (" +
+            "DBWS_EMP_TYPE(69, 'RICKY', DBWS_PHONE_TYPE('(613) 344-1232', '(613) 823-2323')))",
+        "INSERT INTO DBWS_EMP_TYPE_TABLE VALUES (" +
+            "DBWS_EMP_TYPE(99, 'JULIAN', DBWS_PHONE_TYPE('(613) 424-0987', '(613) 555-8888')))"
         };
     static final String CREATE_GET_EMP_TYPE_BY_ID_PROC =
-        "CREATE OR REPLACE PROCEDURE GET_EMP_TYPE_BY_ID(EID IN NUMBER, ETYPE OUT EMP_TYPE) AS" +
+        "CREATE OR REPLACE PROCEDURE GET_EMP_TYPE_BY_ID(EID IN NUMBER, ETYPE OUT DBWS_EMP_TYPE) AS" +
         "\nBEGIN" +
-            "\nSELECT VALUE(E) INTO ETYPE FROM EMP_TYPE_TABLE E WHERE E.ID = EID;" +
+            "\nSELECT VALUE(E) INTO ETYPE FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = EID;" +
         "\nEND GET_EMP_TYPE_BY_ID;";
     static final String CREATE_GET_EMP_TYPE_BY_ID_2_FUNC =
-        "CREATE OR REPLACE FUNCTION GET_EMP_TYPE_BY_ID_2(EID IN NUMBER) RETURN EMP_TYPE AS" +
-        "\nETYPE EMP_TYPE;" +
+        "CREATE OR REPLACE FUNCTION GET_EMP_TYPE_BY_ID_2(EID IN NUMBER) RETURN DBWS_EMP_TYPE AS" +
+        "\nETYPE DBWS_EMP_TYPE;" +
         "\nBEGIN" +
-            "\nSELECT VALUE(E) INTO ETYPE FROM EMP_TYPE_TABLE E WHERE E.ID = EID;" +
+            "\nSELECT VALUE(E) INTO ETYPE FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = EID;" +
             "\nRETURN ETYPE;" +
         "\nEND GET_EMP_TYPE_BY_ID_2;";
     static final String CREATE_ADD_EMP_TYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE ADD_EMP_TYPE(ETYPE IN EMP_TYPE, RESULT OUT EMP_TYPE) AS" +
+        "CREATE OR REPLACE PROCEDURE ADD_EMP_TYPE(ETYPE IN DBWS_EMP_TYPE, RESULT OUT DBWS_EMP_TYPE) AS" +
         "\nBEGIN" +
-            "\nDELETE FROM EMP_TYPE_TABLE WHERE ID = ETYPE.ID;" +
-            "\nINSERT INTO EMP_TYPE_TABLE VALUES (ETYPE);" +
-            "\nSELECT VALUE(E) INTO RESULT FROM EMP_TYPE_TABLE E WHERE E.ID = ETYPE.ID;" +
-            "\nDELETE FROM EMP_TYPE_TABLE WHERE ID = ETYPE.ID;" +
+            "\nDELETE FROM DBWS_EMP_TYPE_TABLE WHERE ID = ETYPE.ID;" +
+            "\nINSERT INTO DBWS_EMP_TYPE_TABLE VALUES (ETYPE);" +
+            "\nSELECT VALUE(E) INTO RESULT FROM DBWS_EMP_TYPE_TABLE E WHERE E.ID = ETYPE.ID;" +
+            "\nDELETE FROM DBWS_EMP_TYPE_TABLE WHERE ID = ETYPE.ID;" +
         "\nEND ADD_EMP_TYPE;";
     static final String CREATE_ADD_EMP_TYPE2_FUNC =
-        "CREATE OR REPLACE FUNCTION ADD_EMP_TYPE2(ETYPE IN EMP_TYPE) RETURN EMP_TYPE AS" +
-        "\nRESULT EMP_TYPE;" +
+        "CREATE OR REPLACE FUNCTION ADD_EMP_TYPE2(ETYPE IN DBWS_EMP_TYPE) RETURN DBWS_EMP_TYPE AS" +
+        "\nRESULT DBWS_EMP_TYPE;" +
         "\nBEGIN" +
             "\nADD_EMP_TYPE(ETYPE, RESULT);" +
             "\nRETURN RESULT;" +
         "\nEND ADD_EMP_TYPE2;";
     static final String DROP_PHONE_TYPE =
-        "DROP TYPE PHONE_TYPE";
+        "DROP TYPE DBWS_PHONE_TYPE FORCE";
     static final String DROP_EMP_TYPE =
-        "DROP TYPE EMP_TYPE";
+        "DROP TYPE DBWS_EMP_TYPE FORCE";
     static final String DROP_EMP_TYPE_TABLE =
-        "DROP TABLE EMP_TYPE_TABLE";
+        "DROP TABLE DBWS_EMP_TYPE_TABLE FORCE";
     static final String DROP_GET_EMP_TYPE_BY_ID_PROC =
         "DROP PROCEDURE GET_EMP_TYPE_BY_ID";
     static final String DROP_GET_EMP_TYPE_BY_ID_2_FUNC =
@@ -120,7 +120,7 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 e.printStackTrace();
             }
         }
-        //because of behaviour of EMP_TYPE_TABLE w.r.t. identity, force create/drop
+        //because of behaviour of DBWS_EMP_TYPE_TABLE w.r.t. identity, force create/drop
         //no matter what the external properties say
         ddlCreate = true;
         ddlDrop = true;
@@ -144,7 +144,9 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 stmt.executeBatch();
             }
             catch (SQLException e) {
-                //e.printStackTrace();
+            	if (ddlDebug) {
+            		e.printStackTrace();
+            	}
             }
         }
         DBWS_BUILDER_XML_USERNAME =
@@ -170,28 +172,28 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"GET_EMP_TYPE_BY_ID\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"emp_typeType\" " +
+                  "returnType=\"dbws_emp_typeType\" " +
               "/>" +
               "<procedure " +
                   "name=\"GetEmpTypeByIdTest2\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"GET_EMP_TYPE_BY_ID_2\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"emp_typeType\" " +
+                  "returnType=\"dbws_emp_typeType\" " +
               "/>" +
               "<procedure " +
                   "name=\"AddEmpTypeTest\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"ADD_EMP_TYPE\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"emp_typeType\" " +
+                  "returnType=\"dbws_emp_typeType\" " +
               "/>" +
               "<procedure " +
                   "name=\"AddEmpTypeTest2\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"ADD_EMP_TYPE2\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"emp_typeType\" " +
+                  "returnType=\"dbws_emp_typeType\" " +
               "/>" +
             "</dbws-builder>";
           builder = null;
@@ -201,11 +203,11 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     @AfterClass
     public static void tearDown() {
         if (ddlDrop) {
+            runDdl(conn, DROP_EMP_TYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_ADD_EMP_TYPE2_FUNC, ddlDebug);
             runDdl(conn, DROP_ADD_EMP_TYPE_PROC, ddlDebug);
             runDdl(conn, DROP_GET_EMP_TYPE_BY_ID_2_FUNC, ddlDebug);
             runDdl(conn, DROP_GET_EMP_TYPE_BY_ID_PROC, ddlDebug);
-            runDdl(conn, DROP_EMP_TYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_EMP_TYPE, ddlDebug);
             runDdl(conn, DROP_PHONE_TYPE, ddlDebug);
         }
@@ -226,14 +228,14 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     }
     static String RESULT_XML =
         REGULAR_XML_HEADER +
-        "<emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>66</id>" +
             "<name>BUBBLES</name>" +
             "<phone>" +
                 "<home>(613) 234-4567</home>" +
                 "<cell>(613) 858-3434</cell>" +
             "</phone>" +
-        "</emp_typeType>";
+        "</dbws_emp_typeType>";
 
     @Test
     public void getEmpTypeByIdTest2() {
@@ -250,14 +252,14 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     }
     static String RESULT2_XML =
         REGULAR_XML_HEADER +
-        "<emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>69</id>" +
             "<name>RICKY</name>" +
             "<phone>" +
                 "<home>(613) 344-1232</home>" +
                 "<cell>(613) 823-2323</cell>" +
             "</phone>" +
-        "</emp_typeType>";
+        "</dbws_emp_typeType>";
 
     @Test
     public void addEmpTypeTest() {
@@ -291,12 +293,12 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     }
     static String ETYPE_XML =
         REGULAR_XML_HEADER +
-        "<emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_emp_typeType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>9</id>" +
             "<name>LAHEY</name>" +
             "<phone>" +
                 "<home>(902) 987-0011</home>" +
                 "<cell>(902) 789-1100</cell>" +
             "</phone>" +
-        "</emp_typeType>";
+        "</dbws_emp_typeType>";
 }

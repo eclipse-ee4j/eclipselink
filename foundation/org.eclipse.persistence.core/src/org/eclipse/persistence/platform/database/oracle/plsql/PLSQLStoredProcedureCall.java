@@ -16,6 +16,7 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 //javase imports
 import java.sql.CallableStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
@@ -507,7 +509,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             } else {
                 ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                 if (inArg.inIndex != MIN_VALUE) {
-                    if (type instanceof PLSQLCollection) {
+                	if (type instanceof OracleObjectType) {
+                        super.addNamedArgument(inArg.name, inArg.name, Types.STRUCT, complexType.getCompatibleType());
+                	} else if (type instanceof PLSQLCollection) {
                         DatabaseType nestedType = ((PLSQLCollection) type).getNestedType();
                         if (nestedType != null) {
                             ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(inArg.name);
@@ -540,6 +544,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 if (outArg.outIndex != MIN_VALUE) {
                     if (complexType instanceof OracleArrayType) {
                     	super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getTypeName(), complexType.getJavaType());
+                    } else if (complexType instanceof OracleObjectType) {
+                    	super.addNamedOutputArgument(outArg.name, outArg.name, Types.STRUCT, complexType.getTypeName(), complexType.getJavaType());
                     } else if (complexType instanceof PLSQLCollection) {
                         DatabaseType nestedType = ((PLSQLCollection) complexType).getNestedType();
                         if (nestedType != null) {
