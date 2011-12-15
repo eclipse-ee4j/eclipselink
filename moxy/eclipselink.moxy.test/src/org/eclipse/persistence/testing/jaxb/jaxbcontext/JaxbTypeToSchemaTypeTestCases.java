@@ -54,6 +54,8 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
 	public void testTypeArray() throws Exception{
 		Type[] types = new Type[]{String.class};
 		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(types, null, Thread.currentThread().getContextClassLoader());
+		// Additionally, test refreshMetadata when bootstrapping from Type[]
+		ctx.refreshMetadata();
 		Map<Type, QName> typeMap = ctx.getTypeToSchemaType();
 		assertEquals(1, typeMap.size());
 		assertNotNull(typeMap.get(String.class));

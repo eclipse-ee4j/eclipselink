@@ -110,7 +110,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int XJB_NOT_SOURCE = 50078;
     public static final int XSD_IMPORT_NOT_SOURCE = 50079;
     public static final int INVALID_XMLLOCATION = 50080;
-    
+    public static final int EXCEPTION_DURING_SCHEMA_GEN = 50081;
+
     protected JAXBException(String message) {
         super(message);
     }
@@ -1015,6 +1016,17 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { propertyName, propertyType };
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XMLLOCATION, args));
         validationException.setErrorCode(INVALID_XMLLOCATION);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred during schema generation.
+     */
+    public static JAXBException exceptionDuringSchemaGeneration(Exception ex) {
+        Object[] args = { };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, EXCEPTION_DURING_SCHEMA_GEN, args), ex);
+        validationException.setErrorCode(EXCEPTION_DURING_SCHEMA_GEN);
         return validationException;
     }
 

@@ -147,7 +147,18 @@ public class Generator {
         	annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
         }
     }
-    
+
+    /**
+     * This event is called when mappings generation is completed,
+     * and provides a chance to deference anything that is no longer
+     * needed (to reduce the memory footprint of this object).
+     */
+    public void postInitialize() {
+        mappingsGenerator = null;
+        annotationsProcessor.postInitialize();
+        schemaGenerator = null;
+    }
+
     /**
      * 
      */
@@ -293,4 +304,9 @@ public class Generator {
     public void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typesToTypeMapping) {
         this.typeToTypeMappingInfo = typesToTypeMapping;
     }
+
+    public Map<Type, TypeMappingInfo> getTypeToTypeMappingInfo() {
+        return this.typeToTypeMappingInfo;
+    }
+
 }

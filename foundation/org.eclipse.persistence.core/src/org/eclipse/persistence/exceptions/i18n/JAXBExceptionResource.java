@@ -99,7 +99,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50077", "Cannot refresh metadata.  Metadata must be provided as an XML Node in order to support refreshing."},
         {"50078", "Cannot process external bindings files (XJB).  To use external bindings files, both XSD and XJB must be provided as javax.xml.transform.Sources."},
         {"50079", "Cannot process schemas.  If using schema imports, XSDs must be provided as a javax.xml.transform.Source."},
-        {"50080", "XmlLocation is only allowed on properties of type org.xml.sax.Locator, but [{0}] is of type [{1}]."}
+        {"50080", "XmlLocation is only allowed on properties of type org.xml.sax.Locator, but [{0}] is of type [{1}]."},
+        {"50081", "An exception occurred during schema generation."}
     };
 
     /**
