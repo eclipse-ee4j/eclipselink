@@ -16,6 +16,7 @@ import java.net.URL;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.xml.sax.ErrorHandler;
@@ -75,7 +76,8 @@ public class SetXmlSchemaTestCases extends OXTestCase {
             xmlUnmarshaller.setSchema(schema);
             URL url = ClassLoader.getSystemResource(VALID_XML_RESOURCE);
             xmlUnmarshaller.unmarshal(url);
-        } catch(UnsupportedOperationException ex) {
+        } catch(UnsupportedOperationException uoe) {
+        } catch(XMLMarshalException xme) {
             //if the parser doesn't support the setSchema API, this is a valid outcome
             //for the test.
         }
