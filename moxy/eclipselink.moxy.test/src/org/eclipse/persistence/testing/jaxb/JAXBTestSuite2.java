@@ -93,6 +93,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbContextCreationTests.class);        
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbContextReturnTypesTests.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbTypeToSchemaTypeTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nscollison.NamespaceCollisionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.adapter.BinderWithAdapterTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nullpolicy.BinderWithNullPolicyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nullpolicy.BinderWithNullPolicyCompositeTestCases.class);

@@ -591,13 +591,11 @@ public class XMLObjectBuilder extends ObjectBuilder {
             String prefix = marshalRecordNamespaceResolver.resolveNamespaceURI(entry.getValue());
 
             if (prefix == null || prefix.length() == 0) {
-                //if there is no prefix already declared for this uri in the nr add this one                //
-                marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
-                returnList.add(new Namespace(entry.getKey(), entry.getValue()));
-            } else {
-                //if prefix is the same do nothing
-                if (!prefix.equals(entry.getKey())) {
-                    //if prefix exists for uri but is different then add this
+                //if there is no prefix already declared for this uri in the nr add this one
+                //unless that prefix is already bound to another namespace uri
+                prefix = entry.getKey();
+                String uri = marshalRecordNamespaceResolver.resolveNamespacePrefix(prefix);
+                if(uri == null || uri.length() == 0) {
                     marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
                     returnList.add(new Namespace(entry.getKey(), entry.getValue()));
                 }
