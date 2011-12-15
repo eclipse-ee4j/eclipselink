@@ -51,9 +51,18 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_COMPLEXPKG2_TAB1_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG2_TAB1 AS TABLE OF VARCHAR2(20)";
+    static final String CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE =
+        "CREATE OR REPLACE TYPE COMPLEXPKG2_SIMPLERECORD AS OBJECT (" +
+            "\nSR1 VARCHAR2(20)," +
+            "\nSR2 VARCHAR2(20)" +
+        "\n)";
     static final String CREATE_COMPLEXPKG2_PACKAGE =
         "CREATE OR REPLACE PACKAGE COMPLEXPKG2 AS" +
             "\nTYPE TAB1 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
+            "\nTYPE SIMPLERECORD IS RECORD (" +
+	            "\nSR1 VARCHAR2(20)," +
+	            "\nSR2 VARCHAR2(20)" +
+	        "\n);" +
             "\nFUNCTION TABLETOVARRAY(OLDTAB IN TAB1) RETURN VARCHAR2ARRAY;" +
             "\nFUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY;" +
             "\nFUNCTION VARRAYTOTABLE(OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;" +
@@ -64,6 +73,10 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nFUNCTION TABLEANDVARRAYTOPHONE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN A_PHONE2_TYPE;" +
             "\nFUNCTION TABLEANDVARRAYTOVARRAY(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN VARCHAR2ARRAY;" +
             "\nFUNCTION TABLEANDVARRAYTOTABLE(OLDTAB IN TAB1, OLDVARRAY IN VARCHAR2ARRAY) RETURN TAB1;" +
+            "\nFUNCTION RECORDTOVARRAY(OLDREC IN SIMPLERECORD) RETURN VARCHAR2ARRAY;" +
+            "\nFUNCTION RECORDTOPHONE(OLDREC IN SIMPLERECORD) RETURN A_PHONE2_TYPE;" +
+            "\nFUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD;" +
+            "\nFUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD;" +
         "\nEND COMPLEXPKG2;";
     static final String CREATE_COMPLEXPKG2_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG2 AS" +
@@ -173,6 +186,36 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nNEWTAB(6) := OLDVARRAY(3);" +
                 "\nRETURN NEWTAB;" +
             "\nEND TABLEANDVARRAYTOTABLE;" +
+            "\nFUNCTION RECORDTOVARRAY(OLDREC IN SIMPLERECORD) RETURN VARCHAR2ARRAY AS" +
+            "\nNEWVARRAY VARCHAR2ARRAY;" +
+            "\nBEGIN" +
+                "\nNEWVARRAY := VARCHAR2ARRAY();" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(1) := OLDREC.SR1;" +
+                "\nNEWVARRAY.EXTEND;" +
+                "\nNEWVARRAY(2) := OLDREC.SR2;" +
+                "\nRETURN NEWVARRAY;" +
+            "\nEND RECORDTOVARRAY;" +
+            "\nFUNCTION RECORDTOPHONE(OLDREC IN SIMPLERECORD) RETURN A_PHONE2_TYPE AS" +
+            "\nAPHONE A_PHONE2_TYPE;" +
+            "\nBEGIN" +
+                "\nAPHONE := A_PHONE2_TYPE(OLDREC.SR1, OLDREC.SR2);" +
+                "\nRETURN APHONE;" +
+            "\nEND RECORDTOPHONE;" +
+            "\nFUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD AS" +
+            "\nNEWREC SIMPLERECORD;" +
+	        "\nBEGIN" +
+                "\nNEWREC.SR1 := OLDVARRAY(1);" +
+                "\nNEWREC.SR2 := OLDVARRAY(2);" +
+                "\nRETURN NEWREC;" +
+	        "\nEND VARRAYTORECORD;" +
+            "\nFUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD AS" +
+            "\nNEWREC SIMPLERECORD;" +
+            "\nBEGIN" +
+                "\nNEWREC.SR1 := APHONE.HOME;" +
+                "\nNEWREC.SR2 := APHONE.CELL;" +
+                "\nRETURN NEWREC;" +
+            "\nEND PHONETORECORD;" +
         "\nEND COMPLEXPKG2;";
     static final String DROP_COMPLEXPKG2_PACKAGE =
         "DROP PACKAGE COMPLEXPKG2";
@@ -180,11 +223,11 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "DROP PACKAGE BODY COMPLEXPKG2";
     static final String DROP_COMPLEXPKG2_TAB1_TYPE =
         "DROP TYPE COMPLEXPKG2_TAB1";
+    static final String DROP_COMPLEXPKG2_SIMPLERECORD_TYPE =
+        "DROP TYPE COMPLEXPKG2_SIMPLERECORD";
     static final String DROP_VARCHAR2ARRAY_TYPE =
         "DROP TYPE VARCHAR2ARRAY";
-    static final String DROP_A_PHONE2_TYPE =
-        "DROP TYPE A_PHONE2_TYPE";
-
+    static final String DROP_A_PHONE2_TYPE =        "DROP TYPE A_PHONE2_TYPE";
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -213,7 +256,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         }
         if (ddlCreate) {
            	runDdl(conn, CREATE_VARCHAR2ARRAY_VARRAY, ddlDebug);
-        	runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);
+        	runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);        	runDdl(conn, CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_PACKAGE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_BODY, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
@@ -291,6 +334,28 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"COMPLEXPKG2\" " +
                   "procedurePattern=\"TABLEANDVARRAYTOTABLE\" " +
               "/>" +
+              "<plsql-procedure " +
+	              "name=\"RecordToVArrayTest\" " +
+	              "catalogPattern=\"COMPLEXPKG2\" " +
+	              "procedurePattern=\"RECORDTOVARRAY\" " +
+                  "returnType=\"varchar2arrayType\" " +
+	          "/>" +
+	          "<plsql-procedure " +
+	              "name=\"RecordToPhoneTest\" " +
+	              "catalogPattern=\"COMPLEXPKG2\" " +
+	              "procedurePattern=\"RECORDTOPHONE\" " +
+                  "returnType=\"a_phone2_typeType\" " +
+	          "/>" +
+              "<plsql-procedure " +
+	              "name=\"VArrayToRecordTest\" " +
+	              "catalogPattern=\"COMPLEXPKG2\" " +
+	              "procedurePattern=\"VARRAYTORECORD\" " +
+	          "/>" +
+	          "<plsql-procedure " +
+	              "name=\"PhoneToRecordTest\" " +
+	              "catalogPattern=\"COMPLEXPKG2\" " +
+	              "procedurePattern=\"PHONETORECORD\" " +
+	          "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -301,8 +366,9 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         if (ddlDrop) {
         	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE_BODY, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE, ddlDebug);
+        	runDdl(conn, DROP_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
-                runDdl(conn, DROP_A_PHONE2_TYPE, ddlDebug);
+            runDdl(conn, DROP_A_PHONE2_TYPE, ddlDebug);
         	runDdl(conn, DROP_VARCHAR2ARRAY_TYPE, ddlDebug);
         }
     }
@@ -478,6 +544,71 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(TABLE3_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
+    
+    @Test
+    public void recordToVArrayTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputRec1 = unmarshaller.unmarshal(new StringReader(SIMPLE_RECORD_XML));
+        Invocation invocation = new Invocation("RecordToVArrayTest");
+        invocation.setParameter("OLDREC", inputRec1);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(PHONE_VARRAY_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void recordToPhoneTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputRec1 = unmarshaller.unmarshal(new StringReader(SIMPLE_RECORD2_XML));
+        Invocation invocation = new Invocation("RecordToPhoneTest");
+        invocation.setParameter("OLDREC", inputRec1);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(APHONE2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    
+    @Test
+    public void varrayToRecordTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputVArray = unmarshaller.unmarshal(new StringReader(PHONE_VARRAY_XML));
+        Invocation invocation = new Invocation("VArrayToRecordTest");
+        invocation.setParameter("OLDVARRAY", inputVArray);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_RECORD_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void phoneToRecordTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPhone = unmarshaller.unmarshal(new StringReader(APHONE2_XML));
+        Invocation invocation = new Invocation("PhoneToRecordTest");
+        invocation.setParameter("APHONE", inputPhone);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_RECORD2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -566,4 +697,16 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
           "<home>(613)111-2222</home>" +
           "<cell>(613)333-4444</cell>" +
         "</a_phone2_typeType>";
+    public static final String SIMPLE_RECORD_XML =
+	    STANDALONE_XML_HEADER +
+	    "<COMPLEXPKG2_SIMPLERECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	      "<sr1>(613)333-4444</sr1>" +
+	      "<sr2>(613)444-5555</sr2>" +
+	    "</COMPLEXPKG2_SIMPLERECORD>";
+    public static final String SIMPLE_RECORD2_XML =
+	    STANDALONE_XML_HEADER +
+	    "<COMPLEXPKG2_SIMPLERECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	      "<sr1>(613)111-2222</sr1>" +
+	      "<sr2>(613)333-4444</sr2>" +
+	    "</COMPLEXPKG2_SIMPLERECORD>";
 }
