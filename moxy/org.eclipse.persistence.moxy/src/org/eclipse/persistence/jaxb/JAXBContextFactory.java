@@ -107,7 +107,11 @@ public class JAXBContextFactory {
      */
     public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
         JAXBContextInput contextInput = new ContextPathInput(contextPath, properties, classLoader);
-        return new JAXBContext(contextInput);
+        JAXBContext context = new JAXBContext(contextInput);
+        if (context.isRefreshable()) {
+            context.postInitialize();
+        }
+        return context;
     }
 
     /**
@@ -139,7 +143,11 @@ public class JAXBContextFactory {
      */
     public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         JAXBContextInput contextInput = new TypeMappingInfoInput(typesToBeBound, properties, classLoader);
-        return new JAXBContext(contextInput);
+        JAXBContext context = new JAXBContext(contextInput);
+        if (context.isRefreshable()) {
+            context.postInitialize();
+        }
+        return context;
     }
 
     /**

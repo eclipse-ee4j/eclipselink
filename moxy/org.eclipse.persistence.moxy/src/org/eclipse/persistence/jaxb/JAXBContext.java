@@ -168,8 +168,19 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
+     * This event is called when context creation is completed,
+     * and provides a chance to deference anything that is no longer
+     * needed (to reduce the memory footprint of this object).
+     */
+    void postInitialize() {
+        if (this.contextState.generator != null) {
+            this.contextState.generator.postInitialize();
+        }
+    }
+
+    /**
      * ADVANCED:
-     * <p>Refresh the underlying metadata based on the inputs that were 
+     * <p>Refresh the underlying metadata based on the inputs that were
      * used to create the JAXBContext.  This is particularly useful when using
      * the virtual property mappings.  The refreshMetadata call could be made
      * in the following way:</p>
@@ -183,16 +194,42 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @throws javax.xml.bind.JAXBException
      */
     public void refreshMetadata() throws javax.xml.bind.JAXBException {
-        if(null == contextInput) {
-            return;
+        JAXBContextState newState = newContextState();
+        if (newState != null) {
+            contextState = newState;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Build a new JAXBContextState from the current JAXBContextInput.
+     */
+    private JAXBContextState newContextState() throws javax.xml.bind.JAXBException {
+        if (null == contextInput) {
+            return null;
         }
         synchronized(this) {
             JAXBContextState newState = contextInput.createContextState();
             XMLContext xmlContext = getXMLContext();
             xmlContext.setXMLContextState(newState.getXMLContext().getXMLContextState());
             newState.setXMLContext(xmlContext);
-            contextState = newState;
+            newState.setTypeToTypeMappingInfo(contextState.getTypeToTypeMappingInfo());
+            return newState;
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates if this JAXBContext can have its metadata refreshed.
+     */
+    boolean isRefreshable() {
+        if (this.contextInput.properties == null) {
+            return true;
+        }
+        if (this.contextInput.properties.containsKey(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -219,12 +256,20 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Generate a Schema for this JAXBContext
      *  
      * @param outputResolver Class that decides where the schema file (of the given namespace URI) will be written
-     * @param additonalGlobalElements Map of additional global elements to be added to the generated XSD.  
+     * @param additonalGlobalElements Map of additional global elements to be added to the generated XSD.
      * Note that if any QName in this map conflicts with another global element (for example from a TypeMappingInfo object)
      * then the element generated from this map will be the one that is present in the XSD.
      */
     public void generateSchema(SchemaOutputResolver outputResolver, Map<QName, Type> additonalGlobalElements) {
         JAXBContextState currentJAXBContextState = contextState;
+        if (isRefreshable()) {
+            // Recreate context state, to rebuild Generator
+            try {
+                currentJAXBContextState = newContextState();
+            } catch (Exception e) {
+                throw JAXBException.exceptionDuringSchemaGeneration(e);
+            }
+        }
         XMLContext xmlContext = currentJAXBContextState.getXMLContext();
         Generator generator = currentJAXBContextState.getGenerator();
         if (generator == null) {
@@ -1203,7 +1248,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         private void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typeToMappingInfo) {
             this.typeToTypeMappingInfo = typeToMappingInfo;
-            this.generator.setTypeToTypeMappingInfo(typeToMappingInfo);
+            if (this.generator != null) {
+                this.generator.setTypeToTypeMappingInfo(typeToMappingInfo);
+            }
         }
 
         private void setTypeMappingInfoToJavaTypeAdapaters(Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters) {

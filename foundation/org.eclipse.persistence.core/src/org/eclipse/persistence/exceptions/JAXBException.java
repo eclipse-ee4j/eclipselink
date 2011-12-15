@@ -106,6 +106,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int EXCEPTION_WITH_NAME_TRANSFORMER_CLASS = 50074;
     public static final int EXCEPTION_DURING_NAME_TRANSFORMATION = 50075;
     public static final int UNABLE_TO_LOAD_METADATA_FROM_LOCATION = 50076;
+    public static final int EXCEPTION_DURING_SCHEMA_GEN = 50081;
 
     protected JAXBException(String message) {
         super(message);
@@ -982,6 +983,16 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(UNABLE_TO_LOAD_METADATA_FROM_LOCATION);
         return validationException;
     }
-    
-        
+
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred during schema generation.
+     */
+    public static JAXBException exceptionDuringSchemaGeneration(Exception ex) {
+        Object[] args = { };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, EXCEPTION_DURING_SCHEMA_GEN, args), ex);
+        validationException.setErrorCode(EXCEPTION_DURING_SCHEMA_GEN);
+        return validationException;
+    }
+
 }

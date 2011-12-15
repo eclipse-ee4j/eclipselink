@@ -224,6 +224,32 @@ public class AnnotationsProcessor {
     }
 
     /**
+     * This event is called when annotation processing is completed,
+     * and provides a chance to deference anything that is no longer
+     * needed (to reduce the memory footprint of this object).
+     */
+    void postInitialize() {
+        typeInfoClasses = null;
+        packageToPackageInfoMappings = null;
+        typeInfo = null;
+        typeQNames = null;
+        elementDeclarations = null;
+        xmlRootElements = null;
+        localElements = null;
+        factoryMethods = null;
+        xmlRegistries = null;
+        objectFactoryClassNames = null;
+        classesToProcessPropertyTypes = null;
+        javaClassToTypeMappingInfos = null;
+        typeMappingInfoToGeneratedClasses = null;
+        typeMappingInfoToAdapterClasses = null;
+        namespaceResolver = null;
+        helper = null;
+        logger = null;
+        referencedByTransformer = null;
+    }
+
+    /**
      * Generate TypeInfo instances for a given array of JavaClasses.
      * 
      * @param classes
