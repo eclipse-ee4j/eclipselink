@@ -26,7 +26,6 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.binder.jaxbelement.Employee;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -39,7 +38,7 @@ public class NamespaceCollisionTestCases extends TestCase {
     }
     
     public void testNamespaceCollision() throws Exception {
-        String xml = "<ns0:employee xmlns1=\"mynamespace3\" xmlns:ns2=\"mynamespace2\" xmlns:ns0=\"mynamespace1\"><ns2:address><street>123 Fake Street</street></ns2:address><firstName>Matt</firstName><id>123</id></ns0:employee>";
+        String xml = "<ns0:employee xmlns:ns1=\"mynamespace3\" xmlns:ns2=\"mynamespace2\" xmlns:ns0=\"mynamespace1\"><ns2:address><street>123 Fake Street</street></ns2:address><firstName>Matt</firstName><id>123</id></ns0:employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nscollision/employee.xml";
         Document controlDocument = parser.parse(new File(controlSource));
         
@@ -47,9 +46,11 @@ public class NamespaceCollisionTestCases extends TestCase {
         
         Binder binder = ctx.createBinder();
         
-        JAXBElement emp = binder.unmarshal(parser.parse(new StringReader(xml)), Employee.class);
-        ((Employee)emp.getValue()).id = 456;
-        binder.updateXML(emp);
+        JAXBElement elem = binder.unmarshal(parser.parse(new StringReader(xml)), Employee.class);
+        Employee emp = (Employee)elem.getValue();
+        emp.address.city = "Toronto";
+        
+        binder.updateXML(emp.address);
         
         JAXBXMLComparer comparer = new JAXBXMLComparer();
         assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
