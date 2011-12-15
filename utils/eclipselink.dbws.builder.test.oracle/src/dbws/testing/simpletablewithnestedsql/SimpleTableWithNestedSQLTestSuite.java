@@ -64,10 +64,14 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
             "\nPRIMARY KEY (ID)" +
         "\n)";
     static final String[] POPULATE_SIMPLE_TABLE = new String[] {
-        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (1, 'mike', '2001-12-25')",
-        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (2, 'blaise','2002-02-12')",
-        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (3, 'rick','2001-10-30')",
-        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (4, 'mikey', '2010-01-01')"
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (1, 'mike', " +
+            "TO_DATE('2001-12-25 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (2, 'blaise', " +
+            "TO_DATE('2002-02-12 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (3, 'rick'," +
+            "TO_DATE('2001-10-30 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (4, 'mikey', " +
+            "TO_DATE('2010-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'))"
     };
     static final String DROP_SIMPLE_TABLE =
         "DROP TABLE SIMPLETABLE2";

@@ -56,15 +56,20 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         "\nBEGIN" +
             "\nPTABLE := PERSONTYPE_TABLE();" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('BUBBLES', 32, 'M', '1990-11-19');" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('BUBBLES', 32, 'M', " +
+                "TO_DATE('1990-11-19 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('RICKY', 33, 'M', '1985-10-01');" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('RICKY', 33, 'M', " +
+                "TO_DATE('1985-10-01 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('JULIAN', 35, 'M', '1988-02-07');" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('JULIAN', 35, 'M', " +
+                "TO_DATE('1988-02-07 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('SARAH', 25, 'F', '2002-05-12');" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('SARAH', 25, 'F', " +
+                "TO_DATE('2002-05-12 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('J-ROC', 27, 'M', '1998-12-17');" +
+            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('J-ROC', 27, 'M', " +
+                "TO_DATE('1998-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
         "\nEND GET_PERSONTYPE_TABLE;";
     static final String CREATE_GET_PERSONTYPE2_FUNC =
         "CREATE OR REPLACE FUNCTION GET_PERSONTYPE_TABLE2 RETURN PERSONTYPE_TABLE AS" +
