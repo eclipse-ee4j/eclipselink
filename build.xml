@@ -329,7 +329,7 @@
 
     <target name="build-dbws-test" unless="java_is_v5">
         <!-- Compiling dbws tests requires JDK 1.6 -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="build"/>
     </target>
 
     <!-- Compiles all tests (excluding Oracle extensions) -->
@@ -892,10 +892,10 @@
         <ant antfile="build.xml" dir="${eclipselink.moxy.test}" target="test-jaxb-against-jar"/>
     </target>
     <target name="test-dbws" description="run the DBWS core tests"  unless="java_is_v5">
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="test"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
     <target name="test-dbws-srg" description="run the DBWS srg tests"  unless="java_is_v5">
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="test"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
     <target name="test-dbws-builder" description="run the DBWS builder tests"  unless="java_is_v5">
         <ant antfile="build.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
