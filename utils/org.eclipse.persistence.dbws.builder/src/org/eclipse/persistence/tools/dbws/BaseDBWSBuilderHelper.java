@@ -183,7 +183,6 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String NUMBER_STR = "NUMBER";
     public static final String SWAREF_STR = "SWAREF";
 
-
     protected List<TableType> dbTables = new ArrayList<TableType>();
     protected List<ProcedureType> dbStoredProcedures = new ArrayList<ProcedureType>();
     protected Map<ProcedureType, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName =
@@ -362,7 +361,7 @@ public abstract class BaseDBWSBuilderHelper {
      * and List<ProcedureType>.
      */
     public void buildDbArtifacts() {
-        // do Table operations first
+        //do Table operations first
         //it is possible a builder might have pre-built tables
         if (dbTables.size() == 0) {
             for (OperationModel operation : dbwsBuilder.operations) {

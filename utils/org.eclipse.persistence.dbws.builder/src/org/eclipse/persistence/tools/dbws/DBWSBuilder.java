@@ -385,30 +385,21 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             }
         }
         packager.start();
-        boolean isOracle = getDatabasePlatform().getClass().getName().contains("Oracle") 
-            ? true : false;
-        if (builderHelper == null) {
-            if (isOracle) {
-                builderHelper = new OracleHelper(this);
-            }
-            else {
-                builderHelper = new JDBCHelper(this); 
-            }
-        }
-        builderHelper.buildDbArtifacts();
-        builderHelper.buildOROXProjects(topTransformer);  // don't write out projects yet; buildDBWSModel may add additional mappings
+        DBWSBuilderHelper helper = getBuilderHelper();
+        helper.buildDbArtifacts();
+        helper.buildOROXProjects(topTransformer);  // don't write out projects yet; buildDBWSModel may add additional mappings
         // don't write out schema yet; buildDBWSModel/buildWSDL may add additional schema elements
-        builderHelper.buildSchema(topTransformer);
-        builderHelper.buildSessionsXML(dbwsSessionsStream);
+        helper.buildSchema(topTransformer);
+        helper.buildSessionsXML(dbwsSessionsStream);
         packager.setHasAttachments(hasAttachments());
-        builderHelper.buildDBWSModel(topTransformer, dbwsServiceStream);
-        builderHelper.writeAttachmentSchema(swarefStream);
-        builderHelper.buildWSDL(wsdlStream, topTransformer);
-        builderHelper.writeWebXML(webXmlStream);
-        builderHelper.generateDBWSProvider(sourceProviderStream, classProviderStream, sourceProviderListenerStream,
+        helper.buildDBWSModel(topTransformer, dbwsServiceStream);
+        helper.writeAttachmentSchema(swarefStream);
+        helper.buildWSDL(wsdlStream, topTransformer);
+        helper.writeWebXML(webXmlStream);
+        helper.generateDBWSProvider(sourceProviderStream, classProviderStream, sourceProviderListenerStream,
             classProviderListenerStream);
-        builderHelper.writeSchema(dbwsSchemaStream); // now write out schema
-        builderHelper.writeOROXProjects(dbwsOrStream, dbwsOxStream);
+        helper.writeSchema(dbwsSchemaStream); // now write out schema
+        helper.writeOROXProjects(dbwsOrStream, dbwsOxStream);
         packager.end();
     }
 
@@ -428,7 +419,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         else if (builderHelper.hasComplexProcedureArgs()) {
             useProjectXML = true;
-        }       
+        }
         if (!useProjectXML) {
             // check for any named queries - SimpleXMLFormatProject's sometimes need them
             if (orProject.getQueries().size() > 0) {
@@ -466,7 +457,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
         else if (builderHelper.hasComplexProcedureArgs()) {
             useProjectXML = true;
-        } 
+        }
         if (!useProjectXML) {
             // check for any named queries - SimpleXMLFormatProject's sometimes need them
             if (orProject.getQueries().size() > 0) {
@@ -504,7 +495,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
             }
         }
-        //check if any operation is marked with binaryAttachment="true" 
+        //check if any operation is marked with binaryAttachment="true"
         for (OperationModel op : operations) {
             if (op.getBinaryAttachment()) {
                 return true;
@@ -754,8 +745,18 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     public Set<String> getTypeDropDDL() {
         return typeDropDDL;
     }
-    
+
     public DBWSBuilderHelper getBuilderHelper() {
+        if (builderHelper == null) {
+            boolean isOracle = getDatabasePlatform().getClass().getName().contains("Oracle")
+                ? true : false;
+            if (isOracle) {
+                builderHelper = new OracleHelper(this);
+            }
+            else {
+                builderHelper = new JDBCHelper(this);
+            }
+        }
         return builderHelper;
     }
     public void setBuilderHelper(DBWSBuilderHelper builderHelper) {
@@ -777,7 +778,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
 
     public boolean mtomEnabled() {
         boolean mtomEnabled = false;
-        
+
         for (OperationModel opModel : getOperations()) {
             String attachmentType = opModel.getAttachmentType();
             if ("MTOM".equalsIgnoreCase(attachmentType) || "SWAREF".equalsIgnoreCase(attachmentType)) {

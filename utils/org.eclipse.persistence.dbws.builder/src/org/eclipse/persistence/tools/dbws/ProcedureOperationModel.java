@@ -19,20 +19,33 @@ import java.util.List;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 
 public class ProcedureOperationModel extends OperationModel {
 
     protected String catalogPattern;
     protected String schemaPattern;
     protected String procedurePattern;
+    //cache resolved DatabaseType's
+    transient protected List<ProcedureType> dbStoredProcedures = new ArrayList<ProcedureType>();
+
+    //TODO - do we really need any of these?
     protected int overload; // Oracle-specific
     protected boolean isAdvancedJDBC = false;
     protected List<DatabaseType[]> argumentTypes = null;
     protected DatabaseType dbStoredFunctionReturnType = null;
     protected boolean hasComplexArguments = false;
-    
+
     public ProcedureOperationModel() {
         super();
+    }
+
+    @Override
+    public boolean isProcedureOperation() {
+        return true;
+    }
+    public boolean isPLSQLProcedureOperation() {
+        return false;
     }
 
     public String getCatalogPattern() {
@@ -66,6 +79,13 @@ public class ProcedureOperationModel extends OperationModel {
         this.procedurePattern = procedurePattern;
     }
 
+    public List<ProcedureType> getDbStoredProcedures() {
+        return dbStoredProcedures;
+    }
+    public void setDbStoredProcedures(List<ProcedureType> dbStoredProcedures) {
+        this.dbStoredProcedures = dbStoredProcedures;
+    }
+
     public int getOverload() {
         return overload;
     }
@@ -73,20 +93,11 @@ public class ProcedureOperationModel extends OperationModel {
         this.overload = overload;
     }
 
-    @Override
-    public boolean isProcedureOperation() {
-        return true;
-    }
-
     public boolean isAdvancedJDBCProcedureOperation() {
         return isAdvancedJDBC;
     }
     public void setIsAdvancedJDBCProcedureOperation(boolean isAdvancedJDBC) {
         this.isAdvancedJDBC = isAdvancedJDBC;
-    }
-
-    public boolean isPLSQLProcedureOperation() {
-        return false;
     }
 
     @Override
@@ -98,36 +109,36 @@ public class ProcedureOperationModel extends OperationModel {
     /**
      * Indicates if this ProcedureOperationModel has types set for its
      * stored procedure arguments, i.e. argumentTypes is non-null.
-     * 
-     * @return true if this ProcedureOperationModel has types set for 
+     *
+     * @return true if this ProcedureOperationModel has types set for
      *         its stored procedure arguments, false otherwise
      */
     public boolean hasArgumentTypes() {
         return argumentTypes != null;
     }
-    
+
     /**
-     * Return the List of DatabaseType[] entries for this ProcedureOperationModel 
+     * Return the List of DatabaseType[] entries for this ProcedureOperationModel
      * instance's stored procedure arguments, or null if not set.   It is assumed
      * that each entry in the List corresponds to a  stored procedure at the same
      * index in the dbStoredProcedures List. It is also assumed the each entry in
      * a given DatabaseType[] corresponds to an argument in the associated stored
      * procedure at the same index.
-     * 
+     *
      * @return List of DatabaseType[] entries for this ProcedureOperationModel
-     *         instance's stored procedure arguments, or null if not set 
+     *         instance's stored procedure arguments, or null if not set
      */
     public List<DatabaseType[]> getArgumentTypes() {
         return argumentTypes;
     }
 
     /**
-     * Add to the List of DatabaseType[] entries  for  this  ProcedureOperationModel 
-     * instance's stored procedures.       It is assumed that each entry in the List 
+     * Add to the List of DatabaseType[] entries  for  this  ProcedureOperationModel
+     * instance's stored procedures.       It is assumed that each entry in the List
      * corresponds to a stored procedure at the same index in the dbStoredProcedures
      * List. It is also assumed the each entry in a given DatabaseType[] corresponds
      * to an argument in the associated stored procedure at the same index.
-     * 
+     *
      * @param argumentTypes
      */
     public void addArgumentTypes(DatabaseType[] dbTypes) {
@@ -138,21 +149,21 @@ public class ProcedureOperationModel extends OperationModel {
     }
 
     /**
-     * Set  the  List of DatabaseType[]  entries  for  this  ProcedureOperationModel 
-     * instance's stored procedures.       It is assumed that each entry in the List 
+     * Set  the  List of DatabaseType[]  entries  for  this  ProcedureOperationModel
+     * instance's stored procedures.       It is assumed that each entry in the List
      * corresponds to a stored procedure at the same index in the dbStoredProcedures
      * List. It is also assumed the each entry in a given DatabaseType[] corresponds
      * to an argument in the associated stored procedure at the same index.
-     * 
+     *
      * @param dbStoredProcedureTypes
      */
     public void setArgumentTypes(List<DatabaseType[]> argumentTypes) {
         this.argumentTypes = argumentTypes;
     }
-    
+
     /**
      * Get the DatabaseType of the stored function's return argument.
-     * 
+     *
      * @return the stored function's return type
      */
     public DatabaseType getDbStoredFunctionReturnType() {
@@ -161,7 +172,7 @@ public class ProcedureOperationModel extends OperationModel {
 
     /**
      * Set the DatabaseType of the stored function's return argument.
-     * 
+     *
      * @param dbStoredFunctionReturnType
      */
     public void setDbStoredFunctionReturnType(DatabaseType dbStoredFunctionReturnType) {
@@ -169,7 +180,7 @@ public class ProcedureOperationModel extends OperationModel {
     }
 
     /**
-     * Indicates if this ProcedureOperationModel contains advanced Oracle 
+     * Indicates if this ProcedureOperationModel contains advanced Oracle
      * and/or complex PL/SQL arguments.
      */
     public boolean hasComplexArguments() {

@@ -13,9 +13,12 @@
 
 package org.eclipse.persistence.tools.dbws;
 
+//Javase imports
 import java.util.ArrayList;
+import java.util.List;
 
-// Javase imports
+//Oracle DDL parser imports
+import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 
 public class TableOperationModel extends OperationModel {
 
@@ -23,9 +26,16 @@ public class TableOperationModel extends OperationModel {
     protected String schemaPattern;
     protected String tablePattern;
     public ArrayList<OperationModel> additionalOperations;
+    //cache resolved DatabaseType's
+    transient protected List<TableType> dbTables = new ArrayList<TableType>();
 
     public TableOperationModel() {
         super();
+    }
+
+    @Override
+    public boolean isTableOperation() {
+        return true;
     }
 
     public String getTablePattern() {
@@ -59,8 +69,10 @@ public class TableOperationModel extends OperationModel {
         }
     }
 
-    @Override
-    public boolean isTableOperation() {
-        return true;
+    public List<TableType> getDbTables() {
+        return dbTables;
+    }
+    public void setDbTables(List<TableType> dbTables) {
+        this.dbTables = dbTables;
     }
 }
