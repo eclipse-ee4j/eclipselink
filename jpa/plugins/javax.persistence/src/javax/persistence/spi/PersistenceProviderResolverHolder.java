@@ -87,7 +87,7 @@ public class PersistenceProviderResolverHolder {
         private volatile WeakHashMap<ClassLoader, List<PersistenceProvider>> providers = new WeakHashMap<ClassLoader, List<PersistenceProvider>>();
 
         public List<PersistenceProvider> getPersistenceProviders() {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            ClassLoader loader = getContextClassLoader();
             List<PersistenceProvider> loadedProviders = this.providers.get(loader);
 
             if (loadedProviders == null) {
@@ -123,6 +123,25 @@ public class PersistenceProviderResolverHolder {
 
             return loadedProviders;
         }
+
+        /**
+         * Wraps <code>Thread.currentThread().getContextClassLoader()</code> into a doPrivileged block if security manager is present
+         */
+        private static ClassLoader getContextClassLoader() {
+            if (System.getSecurityManager() == null) {
+                return Thread.currentThread().getContextClassLoader();
+            }
+            else {
+                return  (ClassLoader) java.security.AccessController.doPrivileged(
+                        new java.security.PrivilegedAction() {
+                            public java.lang.Object run() {
+                                return Thread.currentThread().getContextClassLoader();
+                            }
+                        }
+                );
+            }
+        }
+
 
         private static final String LOGGER_SUBSYSTEM = "javax.persistence.spi";
 
