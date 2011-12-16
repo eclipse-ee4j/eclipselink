@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site pack200="true">
+   <description
+      url="@REPOS_URL@">
+      This site contains features for EclipseLink compiler dependencies
+   </description>
+   <feature url="features/org.eclipse.persistence.compdeps_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.compdeps" version="@VERSION@.@QUALIFIER@">
+      <category name="org.eclipse.persistence.compdepsIU"/>
+   </feature>
+   <category-def name="org.eclipse.persistence.sdk.compdepsIU" label="Compile Dependencies"/>
+</site>

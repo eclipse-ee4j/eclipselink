@@ -1,0 +1,392 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin  - initial API and implementation
+#******************************************************************************/-->
+
+<project name="compdeps" default="build" basedir=".">
+
+    <available file="../${ant.project.name}" type="dir" property="p2.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="p2.is.local"/>
+
+    <target name="init">
+        <tstamp>
+           <format property="compdeps.build.date" pattern="yyyyMMdd"/>
+           <format property="compdeps.build.time" pattern="HHmm"/>
+        </tstamp>
+        
+        <dirname  property="compdeps.build.location_temp" file="${ant.file.compdeps}"/>
+        <pathconvert targetos="unix" property="compdeps.build.location">
+            <path>
+                <pathelement location="${compdeps.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <property file="${user.home}/build.properties"/>
+        <!-- compdeps.2.base.dir needs to be explicit (not relative) for antcall usage            -->
+        <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
+        <property name="compdeps.2.base.dir"            value="${compdeps.build.location}/../.."/>
+        <property name="compdeps.2.common.dir"          value="${compdeps.2.base.dir}/features/common"/>
+        <property name="compdeps.2.common.plugins.dir"  value="${compdeps.2.base.dir}/plugins"/>
+        <property name="compdeps.2.jpa.plugins.dir"     value="${compdeps.2.base.dir}/jpa/plugins"/>
+        <property name="compdeps.2.sdo.plugins.dir"     value="${compdeps.2.base.dir}/sdo/plugins"/>
+        <property name="compdeps.2.util.plugins.dir"    value="${compdeps.2.base.dir}/utils/plugins"/>
+        <property name="compdeps.2.buildsys.dir"        value="${compdeps.2.base.dir}/buildsystem"/>
+        <echo message="ant.project.name               ='${ant.project.name}'"/>
+        <echo message="basedir                        ='${basedir}'"/>
+        <echo message="compdeps.build.location        ='${compdeps.build.location}'"/>
+        <echo message="compdeps.2.base.dir            ='${compdeps.2.base.dir}'"/>
+        <echo message="compdeps.2.common.dir          ='${compdeps.2.common.dir}'"/>
+        <echo message="compdeps.2.common.plugins.dir  ='${compdeps.2.common.plugins.dir}'"/>
+        <echo message="compdeps.2.jpa.plugins.dir     ='${compdeps.2.jpa.plugins.dir}'"/>
+        <echo message="compdeps.2.sdo.plugins.dir     ='${compdeps.2.sdo.plugins.dir}'"/>
+        <echo message="compdeps.2.util.plugins.dir    ='${compdeps.2.util.plugins.dir}'"/>
+        <echo message="compdeps.2.buildsys.dir        ='${compdeps.2.buildsys.dir}'"/>
+        <echo message=" ---"/>
+
+        <!-- Custom task definitions -->
+        <property name="custom.tasks.lib"               value="${compdeps.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class"         value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <echo message="custom.tasks.lib               ='${custom.tasks.lib}'"/>
+        <echo message="custom.echo.task.class         ='${custom.echo.task.class}'"/>
+        <echo message="custom.selectbundle.task.class ='${custom.selectbundle.task.class}'"/>
+        <echo message=" ---"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <!-- Defaults of Pre-Set variables -->
+        <property name="compdeps.version"               value="1.0.2"/>
+        <property name="compdeps.qualifier"             value="v${compdeps.build.date}${compdeps.build.time}"/>
+        <property name="compdeps.version.string"        value="${compdeps.version}.${compdeps.qualifier}"/>
+        <property name="bld.src.dir"                    value="target"/>
+        <property name="p2repo.dir"                     value="p2repo"/>
+        <property name="specification.vendor"           value="Eclipse.org - EclipseLink Project"/>
+        <echo message="compdeps.version               ='${compdeps.version}'"/>
+        <echo message="compdeps.qualifier             ='${compdeps.qualifier}'"/>
+        <echo message="compdeps.version.string        ='${compdeps.version.string}'"/>
+        <echo message="p2repo.dir                     ='${p2repo.dir}'"/>
+        <echo message="specification.vendor           ='${specification.vendor}'"/>
+        <echo message=" ---"/>
+
+        <!-- Tool definitions -->
+        <property name="p2.SDK.install.dir"             value="D:/Indigo-gm/eclipse"/>
+        <property name="p2.SDK.plugin.dir"              value="${p2.SDK.install.dir}/plugins"/>
+        <property name="p2.publisher.jar"               value="org.eclipse.equinox.p2.publisher_*.jar"/>
+        <property name="p2.launcher.jar"                value="org.eclipse.equinox.launcher_*.jar"/>
+        <property name="p2.artifact.jar"                value="org.eclipse.equinox.artifact.repository_*.jar"/>
+        <available file="${p2.SDK.plugin.dir}" property="sdk.install.exist"/>
+        <echo message="p2.SDK.install.dir             ='${p2.SDK.install.dir}'"/>
+        <say  message="p2.SDK.plugin.dir              ='${p2.SDK.plugin.dir}'"    if="sdk.install.exist"/>
+        <say  message="p2.SDK.plugin.dir:  '${p2.SDK.plugin.dir}' not found!" unless="sdk.install.exist"/>
+        <echo message="p2.publisher.jar               ='${p2.publisher.jar}'"/>
+        <echo message="p2.launcher.jar                ='${p2.launcher.jar}'"/>
+        <echo message="p2.artifact.jar                ='${p2.artifact.jar}'"/>
+        <echo message=" ---"/>
+
+        <!-- Input definitions -->
+        <property name="p2.feature.dir"                 value="${p2repo.dir}/features"/>
+        <property name="p2.bundle.dir"                  value="${p2repo.dir}/plugins"/>
+        <property name="site.dir"                       value="${compdeps.build.location}/${p2repo.dir}"/>
+        <property name="site.dir.url"                   value="file:${site.dir}"/>
+        <property name="site.url"                       value="${site.dir.url}/site.xml"/>
+        <echo message="p2.feature.dir                 ='${p2.feature.dir}'"/>
+        <echo message="p2.bundle.dir                  ='${p2.bundle.dir}'"/>
+        <echo message="site.dir                       ='${site.dir}'"/>
+        <echo message="site.dir.url                   ='${site.dir.url}'"/>
+        <echo message="site.url                       ='${site.url}'"/>
+        <echo message=" ---"/>
+
+        <!-- Helper definitions derived from Pre-set variables -->
+        <property name="compdeps.build.dir"             value="${p2.feature.dir}"/>
+        <property name="bundle.working.dir"             value="${p2.bundle.dir}"/>
+        <echo message="compdeps.build.dir             ='${compdeps.build.dir}'"/>
+        <echo message="bundle.working.dir             ='${bundle.working.dir}'"/>
+        <echo message=" ---"/>
+
+        <!-- Output definitions -->
+        <property name="p2.repos.url"                   value="file:/${p2repo.dir}"/> <!-- DO NOT Override this one -->
+        <property name="p2.release.repos.name"          value="EclipseLink Compdeps Repository"/>
+        <property name="p2.release.repos.url"           value="http://archive.eclipse.org/rt/eclipselink/compdeps-updates"/>
+        <property name="metadata.repos.name"            value="&quot;${p2.release.repos.name}&quot;"/>
+        <property name="artifact.repos.name"            value="&quot;EclipseLink Compdeps Artifacts&quot;"/>
+        <echo message="p2.repos.url                   ='${p2.repos.url}'"/>
+        <echo message="p2.release.repos.name          ='${p2.release.repos.name}'"/>
+        <echo message="p2.release.repos.url           ='${p2.release.repos.url}'"/>
+        <echo message="metadata.repos.name            ='${metadata.repos.name}'"/>
+        <echo message="artifact.repos.name            ='${artifact.repos.name}'"/>
+
+        <!-- Feature Dependency variables -->
+        <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+        <property name="sun.xml.bind.prefix" value="com.sun.xml.bind"/>
+        <property name="sun.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="sdo.prefix" value="commonj.sdo"/>
+        <property name="sdo.criteria" value="[2.1.1,5.0.0)"/>
+        <property name="ejb.prefix" value="javax.ejb"/>
+        <property name="ejb.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="jms.prefix" value="javax.jms"/>
+        <property name="jms.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="persistence.prefix" value="javax.persistence"/>
+        <property name="persistence.criteria" value="[2.0.0,5.0.0)"/>
+        <property name="resource.prefix" value="javax.resource"/>
+        <property name="resource.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="validation.prefix" value="javax.validation"/>
+        <property name="validation.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="servlet.prefix" value="javax.servlet"/>
+        <property name="servlet.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="wsdl.prefix" value="javax.wsdl"/>
+        <property name="wsdl.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="xml.soap.prefix" value="javax.xml.soap"/>
+        <property name="xml.soap.criteria" value="[0.0.1,5.0.0)"/>
+        <!-- For EclipseLink bundles -->
+        <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
+        <property name="antlr.criteria" value="[3.0,5.0)"/>
+        <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
+        <property name="asm.criteria" value="[3.0,5.0)"/>
+        <property name="oracleddl.prefix" value="org.eclipse.persistence.tools.oracleddl"/>
+        <property name="oracleddl.criteria" value="[0.0.1,5.0)"/>
+    </target>
+
+    <!-- Need to copy only the bundles that will be in the features into the "p2repo.dir/plugins" dir
+         (so must copy from main plugins to new temp location). Also need to filter copy the feature xml
+         files to "p2repo.dir/features" to substitute the actual version.qualifer string into it.
+         Then can Generate P2.                                                                        -->
+    <target name="build"                         depends="init, build-feature, generate-p2"/>
+    <target name="build-feature"                 depends="clean, create-deployable-features"/>
+
+    <!-- Feature Targets -->
+    <!-- clean -->
+    <target name="clean" depends="init" description="Clean all generated content">
+        <delete dir="${bld.src.dir}" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${p2repo.dir}"  includeEmptyDirs="true" failonerror="false"/>
+    </target>
+
+    <target name="resolve-feature-dependencies" depends="init">
+        <echo message="Searching ${compdeps.2.common.plugins.dir}..."/>
+        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
+        />
+        <selectbundle basename="${ejb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${ejb.criteria}" property="ejb.version" versiononly="true"
+        />
+        <selectbundle basename="${jms.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${jms.criteria}" property="jms.version" versiononly="true"
+        />
+        <selectbundle basename="${resource.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${resource.criteria}" property="resource.version" versiononly="true"
+        />
+        <selectbundle basename="${servlet.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${servlet.criteria}" property="servlet.version" versiononly="true"
+        />
+        <selectbundle basename="${xml.soap.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${xml.soap.criteria}" property="xml.soap.version" versiononly="true"
+        />
+        <selectbundle basename="${antlr.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
+        />
+        <selectbundle basename="${asm.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${asm.criteria}" property="asm.version" versiononly="true"
+        />
+        <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
+        <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid." unless="sun.xml.bind.version"/>
+        <say  message="   ejb.version              = '${ejb.version}'"                                                              if="ejb.version"/>
+        <say  message="   '${ejb.prefix}_${ejb.criteria}.jar' not found! Generated features will be invalid."                   unless="ejb.version"/>
+        <say  message="   jms.version              = '${jms.version}'"                                                              if="jms.version"/>
+        <say  message="   '${jms.prefix}_${jms.criteria}.jar' not found! Generated features will be invalid."                   unless="jms.version"/>
+        <say  message="   resource.version         = '${resource.version}'"                                                         if="resource.version"/>
+        <say  message="   '${resource.prefix}_${resource.criteria}.jar' not found! Generated features will be invalid."         unless="resource.version"/>
+        <say  message="   servlet.version          = '${servlet.version}'"                                                          if="servlet.version"/>
+        <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."           unless="servlet.version"/>
+        <say  message="   xml.soap.version         = '${xml.soap.version}'"                                                         if="xml.soap.version"/>
+        <say  message="   '${xml.soap.prefix}_${xml.soap.criteria}.jar' not found! Generated features will be invalid."         unless="xml.soap.version"/>
+        <say  message="   antlr.version            = '${antlr.version}'"                                                            if="antlr.version"/>
+        <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."               unless="antlr.version"/>
+        <say  message="   asm.version              = '${asm.version}'"                                                              if="asm.version"/>
+        <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                   unless="asm.version"/>
+        
+        <echo message="Searching ${compdeps.2.jpa.plugins.dir}..."/>
+        <selectbundle basename="${persistence.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
+                     criterion="${persistence.criteria}" property="persistence.version" versiononly="true"
+        />
+        <selectbundle basename="${validation.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
+                     criterion="${validation.criteria}" property="validation.version" versiononly="true"
+        />
+        <say  message="   persistence.version      = '${persistence.version}'"                                                      if="persistence.version"/>
+        <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid."   unless="persistence.version"/>
+        <say  message="   validation.version       = '${validation.version}'"                                                       if="validation.version"/>
+        <say  message="   '${validation.prefix}_${validation.criteria}.jar' not found! Generated features will be invalid."     unless="validation.version"/>
+
+        <echo message="Searching ${compdeps.2.sdo.plugins.dir}..."/>
+        <selectbundle basename="${sdo.prefix}"  directory="${compdeps.2.sdo.plugins.dir}"
+                     criterion="${sdo.criteria}" property="sdo.version" versiononly="true"
+        />
+        <say  message="   sdo.version              = '${sdo.version}'"                                                              if="sdo.version"/>
+        <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                   unless="sdo.version"/>
+        
+        <echo message="Searching ${compdeps.2.util.plugins.dir}..."/>
+        <selectbundle basename="${oracleddl.prefix}"  directory="${compdeps.2.util.plugins.dir}"
+                     criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
+        />
+        <selectbundle basename="${wsdl.prefix}"  directory="${compdeps.2.util.plugins.dir}"
+                     criterion="${wsdl.criteria}" property="wsdl.version" versiononly="true"
+        />
+        <say  message="   oracleddl.version        = '${oracleddl.version}'"                                                        if="oracleddl.version"/>
+        <say  message="   '${oracleddl.prefix}_${oracleddl.criteria}.jar' not found! Generated features will be invalid."       unless="oracleddl.version"/>
+        <say  message="   wsdl.version             = '${wsdl.version}'"                                                             if="wsdl.version"/>
+        <say  message="   '${wsdl.prefix}_${wsdl.criteria}.jar' not found! Generated features will be invalid."                 unless="wsdl.version"/>
+    </target>
+
+    <!-- build feature jars -->
+    <target name="jar-feature" description="General target for packaging a feature">
+        <mkdir dir="${compdeps.build.dir}"/>
+        <jar jarfile="${compdeps.build.dir}/${feature.name}_${compdeps.version.string}.jar" duplicate="preserve">
+            <fileset dir="${compdeps.2.common.dir}">
+                <include name="*.html"/>
+                <exclude name="*.bak"/>
+            </fileset>
+            <fileset dir="${compdeps.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <exclude name="*.bak"/>
+            </fileset>
+            <fileset dir="${bld.src.dir}/${feature.name}">
+                <include name="*.*"/>
+                <exclude name="*.bak"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="create-deployable-features" depends="resolve-feature-dependencies">
+        <mkdir dir="${bld.src.dir}"/>
+        <!--          Filters for feature.xml files                 -->
+        <filter token="VERSION"              value="${compdeps.version}"/>
+        <filter token="QUALIFIER"            value="${compdeps.qualifier}"/>
+        <!--          Filters for dependencies in feature.xml files -->
+        <filter token="SUN_XML_BIND_VERSION" value="${sun.xml.bind.version}"/>
+        <filter token="EJB_VERSION"          value="${ejb.version}"/>
+        <filter token="JMS_VERSION"          value="${jms.version}"/>
+        <filter token="RESOURCE_VERSION"     value="${resource.version}"/>
+        <filter token="SERVLET_VERSION"      value="${servlet.version}"/>
+        <filter token="XML_SOAP_VERSION"     value="${xml.soap.version}"/>
+        <filter token="PERSISTENCE_VERSION"  value="${persistence.version}"/>
+        <filter token="VALIDATION_VERSION"   value="${validation.version}"/>
+        <filter token="SDO_VERSION"          value="${sdo.version}"/>
+        <filter token="WSDL_VERSION"         value="${wsdl.version}"/>
+        <!--          Filters for product bundles in feature.xml files -->
+        <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
+        <filter token="ASM_VERSION"          value="${asm.version}"/>
+        <filter token="ORACLEDDL_VERSION"    value="${oracleddl.version}"/>
+        <!--          Filters for feature.properties files          -->
+        <filter token="PROVIDER"             value="${specification.vendor}"/>
+        <filter token="REPOS_NAME"           value="${p2.release.repos.name}"/>
+        <filter token="MILESTONE_REPOS"      value="${p2.release.repos.name}"/>
+        <filter token="PRIME_UPDATE_URL"     value="${p2.release.repos.url}"/> 
+        <filter token="SECOND_UPDATE_URL"    value="${p2.release.repos.url}"/> 
+        <copy todir="${bld.src.dir}" filtering="true">
+            <fileset dir="${compdeps.build.location}">
+                <include name="**/feature*.*"/>
+            </fileset>
+        </copy>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.compdeps"/>
+        </antcall>
+    </target>
+
+    <!-- P2 Targets -->
+    <target name="populate-p2-site" depends="init, resolve-feature-dependencies">
+        <delete dir="${p2.bundle.dir}" failonerror="false"/>
+        <mkdir dir="${p2.bundle.dir}"/>
+        <!-- populate bundle jars -->
+        <copy todir="${p2.bundle.dir}">
+            <fileset
+                dir="${compdeps.2.common.plugins.dir}"
+                includes="${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,
+                          ${sun.xml.bind.prefix}.source_${sun.xml.bind.version}.jar,
+                          ${ejb.prefix}_${ejb.version}.jar,
+                          ${jms.prefix}_${jms.version}.jar,
+                          ${resource.prefix}_${resource.version}.jar,
+                          ${servlet.prefix}_${servlet.version}.jar,
+                          ${xml.soap.prefix}_${xml.soap.version}.jar,
+                          ${antlr.prefix}_${antlr.version}.jar,
+                          ${antlr.prefix}.source_${antlr.version}.jar,
+                          ${asm.prefix}_${asm.version}.jar,
+                          ${asm.prefix}.source_${asm.version}.jar"
+            />
+            <fileset
+                dir="${compdeps.2.jpa.plugins.dir}"
+                includes="${persistence.prefix}_${persistence.version}.jar,
+                          ${persistence.prefix}.source_${persistence.version}.jar,
+                          ${validation.prefix}_${validation.version}.jar"
+            />
+            <fileset
+                dir="${compdeps.2.sdo.plugins.dir}"
+                includes="${sdo.prefix}_${sdo.version}.jar"
+            />
+            <fileset
+                dir="${compdeps.2.util.plugins.dir}"
+                includes="${oracleddl.prefix}_${oracleddl.version}.jar,
+                          ${oracleddl.prefix}.source_${oracleddl.version}.jar,
+                          ${wsdl.prefix}_${wsdl.version}.jar"
+            />
+        </copy>
+    </target>
+
+
+    <target name="generate-p2" depends="populate-p2-site">
+        <delete file="${site.dir}/site.xml" quiet="true"/>
+        <filter token="REPOS_URL"          value="${p2.release.repos.url}"/>
+        <filter token="VERSION"            value="${compdeps.version}"/>
+        <filter token="QUALIFIER"          value="${compdeps.qualifier}"/>
+        <copy todir="${site.dir}" file="${compdeps.build.location}/site.xml" filtering="true"/>
+
+        <echo message="java.home         ='${java.home}'"/>
+        <echo message="p2.SDK.plugin.dir ='${p2.SDK.plugin.dir}'"/>
+        <echo message="p2.launcher.jar   ='${p2.launcher.jar}'"/>
+        <echo message="p2.publisher.jar  ='${p2.publisher.jar}'"/>
+        <echo message="-----"/>
+        <echo message="p2repo.dir           ='${p2repo.dir}'"/>
+        <echo message="p2.repos.url         ='${p2.repos.url}'"/>
+        <echo message="p2.release.repos.url ='${p2.release.repos.url}'"/>
+        <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
+        <delete  failonerror="false">
+            <fileset dir="${p2repo.dir}" includes="artifact*.*, content*.*"/>
+        </delete>
+        <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
+            jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <classpath>
+                <fileset dir="${p2.SDK.plugin.dir}"
+                    includes="${p2.launcher.jar},
+                              ${p2.publisher.jar}"/>
+                <pathelement location="${p2.SDK.plugin.dir}" />
+            </classpath>
+            <arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher" />
+            <arg line=" -metadataRepository ${p2.repos.url}" />
+            <arg line=" -artifactRepository ${p2.repos.url}" />
+            <arg line=" -source ${p2repo.dir}" />
+            <arg line=" -compress -publishArtifacts -configs all" />
+        </java>
+    </target>
+
+
+</project>
