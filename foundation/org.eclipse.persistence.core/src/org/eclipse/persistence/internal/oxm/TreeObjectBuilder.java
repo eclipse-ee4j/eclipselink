@@ -369,7 +369,9 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
         lazyInitialize();
-        if (null == rootXPathNode.getNonAttributeChildren()) {
+        XPathNode textNode = rootXPathNode.getTextNode();
+        List<XPathNode> nonAttributeChildren = rootXPathNode.getNonAttributeChildren();
+        if (null == textNode && null == nonAttributeChildren) {
             return record;
         }
         XMLDescriptor xmlDescriptor = (XMLDescriptor) descriptor;
@@ -381,9 +383,13 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         } else {
             marshalContext = ObjectMarshalContext.getInstance();
         }
-        for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(rootXPathNode); x < size; x++) {
-            XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, rootXPathNode);
-            xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x), rootFragment);
+        if(null == nonAttributeChildren) {
+            textNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext, rootFragment);
+        } else {
+            for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(rootXPathNode); x < size; x++) {
+                XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, rootXPathNode);
+                xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x), rootFragment);
+            }
         }
         return record;
     }
