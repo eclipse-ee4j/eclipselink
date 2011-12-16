@@ -574,8 +574,20 @@ public class XPathEngine {
             element = ((Document)parent).getDocumentElement();
         } else {
             String namespace = resolveNamespacePrefix(fragment, getNamespaceResolverForField(xmlField));
-            element = parent.getOwnerDocument().createElementNS(namespace, fragment.getShortName());
-            if (fragment.isGeneratedPrefix()) {
+            //TODO
+            NamespaceResolver domResolver = new NamespaceResolver();
+            domResolver.setDOM(parent);
+            String existingPrefix = domResolver.resolveNamespaceURI(namespace);
+            String elementName = fragment.getShortName();
+            if(existingPrefix != null) {
+                if(existingPrefix.length() > 0) {
+                    elementName = existingPrefix + ":" + fragment.getLocalName();
+                } else {
+                    elementName = fragment.getLocalName();
+                }
+            }
+            element = parent.getOwnerDocument().createElementNS(namespace, elementName);
+            if (fragment.isGeneratedPrefix() && existingPrefix == null) {
                 element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + fragment.getPrefix(), fragment.getNamespaceURI());
             }
             XPathPredicate predicate = fragment.getPredicate();
@@ -604,8 +616,20 @@ public class XPathEngine {
         String nodeName = lastFragment.getShortName();
         String namespace = resolveNamespacePrefix(lastFragment, getNamespaceResolverForField(xmlField));
 
-        Element elem = parent.getOwnerDocument().createElementNS(namespace, nodeName);
-        if (lastFragment.isGeneratedPrefix()) {
+        NamespaceResolver domResolver = new NamespaceResolver();
+        domResolver.setDOM(parent);
+        String existingPrefix = domResolver.resolveNamespaceURI(namespace);
+        String elementName = lastFragment.getShortName();
+        if(existingPrefix != null) {
+            if(existingPrefix.length() > 0) {
+                elementName = existingPrefix + ":" + lastFragment.getLocalName();
+            } else {
+                elementName = lastFragment.getLocalName();
+            }
+        }
+        
+        Element elem = parent.getOwnerDocument().createElementNS(namespace, elementName);
+        if (lastFragment.isGeneratedPrefix() && existingPrefix == null) {
             elem.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + lastFragment.getPrefix(), lastFragment.getNamespaceURI());
         }
 

@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -106,6 +107,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         } else if (XMLConstants.XMLNS.equals(prefix)) {
             return XMLConstants.XMLNS_URL;
         }
+        if(dom != null) {
+            return XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(dom, prefix);
+        }
         return null;
     }
 
@@ -151,7 +155,11 @@ public class NamespaceResolver implements XMLNamespaceResolver {
                 Node attr = namedNodeMap.item(x);
                 if(XMLConstants.XMLNS_URL.equals(attr.getNamespaceURI())) {
                     if(uri.equals(attr.getNodeValue())) {
-                        return attr.getLocalName();
+                        if(attr.getLocalName() != null && (!(attr.getLocalName().equals(XMLConstants.XMLNS)))) {
+                            return attr.getLocalName();
+                        } else {
+                            return "";
+                        }
                     }
                 }
             }
