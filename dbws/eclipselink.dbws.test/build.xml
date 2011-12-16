@@ -70,7 +70,7 @@
     <!-- local property overrides -->
     <property file="${user.home}/build.properties"/>
     <!-- properties checked into SVN -->
-    <property file="${dbws_test.build.location}/antbuild.properties"/>
+    <property file="${dbws_test.build.location}/build.properties"/>
     <!-- local testing properties overrides -->
     <property file="${user.home}/test.properties"/>
     <!-- testing properties checked into SVN -->
