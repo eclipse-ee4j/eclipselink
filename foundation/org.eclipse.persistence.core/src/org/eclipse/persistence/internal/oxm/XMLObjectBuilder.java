@@ -454,7 +454,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         List extraNamespaces = null;
         if (isXmlDescriptor()) {
             XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
-            extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session);
+            extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session, false);
             writeExtraNamespaces(extraNamespaces, record);
             addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, refDesc, xmlField, originalObject, object, wasXMLRoot, false);
         }
@@ -571,6 +571,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session) {
+        return addExtraNamespacesToNamespaceResolver(desc, marshalRecord, session, true);
+    }
+    
+    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session, boolean allowOverride) {
         if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers()) {
             return null;
         }
@@ -595,7 +599,14 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 //unless that prefix is already bound to another namespace uri
                 prefix = entry.getKey();
                 String uri = marshalRecordNamespaceResolver.resolveNamespacePrefix(prefix);
-                if(uri == null || uri.length() == 0) {
+                if(allowOverride || uri == null || uri.length() == 0) {
+                    marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
+                    returnList.add(new Namespace(entry.getKey(), entry.getValue()));
+                }
+            } else if(allowOverride) {
+                //if overrides are allowed, add the prefix if the URI is different
+                if (!prefix.equals(entry.getKey())) {
+                    //if prefix exists for uri but is different then add this
                     marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
                     returnList.add(new Namespace(entry.getKey(), entry.getValue()));
                 }
