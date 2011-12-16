@@ -327,6 +327,12 @@
             name="dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite"
           />
           <test
+            name="dbws.testing.complexplsqlsf.ComplexPLSQLSFTestSuite"
+          />
+          <test
+            name="dbws.testing.complexplsqlsp.ComplexPLSQLSPTestSuite"
+          />
+          <test
             name="dbws.testing.customsql.CustomSQLTestSuite"
           />
           <test
