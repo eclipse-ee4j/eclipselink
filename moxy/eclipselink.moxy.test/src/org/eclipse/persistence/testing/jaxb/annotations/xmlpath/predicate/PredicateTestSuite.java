@@ -30,6 +30,7 @@ public class PredicateTestSuite extends TestCase {
         suite.addTestSuite(ReferenceTestCases.class);
         suite.addTestSuite(XPathsTestCases.class);
         suite.addTest(PredicateNsTestSuite.suite());
+        suite.addTestSuite(AttributeTestCases.class);
         return suite;
     }
 

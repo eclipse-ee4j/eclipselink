@@ -301,6 +301,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             XPathFragment nextFragment = xPathFragment.getNextFragment();
             if (nextFragment.isAttribute()) {
+                marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                 marshalRecord.attribute(nextFragment, namespaceResolver, stringValue);
                 marshalRecord.closeStartElement();
             } else {
