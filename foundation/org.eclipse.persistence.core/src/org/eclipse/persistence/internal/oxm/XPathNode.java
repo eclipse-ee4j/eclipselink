@@ -196,10 +196,7 @@ public class XPathNode {
                     textXPathNode.setUnmarshalNodeValue(aNodeValue);
                 }
                 this.setTextNode(textXPathNode);
-                if (null == nonAttributeChildren) {
-                    nonAttributeChildren = new ArrayList();
-                }
-                if(!(nonAttributeChildren.contains(textXPathNode))) {
+                if(null != nonAttributeChildren && !nonAttributeChildren.contains(textXPathNode)) {
                     nonAttributeChildren.add(textXPathNode);
                 }
                 return textXPathNode;
@@ -232,6 +229,9 @@ public class XPathNode {
         } else {
             if (null == nonAttributeChildren) {
                 nonAttributeChildren = new ArrayList();
+                if(null != textNode) {
+                    nonAttributeChildren.add(textNode);
+                }
             }
             if (null == nonAttributeChildrenMap) {
                 nonAttributeChildrenMap = new HashMap();
@@ -308,7 +308,11 @@ public class XPathNode {
             if (anyAttributeNode != null) {
                 hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance(), null) || hasValue;
             }
-            if (null != nonAttributeChildren) {
+            if (null == nonAttributeChildren) {
+                if (textNode != null) {
+                    hasValue = textNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance(), null) || hasValue;
+                }
+            } else {
                 for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(this); x < size; x++) {
                     XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, this);
                     MarshalContext childMarshalContext = marshalContext.getMarshalContext(x);
