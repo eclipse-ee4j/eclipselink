@@ -108,7 +108,7 @@
                                                     else="${dbwsbldr.build.location}">
             <available file="${dbwsbldr.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
-        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+        <echo message="extensions.depend.dir    = '${extensions.depend.dir}'"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -135,6 +135,7 @@
                      criterion="${ddlparser.criteria}" property="ddlparser.jar"
         />
         <property name="ddlparser.lib"    value="${dbwsbldr.2.plugins.dir}/${ddlparser.jar}"/>
+        <say message="ddlparser.jar            = '${ddlparser.jar}'"/>
 
         <!-- dependency tests -->
         <available file="${asm.lib}"                property="asm.bundle.exist"/>
@@ -170,7 +171,7 @@
         <selectbundle basename="${bndtool.prefix}" directory="${dbwsbldr.2.buildsys.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <say message="bndtool.lib                     = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say message="bndtool.lib              = '${bndtool.lib}'" if="bndtool.lib"/>
         <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${dbwsbldr.2.buildsys.dir}'!" unless="bndtool.lib"/>
 
         <condition property="bld">
