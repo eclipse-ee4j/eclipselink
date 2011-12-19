@@ -251,13 +251,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             xmlContext.setXMLContextState(newState.getXMLContext().getXMLContextState());
             newState.setXMLContext(xmlContext);
             newState.setTypeToTypeMappingInfo(contextState.getTypeToTypeMappingInfo());
-            
-            int[] wins = new int[] {1, 2, 3};
-            
-            for (int i : wins) {
-                System.out.println(i);
-            }
-            
+
             return newState;
         }
     }
