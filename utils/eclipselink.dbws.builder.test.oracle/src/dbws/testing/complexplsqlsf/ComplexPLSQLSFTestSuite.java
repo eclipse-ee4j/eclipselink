@@ -49,6 +49,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nHOME VARCHAR2(20)," +
             "\nCELL VARCHAR2(20)" +
         "\n)";
+    static final String CREATE_A_PHONE2_TYPE_TABLE =
+        "CREATE OR REPLACE TYPE A_PHONE2_TYPE_TABLE AS TABLE OF A_PHONE2_TYPE";
     static final String CREATE_COMPLEXPKG2_TAB1_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG2_TAB1 AS TABLE OF VARCHAR2(20)";
     static final String CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE =
@@ -77,6 +79,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nFUNCTION RECORDTOPHONE(OLDREC IN SIMPLERECORD) RETURN A_PHONE2_TYPE;" +
             "\nFUNCTION VARRAYTORECORD(OLDVARRAY IN VARCHAR2ARRAY) RETURN SIMPLERECORD;" +
             "\nFUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD;" +
+            "\nFUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE;" +
+            "\nFUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD;" +
         "\nEND COMPLEXPKG2;";
     static final String CREATE_COMPLEXPKG2_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG2 AS" +
@@ -216,6 +220,31 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nNEWREC.SR2 := APHONE.CELL;" +
                 "\nRETURN NEWREC;" +
             "\nEND PHONETORECORD;" +
+            "\nFUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE AS" +
+            "\nAPHONE1 A_PHONE2_TYPE;" +
+            "\nAPHONE2 A_PHONE2_TYPE;" +
+            "\nAPHONETYPETABLE A_PHONE2_TYPE_TABLE;" +
+            "\nBEGIN" +
+                "\nAPHONE1 := RECORDTOPHONE(OLDREC);" +
+                "\nAPHONE2 := TABLETOPHONE(OLDTAB);" +
+                "\nAPHONETYPETABLE := A_PHONE2_TYPE_TABLE();" +
+                "\nAPHONETYPETABLE.EXTEND;" +
+                "\nAPHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE1;" +
+                "\nAPHONETYPETABLE.EXTEND;" +
+                "\nAPHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE2;" +
+                "\nRETURN APHONETYPETABLE;" +
+            "\nEND PLSQLTOPHONETYPETABLE;" +
+            "\nFUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD AS" +
+            "\nAPHONE1 A_PHONE2_TYPE;" +
+            "\nAPHONE2 A_PHONE2_TYPE;" +
+            "\nNEWREC SIMPLERECORD;" +
+            "\nBEGIN" +
+                "\nAPHONE1 := APHONETYPETABLE(1);" +
+                "\nAPHONE2 := APHONETYPETABLE(2);" +
+                "\nNEWREC.SR1 := APHONE2.HOME;" +
+                "\nNEWREC.SR2 := APHONE1.HOME;" +
+                "\nRETURN NEWREC;" +
+            "\nEND PHONETYPETABLETOPLSQL;" +
         "\nEND COMPLEXPKG2;";
     static final String DROP_COMPLEXPKG2_PACKAGE =
         "DROP PACKAGE COMPLEXPKG2";
@@ -227,7 +256,9 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "DROP TYPE COMPLEXPKG2_SIMPLERECORD";
     static final String DROP_VARCHAR2ARRAY_TYPE =
         "DROP TYPE VARCHAR2ARRAY";
-    static final String DROP_A_PHONE2_TYPE =        "DROP TYPE A_PHONE2_TYPE";
+    static final String DROP_A_PHONE2_TYPE =        "DROP TYPE A_PHONE2_TYPE";    static final String DROP_A_PHONE2_TYPE_TABLE = 
+        "DROP TYPE A_PHONE2_TYPE_TABLE";
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -256,7 +287,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         }
         if (ddlCreate) {
            	runDdl(conn, CREATE_VARCHAR2ARRAY_VARRAY, ddlDebug);
-        	runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);        	runDdl(conn, CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
+        	runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);        	runDdl(conn, CREATE_A_PHONE2_TYPE_TABLE, ddlDebug);
+        	runDdl(conn, CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_PACKAGE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_BODY, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
@@ -356,6 +388,17 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 	              "catalogPattern=\"COMPLEXPKG2\" " +
 	              "procedurePattern=\"PHONETORECORD\" " +
 	          "/>" +
+              "<plsql-procedure " +
+	              "name=\"PLSQLToPhoneTypeTableTest\" " +
+	              "catalogPattern=\"COMPLEXPKG2\" " +
+	              "procedurePattern=\"PLSQLTOPHONETYPETABLE\" " +
+	              "returnType=\"a_phone2_type_tableType\" " +
+	          "/>" +
+	          "<plsql-procedure " +
+	              "name=\"PhoneTypeTableToPLSQLTest\" " +
+	              "catalogPattern=\"COMPLEXPKG2\" " +
+	              "procedurePattern=\"PHONETYPETABLETOPLSQL\" " +
+	          "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -368,6 +411,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
+            runDdl(conn, DROP_A_PHONE2_TYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_A_PHONE2_TYPE, ddlDebug);
         	runDdl(conn, DROP_VARCHAR2ARRAY_TYPE, ddlDebug);
         }
@@ -609,6 +653,40 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void plsqlToPhoneTypeTableTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputRec = unmarshaller.unmarshal(new StringReader(SIMPLE_RECORD_XML));
+        Object inputTab = unmarshaller.unmarshal(new StringReader(PHONE_TABLE_XML));
+        Invocation invocation = new Invocation("PLSQLToPhoneTypeTableTest");
+        invocation.setParameter("OLDREC", inputRec);
+        invocation.setParameter("OLDTAB", inputTab);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(PHONE_TYPE_TABLE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void phoneTypeTableToPLSQLTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPTypeTable = unmarshaller.unmarshal(new StringReader(PHONE_TYPE_TABLE_XML));
+        Invocation invocation = new Invocation("PhoneTypeTableToPLSQLTest");
+        invocation.setParameter("APHONETYPETABLE", inputPTypeTable);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_RECORD2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -709,4 +787,16 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 	      "<sr1>(613)111-2222</sr1>" +
 	      "<sr2>(613)333-4444</sr2>" +
 	    "</COMPLEXPKG2_SIMPLERECORD>";
+    public static final String PHONE_TYPE_TABLE_XML = 
+    	STANDALONE_XML_HEADER +
+    	"<a_phone2_type_tableType xmlns=\"urn:ComplexPLSQLSF\">" +
+    	  "<item>" +
+    	    "<home>(613)333-4444</home>" +
+    	    "<cell>(613)444-5555</cell>" +
+    	  "</item>" +
+    	  "<item>" +
+    	    "<home>(613)111-2222</home>" +
+    	    "<cell>(613)222-3333</cell>" +
+    	  "</item>" +
+    	"</a_phone2_type_tableType>";
 }

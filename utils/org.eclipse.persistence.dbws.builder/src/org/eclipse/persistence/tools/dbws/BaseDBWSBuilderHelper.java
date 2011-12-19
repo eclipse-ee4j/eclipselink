@@ -46,6 +46,7 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
@@ -156,6 +157,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.LongRawType;
 import org.eclipse.persistence.tools.oracleddl.metadata.NCharType;
 import org.eclipse.persistence.tools.oracleddl.metadata.NClobType;
 import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
@@ -1174,7 +1176,8 @@ public abstract class BaseDBWSBuilderHelper {
      * org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType instance.  In the
      * the case of PLSQL Packages, the catalog (package) name can be passed in as well.
      */
-    protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
+    @SuppressWarnings("rawtypes")
+	protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
         if (dType instanceof ArgumentType) {
             dType = ((ArgumentType) dType).getDataType();
         }
@@ -1240,6 +1243,20 @@ public abstract class BaseDBWSBuilderHelper {
                     fields.put(field.getFieldName(), buildDatabaseTypeFromMetadataType(field.getDataType()));
                 }
                 return objType;
+            }
+            if (dType instanceof ObjectTableType) {
+                OracleArrayType tableType = new OracleArrayType();
+                tableType.setTypeName(typeName);
+                tableType.setCompatibleType(compatibleType);
+                tableType.setJavaTypeName(javaTypeName + COLLECTION_WRAPPER_SUFFIX);
+                org.eclipse.persistence.internal.helper.DatabaseType nestedType = buildDatabaseTypeFromMetadataType(((ObjectTableType) dType).getEnclosedType(), null);
+                // need to set the Java Type on the nested type
+                Class wrapper = getWrapperClass(nestedType);
+                if (wrapper != null) {
+                	((ComplexDatabaseType) nestedType).setJavaType(wrapper);
+                }
+                tableType.setNestedType(nestedType);
+                return tableType;
             }
             // TODO - return what here?
             return null;
@@ -1328,5 +1345,42 @@ public abstract class BaseDBWSBuilderHelper {
         }
         args.addAll(pType.getArguments());
         return args;
+    }
+    
+    /**
+     * Return the wrapper class for a given DatabaseType.  The class will be loaded by the
+     * XRDynamicClassloader, based on the DatabaseType's javaTypeName.  If the class
+     * cannot be loaded, or the given DatabaseType is not a ComplexDatabaseType, null
+     * will be returned.
+     *
+     */
+    @SuppressWarnings("rawtypes")
+	protected Class getWrapperClass(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
+		if (databaseType instanceof ComplexDatabaseType) {
+        	return getWrapperClass(((ComplexDatabaseType) databaseType).getJavaTypeName());
+		}
+		return null;
+    }
+
+    /**
+     * Return the wrapper class for a wrapper class name.  The wrapper class name would
+     * typically be an argument type name, descriptor java class name, or a
+     * DatabaseType's javaTypeName.
+     *
+     * The class will be loaded by the XRDynamicClassloader;  if the class cannot be
+     * loaded, null will be returned.
+     *
+     */
+    @SuppressWarnings("rawtypes")
+	protected Class getWrapperClass(String wrapperClassName) {
+        Class wrapperClass = null;
+        try {
+            // the following call will try and load the collection wrapper class via XRDynamicClassLoader
+        	wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(wrapperClassName);
+        } catch (ClassNotFoundException e) {
+        	// TODO:  it is unlikely that we'll get here, so is there any need
+        	//        to handle this with an EclipseLink exception
+        }
+		return wrapperClass;
     }
 }

@@ -49,6 +49,8 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             "\nHOME VARCHAR2(20)," +
             "\nCELL VARCHAR2(20)" +
         "\n)";
+    static final String CREATE_A_PHONE_TYPE_TABLE =
+        "CREATE OR REPLACE TYPE A_PHONE_TYPE_TABLE AS TABLE OF A_PHONE_TYPE";
     static final String CREATE_COMPLEXPKG_TAB1_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG_TAB1 AS TABLE OF VARCHAR2(20)";
     static final String CREATE_COMPLEXPKG_SIMPLERECORD_TYPE =
@@ -77,6 +79,8 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             "\nPROCEDURE RECORDTOPHONE(OLDREC IN SIMPLERECORD, APHONE OUT A_PHONE_TYPE);" +
             "\nPROCEDURE VARRAYTORECORD(OLDVARRAY IN VARCHARARRAY, NEWREC OUT SIMPLERECORD);" +
             "\nPROCEDURE PHONETORECORD(APHONE IN A_PHONE_TYPE, NEWREC OUT SIMPLERECORD);" +
+            "\nPROCEDURE PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1, APHONETYPETABLE OUT A_PHONE_TYPE_TABLE);" +
+            "\nPROCEDURE PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE_TYPE_TABLE, NEWREC OUT SIMPLERECORD);" +
         "\nEND COMPLEXPKG;";
     static final String CREATE_COMPLEXPKG_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG AS" +
@@ -188,6 +192,27 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
                 "\nNEWREC.SR1 := APHONE.HOME;" +
                 "\nNEWREC.SR2 := APHONE.CELL;" +
             "\nEND PHONETORECORD;" +
+            "\nPROCEDURE PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1, APHONETYPETABLE OUT A_PHONE_TYPE_TABLE) AS" +
+            "\nAPHONE1 A_PHONE_TYPE;" +
+            "\nAPHONE2 A_PHONE_TYPE;" +
+            "\nBEGIN" +
+                "\nRECORDTOPHONE(OLDREC, APHONE1);" +
+                "\nTABLETOPHONE(OLDTAB, APHONE2);" +
+                "\nAPHONETYPETABLE := A_PHONE_TYPE_TABLE();" +
+                "\nAPHONETYPETABLE.EXTEND;" +
+                "\nAPHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE1;" +
+                "\nAPHONETYPETABLE.EXTEND;" +
+                "\nAPHONETYPETABLE(APHONETYPETABLE.COUNT) := APHONE2;" +
+            "\nEND PLSQLTOPHONETYPETABLE;" +
+            "\nPROCEDURE PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE_TYPE_TABLE, NEWREC OUT SIMPLERECORD) AS" +
+            "\nAPHONE1 A_PHONE_TYPE;" +
+            "\nAPHONE2 A_PHONE_TYPE;" +
+            "\nBEGIN" +
+                "\nAPHONE1 := APHONETYPETABLE(1);" +
+                "\nAPHONE2 := APHONETYPETABLE(2);" +
+                "\nNEWREC.SR1 := APHONE2.HOME;" +
+                "\nNEWREC.SR2 := APHONE1.HOME;" +
+            "\nEND PHONETYPETABLETOPLSQL;" +
         "\nEND COMPLEXPKG;";
     static final String DROP_COMPLEXPKG_PACKAGE =
         "DROP PACKAGE COMPLEXPKG";
@@ -200,7 +225,9 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
     static final String DROP_VARCHARARRAY_TYPE =
         "DROP TYPE VARCHARARRAY";
     static final String DROP_A_PHONE_TYPE = 
-        "DROP TYPE A_PHONE_TYPE";
+        "DROP TYPE A_PHONE_TYPE";    static final String DROP_A_PHONE_TYPE_TABLE = 
+        "DROP TYPE A_PHONE_TYPE_TABLE";
+
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -229,7 +256,8 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         }
         if (ddlCreate) {
         	runDdl(conn, CREATE_VARCHARARRAY_VARRAY, ddlDebug);
-        	runDdl(conn, CREATE_A_PHONE_TYPE, ddlDebug);        	runDdl(conn, CREATE_COMPLEXPKG_SIMPLERECORD_TYPE, ddlDebug);
+        	runDdl(conn, CREATE_A_PHONE_TYPE, ddlDebug);
+        	runDdl(conn, CREATE_A_PHONE_TYPE_TABLE, ddlDebug);        	runDdl(conn, CREATE_COMPLEXPKG_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_PACKAGE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_BODY, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_TAB1_TYPE, ddlDebug);
@@ -322,6 +350,16 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 	              "catalogPattern=\"COMPLEXPKG\" " +
 	              "procedurePattern=\"PHONETORECORD\" " +
 	          "/>" +
+              "<plsql-procedure " +
+                  "name=\"PLSQLToPhoneTypeTableTest\" " +
+                  "catalogPattern=\"COMPLEXPKG\" " +
+                  "procedurePattern=\"PLSQLTOPHONETYPETABLE\" " +
+              "/>" +
+              "<plsql-procedure " +
+	              "name=\"PhoneTypeTableToPLSQLTest\" " +
+	              "catalogPattern=\"COMPLEXPKG\" " +
+	              "procedurePattern=\"PHONETYPETABLETOPLSQL\" " +
+	          "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -334,6 +372,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_COMPLEXPKG_PACKAGE, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG_TAB1_TYPE, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG_SIMPLERECORD_TYPE, ddlDebug);
+            runDdl(conn, DROP_A_PHONE_TYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_A_PHONE_TYPE, ddlDebug);
             runDdl(conn, DROP_VARCHARARRAY_TYPE, ddlDebug);
         }
@@ -575,6 +614,40 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void plsqlToPhoneTypeTableTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputRec = unmarshaller.unmarshal(new StringReader(SIMPLE_RECORD_XML));
+        Object inputTab = unmarshaller.unmarshal(new StringReader(PHONE_TABLE_XML));
+        Invocation invocation = new Invocation("PLSQLToPhoneTypeTableTest");
+        invocation.setParameter("OLDREC", inputRec);
+        invocation.setParameter("OLDTAB", inputTab);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(PHONE_TYPE_TABLE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void phoneTypeTableToPLSQLTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPTypeTable = unmarshaller.unmarshal(new StringReader(PHONE_TYPE_TABLE_XML));
+        Invocation invocation = new Invocation("PhoneTypeTableToPLSQLTest");
+        invocation.setParameter("APHONETYPETABLE", inputPTypeTable);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_RECORD2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG_TAB1 xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -667,4 +740,16 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 	      "<sr1>(613)111-2222</sr1>" +
 	      "<sr2>(613)333-4444</sr2>" +
 	    "</COMPLEXPKG_SIMPLERECORD>";
+    public static final String PHONE_TYPE_TABLE_XML = 
+    	STANDALONE_XML_HEADER +
+    	"<a_phone_type_tableType xmlns=\"urn:ComplexPLSQLSP\">" +
+    	  "<item>" +
+    	    "<home>(613)333-4444</home>" +
+    	    "<cell>(613)444-5555</cell>" +
+    	  "</item>" +
+    	  "<item>" +
+    	    "<home>(613)111-2222</home>" +
+    	    "<cell>(613)222-3333</cell>" +
+    	  "</item>" +
+    	"</a_phone_type_tableType>";
 }

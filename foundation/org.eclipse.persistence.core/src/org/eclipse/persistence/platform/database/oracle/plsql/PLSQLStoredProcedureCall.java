@@ -511,6 +511,18 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 if (inArg.inIndex != MIN_VALUE) {
                 	if (type instanceof OracleObjectType) {
                         super.addNamedArgument(inArg.name, inArg.name, Types.STRUCT, complexType.getCompatibleType());
+                	} else if (complexType instanceof OracleArrayType) {
+                        DatabaseType nestedType = ((OracleArrayType) type).getNestedType();
+                        if (nestedType != null) {
+                            ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(inArg.name);
+                            field.setSqlType(Types.STRUCT);
+                            if (nestedType.isComplexDatabaseType()) {
+                                field.setSqlTypeName(((ComplexDatabaseType) nestedType).getCompatibleType());
+                            }
+                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), complexType.getCompatibleType(), field);
+                        } else {
+                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), complexType.getCompatibleType());
+                        }
                 	} else if (type instanceof PLSQLCollection) {
                         DatabaseType nestedType = ((PLSQLCollection) type).getNestedType();
                         if (nestedType != null) {
@@ -543,7 +555,19 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                 if (outArg.outIndex != MIN_VALUE) {
                     if (complexType instanceof OracleArrayType) {
-                    	super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getTypeName(), complexType.getJavaType());
+                        DatabaseType nestedType = ((OracleArrayType) complexType).getNestedType();
+                        if (nestedType != null) {
+                            ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField(outArg.name);
+                            nestedField.setSqlType(Types.STRUCT);
+                            if (nestedType.isComplexDatabaseType()) {
+                                ComplexDatabaseType complexNestedType = (ComplexDatabaseType) nestedType;
+                                nestedField.setType(complexNestedType.getJavaType());
+                                nestedField.setSqlTypeName(complexNestedType.getCompatibleType());
+                            }
+                        	super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getTypeName(), complexType.getJavaType(), nestedField);
+                        } else {
+                        	super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getTypeName(), complexType.getJavaType());
+                        }
                     } else if (complexType instanceof OracleObjectType) {
                     	super.addNamedOutputArgument(outArg.name, outArg.name, Types.STRUCT, complexType.getTypeName(), complexType.getJavaType());
                     } else if (complexType instanceof PLSQLCollection) {

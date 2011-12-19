@@ -252,7 +252,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                        hasComplexProcedureArgs = true;
 	                        String typeString = storedProcedure.getCatalogName() + "_" + arg.getTypeName();
 	                        xmlType = buildCustomQName(typeString, dbwsBuilder);
-	                    } else if (arg.getDataType() instanceof VArrayType || arg.getDataType() instanceof ObjectType) {
+	                    } else if (arg.getDataType() instanceof VArrayType || arg.getDataType() instanceof ObjectType || arg.getDataType() instanceof ObjectTableType) {
 	                        // handle advanced JDBC types
 	                        hasComplexProcedureArgs = true;
 	                        String typeString = arg.getTypeName().toLowerCase().concat(TYPE_STR);
@@ -1043,6 +1043,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
             if (direction == IN) {
             	if (hasComplexArgs) {
+                    Class wrapperClass = getWrapperClass(databaseType);
+                    if (wrapperClass != null) {
+                    	((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
+                    }
 	            	((PLSQLStoredProcedureCall)call).addNamedArgument(arg.getArgumentName(), databaseType);
             	} else {
 	                if (argType instanceof VArrayType) {
@@ -1424,42 +1428,5 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     		structureName = packageName + UNDERSCORE + structureName;
     	}
     	return structureName;
-    }
-
-    /**
-     * Return the wrapper class for a given DatabaseType.  The class will be loaded by the
-     * XRDynamicClassloader, based on the DatabaseType's javaTypeName.  If the class
-     * cannot be loaded, or the given DatabaseType is not a ComplexDatabaseType, null
-     * will be returned.
-     *
-     */
-    @SuppressWarnings("rawtypes")
-	protected Class getWrapperClass(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
-		if (databaseType instanceof ComplexDatabaseType) {
-        	return getWrapperClass(((ComplexDatabaseType) databaseType).getJavaTypeName());
-		}
-		return null;
-    }
-
-    /**
-     * Return the wrapper class for a wrapper class name.  The wrapper class name would
-     * typically be an argument type name, descriptor java class name, or a
-     * DatabaseType's javaTypeName.
-     *
-     * The class will be loaded by the XRDynamicClassloader;  if the class cannot be
-     * loaded, null will be returned.
-     *
-     */
-    @SuppressWarnings("rawtypes")
-	protected Class getWrapperClass(String wrapperClassName) {
-        Class wrapperClass = null;
-        try {
-            // the following call will try and load the collection wrapper class via XRDynamicClassLoader
-        	wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(wrapperClassName);
-        } catch (ClassNotFoundException e) {
-        	// TODO:  it is unlikely that we'll get here, so is there any need
-        	//        to handle this with an EclipseLink exception
-        }
-		return wrapperClass;
     }
 }
