@@ -105,8 +105,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     public DescriptorQueryManager() {
         this.queries = new LinkedHashMap(5);
-        this.cachedUpdateCalls = new ConcurrentFixedCache(10);
-        this.cachedExpressionQueries = new ConcurrentFixedCache(20);
         setDoesExistQuery(new DoesExistQuery());// Always has a does exist.
         this.setQueryTimeout(DefaultTimeout);
     }
@@ -124,7 +122,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Return the max size of the expression query cache for avoiding regenerated dynamic query SQL.
      */
     public int getExpressionQueryCacheMaxSize() {
-        return cachedExpressionQueries.getMaxSize();
+        return getCachedExpressionQueries().getMaxSize();
     }
 
     /**
@@ -1688,7 +1686,29 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public void setQueryTimeout(int queryTimeout) {
         this.queryTimeout = queryTimeout;
     }
-       
+
+    /**
+     * INTERNAL:
+     * Returns the collection of cached Update calls.
+     */
+    private ConcurrentFixedCache getCachedUpdateCalls() {
+        if (cachedUpdateCalls == null) {
+            this.cachedUpdateCalls = new ConcurrentFixedCache(10);
+        }
+        return this.cachedUpdateCalls;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns the collection of cached expression queries.
+     */
+    private ConcurrentFixedCache getCachedExpressionQueries() {
+        if (cachedExpressionQueries == null) {
+            this.cachedExpressionQueries = new ConcurrentFixedCache(20);
+        }
+        return this.cachedExpressionQueries;
+    }
+
     /**
      * ADVANCED:
      * Return the size of the update call cache.
@@ -1698,7 +1718,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The default cache size is 10, the update call cache can be disabled through setting the size to 0.
      */
     public int getUpdateCallCacheSize() {
-        return this.cachedUpdateCalls.getMaxSize();
+        return getCachedUpdateCalls().getMaxSize();
     }
     
     /**
@@ -1710,7 +1730,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The default cache size is 10, the update call cache can be disabled through setting the size to 0.
      */
     public void setUpdateCallCacheSize(int updateCallCacheSize) {
-        this.cachedUpdateCalls.setMaxSize(updateCallCacheSize);
+        getCachedUpdateCalls().setMaxSize(updateCallCacheSize);
     }
     
     /**
@@ -1719,7 +1739,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PERF: Allow caching of the update SQL call to avoid regeneration.
      */
     public Vector getCachedUpdateCalls(Vector updateFields) {
-        return (Vector) this.cachedUpdateCalls.get(updateFields);
+        return (Vector) getCachedUpdateCalls().get(updateFields);
     }
     
     /**
@@ -1742,7 +1762,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
                 vectorToCache.add(clonedUpdateCall);
             }
         }
-        this.cachedUpdateCalls.put(updateFields, vectorToCache);
+        getCachedUpdateCalls().put(updateFields, vectorToCache);
     }
     
     /**
@@ -1751,7 +1771,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PERF: Allow caching of expression query SQL call to avoid regeneration.
      */
     public DatabaseQuery getCachedExpressionQuery(DatabaseQuery query) {
-        return (DatabaseQuery)this.cachedExpressionQueries.get(query);
+        return (DatabaseQuery) getCachedExpressionQueries().get(query);
     }
     
     /**
@@ -1760,6 +1780,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PERF: Allow caching of expression query SQL call to avoid regeneration.
      */
     public void putCachedExpressionQuery(DatabaseQuery query) {
-        this.cachedExpressionQueries.put(query, query);
+        getCachedExpressionQueries().put(query, query);
     }
 }
