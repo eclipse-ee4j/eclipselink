@@ -175,9 +175,11 @@ import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLTables;
  * and mapped superclasses.
  * 
  * Key notes:
- * - any metadata mapped from XML to this class must be compared in the
+ * - all metadata mapped from XML to this class must be compared in the
  *   equals method.
- * - any metadata mapped from XML to this class must be handled in the merge
+ * - all metadata mapped from XML must be initialized in the initXMLObject 
+ *   method.
+ * - all metadata mapped from XML to this class must be handled in the merge
  *   method. (merging is done at the accessor/mapping level)
  * - any metadata mapped from XML to this class must be initialized in the
  *   initXMLObject  method.
@@ -1500,6 +1502,49 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
+     * Process record and table types.
+     */
+    public void processPLSQLTypes() {
+        // PLSQL types.
+        
+        // Process the XML first.
+        for (PLSQLRecordMetadata record : m_plsqlRecords) {
+            getProject().addPLSQLComplexType(record);
+        }
+        
+        // Process the annotations.
+        MetadataAnnotation records = getAnnotation(PLSQLRecords.class);
+        if (records != null) {
+            for (Object record : (Object[]) records.getAttribute("value")) { 
+                getProject().addPLSQLComplexType(new PLSQLRecordMetadata((MetadataAnnotation)record, this));
+            }
+        }
+        
+        MetadataAnnotation record = getAnnotation(PLSQLRecord.class);
+        if (record != null) {
+            getProject().addPLSQLComplexType(new PLSQLRecordMetadata(record, this));
+        }
+        
+        // Process the XML first.
+        for (PLSQLTableMetadata table : m_plsqlTables) {
+            getProject().addPLSQLComplexType(table);
+        }
+        
+        // Process the annotations.
+        MetadataAnnotation tables = getAnnotation(PLSQLTables.class);
+        if (tables != null) {
+            for (Object table : (Object[]) tables.getAttribute("value")) { 
+                getProject().addPLSQLComplexType(new PLSQLTableMetadata((MetadataAnnotation)table, this));
+            }
+        }
+        
+        MetadataAnnotation table = getAnnotation(PLSQLTable.class);
+        if (table != null) {
+            getProject().addPLSQLComplexType(new PLSQLTableMetadata(table, this));
+        }
+    }
+    
+    /**
      * INTERNAL:
      * Adds properties to the descriptor.
      */
@@ -1520,45 +1565,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
         MetadataAnnotation property = getAnnotation(Property.class);
         if (property != null) {
             getDescriptor().addProperty(new PropertyMetadata(property, this));
-        }
-    }
-
-    /**
-     * Process record and table types.
-     */
-    public void processPLSQLTypes() {
-        // PLSQL types.
-        
-        // Process the XML first.
-        for (PLSQLRecordMetadata record : m_plsqlRecords) {
-            getProject().addPLSQLComplexType(record);
-        }        
-        // Process the annotations.
-        MetadataAnnotation records = getAnnotation(PLSQLRecords.class);
-        if (records != null) {
-            for (Object record : (Object[]) records.getAttribute("value")) { 
-                getProject().addPLSQLComplexType(new PLSQLRecordMetadata((MetadataAnnotation)record, this));
-            }
-        }        
-        MetadataAnnotation record = getAnnotation(PLSQLRecord.class);
-        if (record != null) {
-            getProject().addPLSQLComplexType(new PLSQLRecordMetadata(record, this));
-        }
-        
-        // Process the XML first.
-        for (PLSQLTableMetadata table : m_plsqlTables) {
-            getProject().addPLSQLComplexType(table);
-        }        
-        // Process the annotations.
-        MetadataAnnotation tables = getAnnotation(PLSQLTables.class);
-        if (tables != null) {
-            for (Object table : (Object[]) tables.getAttribute("value")) { 
-                getProject().addPLSQLComplexType(new PLSQLTableMetadata((MetadataAnnotation)table, this));
-            }
-        }
-        MetadataAnnotation table = getAnnotation(PLSQLTable.class);
-        if (table != null) {
-            getProject().addPLSQLComplexType(new PLSQLTableMetadata(table, this));
         }
     }
     
