@@ -352,11 +352,16 @@ public class MappingsGenerator {
             String prefix = desc.getNonNullNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
             if (prefix != null && !prefix.equals("")) {
                 schemaRef.setSchemaContext("/" + prefix + ":" + info.getSchemaTypeName());
+                schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName(), prefix));
             } else {
-            	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null, false);            
-            	schemaRef.setSchemaContext("/" + getQualifiedString(generatedPrefix, info.getSchemaTypeName()));
-            }
-            schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));
+            	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null, false);
+            	schemaRef.setSchemaContext("/" + getQualifiedString(generatedPrefix, info.getSchemaTypeName()));            	
+            	if(generatedPrefix == null || generatedPrefix.equals(XMLConstants.EMPTY_STRING)){
+                    schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));            		
+            	}else{
+                    schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName(), generatedPrefix));
+            	}
+            }     
         }
         // the default type is complex; need to check for simple type case
         if (info.isEnumerationType() || (info.getPropertyNames().size() == 1 && helper.isAnnotationPresent(info.getProperties().get(info.getPropertyNames().get(0)).getElement(), XmlValue.class))) {
