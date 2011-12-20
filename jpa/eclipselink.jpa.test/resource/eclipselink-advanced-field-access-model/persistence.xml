@@ -23,6 +23,7 @@
             <property name="eclipselink.cache.type.default" value="Full"/>
             <property name="eclipselink.cache.type.Employee" value="Weak"/>
             <property name="eclipselink.cache.type.org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address" value="HardWeak"/>
+            <property name="eclipselink.cache.type.org.eclipse.persistence.testing.models.jpa.advanced.NoIdentityMap" value="None"/>
             <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>

@@ -1663,7 +1663,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #shallowMergeClone(Object)
      */
     public Object deepMergeClone(Object rmiClone) {
-        return mergeClone(rmiClone, MergeManager.CASCADE_ALL_PARTS);
+        return mergeClone(rmiClone, MergeManager.CASCADE_ALL_PARTS, false);
     }
 
     /**
@@ -3344,14 +3344,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #deepMergeClone(Object)
      */
     public Object mergeClone(Object rmiClone) {
-        return mergeClone(rmiClone, MergeManager.CASCADE_PRIVATE_PARTS);
+        return mergeClone(rmiClone, MergeManager.CASCADE_PRIVATE_PARTS, false);
     }
 
     /**
      * INTERNAL:
      * Merge the attributes of the clone into the unit of work copy.
      */
-    public Object mergeClone(Object rmiClone, int cascadeDepth) {
+    public Object mergeClone(Object rmiClone, int cascadeDepth, boolean forRefresh) {
         if (rmiClone == null) {
             return null;
         }
@@ -3366,6 +3366,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         MergeManager manager = new MergeManager(this);
         manager.mergeCloneIntoWorkingCopy();
         manager.setCascadePolicy(cascadeDepth);
+        manager.setForRefresh(forRefresh);
 
         Object merged = null;
         try {
@@ -4511,6 +4512,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         MergeManager manager = new MergeManager(this);
         manager.mergeOriginalIntoWorkingCopy();
+        manager.setForRefresh(true);
         manager.cascadeAllParts();
         for (Iterator cloneEnum = new IdentityHashMap(getCloneMapping()).keySet().iterator(); cloneEnum.hasNext();) {
             Object clone = cloneEnum.next();
@@ -4585,6 +4587,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         MergeManager manager = new MergeManager(this);
         manager.mergeOriginalIntoWorkingCopy();
+        manager.setForRefresh(true);
         manager.setCascadePolicy(cascadeDepth);
         try {
             manager.mergeChanges(implementation, null, this);
@@ -4992,7 +4995,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #deepMergeClone(Object)
      */
     public Object shallowMergeClone(Object rmiClone) {
-        return mergeClone(rmiClone, MergeManager.NO_CASCADE);
+        return mergeClone(rmiClone, MergeManager.NO_CASCADE, false);
     }
 
     /**

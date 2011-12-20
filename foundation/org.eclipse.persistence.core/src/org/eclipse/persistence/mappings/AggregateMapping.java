@@ -611,7 +611,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             // this call will eventually get passed to updateChangeRecord which will 
             //ensure this new aggregates is fully initialized with listeners.
             // If merge into the unit of work, must only merge and raise the event is the value changed.
-            if (mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy()) {
+            if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())  && !mergeManager.isForRefresh()) {
                 this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
             }
             

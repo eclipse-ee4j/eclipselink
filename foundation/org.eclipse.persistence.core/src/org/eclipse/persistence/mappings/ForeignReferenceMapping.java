@@ -398,7 +398,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (!shouldMergeCascadeReference(mergeManager)) {
             return true;
         }
-        if (mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+        if (mergeManager.isForRefresh()) {
             // For reverts we are more concerned about the target than the source.
             if (!isAttributeValueInstantiated(target)) {
                 return true;

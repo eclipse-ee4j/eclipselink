@@ -412,27 +412,15 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             if (primaryKey == null) {
                 primaryKey = concreteDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
             }
-            // Revert only works in the object is in the parent cache, if it is not merge must be used.
-            if (unitOfWork.getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, original.getClass(), concreteDescriptor)) {
-                if (shouldCascadeAllParts()) {
-                    unitOfWork.deepRevertObject(clone);
-                } else if (shouldCascadePrivateParts()) {
-                    unitOfWork.revertObject(clone);
-                } else if (shouldCascadeByMapping()) {
-                    unitOfWork.revertObject(clone, MergeManager.CASCADE_BY_MAPPING);
-                } else if (!shouldCascadeParts()) {
-                    unitOfWork.shallowRevertObject(clone);
-                }
-            } else {
-                if (shouldCascadeAllParts()) {
-                    unitOfWork.deepMergeClone(original);
-                } else if (shouldCascadePrivateParts()) {
-                    unitOfWork.mergeClone(original);
-                } else if (shouldCascadeByMapping()) {
-                    unitOfWork.mergeClone(original, MergeManager.CASCADE_BY_MAPPING);
-                } else if (!shouldCascadeParts()) {
-                    unitOfWork.shallowMergeClone(original);
-                }
+            
+            if (shouldCascadeAllParts()) {
+                unitOfWork.mergeClone(original, MergeManager.CASCADE_ALL_PARTS, true);
+            } else if (shouldCascadePrivateParts()) {
+                unitOfWork.mergeClone(original, MergeManager.CASCADE_PRIVATE_PARTS, true);
+            } else if (shouldCascadeByMapping()) {
+                unitOfWork.mergeClone(original, MergeManager.CASCADE_BY_MAPPING, true);
+            } else if (!shouldCascadeParts()) {
+                unitOfWork.mergeClone(original, MergeManager.NO_CASCADE, true);
             }
         }
         //bug 6130550: trigger indirection on the clone where required due to fetch joins on the query

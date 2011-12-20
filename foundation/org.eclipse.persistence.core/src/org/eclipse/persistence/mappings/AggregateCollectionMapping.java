@@ -1974,7 +1974,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             mergeRemoteValueHolder(target, source, mergeManager);
             return;
         }
-        if (mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+        if (mergeManager.isForRefresh()) {
             if (!isAttributeValueInstantiatedOrChanged(target)) {
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute

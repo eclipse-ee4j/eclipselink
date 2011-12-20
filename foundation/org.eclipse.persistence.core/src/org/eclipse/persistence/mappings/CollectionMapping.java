@@ -1391,7 +1391,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             mergeRemoteValueHolder(target, source, mergeManager);
             return;
         }
-        if (mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+        if (mergeManager.isForRefresh()) {
             if (!isAttributeValueInstantiated(target)) {
                 // We must clone and set the value holder from the source to the target.
                 Object attributeValue = getAttributeValueFromObject(source);
@@ -1421,7 +1421,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         boolean fireChangeEvents = false;
         ObjectChangeListener listener = null;
         Object valueOfSourceCloned = null;
-        if (!mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+        if (!mergeManager.isForRefresh()) {
             // EL Bug 338504 - No Need to clone in this case.
             valueOfSourceCloned = valueOfSource;
             // if we are copying from original to clone then the source will be     

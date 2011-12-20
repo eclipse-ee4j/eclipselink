@@ -440,7 +440,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             mergeRemoteValueHolder(target, source, mergeManager);
             return;
         }
-        if (mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+        if (mergeManager.isForRefresh()) {
             if (!isAttributeValueInstantiated(target)) {
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute
@@ -481,7 +481,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
         
         // If merge into the unit of work, must only merge and raise the event is the value changed.
-        if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
+        if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy()) && !mergeManager.isForRefresh()
                 && this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
             // Object level or attribute level so lets see if we need to raise the event?
             Object valueOfTarget = getRealAttributeValueFromObject(target, mergeManager.getSession());

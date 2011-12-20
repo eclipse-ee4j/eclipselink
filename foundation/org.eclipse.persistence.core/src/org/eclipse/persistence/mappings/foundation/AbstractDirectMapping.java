@@ -986,7 +986,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         // If merge into the unit of work, must only merge and raise the event is the value changed.
-        if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
+        if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())  && !mergeManager.isForRefresh()
                 && this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
             // if it didn't change then there will be no event
             Object attributeValue = getAttributeValueFromObject(source);

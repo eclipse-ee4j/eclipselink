@@ -131,6 +131,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testContainsRemoved");
         tests.add("testRefreshRemoved");
         tests.add("testRefreshNotManaged");
+        tests.add("testRefreshEntityWithoutCache");
         tests.add("testDoubleMerge");
         tests.add("testDescriptorNamedQueryForMultipleQueries");
         tests.add("testDescriptorNamedQuery");
@@ -331,6 +332,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    
+    public void testRefreshEntityWithoutCache(){
+        EntityManager em = createEntityManager();
+        NoIdentityMap map = new NoIdentityMap();
+        map.setName("bob");
+        beginTransaction(em);
+        em.persist(map);
+        commitTransaction(em);
+        closeEntityManager(em);
+        clearCache();
+        em = createEntityManager();
+        Query query = em.createQuery("Select e from NoIdentityMap e where e.name = 'bob'");
+        NoIdentityMap emp = (NoIdentityMap) query.getSingleResult();
+        int version = emp.getVersion();
+        emp.setName(System.currentTimeMillis() + "bob");
+        query.setHint(QueryHints.REFRESH, true);
+        emp = (NoIdentityMap) query.getSingleResult();
+        beginTransaction(em);
+        commitTransaction(em);
+        closeEntityManager(em);
+        em = createEntityManager();
+        beginTransaction(em);
+        em.remove(em.find(NoIdentityMap.class, map.getID()));
+        commitTransaction(em);
+        closeEntityManager(em);
+        assertEquals("Unchanged employee had version changed after refresh", version, emp.getVersion());
+        
+    }
+    
     public void testCacheUsage() {
         EntityManager em = createEntityManager();
         Employee emp = new Employee();

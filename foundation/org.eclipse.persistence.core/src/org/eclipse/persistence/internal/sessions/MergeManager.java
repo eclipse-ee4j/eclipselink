@@ -96,6 +96,9 @@ public class MergeManager {
     /** save the currentThread for later comparison to the activeThread in case they don't match */
     protected Thread lockThread;
     
+    /** records that this merge process is for a refresh */
+    protected boolean isForRefresh;
+    
     public MergeManager(AbstractSession session) {
         this.session = session;
         this.mergedNewObjects = new IdentityHashMap();
@@ -231,6 +234,20 @@ public class MergeManager {
         return this.writeLockQueued;
     }
     
+    /**
+     * @return the isForMerge
+     */
+    public boolean isForRefresh() {
+        return isForRefresh;
+    }
+
+    /**
+     * @param isforRefresh the isForMerge to set
+     */
+    public void setForRefresh(boolean isforRefresh) {
+        this.isForRefresh = isforRefresh;
+    }
+
     /**
      * INTERNAL:
      * Will return if the merge process has transitioned the active merge locks to deferred locks for
@@ -524,7 +541,11 @@ public class MergeManager {
             
             // Merge into the clone from the original and use the clone as 
             // backup as anything different should be merged.
-            builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, this.session, cascadeOnly, false, false);  
+            builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, this.session, cascadeOnly, false, false);
+            if (isForRefresh){
+                descriptor.getObjectChangePolicy().revertChanges(registeredObject, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping(), true);
+            }
+
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
         }

@@ -533,7 +533,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             mergeRemoteValueHolder(target, source, mergeManager);
             return;
         }
-        if (mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+        if (mergeManager.isForRefresh()) {
             if (!isAttributeValueInstantiated(target)) {
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute

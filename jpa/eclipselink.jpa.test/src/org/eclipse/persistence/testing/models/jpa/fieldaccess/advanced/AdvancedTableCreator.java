@@ -33,6 +33,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildLARGEPROJECTTable());
         addTableDefinition(buildPARTNERLINKTable());
         addTableDefinition(buildMANTable());
+        addTableDefinition(buildNOIDENTITYMAPTable());
         addTableDefinition(buildPHONENUMBERTable());
         addTableDefinition(buildPHONENUMBERSTATUSTable());
         addTableDefinition(buildPLATINUMBUYERTable());
@@ -663,6 +664,44 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public static TableDefinition buildNOIDENTITYMAPTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_NOIDENTITYMAP");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("NAME");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(40);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+
+        FieldDefinition field5 = new FieldDefinition();
+        field5.setName("VERSION");
+        field5.setTypeName("NUMERIC");
+        field5.setSize(15);
+        field5.setShouldAllowNull(true );
+        field5.setIsPrimaryKey(false );
+        field5.setUnique(false );
+        field5.setIsIdentity(false );
+        table.addField(field5);
+
+        return table;
+    }
+
     public static TableDefinition buildPARENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("FIELD_PARENT");

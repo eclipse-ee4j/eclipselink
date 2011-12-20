@@ -951,7 +951,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return;
         }
         
-        if (mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
+        if (mergeManager.isForRefresh()) {
             if (!areObjectsToBeProcessedInstantiated(target)) {
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute
@@ -982,7 +982,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             if (this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) {
                 // Object level or attribute level so lets see if we need to raise the event?
                 Object targetAttribute = getRealAttributeValueFromObject(target, mergeManager.getSession());
-                if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())
+                if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())  && !mergeManager.isForRefresh()
                         && (((targetAttribute == null) && (attribute != null)) || ((targetAttribute != null) && ((attribute == null) || ((!targetAttribute.equals(attribute)) && (!Helper.comparePotentialArrays(targetAttribute, attribute))))))) {
                     this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), targetAttribute, attribute);
                 }
