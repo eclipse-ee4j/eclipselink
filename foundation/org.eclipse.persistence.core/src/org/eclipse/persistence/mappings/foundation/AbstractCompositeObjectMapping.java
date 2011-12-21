@@ -108,23 +108,6 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
         fields.addElement(this.getField());
         return fields;
     }
-
-    /**
-     * INTERNAL:
-     * Return the value of an attribute which this mapping represents for an object.
-     */
-    public Object getAttributeValueFromObject(Object object) throws DescriptorException {
-        try {
-            Object attributeValue = getAttributeAccessor().getAttributeValueFromObject(object);
-            if (attributeValue == null) {
-                return null;
-            }
-            return attributeValue;
-        } catch (DescriptorException exception) {
-            exception.setMapping(this);
-            throw exception;
-        }
-    }
     
     /**
      * PUBLIC:
