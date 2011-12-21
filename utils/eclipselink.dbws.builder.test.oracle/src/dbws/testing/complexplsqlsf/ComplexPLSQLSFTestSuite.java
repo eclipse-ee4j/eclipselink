@@ -51,6 +51,17 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_A_PHONE2_TYPE_TABLE =
         "CREATE OR REPLACE TYPE A_PHONE2_TYPE_TABLE AS TABLE OF A_PHONE2_TYPE";
+    static final String CREATE_A_CONTACT2_TYPE =
+        "CREATE OR REPLACE TYPE A_CONTACT2_TYPE AS OBJECT (" +
+            "\nADDRESS VARCHAR2(40)," +
+            "\nPHONE A_PHONE2_TYPE" +
+        "\n)";
+    static final String CREATE_A_CUSTOMER2_TYPE =
+        "CREATE OR REPLACE TYPE A_CUSTOMER2_TYPE AS OBJECT (" +
+            "\nNAME VARCHAR2ARRAY," +
+            "\nAGE NUMBER(3)," +
+            "\nCONTACT A_CONTACT2_TYPE" +
+        "\n)";
     static final String CREATE_COMPLEXPKG2_TAB1_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG2_TAB1 AS TABLE OF VARCHAR2(20)";
     static final String CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE =
@@ -81,6 +92,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nFUNCTION PHONETORECORD(APHONE IN A_PHONE2_TYPE) RETURN SIMPLERECORD;" +
             "\nFUNCTION PLSQLTOPHONETYPETABLE(OLDREC IN SIMPLERECORD, OLDTAB IN TAB1) RETURN A_PHONE2_TYPE_TABLE;" +
             "\nFUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD;" +
+            "\nFUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE;" +
         "\nEND COMPLEXPKG2;";
     static final String CREATE_COMPLEXPKG2_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG2 AS" +
@@ -245,6 +257,22 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                 "\nNEWREC.SR2 := APHONE1.HOME;" +
                 "\nRETURN NEWREC;" +
             "\nEND PHONETYPETABLETOPLSQL;" +
+            "\nFUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE AS" +
+            "\nACONTACT A_CONTACT2_TYPE;" +
+			"\nACUSTOMER A_CUSTOMER2_TYPE;" +
+			"\nNEWVARRAY VARCHAR2ARRAY;" +
+			"\nBEGIN" +
+	            "\nNEWVARRAY := VARCHAR2ARRAY();" +
+	            "\nNEWVARRAY.EXTEND;" +
+	            "\nNEWVARRAY(1) := 'John';" +
+	            "\nNEWVARRAY.EXTEND;" +
+	            "\nNEWVARRAY(2) := 'Q';" +
+	            "\nNEWVARRAY.EXTEND;" +
+	            "\nNEWVARRAY(3) := 'Oracle';" +
+				"\nACONTACT := A_CONTACT2_TYPE('1234 Somewhere St, Ottawa, ON', A_PHONE2_TYPE('(613)555-1234', '(613)555-4321'));" +
+			    "\nACUSTOMER := A_CUSTOMER2_TYPE(NEWVARRAY, 41, ACONTACT);" +
+				"\nRETURN ACUSTOMER;" +
+			"\nEND CREATECUSTOMER;" +
         "\nEND COMPLEXPKG2;";
     static final String DROP_COMPLEXPKG2_PACKAGE =
         "DROP PACKAGE COMPLEXPKG2";
@@ -256,7 +284,13 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "DROP TYPE COMPLEXPKG2_SIMPLERECORD";
     static final String DROP_VARCHAR2ARRAY_TYPE =
         "DROP TYPE VARCHAR2ARRAY";
-    static final String DROP_A_PHONE2_TYPE =        "DROP TYPE A_PHONE2_TYPE";    static final String DROP_A_PHONE2_TYPE_TABLE = 
+    static final String DROP_A_PHONE2_TYPE =
+        "DROP TYPE A_PHONE2_TYPE";
+    static final String DROP_A_CUSTOMER2_TYPE = 
+        "DROP TYPE A_CUSTOMER2_TYPE";
+    static final String DROP_A_CONTACT2_TYPE = 
+        "DROP TYPE A_CONTACT2_TYPE";
+    static final String DROP_A_PHONE2_TYPE_TABLE = 
         "DROP TYPE A_PHONE2_TYPE_TABLE";
 
     static boolean ddlCreate = false;
@@ -288,6 +322,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         if (ddlCreate) {
            	runDdl(conn, CREATE_VARCHAR2ARRAY_VARRAY, ddlDebug);
         	runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);        	runDdl(conn, CREATE_A_PHONE2_TYPE_TABLE, ddlDebug);
+        	runDdl(conn, CREATE_A_CONTACT2_TYPE, ddlDebug);
+        	runDdl(conn, CREATE_A_CUSTOMER2_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_PACKAGE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_BODY, ddlDebug);
@@ -399,6 +435,12 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 	              "catalogPattern=\"COMPLEXPKG2\" " +
 	              "procedurePattern=\"PHONETYPETABLETOPLSQL\" " +
 	          "/>" +
+              "<plsql-procedure " +
+		          "name=\"CreateCustomerTest\" " +
+		          "catalogPattern=\"COMPLEXPKG2\" " +
+		          "procedurePattern=\"CREATECUSTOMER\" " +
+	              "returnType=\"a_customer2_typeType\" " +
+		      "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -409,6 +451,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         if (ddlDrop) {
         	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE_BODY, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_A_CUSTOMER2_TYPE, ddlDebug);
+            runDdl(conn, DROP_A_CONTACT2_TYPE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
             runDdl(conn, DROP_A_PHONE2_TYPE_TABLE, ddlDebug);
@@ -687,6 +731,19 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void createContactTest() {
+        Invocation invocation = new Invocation("CreateCustomerTest");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(CUSTOMER_TYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -799,4 +856,19 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
     	    "<cell>(613)222-3333</cell>" +
     	  "</item>" +
     	"</a_phone2_type_tableType>";
+    public static final String CUSTOMER_TYPE_XML = 
+        STANDALONE_XML_HEADER +
+        "<a_customer2_typeType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<name>John</name>" +
+          "<name>Q</name>" +
+          "<name>Oracle</name>" +
+          "<age>41</age>" + 
+          "<contact>" +
+            "<address>1234 Somewhere St, Ottawa, ON</address>" +
+            "<phone>" +
+              "<home>(613)555-1234</home>" +
+              "<cell>(613)555-4321</cell>" +
+            "</phone>" +
+          "</contact>" +
+        "</a_customer2_typeType>";
 }

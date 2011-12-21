@@ -47,7 +47,6 @@ import org.eclipse.persistence.internal.xr.QueryOperation;
 import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredProcedureQueryHandler;
-import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.structures.ArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
@@ -841,18 +840,26 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String lFieldName = field.getFieldName().toLowerCase();
             if (xdesc.getMappingForAttributeName(lFieldName) == null) {
                 if (field.isComposite()) {
+                    String targetTypeName2 = field.getDataType().getTypeName();
+                    String alias = targetTypeName2.toLowerCase();
+                    XMLDescriptor xdesc2 = (XMLDescriptor) oxProject.getDescriptorForAlias(alias);
+                    boolean buildDescriptor = xdesc2 == null;
+                    if (buildDescriptor) {
+                        xdesc2 = buildAndAddNewXMLDescriptor(oxProject, alias, nct.generateSchemaAlias(alias), buildCustomQName(targetTypeName2, dbwsBuilder).getNamespaceURI());
+                    }
                     // handle ObjectType field
                     if (field.getDataType() instanceof ObjectType) {
-                        String alias = field.getDataType().getTypeName().toLowerCase();
-                        XMLDescriptor xdesc2 = (XMLDescriptor) oxProject.getDescriptorForAlias(alias);
-                        if (xdesc2 == null) {
-                            String targetTypeName2 = field.getDataType().getTypeName();
-                            xdesc2 = buildAndAddNewXMLDescriptor(oxProject, alias, nct.generateSchemaAlias(alias), buildCustomQName(targetTypeName2, dbwsBuilder).getNamespaceURI());
+                        if (buildDescriptor) {
                             addToOXProjectForObjectTypeArg(field.getDataType(), oxProject, targetTypeName2, alias);
                         }
                         buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, xdesc2.getJavaClassName());
+                    } else if (field.getDataType() instanceof VArrayType) {
+                        // handle VArray field
+                        if (buildDescriptor) {
+                            addToOXProjectForVArrayArg(field.getDataType(), oxProject, targetTypeName2, alias);
+                        }
+                        buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + "/text()", getAttributeClassForDatabaseType(field.getDataType()));
                     }
-                    // TODO - handle VArray field (composite collection mapping)
                 } else {
                     // direct mapping
                     addDirectMappingForFieldType(xdesc, lFieldName, field);
@@ -895,18 +902,26 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
             if (ordt.getMappingForAttributeName(lFieldName) == null) {
                 if (fType.isComposite()) {
+                    String targetTypeName2 = fType.getDataType().getTypeName();
+                    String alias = targetTypeName2.toLowerCase();
+                    ObjectRelationalDataTypeDescriptor ordt2 = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(alias);
+                    boolean buildDescriptor = ordt2 == null;
+                    if (buildDescriptor) {
+                        ordt2 = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, alias);
+                    }
                     // handle ObjectType field
                     if (fType.getDataType() instanceof ObjectType) {
-                        String targetTypeName2 = fType.getDataType().getTypeName();
-                        String alias = targetTypeName2.toLowerCase();
-                        ObjectRelationalDataTypeDescriptor ordt2 = (ObjectRelationalDataTypeDescriptor)orProject.getDescriptorForAlias(alias);
-                        if (ordt2 == null) {
-                            ordt2 = buildAndAddNewObjectRelationalDataTypeDescriptor(orProject, alias);
+                        if (buildDescriptor) {
                             addToORProjectForObjectTypeArg(fType.getDataType(), orProject, alias);
                         }
                         buildAndAddStructureMapping(ordt, lFieldName, fieldName, ordt2.getJavaClassName());
+                    } else if (fType.getDataType() instanceof VArrayType) {
+                        // handle VArray field
+                        if (buildDescriptor) {
+                        	addToORProjectForVArrayArg(fType.getDataType(), orProject, targetTypeName2, alias);
+                        }
+                        buildAndAddArrayMapping(ordt, lFieldName, fieldName, getStructureNameForField(fType, null));
                     }
-                    // TODO - handle VArray field (object array mapping)
                 } else {
                     // direct mapping
                     DirectToFieldMapping dfm = new DirectToFieldMapping();
