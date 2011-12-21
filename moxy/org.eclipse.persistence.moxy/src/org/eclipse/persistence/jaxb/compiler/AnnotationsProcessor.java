@@ -2538,7 +2538,7 @@ public class AnnotationsProcessor {
             org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy();
             policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
             policy.setIsSetPerformedForAbsentNode(nullPolicy.isSetPerformedForAbsentNode());
-            policy.setXsiNilRepresentsNull(new Boolean(nullPolicy.xsiNilRepresentsNull()));
+            policy.setXsiNilRepresentsNull(Boolean.valueOf(nullPolicy.xsiNilRepresentsNull()));
             policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
             property.setNullPolicy(policy);
 
@@ -2546,7 +2546,7 @@ public class AnnotationsProcessor {
             XmlIsSetNullPolicy nullPolicy = (XmlIsSetNullPolicy) helper.getAnnotation(property.getElement(), XmlIsSetNullPolicy.class);
             org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy();
             policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
-            policy.setXsiNilRepresentsNull(new Boolean(nullPolicy.xsiNilRepresentsNull()));
+            policy.setXsiNilRepresentsNull(Boolean.valueOf(nullPolicy.xsiNilRepresentsNull()));
             policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
             policy.setIsSetMethodName(nullPolicy.isSetMethodName());
             for (XmlParameter next : nullPolicy.isSetParameters()) {
