@@ -89,61 +89,60 @@ Private-Package: .
 Implementation-Version: 2.3.1.qualifier
 Specification-Vendor: Eclipse.org - EclipseLink Project
 Tool: Bnd-0.0.384
-DSTAMP: 20110629
-TODAY: June 29 2011
+DSTAMP: 20111221
 Bundle-Name: EclipseLink SDO
-Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-TSTAMP: 1411
-HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
+TODAY: December 21 2011
+Created-By: 1.6.0_26 (Sun Microsystems Inc.)
+TSTAMP: 1524
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.persistence.core;bundle-version="2.3.1";vi
- sibility:=reexport,org.eclipse.persistence.asm;bundle-version="2.3.1"
- ;resolution:=optional,org.eclipse.persistence.moxy;bundle-version="2.
- 3.1";resolution:=optional
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.3.1";visibility:=reexport,
+ org.eclipse.persistence.asm;bundle-version="2.3.1";resolution:=optional,
+ org.eclipse.persistence.moxy;bundle-version="2.3.1";resolution:=optional
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
+Fragment-Host: commonj.sdo;bundle-version="2.1.1"
 Bundle-Version: 2.3.1.qualifier
-Bnd-LastModified: 1309371189427
+Bnd-LastModified: 1324499058326
 Bundle-ManifestVersion: 2
 Include-Resource: ../../about.html,../../readme.html,../../license.htm
  l
 Import-Package: commonj.sdo;version="2.1.1",commonj.sdo.helper;version
  ="2.1.1",commonj.sdo.impl;version="2.1.1",javax.management;resolution
  :=optional,javax.naming;resolution:=optional,javax.xml.bind;resolutio
- n:=optional;version="2.0.0",javax.xml.datatype;resolution:=optional;v
- ersion="2.0.0",javax.xml.namespace;resolution:=optional;version="2.0.
- 0",javax.xml.transform;resolution:=optional;version="2.0.0",javax.xml
- .transform.dom;resolution:=optional;version="2.0.0",javax.xml.transfo
- rm.sax;resolution:=optional;version="2.0.0",javax.xml.transform.strea
- m;resolution:=optional;version="2.0.0",org.eclipse.persistence.descri
- ptors;version="2.3.1",org.eclipse.persistence.exceptions;version="2.3
- .1",org.eclipse.persistence.internal.databaseaccess;version="2.3.1",o
- rg.eclipse.persistence.internal.descriptors;version="2.3.1",org.eclip
- se.persistence.internal.helper;version="2.3.1",org.eclipse.persistenc
- e.internal.libraries.asm;resolution:=optional,org.eclipse.persistence
- .internal.localization;version="2.3.1",org.eclipse.persistence.intern
- al.oxm;version="2.3.1",org.eclipse.persistence.internal.oxm.record;ve
- rsion="2.3.1",org.eclipse.persistence.internal.oxm.record.namespaces;
- version="2.3.1",org.eclipse.persistence.internal.oxm.schema;version="
- 2.3.1",org.eclipse.persistence.internal.oxm.schema.model;version="2.3
- .1",org.eclipse.persistence.internal.queries;version="2.3.1",org.ecli
- pse.persistence.internal.security;version="2.3.1",org.eclipse.persist
- ence.internal.sessions;version="2.3.1",org.eclipse.persistence.jaxb;v
- ersion="2.3.1",org.eclipse.persistence.logging;version="2.3.1",org.ec
- lipse.persistence.mappings;version="2.3.1",org.eclipse.persistence.ma
- ppings.converters;version="2.3.1",org.eclipse.persistence.mappings.fo
- undation;version="2.3.1",org.eclipse.persistence.mappings.transformer
- s;version="2.3.1",org.eclipse.persistence.oxm;version="2.3.1",org.ecl
- ipse.persistence.oxm.attachment;version="2.3.1",org.eclipse.persisten
- ce.oxm.mappings;version="2.3.1",org.eclipse.persistence.oxm.mappings.
- converters;version="2.3.1",org.eclipse.persistence.oxm.mappings.nullp
- olicy;version="2.3.1",org.eclipse.persistence.oxm.platform;version="2
- .3.1",org.eclipse.persistence.oxm.record;version="2.3.1",org.eclipse.
- persistence.oxm.schema;version="2.3.1",org.eclipse.persistence.oxm.se
- quenced;version="2.3.1",org.eclipse.persistence.oxm.unmapped;version=
- "2.3.1",org.eclipse.persistence.platform.xml;version="2.3.1",org.ecli
- pse.persistence.sessions;version="2.3.1",org.w3c.dom;resolution:=opti
- onal,org.xml.sax;resolution:=optional
+ n:=optional;version="2.0.0",javax.xml.datatype;resolution:=optional,j
+ avax.xml.namespace;resolution:=optional,javax.xml.transform;resolutio
+ n:=optional,javax.xml.transform.dom;resolution:=optional,javax.xml.tr
+ ansform.sax;resolution:=optional,javax.xml.transform.stream;resolutio
+ n:=optional,org.eclipse.persistence.descriptors;version="2.3.1",org.e
+ clipse.persistence.exceptions;version="2.3.1",org.eclipse.persistence
+ .internal.databaseaccess;version="2.3.1",org.eclipse.persistence.inte
+ rnal.descriptors;version="2.3.1",org.eclipse.persistence.internal.hel
+ per;version="2.3.1",org.eclipse.persistence.internal.libraries.asm;re
+ solution:=optional,org.eclipse.persistence.internal.localization;vers
+ ion="2.3.1",org.eclipse.persistence.internal.oxm;version="2.3.1",org.
+ eclipse.persistence.internal.oxm.record;version="2.3.1",org.eclipse.p
+ ersistence.internal.oxm.record.namespaces;version="2.3.1",org.eclipse
+ .persistence.internal.oxm.schema;version="2.3.1",org.eclipse.persiste
+ nce.internal.oxm.schema.model;version="2.3.1",org.eclipse.persistence
+ .internal.queries;version="2.3.1",org.eclipse.persistence.internal.se
+ curity;version="2.3.1",org.eclipse.persistence.internal.sessions;vers
+ ion="2.3.1",org.eclipse.persistence.jaxb;version="2.3.1",org.eclipse.
+ persistence.logging;version="2.3.1",org.eclipse.persistence.mappings;
+ version="2.3.1",org.eclipse.persistence.mappings.converters;version="
+ 2.3.1",org.eclipse.persistence.mappings.foundation;version="2.3.1",or
+ g.eclipse.persistence.mappings.transformers;version="2.3.1",org.eclip
+ se.persistence.oxm;version="2.3.1",org.eclipse.persistence.oxm.attach
+ ment;version="2.3.1",org.eclipse.persistence.oxm.mappings;version="2.
+ 3.1",org.eclipse.persistence.oxm.mappings.converters;version="2.3.1",
+ org.eclipse.persistence.oxm.mappings.nullpolicy;version="2.3.1",org.e
+ clipse.persistence.oxm.platform;version="2.3.1",org.eclipse.persisten
+ ce.oxm.record;version="2.3.1",org.eclipse.persistence.oxm.schema;vers
+ ion="2.3.1",org.eclipse.persistence.oxm.sequenced;version="2.3.1",org
+ .eclipse.persistence.oxm.unmapped;version="2.3.1",org.eclipse.persist
+ ence.platform.xml;version="2.3.1",org.eclipse.persistence.sessions;ve
+ rsion="2.3.1",org.w3c.dom;resolution:=optional,org.xml.sax;resolution
+ :=optional
 Specification-Version: 2.3.1
 Bundle-SymbolicName: org.eclipse.persistence.sdo
 
