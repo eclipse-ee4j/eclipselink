@@ -17,7 +17,7 @@ Include-Resource:\
 Import-Package:\
  commonj.sdo.*;version="2.1.1",\
  javax.xml.bind.*;resolution:=optional;version="2.0.0",\
- javax.xml.*;resolution:=optional;version="2.0.0",\
+ javax.xml.*;resolution:=optional,\
  javax.*;resolution:=optional,\
  org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional,\
  org.eclipse.persistence.*.jaxb.*;resolution:=optional;version="${release.version}",\
