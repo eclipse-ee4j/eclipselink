@@ -4392,6 +4392,9 @@ public class AnnotationsProcessor {
      *         name
      */
     private boolean isXmlRegistry(JavaClass javaClass) {
+        if (javaClass == null) {
+            return false;
+        }
         return (helper.isAnnotationPresent(javaClass, XmlRegistry.class) || xmlRegistries.get(javaClass.getQualifiedName()) != null);
     }
 
