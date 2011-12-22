@@ -546,6 +546,18 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
+     * This method should merge changes from the parent into the child.
+     *
+     * #see this method in VersionLockingPolicy
+     */
+    public void mergeIntoParentCache(CacheKey unitOfWorkCacheKey, CacheKey parentSessionCacheKey){
+        if (isStoredInCache() && unitOfWorkCacheKey != null && parentSessionCacheKey != null) {
+            unitOfWorkCacheKey.setWriteLockValue(parentSessionCacheKey.getWriteLockValue());
+        }
+    }
+
+    /**
+     * INTERNAL:
      */
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;

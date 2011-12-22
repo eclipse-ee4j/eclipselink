@@ -519,7 +519,7 @@ public class MergeManager {
         try {
             ObjectBuilder builder = descriptor.getObjectBuilder();
             
-            if (registeredObject != rmiClone && descriptor.usesVersionLocking() && ! mergedNewObjects.containsKey(registeredObject)) {
+            if (!isForRefresh && registeredObject != rmiClone && descriptor.usesVersionLocking() && ! mergedNewObjects.containsKey(registeredObject)) {
                 VersionLockingPolicy policy = (VersionLockingPolicy) descriptor.getOptimisticLockingPolicy();
                 if (policy.isStoredInObject()) {
                     Object currentValue = builder.extractValueFromObjectForField(registeredObject, policy.getWriteLockField(), session); 
@@ -543,7 +543,17 @@ public class MergeManager {
             // backup as anything different should be merged.
             builder.mergeIntoObject(registeredObject, null, false, rmiClone, this, this.session, cascadeOnly, false, false);
             if (isForRefresh){
+                Object primaryKey = builder.extractPrimaryKeyFromObject(registeredObject, session);
                 descriptor.getObjectChangePolicy().revertChanges(registeredObject, descriptor, (UnitOfWorkImpl)this.session, ((UnitOfWorkImpl)this.session).getCloneMapping(), true);
+                CacheKey uowCacheKey = this.session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, registeredObject.getClass(), descriptor);
+                CacheKey parentCacheKey = session.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, registeredObject.getClass(), descriptor, false);
+                if (descriptor.usesOptimisticLocking()) {
+                    descriptor.getOptimisticLockingPolicy().mergeIntoParentCache(uowCacheKey, parentCacheKey);
+                }
+                // Check for null because when there is NoIdentityMap, CacheKey will be null
+                if ((parentCacheKey != null) && (uowCacheKey != null)) {
+                    uowCacheKey.setReadTime(parentCacheKey.getReadTime());
+                }
             }
 
         } finally {

@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
@@ -372,6 +373,16 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * Only applicable when the value is stored in the cache.
      */
     public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object) {
+        // nothing to do
+    }
+
+    /**
+     * INTERNAL:
+     * This method should merge changes from the parent into the child.
+     *
+     * #see this method in VersionLockingPolicy
+     */
+    public void mergeIntoParentCache(CacheKey unitOfWorkCacheKey, CacheKey parentSessionCacheKey){
         // nothing to do
     }
 

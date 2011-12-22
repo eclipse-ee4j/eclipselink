@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -209,6 +210,14 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * #see this method in VersionLockingPolicy
      */
     public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object);
+
+    /**
+     * INTERNAL:
+     * This method should merge changes from the parent into the child.
+     *
+     * #see this method in VersionLockingPolicy
+     */
+    public void mergeIntoParentCache(CacheKey unitOfWorkCacheKey, CacheKey parentSessionCacheKey);
 
     /**
      * INTERNAL:
