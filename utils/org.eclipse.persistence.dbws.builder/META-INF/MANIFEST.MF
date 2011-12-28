@@ -12,7 +12,7 @@ HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.dbws.
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.4.0",
  org.eclipse.persistence.dbws;bundle-version="2.4.0",
  javax.servlet;bundle-version="2.4.0",
- javax.wsdl;bundle-version="1.6.2"
+ javax.wsdl;bundle-version="1.6.2";resolution:=optional
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2

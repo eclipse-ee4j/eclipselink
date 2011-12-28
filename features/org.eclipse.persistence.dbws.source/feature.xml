@@ -30,6 +30,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.persistence.tools.oracleddl.source"
+         download-size="0"
+         install-size="0"
+         version="@ORACLEDDL_VERSION@"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.persistence.core.source"
          download-size="0"
          install-size="0"

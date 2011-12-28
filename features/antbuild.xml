@@ -70,20 +70,22 @@
         <!-- feature.2.base.dir needs to be explicit (not relative) for antcall usage            -->
         <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
         <property name="feature.2.base.dir"           value="${feature.build.location}/.."/>
-        <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
         <property name="feature.common.dir"           value="${feature.build.location}/common"/>
+        <property name="feature.2.buildsys.dir"       value="${feature.2.base.dir}/buildsystem"/>
+        <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
         <property name="feature.2.jpa.plugins.dir"    value="${feature.2.base.dir}/jpa/plugins"/>
         <property name="feature.2.sdo.plugins.dir"    value="${feature.2.base.dir}/sdo/plugins"/>
-        <property name="feature.2.buildsys.dir"       value="${feature.2.base.dir}/buildsystem"/>
+        <property name="feature.2.util.plugins.dir"   value="${feature.2.base.dir}/utils/plugins"/>
         <echo message="ant.project.name            ='${ant.project.name}'"/>
         <echo message="basedir                     ='${basedir}'"/>
         <echo message="feature.build.location      ='${feature.build.location}'"/>
         <echo message="feature.2.base.dir          ='${feature.2.base.dir}'"/>
-        <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
         <echo message="feature.common.dir          ='${feature.common.dir}'"/>
+        <echo message="feature.2.buildsys.dir      ='${feature.2.buildsys.dir}'"/>
+        <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
         <echo message="feature.2.jpa.plugins.dir   ='${feature.2.jpa.plugins.dir}'"/>
         <echo message="feature.2.sdo.plugins.dir   ='${feature.2.sdo.plugins.dir}'"/>
-        <echo message="feature.2.buildsys.dir      ='${feature.2.buildsys.dir}'"/>
+        <echo message="feature.2.util.plugins.dir  ='${feature.2.util.plugins.dir}'"/>
         <echo message=" ---"/>
 
         <!-- Custom task definitions -->
@@ -209,17 +211,21 @@
         <property name="persistence.criteria" value="[2.0.0,2.1.0)"/>
         <property name="servlet.prefix" value="javax.servlet"/>
         <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
+        <property name="wsdl.prefix" value="javax.wsdl"/>
+        <property name="wsdl.criteria" value="[1.0,9.0)"/>
         <property name="xml.bind.prefix" value="javax.xml.bind"/>
         <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
         <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
-        <property name="antlr.criteria" value="[3.0,4.0)"/>
+        <property name="antlr.criteria" value="[3.0,9.0)"/>
         <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
-        <property name="asm.criteria" value="[3.0,4.0)"/>
+        <property name="asm.criteria" value="[3.0,9.0)"/>
         <property name="hermes.prefix" value="org.eclipse.persistence.jpa.jpql"/>
-        <property name="hermes.criteria" value="[2.0,3.0)"/>
+        <property name="hermes.criteria" value="[1.0,9.0)"/>
+        <property name="oracleddl.prefix" value="org.eclipse.persistence.tools.oracleddl"/>
+        <property name="oracleddl.criteria" value="[1.0,9.0)"/>
     </target>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2.repos.dir/plugins" dir
@@ -289,28 +295,39 @@
         <selectbundle basename="${hermes.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
+        <selectbundle basename="${oracleddl.prefix}" directory="${feature.2.util.plugins.dir}"
+                     criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
+        />
+        <selectbundle basename="${wsdl.prefix}" directory="${feature.2.util.plugins.dir}"
+                     criterion="${wsdl.criteria}" property="wsdl.version" versiononly="true"
+        />
+        <echo message="Searching ${feature.2.util.plugins.dir}..."/>
+        <say  message="   oracleddl.version   = '${oracleddl.version}'"                                                       if="oracleddl.version"/>
+        <say  message="   '${oracleddl.prefix}_${oracleddl.criteria}.jar' not found! Generated features will be invalid."     unless="oracleddl.version"/>
+        <say  message="   wsdl.version        = '${wsdl.version}'"                                                            if="wsdl.version"/>
+        <say  message="   '${wsdl.prefix}_${wsdl.criteria}.jar' not found! Generated features will be invalid."               unless="wsdl.version"/>
         <echo message="Searching ${feature.2.sdo.plugins.dir}..."/>
-        <say  message="   sdo.version         = '${sdo.version}'"         if="sdo.version"/>
+        <say  message="   sdo.version         = '${sdo.version}'"                                                             if="sdo.version"/>
         <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                 unless="sdo.version"/>
         <echo message="Searching ${feature.2.jpa.plugins.dir}..."/>
-        <say  message="   persistence.version = '${persistence.version}'" if="persistence.version"/>
+        <say  message="   persistence.version = '${persistence.version}'"                                                     if="persistence.version"/>
         <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid." unless="persistence.version"/>
         <echo message="Searching ${feature.2.common.plugins.dir}..."/>
-        <say  message="   activation.version  = '${activation.version}'"  if="activation.version"/>
+        <say  message="   activation.version  = '${activation.version}'"                                                      if="activation.version"/>
         <say  message="   '${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="activation.version"/>
-        <say  message="   mail.version        = '${mail.version}'"        if="mail.version"/>
+        <say  message="   mail.version        = '${mail.version}'"                                                            if="mail.version"/>
         <say  message="   '${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="mail.version"/>
-        <say  message="   servlet.version     = '${servlet.version}'"     if="servlet.version"/>
+        <say  message="   servlet.version     = '${servlet.version}'"                                                         if="servlet.version"/>
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="servlet.version"/>
-        <say  message="   xml.bind.version    = '${xml.bind.version}'"    if="xml.bind.version"/>
+        <say  message="   xml.bind.version    = '${xml.bind.version}'"                                                        if="xml.bind.version"/>
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
-        <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="xml.stream.version"/>
+        <say  message="   xml.stream.version  = '${xml.stream.version}'"                                                      if="xml.stream.version"/>
         <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
-        <say  message="   antlr.version      = '${antlr.version}'"      if="antlr.version"/>
-        <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
-        <say  message="   asm.version      = '${asm.version}'"      if="asm.version"/>
-        <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
-        <say  message="   hermes.version      = '${hermes.version}'"      if="hermes.version"/>
+        <say  message="   antlr.version       = '${antlr.version}'"                                                           if="antlr.version"/>
+        <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."             unless="antlr.version"/>
+        <say  message="   asm.version         = '${asm.version}'"                                                             if="asm.version"/>
+        <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                 unless="asm.version"/>
+        <say  message="   hermes.version      = '${hermes.version}'"                                                          if="hermes.version"/>
         <say  message="   '${hermes.prefix}_${hermes.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
     </target>
 
@@ -326,12 +343,14 @@
         <filter token="MAIL_VERSION"        value="${mail.version}"/>
         <filter token="PERSISTENCE_VERSION" value="${persistence.version}"/>
         <filter token="SERVLET_VERSION"     value="${servlet.version}"/>
+        <filter token="WSDL_VERSION"        value="${wsdl.version}"/>
         <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
         <filter token="XMLSTREAM_VERSION"   value="${xml.stream.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"       value="${antlr.version}"/>
         <filter token="ASM_VERSION"         value="${asm.version}"/>
         <filter token="HERMES_VERSION"      value="${hermes.version}"/>
+        <filter token="ORACLEDDL_VERSION"   value="${oracleddl.version}"/>
         <!--          Filters for feature.properties files          -->
         <filter token="PROVIDER"            value="${specification.vendor}"/>
         <filter token="REPOS_NAME"          value="${p2.release.repos.name}"/>

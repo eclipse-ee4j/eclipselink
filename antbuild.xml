@@ -123,7 +123,7 @@
                                   else="C:/apache-maven-3.0.3">
         <isset property="env.M2_HOME"/>
     </condition>
-    <echo message="'M2_HOME' set to: '${M2_HOME}'"/>
+    <echo message="Maven install (M2_HOME) set to: '${M2_HOME}'"/>
     <condition property="use.maven" value="true">
         <available file="${M2_HOME}/bin/mvn"/>
     </condition>
@@ -260,8 +260,6 @@
         </delete>
     </target>
     <target name="clean-core-antbuilt" unless="use.maven" description="Clean the runtime projects" >
-        <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="clean"/>
@@ -324,6 +322,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.equinox}"          target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="build"/>
+        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/ -->
     </target>
 
     <target name="build-core" depends="clean-runtime-checkedin, build-core-maven, build-core-ant">
@@ -635,6 +634,10 @@
             </zipfileset>
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
+            <zipfileset dir="${eclipselink.util.plugins}/">
+                <include name="javax.wsdl*.jar"/>
+                <include name="org.eclipse.persistence*oracleddl*.jar"/>
+            </zipfileset>
         </zip>
     </target>
 
