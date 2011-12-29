@@ -68,6 +68,7 @@
         <property name="maven.2.common.plugins.dir" value="${maven.build.location}/plugins"/>
         <property name="maven.2.jpa.plugins.dir"    value="${maven.build.location}/jpa/plugins"/>
         <property name="maven.2.sdo.plugins.dir"    value="${maven.build.location}/sdo/plugins"/>
+        <property name="maven.2.util.plugins.dir"   value="${maven.build.location}/utils/plugins"/>
         <property name="maven.2.buildsys.dir"       value="${maven.build.location}/buildsystem"/>
 
         <!-- Custom task definitions -->
@@ -79,36 +80,43 @@
     </target>
 
     <target name="discover-static-built-info" depends="discover-init">
-        <property name="jpaapi2.prefix"   value="javax.persistence"/>
-        <property name="jpaapi2.criteria" value="[2.0.0,2.1.0)"/>
-        <property name="jpaapi2.name"     value="Javax Persistence"/>
-        <property name="sdoapi.prefix"    value="commonj.sdo"/>
-        <property name="sdoapi.criteria"  value="[2.1.1,2.2.0)"/>
-        <property name="sdoapi.name"      value="SDO API"/>
-        <property name="antlr.prefix"     value="org.eclipse.persistence.antlr"/>
-        <property name="antlr.criteria"   value="[3.0.0,4.0.0)"/>
-        <property name="antlr.name"       value="EclipseLink ANTLR"/>
-        <property name="asm.prefix"       value="org.eclipse.persistence.asm"/>
-        <property name="asm.criteria"     value="[3.0.0,4.0.0)"/>
-        <property name="asm.name"         value="EclipseLink ASM"/>
+        <property name="jpaapi2.prefix"     value="javax.persistence"/>
+        <property name="jpaapi2.criteria"   value="[2.0.0,2.1.0)"/>
+        <property name="jpaapi2.name"       value="Javax Persistence"/>
+        <property name="sdoapi.prefix"      value="commonj.sdo"/>
+        <property name="sdoapi.criteria"    value="[2.1.1,2.2.0)"/>
+        <property name="sdoapi.name"        value="SDO API"/>
+        <property name="antlr.prefix"       value="org.eclipse.persistence.antlr"/>
+        <property name="antlr.criteria"     value="[3.0.0,4.0.0)"/>
+        <property name="antlr.name"         value="EclipseLink ANTLR"/>
+        <property name="asm.prefix"         value="org.eclipse.persistence.asm"/>
+        <property name="asm.criteria"       value="[3.0.0,4.0.0)"/>
+        <property name="asm.name"           value="EclipseLink ASM"/>
+        <property name="oracleddl.prefix"   value="org.eclipse.persistence.tools.oracleddl"/>
+        <property name="oracleddl.criteria" value="[1.0.0,9.0.0)"/>
+        <property name="oracleddl.name"     value="EclipseLink OracleDDL Parser"/>
 
-        <selectbundle basename="${jpaapi2.prefix}" directory="${maven.2.jpa.plugins.dir}"
+        <selectbundle basename="${jpaapi2.prefix}"  directory="${maven.2.jpa.plugins.dir}"
                      criterion="${jpaapi2.criteria}" property="jpaapi2.version" versiononly="true"
         />
-        <selectbundle basename="${sdoapi.prefix}" directory="${maven.2.sdo.plugins.dir}"
+        <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
                      criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
         />
-        <selectbundle basename="${antlr.prefix}" directory="${maven.2.common.plugins.dir}"
+        <selectbundle basename="${antlr.prefix}"  directory="${maven.2.common.plugins.dir}"
                      criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
         />
-        <selectbundle basename="${asm.prefix}" directory="${maven.2.common.plugins.dir}"
+        <selectbundle basename="${asm.prefix}"  directory="${maven.2.common.plugins.dir}"
                      criterion="${asm.criteria}" property="asm.version" versiononly="true"
         />
+        <selectbundle basename="${oracleddl.prefix}"  directory="${maven.2.util.plugins.dir}"
+                     criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
+        />
         
-        <echo message="jpaapi2.version = ${jpaapi2.version}"/>
-        <echo message="sdoapi.version  = ${sdoapi.version}"/>
-        <echo message="antlr.version   = ${antlr.version}"/>
-        <echo message="asm.version     = ${asm.version}"/>
+        <echo message="jpaapi2.version   = ${jpaapi2.version}"/>
+        <echo message="sdoapi.version    = ${sdoapi.version}"/>
+        <echo message="antlr.version     = ${antlr.version}"/>
+        <echo message="asm.version       = ${asm.version}"/>
+        <echo message="oracleddl.version = ${oracleddl.version}"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -249,6 +257,16 @@
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${asm.prefix}_${asm.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${asm.prefix}.source_${asm.version}.jar"/>
             <param name="artifactName"    value="${asm.name}"/>
+            <param name="dependencies"    value=""/>
+        </antcall>
+        <antcall target="upload-release-artifact">
+            <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${oracleddl.prefix}/${oracleddl.version}"/>
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="${oracleddl.prefix}"/>
+            <param name="artifactVersion" value="${oracleddl.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/${oracleddl.prefix}_${oracleddl.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oracleddl.prefix}.source_${oracleddl.version}.jar"/>
+            <param name="artifactName"    value="${oracleddl.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
     </target>
