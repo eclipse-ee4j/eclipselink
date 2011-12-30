@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.spi;
 
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * An enumeration listing the various releases of the Java Persistence specification.
@@ -82,9 +80,10 @@ public enum JPAVersion {
 	 * @return The list of unique constants
 	 */
 	public static JPAVersion[] versions() {
-		List<JPAVersion> values = Arrays.asList(values());
-		values.remove(DEFAULT_VERSION);
-		return values.toArray(new JPAVersion[values.size()]);
+		JPAVersion[] values = new JPAVersion[2];
+		values[0] = VERSION_1_0;
+		values[1] = VERSION_2_0;
+		return values;
 	}
 
 	/**
