@@ -264,8 +264,8 @@
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${oracleddl.prefix}"/>
             <param name="artifactVersion" value="${oracleddl.version}"/>
-            <param name="artifact"        value="${maven.2.common.plugins.dir}/${oracleddl.prefix}_${oracleddl.version}.jar"/>
-            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oracleddl.prefix}.source_${oracleddl.version}.jar"/>
+            <param name="artifact"        value="${maven.2.util.plugins.dir}/${oracleddl.prefix}_${oracleddl.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.util.plugins.dir}/${oracleddl.prefix}.source_${oracleddl.version}.jar"/>
             <param name="artifactName"    value="${oracleddl.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
