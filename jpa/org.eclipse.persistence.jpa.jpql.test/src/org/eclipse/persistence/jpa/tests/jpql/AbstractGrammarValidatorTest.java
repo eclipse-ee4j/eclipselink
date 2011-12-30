@@ -2531,7 +2531,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MissingLeftParenthesis() throws Exception {
+	public void test_InExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN e.address.street)";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN".length();
@@ -2548,7 +2548,15 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MissingRightParenthesis() throws Exception {
+	public void test_InExpression_MissingLeftParenthesis_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.InExpression_MissingLeftParenthesis);
+	}
+
+	@Test
+	public void test_InExpression_MissingRightParenthesis_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN(e.address.street";
 		int startPosition = query.length();
@@ -2562,6 +2570,14 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public void test_InExpression_MissingRightParenthesis_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.InExpression_MissingRightParenthesis);
 	}
 
 	@Test
