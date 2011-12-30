@@ -14,6 +14,10 @@
 package org.eclipse.persistence.jpa.jpql.spi;
 
 /**
+ * A mapping builder is used to create the appropriate implementation of a {@link IMapping}.
+ *
+ * @see IManagedType
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -23,9 +27,9 @@ public interface IMappingBuilder<T> extends IExternalForm {
 	/**
 	 * Creates a new {@link IMapping}.
 	 *
-	 * @param parent
-	 * @param value
-	 * @return
+	 * @param parent The parent of the mapping to create
+	 * @param value The object that represents the mapping
+	 * @return A new concrete instance of the external form
 	 */
 	IMapping buildMapping(IManagedType parent, T value);
 }
