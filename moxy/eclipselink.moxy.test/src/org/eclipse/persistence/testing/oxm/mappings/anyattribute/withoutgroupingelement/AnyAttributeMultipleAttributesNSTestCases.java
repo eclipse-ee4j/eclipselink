@@ -88,7 +88,7 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
         instream.close();
         xmlToObjectTest(testObject);
     }
-/*
+
     public void testLoadFromSAXSourceWithReader() throws Exception {
         System.out.println("testLoadFromSAXSourceWithReader");
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -99,13 +99,13 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
         factory.setNamespaceAware(true);
         XMLReader xmlReader = factory.newSAXParser().getXMLReader();
         xmlReader.setFeature("http://xml.org/sax/features/namespaces",true);
-        xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes",false);
+        xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes",true);
         
         theSource.setXMLReader(xmlReader);        
         Object testObject = xmlUnmarshaller.unmarshal(theSource);
         instream.close();
         xmlToObjectTest(testObject);
-    }*/
+    }
 
     public void testLoadFromDOMSource() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
