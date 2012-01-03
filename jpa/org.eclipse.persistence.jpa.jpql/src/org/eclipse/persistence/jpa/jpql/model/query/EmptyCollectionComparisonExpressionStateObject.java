@@ -156,6 +156,21 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			EmptyCollectionComparisonExpressionStateObject collection = (EmptyCollectionComparisonExpressionStateObject) stateObject;
+			return not == collection.not &&
+			       stateObject.isEquivalent(collection.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Makes sure the <code><b>NOT</b></code> identifier is not specified.
 	 */
 	public void removeNot() {

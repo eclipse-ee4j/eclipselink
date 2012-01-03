@@ -216,6 +216,22 @@ public class ResultVariableStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			ResultVariableStateObject resultVariable = (ResultVariableStateObject) stateObject;
+			return as == resultVariable.as &&
+			       resultVariable.isEquivalent(resultVariable.resultVariable) &&
+			       areEquivalent(stateObject, resultVariable.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which represents a single select expression, and creates the
 	 * {@link StateObject}.
 	 *

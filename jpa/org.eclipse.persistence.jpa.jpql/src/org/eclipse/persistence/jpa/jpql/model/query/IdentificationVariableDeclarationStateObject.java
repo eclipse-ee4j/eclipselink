@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -195,6 +196,18 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 */
 	public String getEntityName() {
 		return getRootStateObject().getText();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType getManagedType(StateObject stateObject) {
+
+		if (getIdentificationVariableStateObject().isEquivalent(stateObject)) {
+			return getEntity();
+		}
+
+		return null;
 	}
 
 	/**

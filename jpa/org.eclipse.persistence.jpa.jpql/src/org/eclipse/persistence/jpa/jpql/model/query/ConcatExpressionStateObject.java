@@ -92,6 +92,15 @@ public class ConcatExpressionStateObject extends AbstractListHolderStateObject<S
 	 * {@inheritDoc}
 	 */
 	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+		return super.isEquivalent(stateObject) &&
+		       areChildrenEquivalent((ConcatExpressionStateObject) stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected String listName() {
 		return STRING_PRIMARY_STATE_OBJECT_LIST;
 	}

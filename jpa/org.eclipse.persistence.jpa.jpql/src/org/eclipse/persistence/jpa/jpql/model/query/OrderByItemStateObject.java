@@ -224,6 +224,21 @@ public class OrderByItemStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			OrderByItemStateObject orderByItem = (OrderByItemStateObject) stateObject;
+			return ordering == orderByItem.ordering &&
+			       areEquivalent(stateObject, orderByItem.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which represents either a state-field pathe expression or a
 	 * result variable, and creates the {@link StateObject}.
 	 *

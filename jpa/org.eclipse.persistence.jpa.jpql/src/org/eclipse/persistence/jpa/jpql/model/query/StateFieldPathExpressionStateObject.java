@@ -13,7 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model.query;
 
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
+import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
+import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterator.NullIterator;
 
 /**
  * A single-valued association field is designated by the name of an association-field in a
@@ -69,6 +78,51 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected IManagedType resolveManagedType() {
+
+		IMapping mapping = getMapping();
+
+		if (mapping == null) {
+			return null;
+		}
+
+		TypeHelper typeHelper = getTypeHelper();
+		ITypeDeclaration typeDeclaration = mapping.getTypeDeclaration();
+		IType type = typeDeclaration.getType();
+
+		// Collection type cannot be traversed
+		if (typeHelper.isCollectionType(type)) {
+
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+
+			if (typeParameters.length == 0) {
+				return null;
+			}
+
+			type = typeParameters[0].getType();
+		}
+		// Wrap the Map into a virtual IManagedType so it can be returned and the
+		// IType for the Map can be used to retrieve the type of the key and value
+		else if (typeHelper.isMapType(type)) {
+			return new MapManagedType(getManagedTypeProvider(), type);
+		}
+
+		// Retrieve the corresponding managed type for the mapping's type
+		return getManagedTypeProvider().getManagedType(type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected IType resolveType() {
+		return getTypeHelper().convertPrimitive(getTypeDeclaration().getType());
+	}
+
+	/**
 	 * Keeps a reference of the {@link StateFieldPathExpression parsed object} object, which
 	 * should only be done when this object is instantiated during the conversion of a parsed JPQL
 	 * query into {@link StateObject StateObjects}.
@@ -78,5 +132,66 @@ public class StateFieldPathExpressionStateObject extends AbstractPathExpressionS
 	 */
 	public void setExpression(StateFieldPathExpression expression) {
 		super.setExpression(expression);
+	}
+
+	protected static class MapManagedType implements IManagedType {
+
+		protected final IType mapType;
+		protected final IManagedTypeProvider provider;
+
+		protected MapManagedType(IManagedTypeProvider provider, IType mapType) {
+			super();
+			this.mapType  = mapType;
+			this.provider = provider;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void accept(IManagedTypeVisitor visitor) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public int compareTo(IManagedType managedType) {
+			return getType().getName().compareTo(managedType.getType().getName());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public IMapping getMappingNamed(String name) {
+			return null;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public IManagedTypeProvider getProvider() {
+			return provider;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public IType getType() {
+			return mapType;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public IterableIterator<IMapping> mappings() {
+			return NullIterator.instance();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			return getType().getName();
+		}
 	}
 }

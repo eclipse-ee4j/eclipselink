@@ -64,11 +64,53 @@ public final class CollectionExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * Determines whether the children of this {@link StateObject} are equivalent to the children
+	 * of the given one, i.e. the information of the {@link StateObject StateObjects} is the same.
+	 *
+	 * @param stateObject The {@link StateObject} to compare its children to this one's children
+	 * @return <code>true</code> if both have equivalent children; <code>false</code> otherwise
+	 */
+	protected boolean areChildrenEquivalent(CollectionExpressionStateObject stateObject) {
+
+		int size = items.size();
+
+		if (size != stateObject.items.size()) {
+			return false;
+		}
+
+		for (int index = size; --index >= 0; ) {
+
+			StateObject child1 = items.get(index);
+			StateObject child2 = stateObject.items.get(index);
+
+			if (!child1.isEquivalent(child2)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public CollectionExpression getExpression() {
 		return (CollectionExpression) super.getExpression();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			CollectionExpressionStateObject collection = (CollectionExpressionStateObject) stateObject;
+			return areChildrenEquivalent(collection);
+		}
+
+		return false;
 	}
 
 	/**

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.model.DefaultProblem;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IPropertyChangeListener;
@@ -192,6 +193,29 @@ public abstract class AbstractStateObject implements StateObject {
 	 */
 	public final void addPropertyChangeListener(String propertyName, IPropertyChangeListener<?> listener) {
 		changeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	/**
+	 * Determines whether the given two {@link StateObject} are equivalent, i.e. the information of
+	 * both {@link StateObject} is the same.
+	 *
+	 * @param stateObject1 The first {@link StateObject} to compare its content with the other one
+	 * @param stateObject2 The second {@link StateObject} to compare its content with the other one
+	 * @return <code>true</code> if both objects are equivalent; <code>false</code> otherwise
+	 */
+	protected final boolean areEquivalent(StateObject stateObject1, StateObject stateObject2) {
+
+		// Both are equal or both are null
+		if ((stateObject1 == stateObject2) || (stateObject1 == null) && (stateObject2 == null)) {
+			return true;
+		}
+
+		// One is null but the other is not
+		if ((stateObject1 == null) || (stateObject2 == null)) {
+			return false;
+		}
+
+		return stateObject1.isEquivalent(stateObject2);
 	}
 
 	/**
@@ -408,7 +432,7 @@ public abstract class AbstractStateObject implements StateObject {
 	 * @param type The Java type to wrap with an external form
 	 * @return The external form of the given type
 	 */
-	protected IType getType(Class<?> type) {
+	public IType getType(Class<?> type) {
 		return getTypeRepository().getType(type);
 	}
 
@@ -418,8 +442,17 @@ public abstract class AbstractStateObject implements StateObject {
 	 * @param typeName The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
-	protected IType getType(String typeName) {
+	public IType getType(String typeName) {
 		return getTypeRepository().getType(typeName);
+	}
+
+	/**
+	 * Returns a helper that gives access to the most common {@link IType types}.
+	 *
+	 * @return A helper containing a collection of methods related to {@link IType}
+	 */
+	public TypeHelper getTypeHelper() {
+		return getTypeRepository().getTypeHelper();
 	}
 
 	/**
@@ -427,7 +460,7 @@ public abstract class AbstractStateObject implements StateObject {
 	 *
 	 * @return The repository of {@link IType ITypes}
 	 */
-	protected ITypeRepository getTypeRepository() {
+	public ITypeRepository getTypeRepository() {
 		return getManagedTypeProvider().getTypeRepository();
 	}
 
@@ -451,6 +484,14 @@ public abstract class AbstractStateObject implements StateObject {
 	 */
 	public boolean isDecorated() {
 		return decorator != null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isEquivalent(StateObject stateObject) {
+		return (this == stateObject) ||
+		       ((stateObject != null) && (stateObject.getClass() == getClass()));
 	}
 
 	/**

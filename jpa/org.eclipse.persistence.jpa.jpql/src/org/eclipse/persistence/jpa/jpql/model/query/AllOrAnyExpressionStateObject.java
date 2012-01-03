@@ -141,6 +141,20 @@ public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExp
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AllOrAnyExpressionStateObject allOrAny = (AllOrAnyExpressionStateObject) stateObject;
+			return identifier.equals(allOrAny.identifier);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Keeps a reference of the {@link AllOrAnyExpression parsed object} object, which should only be
 	 * done when this object is instantiated during the conversion of a parsed JPQL query into {@link
 	 * StateObject StateObjects}.

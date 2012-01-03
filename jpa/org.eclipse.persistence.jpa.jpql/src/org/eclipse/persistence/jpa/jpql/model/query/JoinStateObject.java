@@ -169,6 +169,20 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			JoinStateObject join = (JoinStateObject) stateObject;
+			return (as = join.as) && identificationVariable.isEquivalent(join.identificationVariable);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Makes sure the <code><b>AS</b></code> identifier is not specified.
 	 */
 	public void removeNot() {

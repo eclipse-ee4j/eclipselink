@@ -255,6 +255,22 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
 	 * {@inheritDoc}
 	 */
 	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			CaseExpressionStateObject caseExpression = (CaseExpressionStateObject) stateObject;
+			return areEquivalent(elseStateObject,        caseExpression.elseStateObject)        &&
+			       areEquivalent(caseOperandStateObject, caseExpression.caseOperandStateObject) &&
+			       areChildrenEquivalent(caseExpression);
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected String listName() {
 		return WHEN_CLAUSE_STATE_OBJECT_LIST;
 	}

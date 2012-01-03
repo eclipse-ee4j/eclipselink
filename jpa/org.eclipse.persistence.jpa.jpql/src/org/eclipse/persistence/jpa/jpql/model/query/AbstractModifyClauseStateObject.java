@@ -16,7 +16,9 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 import java.io.IOException;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterator.SingleElementListIterator;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
@@ -55,7 +57,14 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
 	 * {@inheritDoc}
 	 */
 	public IterableListIterator<VariableDeclarationStateObject> declarations() {
-		return null;
+		return new SingleElementListIterator<VariableDeclarationStateObject>(rangeVariableDeclaration);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType findManagedType(StateObject stateObject) {
+		return getManagedType(stateObject);
 	}
 
 	/**
@@ -122,6 +131,20 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
 	/**
 	 * {@inheritDoc}
 	 */
+	public IManagedType getManagedType(StateObject stateObject) {
+
+		IdentificationVariableStateObject identificationVariable = getIdentificationVariableStateObject();
+
+		if (identificationVariable.isEquivalent(stateObject)) {
+			return identificationVariable.getManagedType();
+		}
+
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public AbstractModifyStatementStateObject getParent() {
 		return (AbstractModifyStatementStateObject) super.getParent();
@@ -153,6 +176,20 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
 	protected void initialize() {
 		super.initialize();
 		rangeVariableDeclaration = new RangeVariableDeclarationStateObject(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractModifyClauseStateObject modifyClause = (AbstractModifyClauseStateObject) stateObject;
+			return rangeVariableDeclaration.isEquivalent(modifyClause.rangeVariableDeclaration);
+		}
+
+		return false;
 	}
 
 	/**

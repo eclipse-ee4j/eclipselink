@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.Assert;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeEvent;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeEvent.EventType;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
@@ -231,7 +232,8 @@ public class ChangeSupport {
 	@SuppressWarnings("unchecked")
 	public void firePropertyChanged(String propertyName, Object oldValue, Object newValue) {
 
-		if (valuesAreDifferent(oldValue, newValue) && hasPropertyChangeListeners(propertyName)) {
+		if (ExpressionTools.valuesAreDifferent(oldValue, newValue) &&
+		    hasPropertyChangeListeners(propertyName)) {
 
 			PropertyChangeEvent<Object> event = new PropertyChangeEvent<Object>(source, propertyName, oldValue, newValue);
 
@@ -583,41 +585,5 @@ public class ChangeSupport {
 
 			fireListChangeEvent(event);
 		}
-	}
-
-	/**
-	 * Determines whether the values are different, with the appropriate <code>null</code> checks.
-	 *
-	 * @param value1 The first value to check for equality and equivalency
-	 * @param value2 The second value to check for equality and equivalency
-	 * @return <code>true</code> if both values are different; <code>true</code> if they are both
-	 * <code>null</code>, equal or equivalent
-	 */
-	public boolean valuesAreDifferent(Object value1, Object value2) {
-		return !valuesAreEqual(value1, value2);
-	}
-
-	/**
-	 * Determines whether the values are equal or equivalent, with the appropriate <code>null</code>
-	 * checks.
-	 *
-	 * @param value1 The first value to check for equality and equivalency
-	 * @param value2 The second value to check for equality and equivalency
-	 * @return <code>true</code> if both values are <code>null</code>, equal or equivalent;
-	 * <code>false</code> otherwise
-	 */
-	public boolean valuesAreEqual(Object value1, Object value2) {
-
-		// Both are equal or both are null
-		if ((value1 == value2) || (value1 == null) && (value2 == null)) {
-			return true;
-		}
-
-		// One is null but the other is not
-		if ((value1 == null) || (value2 == null)) {
-			return false;
-		}
-
-		return value1.equals(value2);
 	}
 }

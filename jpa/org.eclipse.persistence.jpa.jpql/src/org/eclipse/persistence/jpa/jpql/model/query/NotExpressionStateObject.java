@@ -125,6 +125,20 @@ public class NotExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			NotExpressionStateObject not = (NotExpressionStateObject) stateObject;
+			return areEquivalent(stateObject, not.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which represents the negated expression, and creates the
 	 * {@link StateObject}.
 	 *

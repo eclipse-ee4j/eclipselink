@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.Problem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterator.SingleElementListIterator;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -27,7 +29,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @author Pascal Filion
  */
 @SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
-public abstract class AbstractRangeVariableDeclarationStateObject extends AbstractStateObject {
+public abstract class AbstractRangeVariableDeclarationStateObject extends AbstractStateObject
+                                                                  implements VariableDeclarationStateObject {
 
 	/**
 	 * Flag used to determine if the <code><b>AS</b></code> identifier is used or not.
@@ -194,11 +197,36 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
 	/**
 	 * {@inheritDoc}
 	 */
+	public IterableListIterator<IdentificationVariableStateObject> identificationVariables() {
+		return new SingleElementListIterator<IdentificationVariableStateObject>(identificationVariable);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void initialize() {
 		super.initialize();
 		rootStateObject        = buildRootStateObject();
 		identificationVariable = new IdentificationVariableStateObject(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractRangeVariableDeclarationStateObject declaration = (AbstractRangeVariableDeclarationStateObject) stateObject;
+
+			return as == declaration.as &&
+			       identificationVariableOptional == declaration.identificationVariableOptional &&
+			       identificationVariable.isEquivalent(declaration.identificationVariable)      &&
+			       areEquivalent(rootStateObject, declaration.rootStateObject);
+		}
+
+		return false;
 	}
 
 	/**

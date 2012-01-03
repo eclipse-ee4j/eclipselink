@@ -105,6 +105,34 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
 	}
 
 	/**
+	 * Determines whether the children of this {@link StateObject} are equivalent to the children
+	 * of the given one, i.e. the information of the {@link StateObject StateObjects} is the same.
+	 *
+	 * @param stateObject The {@link StateObject} to compare its children to this one's children
+	 * @return <code>true</code> if both have equivalent children; <code>false</code> otherwise
+	 */
+	protected boolean areChildrenEquivalent(AbstractListHolderStateObject<? extends StateObject> stateObject) {
+
+		int size = itemsSize();
+
+		if (size != stateObject.itemsSize()) {
+			return false;
+		}
+
+		for (int index = size; --index >= 0; ) {
+
+			StateObject child1 = getItem(index);
+			StateObject child2 = stateObject.getItem(index);
+
+			if (!child1.isEquivalent(child2)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public boolean canMoveDown(T stateObject) {

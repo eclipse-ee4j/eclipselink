@@ -97,6 +97,15 @@ public class JavaTypeRepository implements ITypeRepository {
 	}
 
 	/**
+	 * Returns the {@link ClassLoader} TODO.
+	 *
+	 * @return
+	 */
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public IType getEnumType(String enumTypeName) {

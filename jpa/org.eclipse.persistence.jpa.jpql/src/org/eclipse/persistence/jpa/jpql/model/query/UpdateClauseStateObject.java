@@ -47,7 +47,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
                                      implements ListHolderStateObject<UpdateItemStateObject> {
 
 	/**
-	 * The list of {@link UpdateItemStateObject UpdateItemStateObjects} that represent the update items.
+	 * The list of {@link UpdateItemStateObject} that represent the update items.
 	 */
 	private List<UpdateItemStateObject> items;
 
@@ -202,6 +202,7 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public UpdateItemStateObject addItem(UpdateItemStateObject item) {
 		getChangeSupport().addItem(this, items, UPDATE_ITEMS_LIST, parent(item));
 		return item;
@@ -219,6 +220,34 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
 	 */
 	public void addListChangeListener(String listName, IListChangeListener<UpdateItemStateObject> listener) {
 		getChangeSupport().addListChangeListener(listName, listener);
+	}
+
+	/**
+	 * Determines whether the children of this {@link StateObject} are equivalent to the children
+	 * of the given one, i.e. the information of the {@link StateObject StateObjects} is the same.
+	 *
+	 * @param stateObject The {@link StateObject} to compare its children to this one's children
+	 * @return <code>true</code> if both have equivalent children; <code>false</code> otherwise
+	 */
+	protected boolean areChildrenEquivalent(UpdateClauseStateObject stateObject) {
+
+		int size = itemsSize();
+
+		if (size != stateObject.itemsSize()) {
+			return false;
+		}
+
+		for (int index = size; --index >= 0; ) {
+
+			StateObject child1 = getItem(index);
+			StateObject child2 = stateObject.getItem(index);
+
+			if (!child1.isEquivalent(child2)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -280,6 +309,15 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
 	protected void initialize() {
 		super.initialize();
 		items = new ArrayList<UpdateItemStateObject>();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+		return super.isEquivalent(stateObject) &&
+		       areChildrenEquivalent((UpdateClauseStateObject) stateObject);
 	}
 
 	/**

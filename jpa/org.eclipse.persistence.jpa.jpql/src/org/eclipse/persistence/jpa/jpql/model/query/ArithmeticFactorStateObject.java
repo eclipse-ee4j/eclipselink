@@ -173,6 +173,21 @@ public class ArithmeticFactorStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			ArithmeticFactorStateObject arithmeticFactor = (ArithmeticFactorStateObject) stateObject;
+			return plusSign == arithmeticFactor.plusSign &&
+			       areEquivalent(stateObject, arithmeticFactor.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment to become the new arithmetic primary.
 	 *
 	 * @param jpqlFragment A portion of a query that will be parsed and the {@link StateObject} that

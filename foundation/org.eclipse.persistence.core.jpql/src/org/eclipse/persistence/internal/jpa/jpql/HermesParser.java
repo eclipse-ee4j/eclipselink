@@ -92,13 +92,14 @@ public final class HermesParser implements JPAQueryBuilder {
 	 * Indicates whether this query builder should have validation mode on for JPQL queries.
 	 */
 	private boolean validateQueries;
-	
+
+	/**
+	 * Creates a new <code>HermesParser</code>.
+	 */
 	public HermesParser() {
-                this(true);
-                //this(true);
-                //this.queryHelper = new DefaultJPQLQueryHelper(EclipseLinkJPQLGrammar2_4.instance());
-        }
-	
+		this(true);
+	}
+
 	/**
 	 * Creates a new {@link HermesParser}.
 	 *

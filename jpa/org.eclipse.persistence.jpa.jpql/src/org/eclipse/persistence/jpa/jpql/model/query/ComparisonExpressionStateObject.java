@@ -164,6 +164,20 @@ public class ComparisonExpressionStateObject extends CompoundExpressionStateObje
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			ComparisonExpressionStateObject comparison = (ComparisonExpressionStateObject) stateObject;
+			return identifier == comparison.identifier;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Keeps a reference of the {@link ComparisonExpression parsed object} object, which should only
 	 * be done when this object is instantiated during the conversion of a parsed JPQL query into
 	 * {@link StateObject StateObjects}.

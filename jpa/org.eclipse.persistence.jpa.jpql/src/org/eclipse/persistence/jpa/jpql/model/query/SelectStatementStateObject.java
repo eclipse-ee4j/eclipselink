@@ -251,6 +251,20 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			SelectStatementStateObject select = (SelectStatementStateObject) stateObject;
+			return areEquivalent(orderByClause, select.orderByClause);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Removes the <code><b>ORDER BY</b></code> clause.
 	 */
 	public void removeOrderByClause() {

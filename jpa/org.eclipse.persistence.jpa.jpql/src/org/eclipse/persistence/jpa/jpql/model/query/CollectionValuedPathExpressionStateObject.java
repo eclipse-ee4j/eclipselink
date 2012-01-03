@@ -13,7 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model.query;
 
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
  * A collection-valued field is designated by the name of an association field in a one-to-many or a
@@ -65,6 +70,73 @@ public class CollectionValuedPathExpressionStateObject extends AbstractPathExpre
 	@Override
 	public CollectionValuedPathExpression getExpression() {
 		return (CollectionValuedPathExpression) super.getExpression();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected IManagedType resolveManagedType() {
+
+		IMapping mapping = getMapping();
+
+		if (mapping == null) {
+			return null;
+		}
+
+		TypeHelper typeHelper = getTypeHelper();
+		ITypeDeclaration typeDeclaration = mapping.getTypeDeclaration();
+		IType type = typeDeclaration.getType();
+
+		// Collection type cannot be traversed
+		// Example: SELECT e.employees. FROM Employee e where employees is a collection,
+		// it cannot be traversed
+		if (typeHelper.isCollectionType(type)) {
+			return null;
+		}
+
+		// Primitive types cannot have a managed type
+		if (typeHelper.isPrimitiveType(type)) {
+			return null;
+		}
+
+		// Retrieve the corresponding managed type for the mapping's type
+		return getManagedTypeProvider().getManagedType(type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected IType resolveType() {
+
+		TypeHelper typeHelper = getTypeHelper();
+		ITypeDeclaration typeDeclaration = getTypeDeclaration();
+		IType type = typeDeclaration.getType();
+
+		// For a collection type, return the first type parameter
+		if (typeHelper.isCollectionType(type)) {
+
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+
+			if (typeParameters.length > 0) {
+				type = typeParameters[0].getType();
+			}
+		}
+		// For a map type, by default the value is the actual type to return
+		else if (typeHelper.isMapType(type)) {
+
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+
+			if (typeParameters.length == 2) {
+				type = typeParameters[1].getType();
+			}
+		}
+
+		// A collection-valued path expression should not reference a primitive,
+		// however, in an invalid query, this could potentially happen and the API
+		// only deals with the primitive wrapper type
+		return typeHelper.convertPrimitive(type);
 	}
 
 	/**

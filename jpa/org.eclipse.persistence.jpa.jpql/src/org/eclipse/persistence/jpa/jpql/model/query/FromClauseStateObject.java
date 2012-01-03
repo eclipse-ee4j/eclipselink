@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.InternalFromClauseBNF;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 
 /**
  * The <code><b>FROM</b></code> clause of a query defines the domain of the query by declaring
@@ -62,6 +63,14 @@ public class FromClauseStateObject extends AbstractFromClauseStateObject {
 	@Override
 	protected String declarationBNF() {
 		return InternalFromClauseBNF.ID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType findManagedType(StateObject stateObject) {
+		// This is the declaration clause of the top-level query
+		return getManagedType(stateObject);
 	}
 
 	/**

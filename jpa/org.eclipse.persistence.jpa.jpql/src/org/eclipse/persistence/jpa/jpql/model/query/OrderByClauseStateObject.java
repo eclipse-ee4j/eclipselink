@@ -170,6 +170,15 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
 	 * {@inheritDoc}
 	 */
 	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+		return super.isEquivalent(stateObject) &&
+		       areChildrenEquivalent((OrderByClauseStateObject) stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected String listName() {
 		return ORDER_BY_ITEMS_LIST;
 	}

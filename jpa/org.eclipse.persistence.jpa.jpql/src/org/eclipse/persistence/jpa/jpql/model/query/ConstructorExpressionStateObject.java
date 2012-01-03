@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
@@ -178,14 +179,27 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
 	}
 
 	/**
-	 * Returns the actual {@link IType} that was resolved or <code>null</code> if it could not be
-	 * resolved.
+	 * Returns the actual {@link IType} that was resolved or <code>null</code> if it could not be resolved.
 	 *
 	 * @return The actual {@link IType}
 	 */
 	public IType getType() {
-		resolveType();
+		if (type == null) {
+			type = resolveType();
+		}
 		return type;
+	}
+
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			ConstructorExpressionStateObject constructor = (ConstructorExpressionStateObject) stateObject;
+			return ExpressionTools.valuesAreEqual(className, constructor.className) &&
+			       areChildrenEquivalent(constructor);
+		}
+
+		return false;
 	}
 
 	/**
@@ -208,9 +222,26 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
 
 	/**
 	 * Resolves the actual {@link IType} based on the class name.
+	 *
+	 * @return The {@link IType} with the fully qualified class name
 	 */
-	public void resolveType() {
-		type = getType(className);
+	protected IType resolveType() {
+
+		if (ExpressionTools.stringIsEmpty(className)) {
+			return null;
+		}
+
+		return getType(className);
+	}
+
+	/**
+	 * Sets the fully qualified class name that will be used to retrieve the constructor.
+	 *
+	 * @param className The fully qualified class name
+	 */
+	public void setClassName(CharSequence className) {
+		type = null;
+		setClassNameInternally(className);
 	}
 
 	/**
@@ -227,9 +258,9 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
 	 *
 	 * @param className The fully qualified class name
 	 */
-	public void setClassName(String className) {
+	protected void setClassNameInternally(CharSequence className) {
 		String oldClassName = this.className;
-		this.className = className;
+		this.className = (className != null) ? className.toString() : null;
 		firePropertyChanged(CLASS_NAME_PROPERTY, oldClassName, className);
 	}
 
@@ -252,7 +283,7 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
 	 */
 	public void setType(IType type) {
 		this.type = type;
-		setClassName((type != null) ? type.getName() : null);
+		setClassNameInternally((type != null) ? type.getName() : null);
 	}
 
 	/**

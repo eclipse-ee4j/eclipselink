@@ -1061,7 +1061,10 @@ public final class JPQLQueries {
 	public static String query_170() {
 		return "SELECT DISTINCT c " +
 		       "from Customer c " +
-		       "WHERE c.home.street = :street OR c.home.city = :city OR c.home.state = :state or c.home.zip = :zip";
+		       "WHERE    c.home.street = :street " +
+		       "      OR c.home.city   = :city " +
+		       "      OR c.home.state  = :state " +
+		       "      or c.home.zip    = :zip";
 	}
 
 	public static String query_171() {
@@ -1073,7 +1076,10 @@ public final class JPQLQueries {
 	public static String query_172() {
 		return "SELECT c " +
 		       "from Customer c " +
-		       "WHERE c.home.street = :street AND c.home.city = :city AND c.home.state = :state and c.home.zip = :zip";
+		       "WHERE     c.home.street = :street " +
+		       "      AND c.home.city   = :city " +
+		       "      AND c.home.state  = :state " +
+		       "      and c.home.zip    = :zip";
 	}
 
 	public static String query_173() {

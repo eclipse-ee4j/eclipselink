@@ -20,7 +20,6 @@ import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
-import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 
 /**
  * This is the root of the {@link StateObject} hierarchy that represents a JPQL query. The only
@@ -238,14 +237,6 @@ public class JPQLQueryStateObject extends AbstractStateObject {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ITypeRepository getTypeRepository() {
-		return getManagedTypeProvider().getTypeRepository();
-	}
-
-	/**
 	 * Determines whether a query statement has been defined.
 	 *
 	 * @return <code>true</code> if there is a query statement defined; <code>false</code> otherwise
@@ -268,6 +259,20 @@ public class JPQLQueryStateObject extends AbstractStateObject {
 
 		this.provider     = provider;
 		this.queryBuilder = queryBuilder;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			JPQLQueryStateObject jpqlStateObject = (JPQLQueryStateObject) stateObject;
+			return areEquivalent(queryStatement, jpqlStateObject.queryStatement);
+		}
+
+		return false;
 	}
 
 	/**

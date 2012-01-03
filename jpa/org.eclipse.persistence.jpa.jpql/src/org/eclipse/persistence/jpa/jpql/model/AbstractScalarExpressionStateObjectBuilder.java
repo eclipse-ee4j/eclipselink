@@ -60,7 +60,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "nls"})
 public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScalarExpressionStateObjectBuilder<T>> extends AbstractStateObjectBuilder
 	implements IScalarExpressionStateObjectBuilder<T> {
 
@@ -176,7 +176,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
 	 * {@inheritDoc}
 	 */
 	public T case_(ICaseExpressionStateObjectBuilder builder) {
-		Assert.isSame(caseBuilder, builder);
+		Assert.isEqual(caseBuilder, builder, "The Case expression builder is not the same as the current one");
 		add(builder.buildStateObject());
 		builder = null;
 		return (T) this;
@@ -312,7 +312,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
 	 */
 	public ICaseExpressionStateObjectBuilder getCaseBuilder() {
 		if (caseBuilder == null) {
-			return getParent().getQueryBuilder().buildCaseExpressionStateObjectBuilder(parent);
+			caseBuilder = getParent().getQueryBuilder().buildCaseExpressionStateObjectBuilder(parent);
 		}
 		return caseBuilder;
 	}

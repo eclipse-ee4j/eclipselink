@@ -51,26 +51,6 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
                                      implements ListHolderStateObject<StateObject> {
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SelectClause getExpression() {
-		return (SelectClause) super.getExpression();
-	}
-
-	/**
-	 * Keeps a reference of the {@link SelectClause parsed object} object, which should only be
-	 * done when this object is instantiated during the conversion of a parsed JPQL query into
-	 * {@link StateObject StateObjects}.
-	 *
-	 * @param expression The {@link SelectClause parsed object} representing a <code>SELECT<b></b></code>
-	 * clause
-	 */
-	public void setExpression(SelectClause expression) {
-		super.setExpression(expression);
-	}
-
-	/**
 	 * The builder is cached during the creation of the select expression.
 	 */
 	private ISelectExpressionStateObjectBuilder builder;
@@ -109,14 +89,6 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	protected void addChildren(List<StateObject> children) {
 		super.addChildren(children);
 		children.addAll(items);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public <T extends StateObject> T addItem(T item) {
-		getChangeSupport().addItem(this, items, SELECT_ITEMS_LIST, parent(item));
-		return item;
 	}
 
 	/**
@@ -162,6 +134,14 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 		item.parse(jpqlFragment);
 		item.setResultVariable(resultVariable);
 		addItem(item);
+		return item;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public <S extends StateObject> S addItem(S item) {
+		getChangeSupport().addItem(this, items, SELECT_ITEMS_LIST, parent(item));
 		return item;
 	}
 
@@ -214,6 +194,34 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	}
 
 	/**
+	 * Determines whether the children of this {@link StateObject} are equivalent to the children
+	 * of the given one, i.e. the information of the {@link StateObject StateObjects} is the same.
+	 *
+	 * @param stateObject The {@link StateObject} to compare its children to this one's children
+	 * @return <code>true</code> if both have equivalent children; <code>false</code> otherwise
+	 */
+	protected boolean areChildrenEquivalent(SelectClauseStateObject stateObject) {
+
+		int size = itemsSize();
+
+		if (size != stateObject.itemsSize()) {
+			return false;
+		}
+
+		for (int index = size; --index >= 0; ) {
+
+			StateObject child1 = getItem(index);
+			StateObject child2 = stateObject.getItem(index);
+
+			if (!child1.isEquivalent(child2)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public boolean canMoveDown(StateObject item) {
@@ -240,6 +248,14 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 			builder = getQueryBuilder().buildStateObjectBuilder(this);
 		}
 		return builder;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public SelectClause getExpression() {
+		return (SelectClause) super.getExpression();
 	}
 
 	/**
@@ -287,6 +303,15 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	protected void initialize() {
 		super.initialize();
 		items = new ArrayList<StateObject>();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+		return super.isEquivalent(stateObject) &&
+		       areChildrenEquivalent((SelectClauseStateObject) stateObject);
 	}
 
 	/**
@@ -347,6 +372,18 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	 */
 	public void removeListChangeListener(String listName, IListChangeListener<StateObject> listener) {
 		getChangeSupport().removeListChangeListener(listName, listener);
+	}
+
+	/**
+	 * Keeps a reference of the {@link SelectClause parsed object} object, which should only be
+	 * done when this object is instantiated during the conversion of a parsed JPQL query into
+	 * {@link StateObject StateObjects}.
+	 *
+	 * @param expression The {@link SelectClause parsed object} representing a <code>SELECT<b></b></code>
+	 * clause
+	 */
+	public void setExpression(SelectClause expression) {
+		super.setExpression(expression);
 	}
 
 	/**

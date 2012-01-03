@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.model.query;
 
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 
 /**
  * Range variable declarations allow the developer to designate a "root" for objects which may not
@@ -100,11 +101,22 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
 	/**
 	 * Returns the abstract schema name.
 	 *
-	 * @return The name of the abstract schema type for which the identification variable is ranging
-	 * over
+	 * @return The name of the abstract schema type for which the identification variable is ranging over
 	 */
 	public String getEntityName() {
 		return getRootStateObject().getText();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType getManagedType(StateObject stateObject) {
+
+		if (getIdentificationVariableStateObject().isEquivalent(stateObject)) {
+			return getRootStateObject().getEntity();
+		}
+
+		return null;
 	}
 
 	/**
@@ -182,5 +194,4 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
 	public void setRootPath(String root) {
 		setEntityName(root);
 	}
-
 }

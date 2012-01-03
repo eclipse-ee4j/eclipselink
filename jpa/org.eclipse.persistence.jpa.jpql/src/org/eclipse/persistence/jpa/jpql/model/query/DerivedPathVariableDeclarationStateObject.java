@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model.query;
 
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+
 /**
  * <div nowrap><b>BNF:</b> <code>subselect_identification_variable_declaration ::= derived_path_expression [AS] identification_variable {join}*</code><p>
  *
@@ -64,6 +66,18 @@ public class DerivedPathVariableDeclarationStateObject extends AbstractRangeVari
 	@Override
 	protected StateObject buildRootStateObject() {
 		return new CollectionValuedPathExpressionStateObject(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType getManagedType(StateObject stateObject) {
+
+		if (getIdentificationVariableStateObject().isEquivalent(stateObject)) {
+			return getRootStateObject().getManagedType();
+		}
+
+		return null;
 	}
 
 	/**

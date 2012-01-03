@@ -293,6 +293,23 @@ public class BetweenExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			BetweenExpressionStateObject between = (BetweenExpressionStateObject) stateObject;
+			return not == between.not &&
+			       areEquivalent(stateObject,           between.stateObject)           &&
+			       areEquivalent(lowerBoundStateObject, between.lowerBoundStateObject) &&
+			       areEquivalent(upperBoundStateObject, between.upperBoundStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which will represent the expression to compare its result to
 	 * the lower and upper bounds.
 	 *

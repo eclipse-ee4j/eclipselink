@@ -179,6 +179,20 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			WhenClauseStateObject whenClause = (WhenClauseStateObject) stateObject;
+			return areEquivalent(thenStateObject, whenClause.thenStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which will represent the <code><b>THEN</b></code> expression.
 	 * The JPQL fragment should not start with the identifier.
 	 *

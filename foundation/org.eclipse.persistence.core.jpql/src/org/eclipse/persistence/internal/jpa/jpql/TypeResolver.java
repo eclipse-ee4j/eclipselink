@@ -450,7 +450,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		}
 
 		if (mapping.isDirectToFieldMapping()) {
-		        AbstractDirectMapping directMapping = (AbstractDirectMapping) mapping;
+			AbstractDirectMapping directMapping = (AbstractDirectMapping) mapping;
 			Class<?> type = directMapping.getAttributeClassification();
 			if (type != null) {
 				return type;

@@ -182,6 +182,21 @@ public abstract class CompoundExpressionStateObject extends AbstractStateObject 
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			CompoundExpressionStateObject compound = (CompoundExpressionStateObject) stateObject;
+			return areEquivalent(leftStateObject,  compound.leftStateObject) &&
+			       areEquivalent(rightStateObject, compound.rightStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment and update the left side of the compound expression.
 	 *
 	 * @param jpqlFragment The portion of the query to become the left side of the compound expression

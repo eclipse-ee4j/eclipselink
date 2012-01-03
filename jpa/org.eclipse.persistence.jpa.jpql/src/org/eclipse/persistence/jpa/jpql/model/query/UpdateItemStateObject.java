@@ -213,6 +213,21 @@ public class UpdateItemStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			UpdateItemStateObject updateItem = (UpdateItemStateObject) stateObject;
+			return stateFieldPath.isEquivalent(updateItem.stateFieldPath) &&
+			       areEquivalent(newValue, updateItem.newValue);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns the segments in the state field path in order.
 	 *
 	 * @return An {@link IterableListIterator} over the paths of the state field path

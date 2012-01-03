@@ -185,6 +185,21 @@ public abstract class AbstractDoubleEncapsulatedExpressionStateObject extends Ab
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractDoubleEncapsulatedExpressionStateObject encapsulated = (AbstractDoubleEncapsulatedExpressionStateObject) stateObject;
+			return areEquivalent(firstStateObject,  encapsulated.firstStateObject) &&
+			       areEquivalent(secondStateObject, encapsulated.secondStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which will represent the first encapsulated expression.
 	 *
 	 * @param jpqlFragment The string representation of the first encapsulated expression to parse and

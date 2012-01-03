@@ -129,6 +129,20 @@ public abstract class AggregateFunctionStateObject extends AbstractSingleEncapsu
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AggregateFunctionStateObject function = (AggregateFunctionStateObject) stateObject;
+			return distinct == function.distinct;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Sets whether the <code><b>DISTINCT</b></code> keyword should be part of the query, which is
 	 * used to return only distinct (different) values
 	 *

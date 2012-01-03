@@ -129,6 +129,21 @@ public abstract class AbstractJoinStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractJoinStateObject join = (AbstractJoinStateObject) stateObject;
+			return joinType.equals(join.joinType) &&
+			       areEquivalent(joinAssociationPath, join.joinAssociationPath);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns the segments in the state field path in order.
 	 *
 	 * @return An <code>Iterator</code> over the segments of the state field path

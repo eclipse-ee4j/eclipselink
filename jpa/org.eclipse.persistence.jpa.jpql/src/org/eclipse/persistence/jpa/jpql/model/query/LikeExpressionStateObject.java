@@ -231,6 +231,23 @@ public class LikeExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			LikeExpressionStateObject like = (LikeExpressionStateObject) stateObject;
+			return not == like.not &&
+			       areEquivalent(patternValue,      like.patternValue)    &&
+			       areEquivalent(escapeCharacter,   like.escapeCharacter) &&
+			       areEquivalent(stringStateObject, like.stringStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Makes sure the <code><b>NOT</b></code> identifier is not specified.
 	 */
 	public void removeNot() {

@@ -151,6 +151,15 @@ public interface StateObject {
 	boolean isDecorated();
 
 	/**
+	 * Determines whether the given {@link StateObject} is equivalent to this one, i.e. the
+	 * information of both {@link StateObject} is the same.
+	 *
+	 * @param stateObject The {@link StateObject} to compare its content to this one
+	 * @return <code>true</code> if both object are equivalent; <code>false</code> otherwise
+	 */
+	boolean isEquivalent(StateObject stateObject);
+
+	/**
 	 * Unregisters the given {@link IPropertyChangeListener} that was registered for the specified
 	 * property. The listener will no longer be notified when the property changes.
 	 *

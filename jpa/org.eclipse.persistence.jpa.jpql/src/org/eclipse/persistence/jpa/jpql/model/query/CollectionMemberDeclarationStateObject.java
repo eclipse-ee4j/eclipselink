@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.SingleElementListIterator;
 
@@ -200,6 +201,18 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
 	/**
 	 * {@inheritDoc}
 	 */
+	public IManagedType getManagedType(StateObject stateObject) {
+
+		if (identificationVariable.isEquivalent(stateObject)) {
+			return collectionValuedPath.getManagedType();
+		}
+
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public AbstractFromClauseStateObject getParent() {
 		return (AbstractFromClauseStateObject) super.getParent();
@@ -215,6 +228,11 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
 		return as;
 	}
 
+	/**
+	 * Determines whether an identification variable was defined.
+	 *
+	 * @return <code>true</code> if an identification variable is defined; <code>false</code> otherwise
+	 */
 	public boolean hasIdentificationVariable() {
 		return identificationVariable.hasText();
 	}
@@ -247,6 +265,24 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
 	 */
 	public boolean isDerived() {
 		return derived;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			CollectionMemberDeclarationStateObject declaration = (CollectionMemberDeclarationStateObject) stateObject;
+
+			return as      == declaration.as      &&
+			       derived == declaration.derived &&
+			       identificationVariable.isEquivalent(declaration.identificationVariable) &&
+			       collectionValuedPath  .isEquivalent(declaration.collectionValuedPath);
+		}
+
+		return false;
 	}
 
 	/**
@@ -312,6 +348,16 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
 	 */
 	public void setPath(String path) {
 		collectionValuedPath.setPath(path);
+	}
+
+	/**
+	 * Changes the path expression with the list of segments, the identification variable will also
+	 * be updated with the first segment.
+	 *
+	 * @param paths The new path expression
+	 */
+	public void setPaths(List<String> paths) {
+		collectionValuedPath.setPaths(paths);
 	}
 
 	/**

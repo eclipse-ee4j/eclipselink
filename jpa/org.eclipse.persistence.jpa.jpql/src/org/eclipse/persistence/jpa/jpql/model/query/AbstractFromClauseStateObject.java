@@ -16,15 +16,16 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.model.Problem;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
 import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 
+import static org.eclipse.persistence.jpa.jpql.ExpressionTools.*;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -47,7 +48,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
                                                     implements DeclarationStateObject {
 
 	/**
-	 * Notifies the content of the list of {@link IVariableDeclarationStateObject} has changed.
+	 * Notifies the content of the list of {@link VariableDeclarationStateObject} has changed.
 	 */
 	public static final String VARIABLE_DECLARATIONS_LIST = "variableDeclarations";
 
@@ -172,7 +173,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	public IdentificationVariableStateObject findIdentificationVariable(String variable) {
 
 		for (IdentificationVariableStateObject identificationVariable : identificationVariables()) {
-			if (Assert.isSame(identificationVariable.getText(), variable)) {
+			if (stringsAreEqualIgnoreCase(identificationVariable.getText(), variable)) {
 				return identificationVariable;
 			}
 		}
@@ -199,6 +200,23 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	/**
 	 * {@inheritDoc}
 	 */
+	public IManagedType getManagedType(StateObject stateObject) {
+
+		for (VariableDeclarationStateObject declaration : declarations()) {
+
+			IManagedType managedType = declaration.getManagedType(stateObject);
+
+			if (managedType != null) {
+				return managedType;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public AbstractSelectStatementStateObject getParent() {
 		return (AbstractSelectStatementStateObject) super.getParent();
@@ -219,11 +237,23 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	 * @return The list of {@link IdentificationVariableStateObject IdentificationVariableStateObjects}
 	 */
 	public IterableIterator<IdentificationVariableStateObject> identificationVariables() {
+
 		List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
+
 		for (VariableDeclarationStateObject stateObject : items()) {
 			CollectionTools.addAll(stateObjects, stateObject.identificationVariables());
 		}
+
 		return new CloneListIterator<IdentificationVariableStateObject>(stateObjects);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+		return super.isEquivalent(stateObject) &&
+		       areChildrenEquivalent((AbstractListHolderStateObject<?>) stateObject);
 	}
 
 	/**

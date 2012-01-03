@@ -35,7 +35,7 @@ public final class RefactoringToolTest1_0 extends AbstractRefactoringToolTest {
 	}
 
 	@Test
-	public void test_ClassName_1() throws Exception {
+	public void test_RenameClassName_1() throws Exception {
 
 		String jpqlQuery = "SELECT NEW java.util.Vector(a.employees) FROM Address A";
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
@@ -46,25 +46,67 @@ public final class RefactoringToolTest1_0 extends AbstractRefactoringToolTest {
 	}
 
 	@Test
-	public void test_EnumConstant_1() throws Exception {
+	public void test_RenameClassName_2() throws Exception {
 
-		String jpqlQuery = "UPDATE Employee SET name = javax.persistence.AccessType.FIELD";
+		String jpqlQuery = "SELECT NEW org.eclipse.persistence.Collection.Vector(a.employees) FROM Address A";
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-		refactoringTool.renameEnumConstant("javax.persistence.AccessType.FIELD", "javax.persistence.AccessType.PROPERTY");
+		refactoringTool.renameClassName("org.eclipse.persistence.Collection", "org.eclipse.persistence.Type");
 
-		String expected = "UPDATE Employee SET name = javax.persistence.AccessType.PROPERTY";
+		String expected = "SELECT NEW org.eclipse.persistence.Type.Vector(a.employees) FROM Address A";
 		assertEquals(expected, refactoringTool.toActualText());
 	}
 
 	@Test
-	public void test_EnumConstant_2() throws Exception {
+	public void test_RenameClassName_3() throws Exception {
 
-		String jpqlQuery = "UPDATE Employee e SET e.name = e.lName";
+		String jpqlQuery = "SELECT NEW org.eclipse.persistence.Vector(a.employees) FROM Address A";
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-		refactoringTool.renameEnumConstant("javax.persistence.AccessType.FIELD", "javax.persistence.AccessType.PROPERTY");
+		refactoringTool.renameClassName("org.eclipse.persistence.AbstractSession", "org.eclipse.persistence.session.Session");
 
-		String expected = "UPDATE Employee e SET e.name = e.lName";
+		assertEquals(jpqlQuery, refactoringTool.toActualText());
+	}
+
+	@Test
+	public void test_RenameClassName_4() throws Exception {
+
+		String jpqlQuery = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.FIRST_NAME";
+		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+		refactoringTool.renameClassName("jpql.query.EnumType", "org.eclipse.persistence.Type");
+
+		String expected = "SELECT p FROM Product p WHERE p.enumType = org.eclipse.persistence.Type.FIRST_NAME";
 		assertEquals(expected, refactoringTool.toActualText());
+	}
+
+	@Test
+	public void test_RenameClassName_5() throws Exception {
+
+		String jpqlQuery = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.";
+		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+		refactoringTool.renameClassName("jpql.query.EnumType", "org.eclipse.persistence.Type");
+
+		String expected = "SELECT p FROM Product p WHERE p.enumType = org.eclipse.persistence.Type.";
+		assertEquals(expected, refactoringTool.toActualText());
+	}
+
+	@Test
+	public void test_RenameClassName_6() throws Exception {
+
+		String jpqlQuery = "SELECT p FROM Product p WHERE p.enumType = jpql.query.Employee.EnumType.FIRST_NAME";
+		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+		refactoringTool.renameClassName("jpql.query.Employee", "org.eclipse.persistence.Type");
+
+		String expected = "SELECT p FROM Product p WHERE p.enumType = org.eclipse.persistence.Type.EnumType.FIRST_NAME";
+		assertEquals(expected, refactoringTool.toActualText());
+	}
+
+	@Test
+	public void test_RenameClassName_7() throws Exception {
+
+		String jpqlQuery = "SELECT p FROM Product p WHERE p.enumType = jpql.query.EnumType.FIRST_NAME";
+		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+		refactoringTool.renameClassName("jpql.query.Employee", "org.eclipse.persistence.Type");
+
+		assertEquals(jpqlQuery, refactoringTool.toActualText());
 	}
 
 	@Test
@@ -90,13 +132,34 @@ public final class RefactoringToolTest1_0 extends AbstractRefactoringToolTest {
 	}
 
 	@Test
+	public void test_RenameEnumConstant_1() throws Exception {
+
+		String jpqlQuery = "UPDATE Employee SET name = javax.persistence.AccessType.FIELD";
+		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+		refactoringTool.renameEnumConstant("javax.persistence.AccessType.FIELD", "javax.persistence.AccessType.PROPERTY");
+
+		String expected = "UPDATE Employee SET name = javax.persistence.AccessType.PROPERTY";
+		assertEquals(expected, refactoringTool.toActualText());
+	}
+
+	@Test
+	public void test_RenameEnumConstant_2() throws Exception {
+
+		String jpqlQuery = "UPDATE Employee e SET e.name = e.lName";
+		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+		refactoringTool.renameEnumConstant("javax.persistence.AccessType.FIELD", "javax.persistence.AccessType.PROPERTY");
+
+		assertEquals(jpqlQuery, refactoringTool.toActualText());
+	}
+
+	@Test
 	public void test_RenameFieldName_1() throws Exception {
 
-		String jpqlQuery = "SELECT e.address.zipcode FROM Employee e";
+		String jpqlQuery = "SELECT e.address.zip FROM Employee e";
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-		refactoringTool.renameField("Address", "address", "addr");
+		refactoringTool.renameField("jpql.query.Employee", "address", "addr");
 
-		String expected = "SELECT e.addr.zipcode FROM Employee e";
+		String expected = "SELECT e.addr.zip FROM Employee e";
 		assertEquals(expected, refactoringTool.toActualText());
 	}
 
@@ -105,10 +168,9 @@ public final class RefactoringToolTest1_0 extends AbstractRefactoringToolTest {
 
 		String jpqlQuery = "SELECT e.address.zipcode FROM Employee e";
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-		refactoringTool.renameField("Address", "zip", "zipcode");
+		refactoringTool.renameField("jpql.query.Address", "zip", "zipcode");
 
-		String expected = "SELECT e.address.zipcode FROM Employee e";
-		assertEquals(expected, refactoringTool.toActualText());
+		assertEquals(jpqlQuery, refactoringTool.toActualText());
 	}
 
 	@Test
@@ -151,7 +213,6 @@ public final class RefactoringToolTest1_0 extends AbstractRefactoringToolTest {
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 		refactoringTool.renameVariable("a", "addr");
 
-		String expected = "SELECT FROM Address";
-		assertEquals(expected, refactoringTool.toActualText());
+		assertEquals(jpqlQuery, refactoringTool.toActualText());
 	}
 }

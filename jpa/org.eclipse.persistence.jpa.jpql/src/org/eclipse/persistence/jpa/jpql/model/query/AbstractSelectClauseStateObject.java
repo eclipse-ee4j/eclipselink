@@ -98,6 +98,20 @@ public abstract class AbstractSelectClauseStateObject extends AbstractStateObjec
 	public abstract boolean hasSelectItem();
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractSelectClauseStateObject select = (AbstractSelectClauseStateObject) stateObject;
+			return distinct && select.distinct;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment and create the select item. For the top-level query, the
 	 * fragment can contain several select items but for a subquery, it can represent only one.
 	 *

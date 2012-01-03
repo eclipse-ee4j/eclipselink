@@ -40,18 +40,6 @@ public final class Assert {
 	}
 
 	/**
-	 * Determines whether the values are different, with the appropriate <code>null</code> checks.
-	 *
-	 * @param value1 The first value to check for equality and equivalency
-	 * @param value2 The second value to check for equality and equivalency
-	 * @return <code>true</code> if both values are different; <code>true</code> if they are both
-	 * <code>null</code>, equal or equivalent
-	 */
-	public static boolean isDifferent(Object object1, Object object2) {
-		return !isSame(object1, object2);
-	}
-
-	/**
 	 * Determines whether the given two objects are equal (identity). If the two objects are not
 	 * identical, then an {@link AssertException} is thrown
 	 *
@@ -102,30 +90,6 @@ public final class Assert {
 		if (object != null) {
 			fail(message);
 		}
-	}
-
-	/**
-	 * Determines whether the values are equal or equivalent, with the appropriate <code>null</code>
-	 * checks. No exception is thrown when the two values are not equal or equivalent.
-	 *
-	 * @param value1 The first value to check for equality and equivalency
-	 * @param value2 The second value to check for equality and equivalency
-	 * @return <code>true</code> if both values are <code>null</code>, equal or equivalent;
-	 * <code>false</code> otherwise
-	 */
-	public static boolean isSame(Object object1, Object object2) {
-
-		// Both are equal or both are null
-		if ((object1 == object2) || (object1 == null) && (object2 == null)) {
-			return true;
-		}
-
-		// One is null but the other is not
-		if ((object1 == null) || (object2 == null)) {
-			return false;
-		}
-
-		return object1.equals(object2);
 	}
 
 	/**

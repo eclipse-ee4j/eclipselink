@@ -92,6 +92,15 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
 	 * {@inheritDoc}
 	 */
 	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+		return super.isEquivalent(stateObject) &&
+		       areChildrenEquivalent((GroupByClauseStateObject) stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected String listName() {
 		return GROUP_BY_ITEMS_LIST;
 	}

@@ -15,8 +15,13 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.model.Problem;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
  * This state object represents a single identification variable, which is identifying TODO.
@@ -29,6 +34,27 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
  */
 @SuppressWarnings("nls")
 public class IdentificationVariableStateObject extends SimpleStateObject {
+
+	/**
+	 * The {@link IManagedType} mapped to the identification variable if the identification variable
+	 * maps to an entity name.
+	 */
+	private IManagedType managedType;
+
+	/**
+	 *
+	 */
+	private IMapping mapping;
+
+	/**
+	 * The {@link IType} of the object being mapped to this identification variable.
+	 */
+	private IType type;
+
+	/**
+	 * The {@link ITypeDeclaration} of the object being mapped to this identification variable.
+	 */
+	private ITypeDeclaration typeDeclaration;
 
 	/**
 	 * Determines whether this identification variable is virtual, meaning it's not part of the query
@@ -96,11 +122,101 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
 	}
 
 	/**
+	 * Makes sure the current identification variable and the given one are the same. If they are
+	 * not, then clears the cached values related to the type.
+	 *
+	 * @param text The new identification variable
+	 */
+	protected void checkIntegrity(String text) {
+		if (ExpressionTools.valuesAreDifferent(getText(), text)) {
+			clearResolvedObjects();
+		}
+	}
+
+	/**
+	 * Clears the values related to the managed type and type.
+	 */
+	protected void clearResolvedObjects() {
+		type            = null;
+		managedType     = null;
+		typeDeclaration = null;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public IdentificationVariable getExpression() {
 		return (IdentificationVariable) super.getExpression();
+	}
+
+	/**
+	 * Returns the {@link IManagedType} associated with the field handled by this object. If this
+	 * object does not handle a field that has a {@link IManagedType}, then <code>null</code> should
+	 * be returned.
+	 * <p>
+	 * For example: "<code><b>SELECT</b> e <b>FROM</b> Employee e</code>", the object for <i>e</i>
+	 * would be returning the {@link IManagedType} for <i>Employee</i>.
+	 *
+	 * @return Either the {@link IManagedType}, if it could be resolved; <code>null</code> otherwise
+	 */
+	public IManagedType getManagedType() {
+		if ((managedType == null) && (mapping == null)) {
+			managedType = resolveManagedType();
+		}
+		return managedType;
+	}
+
+	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	public IMapping getMapping() {
+		if ((managedType == null) && (mapping == null)) {
+			mapping = resolveMapping();
+		}
+		return mapping;
+	}
+
+	/**
+	 * Returns the {@link IType} of the field handled by this object.
+	 *
+	 * @return Either the {@link IType} that was resolved by this {@link Resolver} or the {@link IType}
+	 * for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	public IType getType() {
+		if (type == null) {
+			type = resolveType();
+		}
+		return type;
+	}
+
+	/**
+	 * Returns the {@link ITypeDeclaration} of the field handled by this object.
+	 *
+	 * @return Either the {@link ITypeDeclaration} that was resolved by this object or the {@link
+	 * ITypeDeclaration} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	public ITypeDeclaration getTypeDeclaration() {
+		if (typeDeclaration == null) {
+			typeDeclaration = resolveTypeDeclaration();
+		}
+		return typeDeclaration;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			IdentificationVariableStateObject variable = (IdentificationVariableStateObject) stateObject;
+			return ExpressionTools.stringsAreEqualIgnoreCase(getText(), variable.getText());
+		}
+
+		return false;
 	}
 
 	/**
@@ -114,9 +230,45 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
 		return virtual;
 	}
 
-//	public IType getType() {
-//		return null;// getSelectStatement().getFromClause().getType(this);
-//	}
+	/**
+	 * Retrieves the {@link IManagedType} that is mapped to the identification variable, if and only
+	 * if the identification variable is used to declare an entity.
+	 *
+	 * @return Either the {@link IManagedType} declared by the identification variable or <code>null</code>
+	 * if it could not be resolved
+	 */
+	protected IManagedType resolveManagedType() {
+		return getManagedTypeProvider().getManagedType(getType());
+	}
+
+	/**
+	 * Resolves
+	 *
+	 * @return
+	 */
+	protected IMapping resolveMapping() {
+		return null;
+	}
+
+	/**
+	 * Resolves the {@link IType} of the property handled by this object.
+	 *
+	 * @return Either the {@link IType} that was resolved by this object or the {@link IType} for
+	 * {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	protected IType resolveType() {
+		return getTypeDeclaration().getType();
+	}
+
+	/**
+	 * Resolves the {@link ITypeDeclaration} of the property handled by this object.
+	 *
+	 * @return Either the {@link ITypeDeclaration} that was resolved by this object or the {@link
+	 * ITypeDeclaration} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	protected ITypeDeclaration resolveTypeDeclaration() {
+		return null;
+	}
 
 	/**
 	 * Keeps a reference of the {@link IdentificationVariable parsed object} object, which should only be
@@ -128,6 +280,15 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
 	 */
 	public void setExpression(IdentificationVariable expression) {
 		super.setExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setText(String text) {
+		checkIntegrity(text);
+		super.setText(text);
 	}
 
 	/**

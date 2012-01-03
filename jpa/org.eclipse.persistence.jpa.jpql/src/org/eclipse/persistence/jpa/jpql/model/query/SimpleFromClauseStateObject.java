@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import org.eclipse.persistence.jpa.jpql.parser.InternalSimpleFromClauseBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 
 /**
  * The <code><b>FROM</b></code> clause of a sub-query defines the domain of the sub-query by
@@ -120,6 +121,17 @@ public class SimpleFromClauseStateObject extends AbstractFromClauseStateObject {
 	@Override
 	public String declarationBNF() {
 		return InternalSimpleFromClauseBNF.ID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType findManagedType(StateObject stateObject) {
+		IManagedType managedType = getManagedType(stateObject);
+		if (managedType == null) {
+			managedType = getParent().getParent().getDeclaration().findManagedType(stateObject);
+		}
+		return managedType;
 	}
 
 	/**

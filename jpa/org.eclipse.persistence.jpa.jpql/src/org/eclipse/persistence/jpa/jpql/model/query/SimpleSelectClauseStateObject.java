@@ -140,6 +140,20 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
 	 * {@inheritDoc}
 	 */
 	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			SimpleSelectClauseStateObject select = (SimpleSelectClauseStateObject) stateObject;
+			return areEquivalent(this.stateObject, select.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void parse(String jpqlFragment) {
 		StateObject stateObject = buildStateObject(jpqlFragment, SimpleSelectExpressionBNF.ID);
 		setSelectItem(stateObject);

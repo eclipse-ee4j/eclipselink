@@ -128,6 +128,20 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractSingleEncapsulatedExpressionStateObject encapsulated = (AbstractSingleEncapsulatedExpressionStateObject) stateObject;
+			return areEquivalent(stateObject, encapsulated.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which represents the encapsulated expression, and creates the
 	 * {@link StateObject}.
 	 *

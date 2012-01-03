@@ -203,6 +203,21 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
 	 * {@inheritDoc}
 	 */
 	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			TrimExpressionStateObject trim = (TrimExpressionStateObject) stateObject;
+			return specification == trim.specification &&
+			       areEquivalent(trimCharacter, trim.trimCharacter);
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void parse(String jpqlFragment) {
 
 		StringBuilder sb = new StringBuilder();

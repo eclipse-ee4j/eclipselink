@@ -170,6 +170,20 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractConditionalClauseStateObject clause = (AbstractConditionalClauseStateObject) stateObject;
+			return areEquivalent(conditionalStateObject, clause.conditionalStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment as the right side of an <code><b>OR</b></code> expression. The
 	 * current conditional expression will become the left side of the <code><b>OR</b></code>
 	 * expression.

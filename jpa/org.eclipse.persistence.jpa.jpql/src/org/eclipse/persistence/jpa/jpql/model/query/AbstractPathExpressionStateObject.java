@@ -15,17 +15,23 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeEvent.EventType;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.model.ListChangeEvent;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
+import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
-import org.eclipse.persistence.jpa.jpql.util.iterator.ArrayListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 
@@ -59,9 +65,34 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	private StateObject identificationVariable;
 
 	/**
+	 *
+	 */
+	private IManagedType managedType;
+
+	/**
+	 *
+	 */
+	private ArrayList<IMapping> mappings;
+
+	/**
 	 * The list of segments, including the general identification variable.
 	 */
 	private List<String> paths;
+
+	/**
+	 *
+	 */
+	private boolean resolved;
+
+	/**
+	 * The {@link IType} of the object being mapped to this identification variable.
+	 */
+	private IType type;
+
+	/**
+	 * The {@link ITypeDeclaration} of the object being mapped to this identification variable.
+	 */
+	private ITypeDeclaration typeDeclaration;
 
 	/**
 	 * Notifies the identification variable property has changed.
@@ -113,6 +144,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public String addItem(String item) {
 		getChangeSupport().addItem(this, paths, PATHS_LIST, item);
 		return item;
@@ -208,6 +240,18 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	}
 
 	/**
+	 * Clears the values related to the managed type and type.
+	 */
+	protected void clearResolvedObjects() {
+
+		mappings.clear();
+
+		resolved        = false;
+		type            = null;
+		typeDeclaration = null;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -237,6 +281,39 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	}
 
 	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	public IManagedType getManagedType() {
+		if (managedType == null) {
+			managedType = resolveManagedType();
+		}
+		return managedType;
+	}
+
+	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	public IMapping getMapping() {
+		resolveMappings();
+		return mappings.get(itemsSize() - 1);
+	}
+
+	/**
+	 * Retrieves the {@link IMapping} for the path at the given position.
+	 *
+	 * @param index The index of the path for which its {@link IMapping} should be retrieved, which
+	 * should start at 1 to skip the identification variable
+	 */
+	public IMapping getMapping(int index) {
+		resolveMappings();
+		return mappings.get(index);
+	}
+
+	/**
 	 * Returns the string representation of the path expression. If the identification variable is
 	 * virtual, then it is not part of the result.
 	 *
@@ -244,6 +321,32 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	 */
 	public String getPath() {
 		return toString();
+	}
+
+	/**
+	 * Returns the {@link IType} of the field handled by this object.
+	 *
+	 * @return Either the {@link IType} that was resolved by this {@link Resolver} or the {@link IType}
+	 * for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	public IType getType() {
+		if (type == null) {
+			type = resolveType();
+		}
+		return type;
+	}
+
+	/**
+	 * Returns the {@link ITypeDeclaration} of the field handled by this object.
+	 *
+	 * @return Either the {@link ITypeDeclaration} that was resolved by this object or the {@link
+	 * ITypeDeclaration} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	public ITypeDeclaration getTypeDeclaration() {
+		if (typeDeclaration == null) {
+			typeDeclaration = resolveTypeDeclaration();
+		}
+		return typeDeclaration;
 	}
 
 	/**
@@ -268,7 +371,44 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	@Override
 	protected void initialize() {
 		super.initialize();
-		paths = new ArrayList<String>();
+		paths    = new ArrayList<String>();
+		mappings = new ArrayList<IMapping>();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (!super.isEquivalent(stateObject)) {
+			return false;
+		}
+
+		AbstractPathExpressionStateObject path = (AbstractPathExpressionStateObject) stateObject;
+
+		if (!areEquivalent(getIdentificationVariable(), path.getIdentificationVariable())) {
+			return false;
+		}
+
+		int index = itemsSize();
+
+		if (index != path.itemsSize()) {
+			return false;
+		}
+
+		// Skip index 0, it is already tested and two identification
+		// variables with different case are equivalent
+		while (--index > 0) {
+			String path1 = getItem(index);
+			String path2 = path.getItem(index);
+
+			if (ExpressionTools.valuesAreDifferent(path1, path2)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -334,6 +474,79 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	}
 
 	/**
+	 * Resolves
+	 *
+	 * @return
+	 */
+	protected abstract IManagedType resolveManagedType();
+
+	/**
+	 * Resolves the {@link IMapping} objects that constitutes the path expression.
+	 */
+	protected void resolveMappings() {
+
+		if (!resolved) {
+			resolved = true;
+			IManagedTypeProvider provider = getManagedTypeProvider();
+			IManagedType managedType = null;
+
+			for (int index = 0, count = itemsSize(); index < count; index++) {
+
+				// Identification variable
+				if (index == 0) {
+					StateObject stateObject = getIdentificationVariable();
+
+					// The identification variable is not set, which means the traversal can happen
+					if (stateObject != null) {
+						managedType = getDeclaration().findManagedType(stateObject);
+					}
+
+					mappings.add(null);
+				}
+				// Resolve the path expression after the identification variable
+				else if (managedType != null) {
+
+					String path = getItem(index);
+
+					// Cache the mapping
+					IMapping mapping = managedType.getMappingNamed(path);
+					mappings.add(mapping);
+
+					// Continue by retrieving the managed type
+					if (mapping != null) {
+						managedType = provider.getManagedType(mapping.getType());
+					}
+					else {
+						managedType = null;
+					}
+				}
+				else {
+					mappings.add(null);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Resolves the {@link IType} of the property handled by this object.
+	 *
+	 * @return Either the {@link IType} that was resolved by this object or the {@link IType} for
+	 * {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	protected abstract IType resolveType();
+
+	/**
+	 * Resolves the {@link ITypeDeclaration} of the property handled by this object.
+	 *
+	 * @return Either the {@link ITypeDeclaration} that was resolved by this object or the {@link
+	 * ITypeDeclaration} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	protected ITypeDeclaration resolveTypeDeclaration() {
+		resolveMappings();
+		return getMapping().getTypeDeclaration();
+	}
+
+	/**
 	 * Sets the {@link StateObject} representing the identification variable that starts the path
 	 * expression, which can be a sample identification variable, a map value, map key or map entry
 	 * expression.
@@ -353,9 +566,33 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	 * @param identificationVariable The root of the path expression
 	 */
 	protected void setIdentificationVariableInternally(StateObject identificationVariable) {
+		clearResolvedObjects();
 		StateObject oldIdentificationVariable = this.identificationVariable;
 		this.identificationVariable = parent(identificationVariable);
 		firePropertyChanged(IDENTIFICATION_VARIABLE_PROPERTY, oldIdentificationVariable, identificationVariable);
+	}
+
+	/**
+	 * Changes the path expression with the list of segments, the identification variable will also
+	 * be updated with the first segment.
+	 *
+	 * @param path The new path expression
+	 */
+	public void setPath(CharSequence path) {
+
+		List<String> paths = new ArrayList<String>();
+
+		for (StringTokenizer tokenizer = new StringTokenizer(path.toString(), ".", true); tokenizer.hasMoreTokens(); ) {
+			String token = tokenizer.nextToken();
+			if (!token.equals(".")) {
+				paths.add(token);
+			}
+			else if (!tokenizer.hasMoreTokens()) {
+				paths.add(ExpressionTools.EMPTY_STRING);
+			}
+		}
+
+		setPaths(paths.listIterator());
 	}
 
 	/**
@@ -365,9 +602,14 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	 * @param path The replacement
 	 */
 	public void setPath(int index, String path) {
+
 		if (index == 0) {
 			setIdentificationVariableInternally(null);
 		}
+		else {
+			clearResolvedObjects();
+		}
+
 		getChangeSupport().replaceItem(this, paths, PATHS_LIST, index, path);
 	}
 
@@ -375,18 +617,11 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	 * Changes the path expression with the list of segments, the identification variable will also
 	 * be updated with the first segment.
 	 *
-	 * @param path The new path expression
+	 * @param paths The new path expression
 	 */
-	public void setPath(String path) {
-
-		List<String> paths = new ArrayList<String>();
-
-		for (StringTokenizer tokenizer = new StringTokenizer(path, "."); tokenizer.hasMoreTokens(); ) {
-			String token = tokenizer.nextToken();
-			paths.add(token);
-		}
-
-		setPaths(paths.listIterator());
+	public void setPaths(List<String> paths) {
+		setIdentificationVariableInternally(null);
+		getChangeSupport().replaceItems(this, this.paths, PATHS_LIST, paths);
 	}
 
 	/**
@@ -396,8 +631,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	 * @param paths The new path expression
 	 */
 	public void setPaths(ListIterator<String> paths) {
-		setIdentificationVariableInternally(null);
-		getChangeSupport().replaceItems(this, this.paths, PATHS_LIST, CollectionTools.list(paths));
+		setPaths(CollectionTools.list(paths));
 	}
 
 	/**
@@ -407,7 +641,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	 * @param paths The new path expression
 	 */
 	public void setPaths(String... paths) {
-		setPaths(new ArrayListIterator<String>(paths));
+		setPaths(Arrays.asList(paths));
 	}
 
 	/**

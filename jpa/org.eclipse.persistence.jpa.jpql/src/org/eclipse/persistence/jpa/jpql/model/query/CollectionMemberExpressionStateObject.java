@@ -213,6 +213,23 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			CollectionMemberExpressionStateObject collection = (CollectionMemberExpressionStateObject) stateObject;
+			return not == collection.not &&
+			       of == collection.of &&
+			       collectionValuedPath.isEquivalent(collection.collectionValuedPath) &&
+			       areEquivalent(entityStateObject, collection.entityStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Makes sure the <code><b>NOT</b></code> identifier is not specified.
 	 */
 	public void removeNot() {

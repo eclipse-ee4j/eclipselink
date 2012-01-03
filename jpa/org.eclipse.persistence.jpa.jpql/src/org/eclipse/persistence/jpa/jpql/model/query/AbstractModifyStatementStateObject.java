@@ -199,6 +199,21 @@ public abstract class AbstractModifyStatementStateObject extends AbstractStateOb
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractModifyStatementStateObject clause = (AbstractModifyStatementStateObject) stateObject;
+			return modifyClause.isEquivalent(clause.modifyClause) &&
+			       areEquivalent(whereClause, clause.whereClause);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Removes the <code><b>WHERE</b></code> clause.
 	 */
 	public void removeWhereClause() {

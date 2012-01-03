@@ -234,6 +234,22 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractTripleEncapsulatedExpressionStateObject encapsulated = (AbstractTripleEncapsulatedExpressionStateObject) stateObject;
+			return areEquivalent(firstStateObject,  encapsulated.firstStateObject)  &&
+			       areEquivalent(secondStateObject, encapsulated.secondStateObject) &&
+			       areEquivalent(thirdStateObject,  encapsulated.thirdStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given JPQL fragment, which will represent the first encapsulated expression.
 	 *
 	 * @param jpqlFragment The string representation of the first encapsulated expression to parse and

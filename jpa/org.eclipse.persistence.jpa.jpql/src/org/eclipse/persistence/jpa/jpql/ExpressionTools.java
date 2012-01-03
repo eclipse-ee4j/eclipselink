@@ -301,6 +301,42 @@ public final class ExpressionTools {
 	}
 
 	/**
+	 * Determines whether the two sequence of characters are different, with the appropriate
+	 * <code>null</code> checks and the case is ignored.
+	 *
+	 * @param value1 The first value to check for equality and equivalency
+	 * @param value2 The second value to check for equality and equivalency
+	 * @return <code>true</code> if both values are different; <code>false</code> otherwise
+	 */
+	public static boolean stringsAreDifferentIgnoreCase(CharSequence value1, CharSequence value2) {
+		return !stringsAreEqualIgnoreCase(value1, value2);
+	}
+
+	/**
+	 * Determines whether the two sequence of characters are equal or equivalent, with the
+	 * appropriate <code>null</code> checks and the case is ignored.
+	 *
+	 * @param value1 The first value to check for equality and equivalency
+	 * @param value2 The second value to check for equality and equivalency
+	 * @return <code>true</code> if both values are <code>null</code>, equal or equivalent;
+	 * <code>false</code> otherwise
+	 */
+	public static boolean stringsAreEqualIgnoreCase(CharSequence value1, CharSequence value2) {
+
+		// Both are equal or both are null
+		if ((value1 == value2) || (value1 == null) && (value2 == null)) {
+			return true;
+		}
+
+		// One is null but the other is not
+		if ((value1 == null) || (value2 == null)) {
+			return false;
+		}
+
+		return value1.toString().equalsIgnoreCase(value2.toString());
+	}
+
+	/**
 	 * Converts the string representation of the escape characters contained by the given {@link
 	 * CharSequence} into the actual escape characters. For example, the string '\\b' is converted
 	 * into the character value '\b'.
@@ -404,5 +440,41 @@ public final class ExpressionTools {
 		text = text.substring(startIndex, endIndex);
 		text = text.replace("''", "'");
 		return text;
+	}
+
+	/**
+	 * Determines whether the values are different, with the appropriate <code>null</code> checks.
+	 *
+	 * @param value1 The first value to check for equality and equivalency
+	 * @param value2 The second value to check for equality and equivalency
+	 * @return <code>true</code> if both values are different; <code>true</code> if they are both
+	 * <code>null</code>, equal or equivalent
+	 */
+	public static boolean valuesAreDifferent(Object value1, Object value2) {
+		return !valuesAreEqual(value1, value2);
+	}
+
+	/**
+	 * Determines whether the values are equal or equivalent, with the appropriate <code>null</code>
+	 * checks.
+	 *
+	 * @param value1 The first value to check for equality and equivalency
+	 * @param value2 The second value to check for equality and equivalency
+	 * @return <code>true</code> if both values are <code>null</code>, equal or equivalent;
+	 * <code>false</code> otherwise
+	 */
+	public static boolean valuesAreEqual(Object value1, Object value2) {
+
+		// Both are equal or both are null
+		if ((value1 == value2) || (value1 == null) && (value2 == null)) {
+			return true;
+		}
+
+		// One is null but the other is not
+		if ((value1 == null) || (value2 == null)) {
+			return false;
+		}
+
+		return value1.equals(value2);
 	}
 }

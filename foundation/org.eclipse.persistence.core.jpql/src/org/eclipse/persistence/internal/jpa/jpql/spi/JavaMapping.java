@@ -29,6 +29,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
+import org.eclipse.persistence.jpa.jpql.spi.java.JavaType;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaTypeDeclaration;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -195,7 +196,7 @@ final class JavaMapping extends AbstractMapping {
 	}
 
 	private ITypeDeclaration buildTypeDeclaration(ClassDescriptor descriptor) {
-		JavaType type = new JavaType(getTypeRepository(), descriptor);
+		JavaType type = new JavaType(getTypeRepository(), descriptor.getJavaClass());
 		return new JavaTypeDeclaration(getTypeRepository(), type, null, false);
 	}
 

@@ -194,6 +194,21 @@ public class NullComparisonExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			NullComparisonExpressionStateObject comparison = (NullComparisonExpressionStateObject) stateObject;
+			return not == comparison.not &&
+			       areEquivalent(stateObject, comparison.stateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Parses the given singled-valued path expression or input parameter.
 	 *
 	 * @param path Either a singled-valued path expression or an input parameter

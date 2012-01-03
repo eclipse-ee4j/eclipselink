@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 
 /**
- * A list holder refers to a state object containing a list of certain child state objects and this
+ * A <code>ListHolderStateObject</code> is a {@link StateObject} having a list of children and this
  * gives access to some operation over the list.
  *
  * @version 2.4

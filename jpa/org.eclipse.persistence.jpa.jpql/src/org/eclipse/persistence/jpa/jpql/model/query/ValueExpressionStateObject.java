@@ -14,6 +14,8 @@
 package org.eclipse.persistence.jpa.jpql.model.query;
 
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -74,6 +76,25 @@ public class ValueExpressionStateObject extends EncapsulatedIdentificationVariab
 	@Override
 	public String getIdentifier() {
 		return VALUE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected IType resolveType() {
+
+		ITypeDeclaration typeDeclaration = getTypeDeclaration();
+
+		if (getTypeHelper().isMapType(typeDeclaration.getType())) {
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+
+			if (typeParameters.length == 2) {
+				return typeParameters[1].getType();
+			}
+		}
+
+		return getTypeHelper().objectType();
 	}
 
 	/**

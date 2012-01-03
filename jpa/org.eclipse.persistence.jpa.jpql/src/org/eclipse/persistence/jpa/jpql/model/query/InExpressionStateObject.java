@@ -250,6 +250,23 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			InExpressionStateObject inStateObject = (InExpressionStateObject) stateObject;
+			return not == inStateObject.not &&
+			       singleInputParameter == inStateObject.singleInputParameter &&
+			       areEquivalent(stateObject, stateObject) &&
+			       areChildrenEquivalent(inStateObject);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input
 	 * parameter.
 	 *

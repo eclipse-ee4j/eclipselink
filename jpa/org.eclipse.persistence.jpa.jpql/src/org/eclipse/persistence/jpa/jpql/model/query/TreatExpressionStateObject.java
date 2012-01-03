@@ -242,6 +242,21 @@ public class TreatExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			TreatExpressionStateObject treat = (TreatExpressionStateObject) stateObject;
+			return as == treat.as &&
+			       entityTypeName.isEquivalent(treat.entityTypeName);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Makes sure the <code><b>AS</b></code> identifier is not specified.
 	 */
 	public void removeAs() {

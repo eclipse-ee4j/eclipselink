@@ -77,6 +77,20 @@ public abstract class SimpleStateObject extends AbstractStateObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			SimpleStateObject simple = (SimpleStateObject) stateObject;
+			return ExpressionTools.valuesAreEqual(text, simple.text);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Sets the text held by this state object.
 	 *
 	 * @param text This model's text value

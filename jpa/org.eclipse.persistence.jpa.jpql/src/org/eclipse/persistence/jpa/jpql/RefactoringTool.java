@@ -23,13 +23,17 @@ import org.eclipse.persistence.jpa.jpql.model.query.ConstructorExpressionStateOb
 import org.eclipse.persistence.jpa.jpql.model.query.EntityTypeLiteralStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OrderByItemStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ResultVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
-import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 
 /**
  * The abstract implementation providing refactoring support for JPQL queries.
@@ -77,6 +81,11 @@ public abstract class RefactoringTool {
 	private JPQLQueryStateObject stateObject;
 
 	/**
+	 * Determines whether the parsing system should be tolerant.
+	 */
+	private boolean tolerant;
+
+	/**
 	 * Creates a new <code>RefactoringTool</code>.
 	 *
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
@@ -108,6 +117,7 @@ public abstract class RefactoringTool {
 	                          String jpqlQueryBNFId) {
 
 		super();
+		this.tolerant            = true;
 		this.jpqlFragment        = jpqlFragment;
 		this.jpqlQueryBNFId      = jpqlQueryBNFId;
 		this.jpqlQueryBuilder    = jpqlQueryBuilder;
@@ -147,7 +157,7 @@ public abstract class RefactoringTool {
 	 * @return A new {@link EnumConstantRenamer}
 	 */
 	protected EnumConstantRenamer buildEnumConstantRenamer(String oldClassName, String newClassName) {
-		return new EnumConstantRenamer(oldClassName, newClassName);
+		return new EnumConstantRenamer(managedTypeProvider, oldClassName, newClassName);
 	}
 
 	/**
@@ -163,7 +173,7 @@ public abstract class RefactoringTool {
 	                                                 String oldFieldName,
 	                                                 String newFieldName) {
 
-		return new FieldNameRenamer(typeName, oldFieldName, newFieldName);
+		return new FieldNameRenamer(managedTypeProvider, typeName, oldFieldName, newFieldName);
 	}
 
 	/**
@@ -186,13 +196,32 @@ public abstract class RefactoringTool {
 	protected abstract JPQLQueryContext buildJPQLQueryContext();
 
 	/**
+	 * Creates the visitor that will traverse the {@link StateObject} representation of the JPQL
+	 * query and will rename a result variable.
+	 *
+	 * @param oldVariableName The current result variable name
+	 * @param newVariableName The new name of the result variable
+	 * @return A new {@link ResultVariableNameRenamer}
+	 */
+	protected ResultVariableNameRenamer buildResultVariableNameRenamer(String oldVariableName,
+	                                                                   String newVariableName) {
+
+		return new ResultVariableNameRenamer(oldVariableName, newVariableName);
+	}
+
+	/**
 	 * Creates the {@link StateObject} representation of the JPQL fragment to manipulate.
 	 *
 	 * @return The parsed and editable JPQL query
 	 * @see #getStateObject()
 	 */
 	protected JPQLQueryStateObject buildStateObject() {
-		return jpqlQueryBuilder.buildStateObject(managedTypeProvider, jpqlFragment, jpqlQueryBNFId, isTolerant());
+		return jpqlQueryBuilder.buildStateObject(
+			managedTypeProvider,
+			jpqlFragment,
+			jpqlQueryBNFId,
+			tolerant
+		);
 	}
 
 	/**
@@ -203,7 +232,9 @@ public abstract class RefactoringTool {
 	 * @param newVariableName The new name of the identification variable
 	 * @return A new {@link VariableNameRenamer}
 	 */
-	protected VariableNameRenamer buildVariableNameRenamer(String oldVariableName, String newVariableName) {
+	protected VariableNameRenamer buildVariableNameRenamer(String oldVariableName,
+	                                                       String newVariableName) {
+
 		return new VariableNameRenamer(oldVariableName, newVariableName);
 	}
 
@@ -269,8 +300,7 @@ public abstract class RefactoringTool {
 	}
 
 	/**
-	 * Returns the {@link StateObject} representation of the JPQL query or JPQL fragment that was
-	 * parsed.
+	 * Returns the {@link StateObject} representation of the JPQL query or JPQL fragment that was parsed.
 	 *
 	 * @return The editable state model
 	 */
@@ -287,8 +317,8 @@ public abstract class RefactoringTool {
 	 *
 	 * @return By default, the parsing system uses tolerance
 	 */
-	protected boolean isTolerant() {
-		return true;
+	public boolean isTolerant() {
+		return tolerant;
 	}
 
 	/**
@@ -347,7 +377,7 @@ public abstract class RefactoringTool {
 	}
 
 	/**
-	 * Renames a given field
+	 * Renames a field from the given type.
 	 *
 	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
 	 * @param oldFieldName The current name of the attribute to rename
@@ -359,7 +389,18 @@ public abstract class RefactoringTool {
 	}
 
 	/**
-	 * Renames a given variable name to the new name.
+	 * Renames a result variable name.
+	 *
+	 * @param oldVariableName The current identification variable name
+	 * @param newVariableName The new name of the identification variable
+	 */
+	public void renameResultVariable(String oldVariableName, String newVariableName) {
+		ResultVariableNameRenamer renamer = buildResultVariableNameRenamer(oldVariableName, newVariableName);
+		getStateObject().accept(renamer);
+	}
+
+	/**
+	 * Renames a variable name.
 	 *
 	 * @param oldVariableName The current identification variable name
 	 * @param newVariableName The new name of the identification variable
@@ -381,6 +422,17 @@ public abstract class RefactoringTool {
 	}
 
 	/**
+	 * Sets whether the parsing system should be tolerant, meaning if it should try to parse invalid
+	 * or incomplete queries.
+	 *
+	 * @param tolerant <code>true</code> if the JPQL query or fragment should be parsed with tolerance;
+	 * <code>false</code> otherwise
+	 */
+	public void setTolerant(boolean tolerant) {
+		this.tolerant = tolerant;
+	}
+
+	/**
 	 * Returns a string representation of the {@link org.eclipse.persistence.jpa.jpql.model.query.StateObject
 	 * StateObject}, which represents exactly how the JPQL query was parsed but include the
 	 * refactoring changes.
@@ -394,7 +446,12 @@ public abstract class RefactoringTool {
 	/**
 	 * This visitor renames a fully qualified class name.
 	 */
-	protected class ClassNameRenamer extends AbstractTraverseChildrenVisitor {
+	protected static class ClassNameRenamer extends AbstractTraverseChildrenVisitor {
+
+		/**
+		 * The {@link StateObjectUpdater} that updates the class name when notified.
+		 */
+		protected StateObjectUpdater<ConstructorExpressionStateObject> constructorUpdater;
 
 		/**
 		 * The current name of the class to rename.
@@ -405,6 +462,11 @@ public abstract class RefactoringTool {
 		 * The new name of the class.
 		 */
 		protected final String oldClassName;
+
+		/**
+		 * The {@link StateObjectUpdater} that updates the state field path expression when notified.
+		 */
+		protected StateObjectUpdater<StateFieldPathExpressionStateObject> pathExpressionUpdater;
 
 		/**
 		 * Creates a new <code>ClassNameRenamer</code>.
@@ -418,13 +480,92 @@ public abstract class RefactoringTool {
 			this.newClassName = newClassName;
 		}
 
+		protected StateObjectUpdater<ConstructorExpressionStateObject> buildConstructorUpdater() {
+			return new StateObjectUpdater<ConstructorExpressionStateObject>() {
+				public void update(ConstructorExpressionStateObject stateObject, CharSequence newValue) {
+					stateObject.setClassName(newValue);
+				}
+			};
+		}
+
+		protected StateObjectUpdater<StateFieldPathExpressionStateObject> buildPathExpressionStateObjectUpdater() {
+			return new StateObjectUpdater<StateFieldPathExpressionStateObject>() {
+				public void update(StateFieldPathExpressionStateObject stateObject, CharSequence newValue) {
+					stateObject.setPath(newValue);
+				}
+			};
+		}
+
+		protected StateObjectUpdater<ConstructorExpressionStateObject> constructorUpdater() {
+			if (constructorUpdater == null ){
+				constructorUpdater = buildConstructorUpdater();
+			}
+			return constructorUpdater;
+		}
+
+		protected StateObjectUpdater<StateFieldPathExpressionStateObject> pathExpressionUpdater() {
+			if (pathExpressionUpdater == null ){
+				pathExpressionUpdater = buildPathExpressionStateObjectUpdater();
+			}
+			return pathExpressionUpdater;
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public void visit(ConstructorExpressionStateObject stateObject) {
-			if (oldClassName.equals(stateObject.getClassName())) {
-				stateObject.setClassName(newClassName);
+			visit(stateObject, stateObject.getClassName(), constructorUpdater());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(StateFieldPathExpressionStateObject stateObject) {
+			visit(stateObject, stateObject.getPath(), pathExpressionUpdater());
+		}
+
+		/**
+		 * Visits the given {@link StateObject} and if its value is the same as the old class name or
+		 * if the value represents an inner class of that old class name, then the given {@link
+		 * StateObjectUpdater} will be notified to replace the value.
+		 *
+		 * @param stateObject The {@link StateObject} that is being visited
+		 * @param value The value to check if it's the old class name
+		 * @param updater The {@link StateObjectUpdater} is notified when to replace the value
+		 */
+		protected <T extends StateObject> void visit(T stateObject,
+		                                             String value,
+		                                             StateObjectUpdater<T> updater) {
+
+			if (oldClassName.equals(value)) {
+				updater.update(stateObject, newClassName);
+			}
+			else {
+				int index = value.lastIndexOf(AbstractExpression.DOT);
+
+				// Traverse the value by retrieving a fragment up to the last dot (based on the index)
+				for (; index > -1; index = value.lastIndexOf(AbstractExpression.DOT, index - 1)) {
+					String fragment = value.substring(0, index);
+
+					if (oldClassName.equals(fragment)) {
+						StringBuilder newValue = new StringBuilder(newClassName);
+						newValue.append(AbstractExpression.DOT);
+
+						// The path does not end with '.'
+						if (index + 1 < value.length()) {
+							newValue.append(value.substring(index + 1));
+						}
+
+						updater.update(stateObject, newValue);
+						break;
+					}
+					// No need to continue the search
+					else if (fragment.length() < oldClassName.length()) {
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -458,7 +599,7 @@ public abstract class RefactoringTool {
 	 * </li>
 	 * </ul>
 	 */
-	protected class EntityNameRenamer extends AbstractTraverseChildrenVisitor {
+	protected static class EntityNameRenamer extends AbstractTraverseChildrenVisitor {
 
 		/**
 		 * The current name of the entity to rename.
@@ -516,7 +657,12 @@ public abstract class RefactoringTool {
 	/**
 	 * This visitor renames an enum constant. An enum constant is represented by a path expression.
 	 */
-	protected class EnumConstantRenamer extends AbstractTraverseChildrenVisitor {
+	protected static class EnumConstantRenamer extends AbstractTraverseChildrenVisitor {
+
+		/**
+		 * The external form of a provider that gives access to the JPA metadata.
+		 */
+		protected final IManagedTypeProvider managedTypeProvider;
 
 		/**
 		 * The current name of the enum constant to rename.
@@ -531,19 +677,28 @@ public abstract class RefactoringTool {
 		/**
 		 * Creates a new <code>ClassNameRenamer</code>.
 		 *
+		 * @param managedTypeProvider The provider of managed types
 		 * @param oldEnumConstant The new name of the enum constant
 		 * @param newEnumConstant The current name of the enum constant to rename
 		 */
-		public EnumConstantRenamer(String oldEnumConstant, String newEnumConstant) {
+		public EnumConstantRenamer(IManagedTypeProvider managedTypeProvider,
+		                           String oldEnumConstant,
+		                           String newEnumConstant) {
+
 			super();
-			this.oldEnumConstant = oldEnumConstant;
-			this.newEnumConstant = newEnumConstant;
+			this.oldEnumConstant     = oldEnumConstant;
+			this.newEnumConstant     = newEnumConstant;
+			this.managedTypeProvider = managedTypeProvider;
 		}
 
 		protected void renameEnumConstant(AbstractPathExpressionStateObject stateObject) {
+
 			String path = stateObject.toString();
+
 			if (path.equals(oldEnumConstant)) {
-				IType type = getManagedTypeProvider().getTypeRepository().getEnumType(path);
+
+				IType type = managedTypeProvider.getTypeRepository().getEnumType(path);
+
 				if (type != null) {
 					stateObject.setPath(newEnumConstant);
 				}
@@ -570,7 +725,12 @@ public abstract class RefactoringTool {
 	/**
 	 * This visitor renames any segment of a path expression.
 	 */
-	protected class FieldNameRenamer extends AbstractTraverseChildrenVisitor {
+	protected static class FieldNameRenamer extends AbstractTraverseChildrenVisitor {
+
+		/**
+		 * The external form of a provider that gives access to the JPA metadata.
+		 */
+		protected final IManagedTypeProvider managedTypeProvider;
 
 		/**
 		 * The new name of the attribute.
@@ -594,54 +754,43 @@ public abstract class RefactoringTool {
 		 * @param oldFieldName The current name of the attribute to rename
 		 * @param newFieldName The new name of the attribute
 		 */
-		public FieldNameRenamer(String typeName, String oldFieldName, String newFieldName) {
+		public FieldNameRenamer(IManagedTypeProvider managedTypeProvider,
+		                        String typeName,
+		                        String oldFieldName,
+		                        String newFieldName) {
+
 			super();
-			this.typeName     = typeName;
-			this.oldFieldName = oldFieldName;
-			this.newFieldName = newFieldName;
+			this.typeName            = typeName;
+			this.oldFieldName        = oldFieldName;
+			this.newFieldName        = newFieldName;
+			this.managedTypeProvider = managedTypeProvider;
 		}
 
-		protected void rename(AbstractPathExpressionStateObject stateObject,
-		                      boolean collectionValuedPath) {
+		/**
+		 * Performs the rename on the path expression.
+		 *
+		 * @param stateObject The {@link AbstractPathExpressionStateObject} being visited, which may
+		 * have to have its path renamed
+		 */
+		protected void rename(AbstractPathExpressionStateObject stateObject) {
 
-			// TODO: Create a new API that only uses the StateObject
-			//       This won't work if more than one refactoring is performed
-			JPQLQueryContext context = buildJPQLQueryContext();
-			context.setJPQLExpression(stateObject.getRoot().getExpression());
-			context.setQuery(new JavaQuery(getManagedTypeProvider(), getJPQLFragment()));
+			// Now traverse the path expression after the identification variable
+			for (int index = 1, count = stateObject.itemsSize(); index < count; index++) {
 
-			// Resolve the path expression by starting with the general identification variable
-			Resolver resolver = context.getResolver(stateObject.getExpression().getIdentificationVariable());
+				// Retrieve the mapping for the path at the current position
+				IMapping mapping = stateObject.getMapping(index);
 
-			// Make sure the identification variable could not be resolved
-			if (resolver != null) {
+				if (mapping == null) {
+					break;
+				}
 
-				// Now traverse the path expression after the identification variable
-				for (int index = 1, count = stateObject.itemsSize(); index < count; index++) {
-					String path = stateObject.getItem(index);
-					Resolver childResolver = resolver.getChild(path);
+				// The name matches
+				if (mapping.getName().equals(oldFieldName)) {
 
-					if (childResolver == null) {
-						if ((index + 1 == count) && collectionValuedPath) {
-							childResolver = new CollectionValuedFieldResolver(resolver, path);
-						}
-						else {
-							childResolver = new StateFieldResolver(resolver, path);
-						}
+					// Make sure the field name is from the right type
+					String parentTypeName = mapping.getParent().getType().getName();
 
-						resolver.addChild(path, childResolver);
-						resolver = childResolver;
-					}
-
-					// Retrieve the mapping so we can check the name
-					IMapping mapping = resolver.getMapping();
-
-					if (mapping == null) {
-						break;
-					}
-
-					// The name matches, update the state object
-					if (mapping.getName().equals(oldFieldName)) {
+					if (parentTypeName.equals(typeName)) {
 						stateObject.setPath(index, newFieldName);
 						break;
 					}
@@ -654,7 +803,7 @@ public abstract class RefactoringTool {
 		 */
 		@Override
 		public void visit(CollectionValuedPathExpressionStateObject stateObject) {
-			rename(stateObject, true);
+			rename(stateObject);
 		}
 
 		/**
@@ -662,14 +811,125 @@ public abstract class RefactoringTool {
 		 */
 		@Override
 		public void visit(StateFieldPathExpressionStateObject stateObject) {
-			rename(stateObject, false);
+			rename(stateObject);
 		}
+	}
+
+	/**
+	 * This visitor renames all the result variables found in the JPQL query.
+	 */
+	protected static class ResultVariableNameRenamer extends AbstractTraverseChildrenVisitor {
+
+		/**
+		 * The new name of the result variable.
+		 */
+		protected final String newVariableName;
+
+		/**
+		 * The current result variable name.
+		 */
+		protected final String oldVariableName;
+
+		/**
+		 * Makes sure an identification variable is renamed only when it's used by an order by item.
+		 */
+		protected boolean renameIdentificationVariable;
+
+		/**
+		 * Creates a new <code>ResultVariableNameRenamer</code>.
+		 *
+		 * @param oldVariableName The current result variable name
+		 * @param newVariableName The new name of the result variable
+		 */
+		public ResultVariableNameRenamer(String oldVariableName, String newVariableName) {
+			super();
+			this.oldVariableName = oldVariableName;
+			this.newVariableName = newVariableName;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariableStateObject stateObject) {
+
+			if (renameIdentificationVariable &&
+			    oldVariableName.equalsIgnoreCase(stateObject.getText())) {
+
+				stateObject.setText(newVariableName);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(JPQLQueryStateObject stateObject) {
+			if (stateObject.hasQueryStatement()) {
+				stateObject.getQueryStatement().accept(this);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(OrderByItemStateObject stateObject) {
+			if (stateObject.hasStateObject()) {
+				stateObject.getStateObject().accept(this);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ResultVariableStateObject stateObject) {
+			if (oldVariableName.equalsIgnoreCase(stateObject.getResultVariable())) {
+				stateObject.setResultVariable(newVariableName);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SelectStatementStateObject stateObject) {
+
+			// Result variables defined in the SELECT clause
+			stateObject.getSelectClause().accept(this);
+
+			// Result variables used in the ORDER BY clause
+			if (stateObject.hasOrderByClause()) {
+				renameIdentificationVariable = true;
+				try {
+					stateObject.getOrderByClause().accept(this);
+				}
+				finally {
+					renameIdentificationVariable = false;
+				}
+			}
+		}
+	}
+
+	/**
+	 * This interface is used to transparently push the new value into the {@link StateObject}.
+	 */
+	protected static interface StateObjectUpdater<T extends StateObject> {
+
+		/**
+		 * Updates the given {@link StateObject} by updating its state with the given new value.
+		 *
+		 * @param stateObject The {@link StateObject} to update
+		 * @param newValue The new value to push into the object
+		 */
+		void update(T stateObject, CharSequence newValue);
 	}
 
 	/**
 	 * This visitor renames all the identification variables found in the JPQL query.
 	 */
-	protected class VariableNameRenamer extends AbstractTraverseChildrenVisitor {
+	protected static class VariableNameRenamer extends AbstractTraverseChildrenVisitor {
 
 		/**
 		 * The new name of the identification variable.

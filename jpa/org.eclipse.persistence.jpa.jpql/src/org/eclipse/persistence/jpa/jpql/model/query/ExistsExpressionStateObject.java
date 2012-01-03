@@ -159,6 +159,20 @@ public class ExistsExpressionStateObject extends AbstractSingleEncapsulatedExpre
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			ExistsExpressionStateObject exists = (ExistsExpressionStateObject) stateObject;
+			return not == exists.not;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Makes sure the <code><b>NOT</b></code> identifier is not specified.
 	 */
 	public void removeNot() {

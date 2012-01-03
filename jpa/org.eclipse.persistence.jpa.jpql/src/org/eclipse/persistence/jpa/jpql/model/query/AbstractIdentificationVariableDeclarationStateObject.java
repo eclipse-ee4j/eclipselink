@@ -194,6 +194,15 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
 	}
 
 	/**
+	 * Returns the {@link IdentificationVariableStateObject} holding onto the identification variable.
+	 *
+	 * @return The {@link IdentificationVariableStateObject}, which is never <code>null</code>
+	 */
+	public IdentificationVariableStateObject getIdentificationVariableStateObject() {
+		return getRangeVariableDeclaration().getIdentificationVariableStateObject();
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -251,23 +260,41 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEquivalent(StateObject stateObject) {
+
+		if (super.isEquivalent(stateObject)) {
+			AbstractIdentificationVariableDeclarationStateObject declaration = (AbstractIdentificationVariableDeclarationStateObject) stateObject;
+			return rangeVariableDeclaration.isEquivalent(declaration.rangeVariableDeclaration) &&
+			       areChildrenEquivalent(declaration);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns only the {@link JoinStateObject JoinStateObjects} that are defined in this
 	 * declaration.
 	 *
 	 * @return The {@link JoinStateObject JoinStateObjects} only
 	 */
 	public List<JoinStateObject> joins() {
-		final List<JoinStateObject> joins = new ArrayList<JoinStateObject>();
-		AbstractStateObjectVisitor visitor = new AbstractStateObjectVisitor() {
 
+		final List<JoinStateObject> joins = new ArrayList<JoinStateObject>();
+
+		AbstractStateObjectVisitor visitor = new AbstractStateObjectVisitor() {
 			@Override
 			public void visit(JoinStateObject stateObject) {
 				joins.add(stateObject);
 			}
 		};
+
 		for (AbstractJoinStateObject child : items()) {
 			child.accept(visitor);
 		}
+
 		return joins;
 	}
 
@@ -325,7 +352,9 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
 	 */
 	@Override
 	protected void toTextInternal(Appendable writer) throws IOException {
+
 		rangeVariableDeclaration.toString(writer);
+
 		if (itemsSize() > 0) {
 			writer.append(SPACE);
 			toStringItems(writer, false);

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model.query;
 
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 
 /**
@@ -60,6 +61,18 @@ public class DerivedPathIdentificationVariableDeclarationStateObject extends Abs
 	@Override
 	protected AbstractRangeVariableDeclarationStateObject buildRangeVariableDeclarationStateObject() {
 		return new DerivedPathVariableDeclarationStateObject(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType getManagedType(StateObject stateObject) {
+
+		if (getIdentificationVariableStateObject().isEquivalent(stateObject)) {
+			return getRootStateObject().getManagedType();
+		}
+
+		return null;
 	}
 
 	/**
