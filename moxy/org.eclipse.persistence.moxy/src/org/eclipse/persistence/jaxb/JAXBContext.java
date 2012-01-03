@@ -794,9 +794,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             platform.getConversionManager().setLoader(loader);
             XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
 
-            if(generator.getAnnotationsProcessor().getPackageToPackageInfoMappings().size() > 1){
-                ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
-            }
+            ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
             return new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
         }
@@ -929,9 +927,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             platform.getConversionManager().setLoader(loader);
             XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
 
-            if(generator.getAnnotationsProcessor().getPackageToPackageInfoMappings().size() > 1){
-                ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
-            }
+            ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
+
             return new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
         }
 
