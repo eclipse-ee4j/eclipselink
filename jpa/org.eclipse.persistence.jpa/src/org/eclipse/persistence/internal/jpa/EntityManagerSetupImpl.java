@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -2566,8 +2566,8 @@ public class EntityManagerSetupImpl {
         //Check if overridden at emf creation
         String validationModeAtEMFCreation = (String) puProperties.get(PersistenceUnitProperties.VALIDATION_MODE);
         if(validationModeAtEMFCreation != null) {
-            //User would get IllegalArgumentException if he has specified invalid mode
-            validationMode = ValidationMode.valueOf(validationModeAtEMFCreation);
+            // User will receive IllegalArgumentException an invalid mode has been specified
+            validationMode = ValidationMode.valueOf(validationModeAtEMFCreation.toUpperCase());
         }
         return validationMode;
     }
