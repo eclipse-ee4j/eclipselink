@@ -136,7 +136,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
               setClassIndicatorField(classIndicatorXMLField);
           }
           XPathFragment frag = classIndicatorXMLField.getLastXPathFragment();                        
-          if ((frag != null) && frag.hasNamespace() && (namespaceResolver != null)) {
+          if ((frag != null) && frag.hasNamespace() && frag.getPrefix() !=null && (namespaceResolver != null)) {
               String uri = namespaceResolver.resolveNamespacePrefix(frag.getPrefix());
               classIndicatorXMLField.getLastXPathFragment().setNamespaceURI(uri);
           }          

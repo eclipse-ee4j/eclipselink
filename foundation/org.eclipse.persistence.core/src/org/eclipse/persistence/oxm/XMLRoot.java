@@ -13,7 +13,6 @@
 package org.eclipse.persistence.oxm;
 
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
 
 /**
  * <p>XMLRoot is used to hold an Object along with the corresponding QName and some other related information.
@@ -26,7 +25,9 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
  */
 public class XMLRoot {
     protected Object rootObject;
-    protected XPathFragment rootFragment;
+    protected String localName;
+    protected String namespaceUri;
+    protected String prefix;
     protected String encoding;
     protected String xmlVersion;
     protected String schemaLocation;
@@ -34,13 +35,6 @@ public class XMLRoot {
     protected QName schemaType;
     protected Class declaredType;
     protected boolean nil;
-
-    /**
-     * Create a new XMLRoot object.
-     */
-    public XMLRoot() {
-        rootFragment = new XPathFragment();
-    }
 
     /**
      * Gets the object.  This may be null.
@@ -57,7 +51,7 @@ public class XMLRoot {
      * @return the local name
      */
     public String getLocalName() {
-        return rootFragment.getLocalName();
+    	return localName;
     }
 
     /**
@@ -66,7 +60,7 @@ public class XMLRoot {
      * @return the namespace uri
      */
     public String getNamespaceURI() {
-        return rootFragment.getNamespaceURI();
+    	return namespaceUri;
     }
 
     /**
@@ -86,7 +80,12 @@ public class XMLRoot {
      * @param name the new local name
      */
     public void setLocalName(String name) {
-        rootFragment.setXPath(name);
+    	int colonIdx = name.indexOf(XMLConstants.COLON);
+    	if(colonIdx > -1){
+            this.localName = name.substring(colonIdx +1);
+    	}else{
+    	    this.localName = name;
+    	}
     }
 
     /**
@@ -95,18 +94,12 @@ public class XMLRoot {
      * @param rootElementUri the new namespace uri
      */
     public void setNamespaceURI(String rootElementUri) {
-        rootFragment.setNamespaceURI(rootElementUri);
+    	if(rootElementUri != null && rootElementUri.length() ==0){
+            this.namespaceUri = null;
+    	}else{
+       	    this.namespaceUri = rootElementUri;
+    	}
     }
-
-    /**
-     * INTERNAL:.
-     *
-     * @return the root fragment
-     */
-    public XPathFragment getRootFragment() {
-        return rootFragment;
-    }
-
     /**
      * Gets the encoding which will be set on the XMLRoot during unmarshal.
      *
