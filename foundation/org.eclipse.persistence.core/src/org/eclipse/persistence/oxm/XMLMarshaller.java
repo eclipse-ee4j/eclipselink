@@ -977,9 +977,12 @@ public class XMLMarshaller implements Cloneable {
     private XPathFragment buildRootFragment(Object object, XMLDescriptor descriptor, boolean isXMLRoot, MarshalRecord marshalRecord) {
         XPathFragment rootFragment = null;
         if (isXMLRoot) {
-            rootFragment = ((XMLRoot) object).getRootFragment();
-            String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
+        	String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
             String xmlRootLocalName = ((XMLRoot) object).getLocalName();
+        	rootFragment = new XPathFragment();
+        	rootFragment.setLocalName(xmlRootLocalName);
+        	rootFragment.setNamespaceURI(xmlRootUri);
+            
             if (xmlRootUri != null) {
                 if (descriptor != null) {
                     String xmlRootPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(xmlRootUri);
@@ -990,7 +993,7 @@ public class XMLMarshaller implements Cloneable {
                     if(xmlRootPrefix == null) {
                         rootFragment.setXPath(xmlRootLocalName);
                     } else {
-                        rootFragment.setXPath(xmlRootPrefix + XMLConstants.COLON + xmlRootLocalName);
+                    	 rootFragment.setPrefix(xmlRootPrefix);
                     }
                 } else {
                     String xmlRootPrefix = "ns0";

@@ -475,11 +475,10 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                 wasXMLRoot = true;
                 XPathFragment frag = new XPathFragment();
 
-                if ((((XMLRoot) element)).getRootFragment().getNamespaceURI() != null) {
+                if ((((XMLRoot) element)).getNamespaceURI() != null) {
                     frag.setNamespaceURI(((XMLRoot) element).getNamespaceURI());
-                } else {
-                    frag.setXPath(((XMLRoot) element).getLocalName());
                 }
+                frag.setXPath(((XMLRoot) element).getLocalName());
                 xmlRootField.setXPathFragment(frag);
 
                 xmlRootField.setNamespaceResolver(record.getNamespaceResolver());
@@ -487,8 +486,8 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
             }
             if (element instanceof String) {
                 if (wasXMLRoot) {
-                    if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
-                        String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+                    if (((XMLRoot) originalObject).getNamespaceURI() != null) {
+                        String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                         if ((prefix == null) || prefix.length() == 0) {
                             xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                             prefix = record.getNamespaceResolver().generatePrefix();
@@ -510,10 +509,10 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                 XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(element.getClass());
 
                 if (wasXMLRoot) {
-                    if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
+                    if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                         String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                         if ((prefix == null) || prefix.length() == 0) {
-                            prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+                            prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                         }
                         if ((prefix == null) || prefix.length() == 0) {
                             xmlRootField.getXPathFragment().setGeneratedPrefix(true);
@@ -561,11 +560,11 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
             wasXMLRoot = true;
             xmlRootField = new XMLField();
             XPathFragment frag = new XPathFragment();
-            if ((((XMLRoot) element)).getRootFragment().getNamespaceURI() != null) {
+            if ((((XMLRoot) element)).getNamespaceURI() != null) {
                 frag.setNamespaceURI(((XMLRoot) element).getNamespaceURI());
-            } else {
-                frag.setXPath(((XMLRoot) element).getLocalName());
             }
+            frag.setLocalName(((XMLRoot) element).getLocalName());
+            
             xmlRootField.setXPathFragment(frag);
 
             xmlRootField.setNamespaceResolver(row.getNamespaceResolver());
@@ -583,10 +582,10 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                 return;
             }
             if (wasXMLRoot) {
-                if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
+                if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                     String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                     if ((prefix == null) || prefix.length() == 0) {
-                        prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+                        prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                     }
                     if ((prefix == null) || prefix.length() == 0) {
                         xmlRootField.getXPathFragment().setGeneratedPrefix(true);
@@ -605,8 +604,8 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
 
     private void writeSimpleValue(XMLField xmlRootField, Object element, Object originalObject, DOMRecord record, org.w3c.dom.Document doc, Node root, boolean wasXMLRoot, AbstractSession session) {
         if (wasXMLRoot) {
-            if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
-                String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+            if (((XMLRoot) originalObject).getNamespaceURI() != null) {
+                String prefix = record.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                 if ((prefix == null) || prefix.length() == 0) {
                     xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                     prefix = record.getNamespaceResolver().generatePrefix();

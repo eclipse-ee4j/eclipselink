@@ -13,11 +13,12 @@
 package org.eclipse.persistence.oxm;
 
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
 
 public class XMLRoot {
     protected Object rootObject;
-    protected XPathFragment rootFragment;
+    protected String localName;
+    protected String namespaceUri;
+    protected String prefix;
     protected String encoding;
     protected String xmlVersion;
     protected String schemaLocation;
@@ -26,20 +27,16 @@ public class XMLRoot {
     protected Class declaredType;
     protected boolean nil;
 
-    public XMLRoot() {
-        rootFragment = new XPathFragment();
-    }
-
     public Object getObject() {
         return rootObject;
     }
 
     public String getLocalName() {
-        return rootFragment.getLocalName();
+    	return localName;
     }
 
     public String getNamespaceURI() {
-        return rootFragment.getNamespaceURI();
+    	return namespaceUri;
     }
 
     public void setObject(Object rootObject) {
@@ -54,18 +51,21 @@ public class XMLRoot {
      * @param qualifiedName a fully qualified element name
      */
     public void setLocalName(String name) {
-        rootFragment.setXPath(name);
+    	int colonIdx = name.indexOf(XMLConstants.COLON);
+    	if(colonIdx > -1){
+    		this.localName = name.substring(colonIdx +1);
+    	}else{
+    	    this.localName = name;
+    	}
+    	
     }
 
     public void setNamespaceURI(String rootElementUri) {
-        rootFragment.setNamespaceURI(rootElementUri);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public XPathFragment getRootFragment() {
-        return rootFragment;
+    	if(rootElementUri != null && rootElementUri.length() ==0){
+    		this.namespaceUri = null;
+    	}else{
+       	    this.namespaceUri = rootElementUri;
+    	}
     }
 
     public String getEncoding() {

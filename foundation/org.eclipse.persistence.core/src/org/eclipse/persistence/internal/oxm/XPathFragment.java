@@ -156,13 +156,20 @@ public class XPathFragment {
     }
 
     public String getShortName() {
+    	if(shortName == null){
+    		if(prefix !=null && prefix.length() >0){
+      			shortName = prefix + XMLConstants.COLON + localName;
+      		}else{
+      		    shortName = localName;
+      		}
+    	}
         return shortName;
     }
 
     public byte[] getShortNameBytes() {
         if(null == shortNameBytes) {
             try {
-                shortNameBytes = shortName.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+                shortNameBytes = getShortName().getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             } catch (UnsupportedEncodingException e) {
             }
         }
@@ -175,6 +182,7 @@ public class XPathFragment {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+        resetShortName();
     }
 
     public String getLocalName() {
@@ -183,6 +191,7 @@ public class XPathFragment {
 
     public void setLocalName(String localName) {
     	this.localName = localName;
+    	resetShortName();
     }
 
     public String getNamespaceURI() {
@@ -359,5 +368,9 @@ public class XPathFragment {
     public void setXMLField(XMLField field) {
         this.xmlField = field;
     }
-
+    
+    private void resetShortName(){
+    	shortName = null;
+    	shortNameBytes = null;
+    }   
 }

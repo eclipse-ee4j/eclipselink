@@ -405,13 +405,11 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             xmlRootField = new XMLField();
             wasXMLRoot = true;
             XPathFragment frag = new XPathFragment();
-            if ((((XMLRoot) objectValue)).getRootFragment().getNamespaceURI() != null) {
+            if ((((XMLRoot) objectValue)).getNamespaceURI() != null) {
                 frag.setNamespaceURI(((XMLRoot) objectValue).getNamespaceURI());
-            } else {
-                frag.setXPath(((XMLRoot) objectValue).getLocalName());
             }
-
-            xmlRootField.setXPathFragment((((XMLRoot) objectValue)).getRootFragment());
+            frag.setXPath(((XMLRoot) objectValue).getLocalName());
+            xmlRootField.setXPathFragment(frag);
             xmlRootField.setNamespaceResolver(row.getNamespaceResolver());
 
             objectValue = ((XMLRoot) objectValue).getObject();
@@ -428,10 +426,10 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                 return;
             }
             if (wasXMLRoot) {
-                if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
+                if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                     String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                     if ((prefix == null) || prefix.length() == 0) {
-                        prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+                        prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                     }
                     if ((prefix == null) || prefix.length() == 0) {
                         xmlRootField.getXPathFragment().setGeneratedPrefix(true);
@@ -590,8 +588,8 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     private void writeSimpleValue(XMLField xmlRootField, DOMRecord row, AbstractSession session, Object originalObject, Object value, Node root, Node toReplace, boolean wasXMLRoot) {
         org.w3c.dom.Document doc = row.getDocument();
         if (wasXMLRoot) {
-            if (((XMLRoot) originalObject).getRootFragment().getNamespaceURI() != null) {
-                String prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getRootFragment().getNamespaceURI());
+            if (((XMLRoot) originalObject).getNamespaceURI() != null) {
+                String prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                 if ((prefix == null) || prefix.length() == 0) {
                     xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                     prefix = row.getNamespaceResolver().generatePrefix();
