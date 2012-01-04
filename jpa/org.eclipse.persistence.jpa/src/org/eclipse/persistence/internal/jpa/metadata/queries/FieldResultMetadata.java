@@ -18,17 +18,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+
+import org.eclipse.persistence.queries.EntityResult;
+import org.eclipse.persistence.queries.FieldResult;
 
 /**
  * INTERNAL:
  * Object to hold onto an field result metadata.
  * 
  * Key notes:
- * - any metadata mapped from XML to this class must be compared in the
+ * - all metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML must be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -38,7 +44,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class FieldResultMetadata extends ORMetadata {
-    // Both the name and column are required in XML and annotations.
     private String m_name;
     private String m_column;
     
@@ -93,6 +98,21 @@ public class FieldResultMetadata extends ORMetadata {
      */
     public String getName() {
         return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     * NOTE: Both the name and column are required in XML and annotations
+     * so that makes processing easier (no need for defaults).
+     */
+    public void process(EntityResult entityResult) {
+        DatabaseField field = new DatabaseField();
+        
+        // Process the name (taking into consideration delimiters etc.)
+        setFieldName(field, getColumn());
+        
+        // Add a field result to the entity result.
+        entityResult.addFieldResult(new FieldResult(getName(), field));
     }
     
     /**

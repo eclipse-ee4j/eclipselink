@@ -19,8 +19,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -29,8 +27,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import org.eclipse.persistence.queries.ColumnResult;
-import org.eclipse.persistence.queries.EntityResult;
-import org.eclipse.persistence.queries.FieldResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 
 /**
@@ -40,6 +36,8 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML must be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -71,7 +69,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
         m_name = (String) sqlResultSetMapping.getAttribute("name");
         
         for (Object entityResult : (Object[]) sqlResultSetMapping.getAttributeArray("entities")) {
-            m_entityResults.add(new EntityResultMetadata((MetadataAnnotation)entityResult, accessor));
+            m_entityResults.add(new EntityResultMetadata((MetadataAnnotation) entityResult, accessor));
         }
         
         for (Object columnResult : (Object[]) sqlResultSetMapping.getAttributeArray("columns")) {
@@ -140,6 +138,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
         
+        // Initialize lists of objects.
         initXMLObjects(m_entityResults, accessibleObject);
     }
     
@@ -148,54 +147,27 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * Process an sql result set mapping metadata into a EclipseLink 
      * SqlResultSetMapping and store it on the session.
      */
-    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {        
+    public void process(AbstractSession session, ClassLoader loader) {        
         // Initialize a new SqlResultSetMapping (with the metadata name)
         SQLResultSetMapping mapping = new SQLResultSetMapping(getName());
         
         // Process the entity results.
-        for (EntityResultMetadata eResult : m_entityResults) {
-            EntityResult entityResult = new EntityResult(MetadataHelper.getClassForName(eResult.getEntityClass().getName(), loader));
-        
-            // Process the field results.
-            if (eResult.hasFieldResults()) {
-                for (FieldResultMetadata fResult : eResult.getFieldResults()) {
-                    FieldResult fieldResult = new FieldResult(fResult.getName(), fResult.getColumn());
-                    if (project.useDelimitedIdentifier()) {
-                        fieldResult.getColumn().setUseDelimiters(true);
-                    } else if (project.getShouldForceFieldNamesToUpperCase() && !fieldResult.getColumn().shouldUseDelimiters()) {
-                        fieldResult.getColumn().useUpperCaseForComparisons(true);
-                    }
-                    entityResult.addFieldResult(fieldResult);
-                }
-            }
-        
-            // Process the discriminator value;
-            if (eResult.getDiscriminatorColumn() !=null){
-                DatabaseField descriminatorField = new DatabaseField(eResult.getDiscriminatorColumn());
-                if (project.useDelimitedIdentifier()) {
-                    descriminatorField.setUseDelimiters(true);
-                } else if (project.getShouldForceFieldNamesToUpperCase() && !descriminatorField.shouldUseDelimiters()){
-                    descriminatorField.useUpperCaseForComparisons(true);
-                }
-                entityResult.setDiscriminatorColumn(descriminatorField);
-            }
-        
-            // Add the result to the SqlResultSetMapping.
-            mapping.addResult(entityResult);
+        for (EntityResultMetadata entityResult : m_entityResults) {
+            entityResult.process(mapping, loader);
         }
         
         // Process the column results.
         for (String columnResult : m_columnResults) {
             ColumnResult result = new ColumnResult(columnResult);
-            if (project.useDelimitedIdentifier()) {
+            if (getProject().useDelimitedIdentifier()) {
                 result.getColumn().setUseDelimiters(true);
             }
-            if (project.getShouldForceFieldNamesToUpperCase()) {
+            if (getProject().getShouldForceFieldNamesToUpperCase()) {
                 result.getColumn().useUpperCaseForComparisons(true);
             }
             mapping.addResult(result);
         }
-            
+        
         session.getProject().addSQLResultSetMapping(mapping);
     }
     
@@ -203,9 +175,14 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    protected void setColumnResults(List<String> columnResults) {            
+    public void setColumnResults(List<String> columnResults) {            
         m_columnResults = columnResults; 
     }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     
     /**
      * INTERNAL:

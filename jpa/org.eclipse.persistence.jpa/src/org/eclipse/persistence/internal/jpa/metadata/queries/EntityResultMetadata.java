@@ -19,12 +19,16 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
+import org.eclipse.persistence.queries.EntityResult;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
 
 /**
  * INTERNAL:
@@ -33,6 +37,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML must be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -66,7 +72,7 @@ public class EntityResultMetadata extends ORMetadata {
         m_discriminatorColumn = (String) entityResult.getAttribute("discriminatorColumn");
         
         for (Object fieldResult : (Object[]) entityResult.getAttributeArray("fields")) {
-            m_fieldResults.add(new FieldResultMetadata((MetadataAnnotation)fieldResult, accessor));
+            m_fieldResults.add(new FieldResultMetadata((MetadataAnnotation) fieldResult, accessor));
         }
     }
     
@@ -126,13 +132,6 @@ public class EntityResultMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public boolean hasFieldResults() {
-        return m_fieldResults != null && ! m_fieldResults.isEmpty();
-    }
-    
-    /**
-     * INTERNAL:
-     */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
@@ -141,6 +140,34 @@ public class EntityResultMetadata extends ORMetadata {
         initXMLObjects(m_fieldResults, accessibleObject);
         
         m_entityClass = initXMLClassName(m_entityClassName);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the entity result for the given sql result set mapping.
+     */
+    public void process(SQLResultSetMapping mapping, ClassLoader loader) {
+        // Create a new entity result.
+        EntityResult entityResult = new EntityResult(MetadataHelper.getClassForName(getEntityClass().getName(), loader));
+    
+        // Process the field results.
+        for (FieldResultMetadata fieldResult : getFieldResults()) {
+            fieldResult.process(entityResult);
+        }
+    
+        // Process the discriminator value;
+        if (getDiscriminatorColumn() != null) {
+            DatabaseField discriminatorField = new DatabaseField();
+            
+            // Process the name (taking into consideration delimiters etc.)
+            setFieldName(discriminatorField, getDiscriminatorColumn());
+            
+            // Set the discriminator column on the entity result.
+            entityResult.setDiscriminatorColumn(discriminatorField);
+        }
+    
+        // Add the result to the SqlResultSetMapping.
+        mapping.addResult(entityResult);
     }
     
     /**

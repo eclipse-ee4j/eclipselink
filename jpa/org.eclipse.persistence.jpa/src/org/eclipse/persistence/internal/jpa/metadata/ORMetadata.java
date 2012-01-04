@@ -42,6 +42,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -50,7 +51,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
+import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLComplexTypeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 
 /**
  * INTERNAL:
@@ -211,6 +216,34 @@ public abstract class ORMetadata {
         }
         
         return (boxedTypes.containsKey(type)) ? boxedTypes.get(type) : type;
+    }
+    
+    /**
+     * Return the DataType enum constant for the String type name.
+     * If not a type defined by the enums, then return a record type.
+     */
+    protected DatabaseType getDatabaseTypeEnum(String type) {
+        if (type == null) {
+            return JDBCTypes.VARCHAR_TYPE;
+        }
+        
+        try {
+            return JDBCTypes.valueOf(type);
+        } catch (Exception invalid) {
+            try {
+                return OraclePLSQLTypes.valueOf(type);
+            } catch (Exception alsoInvalid) {
+                PLSQLComplexTypeMetadata typeMetadata = getProject().getPLSQLComplexType(type);
+                
+                if (typeMetadata != null) {
+                    return typeMetadata.process();
+                }
+                
+                PLSQLrecord record = new PLSQLrecord();
+                record.setTypeName(type);
+                return record;
+            }
+        }
     }
     
     /**

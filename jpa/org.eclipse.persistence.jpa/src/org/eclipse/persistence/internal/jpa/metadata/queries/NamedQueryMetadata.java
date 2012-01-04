@@ -25,7 +25,6 @@ import java.util.Map;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -38,6 +37,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -150,7 +151,7 @@ public class NamedQueryMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
+    public void process(AbstractSession session, ClassLoader loader) {
         try {
             Map<String, Object> hints = processQueryHints(session);
             session.addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), hints));

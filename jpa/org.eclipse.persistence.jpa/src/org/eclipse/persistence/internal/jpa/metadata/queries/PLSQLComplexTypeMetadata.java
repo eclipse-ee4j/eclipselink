@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -25,6 +24,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -74,52 +75,74 @@ public abstract class PLSQLComplexTypeMetadata extends ORMetadata {
                 return false;
             }
             
-            if (! valuesMatch(this.javaType, parameter.getJavaType())) {
-                return false;
-            }
+            return valuesMatch(this.javaType, parameter.getJavaType());
         }
         
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getCompatibleType() {
+        return compatibleType;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getJavaType() {
+        return javaType;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getName() {
+        return name;
+    }
     
     /**
      * Build a runtime type from the meta-data.
      */
-    public abstract ComplexDatabaseType process(MetadataProject project);
+    public abstract ComplexDatabaseType process();
     
     /**
      * Build a runtime record type from the meta-data.
      */
-    public void process(ComplexDatabaseType type, MetadataProject project) {
+    protected void process(ComplexDatabaseType type) {
         type.setTypeName(this.name);
         type.setCompatibleType(this.compatibleType);
+        
         if (this.javaType != null) {
             type.setJavaType(getJavaClass(getMetadataClass(this.javaType)));
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCompatibleType() {
-        return compatibleType;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setCompatibleType(String compatibleType) {
         this.compatibleType = compatibleType;
     }
-
-    public String getJavaType() {
-        return javaType;
-    }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setJavaType(String javaType) {
         this.javaType = javaType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }

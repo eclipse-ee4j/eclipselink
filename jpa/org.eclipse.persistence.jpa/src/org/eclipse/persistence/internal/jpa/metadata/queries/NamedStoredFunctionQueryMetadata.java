@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -30,12 +29,14 @@ import org.eclipse.persistence.queries.StoredFunctionCall;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
  * 
- * @author James
+ * @author James Sutherland
  * @since EclipseLink 2.3
  */
 public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryMetadata {
@@ -98,18 +99,18 @@ public class NamedStoredFunctionQueryMetadata extends NamedStoredProcedureQueryM
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
+    public void process(AbstractSession session, ClassLoader loader) {
         // Build the stored procedure call.
         StoredFunctionCall call = new StoredFunctionCall();
         
         // Process the stored procedure parameters.
-        boolean callByIndex = (m_callByIndex == null) ? false : m_callByIndex;
+        boolean callByIndex = callByIndex();
         for (StoredProcedureParameterMetadata parameter : getParameters()) {
-            parameter.process(call, project, callByIndex, false);
+            parameter.process(call, callByIndex, false);
         }
         
         if (getReturnParameter() != null) {
-            getReturnParameter().process(call, project, callByIndex, true);
+            getReturnParameter().process(call, callByIndex, true);
         }
         
         // Process the procedure name.

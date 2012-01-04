@@ -19,11 +19,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 
 /**
  * INTERNAL:
@@ -32,6 +29,8 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -122,31 +121,6 @@ public class PLSQLParameterMetadata extends ORMetadata {
     }
     
     /**
-     * Return the DataType enum constant for the String type name.
-     * If not a type defined by the enums, then return a record type.
-     */
-    public static DatabaseType getDatabaseTypeEnum(String type, MetadataProject project) {
-        if (type == null) {
-            return JDBCTypes.VARCHAR_TYPE;
-        }
-        try {
-            return JDBCTypes.valueOf(type);
-        } catch (Exception invalid) {
-            try {
-                return OraclePLSQLTypes.valueOf(type);
-            } catch (Exception alsoInvalid) {
-                PLSQLComplexTypeMetadata typeMetadata = project.getPLSQLComplexType(type);
-                if (typeMetadata != null) {
-                    return typeMetadata.process(project);
-                }
-                PLSQLrecord record = new PLSQLrecord();
-                record.setTypeName(type);
-                return record;
-            }
-        }
-    }
-    
-    /**
      * INTERNAL:
      * Used for OX mapping.
      */
@@ -205,7 +179,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void process(PLSQLStoredProcedureCall call, MetadataProject project, boolean functionReturn) {
+    public void process(PLSQLStoredProcedureCall call, boolean functionReturn) {
                     
         // Process the procedure parameter name, defaults to the 
         // argument field name.
@@ -218,7 +192,9 @@ public class PLSQLParameterMetadata extends ORMetadata {
         if ((m_optional != null) && m_optional) {
             call.addOptionalArgument(procedureParameterName);
         }
-        DatabaseType type = getDatabaseTypeEnum(getDatabaseType(), project);
+        
+        DatabaseType type = getDatabaseTypeEnum(getDatabaseType());
+        
         // Process the parameter direction
         if (functionReturn) {
             if (getLength() != null) {

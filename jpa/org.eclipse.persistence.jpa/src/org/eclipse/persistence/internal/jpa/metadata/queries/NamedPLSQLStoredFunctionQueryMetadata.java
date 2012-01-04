@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -27,7 +26,17 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctio
  * INTERNAL:
  * Object to hold onto a named PLSQL stored function query.
  * 
- * @author James
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - all metadata mapped from XML must be initialized in the initXMLObject 
+ *   method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
+ * @author James Sutherland
  * @since EclipseLink 2.3
  */
 public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProcedureQueryMetadata {
@@ -81,25 +90,26 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
         
-        // Initialize parameters ...
-        initXMLObject(this.returnParameter, accessibleObject);
+        // Initialize the return parameter.
+        initXMLObject(returnParameter, accessibleObject);
     }
 
     /**
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
+    public void process(AbstractSession session, ClassLoader loader) {
         // Build the stored procedure call.
         PLSQLStoredFunctionCall call = new PLSQLStoredFunctionCall();
         
         // Process the stored procedure parameters.
         for (PLSQLParameterMetadata parameter : getParameters()) {
-            parameter.process(call, project, false);
+            parameter.process(call, false);
         }
         
+        // Process the return parameter.
         if (getReturnParameter() != null) {
-            getReturnParameter().process(call, project, true);
+            getReturnParameter().process(call, true);
         }
         
         // Process the procedure name.

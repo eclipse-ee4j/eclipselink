@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -36,6 +35,8 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -47,9 +48,10 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata {
     private Boolean m_multipleResultSets;
     private Boolean m_returnsResultSet;
-    protected Boolean m_callByIndex;
+    private Boolean m_callByIndex;
 
     private List<StoredProcedureParameterMetadata> m_parameters = new ArrayList<StoredProcedureParameterMetadata>();
+    
     private String m_procedureName;
     
     /**
@@ -71,9 +73,9 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         }
         
         m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
-        m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
-        m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttribute("multipleResultSets");
-        m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttribute("callByIndex");
+        m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttributeBooleanDefaultFalse("returnsResultSet");
+        m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttributeBooleanDefaultFalse("multipleResultSets");
+        m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttributeBooleanDefaultFalse("callByIndex");
     }
     
     /**
@@ -87,6 +89,13 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
+    public boolean callByIndex() {
+        return m_callByIndex == null ? false : m_callByIndex; 
+    }
+    
+    /**
+     * INTERNAL:
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof NamedStoredProcedureQueryMetadata) {
@@ -95,9 +104,11 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
             if (! valuesMatch(m_returnsResultSet, query.getReturnsResultSet())) {
                 return false;
             }
+            
             if (! valuesMatch(m_callByIndex, query.getCallByIndex())) {
                 return false;
             }
+            
             if (! valuesMatch(m_multipleResultSets, query.getMultipleResultSets())) {
                 return false;
             }
@@ -155,6 +166,13 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
+    public boolean hasMultipleResultSets() {
+        return m_multipleResultSets == null ? false : m_multipleResultSets; 
+    }
+    
+    /**
+     * INTERNAL:
+     */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
@@ -167,23 +185,24 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
+    public void process(AbstractSession session, ClassLoader loader) {
         // Build the stored procedure call.
         StoredProcedureCall call = new StoredProcedureCall();
         
         // Process the stored procedure parameters.
-        boolean callByIndex = (m_callByIndex == null) ? false : m_callByIndex;
+        boolean callByIndex = callByIndex();
         for (StoredProcedureParameterMetadata parameter : m_parameters) {
-            parameter.process(call, project, callByIndex, false);
+            parameter.process(call, callByIndex, false);
         }
         
         // Process the procedure name.
         call.setProcedureName(m_procedureName);
         
         // Process the returns result set.
-        call.setReturnsResultSet((m_returnsResultSet == null) ? false : m_returnsResultSet);
+        call.setReturnsResultSet(returnsResultSet());
         
-        call.setHasMultipleResultSets((m_multipleResultSets == null) ? false : m_multipleResultSets);
+        // Process the multiple result sets.
+        call.setHasMultipleResultSets(hasMultipleResultSets());
         
         // Process the query hints.
         Map<String, Object> hints = processQueryHints(session);
@@ -199,6 +218,13 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         } else {
             session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, hints, loader, session));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean returnsResultSet() {
+        return m_returnsResultSet == null ? false : m_returnsResultSet; 
     }
     
     /**

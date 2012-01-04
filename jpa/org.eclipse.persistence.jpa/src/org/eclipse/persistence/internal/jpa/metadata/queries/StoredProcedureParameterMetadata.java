@@ -18,7 +18,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import org.eclipse.persistence.annotations.Direction;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -35,6 +34,8 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -151,6 +152,14 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public Boolean getOptional() {
+        return m_optional;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getQueryParameter() {
         return m_queryParameter;
     }
@@ -204,7 +213,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void process(StoredProcedureCall call, MetadataProject project, boolean callByIndex, boolean functionReturn) {                    
+    public void process(StoredProcedureCall call, boolean callByIndex, boolean functionReturn) {                    
         // Process the procedure parameter name, defaults to the 
         // argument field name.
         // TODO: Log a message when defaulting.
@@ -230,101 +239,104 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         } else if (m_direction == null || m_direction.equals(Direction.IN.name())) {
             // TODO: Log a defaulting message if m_direction is null.
             if (hasType()) {
-                if (!callByIndex) {
-                    call.addNamedArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
+                if (callByIndex) {
+                    call.addUnamedArgument(m_queryParameter, getJavaClass(m_type));
                 } else {
-                    call.addUnamedArgument(m_queryParameter, getJavaClass(m_type));                    
+                    call.addNamedArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));                    
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
-                if (!callByIndex) {
-                    call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                } else {
+                if (callByIndex) {
                     call.addUnamedArgument(m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                } else {
+                    call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
                 }
             } else if (hasJdbcType()) {
-                if (!callByIndex) {
-                    call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType);
-                } else {
+                if (callByIndex) {
                     call.addUnamedArgument(m_queryParameter, m_jdbcType);
+                } else {
+                    call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType);
                 }
             } else {
-                if (!callByIndex) {
-                    call.addNamedArgument(procedureParameterName, m_queryParameter);
-                } else {
+                if (callByIndex) {
                     call.addUnamedArgument(m_queryParameter);
+                } else {
+                    call.addNamedArgument(procedureParameterName, m_queryParameter);
                 }
             }
         } else if (m_direction.equals(Direction.OUT.name())) {
             if (hasType()) {
-                if (!callByIndex) {
-                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
-                } else {
+                if (callByIndex) {
                     call.addUnamedOutputArgument(m_queryParameter, getJavaClass(m_type));
+                } else {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, getJavaClass(m_type));
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
-                if (!callByIndex) {
-                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                } else {
+                if (callByIndex) {
                     call.addUnamedOutputArgument(m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                } else {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
                 }
             } else if (hasJdbcType()) {
                 if (callByIndex) {
-                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType);
-                } else {
                     call.addUnamedOutputArgument(m_queryParameter, m_jdbcType);
+                } else {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType);
                 }
             } else {
-                if (!callByIndex) {
-                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
-                } else {
+                if (callByIndex) {
                     call.addUnamedOutputArgument(m_queryParameter);
+                } else {
+                    call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
                 }
             }
+            
             //set the project level settings on the argument's database fields
-            setDatabaseFieldSettings((DatabaseField)call.getParameters().get(call.getParameters().size() - 1), project);
+            setDatabaseFieldSettings((DatabaseField)call.getParameters().get(call.getParameters().size() - 1));
         } else if (m_direction.equals(Direction.IN_OUT.name())) {
             if (hasType()) {
-                if (!callByIndex) {
-                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, getJavaClass(m_type));
-                } else {
+                if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, getJavaClass(m_type));
+                } else {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, getJavaClass(m_type));
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
-                if (!callByIndex) {
-                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                } else {
+                if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                } else {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
                 }
             } else if (hasJdbcType()) {
-                if (!callByIndex) {
-                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType);
-                } else {
+                if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType);
+                } else {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType);
                 }
             } else {
-                if (!callByIndex) {
-                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter);
-                } else {
+                if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter);
+                } else {
+                    call.addNamedInOutputArgument(procedureParameterName, m_queryParameter);
                 }
             }
+            
             //set the project level settings on the argument's out database field
             Object[] array = (Object[])call.getParameters().get(call.getParameters().size() - 1);
             if (array[0] == array[1]){
                 array[1] = ((DatabaseField)array[1]).clone();
             }
-            setDatabaseFieldSettings((DatabaseField)array[1], project);
+            setDatabaseFieldSettings((DatabaseField) array[1]);
         } else if (m_direction.equals(Direction.OUT_CURSOR.name())) {
-            boolean multipleCursors = false;
-            if (call.getParameterTypes().contains(call.OUT_CURSOR)) {
-                multipleCursors = true;
-            }
-            if (!callByIndex) {
-                call.useNamedCursorOutputAsResultSet(m_queryParameter);
-            } else {
+            boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
+            
+            if (callByIndex) {
                 call.useUnnamedCursorOutputAsResultSet();
+            } else {
+                call.useNamedCursorOutputAsResultSet(m_queryParameter);
             }
-            // There are multiple cursor output parameters, then do not use the cursor as the result set.
+            
+            // There are multiple cursor output parameters, then do not use the 
+            // cursor as the result set. This will be set to true in the calls
+            // above so we must do the multiple cursor call before hand.
             if (multipleCursors) {
                 call.setIsCursorOutputProcedure(false);
             }
@@ -335,10 +347,10 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      * set the project level settings on the database fields
      */
-    protected void setDatabaseFieldSettings(DatabaseField field, MetadataProject project){
-        if (project.useDelimitedIdentifier()) {
+    protected void setDatabaseFieldSettings(DatabaseField field) {
+        if (getProject().useDelimitedIdentifier()) {
             field.setUseDelimiters(true);
-        } else if (project.getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
+        } else if (getProject().getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
             field.useUpperCaseForComparisons(true);
         }
     }
@@ -379,6 +391,14 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setOptional(Boolean optional) {
+        m_optional = optional;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setQueryParameter(String queryParameter) {
         m_queryParameter = queryParameter;
     }
@@ -396,13 +416,5 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      */
     public void setTypeName(String typeName) {
         m_typeName = typeName;
-    }
-    
-    public Boolean getOptional() {
-        return m_optional;
-    }
-
-    public void setOptional(Boolean optional) {
-        m_optional = optional;
     }
 }

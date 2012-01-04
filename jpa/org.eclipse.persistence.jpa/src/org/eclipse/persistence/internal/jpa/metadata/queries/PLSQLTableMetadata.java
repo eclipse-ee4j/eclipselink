@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
@@ -24,6 +23,8 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -81,10 +82,10 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
      * INTERNAL:
      * Build a runtime record type from the meta-data.
      */
-    public PLSQLCollection process(MetadataProject project) {
+    public PLSQLCollection process() {
         PLSQLCollection table = new PLSQLCollection();
-        super.process(table, project);
-        table.setNestedType(PLSQLParameterMetadata.getDatabaseTypeEnum(this.nestedType, project));
+        super.process(table);
+        table.setNestedType(getDatabaseTypeEnum(getNestedType()));
         return table;
     }
 
@@ -95,5 +96,4 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
     public void setNestedType(String nestedType) {
         this.nestedType = nestedType;
     }
-    
 }

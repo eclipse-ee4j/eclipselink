@@ -15,9 +15,10 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 
@@ -28,6 +29,8 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -55,7 +58,7 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
         super(record, accessor);
                 
         for (Object field : (Object[]) record.getAttributeArray("fields")) {
-            this.fields.add(new PLSQLParameterMetadata((MetadataAnnotation)field, accessor));
+            this.fields.add(new PLSQLParameterMetadata((MetadataAnnotation) field, accessor));
         }
     }
     
@@ -85,26 +88,43 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(fields, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
      * Build a runtime record type from the meta-data.
      */
-    public PLSQLrecord process(MetadataProject project) {
+    public PLSQLrecord process() {
         PLSQLrecord record = new PLSQLrecord();
-        super.process(record, project);
+        super.process(record);
+        
         for (PLSQLParameterMetadata field : this.fields) {
             PLSQLargument argument = new PLSQLargument();
             argument.name = field.getName();
-            argument.databaseType = field.getDatabaseTypeEnum(field.getDatabaseType(), project);
+            argument.databaseType = getDatabaseTypeEnum(field.getDatabaseType());
+            
             if (field.getLength() != null) {
                 argument.length = field.getLength();
             }
+            
             if (field.getPrecision() != null) {
                 argument.precision = field.getPrecision();
             }
+            
             if (field.getScale() != null) {
                 argument.scale = field.getScale();
             }
+            
             record.addField(argument);
         }
+        
         return record;
     }
 

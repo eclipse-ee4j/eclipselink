@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -36,6 +35,8 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - all metadata mapped from XML should be initialized in the initXMLObject 
+ *   method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -127,13 +128,13 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
+    public void process(AbstractSession session, ClassLoader loader) {
         // Build the stored procedure call.
         PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
         
         // Process the stored procedure parameters.
         for (PLSQLParameterMetadata parameter : m_parameters) {
-            parameter.process(call, project, false);
+            parameter.process(call, false);
         }
         
         // Process the procedure name.
