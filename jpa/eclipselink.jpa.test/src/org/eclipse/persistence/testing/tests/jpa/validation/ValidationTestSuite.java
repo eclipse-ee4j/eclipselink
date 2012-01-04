@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -42,14 +42,17 @@ public class ValidationTestSuite extends JUnitTestCase {
     }
     
     public static Test suite() {
-        return new TestSuite(ValidationTestSuite.class) {
+        TestSuite suite = new TestSuite(ValidationTestSuite.class) {
         
             protected void setUp(){
             }
 
             protected void tearDown() {
             }
+            
         };
+        suite.setName("ValidationTestSuite");
+        return suite;
     }
     
     public void testCacheIsolation_PropertiesDefault_Config() throws Exception {
@@ -149,6 +152,42 @@ public class ValidationTestSuite extends JUnitTestCase {
             return;
         }
         fail("Failed to throw expected IllegalArgumentException, when incorrect PKClass is used in find call");
+    }
+    
+    /**
+     * Bug 367007 - map values of javax.persistence.validation.mode are incorrectly throwing exception
+     * Create an EntityManager with valid parameter values for javax.persistence.validation.mode
+     */
+    public void testValidValidationModes() {
+        // test only applicable to JPA 2.0 and above
+        if (isJPA10()) {
+            return;
+        }
+        String property = "javax.persistence.validation.mode";
+        String[] validationModes = { 
+                "none", "NONE", "NoNe", ValidationMode.NONE.name(),
+                "auto", "AUTO", "AuTo", ValidationMode.AUTO.name(),
+        };
+        
+        // close the emf first to allow properties to be specified
+        closeEntityManagerFactory();
+        
+        for (String validationMode : validationModes) {
+            EntityManager em = null;
+            try {
+                Map<String, String> props = new HashMap<String, String>();
+                props.putAll(JUnitTestCaseHelper.getDatabaseProperties());
+                props.put(property, validationMode);
+                em = createEntityManager(props);
+            } catch (RuntimeException exception) {
+                fail("Exception caught when passing property: [" + property + "] = [" + validationMode + "] when creating an EntityManager: " + exception.getMessage());
+            } finally {
+                if (em != null) {
+                    closeEntityManager(em);
+                }
+                closeEntityManagerFactory();
+            }
+        }
     }
     
     public class tmpDataSourceImp implements DataSource{
