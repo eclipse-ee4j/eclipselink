@@ -118,6 +118,9 @@ public class JAXBBinder extends Binder {
         if (null == obj) {
             throw new IllegalArgumentException();
         }
+        if(obj instanceof JAXBElement && !(obj instanceof WrappedValue)) {
+            return xmlBinder.getXMLNode(((JAXBElement)obj).getValue());
+        }
         
         return xmlBinder.getXMLNode(obj);
     }
