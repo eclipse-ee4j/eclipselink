@@ -320,14 +320,36 @@ public class MappingsGenerator {
         xmlDescriptor.setInstantiationPolicy(policy);
         JavaClass paramClass = helper.getJavaClass(factoryMethodParamTypes[0]);
         if(helper.isBuiltInJavaType(paramClass)){
-            XMLDirectMapping mapping = new XMLDirectMapping();
-            mapping.setAttributeName("value");
-            mapping.setGetMethodName("getValue");
-            mapping.setSetMethodName("setValue");
-            mapping.setXPath("text()");
-            Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
-            mapping.setAttributeClassification(attributeClassification);
-            xmlDescriptor.addMapping(mapping);
+            if(isBinaryData(paramClass)){
+                XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
+                mapping.setAttributeName("value");
+                mapping.setXPath(".");
+                ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                mapping.setSetMethodName("setValue");
+                mapping.setGetMethodName("getValue");
+
+                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
+                mapping.setAttributeClassification(attributeClassification);
+
+                mapping.setShouldInlineBinaryData(false);
+                if(mapping.getMimeType() == null) {
+                    if(areEquals(paramClass, javax.xml.transform.Source.class)) {
+                        mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/xml"));
+                    } else {
+                        mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
+                    }                       
+                }
+                xmlDescriptor.addMapping(mapping); 
+            } else {
+                XMLDirectMapping mapping = new XMLDirectMapping();
+                mapping.setAttributeName("value");
+                mapping.setGetMethodName("getValue");
+                mapping.setSetMethodName("setValue");
+                mapping.setXPath("text()");
+                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
+                mapping.setAttributeClassification(attributeClassification);
+                xmlDescriptor.addMapping(mapping);
+            }
         }else{
             XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
             mapping.setAttributeName("value");

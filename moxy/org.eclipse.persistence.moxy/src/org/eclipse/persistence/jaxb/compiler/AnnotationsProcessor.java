@@ -1166,12 +1166,12 @@ public class AnnotationsProcessor {
         if (factoryMethod != null) {
             // set up factory method info for mappings.
             info.setFactoryMethodName(factoryMethod.getName());
-            info.setObjectFactoryClassName(factoryMethod.getOwningClass().getRawName());
+            info.setObjectFactoryClassName(factoryMethod.getOwningClass().getQualifiedName());
             JavaClass[] paramTypes = factoryMethod.getParameterTypes();
             if (paramTypes != null && paramTypes.length > 0) {
                 String[] paramTypeNames = new String[paramTypes.length];
                 for (int i = 0; i < paramTypes.length; i++) {
-                    paramTypeNames[i] = paramTypes[i].getRawName();
+                    paramTypeNames[i] = paramTypes[i].getQualifiedName();
                 }
                 info.setFactoryMethodParamTypes(paramTypeNames);
             }
