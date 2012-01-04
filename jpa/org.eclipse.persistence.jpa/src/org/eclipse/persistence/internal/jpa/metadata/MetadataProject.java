@@ -415,26 +415,6 @@ public class MetadataProject {
     }
     
     /**
-     * Add the partitioning policy by name.
-     */
-    public void addPartitioningPolicy(AbstractPartitioningMetadata policy) {
-        // Check for another policy with the same name.
-        if (policy.shouldOverride(m_partitioningPolicies.get(policy.getName()))) {
-            m_partitioningPolicies.put(policy.getName(), policy);
-        }
-    }
-
-    /**
-     * Add the named PLSQL type.
-     */
-    public void addPLSQLComplexType(PLSQLComplexTypeMetadata type) {
-        // Check for another type with the same name.
-        if (type.shouldOverride(m_plsqlComplexTypes.get(type.getName()))) {
-            m_plsqlComplexTypes.put(type.getName(), type);
-        }
-    }
-    
-    /**
      * INTERNAL:
      */
     public void addDefaultListener(EntityListenerMetadata defaultListener) {
@@ -627,6 +607,28 @@ public class MetadataProject {
              * See MetamodelImpl.initialize()
              */
             m_session.getProject().addMappedSuperclass(accessor.getJavaClassName(), metadataDescriptor.getClassDescriptor());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the partitioning policy by name.
+     */
+    public void addPartitioningPolicy(AbstractPartitioningMetadata policy) {
+        // Check for another policy with the same name.
+        if (policy.shouldOverride(m_partitioningPolicies.get(policy.getName()))) {
+            m_partitioningPolicies.put(policy.getName(), policy);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Add the named PLSQL type.
+     */
+    public void addPLSQLComplexType(PLSQLComplexTypeMetadata type) {
+        // Check for another type with the same name.
+        if (type.shouldOverride(m_plsqlComplexTypes.get(type.getName()))) {
+            m_plsqlComplexTypes.put(type.getName(), type);
         }
     }
     
@@ -923,20 +925,6 @@ public class MetadataProject {
     public AbstractConverterMetadata getConverter(String name) {
         return m_converters.get(name);
     }
-
-    /**
-     * Return the named partitioning policy.
-     */
-    public AbstractPartitioningMetadata getPartitioningPolicy(String name) {
-        return m_partitioningPolicies.get(name);
-    }
-
-    /**
-     * Return the named PLSQL type.
-     */
-    public PLSQLComplexTypeMetadata getPLSQLComplexType(String name) {
-        return m_plsqlComplexTypes.get(name);
-    }
     
     /**
      * INTERNAL:
@@ -1087,6 +1075,14 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Return the named partitioning policy.
+     */
+    public AbstractPartitioningMetadata getPartitioningPolicy(String name) {
+        return m_partitioningPolicies.get(name);
+    }
+    
+    /**
+     * INTERNAL:
      * Return the persistence unit default catalog.
      */
     protected String getPersistenceUnitDefaultCatalog() {
@@ -1121,6 +1117,14 @@ public class MetadataProject {
      */
     public XMLPersistenceUnitMetadata getPersistenceUnitMetadata() {
         return m_persistenceUnitMetadata;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the named PLSQL type.
+     */
+    public PLSQLComplexTypeMetadata getPLSQLComplexType(String name) {
+        return m_plsqlComplexTypes.get(name);
     }
     
     /**
