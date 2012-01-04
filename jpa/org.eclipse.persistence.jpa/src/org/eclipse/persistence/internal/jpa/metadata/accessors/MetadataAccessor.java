@@ -150,15 +150,15 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     private MetadataDescriptor m_descriptor;
 
-    protected PartitioningMetadata partitioning;
-    protected ReplicationPartitioningMetadata replicationPartitioning;
-    protected RoundRobinPartitioningMetadata roundRobinPartitioning;
-    protected PinnedPartitioningMetadata pinnedPartitioning;
-    protected RangePartitioningMetadata rangePartitioning;
-    protected ValuePartitioningMetadata valuePartitioning;
-    protected UnionPartitioningMetadata unionPartitioning;
-    protected HashPartitioningMetadata hashPartitioning;
-    protected String partitioned;
+    private PartitioningMetadata m_partitioning;
+    private ReplicationPartitioningMetadata m_replicationPartitioning;
+    private RoundRobinPartitioningMetadata m_roundRobinPartitioning;
+    private PinnedPartitioningMetadata m_pinnedPartitioning;
+    private RangePartitioningMetadata m_rangePartitioning;
+    private ValuePartitioningMetadata m_valuePartitioning;
+    private UnionPartitioningMetadata m_unionPartitioning;
+    private HashPartitioningMetadata m_hashPartitioning;
+    private String m_partitioned;
     
     private String m_access;
     private String m_name;
@@ -321,7 +321,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public HashPartitioningMetadata getHashPartitioning() {
-        return hashPartitioning;
+        return m_hashPartitioning;
     }
     
     /**
@@ -370,7 +370,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public String getPartitioned() {
-        return partitioned;
+        return m_partitioned;
     }
     
     /**
@@ -378,7 +378,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public PartitioningMetadata getPartitioning() {
-        return partitioning;
+        return m_partitioning;
     }
 
     /**
@@ -386,7 +386,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public PinnedPartitioningMetadata getPinnedPartitioning() {
-        return pinnedPartitioning;
+        return m_pinnedPartitioning;
     }
     
     /**
@@ -402,7 +402,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public RangePartitioningMetadata getRangePartitioning() {
-        return rangePartitioning;
+        return m_rangePartitioning;
     }
     
     /**
@@ -506,7 +506,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public ReplicationPartitioningMetadata getReplicationPartitioning() {
-        return replicationPartitioning;
+        return m_replicationPartitioning;
     }
 
     /**
@@ -514,7 +514,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public RoundRobinPartitioningMetadata getRoundRobinPartitioning() {
-        return roundRobinPartitioning;
+        return m_roundRobinPartitioning;
     }
     
     /**
@@ -538,7 +538,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public UnionPartitioningMetadata getUnionPartitioning() {
-        return unionPartitioning;
+        return m_unionPartitioning;
     }
     
     /**
@@ -572,7 +572,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public ValuePartitioningMetadata getValuePartitioning() {
-        return valuePartitioning;
+        return m_valuePartitioning;
     }
     
     /**
@@ -624,14 +624,14 @@ public abstract class MetadataAccessor extends ORMetadata {
         // Initialize single objects.
         initXMLObject(m_accessMethods, accessibleObject);
         
-        initXMLObject(this.partitioning, accessibleObject);
-        initXMLObject(this.replicationPartitioning, accessibleObject);
-        initXMLObject(this.roundRobinPartitioning, accessibleObject);
-        initXMLObject(this.pinnedPartitioning, accessibleObject);
-        initXMLObject(this.rangePartitioning, accessibleObject);
-        initXMLObject(this.valuePartitioning, accessibleObject);
-        initXMLObject(this.hashPartitioning, accessibleObject);
-        initXMLObject(this.unionPartitioning, accessibleObject);
+        initXMLObject(m_partitioning, accessibleObject);
+        initXMLObject(m_replicationPartitioning, accessibleObject);
+        initXMLObject(m_roundRobinPartitioning, accessibleObject);
+        initXMLObject(m_pinnedPartitioning, accessibleObject);
+        initXMLObject(m_rangePartitioning, accessibleObject);
+        initXMLObject(m_valuePartitioning, accessibleObject);
+        initXMLObject(m_hashPartitioning, accessibleObject);
+        initXMLObject(m_unionPartitioning, accessibleObject);
         
         // Initialize lists of objects.
         initXMLObjects(m_converters, accessibleObject);
@@ -674,15 +674,15 @@ public abstract class MetadataAccessor extends ORMetadata {
         m_typeConverters = mergeORObjectLists(m_typeConverters, accessor.getTypeConverters());
         m_properties = mergeORObjectLists(m_properties, accessor.getProperties());
         
-        this.partitioned = (String) mergeSimpleObjects(this.partitioned, accessor.getPartitioned(), accessor, "<partitioned>");
-        this.partitioning = (PartitioningMetadata) mergeORObjects(this.partitioning, accessor.getPartitioning());
-        this.replicationPartitioning = (ReplicationPartitioningMetadata) mergeORObjects(this.replicationPartitioning, accessor.getReplicationPartitioning());
-        this.roundRobinPartitioning = (RoundRobinPartitioningMetadata) mergeORObjects(this.roundRobinPartitioning, accessor.getRoundRobinPartitioning());
-        this.pinnedPartitioning = (PinnedPartitioningMetadata) mergeORObjects(this.pinnedPartitioning, accessor.getPinnedPartitioning());
-        this.rangePartitioning = (RangePartitioningMetadata) mergeORObjects(this.rangePartitioning, accessor.getRangePartitioning());
-        this.valuePartitioning = (ValuePartitioningMetadata) mergeORObjects(this.valuePartitioning, accessor.getValuePartitioning());
-        this.hashPartitioning = (HashPartitioningMetadata) mergeORObjects(this.hashPartitioning, accessor.getHashPartitioning());
-        this.unionPartitioning = (UnionPartitioningMetadata) mergeORObjects(this.unionPartitioning, accessor.getUnionPartitioning());
+        m_partitioned = (String) mergeSimpleObjects(m_partitioned, accessor.getPartitioned(), accessor, "<partitioned>");
+        m_partitioning = (PartitioningMetadata) mergeORObjects(m_partitioning, accessor.getPartitioning());
+        m_replicationPartitioning = (ReplicationPartitioningMetadata) mergeORObjects(m_replicationPartitioning, accessor.getReplicationPartitioning());
+        m_roundRobinPartitioning = (RoundRobinPartitioningMetadata) mergeORObjects(m_roundRobinPartitioning, accessor.getRoundRobinPartitioning());
+        m_pinnedPartitioning = (PinnedPartitioningMetadata) mergeORObjects(m_pinnedPartitioning, accessor.getPinnedPartitioning());
+        m_rangePartitioning = (RangePartitioningMetadata) mergeORObjects(m_rangePartitioning, accessor.getRangePartitioning());
+        m_valuePartitioning = (ValuePartitioningMetadata) mergeORObjects(m_valuePartitioning, accessor.getValuePartitioning());
+        m_hashPartitioning = (HashPartitioningMetadata) mergeORObjects(m_hashPartitioning, accessor.getHashPartitioning());
+        m_unionPartitioning = (UnionPartitioningMetadata) mergeORObjects(m_unionPartitioning, accessor.getUnionPartitioning());
     }
     
     /**
@@ -783,37 +783,37 @@ public abstract class MetadataAccessor extends ORMetadata {
     protected void processPartitioning() {
         boolean found = false;
         // Check for XML defined partitioning.
-        if (this.replicationPartitioning != null) {
+        if (m_replicationPartitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.replicationPartitioning);
+            getProject().addPartitioningPolicy(m_replicationPartitioning);
         }
-        if (this.roundRobinPartitioning != null) {
+        if (m_roundRobinPartitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.roundRobinPartitioning);
+            getProject().addPartitioningPolicy(m_roundRobinPartitioning);
         }
-        if (this.partitioning != null) {
+        if (m_partitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.partitioning);
+            getProject().addPartitioningPolicy(m_partitioning);
         }
-        if (this.rangePartitioning != null) {
+        if (m_rangePartitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.rangePartitioning);
+            getProject().addPartitioningPolicy(m_rangePartitioning);
         }
-        if (this.valuePartitioning != null) {
+        if (m_valuePartitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.valuePartitioning);
+            getProject().addPartitioningPolicy(m_valuePartitioning);
         }
-        if (this.hashPartitioning != null) {
+        if (m_hashPartitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.hashPartitioning);
+            getProject().addPartitioningPolicy(m_hashPartitioning);
         }
-        if (this.unionPartitioning != null) {
+        if (m_unionPartitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.unionPartitioning);
+            getProject().addPartitioningPolicy(m_unionPartitioning);
         }
-        if (this.pinnedPartitioning != null) {
+        if (m_pinnedPartitioning != null) {
             found = true;
-            getProject().addPartitioningPolicy(this.pinnedPartitioning);
+            getProject().addPartitioningPolicy(m_pinnedPartitioning);
         }
         
         // Check for partitioning annotations.
@@ -863,9 +863,9 @@ public abstract class MetadataAccessor extends ORMetadata {
             getProject().addPartitioningPolicy(new HashPartitioningMetadata(annotation, this));
         }
         boolean processed = false;
-        if (this.partitioned != null) {
+        if (m_partitioned != null) {
             processed = true;
-            processPartitioned(this.partitioned);
+            processPartitioned(m_partitioned);
         }
         annotation = getAnnotation(Partitioned.class);
         if (!processed && annotation != null) {
@@ -1040,7 +1040,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setHashPartitioning(HashPartitioningMetadata hashPartitioning) {
-        this.hashPartitioning = hashPartitioning;
+        m_hashPartitioning = hashPartitioning;
     }
     
     /**
@@ -1064,7 +1064,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setPartitioned(String partitioned) {
-        this.partitioned = partitioned;
+        m_partitioned = partitioned;
     }
 
     /**
@@ -1072,7 +1072,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setPartitioning(PartitioningMetadata partitioning) {
-        this.partitioning = partitioning;
+        m_partitioning = partitioning;
     }
     
     /**
@@ -1080,7 +1080,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setPinnedPartitioning(PinnedPartitioningMetadata pinnedPartitioning) {
-        this.pinnedPartitioning = pinnedPartitioning;
+        m_pinnedPartitioning = pinnedPartitioning;
     }
     
     /**
@@ -1096,7 +1096,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setRangePartitioning(RangePartitioningMetadata rangePartitioning) {
-        this.rangePartitioning = rangePartitioning;
+        m_rangePartitioning = rangePartitioning;
     }
     
     /**
@@ -1104,7 +1104,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setReplicationPartitioning(ReplicationPartitioningMetadata replicationPartitioning) {
-        this.replicationPartitioning = replicationPartitioning;
+        m_replicationPartitioning = replicationPartitioning;
     }
     
     /**
@@ -1112,7 +1112,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setRoundRobinPartitioning(RoundRobinPartitioningMetadata roundRobinPartitioning) {
-        this.roundRobinPartitioning = roundRobinPartitioning;
+        m_roundRobinPartitioning = roundRobinPartitioning;
     }
     
     /**
@@ -1136,7 +1136,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setUnionPartitioning(UnionPartitioningMetadata unionPartitioning) {
-        this.unionPartitioning = unionPartitioning;
+        m_unionPartitioning = unionPartitioning;
     }
     
     /**
@@ -1144,7 +1144,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Used for OX mapping.
      */
     public void setValuePartitioning(ValuePartitioningMetadata valuePartitioning) {
-        this.valuePartitioning = valuePartitioning;
+        m_valuePartitioning = valuePartitioning;
     }
 }
 
