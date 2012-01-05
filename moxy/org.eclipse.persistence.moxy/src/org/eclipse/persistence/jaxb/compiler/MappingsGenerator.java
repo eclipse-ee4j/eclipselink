@@ -383,7 +383,21 @@ public class MappingsGenerator {
                 mapping.setAttributeClassification(attributeClassification);
                 xmlDescriptor.addMapping(mapping);
             }
+        }else if(paramClass.isEnum()){
+             EnumTypeInfo enumInfo = (EnumTypeInfo)typeInfo.get(paramClass.getQualifiedName());
+        	
+             XMLDirectMapping mapping = new XMLDirectMapping();
+             mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
+             mapping.setAttributeName("value");
+             mapping.setGetMethodName("getValue");
+             mapping.setSetMethodName("setValue");
+             mapping.setXPath("text()");
+             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
+             mapping.setAttributeClassification(attributeClassification);
+             xmlDescriptor.addMapping(mapping);
+             
         }else{
+        
             XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
             mapping.setAttributeName("value");
             mapping.setGetMethodName("getValue");

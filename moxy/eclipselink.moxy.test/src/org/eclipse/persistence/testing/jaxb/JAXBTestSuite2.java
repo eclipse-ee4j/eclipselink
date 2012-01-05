@@ -25,6 +25,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCa
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.subclass.JAXBElementSubclassEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.subclass.JAXBElementSubclassTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.JAXBElementEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
@@ -72,6 +73,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(JAXBElementBase64TestCases.class);
         suite.addTestSuite(JAXBElementDataHandlerTestCases.class);
         suite.addTestSuite(JAXBElementSubclassTestCases.class);
+        suite.addTestSuite(JAXBElementSubclassEnumTestCases.class);
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
         suite.addTestSuite(JAXBElementEnumTestCases.class);
         suite.addTestSuite(JAXBInheritanceTestCases.class);
