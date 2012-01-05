@@ -340,23 +340,28 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         em.persist(map);
         commitTransaction(em);
-        closeEntityManager(em);
+        if(! isOnServer()){
+            closeEntityManager(em);
+            em = createEntityManager();
+        }
         clearCache();
-        em = createEntityManager();
+        beginTransaction(em);
         Query query = em.createQuery("Select e from NoIdentityMap e where e.name = 'bob'");
         NoIdentityMap emp = (NoIdentityMap) query.getSingleResult();
         int version = emp.getVersion();
-        emp.setName(System.currentTimeMillis() + "bob");
         query.setHint(QueryHints.REFRESH, true);
         emp = (NoIdentityMap) query.getSingleResult();
-        beginTransaction(em);
         commitTransaction(em);
-        closeEntityManager(em);
-        em = createEntityManager();
+        if(! isOnServer()){
+            closeEntityManager(em);
+            em = createEntityManager();
+        }
         beginTransaction(em);
         em.remove(em.find(NoIdentityMap.class, map.getID()));
         commitTransaction(em);
-        closeEntityManager(em);
+        if(! isOnServer()){
+            closeEntityManager(em);
+        }
         assertEquals("Unchanged employee had version changed after refresh", version, emp.getVersion());
         
     }
