@@ -174,4 +174,8 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         assertEquals("OXM file was not processed during context creation.", e.get("tag"), e2.get("tag"));
     }
 
+    public void testCreateContextXmlAnyAttributeSubTypeMap() throws Exception {
+        JAXBContextFactory.createContext(new Class[]{XmlAnyAttributeSubTypeMapModel.class}, null);
+    }
+
 }

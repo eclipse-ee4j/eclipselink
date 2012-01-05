@@ -2339,7 +2339,7 @@ public class AnnotationsProcessor {
             if (info.isSetAnyAttributePropertyName() && !info.getAnyAttributePropertyName().equals(property.getPropertyName())) {
                 throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
             }
-            if (!property.getType().getName().equals("java.util.Map")) {
+            if (!isMapType(property.getType())) {
                 throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
             }
             property.setIsAnyAttribute(true);
