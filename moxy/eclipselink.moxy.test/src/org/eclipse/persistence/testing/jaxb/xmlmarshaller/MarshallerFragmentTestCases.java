@@ -23,12 +23,12 @@ import org.w3c.dom.Document;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerFragmentTestCases extends OXTestCase {
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
-    private final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
-    private Marshaller marshaller;
-    private Employee controlObject;
-    private Document controlDocument;
-    private Boolean originalSetting;
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    protected final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
+    protected Marshaller marshaller;
+    protected Employee controlObject;
+    protected Document controlDocument;
+    protected Boolean originalSetting;
 
     public MarshallerFragmentTestCases(String name) {
         super(name);
