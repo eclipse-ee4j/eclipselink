@@ -83,6 +83,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private XMLMarshaller xmlMarshaller;
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
+    //XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true
+    private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
 
     /**
      * This constructor initializes various settings on the XML marshaller, and
@@ -591,6 +593,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setNoNamespaceSchemaLocation((String) value);
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
+                xmlMarshaller.setFragment(fragment.booleanValue());
+            } else if (XML_DECLARATION.equals(key)) {
+                Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
             	MediaType mType = MediaType.getMediaTypeByName((String)value);

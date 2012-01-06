@@ -38,6 +38,7 @@ public class JAXBSAXTestSuite extends TestCase {
         suite.addTestSuite(MarshallerFormattingTestCases.class);
         suite.addTest(MarshallerEncodingTestCases.suite());
         suite.addTestSuite(MarshallerFragmentTestCases.class);
+        suite.addTestSuite(XMLDeclarationTestCases.class);
 
         return suite;
     }
