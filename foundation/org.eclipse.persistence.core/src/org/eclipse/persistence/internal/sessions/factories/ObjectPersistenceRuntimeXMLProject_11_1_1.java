@@ -1931,6 +1931,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          databaseTypeMapping.setXPath(".");
          descriptor.addMapping(databaseTypeMapping);
 
+         XMLDirectMapping nonAssociativeMapping = new XMLDirectMapping();
+         nonAssociativeMapping.setAttributeName("isNonAssociative");
+         nonAssociativeMapping.setXPath("@non-associative");
+         nonAssociativeMapping.setNullValue(false);
+         descriptor.addMapping(nonAssociativeMapping);
+         
          return descriptor;
      }
 

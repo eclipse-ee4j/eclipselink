@@ -29,6 +29,7 @@ import dbws.testing.complexplsqlsf.ComplexPLSQLSFTestSuite;
 import dbws.testing.complexplsqlsp.ComplexPLSQLSPTestSuite;
 import dbws.testing.customsql.CustomSQLTestSuite;
 import dbws.testing.iottype.IOTTypeTestSuite;
+import dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite;
 import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
 import dbws.testing.objecttype.ObjectTypeTestSuite;
 import dbws.testing.ordescriptor.ORDescriptorTestSuite;
@@ -54,6 +55,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     ComplexPLSQLSPTestSuite.class,
     CustomSQLTestSuite.class,
     IOTTypeTestSuite.class,
+    NonAssociativePLSQLCollectionTestSuite.class,
     ObjectTableTypeTestSuite.class,
     ObjectTypeTestSuite.class,
     ORDescriptorTestSuite.class,

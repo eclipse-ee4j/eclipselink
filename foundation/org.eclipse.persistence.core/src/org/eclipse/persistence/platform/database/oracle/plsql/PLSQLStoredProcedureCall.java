@@ -642,7 +642,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         TypeInfo info = this.typesInfo.get(type.getTypeName());
         // If the info was not found in publisher, then generate it.
         if (info == null) {
-            info = generateNestedFunction(type);
+            info = generateNestedFunction(type, argument.isNonAssociative);
         }
         if (argument.direction == IN) {
             if (!functions.contains(info.sql2PlConv)) {
@@ -666,6 +666,13 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * INTERNAL: Generate the nested function to convert the PLSQL type to its compatible SQL type.
      */
     protected TypeInfo generateNestedFunction(ComplexDatabaseType type) {
+    	return generateNestedFunction(type, false);
+    }
+    
+    /**
+     * INTERNAL: Generate the nested function to convert the PLSQL type to its compatible SQL type.
+     */
+    protected TypeInfo generateNestedFunction(ComplexDatabaseType type, boolean isNonAssociativeCollection) {
         TypeInfo info = new TypeInfo();
         info.pl2SqlName = PL2SQL_PREFIX + (this.functionId++);
         info.sql2PlName = SQL2PL_PREFIX + (this.functionId++);
@@ -875,6 +882,17 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             sb.append(NL);sb.append(INDENT);
             sb.append(BEGIN_BEGIN_BLOCK);
             sb.append(INDENT);sb.append(INDENT);
+            // if the collection is non-associative we need to initialize it
+        	if (isNonAssociativeCollection) {
+                sb.append("aPlsqlItem := ");
+                sb.append(collection.getTypeName());
+                sb.append("();");
+                sb.append(NL);
+                sb.append(INDENT);sb.append(INDENT);
+                sb.append("aPlsqlItem.EXTEND(aSqlItem.COUNT);");
+                sb.append(NL);
+                sb.append(INDENT);sb.append(INDENT);
+        	}            
             sb.append("IF aSqlItem.COUNT > 0 THEN");
             sb.append(NL);
             sb.append(INDENT);sb.append(INDENT);sb.append(INDENT);
@@ -892,7 +910,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append("(aPlsqlItem(I));");
             }
             else {
-                sb.append("aPlsqlItem(I) := aSqlItem(I);");
+        		sb.append("aPlsqlItem(I) := aSqlItem(I);");
             }
             sb.append(NL);
             sb.append(INDENT);sb.append(INDENT);sb.append(INDENT);

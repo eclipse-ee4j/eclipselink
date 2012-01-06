@@ -41,6 +41,7 @@ public class PLSQLargument implements Cloneable {
     public int precision = MIN_VALUE;
     public int scale = MIN_VALUE;
     public boolean cursorOutput = false;
+    public boolean isNonAssociative = false;  // assume collections are associative 
 
     public PLSQLargument() {
         super();
@@ -80,6 +81,16 @@ public class PLSQLargument implements Cloneable {
 
     public void useNamedCursorOutputAsResultSet() {
         cursorOutput = true;
+    }
+
+    /**
+     * Set the 'isNonAssociative' collection flag.  Should be false (default) for
+     * associative/indexed collections, and true for non-associative collections.
+     * 
+     * @param isNonAsscociative
+     */
+    public void setIsNonAssociativeCollection(boolean isNonAsscociative) {
+    	this.isNonAssociative = isNonAsscociative;
     }
 
     @Override

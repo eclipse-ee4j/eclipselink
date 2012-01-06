@@ -67,6 +67,7 @@ import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -319,14 +320,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         if (direction == INOUT) {
                             parm = new Parameter();
                             parm.setName(argName);
-                            if (!hasComplexArgs) {
-	                            parm.setType(xmlType);
-	                            result.setType(xmlType);
-                            } else {  // complex
-	                            // bug 303331 - set type in 'shadow' and 'regular' parameter
-	                            parm.setType(getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName())));
-	                            result.setType(parm.getType());
-                            }
+                            parm.setType(xmlType);
+                            result.setType(xmlType);
                             // use of INOUT precludes SimpleXMLFormat
                             isSimpleXMLFormat = false;
                             if (!hasComplexArgs) {
@@ -991,6 +986,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             		((ComplexDatabaseType) dType).setJavaType(wrapperClass);
             	}
                 call = new PLSQLStoredFunctionCall(dType);
+            	// check for non-associative collection
+            	if (returnArg.getDataType() instanceof PLSQLCollectionType && !((PLSQLCollectionType)returnArg.getDataType()).isIndexed()) {
+            		PLSQLargument plsqlArg = ((PLSQLStoredFunctionCall)call).getArguments().get(0);
+            		plsqlArg.setIsNonAssociativeCollection(true);
+            	}        	
             } else {
                 call = new PLSQLStoredProcedureCall();
             }
@@ -1063,6 +1063,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     	((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
                     }
 	            	((PLSQLStoredProcedureCall)call).addNamedArgument(arg.getArgumentName(), databaseType);
+	            	// check for non-associative collection
+	            	if (argType instanceof PLSQLCollectionType && !((PLSQLCollectionType)argType).isIndexed()) {
+	            		PLSQLargument plsqlArg = ((PLSQLStoredProcedureCall)call).getArguments().get(((PLSQLStoredProcedureCall)call).getArguments().size()-1);
+	            		plsqlArg.setIsNonAssociativeCollection(true);
+	            	}        	
             	} else {
 	                if (argType instanceof VArrayType) {
 	                    dq.addArgument(arg.getArgumentName());
@@ -1109,6 +1114,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             } else {  // INOUT
             	if (hasComplexArgs) {
             		((PLSQLStoredProcedureCall)call).addNamedInOutputArgument(arg.getArgumentName(), databaseType);
+	            	// check for non-associative collection
+	            	if (argType instanceof PLSQLCollectionType && !((PLSQLCollectionType)argType).isIndexed()) {
+	            		PLSQLargument plsqlArg = ((PLSQLStoredProcedureCall)call).getArguments().get(((PLSQLStoredProcedureCall)call).getArguments().size()-1);
+	            		plsqlArg.setIsNonAssociativeCollection(true);
+	            	}        	
             	} else {
                     dq.addArgument(arg.getArgumentName());
                     call.addNamedInOutputArgument(arg.getArgumentName());
