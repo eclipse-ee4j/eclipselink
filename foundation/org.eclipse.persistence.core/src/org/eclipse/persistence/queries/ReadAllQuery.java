@@ -68,7 +68,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     /**
      * PUBLIC:
      * Return a new read all query.
-     * It is better to provide the class and expression builder on construction to esnure a single expression builder is used.
+     * It is better to provide the class and expression builder on construction to ensure a single expression builder is used.
      * If no selection criteria is specified this will read all objects of the class from the database.
      */
     public ReadAllQuery(Class classToRead) {
