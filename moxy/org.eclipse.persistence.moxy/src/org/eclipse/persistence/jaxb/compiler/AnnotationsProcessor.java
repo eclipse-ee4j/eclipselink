@@ -1171,6 +1171,10 @@ public class AnnotationsProcessor {
             if (paramTypes != null && paramTypes.length > 0) {
                 String[] paramTypeNames = new String[paramTypes.length];
                 for (int i = 0; i < paramTypes.length; i++) {
+                	if(shouldGenerateTypeInfo(paramTypes[i])){
+                           JavaClass[] jClassArray = new JavaClass[] { paramTypes[i] };
+                           buildNewTypeInfo(jClassArray);
+                	}
                     paramTypeNames[i] = paramTypes[i].getQualifiedName();
                 }
                 info.setFactoryMethodParamTypes(paramTypeNames);
