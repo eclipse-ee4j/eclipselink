@@ -1,0 +1,10 @@
+<root>
+   <orders>
+      <order id = "123">
+         <item-id>456</item-id>
+      </order>
+   </orders>
+   <customers>
+      <customer order-id="123">value</customer>
+   </customers>
+</root>

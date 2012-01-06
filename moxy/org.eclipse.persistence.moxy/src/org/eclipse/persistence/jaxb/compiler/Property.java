@@ -1163,6 +1163,9 @@ public class Property implements Cloneable {
      */
     public void setXmlJoinNodes(XmlJoinNodes xmlJoinNodes) {
         this.xmlJoinNodes = xmlJoinNodes;
+        if(xmlJoinNodes != null && !CompilerHelper.hasNonAttributeJoinNodes(this)) {
+            this.isAttribute = true;
+        }
     }
 
     /**
@@ -1214,6 +1217,9 @@ public class Property implements Cloneable {
      */
     public void setXmlJoinNodesList(List<XmlJoinNodes> xmlJoinNodesList) {
         this.xmlJoinNodesList = xmlJoinNodesList;
+        if(xmlJoinNodesList != null && !(xmlJoinNodesList.isEmpty()) && !CompilerHelper.hasNonAttributeJoinNodes(this)) {
+            this.isAttribute = true;
+        }
     }
     
     /**
