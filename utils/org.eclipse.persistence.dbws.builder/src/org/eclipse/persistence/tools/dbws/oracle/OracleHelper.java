@@ -18,9 +18,11 @@ import java.sql.Struct;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.OTHER;
@@ -115,6 +117,7 @@ import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
 import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
 import static org.eclipse.persistence.tools.dbws.Util.CURSOR_STR;
@@ -154,24 +157,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * Builds query operations for a given ProcedureOperationModel.
      */
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
-        List<ProcedureType> procs = new ArrayList<ProcedureType>();
-        for (Map.Entry<ProcedureType, DbStoredProcedureNameAndModel> me : dbStoredProcedure2QueryName.entrySet()) {
-            ProcedureType key = me.getKey();
-            DbStoredProcedureNameAndModel value = me.getValue();
-            if (value.name.equals(procedureOperationModel.getName())) {
-                procs.add(key);
-            }
-        }
-        // nested under a <table> operation
-        if (procs.isEmpty()) {
-            List<ProcedureType> additionalProcs = loadProcedures(procedureOperationModel);
-            if (additionalProcs != null && !additionalProcs.isEmpty()) {
-                procs.addAll(additionalProcs);
-            }
-            //TODO - add to dbStoredProcedure2QueryName map
-        }
-
-        for (ProcedureType storedProcedure : procs) {
+        for (ProcedureType storedProcedure : procedureOperationModel.getDbStoredProcedures()) {
             boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(storedProcedure);
             QueryOperation qo = new QueryOperation();
             qo.setName(getNameForQueryOperation(procedureOperationModel, storedProcedure));
@@ -492,79 +478,126 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Generates a List<TableType> based on a given originalCatalogPattern, schemaPattern,
-     * and tableNamePattern.
+     * Generates a List<TableType> based on a given set of patterns.
      */
-    protected List<TableType> loadTables(String originalCatalogPattern, String schemaPattern,
-        String tableNamePattern) {
+    protected List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns,
+        List<String> tableNamePatterns) {
         try {
-            return dtBuilder.buildTables(dbwsBuilder.getConnection(), schemaPattern,
-                tableNamePattern);
+            return dtBuilder.buildTables(dbwsBuilder.getConnection(), schemaPatterns,
+                tableNamePatterns);
         }
         catch (ParseException e) {
-            e.printStackTrace();
+            //TODO - figure out what to do with a ParseException
         }
         return null;
     }
 
     /**
-     * Generates a List<ProcedureType> based on a given ProcedureOperationModel.
+     * Generates a List<ProcedureType> based on a given set of patterns.
      */
-    protected List<ProcedureType> loadProcedures(ProcedureOperationModel procedureModel) {
+    protected List<ProcedureType> loadProcedures(List<String> catalogPatterns, List<String> schemaPatterns,
+        List<String> procedureNamePatterns) {
         List<ProcedureType> allProcsAndFuncs = new ArrayList<ProcedureType>();
-        try {
-            // handle PLSQL package stored procedures/functions
-            if (procedureModel.getCatalogPattern() != null &&
-                procedureModel.getCatalogPattern().length() > 0 &&
-                !procedureModel.getCatalogPattern().equals(TOPLEVEL)) {
-                List<PLSQLPackageType> foundPackages = dtBuilder.buildPackages(dbwsBuilder.getConnection(),
-                    procedureModel.getSchemaPattern(), procedureModel.getCatalogPattern());
-                if (foundPackages != null) {
-                    for (PLSQLPackageType plsqlpkg : foundPackages) {
-                    	// maintain a map of proc names to proctypes to handle overloading
-                    	Map<String, List<ProcedureType>> procNamesToProcs = new HashMap<String, List<ProcedureType>>();
-                        for (ProcedureType pType : plsqlpkg.getProcedures()) {
-                        	String procName = pType.getProcedureName();
-                            if (Util.sqlMatch(procedureModel.getProcedurePattern(), procName)) {
-                            	// if there's already and entry, we have overloading
-                        		List<ProcedureType> procList;
-                            	if (procNamesToProcs.containsKey(procName)) {
-                            		procList = procNamesToProcs.get(procName);
-                            		ProcedureType lastType = procList.get(procList.size()-1);
-                            		// we want to start overload at 1
-                            		if (procList.size() == 1) {
-                            			lastType.setOverload(1);
-                            		}
-                            		pType.setOverload(lastType.getOverload() + 1);
-                            		procList.add(pType);
-                            	} else {
-                            		procList = new ArrayList<ProcedureType>();
-                            		procList.add(pType);
-                            		procNamesToProcs.put(procName, procList);
-                            	}
-                                allProcsAndFuncs.add(pType);
+        List<String> topLevelSchemaPatterns = new ArrayList<String>();
+        List<String> topLevelProcedureNamePatterns = new ArrayList<String>();
+        Map<String, Set<String>> packagePatterns = new HashMap<String,Set<String>>();
+        for (int i = 0, len = catalogPatterns.size(); i < len; i++) {
+            String catalogPattern = catalogPatterns.get(i);
+            String schemaPattern = schemaPatterns.get(i);
+            if (schemaPattern == null) {
+                schemaPattern = dbwsBuilder.getUsername().toUpperCase();
+            }
+            if (catalogPattern == null || catalogPattern.length() == 0 ||
+                TOPLEVEL.equals(catalogPattern)) {
+                topLevelSchemaPatterns.add(schemaPattern);
+                topLevelProcedureNamePatterns.add(procedureNamePatterns.get(i));
+            }
+            else {
+                Set<String> packageNames = packagePatterns.get(schemaPattern);
+                if (packageNames == null) {
+                    packageNames = new HashSet<String>();
+                    packagePatterns.put(schemaPattern, packageNames);
+                }
+                packageNames.add(catalogPattern);
+            }
+        }
+        if (topLevelProcedureNamePatterns.size() > 0) {
+            try {
+                List<ProcedureType> topLevelProcedures = dtBuilder.buildProcedures(dbwsBuilder.getConnection(),
+                    topLevelSchemaPatterns, topLevelProcedureNamePatterns);
+                if (topLevelProcedures != null && topLevelProcedures.size() > 0) {
+                    allProcsAndFuncs.addAll(topLevelProcedures);
+                }
+            }
+            catch (ParseException e) {
+                //e.printStackTrace();
+                //TODO - not sure what to do with ParseException
+            }
+            try {
+                List<FunctionType> topLevelFunctions = dtBuilder.buildFunctions(dbwsBuilder.getConnection(),
+                    topLevelSchemaPatterns, topLevelProcedureNamePatterns);
+                if (topLevelFunctions != null && topLevelFunctions.size() > 0) {
+                    allProcsAndFuncs.addAll(topLevelFunctions);
+                }
+            }
+            catch (ParseException e) {
+                //e.printStackTrace();
+                //TODO - not sure what to do with ParseException
+            }
+        }
+        if (packagePatterns.size() > 0) {
+            try {
+                //unravel map
+                List<String> schemaPats = new ArrayList<String>();
+                List<String> packagePats = new ArrayList<String>();
+                for (String schema : packagePatterns.keySet()) {
+                    Set<String> packageNames = packagePatterns.get(schema);
+                    for (String packageName : packageNames) {
+                        schemaPats.add(schema);
+                        packagePats.add(packageName);
+                    }
+                }
+                List<PLSQLPackageType> packages = dtBuilder.buildPackages(dbwsBuilder.getConnection(),
+                    schemaPats, packagePats);
+                //check for overloading
+                for (PLSQLPackageType pakage : packages) {
+                    Map<String, List<ProcedureType>> overloadMap = new HashMap<String, List<ProcedureType>>();
+                    List<ProcedureType> procedures = pakage.getProcedures();
+                    for (ProcedureType procedure : procedures) {
+                        String procedureName = procedure.getProcedureName();
+                        List<ProcedureType> multipleProcedures = overloadMap.get(procedureName);
+                        if (multipleProcedures == null) {
+                            multipleProcedures = new ArrayList<ProcedureType>();
+                            overloadMap.put(procedureName, multipleProcedures);
+                        }
+                        multipleProcedures.add(procedure);
+                    }
+                    for (List<ProcedureType> procs : overloadMap.values()) {
+                        if (procs.size() >1) {
+                            for (int i = 0, len = procs.size(); i < len; i++) {
+                                procs.get(i).setOverload(i);
                             }
+                        }
+                    }
+                    //check against procedureNamePatterns
+                    String tmp = "";
+                    for (int i = 0, len = procedureNamePatterns.size(); i < len; i++) {
+                        tmp += procedureNamePatterns.get(i);
+                        if (i < len -1) {
+                            tmp += "|";
+                        }
+                    }
+                    for (ProcedureType procedure : procedures) {
+                        if (sqlMatch(tmp, procedure.getProcedureName())) {
+                            allProcsAndFuncs.add(procedure);
                         }
                     }
                 }
             }
-            else {
-                // handle top-level stored procedures/functions
-                List<ProcedureType> foundProcedures = dtBuilder.buildProcedures(dbwsBuilder.getConnection(),
-                        procedureModel.getSchemaPattern(), procedureModel.getProcedurePattern());
-                List<FunctionType> foundFunctions = dtBuilder.buildFunctions(dbwsBuilder.getConnection(),
-                        procedureModel.getSchemaPattern(), procedureModel.getProcedurePattern());
-
-                if (foundProcedures != null) {
-                    allProcsAndFuncs.addAll(foundProcedures);
-                }
-                if (foundFunctions != null) {
-                    allProcsAndFuncs.addAll(foundFunctions);
-                }
+            catch (ParseException e) {
+                //e.printStackTrace();
+                //TODO - not sure what to do with ParseException
             }
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
         }
         return allProcsAndFuncs.isEmpty() ? null : allProcsAndFuncs;
     }
@@ -990,7 +1023,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             	if (returnArg.getDataType() instanceof PLSQLCollectionType && !((PLSQLCollectionType)returnArg.getDataType()).isIndexed()) {
             		PLSQLargument plsqlArg = ((PLSQLStoredFunctionCall)call).getArguments().get(0);
             		plsqlArg.setIsNonAssociativeCollection(true);
-            	}        	
+            	}
             } else {
                 call = new PLSQLStoredProcedureCall();
             }
@@ -1067,7 +1100,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	            	if (argType instanceof PLSQLCollectionType && !((PLSQLCollectionType)argType).isIndexed()) {
 	            		PLSQLargument plsqlArg = ((PLSQLStoredProcedureCall)call).getArguments().get(((PLSQLStoredProcedureCall)call).getArguments().size()-1);
 	            		plsqlArg.setIsNonAssociativeCollection(true);
-	            	}        	
+	            	}
             	} else {
 	                if (argType instanceof VArrayType) {
 	                    dq.addArgument(arg.getArgumentName());
@@ -1118,7 +1151,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	            	if (argType instanceof PLSQLCollectionType && !((PLSQLCollectionType)argType).isIndexed()) {
 	            		PLSQLargument plsqlArg = ((PLSQLStoredProcedureCall)call).getArguments().get(((PLSQLStoredProcedureCall)call).getArguments().size()-1);
 	            		plsqlArg.setIsNonAssociativeCollection(true);
-	            	}        	
+	            	}
             	} else {
                     dq.addArgument(arg.getArgumentName());
                     call.addNamedInOutputArgument(arg.getArgumentName());

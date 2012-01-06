@@ -55,7 +55,6 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
@@ -130,7 +129,7 @@ public class Util {
     static final String PROVIDER_LISTENER = "ProviderListener";
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
-    
+
     public static final String PERCENT = "%";
     public static final String UNDERSCORE = "_";
     public static final String BUILDING_QUERYOP_FOR = "Building QueryOperation for ";
@@ -172,9 +171,9 @@ public class Util {
     public static final String VARBINARY_STR = "VARBINARY";
     public static final String VARCHAR_STR = "VARCHAR";
     public static final String VARCHAR2_STR = "VARCHAR2";
-    
+
     /**
-     * Return the JDBC type (as int) for a given type name. 
+     * Return the JDBC type (as int) for a given type name.
      */
     public static int getJDBCTypeFromTypeName(String typeName) {
         int jdbcType = Types.OTHER;
@@ -248,7 +247,7 @@ public class Util {
         else if (typeName.equals(ARRAY_STR)) {
             jdbcType = Types.ARRAY;
         }
-        else if (typeName.equals(BOOLEAN_STR)  || 
+        else if (typeName.equals(BOOLEAN_STR)  ||
         		 typeName.equals(INTEGER_STR)  ||
         		 typeName.equals(SMALLINT_STR) ||
         		 typeName.equals(TINYINT_STR)) {
@@ -256,9 +255,9 @@ public class Util {
         }
         return jdbcType;
     }
-    
+
     /**
-     * Return the JDBC type name for a given JDBC type code. 
+     * Return the JDBC type name for a given JDBC type code.
      */
     public static String getJDBCTypeNameFromType(int jdbcType) {
         String typeName = OTHER_STR;
@@ -520,7 +519,7 @@ public class Util {
         xdesc.setDefaultRootElement(tablenameAlias);
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference(EMPTY_STRING);
         schemaReference.setSchemaContext(SLASH + tablenameAlias);
-        schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
+        schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
         xdesc.setSchemaReference(schemaReference);
         return xdesc;
     }
@@ -576,17 +575,18 @@ public class Util {
 
     public static boolean sqlMatch(String pattern, String input) {
         if (pattern != null && pattern.length() > 0) {
-            String tmp = pattern.replace('_', '.').replace("%", ".*");
+            //add support for positive 'empty' pattern matching
+            String tmp = "\\A\\Z|" + pattern.replace('_', '.').replace("%", ".*");
             Pattern p = Pattern.compile(tmp, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-            return p.matcher(input).matches();
+            return p.matcher(input == null ? "" : input).matches();
         }
         return false;
     }
-    
+
     /**
      * Indicates if a given ArgumentType is considered 'complex', i.e. it has
-     * a data type that is one of PLSQLRecordType, PLSQLCollectionType, 
-     * VArrayType, ObjectType, or NestedTableType 
+     * a data type that is one of PLSQLRecordType, PLSQLCollectionType,
+     * VArrayType, ObjectType, or NestedTableType
      */
     public static boolean isArgComplex(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
@@ -598,9 +598,9 @@ public class Util {
 
     /**
      * Indicates if a given ArgumentType is considered a PL/SQL argument,
-     * i.e. it has a data type that is one of PLSQLRecordType, 
-     * PLSQLCollectionType, BOOLEAN_TYPE, BINARY_INTEGER_TYPE, 
-     * or PLS_INTEGER_TYPE 
+     * i.e. it has a data type that is one of PLSQLRecordType,
+     * PLSQLCollectionType, BOOLEAN_TYPE, BINARY_INTEGER_TYPE,
+     * or PLS_INTEGER_TYPE
      */
     public static boolean isArgPLSQL(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
@@ -610,8 +610,8 @@ public class Util {
 
     /**
      * Indicates if a given ArgumentType is considered a PL/SQL scalar
-     * argument, i.e. it has a data type that is one of BOOLEAN_TYPE, 
-     * BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE 
+     * argument, i.e. it has a data type that is one of BOOLEAN_TYPE,
+     * BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
      */
     public static boolean isArgPLSQLScalar(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
@@ -623,8 +623,8 @@ public class Util {
     /**
      * Indicates if a given ProcedureType contains one or more arguments that
      * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,
-     * VArrayType, ObjectType, or NestedTableType.  
-     * 
+     * VArrayType, ObjectType, or NestedTableType.
+     *
      * Note that for FunctionType the return argument is tested as well.
      */
     public static boolean hasComplexArgs(ProcedureType storedProcedure) {
@@ -642,10 +642,10 @@ public class Util {
     }
 
     /**
-     * Indicates if a given ProcedureType contains one or more PL/SQL 
-     * arguments, i.e. PLSQLRecordType, PLSQLCollectionType, 
+     * Indicates if a given ProcedureType contains one or more PL/SQL
+     * arguments, i.e. PLSQLRecordType, PLSQLCollectionType,
      * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
-     * 
+     *
      * Note that for FunctionType the return argument is tested as well.
      */
     public static boolean hasPLSQLArgs(ProcedureType storedProcedure) {
@@ -663,8 +663,8 @@ public class Util {
     }
 
     /**
-     * Indicates if a given list of ArgumentTypes contains one or more 
-     * PL/SQL arguments, i.e. PLSQLRecordType, PLSQLCollectionType, 
+     * Indicates if a given list of ArgumentTypes contains one or more
+     * PL/SQL arguments, i.e. PLSQLRecordType, PLSQLCollectionType,
      * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
      */
     public static boolean hasPLSQLArgs(List<ArgumentType> arguments) {
@@ -689,11 +689,11 @@ public class Util {
         }
         return false;
     }
-    
+
     /**
-     * Indicates if a given List<DatabaseType> contains one or more arguments 
-     * that are considered PL/SQL scalars, i.e. PLSQLBoolean, PLSQLInteger, 
-     * BinaryInteger, etc. 
+     * Indicates if a given List<DatabaseType> contains one or more arguments
+     * that are considered PL/SQL scalars, i.e. PLSQLBoolean, PLSQLInteger,
+     * BinaryInteger, etc.
      */
     public static boolean hasPLSQLScalarArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {

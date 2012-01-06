@@ -27,7 +27,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +95,7 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle;
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
+import org.eclipse.persistence.tools.dbws.jdbc.DbTable;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
@@ -123,7 +123,6 @@ import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
-import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
@@ -132,7 +131,6 @@ import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.buildORDescriptor;
 import static org.eclipse.persistence.tools.dbws.Util.buildOXDescriptor;
-import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
@@ -169,6 +167,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.RealType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
+import org.eclipse.persistence.tools.oracleddl.metadata.TimeStampType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
 
@@ -187,8 +186,6 @@ public abstract class BaseDBWSBuilderHelper {
 
     protected List<TableType> dbTables = new ArrayList<TableType>();
     protected List<ProcedureType> dbStoredProcedures = new ArrayList<ProcedureType>();
-    protected Map<ProcedureType, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName =
-            new HashMap<ProcedureType, DbStoredProcedureNameAndModel>();
     protected DBWSBuilder dbwsBuilder;
     protected XMLSessionConfigProject_11_1_1 sessionConfigProject =
         new XMLSessionConfigProject_11_1_1();
@@ -205,13 +202,15 @@ public abstract class BaseDBWSBuilderHelper {
 
     public abstract boolean hasComplexProcedureArgs();
 
-    protected abstract List<TableType> loadTables(String originalCatalogPattern,
-        String originalSchemaPattern, String originalTablePattern);
+    protected abstract List<TableType> loadTables(List<String> catalogPatterns,
+        List<String> schemaPatterns, List<String> tableNamePatterns);
+    protected abstract List<ProcedureType> loadProcedures(List<String> catalogPatterns,
+        List<String> schemaPatterns, List<String> procedureNamePatterns);
 
-    protected abstract List<ProcedureType> loadProcedures(ProcedureOperationModel procedureModel);
-
-    protected abstract void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments, Project orProject, Project oxProject, ProcedureOperationModel opModel);
-    protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs);
+    protected abstract void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments,
+        Project orProject, Project oxProject, ProcedureOperationModel opModel);
+    protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject,
+        Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs);
 
     protected void addToOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
         Project orProject, Project oxProject, NamingConventionTransformer nct) {
@@ -363,68 +362,108 @@ public abstract class BaseDBWSBuilderHelper {
      * and List<ProcedureType>.
      */
     public void buildDbArtifacts() {
-        //do Table operations first
-        //it is possible a builder might have pre-built tables
+        List<TableOperationModel> tableOperations = new ArrayList<TableOperationModel>();
+        List<ProcedureOperationModel> procedureOperations = new ArrayList<ProcedureOperationModel>();
+        //its possible a builder might have pre-built tables
         if (dbTables.size() == 0) {
+            //do Table operations first
             for (OperationModel operation : dbwsBuilder.operations) {
                 if (operation.isTableOperation()) {
-                    TableOperationModel tableModel = (TableOperationModel)operation;
-                    String catalogPattern = tableModel.getCatalogPattern();
-                    String schemaPattern = tableModel.getSchemaPattern();
-                    String tableNamePattern = tableModel.getTablePattern();
-                    List<TableType> tables = loadTables(catalogPattern, schemaPattern, tableNamePattern);
-                    if (tables == null || tables.isEmpty()) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("No matching tables for pattern ");
-                        if (catalogPattern != null) {
-                            sb.append(catalogPattern);
-                            sb.append(".");
+                    TableOperationModel tom = (TableOperationModel)operation;
+                    tableOperations.add(tom);
+                    if (tom.additionalOperations != null && tom.additionalOperations.size() > 0) {
+                        for (OperationModel nestedOperation : tom.additionalOperations) {
+                            if (nestedOperation.isProcedureOperation()) {
+                                procedureOperations.add((ProcedureOperationModel)nestedOperation);
+                            }
                         }
-                        if (schemaPattern != null) {
-                            sb.append(schemaPattern);
-                            sb.append(".");
-                        }
-                        sb.append(tableNamePattern);
-                        dbwsBuilder.logMessage(FINEST, sb.toString());
-                    }
-                    else {
-                        dbTables.addAll(tables);
                     }
                 }
             }
+            if (tableOperations.size() > 0) {
+                List<String> catalogPatterns = new ArrayList<String>();
+                List<String> schemaPatterns = new ArrayList<String>();
+                List<String> tableNamePatterns = new ArrayList<String>();
+                for (TableOperationModel tableOperation : tableOperations) {
+                    catalogPatterns.add(tableOperation.getCatalogPattern());
+                    schemaPatterns.add(tableOperation.getSchemaPattern());
+                    tableNamePatterns.add(tableOperation.getTablePattern());
+                }
+                List<TableType> tables = loadTables(catalogPatterns, schemaPatterns,
+                    tableNamePatterns);
+                //now assign tables to operations
+                for (TableType tableType : tables) {
+                    for (TableOperationModel tableOperation : tableOperations) {
+                        //figure out catalog(optional)/schema/tableName matching
+                        boolean tableNameMatch = sqlMatch(tableOperation.getTablePattern(),
+                            tableType.getTableName());
+                        boolean schemaNameMatch = sqlMatch(tableOperation.getSchemaPattern(),
+                            tableType.getSchema());
+                        if (tableNameMatch && schemaNameMatch) {
+                            String originalCatalogPattern = tableOperation.getCatalogPattern();
+                            if (tableType instanceof DbTable && originalCatalogPattern != null) {
+                                boolean catalogNameMatch = sqlMatch(originalCatalogPattern,
+                                    ((DbTable)tableType).getCatalog());
+                                if (catalogNameMatch) {
+                                    tableOperation.getDbTables().add(tableType);
+                                }
+                            }
+                            else {
+                                tableOperation.getDbTables().add(tableType);
+                            }
+                        }
+                    }
+                }
+                dbTables.addAll(tables);
+            }
         }
+
         // next do StoredProcedure operations
         //its possible a builder might have pre-built procedures
         if (dbStoredProcedures.size() == 0) {
             for (OperationModel operation : dbwsBuilder.operations) {
                 if (operation.isProcedureOperation()) {
-                    ProcedureOperationModel procedureModel = (ProcedureOperationModel)operation;
-                    List<ProcedureType> procs = loadProcedures(procedureModel);
-                    if (procs == null || procs.isEmpty()) {
-                        String catalogPattern = procedureModel.getCatalogPattern();
-                        String schemaPattern = procedureModel.getSchemaPattern();
-                        String procedurePattern = procedureModel.getProcedurePattern();
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("No matching procedures for pattern ");
-                        if (catalogPattern != null) {
-                            sb.append(catalogPattern);
-                            sb.append(".");
-                        }
-                        if (schemaPattern != null) {
-                            sb.append(schemaPattern);
-                            sb.append(".");
-                        }
-                        sb.append(procedurePattern);
-                        dbwsBuilder.logMessage(FINEST, sb.toString());
-                    }
-                    else {
-                        dbStoredProcedures.addAll(procs);
-                    }
+                    procedureOperations.add((ProcedureOperationModel)operation);
                 }
             }
+            if (procedureOperations.size() > 0) {
+                List<String> catalogPatterns = new ArrayList<String>();
+                List<String> schemaPatterns = new ArrayList<String>();
+                List<String> procedureNamePatterns = new ArrayList<String>();
+                for (ProcedureOperationModel procedureOperation : procedureOperations) {
+                    catalogPatterns.add(procedureOperation.getCatalogPattern());
+                    schemaPatterns.add(procedureOperation.getSchemaPattern());
+                    procedureNamePatterns.add(procedureOperation.getProcedurePattern());
+                }
+                List<ProcedureType> procedures = loadProcedures(catalogPatterns, schemaPatterns,
+                    procedureNamePatterns);
+                //now assign procedures to operations
+                for (ProcedureType procedureType : procedures) {
+                    for (ProcedureOperationModel procedureOperation : procedureOperations) {
+                        boolean procedureNameMatch = sqlMatch(procedureOperation.getProcedurePattern(),
+                            procedureType.getProcedureName());
+                        boolean schemaNameMatch = true;
+                        boolean catalogNameMatch = true;
+                        if (procedureNameMatch) {
+                            String originalSchemaPattern = procedureOperation.getSchemaPattern();
+                            if (originalSchemaPattern != null) {
+                                schemaNameMatch = sqlMatch(originalSchemaPattern,
+                                    procedureType.getSchema());
+                            }
+                            String originalCatalogPattern = procedureOperation.getCatalogPattern();
+                            if (originalCatalogPattern != null) {
+                                catalogNameMatch = sqlMatch(originalCatalogPattern,
+                                    procedureType.getCatalogName());
+                            }
+                        }
+                        if (procedureNameMatch && schemaNameMatch && catalogNameMatch) {
+                            procedureOperation.getDbStoredProcedures().add(procedureType);
+                        }
+                    }
+                }
+                dbStoredProcedures.addAll(procedures);
+            }
         }
-        buildDbStoredProcedure2QueryNameMap(dbStoredProcedure2QueryName,
-            dbStoredProcedures, dbwsBuilder.operations);
     }
 
     @SuppressWarnings("unchecked")
@@ -758,15 +797,6 @@ public abstract class BaseDBWSBuilderHelper {
         return null;
     }
 
-    protected static class DbStoredProcedureNameAndModel {
-        public String name;
-        public ProcedureOperationModel procOpModel;
-        public DbStoredProcedureNameAndModel(String name, ProcedureOperationModel procOpModel) {
-            this.name = name;
-            this.procOpModel = procOpModel;
-        }
-    }
-
     protected static DirectToFieldMapping setUpDirectToFieldMapping(
         RelationalDescriptor desc, String columnName, NamingConventionTransformer nct,
         Class<?> attributeClass, int jdbcType, boolean isPk) {
@@ -810,7 +840,7 @@ public abstract class BaseDBWSBuilderHelper {
                         // only need one operation to require attachments
                         break;
                     }
-                    if (tom.additionalOperations.size() > 0) {
+                    if (tom.additionalOperations != null && tom.additionalOperations.size() > 0) {
                         for (OperationModel om2 : tom.additionalOperations) {
                             if (om2.isProcedureOperation()) {
                                 ProcedureOperationModel pom = (ProcedureOperationModel)om2;
@@ -935,30 +965,32 @@ public abstract class BaseDBWSBuilderHelper {
             }
         }
         // handle complex procedure arguments
-        for (ProcedureType procType : dbStoredProcedures) {
-            DbStoredProcedureNameAndModel nameAndModel = dbStoredProcedure2QueryName.get(procType);
-            if (nameAndModel != null && (nameAndModel.procOpModel.isPLSQLProcedureOperation()
-                    || nameAndModel.procOpModel.isAdvancedJDBCProcedureOperation())) {
-                // build list of arguments to process (i.e. build descriptors for)
-                List<ArgumentType> args = getArgumentListForProcedureType(procType);
-
-                boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
-                boolean hasPLSQLArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs(args);
-                boolean hasPLSQLScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
-
-                // set 'complex' flag on model to indicate complex arg processing is required
-                // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
-                //       model necessarily have complex args, but we will need to know to
-                //       process the ones that do
-                if (!nameAndModel.procOpModel.hasComplexArguments) {
-                	nameAndModel.procOpModel.setHasComplexArguments(hasComplexArgs);
-                }
-
-                if (hasComplexArgs || hasPLSQLScalarArgs) {
-                    // subclasses are responsible for processing complex arguments
-                    addToOROXProjectsForComplexArgs(args, orProject, oxProject, nameAndModel.procOpModel);
-                    // build a query for this ProcedureType as it has one or more complex arguments
-                    buildQueryForProcedureType(procType, orProject, oxProject, nameAndModel.procOpModel, hasPLSQLArgs);
+        for (OperationModel opModel : dbwsBuilder.operations) {
+            if (opModel.isProcedureOperation()) {
+                ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
+                if (procedureOperation.isPLSQLProcedureOperation() ||
+                    procedureOperation.isAdvancedJDBCProcedureOperation()) {
+                    for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
+                        // build list of arguments to process (i.e. build descriptors for)
+                        List<ArgumentType> args = getArgumentListForProcedureType(procType);
+                        boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
+                        boolean hasPLSQLArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs(args);
+                        boolean hasPLSQLScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
+                        // set 'complex' flag on model to indicate complex arg processing is required
+                        // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
+                        //       model necessarily have complex args, but we will need to know to
+                        //       process the ones that do
+                        if (!procedureOperation.hasComplexArguments) {
+                            procedureOperation.setHasComplexArguments(hasComplexArgs);
+                        }
+                        if (hasComplexArgs || hasPLSQLScalarArgs) {
+                            // subclasses are responsible for processing complex arguments
+                            addToOROXProjectsForComplexArgs(args, orProject, oxProject, procedureOperation);
+                            // build a query for this ProcedureType as it has one or more complex arguments
+                            buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation,
+                                hasPLSQLArgs);
+                        }
+                    }
                 }
             }
         }
@@ -1018,70 +1050,6 @@ public abstract class BaseDBWSBuilderHelper {
             }
         }
         return columns;
-    }
-
-    static void buildDbStoredProcedure2QueryNameMap(
-        Map<ProcedureType, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName,
-        List<ProcedureType> dbStoredProcedures, ArrayList<OperationModel> operations) {
-        for (OperationModel opModel : operations) {
-            if (opModel.isProcedureOperation()) {
-                ProcedureOperationModel procOpModel = (ProcedureOperationModel)opModel;
-                // scan all the dbStoredProcedures for matches
-                List<ProcedureType> matches = new ArrayList<ProcedureType>();
-                String modelCatalogPattern = escapePunctuation(procOpModel.getCatalogPattern());
-                if (TOPLEVEL.equalsIgnoreCase(modelCatalogPattern)) {
-                    modelCatalogPattern = null;
-                }
-                String modelSchemaPattern =
-                    escapePunctuation(procOpModel.getSchemaPattern());
-                String modelProcedureNamePattern =
-                    escapePunctuation(procOpModel.getProcedurePattern());
-                for (ProcedureType storedProc : dbStoredProcedures) {
-                    boolean procedureNameMatch =
-                        sqlMatch(modelProcedureNamePattern, storedProc.getProcedureName());
-                    if (storedProc.getCatalogName() == null || modelCatalogPattern == null) {
-                        if (modelSchemaPattern == null || modelSchemaPattern.length() == 0) {
-                            // solely determined by procedureName
-                            if (procedureNameMatch) {
-                                matches.add(storedProc);
-                            }
-                        }
-                        // combination of schema & procedureName
-                        else if (sqlMatch(modelSchemaPattern, storedProc.getSchema()) && procedureNameMatch) {
-                            matches.add(storedProc);
-                        }
-                    }
-                    else {
-                        boolean catalogMatch =
-                            sqlMatch(modelCatalogPattern, storedProc.getCatalogName());
-                        if (modelSchemaPattern == null || modelSchemaPattern.length() == 0) {
-                            // determined by catalog * procedureName
-                            if (catalogMatch && procedureNameMatch) {
-                                matches.add(storedProc);
-                            }
-                        }
-                        // combination of catalog, schema & procedureName
-                        else if (sqlMatch(modelSchemaPattern, storedProc.getSchema()) &&
-                            catalogMatch && procedureNameMatch) {
-                            matches.add(storedProc);
-                        }
-                    }
-                }
-                if (matches.size() == 1) {
-                    DbStoredProcedureNameAndModel nameAndModel =
-                        new DbStoredProcedureNameAndModel(procOpModel.getName(), procOpModel);
-                    dbStoredProcedure2QueryName.put(matches.get(0), nameAndModel);
-                }
-                else {
-                    for (int i = 0, len = matches.size(); i < len;) {
-                        DbStoredProcedureNameAndModel nameAndModel =
-                            new DbStoredProcedureNameAndModel(procOpModel.getName()+(i+1), procOpModel);
-                        dbStoredProcedure2QueryName.put(matches.get(i), nameAndModel);
-                        i++;
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -1155,7 +1123,7 @@ public abstract class BaseDBWSBuilderHelper {
                 type = ScalarDatabaseTypeEnum.TIME_TYPE;
                 break;
             case Types.TIMESTAMP:
-                type = ScalarDatabaseTypeEnum.TIMESTAMP_TYPE;
+                type = new TimeStampType();
                 break;
             case Types.VARBINARY:
                 type = new RawType();
@@ -1346,7 +1314,7 @@ public abstract class BaseDBWSBuilderHelper {
         args.addAll(pType.getArguments());
         return args;
     }
-    
+
     /**
      * Return the wrapper class for a given DatabaseType.  The class will be loaded by the
      * XRDynamicClassloader, based on the DatabaseType's javaTypeName.  If the class

@@ -503,7 +503,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             // check nested operations
             if (op.isTableOperation()) {
             	TableOperationModel top = (TableOperationModel)op;
-            	if (top.additionalOperations != null) {
+            	if (top.additionalOperations != null && top.additionalOperations.size() > 0) {
                 	for (OperationModel addOp : top.additionalOperations) {
                 		if (addOp.binaryAttachment) {
                 			return true;

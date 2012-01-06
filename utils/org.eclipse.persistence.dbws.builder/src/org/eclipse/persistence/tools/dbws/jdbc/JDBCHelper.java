@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import static java.sql.DatabaseMetaData.columnNullable;
 import static java.sql.DatabaseMetaData.procedureReturnsResult;
 import static java.sql.DatabaseMetaData.tableIndexStatistic;
@@ -33,7 +32,6 @@ import static java.sql.Types.ARRAY;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.STRUCT;
 import static java.util.logging.Level.FINEST;
-//import static java.util.logging.Level.SEVERE;
 
 //java eXtension imports
 import javax.xml.namespace.QName;
@@ -250,7 +248,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                                                               //  the 'overload level' - i.e. which
                                                               //  procedure we are dealing with
     //protected List<DbStoredProcedure> dbStoredProcedures = new ArrayList<DbStoredProcedure>();
-    //protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName = 
+    //protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName =
     //    new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
 
     public JDBCHelper(DBWSBuilder dbwsBuilder) {
@@ -263,7 +261,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         }
         return true;
     }
-    
+
     public boolean hasComplexProcedureArgs() {
         return false;
     }
@@ -271,23 +269,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
         String name = procedureOperationModel.getName();
         boolean isMySQL = dbwsBuilder.getDatabasePlatform().getClass().getName().contains("MySQL");
-        List<ProcedureType> procs = new ArrayList<ProcedureType>();
-        for (Map.Entry<ProcedureType, DbStoredProcedureNameAndModel> me : dbStoredProcedure2QueryName.entrySet()) {
-            ProcedureType key = me.getKey();
-            DbStoredProcedureNameAndModel value = me.getValue();
-            if (value.name.equals(procedureOperationModel.getName())) {
-                procs.add(key);
-            }
-        }
-        // nested under a <table> operation
-        if (procs.isEmpty()) {
-            List<ProcedureType> additionalProcs = loadProcedures(procedureOperationModel);
-            if (additionalProcs != null && !additionalProcs.isEmpty()) {
-                procs.addAll(additionalProcs);
-            }
-            //TODO - add to dbStoredProcedure2QueryName map
-        }
-        for (ProcedureType storedProcedure : procs) {
+        for (ProcedureType storedProcedure : procedureOperationModel.getDbStoredProcedures()) {
             StringBuilder sb = new StringBuilder();
             if (name == null || name.length() == 0) {
                 if (storedProcedure.getOverload() > 0) {
@@ -464,7 +446,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                             result.setType(xmlType);
                             // use of INOUT precludes SimpleXMLFormat
                             isSimpleXMLFormat = false;
-                            
+
                             if (qh instanceof StoredProcedureQueryHandler) {
                                 ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
                             }
@@ -480,17 +462,27 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                     }
                 }
             }
-            
+
             handleSimpleXMLFormat(isSimpleXMLFormat, result, procedureOperationModel);
             qo.setResult(result);
             dbwsBuilder.getXrServiceModel().getOperations().put(qo.getName(), qo);
         }
         finishProcedureOperation();
     }
-    
+
+    protected List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns,
+        List<String> tableNamePatterns) {
+        List<TableType> tables = new ArrayList<TableType>();
+        for (int i = 0, len = catalogPatterns.size(); i < len; i++) {
+            String catalogPattern = catalogPatterns.get(i);
+            String schemaPattern = schemaPatterns.get(i);
+            String tablePattern = tableNamePatterns.get(i);
+            tables.addAll(loadTables(catalogPattern, schemaPattern, tablePattern));
+        }
+        return tables;
+    }
     protected List<TableType> loadTables(String originalCatalogPattern, String originalSchemaPattern,
         String originalTablePattern) {
-
         List<TableType> dbTables = null;
         String schemaPattern = escapePunctuation(originalSchemaPattern);
         String tablePattern = escapePunctuation(originalTablePattern);
@@ -569,8 +561,6 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                         dbColumn.setJDBCTypeName(columnInfo.getString(COLUMNSINFO_TYPE_NAME));
                         dbColumn.setDataType(buildTypeForJDBCType(dbColumn.getJDBCType(),
                             dbPrecision, dbScale));
-                        //TODO - just put into dbTable in order that columnInfo reports
-                        //       if backward-compat problems, put back 'ordinal' logic
                         dbTable.getColumns().add(dbColumn);
                     }
                     columnInfo.close();
@@ -605,7 +595,8 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                             }
                         }
                         indexInfo.close();
-                    } catch (SQLException sqlException) {
+                    }
+                    catch (SQLException sqlException) {
                         //TODO - do we still need this if we (JDBCHelper) isn't handling Oracle?
                         // sqlException.printStackTrace();
                         // ORA-01702: a view is not appropriate here: can't retrieve indexInfo
@@ -622,20 +613,28 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         return dbTables;
     }
 
-    protected List<ProcedureType> loadProcedures(ProcedureOperationModel procedureModel ) {
-
+    protected List<ProcedureType> loadProcedures(List<String> catalogPatterns,
+        List<String> schemaPatterns, List<String> procedureNamePatterns) {
+        List<ProcedureType> procedures = new ArrayList<ProcedureType>();
+        for (int i = 0, len = catalogPatterns.size(); i < len; i++) {
+            String catalogPattern = catalogPatterns.get(i);
+            String schemaPattern = schemaPatterns.get(i);
+            String tablePattern = procedureNamePatterns.get(i);
+            procedures.addAll(loadProcedures(catalogPattern, schemaPattern, tablePattern));
+        }
+        return procedures;
+    }
+    protected List<ProcedureType> loadProcedures(String originalCatalogPattern,
+        String originalSchemaPattern, String originalProcedurePattern) {
         List<ProcedureType> dbStoredProcedures = null;
         boolean catalogMatchDontCare = false;
         DatabasePlatform platform = dbwsBuilder.getDatabasePlatform();
-        if (platform instanceof MySQLPlatform || 
+        if (platform instanceof MySQLPlatform ||
             platform instanceof DerbyPlatform ||
             platform instanceof PostgreSQLPlatform ) {
             // TODO - get info on other platforms that also require catalogMatchDontCare = true
             catalogMatchDontCare = true;
         }
-        String originalCatalogPattern = procedureModel.getCatalogPattern();
-        String originalSchemaPattern = procedureModel.getSchemaPattern();
-        String originalProcedurePattern = procedureModel.getProcedurePattern();
         String catalogPattern = escapePunctuation(originalCatalogPattern);
         String schemaPattern = escapePunctuation(originalSchemaPattern);
         String procedurePattern = escapePunctuation(originalProcedurePattern);
@@ -701,13 +700,13 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                             // default to ArgumentTypeDirection.IN
                             dbStoredArgument.setDirection(IN);
                         }
-                        
+
                         int jdbcType = procedureColumnsInfo.getInt(PROC_COLS_INFO_DATA_TYPE);
                         int precision = procedureColumnsInfo.getInt(PROC_COLS_INFO_PRECISION);
                         int scale = procedureColumnsInfo.getInt(PROC_COLS_INFO_SCALE);
 
                         dbStoredArgument.setDataType(buildTypeForJDBCType(jdbcType, precision, scale));
-                        
+
                         // find matching DbStoredProcedure
                         // this dbStoredArgument belongs to a 'regular' procedure
                         ProcedureType matchingProc = null;
@@ -782,7 +781,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         }
         return databaseMetaData;
     }
-    
+
     public static boolean matches(ProcedureType proc, String catalog, String schema, String name, boolean isOracle,
             boolean catalogMatchDontCare) {
 
