@@ -39,6 +39,7 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 
 /**
  * Helper class for code that needs to be shared between AnnotationsProcessor,
@@ -414,5 +415,25 @@ public class CompilerHelper {
             Class wrappedClass = ((JavaClassImpl)cls).getJavaClass();
             ((JaxbClassLoader)loader).putClass(wrappedClass.getName(), wrappedClass);
         }
+    }
+    
+    static boolean hasNonAttributeJoinNodes(Property property) {
+        if(property.isSetXmlJoinNodes()) {
+            for(XmlJoinNodes.XmlJoinNode next: property.getXmlJoinNodes().getXmlJoinNode()) {
+                if(!(next.getXmlPath().startsWith("@"))) {
+                    return true;
+                }
+            }
+        } else if(property.isSetXmlJoinNodesList()) {
+            for(XmlJoinNodes nextNodes:property.getXmlJoinNodesList()) {
+                for(XmlJoinNodes.XmlJoinNode next: nextNodes.getXmlJoinNode()) {
+                    if(!(next.getXmlPath().startsWith("@"))) {
+                        return true;
+                    }
+                }
+            }
+            
+        }
+        return false;
     }
 }
