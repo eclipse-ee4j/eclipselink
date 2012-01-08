@@ -282,24 +282,6 @@
             <param name="artifactName" value="EclipseLink (non-OSGi)"/>
             <param name="dependencies" value=""/>
         </antcall>
-        <!-- antcall target="upload-artifact">
-            <param name="groupId" value="org.eclipse.persistence"/>
-            <param name="artifactId" value="org.eclipse.persistence.antlr"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.antlr.bndl.prefix}.source_${version.string}.jar"/>
-            <param name="artifactName" value="EclipseLink ANTLR"/>
-            <param name="dependencies" value=""/>
-        </antcall>
-        <antcall target="upload-artifact">
-            <param name="groupId" value="org.eclipse.persistence"/>
-            <param name="artifactId" value="org.eclipse.persistence.asm"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.asm.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.asm.bndl.prefix}.source_${version.string}.jar"/>
-            <param name="artifactName" value="EclipseLink ASM"/>
-            <param name="dependencies" value=""/>
-        </antcall -->
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.core"/>
