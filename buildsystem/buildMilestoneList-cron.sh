@@ -213,6 +213,8 @@ for version in `ls -dr [0-9]*` ; do
     echo "          </tr>                                                                        " >> $tmp/index.xml
 
     #    Generate each table row depending upon available content
+    #        TO-DO:: Need to parse content dirs for date, sort newest to oldest, and generate based on that order
+    #        Currently sorts my milestone name in reverse order. is fie until hit a double-digit milestone.
     for contentdir in `ls -dr [MR]*[0-9]*` ; do
         echo ${contentdir}
         cd ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}
