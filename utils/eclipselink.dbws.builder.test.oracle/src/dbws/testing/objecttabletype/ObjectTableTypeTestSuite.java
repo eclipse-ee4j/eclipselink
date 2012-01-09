@@ -43,51 +43,51 @@ import dbws.testing.DBWSTestSuite;
 public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 
     static final String CREATE_PERSONTYPE =
-        "CREATE OR REPLACE TYPE PERSONTYPE AS OBJECT (" +
+        "CREATE OR REPLACE TYPE DBWS_PERSONTYPE AS OBJECT (" +
             "\nNAME VARCHAR2(20)," +
             "\nAGE NUMBER," +
             "\nGENDER VARCHAR2(1)," +
             "\nINCARCERATED DATE" +
         "\n)";
     static final String CREATE_PERSONTYPE_TABLE =
-        "CREATE OR REPLACE TYPE PERSONTYPE_TABLE AS TABLE OF PERSONTYPE";
+        "CREATE OR REPLACE TYPE DBWS_PERSONTYPE_TABLE AS TABLE OF DBWS_PERSONTYPE";
     static final String CREATE_GET_PERSONTYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE(PTABLE OUT PERSONTYPE_TABLE) AS" +
+        "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE(PTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
         "\nBEGIN" +
-            "\nPTABLE := PERSONTYPE_TABLE();" +
+            "\nPTABLE := DBWS_PERSONTYPE_TABLE();" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('BUBBLES', 32, 'M', " +
+            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('BUBBLES', 32, 'M', " +
                 "TO_DATE('1990-11-19 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('RICKY', 33, 'M', " +
+            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('RICKY', 33, 'M', " +
                 "TO_DATE('1985-10-01 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('JULIAN', 35, 'M', " +
+            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('JULIAN', 35, 'M', " +
                 "TO_DATE('1988-02-07 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('SARAH', 25, 'F', " +
+            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('SARAH', 25, 'F', " +
                 "TO_DATE('2002-05-12 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
             "\nPTABLE.EXTEND;" +
-            "\nPTABLE(PTABLE.COUNT) := PERSONTYPE('J-ROC', 27, 'M', " +
+            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('J-ROC', 27, 'M', " +
                 "TO_DATE('1998-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
         "\nEND GET_PERSONTYPE_TABLE;";
     static final String CREATE_GET_PERSONTYPE2_FUNC =
-        "CREATE OR REPLACE FUNCTION GET_PERSONTYPE_TABLE2 RETURN PERSONTYPE_TABLE AS" +
-        "\nL_DATA PERSONTYPE_TABLE;" +
+        "CREATE OR REPLACE FUNCTION GET_PERSONTYPE_TABLE2 RETURN DBWS_PERSONTYPE_TABLE AS" +
+        "\nL_DATA DBWS_PERSONTYPE_TABLE;" +
         "\nBEGIN" +
             "\nGET_PERSONTYPE_TABLE(L_DATA);" +
             "\nRETURN L_DATA;" +
         "\nEND GET_PERSONTYPE_TABLE2;";
     static final String CREATE_ADD_PERSONTYPE_TO_TABLE_PROC =
-        "CREATE OR REPLACE PROCEDURE ADD_PERSONTYPE_TO_TABLE(PTYPETOADD IN PERSONTYPE, OLDTABLE IN PERSONTYPE_TABLE, NEWTABLE OUT PERSONTYPE_TABLE) AS" +
+        "CREATE OR REPLACE PROCEDURE ADD_PERSONTYPE_TO_TABLE(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE, NEWTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
         "\nBEGIN" +
           "\nNEWTABLE := OLDTABLE;" +
           "\nNEWTABLE.EXTEND;" +
           "\nNEWTABLE(NEWTABLE.COUNT) := PTYPETOADD;" +
         "\nEND ADD_PERSONTYPE_TO_TABLE;";
     static final String CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC =
-        "CREATE OR REPLACE FUNCTION ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD IN PERSONTYPE, OLDTABLE IN PERSONTYPE_TABLE) RETURN PERSONTYPE_TABLE AS" +
-        "\nNEWTABLE PERSONTYPE_TABLE;" +
+        "CREATE OR REPLACE FUNCTION ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE) RETURN DBWS_PERSONTYPE_TABLE AS" +
+        "\nNEWTABLE DBWS_PERSONTYPE_TABLE;" +
         "\nBEGIN" +
             "\nADD_PERSONTYPE_TO_TABLE(PTYPETOADD, OLDTABLE, NEWTABLE);" +
             "\nRETURN NEWTABLE;" +
@@ -102,9 +102,9 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static final String DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC =
         "DROP FUNCTION ADD_PERSONTYPE_TO_TABLE2";
     static final String DROP_PERSONTYPE_TABLE =
-        "DROP TYPE PERSONTYPE_TABLE";
+        "DROP TYPE DBWS_PERSONTYPE_TABLE";
     static final String DROP_PERSONTYPE =
-        "DROP TYPE PERSONTYPE";
+        "DROP TYPE DBWS_PERSONTYPE";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -163,28 +163,28 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"GET_PERSONTYPE_TABLE\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"persontype_tableType\" " +
+                  "returnType=\"dbws_persontype_tableType\" " +
               "/>" +
               "<procedure " +
                   "name=\"GetPersonTypeTable2\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"GET_PERSONTYPE_TABLE2\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"persontype_tableType\" " +
+                  "returnType=\"dbws_persontype_tableType\" " +
               "/>" +
               "<procedure " +
                   "name=\"AddPersonTypeToTable\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"ADD_PERSONTYPE_TO_TABLE\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"persontype_tableType\" " +
+                  "returnType=\"dbws_persontype_tableType\" " +
               "/>" +
               "<procedure " +
                   "name=\"AddPersonTypeToTable2\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"ADD_PERSONTYPE_TO_TABLE2\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"persontype_tableType\" " +
+                  "returnType=\"dbws_persontype_tableType\" " +
               "/>" +
             "</dbws-builder>";
           builder = null;
@@ -230,7 +230,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     }
     static String RESULT_XML =
         REGULAR_XML_HEADER +
-        "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<dbws_persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
             "<item>" +
                 "<name>BUBBLES</name>" +
                 "<age>32</age>" +
@@ -261,7 +261,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                 "<gender>M</gender>" +
                 "<incarcerated>1998-12-17</incarcerated>" +
             "</item>" +
-        "</persontype_tableType>";
+        "</dbws_persontype_tableType>";
 
     @Test
     public void addPersonTypeToTable() {
@@ -303,16 +303,16 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     }
     static String PTYPE_INPUT_XML =
         REGULAR_XML_HEADER +
-        "<persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<dbws_persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
             "<name>COREY</name>" +
             "<age>20</age>" +
             "<gender>M</gender>" +
             "<incarcerated>1997-12-09</incarcerated>" +
-        "</persontypeType>";
+        "</dbws_persontypeType>";
 
     static String PTABLE_INPUT_XML =
         REGULAR_XML_HEADER +
-        "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<dbws_persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
             "<item>" +
                 "<name>BUBBLES</name>" +
                 "<age>32</age>" +
@@ -343,11 +343,11 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                 "<gender>M</gender>" +
                 "<incarcerated>1998-12-17</incarcerated>" +
             "</item>" +
-        "</persontype_tableType>";
+        "</dbws_persontype_tableType>";
 
     static String NEW_PTABLE_OUTPUT_XML =
         REGULAR_XML_HEADER +
-        "<persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<dbws_persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
             "<item>" +
                 "<name>BUBBLES</name>" +
                 "<age>32</age>" +
@@ -384,5 +384,5 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                 "<gender>M</gender>" +
                 "<incarcerated>1997-12-09</incarcerated>" +
             "</item>" +
-        "</persontype_tableType>";
+        "</dbws_persontype_tableType>";
 }

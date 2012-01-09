@@ -42,7 +42,7 @@ import dbws.testing.DBWSTestSuite;
 public class CustomSQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_CUSTOM_TABLE =
-        "CREATE TABLE CUSTOM (" +
+        "CREATE TABLE DBWS_CUSTOM (" +
             "\nEMPNO NUMERIC(4)," +
             "\nENAME VARCHAR(10)," +
             "\nJOB VARCHAR(9)," +
@@ -54,51 +54,51 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
             "\nPRIMARY KEY (EMPNO)" +
         "\n)";
     static final String[] POPULATE_CUSTOM_TABLE = new String[] {
-        "INSERT INTO CUSTOM VALUES (7369,'SMITH','CLERK',7902," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7369,'SMITH','CLERK',7902," +
             "TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "800,NULL,20)",
-        "INSERT INTO CUSTOM VALUES (7499,'ALLEN','SALESMAN',7698," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7499,'ALLEN','SALESMAN',7698," +
             "TO_DATE('1981-2-20 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "1600,300,30)",
-        "INSERT INTO CUSTOM VALUES (7521,'WARD','SALESMAN',7698," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7521,'WARD','SALESMAN',7698," +
             "TO_DATE('1981-2-22 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "1250,500,30)",
-        "INSERT INTO CUSTOM VALUES (7566,'JONES','MANAGER',7839," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7566,'JONES','MANAGER',7839," +
             "TO_DATE('1981-04-02 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "2975,NULL,20)",
-        "INSERT INTO CUSTOM VALUES (7654,'MARTIN','SALESMAN',7698," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7654,'MARTIN','SALESMAN',7698," +
             "TO_DATE('1981-9-28 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "1250,1400,30)",
-        "INSERT INTO CUSTOM VALUES (7698,'BLAKE','MANAGER',7839," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7698,'BLAKE','MANAGER',7839," +
             "TO_DATE('1981-5-1 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "2850,NULL,30)",
-        "INSERT INTO CUSTOM VALUES (7782,'CLARK','MANAGER',7839," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7782,'CLARK','MANAGER',7839," +
             "TO_DATE('1981-6-9 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "2450,NULL,10)",
-        "INSERT INTO CUSTOM VALUES (7788,'SCOTT','ANALYST',7566," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7788,'SCOTT','ANALYST',7566," +
             "TO_DATE('1981-06-09 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "3000.99,NULL,20)",
-        "INSERT INTO CUSTOM VALUES (7839,'KING','PRESIDENT',NULL," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7839,'KING','PRESIDENT',NULL," +
             "TO_DATE('1981-11-17 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "5000.99,NULL,10)",
-        "INSERT INTO CUSTOM VALUES (7844,'TURNER','SALESMAN',7698," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7844,'TURNER','SALESMAN',7698," +
             "TO_DATE('1981-9-8 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "1500,0,30)",
-        "INSERT INTO CUSTOM VALUES (7876,'ADAMS','CLERK',7788," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7876,'ADAMS','CLERK',7788," +
             "TO_DATE('1987-05-23 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "1100,NULL,20)",
-        "INSERT INTO CUSTOM VALUES (7900,'JAMES','CLERK',7698," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7900,'JAMES','CLERK',7698," +
             "TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "950,NULL,30)",
-        "INSERT INTO CUSTOM VALUES (7902,'FORD','ANALYST',7566," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7902,'FORD','ANALYST',7566," +
             "TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "3000,NULL,20)",
-        "INSERT INTO CUSTOM VALUES (7934,'MILLER','CLERK',7782," +
+        "INSERT INTO DBWS_CUSTOM VALUES (7934,'MILLER','CLERK',7782," +
             "TO_DATE('1982-01-23 00:00:00','YYYY-MM-DD HH24:MI:SS')," +
             "1300,NULL,10)"
     };
     static final String DROP_CUSTOM_TABLE =
-        "DROP TABLE CUSTOM";
+        "DROP TABLE DBWS_CUSTOM";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -161,7 +161,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
             "</properties>" +
             "<table " +
               "schemaPattern=\"%\" " +
-              "tableNamePattern=\"CUSTOM\" " +
+              "tableNamePattern=\"DBWS_CUSTOM\" " +
               ">" +
               "<sql " +
                 "name=\"countCustom\" " +
@@ -169,7 +169,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "simpleXMLFormatTag=\"custom-info\" " +
                 "xmlTag=\"aggregate-info\" " +
                 ">" +
-                "<text><![CDATA[select count(*) from CUSTOM]]></text> " +
+                "<text><![CDATA[select count(*) from DBWS_CUSTOM]]></text> " +
               "</sql>" +
               "<sql " +
                 "name=\"customInfo\" " +
@@ -177,7 +177,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "simpleXMLFormatTag=\"custom-info\" " +
                 "xmlTag=\"aggregate-info\" " +
                 "> " +
-                "<text><![CDATA[select count(*) as \"COUNT\", CAST(max(SAL) as NUMBER(7,2)) \"MAX-Salary\" from CUSTOM]]></text>" +
+                "<text><![CDATA[select count(*) as \"COUNT\", CAST(max(SAL) as NUMBER(7,2)) \"MAX-Salary\" from DBWS_CUSTOM]]></text>" +
               "</sql>" +
             "</table>" +
           "</dbws-builder>";
@@ -237,7 +237,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
 
     @Test
     public void findByPrimaryKey() {
-        Invocation invocation = new Invocation("findByPrimaryKey_customType");
+        Invocation invocation = new Invocation("findByPrimaryKey_dbws_customType");
         invocation.setParameter("empno", 7788);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -251,7 +251,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
 
     public static final String FINDBYPK_7788_CONTROL_DOC =
         REGULAR_XML_HEADER +
-        "<customType xmlns=\"urn:customSQL\">" +
+        "<dbws_customType xmlns=\"urn:customSQL\">" +
           "<empno>7788</empno>" +
           "<ename>SCOTT</ename>" +
           "<job>ANALYST</job>" +
@@ -260,12 +260,12 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<sal>3000.99</sal>" +
           "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
-        "</customType>";
+        "</dbws_customType>";
 
     @SuppressWarnings("rawtypes")
     @Test
     public void findAll() {
-        Invocation invocation = new Invocation("findAll_customType");
+        Invocation invocation = new Invocation("findAll_dbws_customType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -283,7 +283,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     public static final String FIND_ALL_CONTROL_DOC =
         REGULAR_XML_HEADER +
         "<collection>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7369</empno>" +
                 "<ename>SMITH</ename>" +
                 "<job>CLERK</job>" +
@@ -292,8 +292,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>800</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>20</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7499</empno>" +
                 "<ename>ALLEN</ename>" +
                 "<job>SALESMAN</job>" +
@@ -302,8 +302,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>1600</sal>" +
                 "<comm>300</comm>" +
                 "<deptno>30</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7521</empno>" +
                 "<ename>WARD</ename>" +
                 "<job>SALESMAN</job>" +
@@ -312,8 +312,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>1250</sal>" +
                 "<comm>500</comm>" +
                 "<deptno>30</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7566</empno>" +
                 "<ename>JONES</ename>" +
                 "<job>MANAGER</job>" +
@@ -322,8 +322,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>2975</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>20</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7654</empno>" +
                 "<ename>MARTIN</ename>" +
                 "<job>SALESMAN</job>" +
@@ -332,8 +332,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>1250</sal>" +
                 "<comm>1400</comm>" +
                 "<deptno>30</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7698</empno>" +
                 "<ename>BLAKE</ename>" +
                 "<job>MANAGER</job>" +
@@ -342,8 +342,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>2850</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>30</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7782</empno>" +
                 "<ename>CLARK</ename>" +
                 "<job>MANAGER</job>" +
@@ -352,8 +352,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>2450</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>10</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7788</empno>" +
                 "<ename>SCOTT</ename>" +
                 "<job>ANALYST</job>" +
@@ -362,8 +362,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>3000.99</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>20</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7839</empno>" +
                 "<ename>KING</ename>" +
                 "<job>PRESIDENT</job>" +
@@ -372,8 +372,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>5000.99</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>10</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7844</empno>" +
                 "<ename>TURNER</ename>" +
                 "<job>SALESMAN</job>" +
@@ -382,8 +382,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>1500</sal>" +
                 "<comm>0</comm>" +
                 "<deptno>30</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7876</empno>" +
                 "<ename>ADAMS</ename>" +
                 "<job>CLERK</job>" +
@@ -392,8 +392,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>1100</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>20</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7900</empno>" +
                 "<ename>JAMES</ename>" +
                 "<job>CLERK</job>" +
@@ -402,8 +402,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>950</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>30</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7902</empno>" +
                 "<ename>FORD</ename>" +
                 "<job>ANALYST</job>" +
@@ -412,8 +412,8 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>3000</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>20</deptno>" +
-            "</customType>" +
-            "<customType xmlns=\"urn:customSQL\">" +
+            "</dbws_customType>" +
+            "<dbws_customType xmlns=\"urn:customSQL\">" +
                 "<empno>7934</empno>" +
                 "<ename>MILLER</ename>" +
                 "<job>CLERK</job>" +
@@ -422,6 +422,6 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
                 "<sal>1300</sal>" +
                 "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
                 "<deptno>10</deptno>" +
-            "</customType>" +
+            "</dbws_customType>" +
         "</collection>";
 }

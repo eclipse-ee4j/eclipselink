@@ -40,74 +40,74 @@ import dbws.testing.DBWSTestSuite;
 public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
 
     static final String CREATE_REGION_TYPE =
-        "CREATE OR REPLACE TYPE REGION AS OBJECT (" +
+        "CREATE OR REPLACE TYPE DBWS_REGION AS OBJECT (" +
             "\nREG_ID NUMBER(5)," +
             "\nREG_NAME VARCHAR2(50)" +
         "\n)";
     static final String CREATE_EMP_ADDRESS_TYPE =
-        "CREATE OR REPLACE TYPE EMP_ADDRESS AS OBJECT (" +
+        "CREATE OR REPLACE TYPE DBWS_EMP_ADDRESS AS OBJECT (" +
             "\nSTREET VARCHAR2(100)," +
             "\nSUBURB VARCHAR2(100)," +
-            "\nADDR_REGION REGION," +
+            "\nADDR_REGION DBWS_REGION," +
             "\nPOSTCODE INTEGER" +
         "\n)";
     static final String CREATE_EMP_OBJECT_TYPE =
-        "CREATE OR REPLACE TYPE EMP_OBJECT AS OBJECT (" +
+        "CREATE OR REPLACE TYPE DBWS_EMP_OBJECT AS OBJECT (" +
             "\nEMPLOYEE_ID NUMBER(8)," +
-            "\nADDRESS EMP_ADDRESS," +
+            "\nADDRESS DBWS_EMP_ADDRESS," +
             "\nEMPLOYEE_NAME VARCHAR2(80)," +
             "\nDATE_OF_HIRE  DATE" +
         "\n)";
     static final String CREATE_EMP_INFO_TYPE =
-        "CREATE OR REPLACE TYPE EMP_INFO AS OBJECT (" +
+        "CREATE OR REPLACE TYPE DBWS_EMP_INFO AS OBJECT (" +
             "\nID NUMBER(5)," +
             "\nNAME VARCHAR2(50)" +
         "\n)";
     static final String CREATE_EMP_INFO_ARRAY_TYPE =
-        "CREATE OR REPLACE TYPE EMP_INFO_ARRAY AS VARRAY(3) OF EMP_INFO";
+        "CREATE OR REPLACE TYPE DBWS_EMP_INFO_ARRAY AS VARRAY(3) OF DBWS_EMP_INFO";
     static final String CREATE_ADVANCED_OBJECT_DEMO_PACKAGE =
-        "CREATE OR REPLACE PACKAGE ADVANCED_OBJECT_DEMO AS" +
-            "\nFUNCTION ECHOREGION(AREGION IN REGION) RETURN REGION;" +
-            "\nFUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN EMP_ADDRESS) RETURN EMP_ADDRESS;" +
-            "\nFUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN EMP_OBJECT) RETURN EMP_OBJECT;" +
-            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN EMP_INFO_ARRAY;" +
-        "\nEND ADVANCED_OBJECT_DEMO;";
+        "CREATE OR REPLACE PACKAGE DBWS_ADVANCED_OBJECT_DEMO AS" +
+            "\nFUNCTION ECHOREGION(AREGION IN DBWS_REGION) RETURN DBWS_REGION;" +
+            "\nFUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN DBWS_EMP_ADDRESS) RETURN DBWS_EMP_ADDRESS;" +
+            "\nFUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN DBWS_EMP_OBJECT) RETURN DBWS_EMP_OBJECT;" +
+            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN DBWS_EMP_INFO_ARRAY;" +
+        "\nEND DBWS_ADVANCED_OBJECT_DEMO;";
     static final String CREATE_ADVANCED_OBJECT_DEMO_BODY =
-        "CREATE OR REPLACE PACKAGE BODY ADVANCED_OBJECT_DEMO AS" +
-            "\nFUNCTION ECHOREGION(AREGION IN REGION) RETURN REGION AS" +
+        "CREATE OR REPLACE PACKAGE BODY DBWS_ADVANCED_OBJECT_DEMO AS" +
+            "\nFUNCTION ECHOREGION(AREGION IN DBWS_REGION) RETURN DBWS_REGION AS" +
             "\nBEGIN" +
                 "\nRETURN AREGION;" +
             "\nEND ECHOREGION;" +
-            "\nFUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN EMP_ADDRESS) RETURN EMP_ADDRESS AS" +
+            "\nFUNCTION ECHOEMPADDRESS(ANEMPADDRESS IN DBWS_EMP_ADDRESS) RETURN DBWS_EMP_ADDRESS AS" +
             "\nBEGIN" +
                 "\nRETURN ANEMPADDRESS;" +
             "\nEND ECHOEMPADDRESS;" +
-            "\nFUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN EMP_OBJECT) RETURN EMP_OBJECT AS" +
+            "\nFUNCTION ECHOEMPOBJECT(ANEMPOBJECT IN DBWS_EMP_OBJECT) RETURN DBWS_EMP_OBJECT AS" +
             "\nBEGIN" +
                 "\nRETURN ANEMPOBJECT;" +
             "\nEND ECHOEMPOBJECT;" +
-            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN EMP_INFO_ARRAY AS" +
-            "\nL_DATA EMP_INFO_ARRAY := EMP_INFO_ARRAY();" +
+            "\nFUNCTION BUILDEMPARRAY(NUM IN INTEGER) RETURN DBWS_EMP_INFO_ARRAY AS" +
+            "\nL_DATA DBWS_EMP_INFO_ARRAY := DBWS_EMP_INFO_ARRAY();" +
             "\nBEGIN" +
                 "\nFOR I IN 1 .. NUM LOOP" +
                     "\nL_DATA.EXTEND;" +
-                    "\nL_DATA(I) := EMP_INFO(I, 'entry ' || i);" +
+                    "\nL_DATA(I) := DBWS_EMP_INFO(I, 'entry ' || i);" +
                 "\nEND LOOP;" +
                 "\nRETURN L_DATA;" +
             "\nEND BUILDEMPARRAY;" +
-        "\nEND ADVANCED_OBJECT_DEMO;";
+        "\nEND DBWS_ADVANCED_OBJECT_DEMO;";
     static final String DROP_REGION_TYPE =
-        "DROP TYPE REGION";
+        "DROP TYPE DBWS_REGION";
     static final String DROP_EMP_ADDRESS_TYPE =
-        "DROP TYPE EMP_ADDRESS";
+        "DROP TYPE DBWS_EMP_ADDRESS";
     static final String DROP_EMP_OBJECT_TYPE =
-        "DROP TYPE EMP_OBJECT";
+        "DROP TYPE DBWS_EMP_OBJECT";
     static final String DROP_EMP_INFO_ARRAY_TYPE =
-        "DROP TYPE EMP_INFO_ARRAY";
+        "DROP TYPE DBWS_EMP_INFO_ARRAY";
     static final String DROP_EMP_INFO_TYPE =
-        "DROP TYPE EMP_INFO";
+        "DROP TYPE DBWS_EMP_INFO";
     static final String DROP_ADVANCED_OBJECT_DEMO_PACKAGE =
-        "DROP PACKAGE ADVANCED_OBJECT_DEMO";
+        "DROP PACKAGE DBWS_ADVANCED_OBJECT_DEMO";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -164,31 +164,31 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
               "</properties>" +
               "<procedure " +
                   "name=\"echoRegion\" " +
-                  "catalogPattern=\"ADVANCED_OBJECT_DEMO\" " +
+                  "catalogPattern=\"DBWS_ADVANCED_OBJECT_DEMO\" " +
                   "procedurePattern=\"ECHOREGION\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"regionType\" " +
+                  "returnType=\"dbws_regionType\" " +
               "/>" +
               "<procedure " +
                   "name=\"echoEmpAddress\" " +
-                  "catalogPattern=\"ADVANCED_OBJECT_DEMO\" " +
+                  "catalogPattern=\"DBWS_ADVANCED_OBJECT_DEMO\" " +
                   "procedurePattern=\"ECHOEMPADDRESS\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"emp_addressType\" " +
+                  "returnType=\"dbws_emp_addressType\" " +
               "/>" +
               "<procedure " +
                   "name=\"echoEmpObject\" " +
-                  "catalogPattern=\"ADVANCED_OBJECT_DEMO\" " +
+                  "catalogPattern=\"DBWS_ADVANCED_OBJECT_DEMO\" " +
                   "procedurePattern=\"ECHOEMPOBJECT\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"emp_objectType\" " +
+                  "returnType=\"dbws_emp_objectType\" " +
                   "/>" +
               "<procedure " +
                   "name=\"buildEmpArray\" " +
-                  "catalogPattern=\"ADVANCED_OBJECT_DEMO\" " +
+                  "catalogPattern=\"DBWS_ADVANCED_OBJECT_DEMO\" " +
                   "procedurePattern=\"BUILDEMPARRAY\" " +
                   "isAdvancedJDBC=\"true\" " +
-                  "returnType=\"emp_info_arrayType\" " +
+                  "returnType=\"dbws_emp_info_arrayType\" " +
               "/>" +
             "</dbws-builder>";
           builder = null;
@@ -225,10 +225,10 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     }
     static final String REGION_XML =
         REGULAR_XML_HEADER +
-        "<regionType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_regionType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<reg_id>5</reg_id>" +
         "<reg_name>this is a test</reg_name>" +
-        "</regionType>";
+        "</dbws_regionType>";
 
     @Test
     public void struct2LevelDeep() {
@@ -248,7 +248,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     }
     static final String EMP_ADDRESS_XML =
         REGULAR_XML_HEADER +
-        "<emp_addressType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_emp_addressType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<street>20 Pinetrail Cres.</street>" +
            "<suburb>Centrepointe</suburb>" +
            "<addr_region>" +
@@ -256,7 +256,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
               "<reg_name>this is a test</reg_name>" +
            "</addr_region>" +
            "<postcode>12</postcode>" +
-        "</emp_addressType>";
+        "</dbws_emp_addressType>";
 
     @Test
     public void struct3LevelDeep() {
@@ -276,7 +276,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     }
     static final String EMP_OBJECT_XML =
         REGULAR_XML_HEADER +
-        "<emp_objectType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_emp_objectType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<employee_id>55</employee_id>" +
            "<address>" +
               "<street>20 Pinetrail Cres.</street>" +
@@ -289,7 +289,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
            "</address>" +
            "<employee_name>Mike Norman</employee_name>" +
            "<date_of_hire>2011-11-11</date_of_hire>" +
-        "</emp_objectType>";
+        "</dbws_emp_objectType>";
 
     @Test
     public void buildEmpArray() {
@@ -307,7 +307,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     }
     static final String EMP_INFO_ARRAY_XML =
         REGULAR_XML_HEADER +
-        "<emp_info_arrayType xmlns=\"urn:advancedjdbcpackage\">" +
+        "<dbws_emp_info_arrayType xmlns=\"urn:advancedjdbcpackage\">" +
             "<item>" +
                 "<id>1</id>" +
                 "<name>entry 1</name>" +
@@ -320,5 +320,5 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
                 "<id>3</id>" +
                 "<name>entry 3</name>" +
             "</item>" +
-         "</emp_info_arrayType>";
+         "</dbws_emp_info_arrayType>";
 }

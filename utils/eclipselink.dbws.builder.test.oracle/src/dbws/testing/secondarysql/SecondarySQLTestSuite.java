@@ -122,7 +122,7 @@ import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE_
 public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     static final String CREATE_SECONDARY_TABLE =
-        "CREATE TABLE SECONDARY (" +
+        "CREATE TABLE DBWS_SECONDARY (" +
             "\nEMPNO NUMERIC(4)," +
             "\nENAME VARCHAR(10)," +
             "\nJOB VARCHAR(9)," +
@@ -134,23 +134,23 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
             "\nPRIMARY KEY (EMPNO)" +
         "\n)";
     static final String[] POPULATE_SECONDARY_TABLE = new String[] {
-        "INSERT INTO SECONDARY VALUES (7369,'SMITH','CLERK',7902,TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800.88,NULL,20)",
-        "INSERT INTO SECONDARY VALUES (7499,'ALLEN','SALESMAN',7698,TO_DATE('1981-2-20 00:00:00','YYYY-MM-DD HH24:MI:SS'),1600,300,30)",
-        "INSERT INTO SECONDARY VALUES (7521,'WARD','SALESMAN',7698,TO_DATE('1981-2-22 00:00:00','YYYY-MM-DD HH24:MI:SS'),1250,500,30)",
-        "INSERT INTO SECONDARY VALUES (7566,'JONES','MANAGER',7839,TO_DATE('1981-4-2 00:00:00','YYYY-MM-DD HH24:MI:SS'),2975,NULL,20)",
-        "INSERT INTO SECONDARY VALUES (7654,'MARTIN','SALESMAN',7698,TO_DATE('1981-9-28 00:00:00','YYYY-MM-DD HH24:MI:SS'),1250,1400,30)",
-        "INSERT INTO SECONDARY VALUES (7698,'BLAKE','MANAGER',7839,TO_DATE('1981-5-1 00:00:00','YYYY-MM-DD HH24:MI:SS'),2850,NULL,30)",
-        "INSERT INTO SECONDARY VALUES (7782,'CLARK','MANAGER',7839,TO_DATE('1981-6-9 00:00:00','YYYY-MM-DD HH24:MI:SS'),2450,NULL,10)",
-        "INSERT INTO SECONDARY VALUES (7788,'SCOTT','ANALYST',7566,TO_DATE('1981-06-09 00:00:00','YYYY-MM-DD HH24:MI:SS'),3000,NULL,20)",
-        "INSERT INTO SECONDARY VALUES (7839,'KING','PRESIDENT',NULL,TO_DATE('1981-11-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),5000.99,NULL,10)",
-        "INSERT INTO SECONDARY VALUES (7844,'TURNER','SALESMAN',7698,TO_DATE('1981-9-8 00:00:00','YYYY-MM-DD HH24:MI:SS'),1500,0,30)",
-        "INSERT INTO SECONDARY VALUES (7876,'ADAMS','CLERK',7788,TO_DATE('1987-05-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1100,NULL,20)",
-        "INSERT INTO SECONDARY VALUES (7900,'JAMES','CLERK',7698,TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS'),950,NULL,30)",
-        "INSERT INTO SECONDARY VALUES (7902,'FORD','ANALYST',7566,TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS'),3000,NULL,20)",
-        "INSERT INTO SECONDARY VALUES (7934,'MILLER','CLERK',7782,TO_DATE('1982-01-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1300,NULL,10)"
+        "INSERT INTO DBWS_SECONDARY VALUES (7369,'SMITH','CLERK',7902,TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800.88,NULL,20)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7499,'ALLEN','SALESMAN',7698,TO_DATE('1981-2-20 00:00:00','YYYY-MM-DD HH24:MI:SS'),1600,300,30)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7521,'WARD','SALESMAN',7698,TO_DATE('1981-2-22 00:00:00','YYYY-MM-DD HH24:MI:SS'),1250,500,30)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7566,'JONES','MANAGER',7839,TO_DATE('1981-4-2 00:00:00','YYYY-MM-DD HH24:MI:SS'),2975,NULL,20)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7654,'MARTIN','SALESMAN',7698,TO_DATE('1981-9-28 00:00:00','YYYY-MM-DD HH24:MI:SS'),1250,1400,30)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7698,'BLAKE','MANAGER',7839,TO_DATE('1981-5-1 00:00:00','YYYY-MM-DD HH24:MI:SS'),2850,NULL,30)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7782,'CLARK','MANAGER',7839,TO_DATE('1981-6-9 00:00:00','YYYY-MM-DD HH24:MI:SS'),2450,NULL,10)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7788,'SCOTT','ANALYST',7566,TO_DATE('1981-06-09 00:00:00','YYYY-MM-DD HH24:MI:SS'),3000,NULL,20)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7839,'KING','PRESIDENT',NULL,TO_DATE('1981-11-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),5000.99,NULL,10)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7844,'TURNER','SALESMAN',7698,TO_DATE('1981-9-8 00:00:00','YYYY-MM-DD HH24:MI:SS'),1500,0,30)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7876,'ADAMS','CLERK',7788,TO_DATE('1987-05-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1100,NULL,20)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7900,'JAMES','CLERK',7698,TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS'),950,NULL,30)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7902,'FORD','ANALYST',7566,TO_DATE('1981-12-03 00:00:00','YYYY-MM-DD HH24:MI:SS'),3000,NULL,20)",
+        "INSERT INTO DBWS_SECONDARY VALUES (7934,'MILLER','CLERK',7782,TO_DATE('1982-01-23 00:00:00','YYYY-MM-DD HH24:MI:SS'),1300,NULL,10)"
         };
     static final String DROP_SECONDARY_TABLE =
-        "DROP TABLE SECONDARY";
+        "DROP TABLE DBWS_SECONDARY";
 
     static final String NONSENCE_WHERE_SQL = " WHERE 0=1";
     static final String SECONDARY = "secondarySQL";
@@ -160,11 +160,11 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
     static final String SECONDARY_SERVICE_NAMESPACE = "urn:" + SECONDARY_SERVICE;
     static final String SECONDARY_PORT = SECONDARY_SERVICE + "Port";
     static final String SECONDARY_COUNT_SQL =
-        "select count(*) as \"COUNT\", CAST(max(SAL) as NUMBER(7,2)) as \"MAX-Salary\" from SECONDARY";
+        "select count(*) as \"COUNT\", CAST(max(SAL) as NUMBER(7,2)) as \"MAX-Salary\" from DBWS_SECONDARY";
     static final String SECONDARY_COUNT_SCHEMA_TYPE = "secondaryAggregate";
     static final String SECONDARY_ALL_SQL =
-        "select * from SECONDARY";
-    static final String SECONDARY_ALL_SCHEMA_TYPE = "secondaryType";
+        "select * from DBWS_SECONDARY";
+    static final String SECONDARY_ALL_SCHEMA_TYPE = "dbws_secondaryType";
     static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SECONDARY_TEST;
 
     static final String DBWS_BUILDER_XML_USERNAME =
@@ -379,7 +379,13 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      public static final String SCHEMA_CONTROL_DOC =
          REGULAR_XML_HEADER +
          "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:secondarySQL\" xmlns=\"urn:secondarySQL\" elementFormDefault=\"qualified\">\n" +
-          "   <xsd:complexType name=\"secondaryType\">\n" +
+         "   <xsd:complexType name=\"secondaryAggregate\">\n" +
+         "      <xsd:sequence>\n" +
+         "         <xsd:element name=\"count\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"max-salary\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "      </xsd:sequence>\n" +
+         "   </xsd:complexType>\n" +
+         "   <xsd:complexType name=\"dbws_secondaryType\">\n" +
          "      <xsd:sequence>\n" +
          "         <xsd:element name=\"empno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
          "         <xsd:element name=\"ename\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
@@ -391,14 +397,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          "         <xsd:element name=\"deptno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
          "      </xsd:sequence>\n" +
          "   </xsd:complexType>\n" +
-         "   <xsd:complexType name=\"secondaryAggregate\">\n" +
-         "      <xsd:sequence>\n" +
-         "         <xsd:element name=\"count\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "         <xsd:element name=\"max-salary\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-         "      </xsd:sequence>\n" +
-         "   </xsd:complexType>\n" +
-         "   <xsd:element name=\"secondaryType\" type=\"secondaryType\"/>\n" +
          "   <xsd:element name=\"secondaryAggregate\" type=\"secondaryAggregate\"/>\n" +
+         "   <xsd:element name=\"dbws_secondaryType\" type=\"dbws_secondaryType\"/>\n" +
          "</xsd:schema>";
 
      static final String ALL_CUSTOM_CONTROL_DOC =
@@ -509,7 +509,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
            "<srvc:allSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
                "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
              "<srvc:result>" +
-                "<secondaryType>" +
+                "<dbws_secondaryType>" +
                   "<empno>7369</empno>" +
                   "<ename>SMITH</ename>" +
                   "<job>CLERK</job>" +
@@ -518,8 +518,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>800.88</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
-                "</secondaryType>" +
-                "<secondaryType>" +
+                "</dbws_secondaryType>" +
+                "<dbws_secondaryType>" +
                   "<empno>7499</empno>" +
                   "<ename>ALLEN</ename>" +
                   "<job>SALESMAN</job>" +
@@ -528,8 +528,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>1600</sal>" +
                   "<comm>300</comm>" +
                   "<deptno>30</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7521</empno>" +
                   "<ename>WARD</ename>" +
                   "<job>SALESMAN</job>" +
@@ -538,8 +538,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>1250</sal>" +
                   "<comm>500</comm>" +
                   "<deptno>30</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7566</empno>" +
                   "<ename>JONES</ename>" +
                   "<job>MANAGER</job>" +
@@ -548,8 +548,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>2975</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7654</empno>" +
                   "<ename>MARTIN</ename>" +
                   "<job>SALESMAN</job>" +
@@ -558,8 +558,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>1250</sal>" +
                   "<comm>1400</comm>" +
                   "<deptno>30</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7698</empno>" +
                   "<ename>BLAKE</ename>" +
                   "<job>MANAGER</job>" +
@@ -568,8 +568,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>2850</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>30</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7782</empno>" +
                   "<ename>CLARK</ename>" +
                   "<job>MANAGER</job>" +
@@ -578,8 +578,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>2450</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>10</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7788</empno>" +
                   "<ename>SCOTT</ename>" +
                   "<job>ANALYST</job>" +
@@ -588,8 +588,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>3000</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7839</empno>" +
                   "<ename>KING</ename>" +
                   "<job>PRESIDENT</job>" +
@@ -598,8 +598,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>5000.99</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>10</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7844</empno>" +
                   "<ename>TURNER</ename>" +
                   "<job>SALESMAN</job>" +
@@ -608,8 +608,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>1500</sal>" +
                   "<comm>0</comm>" +
                   "<deptno>30</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7876</empno>" +
                   "<ename>ADAMS</ename>" +
                   "<job>CLERK</job>" +
@@ -618,8 +618,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>1100</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7900</empno>" +
                   "<ename>JAMES</ename>" +
                   "<job>CLERK</job>" +
@@ -628,8 +628,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>950</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>30</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7902</empno>" +
                   "<ename>FORD</ename>" +
                   "<job>ANALYST</job>" +
@@ -638,8 +638,8 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>3000</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>20</deptno>" +
-               "</secondaryType>" +
-               "<secondaryType>" +
+               "</dbws_secondaryType>" +
+               "<dbws_secondaryType>" +
                   "<empno>7934</empno>" +
                   "<ename>MILLER</ename>" +
                   "<job>CLERK</job>" +
@@ -648,7 +648,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
                   "<sal>1300</sal>" +
                   "<comm xsi:nil=\"true\"/>" +
                   "<deptno>10</deptno>" +
-               "</secondaryType>" +
+               "</dbws_secondaryType>" +
              "</srvc:result>" +
            "</srvc:allSecondaryResponse>" +
          "</SOAP-ENV:Body>" +
@@ -668,7 +668,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
               "name=\"badColumns\" " +
               "returnType=\"dontCare\"> " +
               "<statement><![CDATA[dontCare]]></statement>" +
-              "<build-statement><![CDATA[select ename, ename from secondary where 0=1]]></build-statement>" +
+              "<build-statement><![CDATA[select ename, ename from dbws_secondary where 0=1]]></build-statement>" +
             "</sql>" +
          "</dbws-builder>";
          XMLContext context = new XMLContext(new DBWSBuilderModelProject());
