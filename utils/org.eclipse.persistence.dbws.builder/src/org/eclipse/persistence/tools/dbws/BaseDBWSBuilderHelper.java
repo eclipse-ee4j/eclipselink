@@ -1229,10 +1229,7 @@ public abstract class BaseDBWSBuilderHelper {
             // TODO - return what here?
             return null;
         } else if (dType instanceof ScalarDatabaseTypeEnum) {
-        	// handle PL/SQL Boolean
-        	if (dType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE) {
-        		return OraclePLSQLTypes.PLSQLBoolean;
-        	}
+            return OraclePLSQLTypes.getDatabaseTypeForCode(((ScalarDatabaseTypeEnum) dType).getTypeName());
         }
         // scalar types
         return JDBCTypes.getDatabaseTypeForCode(org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName(dType.getTypeName()));

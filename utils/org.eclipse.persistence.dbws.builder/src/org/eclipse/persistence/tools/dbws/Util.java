@@ -598,9 +598,9 @@ public class Util {
 
     /**
      * Indicates if a given ArgumentType is considered a PL/SQL argument,
-     * i.e. it has a data type that is one of PLSQLRecordType,
-     * PLSQLCollectionType, BOOLEAN_TYPE, BINARY_INTEGER_TYPE,
-     * or PLS_INTEGER_TYPE
+     * i.e. it has a data type that is one of PLSQLRecordType, 
+     * PLSQLCollectionType, BOOLEAN_TYPE, BINARY_INTEGER_TYPE, 
+     * PLS_INTEGER_TYPE, etc. 
      */
     public static boolean isArgPLSQL(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
@@ -610,14 +610,17 @@ public class Util {
 
     /**
      * Indicates if a given ArgumentType is considered a PL/SQL scalar
-     * argument, i.e. it has a data type that is one of BOOLEAN_TYPE,
-     * BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
+     * argument, i.e. it has a data type that is one of BOOLEAN_TYPE, 
+     * BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
      */
     public static boolean isArgPLSQLScalar(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
-        return argType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE
-                || argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE
-                || argType == ScalarDatabaseTypeEnum.PLS_INTEGER_TYPE;
+        return argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE        		
+            || argType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE
+            || argType == ScalarDatabaseTypeEnum.NATURAL_TYPE
+            || argType == ScalarDatabaseTypeEnum.PLS_INTEGER_TYPE
+            || argType == ScalarDatabaseTypeEnum.POSITIVE_TYPE
+            || argType == ScalarDatabaseTypeEnum.SIGN_TYPE;
     }
 
     /**
@@ -642,9 +645,9 @@ public class Util {
     }
 
     /**
-     * Indicates if a given ProcedureType contains one or more PL/SQL
-     * arguments, i.e. PLSQLRecordType, PLSQLCollectionType,
-     * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
+     * Indicates if a given ProcedureType contains  one or more  PL/SQL 
+     * arguments, i.e. PLSQLRecordType, PLSQLCollectionType, or scalars 
+     * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
      *
      * Note that for FunctionType the return argument is tested as well.
      */
@@ -663,9 +666,9 @@ public class Util {
     }
 
     /**
-     * Indicates if a given list of ArgumentTypes contains one or more
-     * PL/SQL arguments, i.e. PLSQLRecordType, PLSQLCollectionType,
-     * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, or PLS_INTEGER_TYPE
+     * Indicates if a given list  of ArgumentTypes contains  one or more 
+     * PL/SQL arguments, i.e.  PLSQLRecordType, PLSQLCollectionType,  or
+     * scalars BOOLEAN_TYPE, BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
      */
     public static boolean hasPLSQLArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
