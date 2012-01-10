@@ -3153,6 +3153,7 @@
 
     <target name="server-test-nativeapitest">
         <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="nativeapitest"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/nativeapitest"/>
             <param name="MODEL_NAME" value="eclipselink-nativeapitest-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/nativeapitest"/>
