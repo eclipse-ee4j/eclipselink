@@ -315,7 +315,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
      * Not supported.
      */
     public boolean isSynthetic() {
-        throw new UnsupportedOperationException("isSynthetic");
+        return false;
     }
 
     /**
