@@ -207,7 +207,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
     }
 
     public boolean isSynthetic() {
-        throw new UnsupportedOperationException("isSynthetic");
+        return false;
     }
 
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
