@@ -66,6 +66,7 @@ import org.w3c.dom.Node;
  */
 public class XMLObjectBuilder extends ObjectBuilder {
     private Boolean isXMLDescriptor;
+    private boolean xsiTypeIndicatorField;
 
     /**
      * Create an XML object builder for the descriptor.
@@ -739,6 +740,19 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 setSequenceMapping((AbstractDirectMapping)sequenceMapping);
             }
         }
+        
+        
+        
+        if (descriptor.hasInheritance() ) {
+            XMLField indicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
+            if(indicatorField != null){
+               if (indicatorField.getLastXPathFragment().getNamespaceURI() != null && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)
+                        && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)){
+                     xsiTypeIndicatorField = true;
+               }
+               
+            }
+        }
     }
 
     public boolean isXMLObjectBuilder() {
@@ -834,22 +848,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean addToNamespaceResolver){
-
-          boolean xsiTypeIndicatorField = false;
-
-          if (xmlDescriptor.hasInheritance() ) {
-              XMLField indicatorField = (XMLField) xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
-              if(indicatorField != null){
-                 if (indicatorField.getLastXPathFragment().getNamespaceURI() != null && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)
-                          && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)){
-                       xsiTypeIndicatorField = true;
-                 }
-                 if(! xsiTypeIndicatorField){
-                  xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
-                  }
-              }
-          }
-
+    	  if(descriptor.hasInheritance() && !xsiTypeIndicatorField){
+    		  xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
+    	  }
+    	
           QName leafType = null;
           if(xmlField != null){
               leafType = xmlField.getLeafElementType();
@@ -866,8 +868,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
                    }
 
                   if (((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlRef.getType() == XMLSchemaReference.SIMPLE_TYPE)) && xmlRef.getSchemaContext()!=null && xmlRef.isGlobalDefinition()) {
-                      QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
                       if(leafType != null){
+                    	QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
                         if (!ctxQName.equals(leafType)) {
                             QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
                             writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);

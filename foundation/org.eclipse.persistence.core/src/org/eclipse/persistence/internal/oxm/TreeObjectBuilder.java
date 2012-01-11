@@ -426,7 +426,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         valueDescriptor = referenceDescriptor;
                     }
                     if(null != valueDescriptor) {
-                        this.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, valueDescriptor, referenceDescriptor, (XMLField) selfMapping.getField(), false);
+                    	((XMLObjectBuilder)valueDescriptor.getObjectBuilder()).addXsiTypeAndClassIndicatorIfRequired(marshalRecord, valueDescriptor, referenceDescriptor, (XMLField) selfMapping.getField(), false);
                     }
                 }
                 selfXPathNode.marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());
