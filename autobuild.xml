@@ -638,10 +638,12 @@
         <copy todir="${tmp.maven.dir}/${plugins.dir}">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="javax*.jar"/>
+                <exclude name="javax.wsdl*.jar"/>
             </fileset>
             <fileset dir="${signed.jar.path}/${plugins.dir}">
                 <include name="org.eclipse.persistence.*.jar"/>
                 <include name="*modelgen*.jar"/>
+                <exclude name="*oracleddl*.jar"/>
             </fileset>
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="eclipselink-jpa-modelgen*.jar"/>
@@ -653,9 +655,19 @@
                 <include name="javax.persistence*2.0*.jar"/>
             </fileset>
         </copy>
+        <!-- get commonj.sdo -->
         <copy todir="${tmp.maven.dir}/${eclipselink.sdo.base}/${plugins.dir}">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="commonj*.jar"/>
+            </fileset>
+        </copy>
+        <!-- get utils - oracleddl/wsdl -->
+        <copy todir="${tmp.maven.dir}/${eclipselink.util.base}/${plugins.dir}">
+            <fileset dir="${temp.rebuild.dir}/bundlezip">
+                <include name="javax.wsdl*.jar"/>
+            </fileset>
+            <fileset dir="${signed.jar.path}/${plugins.dir}">
+                <include name="org.eclipse.persistence.*oracleddl*.jar"/>
             </fileset>
         </copy>
     </target>
