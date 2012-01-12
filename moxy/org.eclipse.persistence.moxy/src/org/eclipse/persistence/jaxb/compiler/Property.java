@@ -182,7 +182,7 @@ public class Property implements Cloneable {
         for (JavaMethod method : marshalMethods) {
             JavaClass paramType = method.getParameterTypes()[0];
             // look for non-Object parameter type
-            if (!paramType.equals(newType)) {
+            if (!paramType.getQualifiedName().equals(newType.getQualifiedName())) {
                 setTypeFromAdapterClass(newType, paramType);
                 return;
             }
