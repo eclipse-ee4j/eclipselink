@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeReadOnlyMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeSubTypeMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeWriteOnlyMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycollection.AnyCollectionMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycollection.AnyCollectionReadOnlyMappingTestCases;
@@ -58,6 +59,7 @@ public class MappingsTestSuite extends TestSuite {
         suite.addTestSuite(AnyAttributeMappingTestCases.class);
         suite.addTestSuite(AnyAttributeReadOnlyMappingTestCases.class);
         suite.addTestSuite(AnyAttributeWriteOnlyMappingTestCases.class);
+        suite.addTestSuite(AnyAttributeSubTypeMappingTestCases.class);
         suite.addTestSuite(AnyCollectionMappingTestCases.class);
         suite.addTestSuite(AnyCollectionReadOnlyMappingTestCases.class); 
         suite.addTestSuite(AnyCollectionWriteOnlyMappingTestCases.class);

@@ -620,7 +620,7 @@ public class XMLProcessor {
         }
         
         // type has to be a java.util.Map
-        if (!oldProperty.getType().getName().equals("java.util.Map")) {
+        if (!aProcessor.isMapType(oldProperty.getType())) {
             if (oldProperty.getType().getClass().getName().contains("OXMJavaClassImpl")) {
                 JavaClass pType = jModelInput.getJavaModel().getClass("java.util.Map");
                 oldProperty.setType(pType);
