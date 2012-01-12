@@ -23,14 +23,18 @@ import javax.wsdl.WSDLException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 //test imports
@@ -41,6 +45,8 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class VArrayTestSuite extends DBWSTestSuite {
+	static final String VCARRAY_ALIAS = "vcarray";
+	static final String VCARRAY_CLASSNAME = "varraytests.Vcarray_CollectionWrapper";
 
     static final String CREATE_VCARRAY_VARRAY =
         "CREATE OR REPLACE TYPE VCARRAY AS VARRAY(4) OF VARCHAR2(20)";
@@ -361,4 +367,17 @@ public class VArrayTestSuite extends DBWSTestSuite {
                 "<result>3-foobar</result>" +
             "</simple-xml>" +
         "</simple-xml-format>";
+
+    @Test
+    public void validateJavaClassName() {
+    	Project orProject = builder.getOrProject();
+    	ClassDescriptor vcarrayORDesc = orProject.getDescriptorForAlias(VCARRAY_ALIAS);
+    	assertNotNull("No OR descriptor found for alias [" + VCARRAY_ALIAS + "]", vcarrayORDesc);
+    	assertEquals("Expected class name [" + VCARRAY_CLASSNAME + "] but was [" + vcarrayORDesc.getJavaClassName() + "]", vcarrayORDesc.getJavaClassName(), VCARRAY_CLASSNAME);
+    	
+    	Project oxProject = builder.getOxProject();
+    	ClassDescriptor vcarrayOXDesc = oxProject.getDescriptorForAlias(VCARRAY_ALIAS);
+    	assertNotNull("No OX descriptor found for alias [" + VCARRAY_ALIAS + "]", vcarrayOXDesc);
+    	assertEquals("Expected class name [" + VCARRAY_CLASSNAME + "] but was [" + vcarrayOXDesc.getJavaClassName() + "]", vcarrayOXDesc.getJavaClassName(), VCARRAY_CLASSNAME);
+    }
 }

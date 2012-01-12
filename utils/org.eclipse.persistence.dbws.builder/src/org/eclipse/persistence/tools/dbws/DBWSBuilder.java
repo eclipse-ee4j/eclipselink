@@ -92,6 +92,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String PASSWORD_KEY = "password";
     public static final String URL_KEY = "url";
     public static final String PROJNAME_KEY = "projectName";
+    public static final String DEFAULT_PROJECT_NAME = "myProject";
     public static final String CONTEXT_ROOT_KEY = "contextRoot";
     public static final String DATASOURCE_KEY = "dataSource";
     public static final String SESSIONS_FILENAME_KEY = "sessionsFileName";
@@ -584,9 +585,16 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         this.conn = conn;
     }
 
+    /**
+     * Return the projectName property or the default (myProject) if not set.
+     */
     public String getProjectName() {
-        return properties.get(PROJNAME_KEY);
+    	String prjName = properties.get(PROJNAME_KEY);
+    	return (prjName != null && prjName.length() > 0) ? prjName : DEFAULT_PROJECT_NAME;
     }
+    /**
+     * Sets the projectName property.
+     */
     public void setProjectName(String projectName) {
         properties.put(PROJNAME_KEY, projectName);
     }

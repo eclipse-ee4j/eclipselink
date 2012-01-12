@@ -135,6 +135,7 @@ import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
 import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
 import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
@@ -1196,7 +1197,7 @@ public abstract class BaseDBWSBuilderHelper {
                 OracleArrayType varray = new OracleArrayType();
                 varray.setTypeName(typeName);
                 varray.setCompatibleType(compatibleType);
-                varray.setJavaTypeName(javaTypeName + COLLECTION_WRAPPER_SUFFIX);
+                varray.setJavaTypeName(getGeneratedWrapperClassName(javaTypeName, dbwsBuilder.getProjectName()));
                 varray.setNestedType(buildDatabaseTypeFromMetadataType(((VArrayType) dType).getEnclosedType(), null));
                 return varray;
             }
@@ -1204,7 +1205,7 @@ public abstract class BaseDBWSBuilderHelper {
                 OracleObjectType objType = new OracleObjectType();
                 objType.setTypeName(typeName);
                 objType.setCompatibleType(compatibleType);
-                objType.setJavaTypeName(javaTypeName);
+                objType.setJavaTypeName(getGeneratedJavaClassName(javaTypeName, dbwsBuilder.getProjectName()));
                 Map<String, org.eclipse.persistence.internal.helper.DatabaseType> fields = objType.getFields();
                 ObjectType oType = (ObjectType) dType;
                 for (FieldType field : oType.getFields()) {
@@ -1216,7 +1217,7 @@ public abstract class BaseDBWSBuilderHelper {
                 OracleArrayType tableType = new OracleArrayType();
                 tableType.setTypeName(typeName);
                 tableType.setCompatibleType(compatibleType);
-                tableType.setJavaTypeName(javaTypeName + COLLECTION_WRAPPER_SUFFIX);
+                tableType.setJavaTypeName(getGeneratedWrapperClassName(javaTypeName, dbwsBuilder.getProjectName()));
                 org.eclipse.persistence.internal.helper.DatabaseType nestedType = buildDatabaseTypeFromMetadataType(((ObjectTableType) dType).getEnclosedType(), null);
                 // need to set the Java Type on the nested type
                 Class wrapper = getWrapperClass(nestedType);

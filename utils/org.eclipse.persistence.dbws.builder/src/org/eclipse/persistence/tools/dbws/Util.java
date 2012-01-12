@@ -57,6 +57,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.COLON;
@@ -140,6 +141,7 @@ public class Util {
     public static final String OPEN_PAREN = "{";
     public static final String CLOSE_PAREN = "}";
     public static final String SLASH = "/";
+    public static final String DOT = ".";
 
     public static final String ARRAY_STR = "ARRAY";
     public static final String BIGINT_STR = "BIGINT";
@@ -484,10 +486,28 @@ public class Util {
         return false;
     }
 
-    public static String getGeneratedJavaClassName(String tableName, String projectName) {
-        String first = tableName.substring(0, 1).toUpperCase();
-        String rest = tableName.toLowerCase().substring(1);
-        return projectName.toLowerCase() + "." + first + rest;
+    /**
+     * Returns a Java class name based on a given name and project.  The returned
+     * string  will be  in the format  'projectname.Name'.   For  example,  given
+     * the name 'EMPLOYEE'  and projectName 'TEST', the  method would return  the
+     * string 'test.Employee'.
+     * 
+     */
+    public static String getGeneratedJavaClassName(String name, String projectName) {
+        String first = name.substring(0, 1).toUpperCase();
+        String rest = name.toLowerCase().substring(1);
+        return projectName.toLowerCase() + DOT + first + rest;
+    }
+
+    /**
+     * Returns a Java class name based on a given name and project.  The  returned
+     * string  will be  in the format  'projectname.Name_CollectionWrapper'.   For
+     * example, given the name 'EMPLOYEE' and projectName 'TEST', the method would
+     * return the string 'test.Employee_CollectionWrapper'.
+     * 
+     */
+    public static String getGeneratedWrapperClassName(String name, String projectName) {
+        return getGeneratedJavaClassName(name, projectName) + COLLECTION_WRAPPER_SUFFIX;
     }
 
     public static RelationalDescriptor buildORDescriptor(String tableName, String projectName,

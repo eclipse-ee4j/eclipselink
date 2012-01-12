@@ -25,14 +25,17 @@ import javax.wsdl.WSDLException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.sessions.Project;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -42,6 +45,10 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTypeTestSuite extends DBWSTestSuite {
+	static final String EMP_TYPE_ALIAS = "dbws_emp_type";
+	static final String EMP_TYPE_CLASSNAME = "objecttypetests.Dbws_emp_type";
+	static final String PHONE_TYPE_ALIAS = "dbws_phone_type";
+	static final String PHONE_TYPE_CLASSNAME = "objecttypetests.Dbws_phone_type";
 
     static final String CREATE_PHONE_TYPE =
         "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (" +
@@ -301,4 +308,23 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 "<cell>(902) 789-1100</cell>" +
             "</phone>" +
         "</dbws_emp_typeType>";
+
+    @Test
+    public void validateJavaClassName() {
+    	Project orProject = builder.getOrProject();
+    	ClassDescriptor empORDesc = orProject.getDescriptorForAlias(EMP_TYPE_ALIAS);
+    	assertNotNull("No OR descriptor found for alias [" + EMP_TYPE_ALIAS + "]", empORDesc);
+    	assertEquals("Expected class name [" + EMP_TYPE_CLASSNAME + "] but was [" + empORDesc.getJavaClassName() + "]", empORDesc.getJavaClassName(), EMP_TYPE_CLASSNAME);
+    	ClassDescriptor phoneORDesc = orProject.getDescriptorForAlias(PHONE_TYPE_ALIAS);
+    	assertNotNull("No OR descriptor found for alias [" + PHONE_TYPE_ALIAS + "]", phoneORDesc);
+    	assertEquals("Expected class name [" + PHONE_TYPE_CLASSNAME + "] but was [" + phoneORDesc.getJavaClassName() + "]", phoneORDesc.getJavaClassName(), PHONE_TYPE_CLASSNAME);
+    	
+    	Project oxProject = builder.getOxProject();
+    	ClassDescriptor empOXDesc = oxProject.getDescriptorForAlias(EMP_TYPE_ALIAS);
+    	assertNotNull("No OX descriptor found for alias [" + EMP_TYPE_ALIAS + "]", empOXDesc);
+    	assertEquals("Expected class name [" + EMP_TYPE_CLASSNAME + "] but was [" + empOXDesc.getJavaClassName() + "]", empOXDesc.getJavaClassName(), EMP_TYPE_CLASSNAME);
+    	ClassDescriptor phoneOXDesc = oxProject.getDescriptorForAlias(PHONE_TYPE_ALIAS);
+    	assertNotNull("No OX descriptor found for alias [" + PHONE_TYPE_ALIAS + "]", phoneOXDesc);
+    	assertEquals("Expected class name [" + PHONE_TYPE_CLASSNAME + "] but was [" + phoneOXDesc.getJavaClassName() + "]", phoneOXDesc.getJavaClassName(), PHONE_TYPE_CLASSNAME);
+    }
 }

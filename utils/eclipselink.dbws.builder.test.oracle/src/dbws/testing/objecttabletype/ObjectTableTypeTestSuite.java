@@ -24,14 +24,18 @@ import javax.wsdl.WSDLException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.sessions.Project;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -41,6 +45,10 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTableTypeTestSuite extends DBWSTestSuite {
+	static final String PERSON_TYPE_ALIAS = "dbws_persontype";
+	static final String PERSON_TYPE_CLASSNAME = "objecttabletypetests.Dbws_persontype";
+	static final String PERSON_TYPE_TABLE_ALIAS = "dbws_persontype_table";
+	static final String PERSON_TYPE_TABLE_CLASSNAME = "objecttabletypetests.Dbws_persontype_table_CollectionWrapper";
 
     static final String CREATE_PERSONTYPE =
         "CREATE OR REPLACE TYPE DBWS_PERSONTYPE AS OBJECT (" +
@@ -385,4 +393,23 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                 "<incarcerated>1997-12-09</incarcerated>" +
             "</item>" +
         "</dbws_persontype_tableType>";
+
+    @Test
+    public void validateJavaClassName() {
+    	Project orProject = builder.getOrProject();
+    	ClassDescriptor personTypeORDesc = orProject.getDescriptorForAlias(PERSON_TYPE_ALIAS);
+    	assertNotNull("No OR descriptor found for alias [" + PERSON_TYPE_ALIAS + "]", personTypeORDesc);
+    	assertEquals("Expected class name [" + PERSON_TYPE_CLASSNAME + "] but was [" + personTypeORDesc.getJavaClassName() + "]", personTypeORDesc.getJavaClassName(), PERSON_TYPE_CLASSNAME);
+    	ClassDescriptor personTypeTableORDesc = orProject.getDescriptorForAlias(PERSON_TYPE_TABLE_ALIAS);
+    	assertNotNull("No OR descriptor found for alias [" + PERSON_TYPE_TABLE_ALIAS + "]", personTypeTableORDesc);
+    	assertEquals("Expected class name [" + PERSON_TYPE_TABLE_CLASSNAME + "] but was [" + personTypeTableORDesc.getJavaClassName() + "]", personTypeTableORDesc.getJavaClassName(), PERSON_TYPE_TABLE_CLASSNAME);
+    	
+    	Project oxProject = builder.getOxProject();
+    	ClassDescriptor personTypeOXDesc = oxProject.getDescriptorForAlias(PERSON_TYPE_ALIAS);
+    	assertNotNull("No OX descriptor found for alias [" + PERSON_TYPE_ALIAS + "]", personTypeOXDesc);
+    	assertEquals("Expected class name [" + PERSON_TYPE_CLASSNAME + "] but was [" + personTypeOXDesc.getJavaClassName() + "]", personTypeOXDesc.getJavaClassName(), PERSON_TYPE_CLASSNAME);
+    	ClassDescriptor personTypeTableOXDesc = oxProject.getDescriptorForAlias(PERSON_TYPE_TABLE_ALIAS);
+    	assertNotNull("No OX descriptor found for alias [" + PERSON_TYPE_TABLE_ALIAS + "]", personTypeTableOXDesc);
+    	assertEquals("Expected class name [" + PERSON_TYPE_TABLE_CLASSNAME + "] but was [" + personTypeTableOXDesc.getJavaClassName() + "]", personTypeTableOXDesc.getJavaClassName(), PERSON_TYPE_TABLE_CLASSNAME);
+    }
 }
