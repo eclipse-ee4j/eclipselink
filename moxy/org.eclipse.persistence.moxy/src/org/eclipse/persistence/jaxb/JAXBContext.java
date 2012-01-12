@@ -223,6 +223,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Indicates if this JAXBContext can have its metadata refreshed.
      */
     boolean isRefreshable() {
+        return false;
+        /*
         if (this.contextInput.properties == null) {
             return true;
         }
@@ -230,6 +232,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             return false;
         }
         return true;
+        */
     }
 
     /**
