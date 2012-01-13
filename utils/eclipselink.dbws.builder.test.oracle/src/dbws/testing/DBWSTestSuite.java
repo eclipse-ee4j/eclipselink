@@ -43,6 +43,7 @@ import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLComparer;
@@ -50,6 +51,7 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
@@ -209,8 +211,15 @@ public class DBWSTestSuite {
                     }
                 }
                 ProjectHelper.fixOROXAccessors(orProject, oxProject);
-                xrService.setORSession(orProject.createDatabaseSession());
-                xrService.getORSession().dontLogMessages();
+                DatabaseSession databaseSession = orProject.createDatabaseSession();
+                if ("off".equalsIgnoreCase(builder.getLogLevel())) {
+                    databaseSession.dontLogMessages();
+                }
+                else {
+                    databaseSession.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(
+                        builder.getLogLevel()));
+                }
+                xrService.setORSession(databaseSession);
                 xrService.setXMLContext(new XMLContext(oxProject));
                 xrService.setOXSession(xrService.getXMLContext().getSession(0));
             }

@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.internal.helper;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -27,6 +29,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
+import static org.eclipse.persistence.internal.helper.Helper.buildHexStringFromBytes;
 
 /**
  * <b>PUBLIC</b>: Interface used to categorize arguments to Stored Procedures as either
@@ -38,8 +41,11 @@ import static org.eclipse.persistence.internal.helper.Helper.NL;
 @SuppressWarnings("unchecked")
 public interface DatabaseType {
 
-    public static final String TARGET_SUFFIX = "_TARGET";
-    public static final String COMPAT_SUFFIX = "_COMPAT";
+    public static final String TARGET_SHORT_PREFIX = "_T";
+    public static final String TARGET_SUFFIX = TARGET_SHORT_PREFIX + "ARGET";
+    public static final String COMPAT_SHORT_PREFIX = "_C";
+    public static final String COMPAT_SUFFIX = COMPAT_SHORT_PREFIX + "OMPAT";
+    public static final int ARGNAME_SIZE_LIMIT = 30 - TARGET_SUFFIX.length();
 
     public boolean isComplexDatabaseType();
 
@@ -79,15 +85,59 @@ public interface DatabaseType {
     public enum DatabaseTypeHelper {
         databaseTypeHelper;
 
+        static String getTruncatedSHA1Hash(String s) {
+        	StringBuilder sb = new StringBuilder(28);
+        	try {
+        		byte[] longIdentifierBytes = s.getBytes();
+        		MessageDigest md = MessageDigest.getInstance("SHA-1");
+        		md.update(longIdentifierBytes, 0, longIdentifierBytes.length);
+        		byte[] digest = md.digest(); //produces a 160-bit hash
+        		//truncate to 112 bits, which is about the same java.util.UUID;
+        		//HMAC-SHA1-96 is only 96 bits and that's good enough for IPSEC work
+        		//TL;DR - probability of collision quite small
+        		byte[] truncDigest = new byte[14];
+                System.arraycopy(digest, 0, truncDigest, 0, 14);
+                sb.append(buildHexStringFromBytes(truncDigest));
+    		}
+        	catch (NoSuchAlgorithmException e) {
+    			//ignore: should never happen
+    		}
+        	return sb.toString();
+        }
+        
+        protected String getTruncatedSHA1Name(String argName, String prefix) {
+        	if (argName.length() >= ARGNAME_SIZE_LIMIT) {
+        		StringBuilder sb = new StringBuilder();
+        		//the truncated SHA is great, but a PL/SQL identifier
+        		//can't start with a number, so use prefix
+        		sb.append(prefix);
+        		sb.append(getTruncatedSHA1Hash(argName));
+        		return sb.toString();
+        	}
+        	return argName;
+        }
+        
         public String buildTarget(PLSQLargument arg) {
-            StringBuilder sb = new StringBuilder(arg.name);
-            sb.append(TARGET_SUFFIX);
+        	StringBuilder sb = new StringBuilder();
+        	if (arg.name.length() >= ARGNAME_SIZE_LIMIT) {
+        		sb.append(getTruncatedSHA1Name(arg.name, TARGET_SHORT_PREFIX));
+        	}
+        	else {
+        		sb.append(arg.name);
+        		sb.append(TARGET_SUFFIX);
+        	}
             return sb.toString();
         }
 
         public String buildCompatible(PLSQLargument arg) {
-            StringBuilder sb = new StringBuilder(arg.name);
-            sb.append(COMPAT_SUFFIX);
+        	StringBuilder sb = new StringBuilder();
+        	if (arg.name.length() >= ARGNAME_SIZE_LIMIT) {
+        		sb.append(getTruncatedSHA1Name(arg.name, COMPAT_SHORT_PREFIX));
+        	}
+        	else {
+        		sb.append(arg.name);
+        		sb.append(COMPAT_SUFFIX);
+        	}
             return sb.toString();
         }
         

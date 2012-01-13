@@ -46,6 +46,7 @@ import dbws.testing.tabletype.TableTypeTestSuite;
 import dbws.testing.toplevelsimpleplsqlsp.TopLevelSimplePLSQLSPTestSuite;
 import dbws.testing.types.TypesTestSuite;
 import dbws.testing.varray.VArrayTestSuite;
+import dbws.testing.verylongidentifier.VeryLongIdentifierTestSuite;
 import static dbws.testing.DBWSTestSuite.buildConnection;
 
 @RunWith(Suite.class)
@@ -71,7 +72,8 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     TableTypeTestSuite.class,
     TopLevelSimplePLSQLSPTestSuite.class,
     TypesTestSuite.class,
-    VArrayTestSuite.class
+    VArrayTestSuite.class,
+    VeryLongIdentifierTestSuite.class
   }
 )
 public class AllTests {
