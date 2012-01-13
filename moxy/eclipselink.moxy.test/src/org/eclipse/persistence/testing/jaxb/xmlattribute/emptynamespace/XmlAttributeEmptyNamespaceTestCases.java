@@ -25,17 +25,17 @@ public class XmlAttributeEmptyNamespaceTestCases extends JAXBTestCases{
 	public XmlAttributeEmptyNamespaceTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
-		setClasses(new Class[]{EmptyNamespaceTestObject.class});
+		setClasses(new Class[] { EmptyNamespaceTestObject.class });
 	}
 
 	protected Object getControlObject() {
 		EmptyNamespaceTestObject obj = new EmptyNamespaceTestObject();
-		obj.theTestString = "abc123";
-		obj.theElementTestString = "def456";
+		obj.theTestString = "abc123\"&<";
+		obj.theElementTestString = "\"&<def456";
 		return obj;
 	}
 	
-	public void testSchemaGen() throws Exception{
+	public void testSchemaGen() throws Exception {
 		List<InputStream> controlSchemas = new ArrayList<InputStream>();
 		InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(XSD_RESOURCE);
 		controlSchemas.add(is);
