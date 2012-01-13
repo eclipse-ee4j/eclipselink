@@ -30,8 +30,8 @@ public class XmlAttributeEmptyNamespaceTestCases extends JAXBTestCases{
 
 	protected Object getControlObject() {
 		EmptyNamespaceTestObject obj = new EmptyNamespaceTestObject();
-		obj.theTestString = "abc123";
-		obj.theElementTestString = "def456";
+		obj.theTestString = "abc123\"&<";
+		obj.theElementTestString = "\"&<def456";
 		return obj;
 	}
 	

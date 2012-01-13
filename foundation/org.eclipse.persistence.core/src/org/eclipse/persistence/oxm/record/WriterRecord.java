@@ -234,7 +234,7 @@ public class WriterRecord extends MarshalRecord {
      */
     protected void writeValue(String value) {
         try {
-            if(value.indexOf('&') > -1 || value.indexOf('<') > -1) {
+            if(value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1) {
                   char[] chars = value.toCharArray();
                   for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
                       char character = chars[x];
