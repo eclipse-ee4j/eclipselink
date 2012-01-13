@@ -41,10 +41,10 @@ import static org.eclipse.persistence.internal.helper.Helper.buildHexStringFromB
 @SuppressWarnings("unchecked")
 public interface DatabaseType {
 
-    public static final String TARGET_SHORT_PREFIX = "_T";
-    public static final String TARGET_SUFFIX = TARGET_SHORT_PREFIX + "ARGET";
-    public static final String COMPAT_SHORT_PREFIX = "_C";
-    public static final String COMPAT_SUFFIX = COMPAT_SHORT_PREFIX + "OMPAT";
+    public static final String TARGET_SHORT_PREFIX = "T_";
+    public static final String TARGET_SUFFIX = "TARGET";
+    public static final String COMPAT_SHORT_PREFIX = "C_";
+    public static final String COMPAT_SUFFIX = "COMPAT";
     public static final int ARGNAME_SIZE_LIMIT = 30 - TARGET_SUFFIX.length();
 
     public boolean isComplexDatabaseType();
