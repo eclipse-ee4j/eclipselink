@@ -3290,15 +3290,16 @@ public class AnnotationsProcessor {
                             defaultValue = elementDecl.defaultValue();
                         }
                     }
-
                     
-                    if(XMLConstants.EMPTY_STRING.equals(url)) {
-                        isDefaultNamespaceAllowed = false;
-                    }
                     if (XMLProcessor.DEFAULT.equals(url)) {
                         url = packageInfo.getNamespace();
                     }
-                    qname = new QName(url, localName);
+                    if(XMLConstants.EMPTY_STRING.equals(url)) {
+                        isDefaultNamespaceAllowed = false;
+                        qname = new QName(localName);
+                    }else{
+                        qname = new QName(url, localName);
+                    }
 
                     boolean isList = false;
                     if (JAVA_UTIL_LIST.equals(type.getName())) {
