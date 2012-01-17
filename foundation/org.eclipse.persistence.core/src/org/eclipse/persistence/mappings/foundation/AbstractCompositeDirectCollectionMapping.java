@@ -151,11 +151,11 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
             Object cloneContainer = this.getContainerPolicy().containerInstance();
             Object iterator = this.getContainerPolicy().iteratorFor(attributeValue);
             while (this.getContainerPolicy().hasNext(iterator)) {
-                Object originalValue = this.getContainerPolicy().next(iterator, (AbstractSession) cloningSession);
+                Object originalValue = this.getContainerPolicy().next(iterator, cloningSession);
 
                 // Bug 4182377 - there was a typo in the conversion logic
                 Object cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(originalValue, cloningSession), cloningSession);
-                this.getContainerPolicy().addInto(cloneValue, cloneContainer, (AbstractSession) cloningSession);
+                this.getContainerPolicy().addInto(cloneValue, cloneContainer, cloningSession);
             }
             return cloneContainer;
         }

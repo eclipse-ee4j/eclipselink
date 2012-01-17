@@ -369,9 +369,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         try {
             if (hasMultipleStatements()) {
                 for (Enumeration statementEnum = getSQLStatements().elements(); statementEnum.hasMoreElements();) {
-                    DatabaseCall call = null;
+                    DatasourceCall call = null;
                     if (getDescriptor() != null) {
-                        call = getDescriptor().buildCallFromStatement((SQLStatement)statementEnum.nextElement(), getExecutionSession());
+                        call = getDescriptor().buildCallFromStatement((SQLStatement)statementEnum.nextElement(), getQuery(), getExecutionSession());
                     } else {
                         call = ((SQLStatement)statementEnum.nextElement()).buildCall(getExecutionSession());
                     }
@@ -382,9 +382,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
                     }
                 }
             } else {
-                DatabaseCall call = null;
+                DatasourceCall call = null;
                 if (getDescriptor() != null) {
-                    call = getDescriptor().buildCallFromStatement(getSQLStatement(), getExecutionSession());
+                    call = getDescriptor().buildCallFromStatement(getSQLStatement(), getQuery(), getExecutionSession());
                 } else {
                     call = getSQLStatement().buildCall(getExecutionSession());
                 }
@@ -409,7 +409,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
 
     /**
      * Normally only a single statement is used, however multiple table may require multiple statements on write.
-     * This is lazy initialied to conserv space.
+     * This is lazy initialized to conserve space.
      */
     protected void setSQLStatements(Vector sqlStatements) {
         this.sqlStatements = sqlStatements;

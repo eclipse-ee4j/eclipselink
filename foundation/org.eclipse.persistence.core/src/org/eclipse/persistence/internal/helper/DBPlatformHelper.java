@@ -102,8 +102,8 @@ public class DBPlatformHelper {
         for( Iterator<String[]> iterator = nameToVendorPlatform.iterator();
                 dbPlatform == null && iterator.hasNext();) {
             String[] entry = iterator.next();
-            String regExpr = (String) entry[0];
-            String value = (String) entry[1];
+            String regExpr = entry[0];
+            String value = entry[1];
             if(logger.shouldLog(SessionLog.FINEST)) {
                 logger.log(SessionLog.FINEST, "dbPlatformHelper_regExprDbPlatform", regExpr, value); // NOI18N
             }

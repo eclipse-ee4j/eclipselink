@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.sql.SQLException;
-import java.util.*;
 
 /**
  *  INTERNAL:

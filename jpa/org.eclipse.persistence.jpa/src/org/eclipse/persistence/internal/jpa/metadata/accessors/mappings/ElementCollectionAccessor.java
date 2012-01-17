@@ -68,6 +68,7 @@ import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.annotations.DeleteAll;
+import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -96,6 +97,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
@@ -811,24 +813,30 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     protected void processDirectEmbeddableCollectionMapping(MetadataDescriptor referenceDescriptor) {
         // Initialize our mapping.
-        AggregateCollectionMapping mapping = new AggregateCollectionMapping();
+        DatabaseMapping mapping = getOwningDescriptor().getClassDescriptor().newAggregateCollectionMapping();
         
         // Process common direct collection metadata. This must be done 
         // before any field processing since field processing requires that 
         // the collection table be processed before hand.
         process(mapping);
         
-        // Process the fetch type and set the correct indirection on the mapping.
-        processContainerPolicyAndIndirection(mapping);
-        
         // Make sure to mark the descriptor as an embeddable collection descriptor.
         referenceDescriptor.setIsEmbeddable();
         
-        // Process the mappings from the embeddable to setup the field name 
-        // translations. Before we do that lets process the attribute and
-        // association overrides that are available to us and that may be used
-        // to override any field name translations.
-        processMappingsFromEmbeddable(referenceDescriptor, null, mapping, getAttributeOverrides(m_attributeOverrides), getAssociationOverrides(m_associationOverrides), "");
+        if (mapping instanceof AggregateCollectionMapping) {
+            AggregateCollectionMapping collectionMapping = (AggregateCollectionMapping)mapping;
+            
+            // Process the fetch type and set the correct indirection on the mapping.
+            processContainerPolicyAndIndirection(collectionMapping);
+            
+            // Process the mappings from the embeddable to setup the field name 
+            // translations. Before we do that lets process the attribute and
+            // association overrides that are available to us and that may be used
+            // to override any field name translations.
+            processMappingsFromEmbeddable(referenceDescriptor, null, collectionMapping, getAttributeOverrides(m_attributeOverrides), getAssociationOverrides(m_associationOverrides), "");
+        } else if (mapping.isAbstractCompositeCollectionMapping()) {
+            ((AbstractCompositeCollectionMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
+        }
     }
     
     /**

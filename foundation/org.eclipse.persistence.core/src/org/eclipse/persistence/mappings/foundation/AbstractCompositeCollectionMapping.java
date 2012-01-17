@@ -95,8 +95,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
         Object clonedAttributeValue = cp.containerInstance(cp.sizeFor(attributeValue));
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
-            Object cloneElement = super.buildClonePart(original, cacheKey, cp.next(iter, (AbstractSession) clonningSession), clonningSession);
-            cp.addInto(cloneElement, clonedAttributeValue, (AbstractSession) clonningSession);
+            Object cloneElement = super.buildClonePart(original, cacheKey, cp.next(iter, clonningSession), clonningSession);
+            cp.addInto(cloneElement, clonedAttributeValue, clonningSession);
         }
         return clonedAttributeValue;
     }

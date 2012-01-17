@@ -27,7 +27,6 @@ import java.io.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.*;
@@ -347,7 +346,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * INTERNAL:
      * Return the descriptor associated with this descriptor query manager
      */
-    protected ClassDescriptor getDescriptor() {
+    public ClassDescriptor getDescriptor() {
         return descriptor;
     }
 
@@ -834,34 +833,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             return;
         }
 
-        //PERF: set read-object query to cache generated SQL.
-        if (!hasReadObjectQuery()) {
-            // Prepare static read object query always.
-            ReadObjectQuery readObjectQuery = new ReadObjectQuery();
-            readObjectQuery.setSelectionCriteria(getDescriptor().getObjectBuilder().getPrimaryKeyExpression());
-            setReadObjectQuery(readObjectQuery);
-        }
-        getReadObjectQuery().setName("readObject");
-
-        if (!hasInsertQuery()) {
-            // Prepare insert query always.
-            setInsertQuery(new InsertObjectQuery());
-        }
-        getInsertQuery().setModifyRow(getDescriptor().getObjectBuilder().buildTemplateInsertRow(session));
-
-        if (!getDescriptor().usesFieldLocking()) {
-            //do not reset the query if we are using field locking
-            if (!hasDeleteQuery()) {
-                // Prepare delete query always.
-                setDeleteQuery(new DeleteObjectQuery());
-            }
-            getDeleteQuery().setModifyRow(new DatabaseRecord());
-        }
-
-        if (hasUpdateQuery()) {
-            // Do not prepare to update by default to allow minimal update.
-            getUpdateQuery().setModifyRow(getDescriptor().getObjectBuilder().buildTemplateUpdateRow(session));
-        }
+        getDescriptor().initialize(this, session);
     }
 
     /**

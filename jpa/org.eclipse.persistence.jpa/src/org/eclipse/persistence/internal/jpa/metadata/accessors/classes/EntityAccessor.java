@@ -1095,6 +1095,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process secondary-table(s) for a given entity.
      */
     protected void processSecondaryTables() {
+        if (getDescriptor().getClassDescriptor().isEISDescriptor()) {
+            return;
+        }
         MetadataAnnotation secondaryTable = getAnnotation(SecondaryTable.class);
         MetadataAnnotation secondaryTables = getAnnotation(SecondaryTables.class);
         
@@ -1151,6 +1154,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * correct, fully qualified name on the TopLink DatabaseTable.
      */
     protected void processTable(TableMetadata table) {
+        if (getDescriptor().getClassDescriptor().isEISDescriptor()) {
+            return;
+        }
         // Process any table defaults and log warning messages.
         processTable(table, getDescriptor().getDefaultTableName());
         

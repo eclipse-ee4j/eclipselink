@@ -2500,6 +2500,20 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     return (T) accessor.getConnection();
                 }
                 return null;
+            } else if (cls.getName().equals("javax.resource.cci.Connection")) {                
+                UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
+                if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
+                    return (T) unitOfWork.getAccessor().getConnection();
+                }
+                if (checkForTransaction(false) != null) { 
+                    unitOfWork.beginEarlyTransaction();
+                    Accessor accessor = unitOfWork.getAccessor();
+                    // Ensure external connection is acquired.
+                    accessor.incrementCallCount(unitOfWork.getParent());
+                    accessor.decrementCallCount();
+                    return (T) accessor.getDatasourceConnection();
+                }
+                return null;
             }
             throw new PersistenceException(ExceptionLocalization.buildMessage("Provider-does-not-support-the-call", null));
 

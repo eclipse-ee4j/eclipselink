@@ -17,11 +17,9 @@ import java.sql.SQLException;
 import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceFactory;
 
-import org.eclipse.persistence.platform.database.oracle.ucp.UCPDataPartitioningCallback;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.sessions.server.ConnectionPolicy.ExclusiveMode;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel;
 

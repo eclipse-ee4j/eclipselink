@@ -2211,5 +2211,40 @@ public class Helper implements Serializable {
     public static void setDefaultEndDatabaseDelimiter(String delimiter){
         defaultEndDatabaseDelimiter = delimiter;
     }
+
+    /**
+     * Convert the SQL like pattern to a regex pattern.
+     */
+    public static String convertLikeToRegex(String like) {
+        // Bug 3936427 - Replace regular expression reserved characters with escaped version of those characters
+        // For instance replace ? with \?
+        String pattern = like.replaceAll("\\?", "\\\\?");
+        pattern = pattern.replaceAll("\\*", "\\\\*");
+        pattern = pattern.replaceAll("\\.", "\\\\.");
+        pattern = pattern.replaceAll("\\[", "\\\\[");
+        pattern = pattern.replaceAll("\\)", "\\\\)");
+        pattern = pattern.replaceAll("\\(", "\\\\(");
+        pattern = pattern.replaceAll("\\{", "\\\\{");
+        pattern = pattern.replaceAll("\\+", "\\\\+");
+        pattern = pattern.replaceAll("\\^", "\\\\^");
+        pattern = pattern.replaceAll("\\|", "\\\\|");
+    
+        // regular expressions to substitute SQL wildcards with regex wildcards
+    
+        // Use look behind operators to replace "%" which is not preceded by "\" with ".*"
+        pattern = pattern.replaceAll("(?<!\\\\)%", ".*");
+        
+        // Use look behind operators to replace "_" which is not preceded by "\" with "."
+        pattern = pattern.replaceAll("(?<!\\\\)_", ".");   
+        
+        // replace "\%" with "%"
+        pattern = pattern.replaceAll("\\\\%", "%");
+    
+        // replace "\_" with "_"
+        pattern = pattern.replaceAll("\\\\_", "_");
+        // regex requires ^ and $ if pattern must start at start and end at end of string as like requires.
+        pattern = "^" + pattern + "$";
+        return pattern;
+    }
     
 }

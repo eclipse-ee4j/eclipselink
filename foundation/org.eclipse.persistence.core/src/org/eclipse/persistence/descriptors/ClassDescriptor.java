@@ -37,6 +37,7 @@ import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
@@ -46,9 +47,13 @@ import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
@@ -378,6 +383,50 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
     
     /**
+     * Return a new aggregate collection/element collection mapping for this type of descriptor.
+     */
+    public DatabaseMapping newAggregateCollectionMapping() {
+        return new AggregateCollectionMapping();
+    }
+    
+    /**
+     * Return a new direct collection/element collection mapping for this type of descriptor.
+     */
+    public DatabaseMapping newDirectCollectionMapping() {
+        return new DirectCollectionMapping();
+    }
+    
+    /**
+     * Return a new one to one mapping for this type of descriptor.
+     */
+    public ObjectReferenceMapping newOneToOneMapping() {
+        OneToOneMapping mapping = new OneToOneMapping();
+        mapping.setIsOneToOneRelationship(true);
+        return mapping;
+    }
+    
+    /**
+     * Return a new many to one mapping for this type of descriptor.
+     */
+    public ObjectReferenceMapping newManyToOneMapping() {
+        return new ManyToOneMapping();
+    }
+    
+    /**
+     * Return a new one to many mapping for this type of descriptor.
+     */
+    public CollectionMapping newOneToManyMapping() {
+        return new OneToManyMapping();
+    }
+    
+    /**
+     * Return a new one to many mapping for this type of descriptor.
+     */
+    public CollectionMapping newManyToManyMapping() {
+        return new ManyToManyMapping();
+    }
+    
+    /**
      * PUBLIC:
      * Add a direct to field mapping to the receiver. The new mapping specifies that
      * an instance variable of the class of objects which the receiver describes maps in
@@ -525,7 +574,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * This method is used if there is more than one table.
      */
     public void addTable(DatabaseTable table) {
-        getTables().addElement(table);
+        getTables().add(table);
     }
     
     /**
@@ -715,7 +764,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Return a call built from a statement. Subclasses may throw an exception
      * if the statement is not appropriate.
      */
-    public DatabaseCall buildCallFromStatement(SQLStatement statement, AbstractSession session) {
+    public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
         DatabaseCall call = statement.buildCall(session);
         if (isNativeConnectionRequired()) {
             call.setIsNativeConnectionRequired(true);
@@ -2993,6 +3042,41 @@ public class ClassDescriptor implements Cloneable, Serializable {
             this.defaultUpdateObjectQueryRedirector = this.defaultQueryRedirector;
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Initialize the query manager specific to the descriptor type.
+     */
+    public void initialize(DescriptorQueryManager queryManager, AbstractSession session) {
+        //PERF: set read-object query to cache generated SQL.
+        if (!queryManager.hasReadObjectQuery()) {
+            // Prepare static read object query always.
+            ReadObjectQuery readObjectQuery = new ReadObjectQuery();
+            readObjectQuery.setSelectionCriteria(getObjectBuilder().getPrimaryKeyExpression());
+            queryManager.setReadObjectQuery(readObjectQuery);
+        }
+        queryManager.getReadObjectQuery().setName("readObject");
+
+        if (!queryManager.hasInsertQuery()) {
+            // Prepare insert query always.
+            queryManager.setInsertQuery(new InsertObjectQuery());
+        }
+        queryManager.getInsertQuery().setModifyRow(getObjectBuilder().buildTemplateInsertRow(session));
+
+        if (!usesFieldLocking()) {
+            //do not reset the query if we are using field locking
+            if (!queryManager.hasDeleteQuery()) {
+                // Prepare delete query always.
+                queryManager.setDeleteQuery(new DeleteObjectQuery());
+            }
+            queryManager.getDeleteQuery().setModifyRow(new DatabaseRecord());
+        }
+
+        if (queryManager.hasUpdateQuery()) {
+            // Do not prepare to update by default to allow minimal update.
+            queryManager.getUpdateQuery().setModifyRow(getObjectBuilder().buildTemplateUpdateRow(session));
+        }        
+    }
 
     /**
      * INTERNAL:
@@ -3201,6 +3285,38 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
+     * Return if the descriptor maps to an EIS or NoSQL datasource.
+     */
+    public boolean isEISDescriptor() {
+        return false;
+    }
+
+    /**
+     * PUBLIC:
+     * Return if the descriptor maps to an object-relational structured type.
+     */
+    public boolean isObjectRelationalDataTypeDescriptor() {
+        return false;
+    }
+
+    /**
+     * PUBLIC:
+     * Return if the descriptor maps to XML.
+     */
+    public boolean isXMLDescriptor() {
+        return false;
+    }
+
+    /**
+     * PUBLIC:
+     * Return if the descriptor maps to a relational table.
+     */
+    public boolean isRelationalDescriptor() {
+        return false;
+    }
+
+    /**
+     * PUBLIC:
      * Return if the java class is an interface.
      */
     public boolean isDescriptorForInterface() {
@@ -3300,13 +3416,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean isMultipleTableDescriptor() {
         return getTables().size() > 1;
-    }
-    /**
-     *  PUBLIC:
-     *  Return if this is an ObjectRelationalDataTypeDescriptor.
-     */
-    public boolean isObjectRelationalDataTypeDescriptor(){
-        return false;
     }
 
     /**
@@ -4791,7 +4900,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getTables().isEmpty()) {
             addTableName(tableName);
         } else {
-            throw DescriptorException.onlyOneTableCanBeAddedWithThisMethod(this);
+            getTables().get(0).setPossiblyQualifiedName(tableName);
         }
     }
 

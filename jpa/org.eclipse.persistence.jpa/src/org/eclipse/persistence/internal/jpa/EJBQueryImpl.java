@@ -261,7 +261,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             if (isCacheable) {
                 // Prepare query as hint may cause cloning (but not un-prepare
                 // as in read-only).
-                databaseQuery.prepareCall(session, new DatabaseRecord());
+                databaseQuery.checkPrepare(session, new DatabaseRecord());
                 session.getProject().getJPQLParseCache().put(jpqlQuery, databaseQuery);
             }
         }
@@ -567,7 +567,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 if (!this.databaseQuery.isPrepared()) {
                     // prepare the query before cloning, this ensures we do not
                     // have to continually prepare on each usage
-                    this.databaseQuery.prepareCall(this.entityManager.getDatabaseSession(), new DatabaseRecord());
+                    this.databaseQuery.checkPrepare(this.entityManager.getDatabaseSession(), new DatabaseRecord());
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));

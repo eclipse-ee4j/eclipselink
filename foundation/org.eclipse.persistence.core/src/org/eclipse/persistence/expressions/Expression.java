@@ -730,7 +730,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The equivalent of the COALESCE SQL function
      * <p>Example:
      * <blockquote><pre>
-     * Vector list = new Vector(3);
+     * List list = new ArrayList(3);
      * list.add(builder.get("firstName"));
      * list.add(builder.get("lastName"));
      * list.add(builder.get("nickname"));
@@ -1211,23 +1211,6 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public String descriptionOfNodeType() {
         return "Expression";
-    }
-
-    /**
-     * INTERNAL:
-     * Check if any element in theObjects is Expression.  
-     */
-    public boolean detectExpression(Vector theObjects) {
-        boolean foundExpression = false;
-        int size = theObjects.size();
-        for (int i = 0; i < size; i++) {
-            Object element = theObjects.get(i);
-            if (element instanceof Expression) {
-                foundExpression = true;
-                break;
-            }
-        }
-        return foundExpression;
     }
     
     /**
@@ -2147,13 +2130,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(byte[] theBytes) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.add(Byte.valueOf(theBytes[index]));
+            values.add(Byte.valueOf(theBytes[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2162,13 +2145,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(char[] theChars) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.add(Character.valueOf(theChars[index]));
+            values.add(Character.valueOf(theChars[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2177,13 +2160,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(double[] theDoubles) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.add(Double.valueOf(theDoubles[index]));
+            values.add(Double.valueOf(theDoubles[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2192,13 +2175,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(float[] theFloats) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.add(Float.valueOf(theFloats[index]));
+            values.add(Float.valueOf(theFloats[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2207,13 +2190,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(int[] theInts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.add(Integer.valueOf(theInts[index]));
+            values.add(Integer.valueOf(theInts[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2222,13 +2205,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(long[] theLongs) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.add(Long.valueOf(theLongs[index]));
+            values.add(Long.valueOf(theLongs[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2237,13 +2220,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(Object[] theObjects) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
-            vector.add(theObjects[index]);
+            values.add(theObjects[index]);
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2252,13 +2235,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(short[] theShorts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.add(Short.valueOf(theShorts[index]));
+            values.add(Short.valueOf(theShorts[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2267,13 +2250,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(boolean[] theBooleans) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            vector.add(Boolean.valueOf(theBooleans[index]));
+            values.add(Boolean.valueOf(theBooleans[index]));
         }
 
-        return in(vector);
+        return in(values);
     }
 
     /**
@@ -2282,8 +2265,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
      * <pre><blockquote>
-     *     EclipseLink: employee.get("age").in(agesVector)
-     *     Java: agesVector.contains(employee.getAge())
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </blockquote></pre>
      */
@@ -3305,13 +3288,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(byte[] theBytes) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.add(Byte.valueOf(theBytes[index]));
+            values.add(Byte.valueOf(theBytes[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3320,13 +3303,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(char[] theChars) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.add(Character.valueOf(theChars[index]));
+            values.add(Character.valueOf(theChars[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3335,13 +3318,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(double[] theDoubles) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.add(Double.valueOf(theDoubles[index]));
+            values.add(Double.valueOf(theDoubles[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3350,13 +3333,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(float[] theFloats) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.add(Float.valueOf(theFloats[index]));
+            values.add(Float.valueOf(theFloats[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3365,13 +3348,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(int[] theInts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.add(Integer.valueOf(theInts[index]));
+            values.add(Integer.valueOf(theInts[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3380,13 +3363,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(long[] theLongs) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.add(Long.valueOf(theLongs[index]));
+            values.add(Long.valueOf(theLongs[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3395,13 +3378,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(Object[] theObjects) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
-            vector.add(theObjects[index]);
+            values.add(theObjects[index]);
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     public Expression notIn(ReportQuery subQuery) {
@@ -3415,13 +3398,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(short[] theShorts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.add(Short.valueOf(theShorts[index]));
+            values.add(Short.valueOf(theShorts[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3430,13 +3413,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(boolean[] theBooleans) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            vector.add(Boolean.valueOf(theBooleans[index]));
+            values.add(Boolean.valueOf(theBooleans[index]));
         }
 
-        return notIn(vector);
+        return notIn(values);
     }
 
     /**
@@ -3446,8 +3429,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
      * <pre><blockquote>
-     *     EclipseLink: employee.get("age").in(agesVector)
-     *     Java: agesVector.contains(employee.getAge())
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </blockquote></pre>
      */
@@ -4493,13 +4476,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * the search condition is FALSE
      */
     public Expression any(byte[] theBytes) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.add(Byte.valueOf(theBytes[index]));
+            values.add(Byte.valueOf(theBytes[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4508,13 +4491,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(char[] theChars) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.add(Character.valueOf(theChars[index]));
+            values.add(Character.valueOf(theChars[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4523,13 +4506,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(double[] theDoubles) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.add(Double.valueOf(theDoubles[index]));
+            values.add(Double.valueOf(theDoubles[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4538,13 +4521,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(float[] theFloats) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.add(Float.valueOf(theFloats[index]));
+            values.add(Float.valueOf(theFloats[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4553,13 +4536,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(int[] theInts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.add(Integer.valueOf(theInts[index]));
+            values.add(Integer.valueOf(theInts[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4568,13 +4551,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(long[] theLongs) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.add(Long.valueOf(theLongs[index]));
+            values.add(Long.valueOf(theLongs[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4583,13 +4566,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(Object[] theObjects) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
-            vector.add(theObjects[index]);
+            values.add(theObjects[index]);
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4598,13 +4581,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(short[] theShorts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.add(Short.valueOf(theShorts[index]));
+            values.add(Short.valueOf(theShorts[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4613,13 +4596,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(boolean[] theBooleans) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            vector.add(Boolean.valueOf(theBooleans[index]));
+            values.add(Boolean.valueOf(theBooleans[index]));
         }
 
-        return any(vector);
+        return any(values);
     }
 
     /**
@@ -4628,12 +4611,30 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
      * <pre><blockquote>
-     *     EclipseLink: employee.get("age").in(agesVector)
-     *     Java: agesVector.contains(employee.getAge())
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
+     *     SQL: AGE IN (55, 18, 30)
+     * </blockquote></pre>
+     * @deprecated since 2.4 replaced by any(List)
+     * @see #any(List)
+     */
+    @Deprecated
+    public Expression any(Vector theObjects) {
+        return any((List)theObjects);
+    }
+
+    /**
+     * PUBLIC:
+     * Return an expression that checks if the receivers value is contained in the collection.
+     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
+     * <p>Example:
+     * <pre><blockquote>
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </blockquote></pre>
      */
-    public Expression any(Vector theObjects) {
+    public Expression any(List theObjects) {
         return any(new ConstantExpression(theObjects, this));
     }
 
@@ -4655,13 +4656,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * the search condition is FALSE
      */
     public Expression some(byte[] theBytes) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.add(Byte.valueOf(theBytes[index]));
+            values.add(Byte.valueOf(theBytes[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4670,13 +4671,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(char[] theChars) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.add(Character.valueOf(theChars[index]));
+            values.add(Character.valueOf(theChars[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4685,13 +4686,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(double[] theDoubles) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.add(Double.valueOf(theDoubles[index]));
+            values.add(Double.valueOf(theDoubles[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4700,13 +4701,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(float[] theFloats) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.add(Float.valueOf(theFloats[index]));
+            values.add(Float.valueOf(theFloats[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4715,13 +4716,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(int[] theInts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.add(Integer.valueOf(theInts[index]));
+            values.add(Integer.valueOf(theInts[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4730,13 +4731,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(long[] theLongs) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.add(Long.valueOf(theLongs[index]));
+            values.add(Long.valueOf(theLongs[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4745,13 +4746,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(Object[] theObjects) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
-            vector.add(theObjects[index]);
+            values.add(theObjects[index]);
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4760,13 +4761,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(short[] theShorts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.add(Short.valueOf(theShorts[index]));
+            values.add(Short.valueOf(theShorts[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4775,13 +4776,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(boolean[] theBooleans) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            vector.add(Boolean.valueOf(theBooleans[index]));
+            values.add(Boolean.valueOf(theBooleans[index]));
         }
 
-        return some(vector);
+        return some(values);
     }
 
     /**
@@ -4790,12 +4791,30 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
      * <pre><blockquote>
-     *     EclipseLink: employee.get("age").in(agesVector)
-     *     Java: agesVector.contains(employee.getAge())
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </blockquote></pre>
+     * @deprecated since 2.4 replaced by some(List)
+     * @see #some(List)
      */
+    @Deprecated    
     public Expression some(Vector theObjects) {
+        return some(new ConstantExpression(theObjects, this));
+    }
+
+    /**
+     * PUBLIC:
+     * Return an expression that checks if the receivers value is contained in the collection.
+     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
+     * <p>Example:
+     * <pre><blockquote>
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
+     *     SQL: AGE IN (55, 18, 30)
+     * </blockquote></pre>
+     */    
+    public Expression some(List theObjects) {
         return some(new ConstantExpression(theObjects, this));
     }
 
@@ -4817,13 +4836,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * the search condition is FALSE
      */
     public Expression all(byte[] theBytes) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.add(Byte.valueOf(theBytes[index]));
+            values.add(Byte.valueOf(theBytes[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4832,13 +4851,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(char[] theChars) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.add(Character.valueOf(theChars[index]));
+            values.add(Character.valueOf(theChars[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4847,13 +4866,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(double[] theDoubles) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.add(Double.valueOf(theDoubles[index]));
+            values.add(Double.valueOf(theDoubles[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4862,13 +4881,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(float[] theFloats) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.add(Float.valueOf(theFloats[index]));
+            values.add(Float.valueOf(theFloats[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4877,13 +4896,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(int[] theInts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.add(Integer.valueOf(theInts[index]));
+            values.add(Integer.valueOf(theInts[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4892,13 +4911,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(long[] theLongs) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.add(Long.valueOf(theLongs[index]));
+            values.add(Long.valueOf(theLongs[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4907,13 +4926,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(Object[] theObjects) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
-            vector.add(theObjects[index]);
+            values.add(theObjects[index]);
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4922,13 +4941,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(short[] theShorts) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.add(Short.valueOf(theShorts[index]));
+            values.add(Short.valueOf(theShorts[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4937,13 +4956,13 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(boolean[] theBooleans) {
-        Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            vector.add(Boolean.valueOf(theBooleans[index]));
+            values.add(Boolean.valueOf(theBooleans[index]));
         }
 
-        return all(vector);
+        return all(values);
     }
 
     /**
@@ -4952,12 +4971,30 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
      * <pre><blockquote>
-     *     EclipseLink: employee.get("age").in(agesVector)
-     *     Java: agesVector.contains(employee.getAge())
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
+     *     SQL: AGE IN (55, 18, 30)
+     * </blockquote></pre>
+     * @deprecated since 2.4 replaced by all(List)
+     * @see #all(List)
+     */
+    @Deprecated
+    public Expression all(Vector theObjects) {
+        return all((List)theObjects);
+    }
+
+    /**
+     * PUBLIC:
+     * Return an expression that checks if the receivers value is contained in the collection.
+     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
+     * <p>Example:
+     * <pre><blockquote>
+     *     EclipseLink: employee.get("age").in(ages)
+     *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </blockquote></pre>
      */
-    public Expression all(Vector theObjects) {
+    public Expression all(List theObjects) {
         return all(new ConstantExpression(theObjects, this));
     }
 

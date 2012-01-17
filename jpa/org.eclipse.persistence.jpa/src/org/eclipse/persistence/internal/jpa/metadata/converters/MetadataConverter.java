@@ -23,6 +23,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -100,6 +101,8 @@ public abstract class MetadataConverter extends ORMetadata {
             ((DirectMapMapping) mapping).setKeyConverter(converter);
         } else if (mapping.isDirectCollectionMapping()) {
             ((DirectCollectionMapping) mapping).setValueConverter(converter);
+        } else if (mapping instanceof AbstractCompositeDirectCollectionMapping) {
+            ((AbstractCompositeDirectCollectionMapping) mapping).setValueConverter(converter);
         } else if (mapping.isAggregateCollectionMapping()) {
             // TODO: Be nice to support converters on AggregateCollections keys.
             // For now they are silently ignored.

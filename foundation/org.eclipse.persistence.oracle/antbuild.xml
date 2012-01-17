@@ -191,6 +191,10 @@
                                                     else="${extensions.depend.dir}/${ucp.jar}">
             <available file="${oracle.extensions.depend.dir}/${ucp.jar}"/>
         </condition>
+        <condition property="nosql.lib"       value="${oracle.extensions.depend.dir}/${nosql.jar}"
+                                                    else="${extensions.depend.dir}/${nosql.jar}">
+            <available file="${oracle.extensions.depend.dir}/${nosql.jar}"/>
+        </condition>
 
         <!-- dependency tests -->
         <available file="${persistence.lib}"   property="persistence.bundle.exist"/>
@@ -204,6 +208,7 @@
         <available file="${xdb.lib}"           property="xdb.bundle.exist"/>
         <available file="${xmlparser.lib}"     property="xmlparser.bundle.exist"/>
         <available file="${ucp.lib}"           property="ucp.bundle.exist"/>
+        <available file="${nosql.lib}"           property="nosql.bundle.exist"/>
         <!-- oracle extension dir test -->
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
 
@@ -216,6 +221,7 @@
         <fail message="Cannot find: '${xdb.lib}'"         unless="xdb.bundle.exist"/>      
         <fail message="Cannot find: '${xmlparser.lib}'"   unless="xmlparser.bundle.exist"/>
         <fail message="Cannot find: '${ucp.lib}'"         unless="ucp.bundle.exist"/>
+        <fail message="Cannot find: '${nosql.lib}'"         unless="nosql.bundle.exist"/>
         
         <!-- Set Compile Path-->
         <path id="oracle.compile.path">
@@ -228,6 +234,7 @@
             <pathelement path="${xdb.lib}"/>
             <pathelement path="${xmlparser.lib}"/>
             <pathelement path="${ucp.lib}"/>
+            <pathelement path="${nosql.lib}"/>
         </path>
     </target>
 

@@ -151,7 +151,7 @@ public class EISAccessor extends DatasourceAccessor {
             try {
                 interaction = getCCIConnection().createInteraction();
                 input = getEISPlatform().createInputRecord(eisCall, this);
-                output = getEISPlatform().createOutputRecord(eisCall, this);
+                output = getEISPlatform().createOutputRecord(eisCall, translationRow, this);
             } finally {
                 session.endOperationProfile(SessionProfiler.SqlPrepare, eisCall.getQuery(), SessionProfiler.ALL);
             }

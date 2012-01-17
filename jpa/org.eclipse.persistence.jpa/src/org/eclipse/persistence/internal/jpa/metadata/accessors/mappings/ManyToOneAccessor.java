@@ -28,6 +28,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.mappings.ManyToOneMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 
 /**
  * INTERNAL:
@@ -113,9 +115,13 @@ public class ManyToOneAccessor extends ObjectAccessor {
         super.process();
         
         // Initialize our mapping now with what we found.
-        ManyToOneMapping mapping = initManyToOneMapping();
-                
-        // Process the owning keys for this mapping.
-        processOwningMappingKeys(mapping);
+        ObjectReferenceMapping mapping = initManyToOneMapping();
+        
+        if (mapping instanceof ManyToOneMapping) {
+            // Process the owning keys for this mapping.
+            processOwningMappingKeys((ManyToOneMapping)mapping);
+        } else if (mapping instanceof EISOneToOneMapping) {
+            processEISOneToOneForeignKeyRelationship((EISOneToOneMapping)mapping);
+        } 
     }
 }

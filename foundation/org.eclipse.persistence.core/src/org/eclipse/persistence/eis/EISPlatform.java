@@ -24,12 +24,15 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.eis.interactions.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>An <code>EISPlatform</code> defines any EIS adapter specific behavior.
@@ -196,7 +199,7 @@ public class EISPlatform extends DatasourcePlatform {
     }
 
     /**
-     * Allow the platform to create the appropiate type of record for the interaction.
+     * Allow the platform to create the appropriate type of record for the interaction.
      */
     public Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
         Record input = interaction.createInputRecord(accessor);
@@ -210,13 +213,13 @@ public class EISPlatform extends DatasourcePlatform {
      * Allow the platform to create the appropriate type of record for the interaction.
      * If an output record is not required then null is returned.
      */
-    public Record createOutputRecord(EISInteraction interaction, EISAccessor accessor) {
+    public Record createOutputRecord(EISInteraction interaction, AbstractRecord translationRow, EISAccessor accessor) {
         return null;
     }
 
     /**
      * INTERNAL:
-     * Allow the platform to handle record ro row conversion.
+     * Allow the platform to handle record to row conversion.
      */
     public AbstractRecord buildRow(Record record, EISInteraction interaction, EISAccessor accessor) {
         Record output = record;
@@ -227,7 +230,7 @@ public class EISPlatform extends DatasourcePlatform {
     }
 
     /**
-     * Allow the platform to handle record ro row conversion.
+     * Allow the platform to handle record to row conversion.
      */
     public Vector buildRows(Record record, EISInteraction interaction, EISAccessor accessor) {
         Record output = record;
@@ -315,7 +318,7 @@ public class EISPlatform extends DatasourcePlatform {
      */
     public void setValueInRecord(String key, Object value, MappedRecord record, EISAccessor accessor) {
         Object recordValue = value;
-        if (shouldConvertDataToStrings()) {
+        if (shouldConvertDataToStrings() && !(value instanceof Record) && !(value instanceof Collection)) {
             recordValue = getConversionManager().convertObject(value, ClassConstants.STRING);
         }
         record.put(key, recordValue);
@@ -365,5 +368,14 @@ public class EISPlatform extends DatasourcePlatform {
         }
         // For non-XML, return the ConversionManager instance from DatasourcePlatform
         return super.getConversionManager();
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method to throw an exception by default.
+     * Platforms that support dynamic querying can override this to generate an EISInteraction.
+     */
+    public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
+        throw QueryException.noCallOrInteractionSpecified();
     }
 }

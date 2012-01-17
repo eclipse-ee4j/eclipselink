@@ -17,23 +17,28 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.eis.mappings.EISCompositeDirectCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISCompositeObjectMapping;
 import org.eclipse.persistence.eis.mappings.EISDirectMapping;
+import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
+import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.oxm.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.oxm.record.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * 
@@ -112,7 +117,7 @@ public class EISDescriptor extends ClassDescriptor {
     @Override
     public InheritancePolicy getInheritancePolicy() {
         if (inheritancePolicy == null) {
-            if(getDataFormat() == EISDescriptor.XML) {
+            if(isXMLFormat()) {
                 // Lazy initialize to conserve space in non-inherited classes.
                 setInheritancePolicy(new org.eclipse.persistence.internal.oxm.QNameInheritancePolicy(this));
             } else {
@@ -154,7 +159,7 @@ public class EISDescriptor extends ClassDescriptor {
             return;
         }
 
-        if (dataFormat.equals(XML)) {
+        if (isXMLFormat()) {
             setObjectBuilder(new XMLObjectBuilder(this));
             if(this.hasInheritance()) {
                 ((QNameInheritancePolicy)getInheritancePolicy()).setNamespaceResolver(this.namespaceResolver);
@@ -164,7 +169,30 @@ public class EISDescriptor extends ClassDescriptor {
         //		initializeQueryManager();
         super.preInitialize(session);
     }
+    
+    /**
+     * INTERNAL:
+     * Initialize the query manager specific to the descriptor type.
+     * Allow the platform to initialize the CRUD queries to defaults.
+     */
+    @Override
+    public void initialize(DescriptorQueryManager queryManager, AbstractSession session) {
+        ((DatasourcePlatform)session.getDatasourcePlatform()).initializeDefaultQueries(queryManager, session);
+        super.initialize(queryManager, session);
+    }
 
+    public boolean isXMLFormat() {
+        return this.dataFormat.equals(XML);
+    }
+
+    public boolean isMappedFormat() {
+        return this.dataFormat.equals(MAPPED);
+    }
+
+    public boolean isIndexedFormat() {
+        return this.dataFormat.equals(INDEXED);
+    }
+    
     /**
      * PUBLIC:
      * Return the data format that the descriptor maps to.
@@ -220,39 +248,23 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) {
-        if (!getDataFormat().equals(XML)) {
-            if (!(fieldValue instanceof List)) {
-                return new DatabaseRecord(1);
-            }
-            List nestedRows = ((List)fieldValue);
-            if (nestedRows.isEmpty()) {
-                return new DatabaseRecord(1);
-            } else {
-                // BUG#2667762 if the tag was empty this could be a string of whitespace.
-                if (!(nestedRows.get(0) instanceof AbstractRecord)) {
-                    return new DatabaseRecord(1);
-                }
-                return (AbstractRecord)nestedRows.get(0);
-            }
-        }
-
-        if (fieldValue instanceof XMLRecord) {
-            return (XMLRecord)fieldValue;
+        if (fieldValue instanceof AbstractRecord) {
+            return (AbstractRecord)fieldValue;
         }
 
         // BUG#2667762 if the tag was empty this could be a string of whitespace.
-        if (!(fieldValue instanceof Vector)) {
-            return getObjectBuilder().createRecord(null);
+        if (!(fieldValue instanceof List)) {
+            return getObjectBuilder().createRecord(0, null);
         }
-        Vector nestedRows = (Vector)fieldValue;
+        List nestedRows = (List)fieldValue;
         if (nestedRows.isEmpty()) {
-            return getObjectBuilder().createRecord(null);
+            return getObjectBuilder().createRecord(0, null);
         } else {
             // BUG#2667762 if the tag was empty this could be a string of whitespace.
-            if (!(nestedRows.firstElement() instanceof XMLRecord)) {
-                return getObjectBuilder().createRecord(null);
+            if (!(nestedRows.get(0) instanceof AbstractRecord)) {
+                return getObjectBuilder().createRecord(0, null);
             }
-            return (XMLRecord)nestedRows.firstElement();
+            return (AbstractRecord)nestedRows.get(0);
         }
     }
 
@@ -262,7 +274,7 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
-        if (!getDataFormat().equals(XML)) {
+        if (!isXMLFormat()) {
             if (!(fieldValue instanceof List)) {
                 return new Vector();
             }
@@ -284,10 +296,6 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public Vector buildDirectValuesFromFieldValue(Object fieldValue) {
-        if (!getDataFormat().equals(XML)) {
-            return super.buildDirectValuesFromFieldValue(fieldValue);
-        }
-
         if (!(fieldValue instanceof Vector)) {
             Vector fieldValues = new Vector(1);
             fieldValues.add(fieldValue);
@@ -304,21 +312,17 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public Object buildFieldValueFromDirectValues(Vector directValues, String elementDataTypeName, AbstractSession session) {
-        if (!getDataFormat().equals(XML)) {
-            return super.buildFieldValueFromDirectValues(directValues, elementDataTypeName, session);
-        }
         return directValues;
     }
 
     /**
      * INTERNAL:
      * Build and return the field value from the specified nested database row.
-     * The database better be expecting an SDKFieldValue.
      */
     @Override
     public Object buildFieldValueFromNestedRow(AbstractRecord nestedRow, AbstractSession session) throws DatabaseException {
         Vector nestedRows = new Vector(1);
-        nestedRows.addElement(nestedRow);
+        nestedRows.add(nestedRow);
         return this.buildFieldValueFromNestedRows(nestedRows, "", session);
     }
 
@@ -338,7 +342,7 @@ public class EISDescriptor extends ClassDescriptor {
     */
     @Override
     public DatabaseField buildField(String fieldName) {
-        if (getDataFormat().equals(XML)) {
+        if (isXMLFormat()) {
             XMLField xmlField = new XMLField(fieldName);
             xmlField.setNamespaceResolver(this.getNamespaceResolver());
             xmlField.initialize();
@@ -355,9 +359,14 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public DatabaseField buildField(DatabaseField field) {
-        if(getDataFormat().equals(XML)) {
+        if (isXMLFormat()) {
             if(!(field instanceof XMLField)) {
-                field = new XMLField(field.getName());
+                String xPath = field.getName();
+                // Moxy requires /text on elements.
+                if ((xPath.indexOf('@') == -1) && (xPath.indexOf("/text()") == -1)) {
+                    xPath = xPath + "/text()";
+                }
+                field = new XMLField(xPath);
             }
             ((XMLField)field).setNamespaceResolver(getNamespaceResolver());
             ((XMLField)field).initialize();
@@ -368,6 +377,7 @@ public class EISDescriptor extends ClassDescriptor {
     /**
      * Return a new direct/basic mapping for this type of descriptor.
      */
+    @Override
     public AbstractDirectMapping newDirectMapping() {
         return new EISDirectMapping();
     }
@@ -375,10 +385,59 @@ public class EISDescriptor extends ClassDescriptor {
     /**
      * Return a new aggregate/embedded mapping for this type of descriptor.
      */
+    @Override
     public AggregateMapping newAggregateMapping() {
         return new EISCompositeObjectMapping();
     }
-
+    
+    /**
+     * Return a new aggregate collection/element collection mapping for this type of descriptor.
+     */
+    @Override
+    public DatabaseMapping newAggregateCollectionMapping() {
+        return new EISCompositeCollectionMapping();
+    }
+    
+    /**
+     * Return a new direct collection/element collection mapping for this type of descriptor.
+     */
+    @Override
+    public DatabaseMapping newDirectCollectionMapping() {
+        return new EISCompositeDirectCollectionMapping();
+    }
+    
+    /**
+     * Return a new one to one mapping for this type of descriptor.
+     */
+    @Override
+    public ObjectReferenceMapping newOneToOneMapping() {
+        return new EISOneToOneMapping();
+    }
+    
+    /**
+     * Return a new many to one mapping for this type of descriptor.
+     */
+    @Override
+    public ObjectReferenceMapping newManyToOneMapping() {
+        return new EISOneToOneMapping();
+    }
+    
+    /**
+     * Return a new one to many mapping for this type of descriptor.
+     */
+    @Override
+    public CollectionMapping newOneToManyMapping() {
+        return new EISOneToManyMapping();
+    }
+    
+    /**
+     * Return a new one to many mapping for this type of descriptor.
+     */
+    @Override
+    public CollectionMapping newManyToManyMapping() {
+        return new EISOneToManyMapping();
+    }
+    
     /**
      * PUBLIC: Add a direct mapping to the receiver. The new mapping specifies
      * that an instance variable of the class of objects which the receiver
@@ -398,7 +457,7 @@ public class EISDescriptor extends ClassDescriptor {
         EISDirectMapping mapping = new EISDirectMapping();
         mapping.setAttributeName(attributeName);
 
-        if (getDataFormat() == EISDescriptor.XML) {
+        if (isXMLFormat()) {
             mapping.setXPath(fieldName);
         } else {
             mapping.setFieldName(fieldName);
@@ -421,7 +480,7 @@ public class EISDescriptor extends ClassDescriptor {
         mapping.setAttributeName(attributeName);
         mapping.setSetMethodName(setMethodName);
         mapping.setGetMethodName(getMethodName);
-        if (getDataFormat() == EISDescriptor.XML) {
+        if (isXMLFormat()) {
             mapping.setXPath(fieldName);
         } else {
             mapping.setFieldName(fieldName);
@@ -438,7 +497,7 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public void addPrimaryKeyFieldName(String fieldName) {
-        if (getDataFormat() == EISDescriptor.XML) {
+        if (isXMLFormat()) {
             addPrimaryKeyField(new XMLField(fieldName));
         } else {
             super.addPrimaryKeyFieldName(fieldName);
@@ -464,13 +523,13 @@ public class EISDescriptor extends ClassDescriptor {
      * EIS Calls.
      */
     @Override
-    public DatabaseCall buildCallFromStatement(SQLStatement statement, AbstractSession session) {
-        throw QueryException.noCallOrInteractionSpecified();
+    public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
+        return ((EISPlatform)session.getDatasourcePlatform()).buildCallFromStatement(statement, query, session);
     }
 
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
-        if (getDataFormat().equals(XML)) {
+        if (isXMLFormat()) {
             for(int x = 0, primaryKeyFieldsSize = this.primaryKeyFields.size(); x<primaryKeyFieldsSize; x++) {
                 XMLField pkField = (XMLField) this.primaryKeyFields.get(x);
                 pkField.setNamespaceResolver(this.namespaceResolver);
@@ -519,6 +578,15 @@ public class EISDescriptor extends ClassDescriptor {
     @Override
     public boolean isReturnTypeRequiredForReturningPolicy() {
         return false;
+    }
+
+    /**
+     * PUBLIC:
+     * Return if the descriptor maps to an EIS or NoSQL datasource.
+     */
+    @Override
+    public boolean isEISDescriptor() {
+        return true;
     }
     
     /**

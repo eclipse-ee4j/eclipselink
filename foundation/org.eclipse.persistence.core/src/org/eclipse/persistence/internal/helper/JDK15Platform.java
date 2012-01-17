@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.helper;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map;
 
 /**
  *  INTERNAL:
@@ -48,30 +47,7 @@ public class JDK15Platform implements JDKPlatform {
         if (pattern == null) {
             // Bug 3936427 - Replace regular expression reserved characters with escaped version of those characters
             // For instance replace ? with \?
-            String convertedRight = ((String)right).replaceAll("\\?", "\\\\?");
-            convertedRight = convertedRight.replaceAll("\\*", "\\\\*");
-            convertedRight = convertedRight.replaceAll("\\.", "\\\\.");
-            convertedRight = convertedRight.replaceAll("\\[", "\\\\[");
-            convertedRight = convertedRight.replaceAll("\\)", "\\\\)");
-            convertedRight = convertedRight.replaceAll("\\(", "\\\\(");
-            convertedRight = convertedRight.replaceAll("\\{", "\\\\{");
-            convertedRight = convertedRight.replaceAll("\\+", "\\\\+");
-            convertedRight = convertedRight.replaceAll("\\^", "\\\\^");
-            convertedRight = convertedRight.replaceAll("\\|", "\\\\|");
-
-            // regular expressions to substitute SQL wildcards with regex wildcards
-
-            // Use look behind operators to replace "%" which is not preceded by "\" with ".*"
-            convertedRight = convertedRight.replaceAll("(?<!\\\\)%", ".*");
-            
-            // Use look behind operators to replace "_" which is not preceded by "\" with "."
-            convertedRight = convertedRight.replaceAll("(?<!\\\\)_", ".");   
-            
-            // replace "\%" with "%"
-            convertedRight = convertedRight.replaceAll("\\\\%", "%");
-
-            // replace "\_" with "_"
-            convertedRight = convertedRight.replaceAll("\\\\_", "_");
+            String convertedRight = Helper.convertLikeToRegex((String)right);
 
             pattern = Pattern.compile(convertedRight);
             // Ensure cache does not grow beyond 100.
@@ -87,7 +63,7 @@ public class JDK15Platform implements JDKPlatform {
             return Boolean.FALSE;
         }
     }
-
+    
     /**
      * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
      */

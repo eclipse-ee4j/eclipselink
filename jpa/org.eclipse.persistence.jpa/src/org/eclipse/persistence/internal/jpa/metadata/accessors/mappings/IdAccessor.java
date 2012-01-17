@@ -108,7 +108,7 @@ public class IdAccessor extends BasicAccessor {
             owningDescriptor.addIdAttributeName(attributeName);
 
             // Add the primary key field to the descriptor.            
-            owningDescriptor.addPrimaryKeyField(getField(), this);
+            owningDescriptor.addPrimaryKeyField(getDatabaseField(), this);
         }
         
         // Flag this id accessor as a JPA id mapping.

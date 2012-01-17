@@ -59,6 +59,15 @@ public class RelationalDescriptor extends ClassDescriptor {
 
     /**
      * PUBLIC:
+     * Return if the descriptor maps to a relational table.
+     */
+    @Override
+    public boolean isRelationalDescriptor() {
+        return true;
+    }
+    
+    /**
+     * PUBLIC:
      * Specify the table name for the class of objects the receiver describes.
      * If the table has a qualifier it should be specified using the dot notation,
      * (i.e. "userid.employee"). This method is used if there is more than one table.

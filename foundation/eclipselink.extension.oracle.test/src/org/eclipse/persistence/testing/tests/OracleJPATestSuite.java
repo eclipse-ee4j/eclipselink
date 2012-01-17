@@ -19,6 +19,8 @@ import junit.framework.Test;
 import org.eclipse.persistence.testing.tests.jpa.customfeatures.CustomFeaturesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.dcn.DCNTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jgeometry.SpatialJPQLTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLMappedTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.timestamptz.TimeStampTZJUnitTestSuite;
@@ -35,6 +37,8 @@ public class OracleJPATestSuite extends TestSuite{
         fullSuite.addTest(CustomFeaturesJUnitTestSuite.suite());
         fullSuite.addTest(TimeStampTZJUnitTestSuite.suite());
         fullSuite.addTest(DCNTestSuite.suite());
+        fullSuite.addTest(NoSQLTestSuite.suite());
+        fullSuite.addTest(NoSQLMappedTestSuite.suite());
         return fullSuite;
     }
 }

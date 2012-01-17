@@ -215,7 +215,7 @@ public class DatabaseField implements Cloneable, Serializable {
                     fieldNameToCompare = field.getNameForComparisons();
                 }
                 
-                if (ourNameToCompare.equals(fieldNameToCompare)) {
+                if (this.name.equals(field.name) || ourNameToCompare.equals(fieldNameToCompare)) {
                     //getTableName will cause NPE if there isn't a table.  use hasTableName instead
                     if ((!hasTableName()) || (!field.hasTableName())) {
                         return true;

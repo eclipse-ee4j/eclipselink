@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.persistence.internal.nosql;version="2.4.0"
+Bundle-Name: EclipseLink NoSQL
+Created-By: 1.6.0_21 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core.
+ nosql
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Fragment-Host: org.eclipse.persistence.core;bundle-version="2.4.0"
+Bundle-Version: 2.4.0.qualifier
+Bundle-ManifestVersion: 2
+Import-Package: org.eclipse.persistence.descriptors,
+ org.eclipse.persistence.expressions,
+ org.eclipse.persistence.internal.databaseaccess,
+ org.eclipse.persistence.internal.descriptors,
+ org.eclipse.persistence.internal.expressions,
+ org.eclipse.persistence.internal.helper,
+ org.eclipse.persistence.internal.queries,
+ org.eclipse.persistence.internal.security,
+ org.eclipse.persistence.internal.sessions,
+ org.eclipse.persistence.jpa.jpql;version="[2.0,3.0)",
+ org.eclipse.persistence.jpa.jpql.parser;version="[2.0,3.0)",
+ org.eclipse.persistence.jpa.jpql.spi;version="[2.0,3.0)",
+ org.eclipse.persistence.jpa.jpql.spi.java;version="[2.0,3.0)",
+ org.eclipse.persistence.jpa.jpql.util;version="[2.0,3.0)",
+ org.eclipse.persistence.jpa.jpql.util.filter;version="[2.0,3.0)",
+ org.eclipse.persistence.jpa.jpql.util.iterator;version="[2.0,3.0)",
+ org.eclipse.persistence.mappings,
+ org.eclipse.persistence.mappings.foundation,
+ org.eclipse.persistence.mappings.querykeys,
+ org.eclipse.persistence.queries
+Bundle-SymbolicName: org.eclipse.persistence.core.nosql
+

@@ -42,6 +42,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -241,6 +243,15 @@ public class XMLDescriptor extends ClassDescriptor {
     }
 
     /**
+     * PUBLIC:
+     * Return if the descriptor maps to XML.
+     */
+    @Override
+    public boolean isXMLDescriptor() {
+        return true;
+    }
+    
+    /**
      * If true, the descriptor may be lazily initialized.  This is useful if the
      * descriptor may not get used.
      */
@@ -323,6 +334,7 @@ public class XMLDescriptor extends ClassDescriptor {
     /**
      * Return a new direct/basic mapping for this type of descriptor.
      */
+    @Override
     public AbstractDirectMapping newDirectMapping() {
         return new XMLDirectMapping();
     }
@@ -330,8 +342,25 @@ public class XMLDescriptor extends ClassDescriptor {
     /**
      * Return a new aggregate/embedded mapping for this type of descriptor.
      */
+    @Override
     public AggregateMapping newAggregateMapping() {
         return new XMLCompositeObjectMapping();
+    }
+    
+    /**
+     * Return a new aggregate collection/element collection mapping for this type of descriptor.
+     */
+    @Override
+    public DatabaseMapping newAggregateCollectionMapping() {
+        return new XMLCompositeCollectionMapping();
+    }
+    
+    /**
+     * Return a new direct collection/element collection mapping for this type of descriptor.
+     */
+    @Override
+    public DatabaseMapping newDirectCollectionMapping() {
+        return new XMLCompositeDirectCollectionMapping();
     }
 
     /**

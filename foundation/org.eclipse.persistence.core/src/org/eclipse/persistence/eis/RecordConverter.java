@@ -18,7 +18,7 @@ import javax.resource.cci.*;
  * <p>The <code>RecordConverter</code> interface allows conversion of an adapter 
  * specific record.  This can be used with the <code>EISPlatform</code> to allow 
  * user code to convert between the JCA-CCI Record used by the adapter and 
- * TopLink.  This can also be used to convert a proprietary adatper record 
+ * EclipeLink.  This can also be used to convert a proprietary adapter record 
  * format or contents into XML, Mapped or Indexed data.
  *
  * @author James

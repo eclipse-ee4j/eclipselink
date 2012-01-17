@@ -107,17 +107,17 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
     @Override
     protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord record, WriteType writeType) {
-        if (((EISDescriptor)getDescriptor()).getDataFormat() == EISDescriptor.XML) {
+        if (((EISDescriptor)getDescriptor()).isXMLFormat()) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder)getReferenceDescriptor(attributeValue, session).getObjectBuilder();
             return objectBuilder.buildRow(attributeValue, session, getField(), (XMLRecord)record);
         } else {
-        	AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session, writeType);
+            AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session, writeType);
             return this.getReferenceDescriptor(attributeValue, session).buildFieldValueFromNestedRow(nestedRow, session);
         }
     }
 
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
-        if (((EISDescriptor)getDescriptor()).getDataFormat() == EISDescriptor.XML) {
+        if (((EISDescriptor)getDescriptor()).isXMLFormat()) {
             return objectBuilder.buildObject(query, nestedRow, joinManager);
         } else {
             Object aggregateObject = objectBuilder.buildNewInstance();
@@ -141,7 +141,7 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
         Object attributeValue = this.getAttributeValueFromObject(object);
 
         // handle "." xpath - condition: xml data format AND xml field is "self"
-        if ((((EISDescriptor)getDescriptor()).getDataFormat() == EISDescriptor.XML) && ((XMLField)getField()).isSelfField()) {
+        if ((((EISDescriptor)getDescriptor()).isXMLFormat()) && ((XMLField)getField()).isSelfField()) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder)getReferenceDescriptor(attributeValue, session).getObjectBuilder();
             objectBuilder.buildIntoNestedRow(record, attributeValue, session);
         } else {
@@ -152,6 +152,21 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
             }
 
             record.put(this.getField(), fieldValue);
+        }
+    }
+    
+    /**
+     * Fix field names for XML data descriptors.
+     * Since fields are fixed to use text() by default in descriptor, ensure the correct non text field is used here.
+     */
+    @Override
+    public void preInitialize(AbstractSession session) {
+        super.preInitialize(session);
+        if (((EISDescriptor)this.descriptor).isXMLFormat()) {
+            if (!(this.field instanceof XMLField)) {
+                XMLField newField = new XMLField(this.field.getName());
+                this.field = newField;
+            }
         }
     }
 }

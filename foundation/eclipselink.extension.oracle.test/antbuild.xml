@@ -161,6 +161,10 @@
                                           else="${extensions.depend.dir}/${oracle.ucp.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
         </condition>
+        <condition property="oracle.nosql.lib" value="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"
+                                          else="${extensions.depend.dir}/${oracle.nosql.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
+        </condition>
 
         <!-- Create needed directories
         <mkdir dir="${oracle_test.classes.dir}"/>
@@ -195,7 +199,8 @@
         <available file="${oracle.aqapi.lib}"     property="oracle.aqapi.lib.exist"/>
         <available file="${oracle.sdoapi.lib}"    property="oracle.sdoapi.lib.exist"/>
         <available file="${oracle.xmlparser.lib}" property="oracle.xmlparser.lib.exist"/>
-        <available file="${oracle.ucp.lib}" property="oracle.ucp.lib.exist"/>
+        <available file="${oracle.ucp.lib}"	      property="oracle.ucp.lib.exist"/>
+        <available file="${oracle.nosql.lib}"	  property="oracle.nosql.lib.exist"/>
 
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
@@ -242,6 +247,7 @@
                 <isset property="oracle.sdoapi.lib.exist"/>
                 <isset property="oracle.xmlparser.lib.exist"/>
                 <isset property="oracle.ucp.lib.exist"/>
+                <isset property="oracle.nosql.lib.exist"/>
             </and>
         </condition>
         <condition property="run.ok">
@@ -288,6 +294,7 @@
             <pathelement path="${oracle.xmlparser.lib}"/>
             <pathelement path="${oracle.orai18n-mapping.lib}"/>
             <pathelement path="${oracle.ucp.lib}"/>
+            <pathelement path="${oracle.nosql.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.test.infrastructure.path">
@@ -307,7 +314,6 @@
             <pathelement path="${oracle_test.build.location}/${eclipselink.oracle.depend.test.jar}"/>
             <pathelement path="${oracle_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${oracle_test.resource.dir}"/>
             <pathelement path="${oracle_test.2.core.test.dir}/resource"/>
         </path>
         <!-- Classpath used for compiling tests. -->
@@ -333,11 +339,12 @@
         <echo message="    oracle dependency location: '${oracle.extensions.depend.dir}' :: found='${oracle.depend.dir.exist}'"/>
         <echo message="    dependency location:        '${extensions.depend.dir}' :: found='${ext.depend.dir.exist}'"/>
         <echo message="        '${oracle.xdb.lib}'         :: found='${oracle.xdb.lib.exist}'"/>
-        <echo message="        '${oracle.ojdbc.lib}'      :: found='${oracle.ojdbc.lib.exist}'"/>
+        <echo message="        '${oracle.ojdbc.lib}'       :: found='${oracle.ojdbc.lib.exist}'"/>
         <echo message="        '${oracle.aqapi.lib}'       :: found='${oracle.aqapi.lib.exist}'"/>
         <echo message="        '${oracle.sdoapi.lib}'      :: found='${oracle.sdoapi.lib.exist}'"/>
-        <echo message="        '${oracle.xmlparser.lib}' :: found='${oracle.xmlparser.lib.exist}'"/>
+        <echo message="        '${oracle.xmlparser.lib}'   :: found='${oracle.xmlparser.lib.exist}'"/>
         <echo message="        '${oracle.ucp.lib}' :: found='${oracle.ucp.lib.exist}'"/>
+        <echo message="        '${oracle.nosql.lib}' :: found='${oracle.nosql.lib.exist}'"/>
         <echo message="Please put your Oracle dependencies in one of the two 'dependency' locations (default or custom defined)."/>
         <fail message="Missing dependencies!" unless="compile.ok"/>
     </target>
@@ -352,6 +359,7 @@
         <echo message="    '${oracle.xmlparser.lib}'"/>
         <echo message="    '${oracle.orai18n-mapping.lib}'"/>
         <echo message="    '${oracle.ucp.lib}'"/>
+        <echo message="    '${oracle.nosql.lib}'"/>
         <mkdir dir="${oracle_test.classes.dir}"/>
         <javac srcdir="${oracle_test.src.dir}"
                destdir="${oracle_test.classes.dir}"
@@ -401,6 +409,12 @@
             <zipfileset dir="resource/dcn" includes="*.xml" prefix="META-INF"/>
             <fileset dir="${oracle_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/dcn/**"/>
+        </jar>
+        <!-- Package the NoSQL JPA model jar. -->
+        <jar jarfile="eclipselink-nosql-model.jar">
+            <zipfileset dir="resource/nosql" includes="*.xml" prefix="META-INF"/>
+            <fileset dir="${oracle_test.classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/nosql/**"/>
         </jar>
         <!-- Package the JPA oracle specific tests jar. -->
         <jar jarfile="eclipselink-jpa-oracle-tests.jar">

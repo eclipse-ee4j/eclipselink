@@ -35,7 +35,7 @@ public class UnitOfWorkTest extends TestCase {
         deleteCall.setFunctionName("delete-file");
         XMLFileInteractionSpec spec = new XMLFileInteractionSpec();
         spec.setInteractionType(XMLFileInteractionSpec.DELETE);
-        spec.setFileName("orders.xml");
+        spec.setFileName("order.xml");
         deleteCall.setInteractionSpec(spec);
         getSession().executeNonSelectingCall(deleteCall);
     }

@@ -72,6 +72,21 @@ public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
     /**
+     * Fix field names for XML data descriptors.
+     * Since fields are fixed to use text() by default in descriptor, ensure the correct non text field is used here.
+     */
+    @Override
+    public void preInitialize(AbstractSession session) {
+        super.preInitialize(session);
+        if (((EISDescriptor)this.descriptor).isXMLFormat()) {
+            if (!(this.field instanceof XMLField)) {
+                XMLField newField = new XMLField(this.field.getName());
+                this.field = newField;
+            }
+        }
+    }
+    
+    /**
      * INTERNAL:
      * The mapping is initialized with the given session. This mapping is fully initialized
      * after this.
@@ -121,7 +136,7 @@ public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     @Override
     protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentsCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
-        if (((EISDescriptor)descriptor).getDataFormat() == EISDescriptor.XML) {
+        if (((EISDescriptor)descriptor).isXMLFormat()) {
             return descriptor.getObjectBuilder().buildObject(query, nestedRow, joinManager);
         } else {
             Object element = descriptor.getObjectBuilder().buildNewInstance();
@@ -132,7 +147,7 @@ public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     @Override
     protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow, WriteType writeType) {
-        if (((EISDescriptor)getDescriptor()).getDataFormat() == EISDescriptor.XML) {
+        if (((EISDescriptor)getDescriptor()).isXMLFormat()) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder)getReferenceDescriptor(attributeValue, session).getObjectBuilder();
             return objectBuilder.buildRow(attributeValue, session, getField(), (XMLRecord)parentRow);
         } else {

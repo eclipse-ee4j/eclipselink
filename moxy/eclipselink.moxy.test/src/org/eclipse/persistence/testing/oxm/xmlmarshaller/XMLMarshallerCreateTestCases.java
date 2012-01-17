@@ -78,7 +78,7 @@ public class XMLMarshallerCreateTestCases extends OXTestCase {
             return;
         } catch (IntegrityException exception) {
             Vector exceptions = exception.getIntegrityChecker().getCaughtExceptions();
-            assertTrue("Too many exceptions were found...should have been 1: " + exceptions, exceptions.size() == 1);
+            assertTrue("Too many exceptions were found...should have been 1.", exceptions.size() == 1);
             Exception e = (Exception)exceptions.elementAt(0);
             assertTrue("A DescriptorException should have been caught but wasn't.", e.getClass() == DescriptorException.class);
             assertTrue("An invalid mapping type exception should have been caught but wasn't.", ((DescriptorException)e).getErrorCode() == DescriptorException.INVALID_MAPPING_TYPE);

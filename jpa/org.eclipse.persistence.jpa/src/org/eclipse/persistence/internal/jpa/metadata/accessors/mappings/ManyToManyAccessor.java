@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 
@@ -132,7 +133,8 @@ public class ManyToManyAccessor extends CollectionAccessor {
         super.process();
         
         // Create a M-M mapping and process common collection mapping metadata.
-        ManyToManyMapping mapping = new ManyToManyMapping();
+        // Allow for different descriptor types (EIS) to create different mapping types.
+        CollectionMapping mapping = getDescriptor().getClassDescriptor().newManyToManyMapping();
         process(mapping);
 
         if (hasMappedBy()) {
@@ -142,7 +144,7 @@ public class ManyToManyAccessor extends CollectionAccessor {
             DatabaseMapping owningMapping = getOwningMappingAccessor();
             if (owningMapping.isManyToManyMapping()){
                 ManyToManyMapping ownerMapping = (ManyToManyMapping) owningMapping;
-                processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), mapping.getRelationTableMechanism());
+                processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), ((ManyToManyMapping)mapping).getRelationTableMechanism());
                 
                 // Set the mapping read-only.
                 mapping.setIsReadOnly(true);
@@ -150,9 +152,9 @@ public class ManyToManyAccessor extends CollectionAccessor {
                 // Invalid owning mapping type, throw an exception.
                 throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
-        } else { 
+        } else if (mapping instanceof ManyToManyMapping) { 
             // Processing the owning side of a M-M, process the join table.
-            processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTableMetadata());
+            processJoinTable(mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), getJoinTableMetadata());
         }
     }
 }

@@ -84,7 +84,6 @@ public class ValidationModel extends TestModel {
         suite.setDescription("This suite tests that proper descriptor exceptions are thrown when appropriate.");
 
         suite.addTest(new GetTableNameTest());
-        suite.addTest(new CatchMultilpeSetTableNameTest());
         suite.addTest(new GetMethodReturnsValueHolderTest());
         suite.addTest(new SequenceFieldNameNotSetTest());
         suite.addTest(new ConnectionSizeChangedAfterLogin());

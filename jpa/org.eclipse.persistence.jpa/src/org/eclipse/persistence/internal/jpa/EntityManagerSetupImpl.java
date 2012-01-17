@@ -107,6 +107,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.eis.EISLogin;
+import org.eclipse.persistence.eis.EISPlatform;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
@@ -1594,36 +1596,81 @@ public class EntityManagerSetupImpl {
      * and possibly to set readConnectionPool.
      */
     protected void updateLogins(Map m){
-        DatasourceLogin login = session.getLogin();
-    
+        DatasourceLogin login = (DatasourceLogin)this.session.getDatasourceLogin();
+
+        String eclipselinkPlatform = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_DATABASE, m, this.session);
+        if (eclipselinkPlatform != null) {
+            login.setPlatformClassName(eclipselinkPlatform, this.persistenceUnitInfo.getClassLoader());
+        }        
+        // Check for EIS platform, need to use an EIS login.
+        if (login.getDatasourcePlatform() instanceof EISPlatform) {
+            EISLogin newLogin = new EISLogin();
+            newLogin.setDatasourcePlatform(login.getDatasourcePlatform());
+            this.session.setDatasourceLogin(newLogin);
+            if (this.session.isServerSession()) {
+               for (ConnectionPool pool : ((ServerSession)this.session).getConnectionPools().values()) {
+                   pool.setLogin(newLogin);
+               }
+            }
+            login = newLogin;
+        }
+        
+        // Check for EIS or custom (JDBC) Connector class.
+        String connectorName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.NOSQL_CONNECTION_SPEC, m, this.session);
+        String connectorProperty = PersistenceUnitProperties.NOSQL_CONNECTION_SPEC;
+        if (connectorName == null) {
+            connectorName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTOR, m, this.session);
+            connectorProperty = PersistenceUnitProperties.JDBC_CONNECTOR;
+        }
+        if (connectorName != null) {
+            Class cls = findClassForProperty(connectorName, connectorProperty, this.persistenceUnitInfo.getClassLoader());
+            Connector connector = null;
+            try {
+                Constructor constructor = cls.getConstructor();
+                connector = (Connector)constructor.newInstance();
+            } catch (Exception exception) {
+                throw EntityManagerSetupException.failedToInstantiateProperty(connectorName, connectorProperty, exception);
+            }
+            if (connector != null) {
+                login.setConnector(connector);
+            }
+        }
+        
+        // Process EIS or JDBC connection properties.
+        Map propertiesMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.NOSQL_PROPERTY, m, session);
+        if (propertiesMap.isEmpty()) {
+            propertiesMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.JDBC_PROPERTY, m, session);
+        }
+        for (Iterator iterator = propertiesMap.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            String property = (String)entry.getKey();
+            String value = (String)entry.getValue();
+            login.setProperty(property, value);
+        }        
+        
         // Note: This call does not checked the stored persistenceUnitInfo or extended properties because
         // the map passed into this method should represent the full set of properties we expect to process
 
-        String user = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_USER, m, session);
-        String password = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_PASSWORD, m, session);
+        String user = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_USER, m, this.session);
+        String password = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_PASSWORD, m, this.session);
         if(user != null) {
             login.setUserName(user);
         }
         if (password != null) {
-            login.setPassword(securableObjectHolder.getSecurableObject().decryptPassword(password));
-        }
-
-        String eclipselinkPlatform = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_DATABASE, m, session);
-        if (eclipselinkPlatform != null) {
-            login.setPlatformClassName(eclipselinkPlatform, persistenceUnitInfo.getClassLoader());
+            login.setPassword(this.securableObjectHolder.getSecurableObject().decryptPassword(password));
         }
         
-        PersistenceUnitTransactionType transactionType = persistenceUnitInfo.getTransactionType();
+        PersistenceUnitTransactionType transactionType = this.persistenceUnitInfo.getTransactionType();
         //bug 5867753: find and override the transaction type using properties
-        String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, m, session);
+        String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, m, this.session);
         if (transTypeString != null) {
             transactionType = PersistenceUnitTransactionType.valueOf(transTypeString);
         }
         //find the jta datasource
-        javax.sql.DataSource jtaDatasource = getDatasourceFromProperties(m, PersistenceUnitProperties.JTA_DATASOURCE, persistenceUnitInfo.getJtaDataSource());
+        javax.sql.DataSource jtaDatasource = getDatasourceFromProperties(m, PersistenceUnitProperties.JTA_DATASOURCE, this.persistenceUnitInfo.getJtaDataSource());
 
         //find the non jta datasource  
-        javax.sql.DataSource nonjtaDatasource = getDatasourceFromProperties(m, PersistenceUnitProperties.NON_JTA_DATASOURCE, persistenceUnitInfo.getNonJtaDataSource());
+        javax.sql.DataSource nonjtaDatasource = getDatasourceFromProperties(m, PersistenceUnitProperties.NON_JTA_DATASOURCE, this.persistenceUnitInfo.getNonJtaDataSource());
 
         if (isValidationOnly(m, false) && transactionType == PersistenceUnitTransactionType.JTA && jtaDatasource == null) {
             updateLoginDefaultConnector(login, m);
@@ -1642,7 +1689,7 @@ public class EntityManagerSetupImpl {
         } else {
             // JtaDataSource will be ignored because transactionType is RESOURCE_LOCAL
             if (jtaDatasource != null) {
-                session.log(SessionLog.WARNING, SessionLog.TRANSACTION, "resource_local_persistence_init_info_ignores_jta_data_source", persistenceUnitInfo.getPersistenceUnitName());
+                session.log(SessionLog.WARNING, SessionLog.TRANSACTION, "resource_local_persistence_init_info_ignores_jta_data_source", this.persistenceUnitInfo.getPersistenceUnitName());
             }
             if (nonjtaDatasource != null) {
                 mainDatasource = nonjtaDatasource;
@@ -1665,7 +1712,7 @@ public class EntityManagerSetupImpl {
             login.setUsesExternalConnectionPooling(true);
         }
 
-        if(this.session.isServerSession()) {
+        if (this.session.isServerSession()) {
             // set readLogin
             if (readDatasource != null) {
                 DatasourceLogin readLogin = login.clone();

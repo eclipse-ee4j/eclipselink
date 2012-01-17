@@ -2325,7 +2325,50 @@ public class PersistenceUnitProperties {
      * @see #COMPOSITE_UNIT
      */
     public static final String COMPOSITE_UNIT_PROPERTIES = "eclipselink.composite-unit.properties";
-        
+
+    /**
+     * Allows the connection information for an NoSQL or EIS datasource to be specified.
+     * An NoSQL datasource is a non-relationship datasource such as a legacy database, NoSQL database,
+     * XML database, transactional and messaging systems, or ERP systems.
+     * @see org.eclipse.persistence.eis.EISConnectionSpec
+     * @see org.eclipse.persistence.annotations.NoSQL
+     */
+    public static final String NOSQL_CONNECTION_SPEC = "eclipselink.nosql.connection-spec";
+    
+    /**
+     * Allows a custom connector to be used to define how to connect to the database.
+     * This is not required if a DataSource or JDBC DriverManager is used.
+     * It can be used to connect to a non standard connection pool,
+     * or provide additional customization in how a connection is obtained.
+     * @see org.eclipse.persistence.sessions.JNDIConnector
+     * @see org.eclipse.persistence.sessions.DefaultConnector
+     */
+    public static final String JDBC_CONNECTOR = "eclipselink.jdbc.connector";
+    
+    /**
+     * Allows setting of NoSQL connection properties.
+     * The NoSQL specific property name should be appended to this prefix.
+     * <p>
+     * i.e.<br>
+     * "eclipselink.nosql.property.nosql.host"="localhost:5000"
+     * 
+     * @see org.eclipse.persistence.eis.EISConnectionSpec
+     * @see org.eclipse.persistence.annotations.NoSQL
+     */
+    public static final String NOSQL_PROPERTY = "eclipselink.nosql.property.";
+    
+    /**
+     * Allows passing of JDBC driver specific connection properties.
+     * This allows for properties to be set on the JDBC connection.
+     * The JDBC driver specific property name should be appended to this prefix.
+     * <p>
+     * i.e.<br>
+     * "eclipselink.jdbc.property.defaultRowPrefetch"="25"
+     * 
+     * @see org.eclipse.persistence.sessions.DatasourceLogin#setProperty(String, Object)
+     */
+    public static final String JDBC_PROPERTY = "eclipselink.jdbc.property.";
+    
     /**
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.

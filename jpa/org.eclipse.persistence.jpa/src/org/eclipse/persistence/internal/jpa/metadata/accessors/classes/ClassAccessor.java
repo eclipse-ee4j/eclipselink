@@ -102,6 +102,7 @@ import org.eclipse.persistence.annotations.CopyPolicy;
 import org.eclipse.persistence.annotations.ExcludeDefaultMappings;
 import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
 import org.eclipse.persistence.annotations.CloneCopyPolicy;
+import org.eclipse.persistence.annotations.NoSql;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.Struct;
@@ -151,6 +152,7 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicy
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.nosql.NoSqlMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
@@ -225,6 +227,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private List<PLSQLTableMetadata> m_plsqlTables = new ArrayList<PLSQLTableMetadata>();
     
     private StructMetadata m_struct;
+    private NoSqlMetadata m_noSql;
         
     /**
      * INTERNAL:
@@ -1126,8 +1129,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing. 
      */
     public void preProcess() {
-        // First check for a @Struct annotation to create the correct type of descriptor.
+        // First check for a @Struct and @EIS annotation to create the correct type of descriptor.
         processStruct();
+        processNoSql();
         
         // Process the global converters.
         processConverters();
@@ -1580,6 +1584,21 @@ public abstract class ClassAccessor extends MetadataAccessor {
         MetadataAnnotation struct = getAnnotation(Struct.class);
         if (struct != null) {
             new StructMetadata(struct, this).process(getDescriptor());
+        }
+    }
+    
+    /**
+     * Check for and process a Struct annotation and configure the correct descriptor type. 
+     */
+    protected void processNoSql() {
+        // Check for XML defined struct.
+        if (m_noSql != null) {
+            m_noSql.process(getDescriptor());
+        }        
+        // Check for a annotation
+        MetadataAnnotation eis = getAnnotation(NoSql.class);
+        if (eis != null) {
+            new NoSqlMetadata(eis, this).process(getDescriptor());
         }
     }
 

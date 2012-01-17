@@ -41,16 +41,20 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
+import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 
 /**
  * An embedded relationship accessor. It may define all the same attributes
@@ -190,21 +194,27 @@ public class EmbeddedAccessor extends MappingAccessor {
      */    
     public void process() {
         // Build and aggregate object mapping and add it to the descriptor.
-        AggregateObjectMapping mapping = new AggregateObjectMapping();
+        AggregateMapping mapping = getOwningDescriptor().getClassDescriptor().newAggregateMapping();
         setMapping(mapping);
         
-        mapping.setIsNullAllowed(true);
         mapping.setReferenceClassName(getReferenceClassName());
         mapping.setAttributeName(getAttributeName());    
         
         // Will check for PROPERTY access
         setAccessorMethods(mapping);
-        
-        // Process attribute overrides.
-        processAttributeOverrides(m_attributeOverrides, mapping, getReferenceDescriptor());
-       
-        // Process association overrides.
-        processAssociationOverrides(m_associationOverrides, mapping, getReferenceDescriptor());
+
+        // EIS and ORDT mappings may not be aggregate object mappings.
+        if (mapping.isAggregateObjectMapping()) {
+            AggregateObjectMapping aggregateMapping = (AggregateObjectMapping)mapping;
+            aggregateMapping.setIsNullAllowed(true);
+            // Process attribute overrides.
+            processAttributeOverrides(m_attributeOverrides, aggregateMapping, getReferenceDescriptor());
+           
+            // Process association overrides.
+            processAssociationOverrides(m_associationOverrides, aggregateMapping, getReferenceDescriptor());
+        } else if (mapping.isAbstractCompositeObjectMapping()) {
+            ((AbstractCompositeObjectMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
+        }
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();

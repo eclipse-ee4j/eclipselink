@@ -50,8 +50,8 @@
 *  When called by autobuild it generates Nightly and Milestone builds
 *================================================================================= -->
 <!-- This ant project includes the following tasks:
-        - build (default) : compiles all components and tests (excluding Oracle extensions)
-        - build.all : compiles all components and tests, including Oracle extensions
+        - build (default) : compiles all components and tests (excluding Oracle, nosql extensions)
+        - build.all : compiles all components and tests, including Oracle, nosql extensions
         - build-eclipselink-jar : compiles all components except tests, packages eclipselink.jar
         - clean : removes all build generated files
         - clean-runtime : removes all runtime specific (product) build generated files (calls both clean-runtime-checkedin and clean-runtime-built)
@@ -59,9 +59,10 @@
         - clean-runtime-built : removes all runtime specific (product) files generated during the build, but that are NOT checked in
         - clean-testing : removes all testing specific build generated files
         - build-distribution : compiles and packages all jars, javadocs, installer
-        - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
+        - build-core : compiles all components, excluding tests, utilities, and Oracle, nosql extensions
         - build-oracle : compiles Oracle extensions and tests
-        - build-test : compiles all tests, excluding Oracle extensions
+        - build-nosql : compiles nosql extensions and tests
+        - build-test : compiles all tests, excluding Oracle, nosql extensions
         - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
         - jar : packages eclipselink.jar
@@ -103,6 +104,8 @@
     <!-- temporary until all build files reworked -->
     <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
     <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
+    <property name="nosql.extensions.depend.dir" value="${trunk.build.location}/../extension.lib.external"/>
+    <echo message="nosql.extensions.depend.dir = '${nosql.extensions.depend.dir}'"/>
     <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
     <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
     <condition property="extensions.depend.dir" value="${trunk.build.location}/../extension.lib.external"
@@ -197,8 +200,11 @@
     <!-- Compiles all components and tests (excluding extensions). -->
     <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
 
-    <!-- Compiles core components, tests and extensions (excluding utilities). -->
+    <!-- Compiles Oracle component, tests and extensions (excluding utilities). -->
     <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test"/>
+
+    <!-- Compiles nosql component, tests and extensions (excluding utilities). -->
+    <target name="build-nosql" depends="build-oracle-extension, build-nosql-extension-test"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all"/>
@@ -228,6 +234,7 @@
 
     <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core-mavenbuilt, clean-core-antbuilt">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"	  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
@@ -281,7 +288,7 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
-    <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
+    <!-- Compiles all runtime components (excluding Tests, Oracle, nosql extensions). -->
     <target name="build-core-maven" if="use.maven">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
@@ -329,6 +336,7 @@
         <!-- temporarily force dbws.builder build from ant -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}" target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
@@ -353,6 +361,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="jar"/>
         
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}" target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="jar"/>
     </target>
 
@@ -379,12 +388,25 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="build"/>
     </target>
 
+    <!-- Compiles nosql extensions and tests. -->
+    <target name="build-nosql-extension">
+        <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"    target="build"/>
+    </target>
+
     <target name="build-oracle-extension-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
     </target>
 
-    <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
+    <target name="build-nosql-extension-test">
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"    target="build"/>
+    </target>
+
+    <!-- Compiles tests (excluding workbench, dbws-util and Oracle, nosql extensions). -->
     <target name="build-core-test" depends="build-all-core-except-dbws-test, build-dbws-test"/>
 
     <target name="build-all-core-except-dbws-test">
@@ -400,7 +422,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="build"/>
     </target>
 
-    <!-- Compiles all tests (excluding Oracle extensions) -->
+    <!-- Compiles all tests (excluding Oracle, nosql extensions) -->
     <target name="build-util-test"  depends="build-workbench-test, build-dbws-utils-test"/>
 
     <target name="build-workbench-test">
@@ -691,6 +713,7 @@
                 <include name="*build.properties"/>
                 <include name="${eclipselink.core.test}/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.oracle.test/**"/>
+                <include name="${eclipselink.core.base}/eclipselink.extension.nosql.test/**"/>
                 <include name="${eclipselink.jpa.test}/**"/>
                 <include name="${eclipselink.moxy.test}/**"/>
                 <include name="${eclipselink.sdo.test}/**"/>
@@ -899,6 +922,10 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}"      target="test-oracle"/>
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.test.oracle}"           target="test-oracle"/ -->
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}"   target="test-oracle"/ -->
+    </target>
+    <!-- Run nosql Tests -->
+    <target name="test-nosql" description="run all nosql specific tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"      target="test-nosql"/>
     </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">

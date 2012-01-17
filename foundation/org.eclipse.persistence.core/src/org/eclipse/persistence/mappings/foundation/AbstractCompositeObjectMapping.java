@@ -212,13 +212,13 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * the specified row.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
-        if (this.descriptor.getCachePolicy().isProtectedIsolation()){
-            if (this.isCacheable && isTargetProtected && cacheKey != null){
+        if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
+            if (this.isCacheable && isTargetProtected && cacheKey != null) {
                 //cachekey will be null when isolating to uow
                 //used cached collection
                 Object result = null;
                 Object cached = cacheKey.getObject();
-                if (cached != null){
+                if (cached != null) {
                     if (wasCacheUsed != null){
                         wasCacheUsed[0] = Boolean.TRUE;
                     }
@@ -227,11 +227,11 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
                 }
                 return result;
                 
-            }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
+            } else if (!this.isCacheable && !isTargetProtected && (cacheKey != null)) {
                 return null;
             }
         }
-        Object fieldValue = row.get(this.getField());
+        Object fieldValue = row.get(this.field);
 
         // BUG#2667762 there could be whitespace in the row instead of null
         if ((fieldValue == null) || (fieldValue instanceof String)) {
@@ -239,19 +239,19 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
         }
 
         // pretty sure we can ignore inheritance here:
-        AbstractRecord nestedRow = this.getReferenceDescriptor().buildNestedRowFromFieldValue(fieldValue);
+        AbstractRecord nestedRow = this.referenceDescriptor.buildNestedRowFromFieldValue(fieldValue);
 
-        ClassDescriptor descriptor = this.getReferenceDescriptor();
+        ClassDescriptor descriptor = this.referenceDescriptor;
         if (descriptor.hasInheritance()) {
             Class nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
-            descriptor = this.getReferenceDescriptor(nestedElementClass, executionSession);
+            descriptor = getReferenceDescriptor(nestedElementClass, executionSession);
         }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         Object toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, executionSession);
-        if(getConverter() != null) {
-            toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
+        if (this.converter != null) {
+            toReturn = this.converter.convertDataValueToObjectValue(toReturn, executionSession);
         }
-        return buildCompositeObject(objectBuilder, nestedRow, sourceQuery, cacheKey, joinManager, executionSession);
+        return toReturn;
     }
 
     /**

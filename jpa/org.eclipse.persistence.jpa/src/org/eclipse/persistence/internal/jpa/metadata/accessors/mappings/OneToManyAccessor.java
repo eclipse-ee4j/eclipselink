@@ -52,6 +52,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -134,7 +135,7 @@ public class OneToManyAccessor extends CollectionAccessor {
         if (hasMappedBy()) {
             // Process a 1-M using the mapped by mapping values.
             processOneToManyMapping();
-        } else if (getJoinColumns().isEmpty()) {
+        } else if (getJoinColumns().isEmpty() || getDescriptor().getClassDescriptor().isEISDescriptor()) {
             // No join columns and no mapped by value, default to
             // unidirectional 1-M using a M-M mapping and a join table.
             processManyToManyMapping();
@@ -179,14 +180,17 @@ public class OneToManyAccessor extends CollectionAccessor {
     protected void processManyToManyMapping() {
         // Create a M-M mapping and process common collection mapping metadata
         // first followed by specific metadata.
-        ManyToManyMapping mapping = new ManyToManyMapping();
+        // Allow for different descriptor types (EIS) to create different mapping types.
+        CollectionMapping mapping = getDescriptor().getClassDescriptor().newManyToManyMapping();
         process(mapping);
         
-        // 266912: If this 1:n accessor is different than the n:n mapping - track this
-        mapping.setDefinedAsOneToManyMapping(true);
-                
-        // Process the JoinTable metadata.
-        processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTableMetadata());
+        if (mapping instanceof ManyToManyMapping) {
+            // 266912: If this 1:n accessor is different than the n:n mapping - track this
+            ((ManyToManyMapping)mapping).setDefinedAsOneToManyMapping(true);
+                    
+            // Process the JoinTable metadata.
+            processJoinTable(mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), getJoinTableMetadata());
+        }
     }
     
     /**

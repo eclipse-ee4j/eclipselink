@@ -33,6 +33,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
 
@@ -108,7 +110,7 @@ public class OneToOneAccessor extends ObjectAccessor {
         super.process();
         
         // Initialize our mapping now with what we found.
-        OneToOneMapping mapping = initOneToOneMapping();
+        ObjectReferenceMapping mapping = initOneToOneMapping();
         
         if (hasMappedBy()) {
             // Non-owning side, process the foreign keys from the owner.
@@ -120,8 +122,8 @@ public class OneToOneAccessor extends ObjectAccessor {
                 // as we would for a many-to-many mapping.
                 if (ownerMapping.hasRelationTableMechanism()) {
                     // Put a relation table mechanism on our mapping.
-                    mapping.setRelationTableMechanism(new RelationTableMechanism());
-                    processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), mapping.getRelationTableMechanism());
+                    ((OneToOneMapping)mapping).setRelationTableMechanism(new RelationTableMechanism());
+                    processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), ((OneToOneMapping)mapping).getRelationTableMechanism());
                 } else {
                     Map<DatabaseField, DatabaseField> targetToSourceKeyFields;
                     Map<DatabaseField, DatabaseField> sourceToTargetKeyFields;
@@ -144,16 +146,19 @@ public class OneToOneAccessor extends ObjectAccessor {
                         sourceToTargetKeyFields = ownerMapping.getSourceToTargetKeyFields();
                     }
                     
-                    mapping.setSourceToTargetKeyFields(targetToSourceKeyFields);
-                    mapping.setTargetToSourceKeyFields(sourceToTargetKeyFields);
+                    ((OneToOneMapping)mapping).setSourceToTargetKeyFields(targetToSourceKeyFields);
+                    ((OneToOneMapping)mapping).setTargetToSourceKeyFields(sourceToTargetKeyFields);
                 }
             } else {
                 // If improper mapping encountered, throw an exception.
                 throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
-        } else {
+        } else if (mapping instanceof OneToOneMapping) {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
-            processOwningMappingKeys(mapping);
+            processOwningMappingKeys(((OneToOneMapping)mapping));
+        } else if (mapping instanceof EISOneToOneMapping) {
+            processEISOneToOneForeignKeyRelationship(((EISOneToOneMapping)mapping));
         }
-    }
+    }   
+    
 }

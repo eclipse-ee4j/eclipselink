@@ -104,7 +104,7 @@ public class BasicAccessor extends DirectAccessor {
     private Boolean m_mutable;
     private Boolean m_returnUpdate;
     private ColumnMetadata m_column;
-    private DatabaseField m_field; 
+    private DatabaseField m_databaseField;
     private GeneratedValueMetadata m_generatedValue;
     private ReturnInsertMetadata m_returnInsert;
     private SequenceGeneratorMetadata m_sequenceGenerator;
@@ -234,7 +234,7 @@ public class BasicAccessor extends DirectAccessor {
      * annotation.
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-        return m_column == null ? super.getColumn(loggingCtx) : m_column;
+        return m_field == null ? (m_column == null ? super.getColumn(loggingCtx) : m_column) : m_field;
     }
     
     /**
@@ -247,8 +247,8 @@ public class BasicAccessor extends DirectAccessor {
     /**
      * INTERNAL:
      */
-    protected DatabaseField getField() {
-        return m_field;
+    protected DatabaseField getDatabaseField() {
+        return m_databaseField;
     }
     
     /**
@@ -308,6 +308,11 @@ public class BasicAccessor extends DirectAccessor {
 
         // Default a column if necessary.
         if (m_column == null) {
+            if (m_field != null) {
+                // @Field provides a simpler synonym for @Column for EIS and NoSQL data,
+                // if one was set, then use it.
+                m_column = m_field;
+            }
             m_column = new ColumnMetadata(this);
         } else {
             // Initialize single objects.
@@ -368,7 +373,7 @@ public class BasicAccessor extends DirectAccessor {
         // Process the @Column or column element if there is one.
         // A number of methods depend on this field so it must be
         // initialized before any further processing can take place.
-        m_field = getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN);
+        m_databaseField = getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN);
         
         // To resolve any generic types (or respect an attribute type 
         // specification) we need to set the attribute classification on the 
@@ -377,8 +382,8 @@ public class BasicAccessor extends DirectAccessor {
             mapping.setAttributeClassificationName(getReferenceClassName());
         }
         
-        mapping.setField(m_field);
-        mapping.setIsReadOnly(m_field.isReadOnly());
+        mapping.setField(m_databaseField);
+        mapping.setIsReadOnly(m_databaseField.isReadOnly());
         mapping.setAttributeName(getAttributeName());
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
@@ -448,10 +453,10 @@ public class BasicAccessor extends DirectAccessor {
                 DatabaseField existingSequenceNumberField = owningDescriptor.getSequenceNumberField();
 
                 if (existingSequenceNumberField == null) {
-                    owningDescriptor.setSequenceNumberField(m_field);
+                    owningDescriptor.setSequenceNumberField(m_databaseField);
                     getProject().addGeneratedValue(m_generatedValue, owningDescriptor.getJavaClass());
                 } else {
-                    throw ValidationException.onlyOneGeneratedValueIsAllowed(owningDescriptor.getJavaClass(), existingSequenceNumberField.getQualifiedName(), m_field.getQualifiedName());
+                    throw ValidationException.onlyOneGeneratedValueIsAllowed(owningDescriptor.getJavaClass(), existingSequenceNumberField.getQualifiedName(), m_databaseField.getQualifiedName());
                 }
             }
         }
@@ -463,7 +468,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected void processIndex() {
         if (m_index != null) {
-            m_index.process(getDescriptor(), m_field.getName());
+            m_index.process(getDescriptor(), m_databaseField.getName());
         }
     }
     
@@ -473,7 +478,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected void processCacheIndex() {
         if (m_cacheIndex != null) {
-            m_cacheIndex.process(getDescriptor(), m_field.getName());
+            m_cacheIndex.process(getDescriptor(), m_databaseField.getName());
         }
     }
     
@@ -501,7 +506,7 @@ public class BasicAccessor extends DirectAccessor {
     @Override
     protected void processReturnInsert() {
         if (m_returnInsert != null) {
-            m_returnInsert.process(getDescriptor(), m_field);
+            m_returnInsert.process(getDescriptor(), m_databaseField);
         }
     }
 
@@ -512,7 +517,7 @@ public class BasicAccessor extends DirectAccessor {
     @Override
     protected void processReturnUpdate() {
         if (isReturnUpdate()) {
-            getDescriptor().addFieldForUpdate(m_field);
+            getDescriptor().addFieldForUpdate(m_databaseField);
         }
     }
     

@@ -86,6 +86,7 @@ import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
@@ -171,6 +172,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private DatabaseMapping m_overrideMapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
     private String m_attributeType;
+    protected ColumnMetadata m_field;
     
     /**
      * INTERNAL:
@@ -185,6 +187,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // Once the class accessor is initialized, we can look for an explicit 
         // access type specification.
         initAccess();
+
+        // Any mapping type may have a field for EIS/NoSQL data.
+        MetadataAnnotation field = getAnnotation(Field.class);
+        if (field != null) {
+            m_field = new ColumnMetadata(field, this);
+        }
     }
     
     /**
@@ -216,6 +224,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // For extra safety compare that the owning class accessors of these
             // mapping accessors are the same.
             if (! valuesMatch(getClassAccessor(), mappingAccessor.getClassAccessor())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_field, mappingAccessor.getField())) {
                 return false;
             }
             
@@ -434,7 +446,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see CollectionAccessor
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-        return new ColumnMetadata(this);
+        return m_field == null ? new ColumnMetadata(this) : m_field;
     }
     
     /**
@@ -511,6 +523,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public EnumeratedMetadata getEnumerated(boolean isForMapKey) {
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ColumnMetadata getField() {
+        return m_field;
     }
     
     /**
@@ -1822,6 +1842,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public void setClassAccessor(ClassAccessor classAccessor) {
         m_classAccessor = classAccessor;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setField(ColumnMetadata column) {
+        m_field = column;
     }
     
     /** 

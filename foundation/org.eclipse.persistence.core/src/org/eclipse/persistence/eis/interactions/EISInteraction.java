@@ -309,7 +309,10 @@ public abstract class EISInteraction extends DatasourceCall {
      * or the arguments from the row can be translated into the interaction parameters.
      */
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
-        setInputRow(modifyRow);
+        if (modifyRow != null) {
+            // Avoid clearing a prepared row.
+            setInputRow(modifyRow);
+        }
         if (hasArguments()) {
             List parametersValues = new ArrayList(getArguments().size());
             for (int index = 0; index < getArguments().size(); index++) {

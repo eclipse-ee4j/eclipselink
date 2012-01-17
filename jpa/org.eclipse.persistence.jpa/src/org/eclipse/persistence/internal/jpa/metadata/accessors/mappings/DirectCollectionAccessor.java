@@ -51,9 +51,12 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetad
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 
 /**
  * An abstract direct collection accessor.
@@ -341,39 +344,48 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     /**
      * INTERNAL:
      */
-    protected void process(CollectionMapping mapping) {
+    protected void process(DatabaseMapping mapping) {
         // Add the mapping to the descriptor.
         setMapping(mapping);
         
-        // Set the reference class name.
-        mapping.setReferenceClassName(getReferenceClassName());
-
         // Set the attribute name.
         mapping.setAttributeName(getAttributeName());
         
         // Will check for PROPERTY access
         setAccessorMethods(mapping);
         
-        // Process join fetch type.
-        processJoinFetch(getJoinFetch(), mapping);
-        
-        // Process the batch fetch if specified.
-        processBatchFetch(getBatchFetch(), mapping);
-        
-        // Process the collection table.
-        processCollectionTable(mapping);
-        
-        // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
-        processReturnInsertAndUpdate();
+        if (mapping instanceof CollectionMapping) {
+            CollectionMapping collectionMapping = (CollectionMapping)mapping;
 
-        // The spec. requires pessimistic lock to be extend-able to CollectionTable
-        mapping.setShouldExtendPessimisticLockScope(true);
-        
-        // Set the cascade on delete if specified.
-        mapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
+            // Set the reference class name.
+            collectionMapping.setReferenceClassName(getReferenceClassName());
+            
+            // Process join fetch type.
+            processJoinFetch(getJoinFetch(), collectionMapping);
+            
+            // Process the batch fetch if specified.
+            processBatchFetch(getBatchFetch(), collectionMapping);
+            
+            // Process the collection table.
+            processCollectionTable(collectionMapping);
+    
+            // The spec. requires pessimistic lock to be extend-able to CollectionTable
+            collectionMapping.setShouldExtendPessimisticLockScope(true);
+            
+            // Set the cascade on delete if specified.
+            collectionMapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
+        } else if (mapping instanceof AggregateMapping) {
+            AggregateMapping aggregateMapping = (AggregateMapping)mapping;
+
+            // Set the reference class name.
+            aggregateMapping.setReferenceClassName(getReferenceClassName());
+        }
         
         // Set the non cacheable if specified.
         mapping.setIsCacheable(!isNonCacheable());
+        
+        // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
+        processReturnInsertAndUpdate();
 
         // Process any partitioning policies.
         processPartitioning();
@@ -406,25 +418,30 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     protected void processDirectCollectionMapping() {
         // Initialize our mapping.
-        DirectCollectionMapping mapping = new DirectCollectionMapping();
+        DatabaseMapping mapping = getOwningDescriptor().getClassDescriptor().newDirectCollectionMapping();
         
         // Process common direct collection metadata. This must be done 
         // before any field processing since field processing requires that 
         // the collection table be processed before hand.
         process(mapping);
-        
-        // Process the container and indirection policies.
-        processContainerPolicyAndIndirection(mapping);
-        
-        // Process the value column (we must process this field before the 
-        // call to processConverter, since it may set a field classification)
-        mapping.setDirectField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.VALUE_COLUMN));
 
-        // To resolve any generic types (or respect an attribute type 
-        // specification) we need to set the attribute classification on the 
-        // mapping to ensure we do the right conversions.
-        if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
-            mapping.setDirectFieldClassificationName(getReferenceClassName());
+        if (mapping instanceof DirectCollectionMapping) {
+            DirectCollectionMapping directCollectionMapping = (DirectCollectionMapping)mapping;
+            // Process the container and indirection policies.
+            processContainerPolicyAndIndirection(directCollectionMapping);
+            
+            // Process the value column (we must process this field before the 
+            // call to processConverter, since it may set a field classification)
+            directCollectionMapping.setDirectField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.VALUE_COLUMN));
+    
+            // To resolve any generic types (or respect an attribute type 
+            // specification) we need to set the attribute classification on the 
+            // mapping to ensure we do the right conversions.
+            if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
+                directCollectionMapping.setDirectFieldClassificationName(getReferenceClassName());
+            }
+        } else if (mapping.isAbstractCompositeDirectCollectionMapping()) {
+            ((AbstractCompositeDirectCollectionMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
         }
         
         // Process a converter for this mapping. We will look for a convert

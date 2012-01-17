@@ -107,11 +107,11 @@ public class VersionAccessor extends BasicAccessor {
             getLogger().logConfigMessage(MetadataLogger.IGNORE_VERSION_LOCKING, this);
         } else {
             MetadataClass lockType = getRawClass();
-            getField().setType(getJavaClass(lockType));
+            getDatabaseField().setType(getJavaClass(lockType));
 
             if (isValidVersionLockingType(lockType) || isValidTimestampVersionLockingType(lockType)) {
                 for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
-                    VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getField()) : new TimestampLockingPolicy(getField());  
+                    VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getDatabaseField()) : new TimestampLockingPolicy(getDatabaseField());  
                     policy.storeInObject();
                     policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
                     owningDescriptor.setOptimisticLockingPolicy(policy);

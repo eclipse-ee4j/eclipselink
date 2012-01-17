@@ -99,11 +99,16 @@ public class EISMappedRecord extends AbstractRecord {
             value = nestedRows;
         } else if (value instanceof List) {
             List values = (List)value;
-            Vector nestedRows = new Vector(values.size());
+            Vector nestedValues = new Vector(values.size());
             for (int index = 0; index < values.size(); index++) {
-                nestedRows.add(new EISMappedRecord((Map)values.get(index), getAccessor()));
+                Object nestedValue = values.get(index);
+                if (nestedValue instanceof Map) {
+                    nestedValues.add(new EISMappedRecord((Map)values.get(index), getAccessor()));
+                } else {
+                    nestedValues.add(nestedValue);
+                }
             }
-            value = nestedRows;
+            value = nestedValues;
         }
         return value;
     }

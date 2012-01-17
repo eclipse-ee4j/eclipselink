@@ -51,6 +51,10 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
         
         if (relationalColumn != null) {
             m_referencedColumnName = ((String) relationalColumn.getAttribute("referencedColumnName"));
+            // Also allow EIS/NoSQL synonym referencedFieldName
+            if (m_referencedColumnName == null) {
+                m_referencedColumnName = ((String) relationalColumn.getAttribute("referencedFieldName"));                
+            }
         }
     }
 

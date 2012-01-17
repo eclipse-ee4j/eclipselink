@@ -44,9 +44,11 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         this.orderedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
     }
     
-    /** INTERNAL:
+    /**
+     * INTERNAL:
      * Auto-Default orderedFields to fields
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (orderedFields==null || orderedFields.size()==0){
@@ -71,6 +73,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * Return them in a vector.
      * The field value better be an Array.
      */
+    @Override
     public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
         
         if(fieldValue == null) {
@@ -86,6 +89,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * set of direct values.
      * The database better be expecting an ARRAY.
      */
+    @Override
     public Object buildFieldValueFromDirectValues(Vector directValues, String elementDataTypeName, AbstractSession session) throws DatabaseException {
         Object[] fields = Helper.arrayFromVector(directValues);
         try {
@@ -104,6 +108,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * Build and return the field value from the specified nested database row.
      * The database better be expecting a Struct.
      */
+    @Override
     public Object buildFieldValueFromNestedRow(AbstractRecord nestedRow, AbstractSession session) throws DatabaseException {
         java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
         return this.buildStructureFromRow(nestedRow, session, connection);
@@ -116,6 +121,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * The database better be expecting an ARRAY.
      * It looks like we can ignore inheritance here....
      */
+    @Override
     public Object buildFieldValueFromNestedRows(Vector nestedRows, String structureName, AbstractSession session) throws DatabaseException {
         Object[] fields = new Object[nestedRows.size()];
         java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
@@ -143,6 +149,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             }
         }
     }
+    
      /**
       * INTERNAL:
       * Build and return the nested rows from the specified field value.
@@ -216,6 +223,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * Build and return the nested database row from the specified field value.
      * The field value better be an Struct.
      */
+     @Override
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) throws DatabaseException {
         
         AbstractRecord row = new DatabaseRecord();
@@ -234,6 +242,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * Build and return the nested rows from the specified field value.
      * The field value better be an ARRAY.
      */
+    @Override
     public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
         
         if(fieldValue==null){
@@ -315,8 +324,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     /**
      * INTERNAL:
      * Build array of objects for Array data type.
-     */
-    
+     */    
     public static Object buildArrayObjectFromArray(Object array) throws DatabaseException {
         Object[] objects = null;
         if(array==null){
@@ -346,7 +354,6 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * INTERNAL:
      * Build array of objects for Struct data type.
      */
-    
     public static Object buildArrayObjectFromStruct(Object structure) throws DatabaseException{
         Object[] attributes = null;
         if(structure==null){
@@ -376,6 +383,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * INTERNAL:
      * Aggregates use a dummy table as default.
      */
+    @Override
     protected DatabaseTable extractDefaultTable() {
         if (isAggregateDescriptor()) {
             return new DatabaseTable();
@@ -408,7 +416,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
         ValueReadQuery valueQuery = new ValueReadQuery();
         valueQuery.setSQLStatement(statement);
-        valueQuery.prepareCall(session, new DatabaseRecord());
+        valueQuery.checkPrepare(session, new DatabaseRecord(), true);
         // Must return unwrapped Ref on WLS.
         valueQuery.getCall().setIsNativeConnectionRequired(true);
 
@@ -430,6 +438,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      *  PUBLIC:
      *  Return if this is an ObjectRelationalDataTypeDescriptor.
      */
+    @Override
     public boolean isObjectRelationalDataTypeDescriptor(){
         return true;
     }
@@ -438,10 +447,12 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * INTERNAL:
      * Aggregates obj-rel are initialized normally as no cloning is required.
      */
+    @Override
     public boolean requiresInitialization() {
         return true;
     }
 
+    @Override
     protected void validateMappingType(DatabaseMapping mapping) {
         //do nothing
     }

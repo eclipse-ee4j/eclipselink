@@ -105,80 +105,65 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             }
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
-                DatabaseCall call = (DatabaseCall)this.calls.get(index);
+                DatasourceCall call = (DatasourceCall)this.calls.get(index);
                 if (query.shouldCloneCall()) {
                     // Need to clone the call if setting query specific properties on it as the call may be shared.
                     call = (DatabaseCall)call.clone();
                     call.setQuery(query);
                     this.calls.set(index, call);
                 }
-                if (!query.shouldIgnoreBindAllParameters()) {
-                    call.setUsesBinding(query.shouldBindAllParameters());
-                }
-                if (!query.shouldIgnoreCacheStatement()) {
-                    call.setShouldCacheStatement(query.shouldCacheStatement());
-                }
-                call.setQueryTimeout(query.getQueryTimeout());
-                if (query.isNativeConnectionRequired()) {
-                    call.setIsNativeConnectionRequired(true);
-                }
-                if (query.isReadQuery()) {
-                    ReadQuery readQuery = (ReadQuery)query;
-                    // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
-                    // We should check FirstRow and MaxResults separately.
-                    if (!call.shouldIgnoreFirstRowSetting()){
-                        if (readQuery.getFirstResult() != 0) {
-                            call.setFirstResult(readQuery.getFirstResult());
-                            call.setIsResultSetScrollable(true);
-                            call.setResultSetType(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
-                            call.setResultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY);
-                        }
-                    }
-                    if (!call.shouldIgnoreMaxResultsSetting()){
-                        call.setMaxRows(readQuery.getMaxRows());
-                    }
-                    call.setResultSetFetchSize(readQuery.getFetchSize());
+                if (call instanceof DatabaseCall) {
+                    configureDatabaseCall((DatabaseCall)call);
                 }
                 call.prepare(executionSession);
             }
         } else if (this.call != null) {
             if (query.shouldCloneCall()) {
                 // Need to clone the call if setting query specific properties on it as the call may be shared.
-                this.call = (DatabaseCall)this.call.clone();
-                call.setQuery(query);
+                this.call = (DatasourceCall)this.call.clone();
+                this.call.setQuery(query);
             }
-            DatabaseCall call = (DatabaseCall)this.call;
-            if (!query.shouldIgnoreBindAllParameters()) {
-                call.setUsesBinding(query.shouldBindAllParameters());
+            DatasourceCall call = this.call;
+            if (call instanceof DatabaseCall) {
+                configureDatabaseCall((DatabaseCall)call);
             }
-            if (!query.shouldIgnoreCacheStatement()) {
-                call.setShouldCacheStatement(query.shouldCacheStatement());
-            }
-            call.setQueryTimeout(query.getQueryTimeout());
-            if (query.isNativeConnectionRequired()) {
-                call.setIsNativeConnectionRequired(true);
-            }
-            if (query.isReadQuery()) {
-                ReadQuery readQuery = (ReadQuery)query;
-                // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
-                // We should check FirstRow and MaxResults separately.
-                if (!call.shouldIgnoreFirstRowSetting()){
-                    if (readQuery.getFirstResult() != 0) {
-                        call.setFirstResult(readQuery.getFirstResult());
-                        call.setIsResultSetScrollable(true);
-                        call.setResultSetType(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
-                        call.setResultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY);
-                    }
-                }
-                if (!call.shouldIgnoreMaxResultsSetting()){
-                    call.setMaxRows(readQuery.getMaxRows());
-                }
-                call.setResultSetFetchSize(((ReadQuery)query).getFetchSize());
-            }
-            call.prepare(executionSession);
+            this.call.prepare(executionSession);
         }
     }
 
+    /**
+     * Set the call level query options into the call.
+     */
+    protected void configureDatabaseCall(DatabaseCall call) {
+        if (!this.query.shouldIgnoreBindAllParameters()) {
+            call.setUsesBinding(this.query.shouldBindAllParameters());
+        }
+        if (!this.query.shouldIgnoreCacheStatement()) {
+            call.setShouldCacheStatement(this.query.shouldCacheStatement());
+        }
+        call.setQueryTimeout(this.query.getQueryTimeout());
+        if (this.query.isNativeConnectionRequired()) {
+            call.setIsNativeConnectionRequired(true);
+        }
+        if (this.query.isReadQuery()) {
+            ReadQuery readQuery = (ReadQuery)this.query;
+            // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
+            // We should check FirstRow and MaxResults separately.
+            if (!call.shouldIgnoreFirstRowSetting()){
+                if (readQuery.getFirstResult() != 0) {
+                    call.setFirstResult(readQuery.getFirstResult());
+                    call.setIsResultSetScrollable(true);
+                    call.setResultSetType(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE);
+                    call.setResultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY);
+                }
+            }
+            if (!call.shouldIgnoreMaxResultsSetting()){
+                call.setMaxRows(readQuery.getMaxRows());
+            }
+            call.setResultSetFetchSize(readQuery.getFetchSize());
+        }
+    }
+    
     /**
      * Pre-build configure the SQL call.
      */

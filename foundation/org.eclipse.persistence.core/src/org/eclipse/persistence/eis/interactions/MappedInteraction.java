@@ -15,6 +15,7 @@ package org.eclipse.persistence.eis.interactions;
 import java.util.*;
 import javax.resource.*;
 import javax.resource.cci.*;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -141,7 +142,7 @@ public class MappedInteraction extends EISInteraction {
                     String parameterName = (String)getArgumentNames().get(index);
                     Object parameter = getParameters().get(index);
 
-                    // If no arguments were passed to the call execution find the paramter from the row.
+                    // If no arguments were passed to the call execution find the parameter from the row.
                     if ((parameter == null) && (getInputRow() != null)) {
                         parameter = getInputRow().get(parameterName);
                     }
@@ -159,11 +160,31 @@ public class MappedInteraction extends EISInteraction {
     }
 
     /**
+     * Create a mapped input record for this interaction.
+     * Populate the data into the record from this interaction's translation row.
+     */
+    public Record createTranslationRecord(AbstractRecord transaltionRow, EISAccessor accessor) {
+        return (MappedRecord)createRecordElement(getInputRecordName(), transaltionRow, accessor);
+    }
+
+    /**
      * Build a database row from the record returned from the interaction.
      */
     public AbstractRecord buildRow(Record record, EISAccessor accessor) {
+        if (record == null) {
+            return  null;
+        }
     	AbstractRecord row = null;
 
+        if (record instanceof IndexedRecord) {
+            IndexedRecord indexedRecord = (IndexedRecord)record;
+            if (indexedRecord.isEmpty()) {
+                return null;
+            }
+            if (indexedRecord.get(0) instanceof Record) {
+                return buildRow((Record)indexedRecord.get(0), accessor);
+            }
+        }
         // If not a mapped record then just put it as a result value in the row.
         if (!(record instanceof MappedRecord)) {
             row = new DatabaseRecord(1);

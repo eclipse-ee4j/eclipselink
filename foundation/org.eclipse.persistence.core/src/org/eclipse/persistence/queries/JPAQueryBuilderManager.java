@@ -13,7 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
-import org.eclipse.persistence.internal.helper.ConversionManager;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * Manager class that maintains the {@link JPAQueryBuilder} to be used in parsing
@@ -44,8 +49,27 @@ public final class JPAQueryBuilderManager {
      */
     private static JPAQueryBuilder buildDefaultQueryBuilder() {
         try {
-            //return (JPAQueryBuilder)ConversionManager.loadClass("org.eclipse.persistence.internal.jpa.jpql.HermesParser").newInstance();
-            return (JPAQueryBuilder)ConversionManager.loadClass("org.eclipse.persistence.queries.ANTLRQueryBuilder").newInstance();
+            Class parserClass = null;
+            // use class.forName() to avoid loading parser classes for JAXB
+            // Use Class.forName not thread class loader to avoid class loader issues.
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    //parserClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName("org.eclipse.persistence.internal.jpa.jpql.HermesParser"));
+                    parserClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName("org.eclipse.persistence.queries.ANTLRQueryBuilder"));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                //parserClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.jpa.jpql.HermesParser");
+                parserClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.queries.ANTLRQueryBuilder");
+            }                  
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    return (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                return (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new IllegalStateException("Could not load the ANTLRQueryBuilder class." /* TODO: Localize string */, e);
@@ -53,6 +77,7 @@ public final class JPAQueryBuilderManager {
         // PERFORMANCE: class for name and newInstance() is an attempt to keep
         // the antlr-based impl classes from loading.
         // return new ANTLRQueryBuilder();
+        return null;
     }
         
     /**

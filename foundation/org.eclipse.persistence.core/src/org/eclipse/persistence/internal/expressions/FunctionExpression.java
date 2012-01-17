@@ -374,7 +374,7 @@ public class FunctionExpression extends BaseExpression {
             builder.setSession(normalizer.getSession().getRootSession(null));
         }
         
-        if (this.operator.getSelector() == ExpressionOperator.Count && getBaseExpression().isObjectExpression() && (!((ObjectExpression)getBaseExpression()).isAttribute())){
+        if (this.operator.getSelector() == ExpressionOperator.Count) {
             // Attempting to count an Entity and not an attribute.  Need to augment this expression.
             // This is normally normalized in ReportQuery, but can get to here in a having clause.
             prepareObjectAttributeCount(normalizer, null, null, null);

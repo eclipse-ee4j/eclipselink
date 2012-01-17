@@ -1140,7 +1140,9 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * special merge/object building behaviour.
      */
     public void setIsCacheable(boolean cacheable) {
-        throw ValidationException.operationNotSupported("setIsCacheable");
+        if (!cacheable) {
+            throw ValidationException.operationNotSupported("setIsCacheable");
+        }
     }
 
     /**

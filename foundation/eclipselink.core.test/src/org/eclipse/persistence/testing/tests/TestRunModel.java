@@ -181,7 +181,7 @@ public class TestRunModel extends TestModel {
 
     /**
      * Return all of the models for the testing tool.
-     * To facilitate exporting the testing browser outside of visual age this mehtod has been modiied
+     * To facilitate exporting the testing browser outside of visual age this method has been modified
      * to create the tests reflectively that way if a particular test fails it will not prevent the rest of the tests from building
      */
     public static Vector buildAllModels() {
@@ -195,6 +195,7 @@ public class TestRunModel extends TestModel {
         models.add(buildLRGTestModel());
         models.add(buildNonLRGTestModel());
         models.add(buildOracleTestModel());
+        models.add(buildNoSQLTestModel());
         models.add(buildJPATestModel());
         models.add(buildPerformanceTestModel());
 
@@ -249,6 +250,32 @@ public class TestRunModel extends TestModel {
         
         TestModel model = new TestModel();
         model.setName("Oracle Tests");
+        for (int index = 0; index < tests.size(); ++index) {
+            Class cls;
+            try {
+                cls = Class.forName((String)tests.get(index));
+                if(TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel)cls.newInstance());
+                } else {
+                    Method suite = cls.getDeclaredMethod("suite", new Class[]{});
+                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                }
+            } catch (Throwable exception) {
+                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+            }
+        }
+        return model;
+    }   
+    
+    /**
+     * Build and return a model of all EIS specific tests.
+     */
+    public static TestModel buildNoSQLTestModel() {
+        List tests = new ArrayList();
+        tests.add("org.eclipse.persistence.testing.tests.NoSQLJPATestSuite");
+        
+        TestModel model = new TestModel();
+        model.setName("NoSQL Tests");
         for (int index = 0; index < tests.size(); ++index) {
             Class cls;
             try {

@@ -67,6 +67,7 @@ import javax.persistence.MapsId;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 
+import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -89,7 +90,6 @@ import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirection
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
-import org.eclipse.persistence.mappings.ManyToOneMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
@@ -311,9 +311,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Initialize a OneToOneMapping.
      */
-    protected OneToOneMapping initOneToOneMapping() {
-        OneToOneMapping mapping = new OneToOneMapping();
-        mapping.setIsOneToOneRelationship(true);
+    protected ObjectReferenceMapping initOneToOneMapping() {
+        // Allow for different descriptor types (EIS) to create different mapping types.
+        ObjectReferenceMapping mapping = getDescriptor().getClassDescriptor().newOneToOneMapping();
         processRelationshipMapping(mapping);
         
         mapping.setIsOptional(isOptional());
@@ -332,8 +332,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Initialize a ManyToOneMapping.
      */
-    protected ManyToOneMapping initManyToOneMapping() {
-        ManyToOneMapping mapping = new ManyToOneMapping();
+    protected ObjectReferenceMapping initManyToOneMapping() {
+        // Allow for different descriptor types (EIS) to create different mapping types.
+        ObjectReferenceMapping mapping = getDescriptor().getClassDescriptor().newManyToOneMapping();
         processRelationshipMapping(mapping);
         
         mapping.setIsOptional(isOptional());
@@ -622,6 +623,24 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         String defaultFKFieldName = getDefaultAttributeName() + "_" + getReferenceDescriptor().getPrimaryKeyFieldName();
         
         processOneToOneForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), getReferenceDescriptor(), defaultFKFieldName, getDescriptor().getPrimaryTable());
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the JoinFields or default the foreign keys for the mapping.
+     * EISOneToOneMapping is always by foreign key.
+     */
+    protected void processEISOneToOneForeignKeyRelationship(EISOneToOneMapping mapping) {
+        for (DatabaseField field : getReferenceDescriptor().getPrimaryKeyFields()) {
+            // If the fk field (name) is not specified, it defaults to the 
+            // concatenation of the following: the name of the referencing 
+            // relationship property or field of the referencing entity or
+            // embeddable class; "_"; the name of the referenced primary key 
+            // column.
+            String defaultFKFieldName = getDefaultAttributeName() + "_" + field.getName();
+            
+            mapping.addForeignKeyField(new DatabaseField(defaultFKFieldName),  field);
+        }
     }
     
     /**

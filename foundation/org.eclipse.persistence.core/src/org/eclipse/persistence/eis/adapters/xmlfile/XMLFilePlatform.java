@@ -12,12 +12,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.eis.adapters.xmlfile;
 
+import java.io.StringWriter;
+
 import javax.resource.cci.*;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.w3c.dom.*;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.eis.interactions.*;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.Sequence;
 
 /**
@@ -49,6 +54,7 @@ public class XMLFilePlatform extends EISPlatform {
     /**
      * Allow the platform to build the interaction spec based on properties defined in the interaction.
      */
+    @Override
     public InteractionSpec buildInteractionSpec(EISInteraction interaction) {
         InteractionSpec spec = interaction.getInteractionSpec();
         if (spec == null) {
@@ -84,7 +90,73 @@ public class XMLFilePlatform extends EISPlatform {
      * INTERNAL:
      * Create platform-default Sequence
      */
+    @Override
     protected Sequence createPlatformDefaultSequence() {
         return new XMLFileSequence();
+    }
+    
+    /**
+     * INTERNAL:
+     * Allow the platform to initialize the CRUD queries to defaults.
+     * Configure the CRUD operations using GET/PUT and DELETE.
+     */
+    @Override
+    public void initializeDefaultQueries(DescriptorQueryManager queryManager, AbstractSession session) {
+        String dataType = ((EISDescriptor)queryManager.getDescriptor()).getDataTypeName();
+        StringWriter writer = new StringWriter();
+        writer.write(dataType);
+        writer.write('[');
+        for (DatabaseField field : queryManager.getDescriptor().getPrimaryKeyFields()) {
+            writer.write(field.getName());
+            writer.write("='#");
+            writer.write(field.getName());
+            writer.write("'");
+        }
+        writer.write(']');
+        String queryString = writer.toString();
+        // Insert
+        if (!queryManager.hasInsertQuery()) {
+            XQueryInteraction call = new XQueryInteraction();
+            call.setXQueryString(dataType);
+            call.setFunctionName("insert");
+            call.setProperty("fileName", dataType + ".xml");
+            queryManager.setInsertCall(call);
+        }
+        
+        // Update
+        if (!queryManager.hasUpdateQuery()) {
+            XQueryInteraction call = new XQueryInteraction();
+            call.setXQueryString(queryString);
+            call.setFunctionName("update");
+            call.setProperty("fileName", dataType + ".xml");
+            queryManager.setUpdateCall(call);
+        }
+
+        // Read
+        if (!queryManager.hasReadObjectQuery()) {
+            XQueryInteraction call = new XQueryInteraction();
+            call.setXQueryString(queryString);
+            call.setFunctionName("read");
+            call.setProperty("fileName", dataType + ".xml");
+            call.setOutputResultPath("result");
+            queryManager.setReadObjectCall(call);
+        }
+        if (!queryManager.hasReadAllQuery()) {
+            XQueryInteraction call = new XQueryInteraction();
+            call.setXQueryString(dataType);
+            call.setFunctionName("read");
+            call.setProperty("fileName", dataType + ".xml");
+            call.setOutputResultPath("result");
+            queryManager.setReadAllCall(call);
+        }
+        
+        // Delete
+        if (!queryManager.hasDeleteQuery()) {
+            XQueryInteraction call = new XQueryInteraction();
+            call.setXQueryString(queryString);
+            call.setFunctionName("delete");
+            call.setProperty("fileName", dataType + ".xml");
+            queryManager.setDeleteCall(call);
+        }
     }
 }

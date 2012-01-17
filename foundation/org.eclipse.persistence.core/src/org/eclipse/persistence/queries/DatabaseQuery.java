@@ -585,7 +585,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             // This query is first prepared for global common state, this must be synced.
             if (!this.isPrepared) {// Avoid the monitor is already prepare, must
                 // If this query will use the custom query, do not prepare.
-                if ((!force) && this.shouldPrepare && (checkForCustomQuery(session, translationRow) != null)) {
+                if ((!force) && (!this.shouldPrepare || !((DatasourcePlatform)session.getDatasourcePlatform()).shouldPrepare(this)
+                        || (checkForCustomQuery(session, translationRow) != null))) {
                     return;
                 }
                 // check again for concurrency.
@@ -814,7 +815,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // so the query keeps track if it has been cloned already.
         queryToExecute = session.prepareDatabaseQuery(queryToExecute);
 
-        boolean prepare = queryToExecute.shouldPrepare(translationRow);
+        boolean prepare = queryToExecute.shouldPrepare(translationRow, session);
         if (prepare) {
             queryToExecute.checkPrepare(session, translationRow);
         }
@@ -834,7 +835,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (!prepare) {
             queryToExecute.setIsPrepared(false);
             queryToExecute.setTranslationRow(translationRow);
-            queryToExecute.checkPrepare(session, translationRow);
+            queryToExecute.checkPrepare(session, translationRow, true);
         }
         queryToExecute.setSession(session);
         if (hasCustomQuery) {
@@ -2419,8 +2420,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * This allows null parameters to affect the SQL, such as stored procedure default values,
      * or IS NULL, or insert defaults.
      */
-    public boolean shouldPrepare(AbstractRecord translationRow) {
+    public boolean shouldPrepare(AbstractRecord translationRow, AbstractSession session) {
         if (!this.shouldPrepare) {
+            return false;
+        }
+        if (!((DatasourcePlatform)session.getDatasourcePlatform()).shouldPrepare(this)) {
             return false;
         }
         if (this.nullableArguments != null) {

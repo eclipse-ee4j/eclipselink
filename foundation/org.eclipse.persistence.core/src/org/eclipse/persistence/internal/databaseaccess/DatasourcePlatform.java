@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.*;
 import java.util.*;
+
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -414,7 +416,16 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.caseStatement());
         addOperator(ExpressionOperator.caseConditionStatement());
     }
-
+    
+    /**
+     * INTERNAL:
+     * Allow the platform to initialize the CRUD queries to defaults.
+     * This is mainly used by EIS platforms, but could be used by relational ones for special behavior.
+     */
+    public void initializeDefaultQueries(DescriptorQueryManager queryManager, AbstractSession session) {
+        
+    }
+    
     public boolean isAccess() {
         return false;
     }
@@ -782,5 +793,13 @@ public class DatasourcePlatform implements Platform {
      */
     public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
         return null;
+    }
+    
+    /**
+     * Allows query prepare to be disable in the platform.
+     * This is required for some EIS platforms, that cannot prepare the call.
+     */
+    public boolean shouldPrepare(DatabaseQuery query) {
+        return true;
     }
 }

@@ -874,7 +874,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
-        if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {
+        if (((EISDescriptor) this.getDescriptor()).isXMLFormat()) {
             ((XMLRecord) row).setSession(executionSession);
         }
         
