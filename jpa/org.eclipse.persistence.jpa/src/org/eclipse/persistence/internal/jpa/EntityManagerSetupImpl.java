@@ -818,6 +818,10 @@ public class EntityManagerSetupImpl {
                 return;
             }
             
+            if (newProfilerClassName.equals(ProfilerType.DMSProfiler)) {
+                newProfilerClassName = ProfilerType.DMSProfilerClassName;
+            }
+            
             String originalProfilerClassNamer = null;
             if (session.getProfiler() != null) {
                 originalProfilerClassNamer = session.getProfiler().getClass().getName();
@@ -829,7 +833,9 @@ public class EntityManagerSetupImpl {
             // New profiler - create the new instance and set it.
             try {
                 Class newProfilerClass = findClassForProperty(newProfilerClassName, PersistenceUnitProperties.PROFILER, loader);
+
                 SessionProfiler sessionProfiler = (SessionProfiler)buildObjectForClass(newProfilerClass, SessionProfiler.class);
+
                 if (sessionProfiler != null) {
                     session.setProfiler(sessionProfiler);
                 } else {

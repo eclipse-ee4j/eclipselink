@@ -1060,6 +1060,25 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * TopLink_sessionName_domainClass.  Cached in properties
+     */
+     public String getDomainClassNounName(String sessionName) {
+        if (getProperty("DMSDomainClassNounName") == null) {
+            StringBuffer buffer = new StringBuffer("EclipseLink");
+            if (sessionName != null) {
+                buffer.append(sessionName);
+            }
+            if (getReferenceClassName() != null) {
+                buffer.append("_");
+                buffer.append(getReferenceClassName());
+            }
+            setProperty("DMSDomainClassNounName", buffer.toString());
+        }
+        return (String)getProperty("DMSDomainClassNounName");
+     }
+    
+    /**
      * PUBLIC: Return the name of the query
      */
     public String getName() {
@@ -1108,6 +1127,24 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * TopLink_sessionName_domainClass_queryClass_queryName (if exist).  Cached in properties
+     */
+    public String getQueryNounName(String sessionName) {
+        if (getProperty("DMSQueryNounName") == null) {
+            StringBuffer buffer = new StringBuffer(getDomainClassNounName(sessionName));
+            buffer.append("_");
+            buffer.append(getClass().getSimpleName());
+            if (getName() != null) {
+                buffer.append("_");
+                buffer.append(getName());
+            }
+            setProperty("DMSQueryNounName", buffer.toString());
+        }
+        return (String)getProperty("DMSQueryNounName");
+    }
+    
+    /**
      * INTERNAL: Return the mechanism assigned to the query
      */
     public DatabaseQueryMechanism getQueryMechanism() {
@@ -1124,7 +1161,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean hasQueryMechanism() {
         return (this.queryMechanism != null);
     }
-
+    
     /**
      * PUBLIC: Return the number of seconds the driver will wait for a Statement
      * to execute to the given number of seconds.
@@ -1196,6 +1233,31 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         return this.queryMechanism.getSelectionCriteria();
     }
 
+    /**
+     * INTERNAL:
+     * TopLink_sessionName_domainClass_queryClass_queryName (if exist)_operationName (if exist).  Cached in properties
+     */
+    public String getSensorName(String operationName, String sessionName) {
+        if (operationName == null) {
+            return getQueryNounName(sessionName);
+        }
+
+        Hashtable sensorNames = (Hashtable)getProperty("DMSSensorNames");
+        if (sensorNames == null) {
+            sensorNames = new Hashtable();
+            setProperty("DMSSensorNames", sensorNames);
+        }
+        Object sensorName = sensorNames.get(operationName);
+        if (sensorName == null) {
+            StringBuffer buffer = new StringBuffer(getQueryNounName(sessionName));
+            buffer.append("_");
+            buffer.append(operationName);
+            sensorName = buffer.toString();
+            sensorNames.put(operationName, sensorName);
+        }
+        return (String)sensorName;
+    }
+    
     /**
      * INTERNAL: Return the current session.
      */

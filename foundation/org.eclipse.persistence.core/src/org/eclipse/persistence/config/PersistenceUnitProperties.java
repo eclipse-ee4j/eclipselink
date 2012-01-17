@@ -1888,6 +1888,7 @@ public class PersistenceUnitProperties {
      * <li>"PerformanceMonitor": Use {@link PerformanceMonitor}
      * <li>"PerformanceProfiler": Use {@link PerformanceProfiler}
      * <li>"QueryMonitor": Use {@link QueryMonitor}
+     * <li>"DMSProfiler": Use {@link DMSPerformanceProfiler}
      * <li>Custom profiler - Specify a custom profiler class name which
      * implements {@link SessionProfiler}
      * </ul>

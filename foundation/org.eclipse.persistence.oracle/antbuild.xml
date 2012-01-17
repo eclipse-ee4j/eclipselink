@@ -196,6 +196,11 @@
             <available file="${oracle.extensions.depend.dir}/${nosql.jar}"/>
         </condition>
 
+        <condition property="dms.lib"       value="${oracle.extensions.depend.dir}/${dms.jar}"
+                                                    else="${extensions.depend.dir}/${dms.jar}">
+            <available file="${oracle.extensions.depend.dir}/${dms.jar}"/>
+        </condition>
+
         <!-- dependency tests -->
         <available file="${persistence.lib}"   property="persistence.bundle.exist"/>
         <available file="${core.lib}"          property="core.bundle.exist"/>
@@ -235,6 +240,7 @@
             <pathelement path="${xmlparser.lib}"/>
             <pathelement path="${ucp.lib}"/>
             <pathelement path="${nosql.lib}"/>
+            <pathelement path="${dms.lib}"/>
         </path>
     </target>
 

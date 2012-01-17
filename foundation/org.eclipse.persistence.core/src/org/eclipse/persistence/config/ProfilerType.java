@@ -30,8 +30,11 @@ public class ProfilerType {
     public static final String PerformanceProfiler = "PerformanceProfiler";
     public static final String QueryMonitor = "QueryMonitor";
     public static final String PerformanceMonitor = "PerformanceMonitor";
+    public static final String DMSProfiler = "DMSProfiler";
     public static final String NoProfiler = "NoProfiler";
 
     public static final String DEFAULT = NoProfiler;
+    
+    public static final String DMSProfilerClassName = "org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler";
 }
 
