@@ -128,7 +128,7 @@
         <!-- Determine appropriate settings for nosql lib variables (overrides of .lib variables won't get reset) -->
         <!-- Check first in nosql extensions dir   -->
         <condition property="mongo.lib" value="${nosql.extensions.depend.dir}/${mongo.jar}"
-                                          else="${extensions.depend.dir}/${mongo.jar}">
+                                               else="${extensions.depend.dir}/${mongo.jar}">
             <available file="${nosql.extensions.depend.dir}/${mongo.jar}"/>
         </condition>
 

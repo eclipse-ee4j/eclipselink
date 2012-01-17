@@ -331,6 +331,7 @@
 
     <target name="build-oracle-extension">
         <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-nosql-extension"/>
     </target>
 
     <target name="build-no-javadoc" depends="get-dependencies">
@@ -484,6 +485,8 @@
             <arg value="-m ${version.string}"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.nosql.jar"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.nosql.source.jar"/>
         </exec>
     </target>
 

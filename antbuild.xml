@@ -204,7 +204,7 @@
     <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test"/>
 
     <!-- Compiles nosql component, tests and extensions (excluding utilities). -->
-    <target name="build-nosql" depends="build-oracle-extension, build-nosql-extension-test"/>
+    <target name="build-nosql" depends="build-nosql-extension, build-nosql-extension-test"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all"/>
@@ -234,7 +234,7 @@
 
     <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core-mavenbuilt, clean-core-antbuilt">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"	  target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
@@ -318,8 +318,6 @@
     </target>
     
     <target name="build-core-ant" unless="use.maven">
-        <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="build"/>
@@ -336,7 +334,7 @@
         <!-- temporarily force dbws.builder build from ant -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}" target="repackage"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
@@ -348,8 +346,6 @@
     *          or "rejars" from prebuilt bundle if classes dir doesn't exist.
     * -->
     <target name="dev-package-bundles" depends="clean-runtime-checkedin">
-        <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="jar"/>
@@ -361,7 +357,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="jar"/>
         
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}" target="jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="jar"/>
     </target>
 
@@ -382,18 +378,14 @@
 
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-extension">
-        <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="build"/>
     </target>
 
     <!-- Compiles nosql extensions and tests. -->
     <target name="build-nosql-extension">
-        <ant antfile="antbuild.xml" dir="${eclipselink.asm}"              target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.antlr}"            target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"    target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="build"/>
     </target>
 
     <target name="build-oracle-extension-test">
@@ -403,7 +395,7 @@
 
     <target name="build-nosql-extension-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"    target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"  target="build"/>
     </target>
 
     <!-- Compiles tests (excluding workbench, dbws-util and Oracle, nosql extensions). -->
@@ -919,9 +911,9 @@
     </target>
     <!-- Run Oracle Tests -->
     <target name="test-oracle" description="run all oracle specific tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}"      target="test-oracle"/>
-        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.test.oracle}"           target="test-oracle"/ -->
-        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}"   target="test-oracle"/ -->
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}"        target="test-oracle"/>
+        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.test.oracle}"         target="test-oracle"/ -->
+        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}" target="test-oracle"/ -->
     </target>
     <!-- Run nosql Tests -->
     <target name="test-nosql" description="run all nosql specific tests">

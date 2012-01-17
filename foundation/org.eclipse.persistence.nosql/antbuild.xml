@@ -35,13 +35,13 @@
         - build (default) : cleans, compiles, and packages all tests
         - clean           : cleans up all generated files and dirs
         - compile         : compiles all classes
-        - package         : packages the oracle extensions OSGi bundle jar.
+        - package         : packages the nosql extensions OSGi bundle jar.
 -->
 <project name="org.eclipse.persistence.nosql" default="build" basedir=".">
-    <available file="../${ant.project.name}" type="dir" property="oracle.is.local"/>
+    <available file="../${ant.project.name}" type="dir" property="nosql.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
     <!-- (should be set locally, and be destroyed upon return)                  -->
-    <fail message="Not running from '${ant.project.name}' directory" unless="oracle.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="nosql.is.local"/>
 
     <dirname  property="nosql.build.location_temp" file="${ant.file.org.eclipse.persistence.nosql}"/>
     <pathconvert targetos="unix" property="nosql.build.location">
@@ -49,7 +49,7 @@
             <pathelement location="${nosql.build.location_temp}"/>
         </path>
     </pathconvert>
-    <echo message="nosql.build.location = '${oracle.build.location}'"/>
+    <echo message="nosql.build.location = '${nosql.build.location}'"/>
     <condition property="nosql.2.base.dir" value="../.." else="..">
         <contains string="${nosql.build.location}" substring="foundation"/>
     </condition>
@@ -168,7 +168,7 @@
         <property name="resource.lib"    value="${nosql.2.common.plugins.dir}/${resource.jar}"/>
         <!-- "nosql" dependency definitions from "nosql.extensions.depend.jars" -->
         <condition property="mongo.lib"     value="${nosql.extensions.depend.dir}/${mongo.jar}"
-                                                    else="${extensions.depend.dir}/${mongo.jar}">
+                                                   else="${extensions.depend.dir}/${mongo.jar}">
             <available file="${nosql.extensions.depend.dir}/${mongo.jar}"/>
         </condition>
 
@@ -185,7 +185,7 @@
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
         <fail message="Cannot find: '${resource.lib}'"    unless="resource.bundle.exist"/>
-        <fail message="Cannot find: '${mongo.lib}'"         unless="mongo.bundle.exist"/>
+        <fail message="Cannot find: '${mongo.lib}'"       unless="mongo.bundle.exist"/>
         
         <!-- Set Compile Path-->
         <path id="nosql.compile.path">
