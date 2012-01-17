@@ -37,6 +37,7 @@ import dbws.testing.oxdescriptor.OXDescriptorTestSuite;
 import dbws.testing.plsqlcollection.PLSQLCollectionTestSuite;
 import dbws.testing.plsqlrecord.PLSQLRecordTestSuite;
 import dbws.testing.secondarysql.SecondarySQLTestSuite;
+import dbws.testing.shadowddlgeneration.ShadowDDLGenerationTestSuite;
 import dbws.testing.simpleplsqlsf.SimplePLSQLSFTestSuite;
 import dbws.testing.simpleplsqlsp.SimplePLSQLSPTestSuite;
 import dbws.testing.simplesf.SimpleSFTestSuite;
@@ -64,6 +65,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
     SecondarySQLTestSuite.class,
+    ShadowDDLGenerationTestSuite.class,
     SimplePLSQLSFTestSuite.class,
     SimplePLSQLSPTestSuite.class,
     SimpleSFTestSuite.class,

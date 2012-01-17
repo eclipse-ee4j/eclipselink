@@ -22,6 +22,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -250,6 +253,13 @@ public class DBWSTestSuite {
                 removeEmptyTextNodes(childNode);
             }
         }
+    }
+
+    static Pattern pattern = Pattern.compile("[\\n\\x0B\\f\\r]");
+    public static String removeLineTerminators(CharSequence inputStr) {
+        String replaceStr = "";
+        Matcher matcher = pattern.matcher(inputStr);
+        return matcher.replaceAll(replaceStr);
     }
 
     /**

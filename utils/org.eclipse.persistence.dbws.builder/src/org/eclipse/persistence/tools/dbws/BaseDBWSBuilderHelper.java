@@ -198,6 +198,14 @@ public abstract class BaseDBWSBuilderHelper {
         this.dbwsBuilder = dbwsBuilder;
     }
 
+    public List<TableType> getDbTables() {
+        return dbTables;
+    }
+
+    public List<ProcedureType> getDbStoredProcedures() {
+        return dbStoredProcedures;
+    }
+
     //abstract methods - platform-specific behaviour in JDBCHelper, OracleHelper
     public abstract boolean hasTables();
 
