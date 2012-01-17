@@ -3042,8 +3042,13 @@ public final class GrammarValidator extends AbstractValidator {
 			}
 		}
 
+		// Check for "IN :input_parameter" defined in JPA 2.0
+		boolean singleInputParameter = isValidJPA20Identifier() &&
+		                               expression.isSingleInputParameter() &&
+		                              !expression.hasRightParenthesis();
+
 		// Missing '('
-		if (!expression.hasLeftParenthesis()) {
+		if (!expression.hasLeftParenthesis() && !singleInputParameter) {
 			int startPosition = position(expression) + 2;  // IN
 
 			if (expression.hasExpression()) {

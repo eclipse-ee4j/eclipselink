@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.internal.jpql.parser;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.internal.jpql.WordParser;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 
 /**
  * The <code>state_field_path_expression</code> must have a string, numeric, or enum value. The
@@ -39,8 +40,8 @@ import org.eclipse.persistence.jpa.internal.jpql.WordParser;
  * <p>
  * <div nowrap>Example: </code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</p>
  *
- * @version 2.3
- * @since 2.3
+ * @version 2.3.0
+ * @since 2.3.3
  * @author Pascal Filion
  */
 public final class InExpression extends AbstractExpression {
@@ -69,6 +70,12 @@ public final class InExpression extends AbstractExpression {
 	 * The expression within parenthesis, which can be one or many expressions.
 	 */
 	private AbstractExpression inItems;
+
+	/**
+	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input
+	 * parameter.
+	 */
+	private Boolean singleInputParameter;
 
 	/**
 	 * Creates a new <code>InExpression</code>.
@@ -261,6 +268,34 @@ public final class InExpression extends AbstractExpression {
 	 */
 	public boolean hasRightParenthesis() {
 		return hasRightParenthesis;
+	}
+
+	/**
+	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input
+	 * parameter:
+	 * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><p>
+	 *
+	 * @since 2.3.3
+	 */
+	public boolean isSingleInputParameter() {
+
+		if (singleInputParameter == null) {
+
+			if (hasLeftParenthesis || hasRightParenthesis)  {
+				singleInputParameter = Boolean.FALSE;
+			}
+			else {
+				WordParser wordParser = new WordParser(getInItems().toActualText());
+				String word = wordParser.word();
+				wordParser.moveForward(word);
+
+				singleInputParameter = (word.length() > 0) &&
+				                       ExpressionTools.isParameter(word.charAt(0)) &&
+				                       wordParser.isTail();
+			}
+		}
+
+		return singleInputParameter;
 	}
 
 	/**

@@ -81,13 +81,13 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 		};
 	}
 
-	private JPQLQueryStringFormatter buildFormatter_7() throws Exception {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace(",)", ", )");
-			}
-		};
-	}
+//	private JPQLQueryStringFormatter buildFormatter_7() throws Exception {
+//		return new JPQLQueryStringFormatter() {
+//			public String format(String query) {
+//				return query.replace(",)", ", )");
+//			}
+//		};
+//	}
 
 	@Test
 	public void test_AbsExpression_InvalidExpression() throws Exception {
@@ -2591,7 +2591,7 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	}
 
 	@Test
-	public void test_InExpression_MissingLeftParenthesis() throws Exception {
+	public void test_InExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN e.address.street)";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN".length();
@@ -2608,7 +2608,15 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	}
 
 	@Test
-	public void test_InExpression_MissingRightParenthesis() throws Exception {
+	public void test_InExpression_MissingLeftParenthesis_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.InExpression_MissingLeftParenthesis);
+	}
+
+	@Test
+	public void test_InExpression_MissingRightParenthesis_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN(e.address.street";
 		int startPosition = query.length();
@@ -2622,6 +2630,14 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public void test_InExpression_MissingRightParenthesis_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.InExpression_MissingRightParenthesis);
 	}
 
 	@Test
@@ -5228,10 +5244,10 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	@Test
 	public void test_SubstringExpression_MissingThirdExpression_1() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0,";
+//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0,";
 
-		int startPosition = query.length();
-		int endPosition   = startPosition;
+//		int startPosition = query.length();
+//		int endPosition   = startPosition;
 
 		// TODO: Support platform and it should be done through an extension rather than
 		// hard coding it in the unit-tests (like using IPlatform)
@@ -5246,21 +5262,12 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingThirdExpression_4() throws Exception {
-
-		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0)";
-
-		List<JPQLQueryProblem> problems = validate(query);
-		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression);
-	}
-
-	@Test
 	public void test_SubstringExpression_MissingThirdExpression_2() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, ";
+//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, ";
 
-		int startPosition = query.length();
-		int endPosition   = startPosition;
+//		int startPosition = query.length();
+//		int endPosition   = startPosition;
 
 		// TODO: Support platform and it should be done through an extension rather than
 		// hard coding it in the unit-tests (like using IPlatform)
@@ -5277,10 +5284,10 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 	@Test
 	public void test_SubstringExpression_MissingThirdExpression_3() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, )";
+//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, )";
 
-		int startPosition = query.length() - 1;
-		int endPosition   = startPosition;
+//		int startPosition = query.length() - 1;
+//		int endPosition   = startPosition;
 
 		// TODO: Support platform and it should be done through an extension rather than
 		// hard coding it in the unit-tests (like using IPlatform)
@@ -5292,6 +5299,15 @@ public final class GrammarValidatorTest extends AbstractValidatorTest {
 //			startPosition,
 //			endPosition
 //		);
+	}
+
+	@Test
+	public void test_SubstringExpression_MissingThirdExpression_4() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0)";
+
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression);
 	}
 
 	@Test
