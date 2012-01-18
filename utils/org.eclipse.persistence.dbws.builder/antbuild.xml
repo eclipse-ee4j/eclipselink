@@ -75,7 +75,7 @@
     <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
 
     <!-- Dependency variables -->
-    <property name="ddlparser.prefix" value="org.eclipse.persistence.tools.oracleddl"/>
+    <property name="ddlparser.prefix" value="org.eclipse.persistence.oracleddlparser"/>
     <property name="ddlparser.criteria" value="[1.0.0,2.0.0)"/>
 
     <!-- Primary Targets: "jar" separate for dev use -->
