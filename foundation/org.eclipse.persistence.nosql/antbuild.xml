@@ -107,51 +107,47 @@
                                                     else="${nosql.build.location}">
             <available file="${nosql.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
-        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
         <tstamp>
            <format property="build.date" pattern="yyyyMMdd"/>
            <format property="build.time" pattern="HHmm"/>
         </tstamp>
-        <property name="build.type"            value="SNAPSHOT"/>
-        <property name="svn.revision"          value="NA"/>
-        <property name="version.qualifier"     value="qualifier"/>
-        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
-        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
-        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
-        <property name="implementation.vendor" value="${specification.vendor}"/>
+        <property name="build.type"             value="SNAPSHOT"/>
+        <property name="svn.revision"           value="NA"/>
+        <property name="version.qualifier"      value="qualifier"/>
+        <property name="version.string"         value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"    value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"   value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor"  value="${specification.vendor}"/>
+        <say  message="'nobnd' is set."        if="nobnd"/>
 
         <!-- Check for BND library -->
-        <property name="nobndtool.manifest.dir"      value="${nosql.build.location}/META-INF"/>
+        <property name="nobndtool.manifest.dir" value="${nosql.build.location}/META-INF"/>
         <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
          **  once bnd is added to the buildsystem directory.                                       -->
         <echo message="bndtool.prefix        = '${bndtool.prefix}'"/>
-        <echo message="nosql.2.buildsys.dir   = '${nosql.2.buildsys.dir}'"/>
         <echo message="bndtool.separator     = '${bndtool.separator}'"/>
         <echo message="bndtool.criteria      = '${bndtool.criteria}'"/>
-        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
         <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <echo message="bndtool.prefix      = '${bndtool.prefix}'"/>
-        <echo message="nosql.2.buildsys.dir = '${nosql.2.buildsys.dir}'"/>
-        <echo message="bndtool.separator   = '${bndtool.separator}'"/>
-        <echo message="bndtool.criteria    = '${bndtool.criteria}'"/>
-        <echo message="nosql.2.buildsys.dir = '${nosql.2.buildsys.dir}'"/>
+        <echo message="nosql.2.buildsys.dir  = '${nosql.2.buildsys.dir}'"/>
         <selectbundle basename="${bndtool.prefix}" directory="${nosql.2.buildsys.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <say message="bndtool.lib                     = '${bndtool.lib}'" if="bndtool.lib"/>
-        <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
+        <say  message="bndtool.lib           = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say  message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
+        <say  message="'nobnd' is set."        if="nobnd"/>
 
-        <echo message="bndtool.lib                     = '${bndtool.lib}'"/>
         <condition property="bld">
             <or>
                 <isset property="bndtool.lib"/>
                 <isset property="nobnd"/>
             </or>
         </condition>
+        <say  message="'bld' is set."          if="bld"/>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
@@ -182,10 +178,15 @@
         <!-- nosql extension dir test -->
         <available file="${nosql.extensions.depend.dir}" type="dir" property="nosql.depend.dir.exist"/>
 
-        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
-        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
-        <fail message="Cannot find: '${resource.lib}'"    unless="resource.bundle.exist"/>
-        <fail message="Cannot find: '${mongo.lib}'"       unless="mongo.bundle.exist"/>
+        <say  message="persistence.lib: '${persistence.lib}'"     if="persistence.bundle.exist"/>
+        <say  message="core.lib:        '${core.lib}'"            if="core.bundle.exist"/>
+        <say  message="resource.lib:    '${resource.lib}'"        if="resource.bundle.exist"/>
+        <say  message="mongo.lib:       '${mongo.lib}'"           if="mongo.bundle.exist"/>
+        <fail message="Cannot find:     '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find:     '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find:     '${resource.lib}'"    unless="resource.bundle.exist"/>
+        <fail message="Cannot find:     '${mongo.lib}'"       unless="mongo.bundle.exist"/>
+        <say  message="'${nosql.extensions.depend.dir}' found."   if="nosql.depend.dir.exist"/>
         
         <!-- Set Compile Path-->
         <path id="nosql.compile.path">
@@ -224,6 +225,10 @@
                 <isset property="bnd.bld"/>
             </and>
         </condition>
+        <say message="'nobnd' is set."          if="nobnd"/>
+        <say message="'package.ok' is set."     if="package.ok"/>
+        <say message="'bnd.bld' is set."        if="bnd.bld"/>
+        <say message="'bnd-package.ok' is set." if="bnd-package.ok"/>
     </target>
 
     <target name="fail-on-no-bnd" unless="bld">
@@ -304,7 +309,7 @@
     </target>
 
     <target name="bnd-package" if="bnd-package.ok" depends="init-package, package-src">
-        <!--delete file="${nosql.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${nosql.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${nosql.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
@@ -314,7 +319,7 @@
             failok="false"
             exceptions="true"
             files="./org.eclipse.persistence.nosql.bnd"
-            output="${nosql.2.foundation.plugins.dir}/${ant.project.name}.jar"/-->
+            output="${nosql.2.foundation.plugins.dir}/${ant.project.name}.jar"/>
     </target>
 
     <!-- repackage -->
@@ -359,7 +364,7 @@
     </target>
 
     <target name="bnd-repackage" if="bnd.bld" depends="init-package, repackage-src" description="take existing source and classes from checked in bundles, and repackage with new manifest">
-        <!--delete file="${nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${nosql.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
@@ -369,6 +374,6 @@
             failok="false"
             exceptions="true"
             files="./org.eclipse.persistence.nosql.bnd"
-            output="${nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/-->
+            output="${nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
     </target>
 </project>
