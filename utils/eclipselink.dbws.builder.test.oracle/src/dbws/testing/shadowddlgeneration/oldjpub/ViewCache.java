@@ -49,6 +49,7 @@ public class ViewCache implements Externalizable {
     protected int m_visits;
     protected boolean m_viewCacheDebug = false;
 
+    @SuppressWarnings("unused")
     public Iterator<ViewRow> getRows(String view, String[] columns, String[] keys, Object[] values,
         String[] orderby) throws java.sql.SQLException {
         m_visits++;

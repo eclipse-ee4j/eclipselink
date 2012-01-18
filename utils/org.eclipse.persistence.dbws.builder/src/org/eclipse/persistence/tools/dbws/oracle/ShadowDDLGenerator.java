@@ -6,45 +6,46 @@ import java.util.Map;
 
 //EclipseLink imports
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
+import org.eclipse.persistence.tools.oracleddl.metadata.DecimalType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVisitor;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
 import static org.eclipse.persistence.tools.dbws.Util.NUMERIC_STR;
+import static org.eclipse.persistence.tools.dbws.Util.OTHER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 
 public class ShadowDDLGenerator {
 
-    protected Map<String, DDLWrapper> createDDLs = new HashMap<String, DDLWrapper>();
-    protected Map<String, DDLWrapper> dropDDLs = new HashMap<String, DDLWrapper>();
-    protected PLSQLPackageType plsqlPackageType;
+    protected Map<PLSQLType, DDLWrapper> createDDLs = new HashMap<PLSQLType, DDLWrapper>();
+    protected Map<PLSQLType, DDLWrapper> dropDDLs = new HashMap<PLSQLType, DDLWrapper>();
 
     public ShadowDDLGenerator(PLSQLPackageType plsqlPackageType) {
-        this.plsqlPackageType = plsqlPackageType;
-        // visit
-        ddlWrapperGeneratorVisitor visitor = new ddlWrapperGeneratorVisitor();
+        // visit all the PLSQLType's
+        DDLWrapperGeneratorVisitor visitor = new DDLWrapperGeneratorVisitor();
         plsqlPackageType.accept(visitor);
     }
 
-    public String getCreateDDLFor(String typeName) {
-        return createDDLs.get(typeName).ddl;
+    public String getCreateDDLFor(PLSQLType plsqlType) {
+        return createDDLs.get(plsqlType).ddl;
     }
 
-    public String getDropDDLFor(String typeName) {
-        return dropDDLs.get(typeName).ddl;
+    public String getDropDDLFor(PLSQLType plsqlType) {
+        return dropDDLs.get(plsqlType).ddl;
     }
 
-    class ddlWrapperGeneratorVisitor extends BaseDatabaseTypeVisitor {
-        static final char COMMA = ',';
-        static final char SEMICOLON = ';';
-        static final char UNDERSCORE = '_';
-        static final char SINGLE_SPACE = ' ';
+    class DDLWrapperGeneratorVisitor extends BaseDatabaseTypeVisitor {
+        static final String COMMA = ",";
+        static final String SEMICOLON = ";";
+        static final String UNDERSCORE = "_";
+        static final String SINGLE_SPACE = " ";
         static final String COR_TYPE = "CREATE OR REPLACE TYPE ";
         static final String DROP_TYPE = "DROP TYPE ";
         static final String FORCE = " FORCE";
@@ -54,6 +55,7 @@ public class ShadowDDLGenerator {
         static final String AS_OBJECT = " AS OBJECT (";
         static final String AS_TABLE_OF = " AS TABLE OF ";
         static final String END_OBJECT = ");";
+        static final String NUMBER = "NUMBER";
         protected PLSQLRecordType currentRecordType;
         @Override
         public void beginVisit(PLSQLRecordType recordType) {
@@ -63,7 +65,7 @@ public class ShadowDDLGenerator {
                 currentRecordType = recordType;
                 ddlWrapper.ddl = COR_TYPE + recordType.getParentType().getPackageName() + UNDERSCORE +
                     recordType.getTypeName().toUpperCase() + AS_OBJECT;
-                createDDLs.put(recordType.getTypeName(), ddlWrapper);
+                createDDLs.put(recordType, ddlWrapper);
             }
             else {
                 currentRecordType = null;
@@ -71,7 +73,7 @@ public class ShadowDDLGenerator {
         }
         @Override
         public void endVisit(PLSQLRecordType recordType) {
-            DDLWrapper ddlWrapper = createDDLs.get(recordType.getTypeName());
+            DDLWrapper ddlWrapper = createDDLs.get(recordType);
             if (ddlWrapper != null && !ddlWrapper.finished) {
                 ddlWrapper.ddl += END_OBJECT;
                 ddlWrapper.finished = true;
@@ -80,13 +82,13 @@ public class ShadowDDLGenerator {
             ddlWrapper.ddl = DROP_TYPE + recordType.getParentType().getPackageName() + UNDERSCORE +
                 recordType.getTypeName().toUpperCase() + FORCE + SEMICOLON;
             ddlWrapper.finished = true;
-            dropDDLs.put(recordType.getTypeName(), ddlWrapper);
+            dropDDLs.put(recordType, ddlWrapper);
         }
 
         @Override
         public void beginVisit(FieldType fieldType) {
             if (currentRecordType != null) {
-                DDLWrapper ddlWrapper = createDDLs.get(currentRecordType.getTypeName());
+                DDLWrapper ddlWrapper = createDDLs.get(currentRecordType);
                 if (!ddlWrapper.finished) {
                     String fieldName = fieldType.getFieldName();
                     for (int i = 0, len = currentRecordType.getFields().size(); i < len; i++) {
@@ -105,12 +107,28 @@ public class ShadowDDLGenerator {
                                 if (fieldDataType instanceof VarChar2Type) {
                                     fieldShadowName = VarChar2Type.TYPENAME;
                                 }
+                                else if (fieldDataType instanceof DecimalType) {
+                                    fieldShadowName = NUMBER;
+                                }
                                 if (fieldDataType instanceof SizedType) {
                                     SizedType sFieldDataType = (SizedType)fieldDataType;
                                     long defaultSize = sFieldDataType.getDefaultSize();
                                     long size = sFieldDataType.getSize();
                                     if (size != defaultSize) {
                                         fieldShadowName += LBRACKET + size + RBRACKET;
+                                    }
+                                }
+                                else if (fieldDataType instanceof PrecisionType) {
+                                    PrecisionType pFieldDataType = (PrecisionType)fieldDataType;
+                                    long defaultPrecision = pFieldDataType.getDefaultPrecision();
+                                    long precision = pFieldDataType.getPrecision();
+                                    long scale = pFieldDataType.getScale();
+                                    if (precision != defaultPrecision) {
+                                        fieldShadowName += LBRACKET + precision;
+                                        if (scale != 0) {
+                                            fieldShadowName += COMMA + SINGLE_SPACE + scale;
+                                        }
+                                        fieldShadowName += RBRACKET;
                                     }
                                 }
                             }
@@ -127,16 +145,22 @@ public class ShadowDDLGenerator {
 
         @Override
         public void beginVisit(PLSQLCollectionType collectionType) {
-            DDLWrapper ddlWrapper = createDDLs.get(collectionType.getTypeName());
+            DDLWrapper ddlWrapper = createDDLs.get(collectionType);
             if (ddlWrapper == null) {
                 ddlWrapper = new DDLWrapper();
             }
             if (!ddlWrapper.finished) {
+                String nestedTypeName = collectionType.getNestedType().getTypeName();
+                String shadowNestedTypeName = getShadowTypeName(nestedTypeName);
+                if (OTHER_STR.equals(shadowNestedTypeName)) {
+                    shadowNestedTypeName = ((PLSQLType)collectionType.getNestedType()).
+                        getParentType().getPackageName() + UNDERSCORE + nestedTypeName;
+                }
                 ddlWrapper.ddl = COR_TYPE + collectionType.getParentType().getPackageName() +
                     UNDERSCORE + collectionType.getTypeName().toUpperCase() + AS_TABLE_OF +
-                    getShadowTypeName(collectionType.getNestedType().getTypeName()) + SEMICOLON;
+                        shadowNestedTypeName + SEMICOLON;
                 ddlWrapper.finished = true;
-                createDDLs.put(collectionType.getTypeName(),ddlWrapper);
+                createDDLs.put(collectionType, ddlWrapper);
             }
         }
         @Override
@@ -145,7 +169,7 @@ public class ShadowDDLGenerator {
             ddlWrapper.ddl = DROP_TYPE + collectionType.getParentType().getPackageName() + UNDERSCORE +
                 collectionType.getTypeName().toUpperCase() + FORCE + SEMICOLON;
             ddlWrapper.finished = true;
-            dropDDLs.put(collectionType.getTypeName(), ddlWrapper);
+            dropDDLs.put(collectionType, ddlWrapper);
         }
 
         protected String getShadowTypeName(String typeName) {

@@ -32,6 +32,7 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
     protected boolean m_returnBeans;
     protected int m_returnColCount;
 
+    @SuppressWarnings("unused")
     public PlsqlCursorMethod(String packageName, String methodName, String methodNo, int modifiers,
         int sequence, TypeClass[] parameterTypes, String[] parameterNames, int[] parameterModes,
         boolean[] parameterDefaults, int paramLen, boolean returnBeans, SqlReflector reflector)
