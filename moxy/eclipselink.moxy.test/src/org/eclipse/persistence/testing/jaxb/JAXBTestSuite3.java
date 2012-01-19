@@ -17,6 +17,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
+import org.eclipse.persistence.testing.jaxb.defaultvalue.DefaultValueTestSuite;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
@@ -91,6 +92,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(XMLSchemaModelTestCases.class);
         suite.addTestSuite(JAXBIntrospectorGetElementNameTestCases.class);
         suite.addTest(CollectionsTestSuite.suite());
+        suite.addTest(DefaultValueTestSuite.suite());
         return suite;
     }
 

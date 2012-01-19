@@ -1433,6 +1433,9 @@ public class MappingsGenerator {
             }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
+        if (!mapping.getXPath().equals("text()")) {
+            ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        }
         return mapping;
     }
 
