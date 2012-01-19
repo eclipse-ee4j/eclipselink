@@ -23,9 +23,9 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class OverrideAllTestCases extends JAXBTestCases {
 
-    private static final String OXM_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/proporder/overrideAll-oxm.xml";
-    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/proporder/sequence.xml";
-    private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/proporder/sequence.xsd";
+    private static final String OXM_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/overrideAll-oxm.xml";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/sequence.xml";
+    private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/sequence.xsd";
 
     public OverrideAllTestCases(String name) throws Exception {
         super(name);

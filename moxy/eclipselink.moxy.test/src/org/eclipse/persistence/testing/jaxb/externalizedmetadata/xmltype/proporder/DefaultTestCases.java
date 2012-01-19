@@ -25,9 +25,9 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class DefaultTestCases extends JAXBTestCases {
 
-    private static final String OXM_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/proporder/default-oxm.xml";
-    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/proporder/default.xml";
-    private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/proporder/default.xsd";
+    private static final String OXM_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/default-oxm.xml";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/default.xml";
+    private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/default.xsd";
 
     public DefaultTestCases(String name) throws Exception {
         super(name);
