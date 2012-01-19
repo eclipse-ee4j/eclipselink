@@ -233,10 +233,10 @@ public class ListofObjects {
 			return false;
 		}
 
-		if(floatArray == null && compareListofObjects.floatArray !=null){
-			if(compareListofObjects.floatArray.length >0){
-				return false;
-			}
+		if(floatArray == null ){
+		    if(compareListofObjects.floatArray !=null) {
+		        return false;
+		    }
 		}else if (floatArray.length == compareListofObjects.floatArray.length) {
 			for (int i = 0; i < floatArray.length; i++) {
 				if (!floatArray[i].equals(compareListofObjects.floatArray[i])) {

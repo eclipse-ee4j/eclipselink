@@ -85,6 +85,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.un
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.EmployeeFactoryClassTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.factory.FactoryTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.proporder.PropOrderTestSuite;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPriceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPricesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPriceTestCases;
@@ -179,6 +180,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(SplitPackageTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.externalizedmetadata.namespace.NamespaceTestCases.class);
         suite.addTestSuite(FactoryTestCases.class);
+        suite.addTest(PropOrderTestSuite.suite());
         return suite;
     }
     

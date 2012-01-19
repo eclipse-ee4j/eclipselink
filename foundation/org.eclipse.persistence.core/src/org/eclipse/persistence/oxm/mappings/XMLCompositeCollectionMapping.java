@@ -27,6 +27,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -148,11 +149,12 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping {
+public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping, XMLContainerMapping {
     AbstractNullPolicy nullPolicy;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
     private XMLInverseReferenceMapping inverseReferenceMapping;
 
+    private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isWriteOnly;
     private boolean reuseContainer = false;
 
@@ -753,6 +755,26 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     void setInverseReferenceMapping(XMLInverseReferenceMapping inverseReferenceMapping) {
         this.inverseReferenceMapping = inverseReferenceMapping;
+    }
+
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return defaultEmptyContainer;
+    }
+
+    /**
+     * INTERNAL
+     * Indicate whether by default an empty container should be set on the 
+     * field/property if the collection is not present in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
+        this.defaultEmptyContainer = defaultEmptyContainer;
     }
 
 }

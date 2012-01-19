@@ -195,7 +195,8 @@ public class ReferenceResolver {
                 if(container == null) {
                     if (mapping.getReuseContainer()) {
                         container = mapping.getAttributeAccessor().getAttributeValueFromObject(referenceSourceObject);
-                    } else {
+                    } 
+                    if(null == container){
                         container = cPolicy.containerInstance();
                     }
                     this.referencedContainers.put(new ReferenceKey(referenceSourceObject, mapping), container);

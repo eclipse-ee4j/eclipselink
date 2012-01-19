@@ -59,7 +59,15 @@ public interface ContainerValue {
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord 
      */    
     public int getIndex();
-    
+
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer();
+
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord

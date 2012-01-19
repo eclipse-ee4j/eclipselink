@@ -20,6 +20,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -222,8 +223,9 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLNillableMapping {
+public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLContainerMapping, XMLNillableMapping {
     private boolean isCDATA;
+    private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isWriteOnly;
     private AbstractNullPolicy nullPolicy;
     protected boolean reuseContainer;
@@ -519,7 +521,25 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public boolean isCollapsingStringValues() {
         return this.isCollapsingStringValues;
     }
-    
 
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return isDefaultEmptyContainer;
+    }
+
+    /**
+     * INTERNAL
+     * Indicate whether by default an empty container should be set on the 
+     * field/property if the collection is not present in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
+        this.isDefaultEmptyContainer = defaultEmptyContainer;
+    }
 
 }

@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.NodeValue;
+import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
@@ -87,7 +88,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
  * 
  */
 
-public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMapping {
+public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<Class, List<XMLField>> classToSourceFieldsMappings;
@@ -97,6 +98,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private Map<String, XMLField> classNameToFieldMappings;
     private Map<XMLField, Converter> fieldsToConverters;
     private ContainerPolicy containerPolicy;
+    private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isMixedContent;
     
     private boolean isWriteOnly;
@@ -875,4 +877,25 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     public XMLCompositeDirectCollectionMapping getMixedContentMapping() {
         return this.mixedContentMapping;
     }
+
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return isDefaultEmptyContainer;
+    }
+
+    /**
+     * INTERNAL
+     * Indicate whether by default an empty container should be set on the 
+     * field/property if the collection is not present in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
+        this.isDefaultEmptyContainer = defaultEmptyContainer;
+    }
+
 }

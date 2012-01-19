@@ -291,8 +291,32 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         }
     }
 
-    public Object getContainerInstance(ContainerValue containerValue) {
-    	return containerInstances[containerValue.getIndex()];    	
+    public Object getContainerInstance(ContainerValue c) {
+        return getContainerInstance(c, true);
+    }
+ 
+    private Object getContainerInstance(ContainerValue c, boolean createContainerIfNecessary) {
+        Object containerInstance = containerInstances[c.getIndex()];
+
+        if (containerInstance == null) {
+            //don't attempt to do a get on a readOnly property.
+            if(c.getReuseContainer() && !(c.getMapping().getAttributeAccessor().isReadOnly())) {
+                containerInstance = c.getMapping().getAttributeAccessor().getAttributeValueFromObject(getCurrentObject());
+            }
+            if(null == containerInstance && createContainerIfNecessary) {
+                containerInstance = c.getContainerInstance();
+            }
+            containerInstances[c.getIndex()] = containerInstance;
+            if(c.getMapping() instanceof XMLChoiceCollectionMapping) {
+                XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue) c;
+                for(NodeValue next:nodeValue.getAllNodeValues()) {
+                    NodeValue nestedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue) next).getChoiceElementNodeValue();
+                    containerInstances[((ContainerValue) nestedNodeValue).getIndex()] = containerInstance;
+                }
+            }
+        }
+
+        return containerInstance;
     }
 
     /**
@@ -508,25 +532,13 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             		containerInstances = new Object[containerValues.size()];
             	}
             	
-            	
-            	
                 for (int x = 0, containerValuesSize = containerValues.size(); x < containerValuesSize; x++) {
                     ContainerValue containerValue = (ContainerValue)containerValues.get(x);
-                    Object containerInstance = null;
-                    //don't attempt to do a get on a readOnly property.
                     if(containerValue.getReuseContainer() && !(containerValue.getMapping().getAttributeAccessor().isReadOnly())) {
-                        containerInstance = containerValue.getMapping().getAttributeAccessor().getAttributeValueFromObject(object);
+                        getContainerInstance(containerValue, false);
                     }
-                    if(null == containerInstance) {
-                        containerInstance = containerValue.getContainerInstance();
-                    }
-                    containerInstances[containerValue.getIndex()] = containerInstance;
-                    if(containerValue.getMapping() instanceof XMLChoiceCollectionMapping) {
-                        XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)containerValue;
-                        for(NodeValue next:nodeValue.getAllNodeValues()) {
-                            NodeValue nestedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)next).getChoiceElementNodeValue();
-                            containerInstances[((ContainerValue)nestedNodeValue).getIndex()] = containerInstance;
-                        }
+                    if(containerValue.isDefaultEmptyContainer()) {
+                        getContainerInstance(containerValue, true);
                     }
                 }
             }

@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -68,9 +69,10 @@ import org.w3c.dom.Node;
  * current Element.
  *
  */
-public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping {
+public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping {
     private XMLField field;
     private MappedKeyMapContainerPolicy containerPolicy;
+    private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isNamespaceDeclarationIncluded;
     private boolean isSchemaInstanceIncluded;
     private boolean isWriteOnly;
@@ -449,6 +451,26 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      */
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
+    }
+
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return isDefaultEmptyContainer;
+    }
+
+    /**
+     * INTERNAL
+     * Indicate whether by default an empty container should be set on the 
+     * field/property if the collection is not present in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
+        this.isDefaultEmptyContainer = defaultEmptyContainer;
     }
 
 }

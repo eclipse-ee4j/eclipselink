@@ -32,8 +32,6 @@ public class EmptyCollectionTestCases extends JAXBWithJSONTestCases{
 
     protected Object getControlObject(){
         Order o = new Order();
-        String[] comments = new String[0];
-        o.setComments(comments);
         o.setId(1);
 
         Customer customer = new Customer();

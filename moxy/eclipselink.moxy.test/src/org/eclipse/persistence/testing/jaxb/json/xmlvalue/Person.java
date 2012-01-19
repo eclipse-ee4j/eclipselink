@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.xmlvalue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Person {
 
     private String firstName;	
-	private List<String> middleNames;		
+	private List<String> middleNames = new ArrayList<String>();
     private String lastName;    	   
     private Address address;   
     private PhoneNumber phoneNumber;	
@@ -109,4 +110,5 @@ public class Person {
 
         return firstName.equals(person.firstName) && lastName.equals(person.lastName);
     }
+
 }
