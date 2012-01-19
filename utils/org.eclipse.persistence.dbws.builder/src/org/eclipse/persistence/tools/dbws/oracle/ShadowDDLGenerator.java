@@ -1,22 +1,47 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman: Jan 2012 - Initial implementation
+ ******************************************************************************/
 package org.eclipse.persistence.tools.dbws.oracle;
 
 //javase imports
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //EclipseLink imports
+import org.eclipse.persistence.tools.oracleddl.metadata.CharType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DecimalType;
+import org.eclipse.persistence.tools.oracleddl.metadata.DoubleType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
+import org.eclipse.persistence.tools.oracleddl.metadata.FloatType;
+import org.eclipse.persistence.tools.oracleddl.metadata.LongRawType;
+import org.eclipse.persistence.tools.oracleddl.metadata.LongType;
+import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.RawType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
+import org.eclipse.persistence.tools.oracleddl.metadata.VarCharType;
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVisitor;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
+import static org.eclipse.persistence.tools.dbws.Util.FLOAT_STR;
+import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.NUMERIC_STR;
 import static org.eclipse.persistence.tools.dbws.Util.OTHER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
@@ -36,9 +61,23 @@ public class ShadowDDLGenerator {
     public String getCreateDDLFor(PLSQLType plsqlType) {
         return createDDLs.get(plsqlType).ddl;
     }
+    public List<String> getAllCreateDDLs() {
+        List<String> allDDLs = new ArrayList<String>();
+        for (Map.Entry<PLSQLType, DDLWrapper> me : createDDLs.entrySet()) {
+            allDDLs.add(me.getValue().ddl);
+        }
+        return allDDLs;
+    }
 
     public String getDropDDLFor(PLSQLType plsqlType) {
         return dropDDLs.get(plsqlType).ddl;
+    }
+    public List<String> getAllDropDDLs() {
+        List<String> allDDLs = new ArrayList<String>();
+        for (Map.Entry<PLSQLType, DDLWrapper> me : dropDDLs.entrySet()) {
+            allDDLs.add(me.getValue().ddl);
+        }
+        return allDDLs;
     }
 
     class DDLWrapperGeneratorVisitor extends BaseDatabaseTypeVisitor {
@@ -55,7 +94,12 @@ public class ShadowDDLGenerator {
         static final String AS_OBJECT = " AS OBJECT (";
         static final String AS_TABLE_OF = " AS TABLE OF ";
         static final String END_OBJECT = ");";
-        static final String NUMBER = "NUMBER";
+        static final String NUMBER_STR = "NUMBER";
+        static final String ROWID_STR = "VARCHAR2(256)";
+        static final String NUMBER_DEFAULTSIZE = "38";
+        static final String FLOAT_DEFAULTSIZE = "63";
+        static final String DOUBLE_DEFAULTSIZE = "126";
+        static final String LONG_DEFAULTSIZE = "32760";
         protected PLSQLRecordType currentRecordType;
         @Override
         public void beginVisit(PLSQLRecordType recordType) {
@@ -88,6 +132,9 @@ public class ShadowDDLGenerator {
         @Override
         public void beginVisit(FieldType fieldType) {
             if (currentRecordType != null) {
+                if (fieldType.getFieldName().equalsIgnoreCase("N18")) {
+                    System.identityHashCode(this);
+                }
                 DDLWrapper ddlWrapper = createDDLs.get(currentRecordType);
                 if (!ddlWrapper.finished) {
                     String fieldName = fieldType.getFieldName();
@@ -103,34 +150,7 @@ public class ShadowDDLGenerator {
                                     getTypeName().toUpperCase();
                             }
                             else {
-                                fieldShadowName = getShadowTypeName(f.getDataType().getTypeName());
-                                if (fieldDataType instanceof VarChar2Type) {
-                                    fieldShadowName = VarChar2Type.TYPENAME;
-                                }
-                                else if (fieldDataType instanceof DecimalType) {
-                                    fieldShadowName = NUMBER;
-                                }
-                                if (fieldDataType instanceof SizedType) {
-                                    SizedType sFieldDataType = (SizedType)fieldDataType;
-                                    long defaultSize = sFieldDataType.getDefaultSize();
-                                    long size = sFieldDataType.getSize();
-                                    if (size != defaultSize) {
-                                        fieldShadowName += LBRACKET + size + RBRACKET;
-                                    }
-                                }
-                                else if (fieldDataType instanceof PrecisionType) {
-                                    PrecisionType pFieldDataType = (PrecisionType)fieldDataType;
-                                    long defaultPrecision = pFieldDataType.getDefaultPrecision();
-                                    long precision = pFieldDataType.getPrecision();
-                                    long scale = pFieldDataType.getScale();
-                                    if (precision != defaultPrecision) {
-                                        fieldShadowName += LBRACKET + precision;
-                                        if (scale != 0) {
-                                            fieldShadowName += COMMA + SINGLE_SPACE + scale;
-                                        }
-                                        fieldShadowName += RBRACKET;
-                                    }
-                                }
+                                fieldShadowName = getShadowTypeName(fieldDataType);
                             }
                             ddlWrapper.ddl += fieldShadowName;
                             if (i < len -1) {
@@ -150,11 +170,30 @@ public class ShadowDDLGenerator {
                 ddlWrapper = new DDLWrapper();
             }
             if (!ddlWrapper.finished) {
-                String nestedTypeName = collectionType.getNestedType().getTypeName();
-                String shadowNestedTypeName = getShadowTypeName(nestedTypeName);
-                if (OTHER_STR.equals(shadowNestedTypeName)) {
-                    shadowNestedTypeName = ((PLSQLType)collectionType.getNestedType()).
-                        getParentType().getPackageName() + UNDERSCORE + nestedTypeName;
+                String shadowNestedTypeName = null;
+                DatabaseType nestedType = collectionType.getNestedType();
+                if (nestedType instanceof NumericType) {
+                    NumericType nDataType = (NumericType)nestedType;
+                    if (nDataType.isNumberSynonym()) {
+                        shadowNestedTypeName = NUMBER_STR;
+                    }
+                    else {
+                        shadowNestedTypeName = NUMERIC_STR;
+                    }
+                    PrecisionType pDataType = (PrecisionType)nestedType;
+                    long defaultPrecision = pDataType.getDefaultPrecision();
+                    long precision = pDataType.getPrecision();
+                    long scale = pDataType.getScale();
+                    if (precision != defaultPrecision) {
+                        shadowNestedTypeName += LBRACKET + precision;
+                        if (scale != 0) {
+                            shadowNestedTypeName += COMMA + SINGLE_SPACE + scale;
+                        }
+                        shadowNestedTypeName += RBRACKET;
+                    }
+                }
+                else {
+                    shadowNestedTypeName = getShadowTypeName(nestedType);
                 }
                 ddlWrapper.ddl = COR_TYPE + collectionType.getParentType().getPackageName() +
                     UNDERSCORE + collectionType.getTypeName().toUpperCase() + AS_TABLE_OF +
@@ -172,11 +211,119 @@ public class ShadowDDLGenerator {
             dropDDLs.put(collectionType, ddlWrapper);
         }
 
-        protected String getShadowTypeName(String typeName) {
-            int typ = getJDBCTypeFromTypeName(typeName);
-            String shadowTypeName = getJDBCTypeNameFromType(typ);
-            if (NUMERIC_STR.equals(shadowTypeName)) {
-                shadowTypeName = "NUMBER";
+        protected String getShadowTypeName(DatabaseType dataType ) {
+            String shadowTypeName = null;
+            if (dataType == ScalarDatabaseTypeEnum.INTEGER_TYPE ||
+                dataType == ScalarDatabaseTypeEnum.SMALLINT_TYPE) {
+                shadowTypeName = NUMBER_STR + LBRACKET + NUMBER_DEFAULTSIZE + RBRACKET;
+            }
+            else if (dataType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE ||
+                dataType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE ||
+                dataType == ScalarDatabaseTypeEnum.NATURAL_TYPE ||
+                dataType == ScalarDatabaseTypeEnum.PLS_INTEGER_TYPE ||
+                dataType == ScalarDatabaseTypeEnum.POSITIVE_TYPE ||
+                dataType == ScalarDatabaseTypeEnum.SIGN_TYPE ||
+                dataType == ScalarDatabaseTypeEnum.SIMPLE_INTEGER_TYPE) {
+                shadowTypeName = INTEGER_STR;
+            }
+            else if (dataType == ScalarDatabaseTypeEnum.ROWID_TYPE) {
+                shadowTypeName = ROWID_STR;
+            }
+            else if (dataType == ScalarDatabaseTypeEnum.SIMPLE_DOUBLE_TYPE) {
+                shadowTypeName = ScalarDatabaseTypeEnum.BINARY_DOUBLE_TYPE.getTypeName();
+            }
+            else if (dataType == ScalarDatabaseTypeEnum.SIMPLE_FLOAT_TYPE) {
+                shadowTypeName = ScalarDatabaseTypeEnum.BINARY_FLOAT_TYPE.getTypeName();
+            }
+            else if (dataType instanceof PrecisionType) {
+                PrecisionType pDataType = (PrecisionType)dataType;
+                long defaultPrecision = pDataType.getDefaultPrecision();
+                String defaultPrecisionStr = NUMBER_DEFAULTSIZE;
+                if (dataType instanceof NumericType || dataType instanceof DecimalType) {
+                    shadowTypeName = NUMBER_STR;
+                }
+                else {
+                    shadowTypeName = FLOAT_STR;
+                    defaultPrecisionStr = FLOAT_DEFAULTSIZE;
+                    if (dataType instanceof FloatType || dataType instanceof DoubleType) {
+                        defaultPrecisionStr = DOUBLE_DEFAULTSIZE;
+                    }
+                }
+                if (!(dataType instanceof NumericType && ((NumericType)dataType).isNumberSynonym())) {
+                    long precision = pDataType.getPrecision();
+                    long scale = pDataType.getScale();
+                    if (precision != defaultPrecision) {
+                        shadowTypeName += LBRACKET + Long.toString(precision);
+                        if (scale != 0) {
+                            shadowTypeName += COMMA + SINGLE_SPACE + scale;
+                        }
+                    }
+                    else {
+                        shadowTypeName += LBRACKET + defaultPrecisionStr;
+                    }
+                    shadowTypeName += RBRACKET;
+                }
+            }
+            else if (dataType instanceof VarCharType) {
+                shadowTypeName = VarChar2Type.TYPENAME;
+                VarCharType vcharType = (VarCharType)dataType;
+                long defaultSize = vcharType.getDefaultSize();
+                long size = vcharType.getSize();
+                String sizeStr = Long.toString(size);
+                if (dataType instanceof LongType) {
+                    shadowTypeName = VarChar2Type.TYPENAME;
+                    if (size == defaultSize) {
+                        sizeStr = LONG_DEFAULTSIZE;
+                    }
+                }
+                shadowTypeName += LBRACKET + sizeStr + RBRACKET;
+            }
+            else if (dataType instanceof CharType) {
+                shadowTypeName = CharType.TYPENAME;
+                long size = ((CharType)dataType).getSize();
+                shadowTypeName += LBRACKET + size + RBRACKET;
+            }
+            else if (dataType instanceof SizedType) {
+                shadowTypeName = dataType.getTypeName();
+                SizedType sDataType = (SizedType)dataType;
+                long defaultSize = sDataType.getDefaultSize();
+                String sizeStr = null;
+                long size = sDataType.getSize();
+                if (dataType instanceof LongType) {
+                    shadowTypeName = VarChar2Type.TYPENAME;
+                    if (size == defaultSize) {
+                        sizeStr = LONG_DEFAULTSIZE;
+                    }
+                    else {
+                        sizeStr = Long.toString(size);
+                    }
+                    shadowTypeName += LBRACKET + sizeStr + RBRACKET;
+                }
+                else if (dataType instanceof LongRawType) {
+                    shadowTypeName = RawType.TYPENAME;
+                    if (size == defaultSize) {
+                        sizeStr = LONG_DEFAULTSIZE;
+                    }
+                    else {
+                        sizeStr = Long.toString(size);
+                    }
+                    shadowTypeName += LBRACKET + sizeStr + RBRACKET;
+                }
+                else if (size != defaultSize) {
+                    shadowTypeName += LBRACKET + size + RBRACKET;
+                }
+            }
+            else if (dataType instanceof PLSQLType) {
+                shadowTypeName = ((PLSQLType)dataType).getParentType().getPackageName() +
+                    UNDERSCORE + dataType.getTypeName();
+            }
+            else {
+                String typeName = dataType.getTypeName();
+                int typ = getJDBCTypeFromTypeName(typeName);
+                shadowTypeName = getJDBCTypeNameFromType(typ);
+                if (OTHER_STR.equals(shadowTypeName)) {
+                    shadowTypeName = typeName;
+                }
             }
             return shadowTypeName;
         }

@@ -96,6 +96,8 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
+import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVisitor;
+import org.eclipse.persistence.tools.oracleddl.metadata.visit.DatabaseTypeVisitor;
 import org.eclipse.persistence.tools.oracleddl.parser.ParseException;
 import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
@@ -152,6 +154,41 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     public boolean hasComplexProcedureArgs() {
         return hasComplexProcedureArgs;
+    }
+
+    @Override
+    public void buildDbArtifacts() {
+        super.buildDbArtifacts();
+        //list of all directly-referenced packages
+        Set<PLSQLPackageType> directPackages = new HashSet<PLSQLPackageType>();
+        for (ProcedureType procedureType : dbStoredProcedures) {
+            for (ArgumentType argumentType : procedureType.getArguments()) {
+                DatabaseType argumentDataType = argumentType.getDataType();
+                if (argumentDataType instanceof PLSQLType) {
+                    PLSQLType plsqlType = (PLSQLType)argumentDataType;
+                    directPackages.add(plsqlType.getParentType());
+                }
+            }
+        }
+        //any indirectly-referenced packages?
+        final Set<PLSQLPackageType> indirectPackages = new HashSet<PLSQLPackageType>();
+        DatabaseTypeVisitor indirectVisitor = new BaseDatabaseTypeVisitor() {
+            @Override
+            public void beginVisit(PLSQLPackageType databaseType) {
+                indirectPackages.add(databaseType);
+            }
+        };
+        for (PLSQLPackageType pckage : directPackages) {
+            pckage.accept(indirectVisitor);
+        }
+        Set<PLSQLPackageType> packages = new HashSet<PLSQLPackageType>();
+        packages.addAll(directPackages);
+        packages.addAll(indirectPackages);
+        for (PLSQLPackageType pckage : packages) {
+            ShadowDDLGenerator ddlGenerator = new ShadowDDLGenerator(pckage);
+            dbwsBuilder.getTypeDDL().addAll(ddlGenerator.getAllCreateDDLs());
+            dbwsBuilder.getTypeDropDDL().addAll(ddlGenerator.getAllDropDDLs());
+        }
     }
 
     /**
@@ -905,7 +942,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-   
+
     /**
      * Build descriptor and mappings for an Object type argument.  The
      * newly created descriptor will be added to the given OX project.
