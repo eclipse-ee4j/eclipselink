@@ -65,6 +65,7 @@ public class ShadowDDLGenerationTestSuite {
     static final String SHADOWDDLTEST_TABLE_TYPE = "NUM_TBL";
     static final String SHADOWDDLTEST_TABLE_TYPE2 = "NUM_TBL2";
     static final String SHADOWDDLTEST_TABLE_TYPE3 = "NONASSO_ARRAY";
+    static final String SHADOWDDLTEST_RECORD_TYPE2 = "NUM_RECORD2";
     static final String CREATE_SHADOWDDLTEST_PACKAGE =
         "CREATE OR REPLACE PACKAGE " + SHADOWDDLTEST_PACKAGE + " AS" +
             "\nTYPE " + SHADOWDDLTEST_TABLE_TYPE + " IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
@@ -106,11 +107,15 @@ public class ShadowDDLGenerationTestSuite {
                 "\nN34 " + SHADOWDDLTEST_TABLE_TYPE3 +
             "\n);" +
             "\nTYPE " + SHADOWDDLTEST_TABLE_TYPE2 + " IS TABLE OF " + SHADOWDDLTEST_RECORD_TYPE + ";" +
-            "\nPROCEDURE " + SHADOWDDLTEST_PROCEDURE + "(NT2 IN " + SHADOWDDLTEST_TABLE_TYPE2 + ");" +
+            "\nTYPE " + SHADOWDDLTEST_RECORD_TYPE2 + " IS RECORD (" +
+                "\nA1 " + SHADOWDDLTEST_TABLE_TYPE2 + "," +
+                "\nA2 " + SHADOWDDLTEST_RECORD_TYPE +
+            "\n);" +
+            "\nPROCEDURE " + SHADOWDDLTEST_PROCEDURE + "(NR2 IN " + SHADOWDDLTEST_RECORD_TYPE2 + ");" +
         "\nEND " + SHADOWDDLTEST_PACKAGE + ";";
     static final String CREATE_SHADOWDDLTEST_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY " + SHADOWDDLTEST_PACKAGE + " AS" +
-            "\nPROCEDURE " + SHADOWDDLTEST_PROCEDURE + "(NT2 IN " + SHADOWDDLTEST_TABLE_TYPE2 + ") AS" +
+            "\nPROCEDURE " + SHADOWDDLTEST_PROCEDURE + "(NR2 IN " + SHADOWDDLTEST_RECORD_TYPE2 + ") AS" +
             "\nBEGIN" +
                 "\nnull;" +
             "\nEND " + SHADOWDDLTEST_PROCEDURE + ";" +
@@ -173,6 +178,8 @@ public class ShadowDDLGenerationTestSuite {
 
             }
          );
+        String numRecord2CreateDDL = null;
+        String numRecord2DropDDL = null;
         String numRecordCreateDDL = null;
         String numRecordDropDDL = null;
         String numTblCreateDDL = null;
@@ -183,28 +190,36 @@ public class ShadowDDLGenerationTestSuite {
         String numTbl3DropDDL = null;
         List<ProcedureMethod> methods = methodType.getDeclaredMethods();
         for (TypeClass typeClass : methods.get(0).getParamTypes()) {
-            if (typeClass.getName().contains(SHADOWDDLTEST_TABLE_TYPE2)) {
-                PlsqlTableType numTbl2 = (PlsqlTableType)typeClass;
-                numTbl2CreateDDL = removeLineTerminators(numTbl2.getSqlTypeDecl());
-                numTbl2DropDDL = removeLineTerminators(numTbl2.getSqlTypeDrop());
-                PlsqlRecordType recordType = (PlsqlRecordType)numTbl2.getComponentType();
+            if (typeClass.getName().contains(SHADOWDDLTEST_RECORD_TYPE2)) {
+                PlsqlRecordType record2Type = (PlsqlRecordType)typeClass;
+                numRecord2CreateDDL = removeLineTerminators(record2Type.getSqlTypeDecl());
+                numRecord2DropDDL = removeLineTerminators(record2Type.getSqlTypeDrop());
+                List<AttributeField> record2Fields = record2Type.getFields(false);
+                TypeClass fieldA1 = record2Fields.get(0).getType();
+                PlsqlTableType numTbl2Type = (PlsqlTableType)fieldA1;
+                numTbl2CreateDDL = removeLineTerminators(numTbl2Type.getSqlTypeDecl());
+                numTbl2DropDDL = removeLineTerminators(numTbl2Type.getSqlTypeDrop());
+                TypeClass fieldA2 = record2Fields.get(1).getType();
+                PlsqlRecordType recordType = (PlsqlRecordType)fieldA2;
                 numRecordCreateDDL = removeLineTerminators(recordType.getSqlTypeDecl());
                 numRecordDropDDL = removeLineTerminators(recordType.getSqlTypeDrop());
-                for (AttributeField field : recordType.getFields(false)) {
-                    if (field.getType() instanceof PlsqlTableType) {
-                        PlsqlTableType tableType = (PlsqlTableType)field.getType();
-                        if (tableType.getName().contains(SHADOWDDLTEST_TABLE_TYPE)) {
-                            numTblCreateDDL = removeLineTerminators(tableType.getSqlTypeDecl());
-                            numTblDropDDL = removeLineTerminators(tableType.getSqlTypeDrop());
-                        }
-                        else if (tableType.getName().contains(SHADOWDDLTEST_TABLE_TYPE3)) {
-                            numTbl3CreateDDL = removeLineTerminators(tableType.getSqlTypeDecl());
-                            numTbl3DropDDL = removeLineTerminators(tableType.getSqlTypeDrop());
-                        }
-                    }
-                }
+                List<AttributeField> recordFields = recordType.getFields(false);
+                TypeClass fieldN33 = recordFields.get(32).getType();
+                PlsqlTableType numTblType = (PlsqlTableType)fieldN33;
+                numTblCreateDDL = removeLineTerminators(numTblType.getSqlTypeDecl());
+                numTblDropDDL = removeLineTerminators(numTblType.getSqlTypeDrop());
+                TypeClass fieldN34 = recordFields.get(33).getType();
+                PlsqlTableType numTbl3Type = (PlsqlTableType)fieldN34;
+                numTbl3CreateDDL = removeLineTerminators(numTbl3Type.getSqlTypeDecl());
+                numTbl3DropDDL = removeLineTerminators(numTbl3Type.getSqlTypeDrop());
             }
         }
+        assertEquals("generated create shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE2 +
+            " does not match expected shadow DDL", numRecord2CreateDDL,
+            EXPECTED_NUMRECORD2_CREATE_SHADOWDDL);
+        assertEquals("generated drop shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE2 +
+            " does not match expected shadow DDL", numRecord2DropDDL,
+            EXPECTED_NUMRECORD2_DROP_SHADOWDDL);
         assertEquals("generated create shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE +
             " does not match expected shadow DDL", numRecordCreateDDL,
             EXPECTED_NUMRECORD_CREATE_SHADOWDDL);
@@ -224,6 +239,13 @@ public class ShadowDDLGenerationTestSuite {
             " does not match expected shadow DDL", numTbl3DropDDL, EXPECTED_NUMTBL3_DROP_SHADOWDDL);
     }
 
+    static final String EXPECTED_NUMRECORD2_CREATE_SHADOWDDL =
+        "CREATE OR REPLACE TYPE " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_RECORD_TYPE2 + " AS OBJECT (" +
+        "      A1 " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_TABLE_TYPE2 + "," + //original definition: NUM_TBL2
+        "      A2 " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_RECORD_TYPE +       //original definition: NUM_RECORD
+        ");";
+    static final String EXPECTED_NUMRECORD2_DROP_SHADOWDDL =
+        "DROP TYPE " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_RECORD_TYPE2 + " FORCE;";
     static final String EXPECTED_NUMRECORD_CREATE_SHADOWDDL =
         "CREATE OR REPLACE TYPE " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_RECORD_TYPE + " AS OBJECT (" +
         "      N1 NUMBER(38)," +                //original definition: INTEGER
@@ -261,7 +283,6 @@ public class ShadowDDLGenerationTestSuite {
         "      N33 " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_TABLE_TYPE + "," +
         "      N34 " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_TABLE_TYPE3 +
         ");";
-
     static final String EXPECTED_NUMRECORD_DROP_SHADOWDDL =
         "DROP TYPE " + SHADOWDDLTEST_PACKAGE + "_" + SHADOWDDLTEST_RECORD_TYPE + " FORCE;";
     static final String EXPECTED_NUMTBL_CREATE_SHADOWDDL =
@@ -295,6 +316,15 @@ public class ShadowDDLGenerationTestSuite {
         PLSQLCollectionType collectionType2 = (PLSQLCollectionType)shadowDDLTestPackage.getTypes().get(3);
         String numTbl2CreateDDL = removeLineTerminators(shadowDDLGenerator.getCreateDDLFor(collectionType2));
         String numTbl2DropDDL = removeLineTerminators(shadowDDLGenerator.getDropDDLFor(collectionType2));
+        PLSQLRecordType recordType2 = (PLSQLRecordType)shadowDDLTestPackage.getTypes().get(4);
+        String numRecord2CreateDDL = removeLineTerminators(shadowDDLGenerator.getCreateDDLFor(recordType2));
+        String numRecord2DropDDL = removeLineTerminators(shadowDDLGenerator.getDropDDLFor(recordType2));
+        assertEquals("generated create shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE2 +
+            " does not match expected shadow DDL", numRecord2CreateDDL,
+            EXPECTED_NUMRECORD2_CREATE_SHADOWDDL);
+        assertEquals("generated drop shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE2 +
+            " does not match expected shadow DDL", numRecord2DropDDL,
+            EXPECTED_NUMRECORD2_DROP_SHADOWDDL);
         assertEquals("generated create shadow DDL for " + SHADOWDDLTEST_RECORD_TYPE +
             " does not match expected shadow DDL", numRecordCreateDDL,
             EXPECTED_NUMRECORD_CREATE_SHADOWDDL);
