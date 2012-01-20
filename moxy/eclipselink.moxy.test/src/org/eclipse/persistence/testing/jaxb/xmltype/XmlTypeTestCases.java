@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmltype.builtin.EmploymentPeriod;
 import org.eclipse.persistence.testing.jaxb.xmltype.builtin.MyDate;
@@ -26,10 +26,11 @@ import org.eclipse.persistence.testing.jaxb.xmltype.builtin.MyDate;
 /**
  *
  */
-public class XmlTypeTestCases extends JAXBTestCases {
+public class XmlTypeTestCases extends JAXBWithJSONTestCases {
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/schema.xsd";
     private final static String XSD_RESOURCE_1 = "org/eclipse/persistence/testing/jaxb/xmltype/builtintype.xsd";
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/instance.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/instance.json";
     private static final String CONTROL_NAME = "John";
 
     public XmlTypeTestCases(String name) throws Exception {
@@ -38,6 +39,7 @@ public class XmlTypeTestCases extends JAXBTestCases {
         classes[0] = Employee.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     protected Object getControlObject() {

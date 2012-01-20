@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.jaxb.xmlelementref;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class EmployeeSingleTestCases  extends JAXBTestCases {
+public class EmployeeSingleTestCases  extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/employee-single.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/employee-single.json";
 
 	public EmployeeSingleTestCases(String name) throws Exception {
 		super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = TestObjectFactory.class;
         setClasses(classes);

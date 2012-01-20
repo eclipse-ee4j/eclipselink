@@ -22,6 +22,7 @@ import java.util.Map;
 
 public class JAXBEmployeeArrayListTestCases extends JAXBEmployeeListTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArrayList.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArrayList.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArrayListNoXsiType.xml";
 
 	public JAXBEmployeeArrayListTestCases(String name) throws Exception {

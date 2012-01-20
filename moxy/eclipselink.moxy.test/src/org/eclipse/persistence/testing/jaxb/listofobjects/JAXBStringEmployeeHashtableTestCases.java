@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
-public class JAXBStringEmployeeHashtableTestCases extends JAXBListOfObjectsTestCases {
+public class JAXBStringEmployeeHashtableTestCases extends JAXBListOfObjectsNoJSONTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeHashtable.xml";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMapNoXsiType.xml";
 	protected final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";

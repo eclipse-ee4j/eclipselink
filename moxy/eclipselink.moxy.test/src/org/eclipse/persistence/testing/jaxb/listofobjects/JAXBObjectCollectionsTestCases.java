@@ -28,7 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsTestCases {
+public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsNoJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections.xml";
 	protected final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/objectCollectionsWrite.xml";

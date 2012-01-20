@@ -12,16 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmltype.proporder;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class TransientTestCases extends JAXBTestCases {
+public class TransientTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/proporder/input.xml";
-
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/proporder/input.json";
+    
     public TransientTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {ChildOfTransientRoot.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

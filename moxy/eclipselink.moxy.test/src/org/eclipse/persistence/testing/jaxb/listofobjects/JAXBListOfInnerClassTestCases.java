@@ -27,6 +27,7 @@ import org.eclipse.persistence.testing.jaxb.listofobjects.ClassWithInnerClass.My
 
 public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.json";
 	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xml";
 
 	public List<MyInner> myList;
@@ -42,6 +43,7 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Type[] types = new Type[1];
 		types[0] = getTypeToUnmarshalTo(); 
 		setTypes(types);	

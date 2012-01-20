@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 public class JAXBIntegerMyListTestCases extends JAXBIntegerArrayTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerMyList.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerMyList.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerMyListNoXsiType.xml";
 
 	public MyList<Integer> integerMyList;
@@ -34,6 +35,7 @@ public class JAXBIntegerMyListTestCases extends JAXBIntegerArrayTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 
 		Type[] types = new Type[1];
 		types[0] = getTypeToUnmarshalTo();

@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerLinkedList.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerLinkedList.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerLinkedListNoXsiType.xml";
 
 	public JAXBIntegerLinkedListTestCases(String name) throws Exception {
@@ -32,6 +33,7 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 
 		Type[] types = new Type[1];
 		types[0] = getTypeToUnmarshalTo();

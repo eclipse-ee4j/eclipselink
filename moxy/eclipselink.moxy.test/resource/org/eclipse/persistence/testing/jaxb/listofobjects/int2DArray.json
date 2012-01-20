@@ -1,0 +1,12 @@
+{"root":{
+    "type":"intArrayArray",
+       "item":[
+	  {
+	    "item":[0,1,2]
+	  },
+	  {
+  	    "item":[3,4,5]
+	  }
+      ]
+   }
+}

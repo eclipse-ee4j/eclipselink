@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.json";
 	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerArrayNoXsiType.xml";
 
 	public JAXBIntegerArrayTestCases(String name) throws Exception {
@@ -37,6 +38,7 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Integer[].class;
 		setClasses(classes);

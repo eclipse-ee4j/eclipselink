@@ -1,0 +1,9 @@
+{"root":{ 
+   "type":"myInnerArray",
+   "item":[
+     {"innerName":"aaa"},
+     {"innerName":"bbb"}
+   ]
+  }
+}
+

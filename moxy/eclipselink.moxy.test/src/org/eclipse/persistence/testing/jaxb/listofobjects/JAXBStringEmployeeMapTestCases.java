@@ -27,7 +27,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
-public class JAXBStringEmployeeMapTestCases extends JAXBListOfObjectsTestCases {
+public class JAXBStringEmployeeMapTestCases extends JAXBListOfObjectsNoJSONTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMap.xml";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringEmployeeMapNoXsiType.xml";
 	protected final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";

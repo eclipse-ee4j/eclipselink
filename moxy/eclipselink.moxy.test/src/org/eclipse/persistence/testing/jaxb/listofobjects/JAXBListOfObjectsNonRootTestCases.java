@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsTestCases {
+public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTestCases {
 
 	protected final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	protected final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";

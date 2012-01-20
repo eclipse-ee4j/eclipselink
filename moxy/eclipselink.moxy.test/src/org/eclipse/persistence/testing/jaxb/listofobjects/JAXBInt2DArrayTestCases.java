@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 public class JAXBInt2DArrayTestCases extends JAXBListOfObjectsTestCases {
 
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/int2DArray.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/int2DArray.json";
     private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/int2DArray.xml";
 
     public JAXBInt2DArrayTestCases(String name) throws Exception {
@@ -32,6 +33,7 @@ public class JAXBInt2DArrayTestCases extends JAXBListOfObjectsTestCases {
 
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = int[][].class;
         setClasses(classes);

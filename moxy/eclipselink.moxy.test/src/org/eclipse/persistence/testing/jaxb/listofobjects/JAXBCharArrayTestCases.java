@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 
 public class JAXBCharArrayTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArray.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArray.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/charArrayNoXsiType.xml";
 
 	public JAXBCharArrayTestCases(String name) throws Exception {
@@ -33,6 +34,7 @@ public class JAXBCharArrayTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = char[].class;
 		setClasses(classes);

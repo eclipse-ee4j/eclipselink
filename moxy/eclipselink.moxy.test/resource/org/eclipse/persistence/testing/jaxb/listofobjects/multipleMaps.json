@@ -1,0 +1,14 @@
+{"root":{
+   "type":"stringIntegerMap",
+   "entry":[
+      {
+      "key":"aaa",
+      "value":1
+      },
+      {
+      "key":"bbb",
+      "value":2
+      }
+   ] 
+   }
+}

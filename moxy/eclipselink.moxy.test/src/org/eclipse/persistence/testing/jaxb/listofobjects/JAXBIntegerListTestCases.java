@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 
 public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerList.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerList.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerListNoXsiType.xml";
 
 	public JAXBIntegerListTestCases(String name) throws Exception {
@@ -31,6 +32,7 @@ public class JAXBIntegerListTestCases extends JAXBIntegerArrayTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 
 		Type[] types = new Type[1];
 		types[0] = getTypeToUnmarshalTo();

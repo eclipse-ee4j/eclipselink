@@ -20,14 +20,17 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class DuplicateNameTestCases extends JAXBTestCases {
+public class DuplicateNameTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/duplicatename.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/duplicatename.json";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/duplicatename.xsd";
     
     public DuplicateNameTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = ObjectFactory.class;
         setClasses(classes);

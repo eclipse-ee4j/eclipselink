@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestC
 
 public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.json";
 	
 	public Map<String, Integer> mapField1;	
 	
@@ -42,6 +43,7 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		types = new Type[5];
 		types[0] = getTypeToUnmarshalTo();
 				  

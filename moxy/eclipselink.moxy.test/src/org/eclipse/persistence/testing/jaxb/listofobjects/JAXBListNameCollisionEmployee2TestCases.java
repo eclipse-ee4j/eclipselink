@@ -27,7 +27,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 public class JAXBListNameCollisionEmployee2TestCases extends
-		JAXBListOfObjectsTestCases {
+JAXBListOfObjectsNoJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeListNameCollision2.xml";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeListNameCollision2NoXsiType.xml";
 

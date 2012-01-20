@@ -16,14 +16,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlEnumMapKeyTestCases extends JAXBTestCases {
+public class XmlEnumMapKeyTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_department_map.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlenum/employee_department_map.json";
     private final static String CONTROL_NAME = "John Doe";
 
     public XmlEnumMapKeyTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeMapDepartmentKey.class;
         classes[1] = Department.class;

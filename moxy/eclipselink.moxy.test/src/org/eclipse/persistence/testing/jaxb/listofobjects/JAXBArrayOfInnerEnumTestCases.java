@@ -13,16 +13,19 @@
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import junit.framework.TestCase;
 
-public class JAXBArrayOfInnerEnumTestCases extends JAXBTestCases {
+public class JAXBArrayOfInnerEnumTestCases extends JAXBWithJSONTestCases {
     public static String XML_RESOURCE="org/eclipse/persistence/testing/jaxb/listofobjects/innerenum.xml";
+    public static String JSON_RESOURCE="org/eclipse/persistence/testing/jaxb/listofobjects/innerenum.json";
     
     public JAXBArrayOfInnerEnumTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{InnerEnumWrapper.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

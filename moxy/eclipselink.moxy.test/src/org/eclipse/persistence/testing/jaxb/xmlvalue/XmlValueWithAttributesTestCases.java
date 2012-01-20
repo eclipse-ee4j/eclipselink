@@ -15,21 +15,32 @@ package org.eclipse.persistence.testing.jaxb.xmlvalue;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlValueWithAttributesTestCases extends JAXBTestCases {
+public class XmlValueWithAttributesTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvalue/phone_number_atts.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvalue/phone_number_atts.json";
     private final static String CONTROL_NUMBER = "123-4567";
 
     public XmlValueWithAttributesTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);        
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = PhoneNumberWithAtts.class;
         setClasses(classes);
+    }
+    
+    public Map getProperties(){
+    	Map props = new HashMap();
+    	props.put(JAXBContext.VALUE_WRAPPER, "value");
+    	return props;
     }
 
     protected Object getControlObject() {

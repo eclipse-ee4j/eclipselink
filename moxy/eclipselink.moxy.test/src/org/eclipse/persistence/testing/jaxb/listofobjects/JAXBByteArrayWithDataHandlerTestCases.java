@@ -26,7 +26,7 @@ import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Node;
 
-public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsTestCases {
+public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsNoJSONTestCases {
 
     public static String XML_RESOURCE="org/eclipse/persistence/testing/jaxb/listofobjects/bytearray.xml";
     public JAXBByteArrayWithDataHandlerTestCases(String name) throws Exception {

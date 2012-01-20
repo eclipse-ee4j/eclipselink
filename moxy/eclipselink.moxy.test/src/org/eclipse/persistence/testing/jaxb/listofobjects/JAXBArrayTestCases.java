@@ -27,6 +27,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/arrays.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/arrays.json";
     private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/arraysNoXsiType.xml";
 
     public JAXBArrayTestCases(String name) throws Exception {
@@ -36,6 +37,7 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
 
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[4];
         classes[0] = char[].class;
         classes[1] = BigDecimal[].class;

@@ -23,8 +23,9 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsTestCases{
+public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMapNoXsiType.xml";
 
 	public HashMap<String, Integer> test;
@@ -35,8 +36,7 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsTestCase
 	}
 
 	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
-
+		setControlDocument(XML_RESOURCE);	
 		Type[] types = new Type[1];
 		types[0] = getTypeToUnmarshalTo();
 		setTypes(types);

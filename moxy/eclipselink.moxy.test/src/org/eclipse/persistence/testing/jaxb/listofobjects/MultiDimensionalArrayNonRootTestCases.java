@@ -23,10 +23,12 @@ import javax.xml.namespace.QName;
 public class MultiDimensionalArrayNonRootTestCases extends JAXBListOfObjectsTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/MultiDimensionalArrayNonRoot.xml";
-
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/MultiDimensionalArrayNonRoot.json";
+    
     public MultiDimensionalArrayNonRootTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = MultiDimensionalArrayRoot.class;
         setClasses(classes);
@@ -107,15 +109,21 @@ public class MultiDimensionalArrayNonRootTestCases extends JAXBListOfObjectsTest
         innerClass2dArray[1][0] = new ClassWithInnerClass.MyInner();
         innerClass2dArray[1][0].innerName = "B";
         root.setInnerClass2dArray(innerClass2dArray);
-
+        
         JAXBElement jaxbElement = new JAXBElement(new QName("urn:example", "root"), Object.class, root);
         return jaxbElement;
     }
-
-    @Override
+    
+    @Override    
     public void xmlToObjectTest(Object testObject) throws Exception {
         testObject = new JAXBElement(new QName("urn:example", "root"), Object.class, testObject);
         super.xmlToObjectTest(testObject);
+    }
+    
+    @Override    
+    public void jsonToObjectTest(Object testObject) throws Exception {
+        testObject = new JAXBElement(new QName("urn:example", "root"), Object.class, testObject);
+        super.jsonToObjectTest(testObject);
     }
 
 }

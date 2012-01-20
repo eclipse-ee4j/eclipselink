@@ -33,6 +33,8 @@ import org.w3c.dom.Document;
 
 public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/externalizedmetadata/typedlist.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/externalizedmetadata/typedlist.json";
+	protected final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/externalizedmetadata/typedlistwrite.json";
 	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/externalizedmetadata/typedlistNoXsiType.xml";
 
 	public JAXBTypedListTestCases(String name) throws Exception {
@@ -46,6 +48,8 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+		setWriteControlJSON(JSON_WRITE_RESOURCE);
 		setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
 		Class[] classes = new Class[1];
 		classes[0] = Company.class;

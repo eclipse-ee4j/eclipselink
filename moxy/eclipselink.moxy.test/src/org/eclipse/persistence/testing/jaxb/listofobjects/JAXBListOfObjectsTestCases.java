@@ -38,12 +38,12 @@ import org.eclipse.persistence.jaxb.JAXBTypeElement;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
+public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
 
 	public JAXBListOfObjectsTestCases(String name) throws Exception {
 		super(name);

@@ -35,7 +35,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases {
+public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsNoJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xml";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArrayNoXsiType.xml";

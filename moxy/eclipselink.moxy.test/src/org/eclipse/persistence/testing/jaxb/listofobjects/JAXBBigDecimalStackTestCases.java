@@ -26,7 +26,7 @@ import javax.xml.namespace.QName;
 public class JAXBBigDecimalStackTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.xml";
 	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStackNoXsiType.xml";
-
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/bigDecimalStack.json";
 	public Stack<BigDecimal> test;
 	
 	public JAXBBigDecimalStackTestCases(String name) throws Exception {
@@ -41,6 +41,7 @@ public class JAXBBigDecimalStackTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Type[] types = new Type[1];
 		types[0] = getTypeToUnmarshalTo();
 		setTypes(types);	

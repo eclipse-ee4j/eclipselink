@@ -27,6 +27,7 @@ import org.eclipse.persistence.testing.jaxb.employee.Employee;
 
 public class JAXBIntArrayTestCases extends JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/intArray.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/intArray.json";
 	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/intArrayNoXsiType.xml";
 
 	public JAXBIntArrayTestCases(String name) throws Exception {
@@ -36,6 +37,7 @@ public class JAXBIntArrayTestCases extends JAXBListOfObjectsTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = int[].class;
 		setClasses(classes);

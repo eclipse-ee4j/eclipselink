@@ -1,0 +1,22 @@
+{"root":{
+  "type":"myInnerMyInnerTreeMap",
+  "entry":[
+     {
+       "key":{
+           "innerName":"aaa"
+       },
+       "value":{
+           "innerName":"bbb"
+       }
+     },
+     {
+       "key":{
+           "innerName":"bbb"
+       },
+       "value":{
+           "innerName":"aaa"
+       }
+     }
+  ]
+  } 
+}

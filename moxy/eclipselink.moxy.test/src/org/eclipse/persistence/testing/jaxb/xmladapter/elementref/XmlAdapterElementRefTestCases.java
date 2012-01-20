@@ -12,15 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.elementref;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
-public class XmlAdapterElementRefTestCases extends JAXBTestCases {
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
+public class XmlAdapterElementRefTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/transactionadd.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/transactionadd.json";
     private final static String TXN_TYPE = "salesOrderAdd"; 
 
     public XmlAdapterElementRefTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = TransactionAdd.class;
         setClasses(classes);

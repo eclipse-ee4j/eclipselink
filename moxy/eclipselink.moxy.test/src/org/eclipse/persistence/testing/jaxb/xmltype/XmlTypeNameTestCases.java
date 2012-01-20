@@ -15,17 +15,19 @@ package org.eclipse.persistence.testing.jaxb.xmltype;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlTypeNameTestCases extends JAXBTestCases {
+public class XmlTypeNameTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/page.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmltype/page.json";
 	private final static String XSD_RESOURCE0 = "org/eclipse/persistence/testing/jaxb/xmltype/page0.xsd";
     private final static String XSD_RESOURCE1 = "org/eclipse/persistence/testing/jaxb/xmltype/page1.xsd";
 	private final static String VALUE = "true";
 
     public XmlTypeNameTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[13];
         classes[0] = GetPageResponse.class;
         classes[1] = A2BCDESomeTest.class; //complex type for this should be "a2BCDESomeTest"

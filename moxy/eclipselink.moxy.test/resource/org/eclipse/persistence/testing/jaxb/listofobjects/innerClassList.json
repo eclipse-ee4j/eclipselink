@@ -1,0 +1,9 @@
+{"root":{ 
+   "type":"listOfMyInner",
+   "item":[
+     {"innerName":"aaa"},
+     {"innerName":"bbb"}
+   ]
+  }
+}
+

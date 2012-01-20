@@ -12,16 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelementref.inheritance1;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.eclipse.persistence.testing.jaxb.dynamic.util.SecondFieldTransformer;
 import org.eclipse.persistence.testing.jaxb.xmlelementref.TestObjectFactory;
 
-public class Inheritance1TestCases extends JAXBTestCases {
+public class Inheritance1TestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/inheritance/inheritance.xml";
-
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/inheritance/inheritance.json";
+    
     public Inheritance1TestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = Customer.class;
         classes[1] = Address.class;

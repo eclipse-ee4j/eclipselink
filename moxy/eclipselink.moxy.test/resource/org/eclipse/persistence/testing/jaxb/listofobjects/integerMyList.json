@@ -1,0 +1,5 @@
+{"root":{
+    "type":"myListOfInteger",
+    "item":[10, 20, 30, 40]
+   }
+}

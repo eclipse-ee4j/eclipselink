@@ -29,10 +29,11 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsNoJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
 
-public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsTestCases {
+public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/multipleMapsNamespace.xml";
 	
 	public Map<String, Integer> mapField1;	
