@@ -24,7 +24,6 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
-import org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.osgi.BundleProxyClassLoader;
 import org.eclipse.persistence.internal.jpa.deployment.osgi.CompositeClassLoader;
 import org.eclipse.persistence.internal.jpa.deployment.osgi.OSGiInitializer;

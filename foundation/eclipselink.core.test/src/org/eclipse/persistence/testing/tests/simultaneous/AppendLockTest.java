@@ -12,15 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.simultaneous;
 
-import java.math.BigDecimal;
-import java.util.Vector;
 
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.Project;

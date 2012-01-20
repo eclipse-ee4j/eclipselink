@@ -41,6 +41,8 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
@@ -75,6 +77,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             suite.addTest(new ExtensibilityTests("testFetchGroupOnRefresh"));
             suite.addTest(new ExtensibilityTests("testExistingEntityManagerAfterRefresh"));
             suite.addTest(new ExtensibilityTests("testSetupImplRefresh"));
+            suite.addTest(new ExtensibilityTests("testRCMRefreshCommand"));
         }
         return suite;
     }
@@ -477,6 +480,52 @@ public class ExtensibilityTests extends JUnitTestCase {
             add = em.find(Address.class, add.getId());
             assertTrue(add.get("appartmentNumber").equals("444"));
         } finally {
+            em = emf.createEntityManager();
+            deleteEmployeeData(em);
+        }
+    }
+
+    /**
+     * This test checks that a MetadataRefreshCommand will refresh the metadata source the same way a call to 
+     * EntityManagerSetupImpl refreshMetadata would.  It also verifies that the listener has been changed on the 
+     * new session for RCM MetadataRefreshCommand messages.  
+     * 
+     */
+    public void testRCMRefreshCommand(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+
+        persistEmployeeData(em);
+        clearCache();
+        em.clear();
+        try{
+            EntityManagerFactoryDelegate delegate = (EntityManagerFactoryDelegate)em.unwrap(JpaEntityManager.class).getEntityManagerFactory();
+            EntityManagerSetupImpl setupImpl = EntityManagerFactoryProvider.emSetupImpls.get(delegate.getSetupImpl().getSessionName());
+            Map properties = new HashMap();
+            
+            //setup
+            properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
+            properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
+            MetadataRefreshCommand command = new MetadataRefreshCommand(properties);
+
+            AbstractSession session = (AbstractSession)JpaHelper.getDatabaseSession(emf);
+            command.executeWithSession(session);
+
+            em = emf.createEntityManager();
+            beginTransaction(em);
+            Address add = (Address)em.createQuery("select a from ExtensibilityAddress a where a.city = 'Herestowm'").getSingleResult();
+            add.set("appartmentNumber", "444");
+            commitTransaction(em);
+            clearCache();
+            em.clear();
+            add = em.find(Address.class, add.getId());
+            assertTrue(add.get("appartmentNumber").equals("444"));
+            this.assertNotNull("RCM Refresh command listener was not added to the new session", ((AbstractSession)JpaHelper.getDatabaseSession(emf)).getRefreshMetadataListener());
+            this.assertNull("RCM Refresh command listener was not removed from old session", session.getRefreshMetadataListener());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
             em = emf.createEntityManager();
             deleteEmployeeData(em);
         }

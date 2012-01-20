@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.tests.writing;
 
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.testing.framework.WriteObjectTest;

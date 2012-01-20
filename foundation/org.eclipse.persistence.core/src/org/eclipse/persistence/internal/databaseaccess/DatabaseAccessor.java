@@ -861,18 +861,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } catch (SQLException exception) {
             //If this is a connection from an external pool then closeStatement will close the connection.
             //we must test the connection before that happens.
-            RuntimeException exceptionToThrow = null;
-            
             DatabaseException commException = processExceptionForCommError(session, exception, dbCall);
             if (commException != null) throw commException;
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);
             } catch (SQLException closeException) {
             }
-            if (exceptionToThrow == null){
-                throw DatabaseException.sqlException(exception, this, session, false);
-            }
-            throw exceptionToThrow;
+
+            throw DatabaseException.sqlException(exception, this, session, false);
         } catch (RuntimeException exception) {
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);

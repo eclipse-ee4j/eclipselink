@@ -1685,6 +1685,20 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE = "eclipselink.metadata-source";
     
     /**
+     * the <code>"eclipselink.metadata-source.send-refresh-command"</code> property
+     * works with cache coordination for a clustered environment to. If cache coordination
+     * is configured and the session is deployed on startup, this property controls the sending
+     * of RCM refresh metadata commands to the cluster.  These commands will cause the remote
+     * instances to refresh their metadata.
+     * 
+     * Defaults to true
+     * 
+     * @see #COORDINATION_PROTOCOL
+     * @see #DEPLOY_ON_STARTUP 
+     */
+    public static final String METADATA_SOURCE_RCM_COMMAND = "eclipselink.metadata-source.send-refresh-command";
+    
+    /**
      * The property <code>"eclipselink.metadata-repository.xml.file"</code>
      * 
      * <p>Specifies the name of the metadata repository xml file to read from using classloader to find the resource</p>

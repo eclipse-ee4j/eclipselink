@@ -87,6 +87,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
@@ -141,7 +142,7 @@ import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.
  * In predeploy the meta-data is processed and weaver transformer is returned to allow weaving of the persistent classes.
  * In deploy the project and session are initialize and registered.
  */
-public class EntityManagerSetupImpl {
+public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /*
      * Design Pattern in use: Builder pattern
      * EntityManagerSetupImpl, MetadataProcessor and MetadataProject
@@ -1176,6 +1177,9 @@ public class EntityManagerSetupImpl {
                     ((SessionBroker)session).setShouldUseDescriptorAliases(true);
                 } else {
                     session = new ServerSession(new Project(new DatabaseLogin()));
+
+                    //set the listener to process RCM metadata refresh commands 
+                    session.setRefreshMetadataListener(this);
                 }
                 session.setName(this.sessionName);
 
@@ -2194,6 +2198,19 @@ public class EntityManagerSetupImpl {
     }
     
     /**
+     * Return if MetadataSource refresh commands should be sent when refresh is called
+     * Checks the PersistenceUnitProperties.METADATA_SOURCE_RCM_COMMAND property and defaults to true.
+     */
+    public boolean shouldSendMetadataRefreshCommand(Map m) {
+        String sendCommand = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.METADATA_SOURCE_RCM_COMMAND, m, this.session);
+        if (sendCommand != null) {
+            return Boolean.parseBoolean(sendCommand);
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * Undeploy may be called several times, but only the call that decreases
      * factoryCount to 0 disconnects the session and removes it from the session manager.
      * This method and predeploy - the only methods altering factoryCount - should be synchronized.
@@ -2619,7 +2636,7 @@ public class EntityManagerSetupImpl {
         //Check if overridden at emf creation
         String validationModeAtEMFCreation = (String) puProperties.get(PersistenceUnitProperties.VALIDATION_MODE);
         if(validationModeAtEMFCreation != null) {
-            // User will receive IllegalArgumentException an invalid mode has been specified
+            // User will receive IllegalArgumentException if an invalid mode has been specified
             validationMode = ValidationMode.valueOf(validationModeAtEMFCreation.toUpperCase());
         }
         return validationMode;
@@ -3039,9 +3056,23 @@ public class EntityManagerSetupImpl {
                 EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
             }
             setIsMetadataExpired(true);
+            //stop this EntityManagerSetupImpl's session from processing refresh commands. The new session should listen instead.
+            getSession().setRefreshMetadataListener(null);
+            
             EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, newSetupImpl);
         }
         return newSetupImpl;
+    }
+
+    /**
+     * This method is just a wrapper on refreshMetadata so that core does not need a dependency on JPA 
+     * due to the EntityManagerSetupImpl return value.  This method satisfies the MetedataRefreshListener implementation
+     * and is called by incoming RCM refresh commands
+     * 
+     * @see refreshMetadata
+     */
+    public void triggerMetadataRefresh(Map properties){
+        refreshMetadata(properties);
     }
 }
 

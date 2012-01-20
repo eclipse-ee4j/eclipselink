@@ -37,6 +37,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.coordination.CommandManager;
+import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -205,24 +207,31 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         EntityManagerFactoryDelegate oldDelegate = delegate;
         delegate = new EntityManagerFactoryDelegate(newSetupImpl, deployProperties, this);
         // This code has been added to allow validation to occur without actually calling createEntityManager
+        // RCM refresh command requires the DEPLOY_ON_STARTUP property is set to true so the listener can be added to the session.
         try{
-             if (newSetupImpl.shouldGetSessionOnCreateFactory(deployProperties)) {
-                getServerSession();
-             }
-         } catch (RuntimeException ex) {
-             if(delegate != null) {
-                 delegate.close();
-             } else {
-                 newSetupImpl.undeploy();
-             }
-             synchronized(EntityManagerFactoryProvider.emSetupImpls){
-                 // bring back the old emSetupImpl and session
-                 EntityManagerFactoryProvider.emSetupImpls.put(sessionName, setupImpl);
-                 SessionManager.getManager().getSessions().put(sessionName, setupImpl.getSession());
-                 setupImpl.setIsMetadataExpired(false);
-             }
-             delegate = oldDelegate;
-             throw ex;
+            if (newSetupImpl.shouldGetSessionOnCreateFactory(deployProperties)) {
+                ServerSession session = getServerSession();
+                CommandManager rcm = session.getCommandManager();
+                if (rcm != null && newSetupImpl.shouldSendMetadataRefreshCommand(deployProperties)) {
+                     MetadataRefreshCommand command = new MetadataRefreshCommand(properties);
+                     rcm.propagateCommand(command);
+                }
+                session.setRefreshMetadataListener(newSetupImpl);
+            }
+        } catch (RuntimeException ex) {
+            if(delegate != null) {
+                delegate.close();
+            } else {
+                newSetupImpl.undeploy();
+            }
+            synchronized(EntityManagerFactoryProvider.emSetupImpls){
+                // bring back the old emSetupImpl and session
+                EntityManagerFactoryProvider.emSetupImpls.put(sessionName, setupImpl);
+                SessionManager.getManager().getSessions().put(sessionName, setupImpl.getSession());
+                setupImpl.setIsMetadataExpired(false);
+            }
+            delegate = oldDelegate;
+            throw ex;
         }
     }
     

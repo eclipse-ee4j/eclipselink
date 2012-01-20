@@ -65,6 +65,7 @@ import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.Command;
+import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.Session
@@ -236,7 +237,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /** Allow queries to be targeted at specific connection pools. */
     protected PartitioningPolicy partitioningPolicy;
-    
+
+    /** the MetadataRefreshListener is used with RCM to force a refresh of the metadata used within EntityManagerFactoryWrappers */
+    protected MetadataRefreshListener metadatalistener;
+
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -4707,5 +4711,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     */
    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
        this.partitioningPolicy = partitioningPolicy;
+   }
+   
+   /**
+    * INTERNAL:
+    * This currently only used by JPA with RCM to force a refresh of the metadata used within EntityManagerFactoryWrappers
+    */
+   public MetadataRefreshListener getRefreshMetadataListener() {
+       return metadatalistener;
+   }
+   
+   public void setRefreshMetadataListener(MetadataRefreshListener metadatalistener) {
+       this.metadatalistener = metadatalistener;
    }
 }
