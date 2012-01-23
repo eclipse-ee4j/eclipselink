@@ -89,4 +89,11 @@
 		<name>org.eclipse.persistence.testing.jaxb.dynamic.secondproject</name>
 		<primary-project xsi:type="class">org.eclipse.persistence.testing.jaxb.dynamic.secondproject.TestModelSecondProject</primary-project>
 	</session>
+	<session xsi:type="database-session">
+		<name>TopLinkSession</name>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects.EmployeeProject</primary-project>
+		<login xsi:type="xml-login">
+			<platform-class>oracle.toplink.ox.platform.SAXPlatform</platform-class>
+		</login>
+	</session>
 </sessions>

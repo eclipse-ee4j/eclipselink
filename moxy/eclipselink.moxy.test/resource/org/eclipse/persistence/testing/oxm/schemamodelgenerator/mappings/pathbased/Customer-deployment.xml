@@ -165,7 +165,7 @@
       </class-mapping-descriptor>
    </class-mapping-descriptors>
    <login xsi:type="xml-login">
-      <platform-class>org.eclipse.persistence.oxm.platform.SAXPlatform</platform-class>
+      <platform-class>oracle.toplink.ox.platform.SAXPlatform</platform-class>
       <user-name></user-name>
       <password></password>
    </login>
