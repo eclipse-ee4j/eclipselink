@@ -14,6 +14,10 @@ package org.eclipse.persistence.internal.nosql.adapters.nosql;
 
 import javax.resource.cci.*;
 
+import oracle.kv.Consistency;
+import oracle.kv.Durability;
+import oracle.kv.Version;
+
 /**
  * Interaction spec for Oracle NoSQL JCA adapter.
  *
@@ -22,7 +26,11 @@ import javax.resource.cci.*;
  */
 public class OracleNoSQLInteractionSpec implements InteractionSpec {    
     protected OracleNoSQLOperation operation;
+    protected Consistency consistency;
+    protected Durability durability;
+    protected long timeout;
     protected String key;
+    protected Version version;
 
     /**
      * Default constructor.
@@ -37,6 +45,14 @@ public class OracleNoSQLInteractionSpec implements InteractionSpec {
     public void setOperation(OracleNoSQLOperation operation) {
         this.operation = operation;
     }
+    
+    public Version getVersion() {
+        return version;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
+    }
 
     public String getKey() {
         return key;
@@ -49,4 +65,29 @@ public class OracleNoSQLInteractionSpec implements InteractionSpec {
     public String toString() {
         return getClass().getName() + "(" + getOperation() + ")";
     }
+
+    public Consistency getConsistency() {
+        return consistency;
+    }
+
+    public void setConsistency(Consistency consistency) {
+        this.consistency = consistency;
+    }
+
+    public Durability getDurability() {
+        return durability;
+    }
+
+    public void setDurability(Durability durability) {
+        this.durability = durability;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
 }

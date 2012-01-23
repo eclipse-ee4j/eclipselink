@@ -902,12 +902,17 @@
       <xsd:element name="additional-criteria" type="orm:additional-criteria" minOccurs="0"/>
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
-      <xsd:element name="table" type="orm:table" minOccurs="0"/>
-      <xsd:element name="secondary-table" type="orm:secondary-table" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="struct" type="orm:struct" minOccurs="0"/>
-      <xsd:element name="primary-key-join-column" 
-                   type="orm:primary-key-join-column" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:choice>
+          <xsd:sequence>
+              <xsd:element name="table" type="orm:table" minOccurs="0"/>
+              <xsd:element name="secondary-table" type="orm:secondary-table" minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="struct" type="orm:struct" minOccurs="0"/>
+              <xsd:element name="primary-key-join-column" 
+                           type="orm:primary-key-join-column" 
+                           minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:element name="no-sql" type="orm:no-sql" minOccurs="0"/>
+      </xsd:choice>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
       <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
@@ -1129,7 +1134,10 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:choice>
+          <xsd:element name="column" type="orm:column" minOccurs="0"/>
+          <xsd:element name="field" type="orm:field" minOccurs="0"/>
+      </xsd:choice>
       <xsd:element name="index" type="orm:index" minOccurs="0"/>
       <xsd:element name="cache-index" type="orm:cache-index" minOccurs="0"/>
       <xsd:element name="generated-value" type="orm:generated-value" minOccurs="0"/>
@@ -2261,17 +2269,18 @@
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
-      <xsd:element name="collection-table" type="orm:collection-table"
-                     minOccurs="0"/>
+      <xsd:choice>
+          <xsd:element name="collection-table" type="orm:collection-table"
+                         minOccurs="0"/>
+          <xsd:element name="field" type="orm:field" minOccurs="0"/>
+      </xsd:choice>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
-
-
       <xsd:element name="noncacheable" type="orm:emptyType" minOccurs="0"/>
-       <xsd:element name="delete-all" type="orm:emptyType" minOccurs="0"/>
+      <xsd:element name="delete-all" type="orm:emptyType" minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -2378,6 +2387,7 @@
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
       <xsd:element name="struct" type="orm:struct" minOccurs="0"/>
+      <xsd:element name="no-sql" type="orm:no-sql" minOccurs="0"/>
       <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
@@ -2418,6 +2428,7 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="field" type="orm:field" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
@@ -2685,8 +2696,10 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="column" type="orm:column" 
-                   minOccurs="0"/>
+      <xsd:choice>
+          <xsd:element name="column" type="orm:column" minOccurs="0"/>
+          <xsd:element name="field" type="orm:field" minOccurs="0"/>
+      </xsd:choice>
       <xsd:element name="index" type="orm:index" minOccurs="0"/>
       <xsd:element name="cache-index" type="orm:cache-index" minOccurs="0"/>
       <xsd:element name="generated-value" type="orm:generated-value"
@@ -3101,8 +3114,11 @@
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
-      <xsd:element name="join-table" type="orm:join-table"
-                   minOccurs="0"/>
+      <xsd:choice>
+          <xsd:element name="join-table" type="orm:join-table"
+                       minOccurs="0"/>
+          <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
       <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
@@ -3143,6 +3159,7 @@
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="join-table" type="orm:join-table" 
                      minOccurs="0"/>
+          <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:choice>
       <xsd:element name="cascade" type="orm:cascade-type" 
                    minOccurs="0"/>
@@ -3953,6 +3970,7 @@
                      minOccurs="0"/>
         <xsd:element name="join-column" type="orm:join-column"
                      minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:choice>
       <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
@@ -4002,6 +4020,7 @@
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="join-table" type="orm:join-table" 
                      minOccurs="0"/>
+        <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:choice>
       <xsd:element name="cascade" type="orm:cascade-type" 
                    minOccurs="0"/>
@@ -5569,6 +5588,165 @@
     <xsd:attribute name="type" type="orm:batch-fetch-type"/>
     <xsd:attribute name="size" type="xsd:integer"/>
   </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="no-sql">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * An NoSQL (No SQL, or Not Only SQL) database is any non-relational data source.
+         * This can include:
+         * 
+         * NoSQL databases such as Oracle NoSQL, MongoDB, etc.
+         * XML databases
+         * Distributed cache stores such as Oracle Coherence
+         * Object databases
+         * Legacy databases, gateways and transaction system such as VSAM, ADA, CICS, IMS, MQSeries, Tuxedo, etc.
+         * ERP systems, such as SAP
+         * 
+         * EclipseLink allows NoSQL data to be mapped to objects, and accessed through JPA and EclipseLink's APIs.
+         * 
+         * Entity and Embeddable objects can be used to map NoSQL data.
+         * Most NoSQL data is hierarchical in form so usage of embeddable objects is common.
+         * Some NoSQL adaptors support XML data, so NoSQL mapped objects can use XML mappings when
+         * mapping to XML.
+         * 
+         * EclipseLink support NoSQL data access through the JavaEE Connector Architecture.
+         * A JCA adaptor is required to map NoSQL data, this may be provided by EclipseLink,
+         * provided by a third party such as Attunity, or custom built.
+         * 
+         * @see org.eclipse.persistence.eis.EISDescriptor
+         * @author James Sutherland
+         * @since EclipseLink 2.4
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface NoSql {
+            /**
+             * (Required) The database name of the database structure type.
+             */
+            String dataType() default "";
+        
+            /**
+             * (Optional) Defines the order of the fields contained in the database structure type.
+             */
+            DataFormatType dataFormat() default DataFormatType.XML; 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="data-type" type="xsd:string"/>
+    <xsd:attribute name="data-format" type="orm:data-format-type"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="data-format-type">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /**
+         * Used to configure the data format type for an EIS descriptor.
+         * 
+         * @see NoSql
+         * @see org.eclipse.persistence.eis.EISDescriptor#setDataFormat(String)
+         * @author James Sutherland
+         * @since EclipseLink 2.4
+         */
+        public enum DataFormatType {
+            /**
+             * XML data is used.  Objects are converted to XML.
+             * This is the default data format.
+             */
+            XML,
+            
+            /**
+             * JCA IndexedRecords are used, objects data is decomposed into an array of field values.
+             */
+            INDEXED,
+        
+            /**
+             * JCA MappedRecords are used, objects data is decomposed into a Map of key/value pairs.
+             */
+            MAPPED    
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+        <xsd:enumeration value="XML"/>
+        <xsd:enumeration value="INDEXED"/>
+        <xsd:enumeration value="MAPPED"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="field">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * Define a structured data type's field name for an object mapped to NoSql data.
+         * This is a generic form of the @Column annotation, which is not specific to relational databases.
+         * It can be use to map EIS and NoSQL data.
+         * 
+         * @see NoSql
+         * @author James Sutherland
+         * @since EclipseLink 2.4
+         */
+        @Target({METHOD, FIELD}) 
+        @Retention(RUNTIME)
+        public @interface Field {
+            /**
+             * (Optional) The data type's name of the field.
+             */
+            String name() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+    
+  <xsd:complexType name="join-field">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        /** 
+         * Define a structured data type's foreign key field for an object mapped to NoSql data.
+         * This is a generic form of the @JoinColumn annotation, which is not specific to relational databases.
+         * It can be use to map EIS and NoSQL data.
+         * 
+         * @see NoSql
+         * @author James Sutherland
+         * @since EclipseLink 2.4
+         */
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface JoinField {
+            /**
+             * (Optional) The name of the foreign key/id reference field in the source record.
+             */
+            String name() default "";
+            
+            /**
+             * (Optional) The name of the id field in the target record.
+             */
+            String referencedFieldName() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="referenced-field-name" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
   
 </xsd:schema>
 

@@ -45,6 +45,7 @@ public class AllFieldsLockingPolicy extends FieldsLockingPolicy {
      * Values to be included in the locking mechanism are added
      * to the translation row.  Set the translation row to all the original field values.
      */
+    @Override
     public void addLockValuesToTranslationRow(ObjectLevelModifyQuery query) {
         verifyUsage(query.getSession());
         query.setTranslationRow(descriptor.getObjectBuilder().buildRowForWhereClause(query));
@@ -56,6 +57,7 @@ public class AllFieldsLockingPolicy extends FieldsLockingPolicy {
      * In this case, it is all the fields, except for the primary key
      * and class indicator.
      */
+    @Override
     protected List<DatabaseField> getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow) {
         return getAllNonPrimaryKeyFields(table);
     }

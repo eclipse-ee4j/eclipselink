@@ -11,16 +11,20 @@
             <!--property name="eclipselink.nosql.property.mongo.port" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.db" value="mydb"/-->
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
-    <!--persistence-unit name="mongo-xml" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="mongo-xml" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/nosql-orm.xml</mapping-file>
+        <mapping-file>META-INF/mongo-orm.xml</mapping-file>
         <properties>
-            <property name="eclipselink.target-database" value="org.eclipse.persistence.eis.nosql.NoSQLPlatform"/>
-            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.eis.nosql.NoSQLConnectionSpec"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <!--property name="eclipselink.nosql.property.mongo.port" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="mydb"/-->
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
-    </persistence-unit-->
+    </persistence-unit>
 </persistence>

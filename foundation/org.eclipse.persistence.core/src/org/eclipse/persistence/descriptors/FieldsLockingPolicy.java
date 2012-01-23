@@ -234,9 +234,9 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     protected abstract List<DatabaseField> getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow);
 
     /**
-       * INTERNAL:
-       * Return the write lock field.
-       */
+     * INTERNAL:
+     * Return the write lock field.
+     */
     public DatabaseField getWriteLockField() {
         // Does not apply to any field locking policy, so return null
         return null;

@@ -38,8 +38,8 @@ import org.eclipse.persistence.testing.models.jpa.mongo.Address;
 import com.mongodb.DB;
 
 /**
- * TestSuite to test Oracle No SQL database
- * ** To run this test suite the Oracle No SQL database must be running.
+ * TestSuite to test Mongo database
+ * ** To run this test suite the Mongo must be running.
  */
 public class MongoTestSuite extends JUnitTestCase {
     

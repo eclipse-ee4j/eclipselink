@@ -788,9 +788,7 @@ public class ProjectClassGenerator {
 
         if (policy instanceof SelectedFieldsLockingPolicy) {
             SelectedFieldsLockingPolicy fieldPolicy = (SelectedFieldsLockingPolicy)policy;
-            for (Enumeration fieldsEnum = fieldPolicy.getLockFields().elements();
-                     fieldsEnum.hasMoreElements();) {
-                DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
+            for ( DatabaseField field : fieldPolicy.getLockFields()) {
                 method.addLine("lockingPolicy.addLockFieldName(\"" + field.getQualifiedName() + "\");");
             }
         } else if (policy instanceof VersionLockingPolicy) {

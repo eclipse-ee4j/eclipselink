@@ -10,7 +10,7 @@
             <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLConnectionSpec"/>
             <property name="eclipselink.nosql.property.nosql.host" value="ottvm070:5000"/>
             <property name="eclipselink.nosql.property.nosql.store" value="kvstore"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="nosql-mapped" transaction-type="RESOURCE_LOCAL">
@@ -23,7 +23,7 @@
             <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLConnectionSpec"/>
             <property name="eclipselink.nosql.property.nosql.host" value="ottvm070:5000,ottvm070:5000"/>
             <property name="eclipselink.nosql.property.nosql.store" value="kvstore"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
 </persistence>

@@ -1,0 +1,70 @@
+<!DOCTYPE pof-config SYSTEM "pof-config.dtd">
+<pof-config>
+   <user-type-list>
+    <!-- include all "standard" Coherence POF user types -->
+    <include>coherence-pof-config.xml</include>
+     <user-type>
+       <type-id>1165</type-id>
+       <class-name>org.eclipse.persistence.testing.models.jpa.performance.Employee</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1164</type-id>
+       <class-name>org.eclipse.persistence.testing.models.jpa.performance.EmployeePeriod</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1163</type-id>
+       <class-name>org.eclipse.persistence.testing.models.jpa.performance.Address</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1162</type-id>
+       <class-name>org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1161</type-id>
+       <class-name>org.eclipse.persistence.testing.models.jpa.performance.Project</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1159</type-id>
+       <class-name>org.eclipse.persistence.testing.models.jpa.performance.LargeProject</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1158</type-id>
+       <class-name>org.eclipse.persistence.testing.models.jpa.performance.SmallProject</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1144</type-id>
+       <class-name>oracle.eclipselink.coherence.integrated.internal.cache.WrapperInternal</class-name>
+       <serializer>
+         <class-name>oracle.eclipselink.coherence.integrated.cache.WrapperPofSerializer</class-name>
+       </serializer>
+     </user-type>
+     <user-type>
+       <type-id>1142</type-id>
+       <class-name>oracle.eclipselink.coherence.integrated.internal.querying.EclipseLinkExtractor</class-name>
+       <serializer>
+         <class-name>oracle.eclipselink.coherence.integrated.cache.ExtractorSerializer</class-name>
+       </serializer>
+     </user-type>
+     <user-type>
+       <type-id>1141</type-id>
+       <class-name>oracle.eclipselink.coherence.integrated.internal.cache.VersionPutProcessor</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1140</type-id>
+       <class-name>oracle.eclipselink.coherence.integrated.internal.cache.VersionRemoveProcessor</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1139</type-id>
+       <class-name>oracle.eclipselink.coherence.integrated.internal.cache.RelationshipUpdateProcessor</class-name>
+     </user-type>
+     <user-type>
+       <type-id>1138</type-id>
+       <class-name>oracle.eclipselink.coherence.integrated.internal.querying.EclipseLinkFilterFactory$SubClassOf</class-name>
+     </user-type>
+
+   </user-type-list>
+
+   <allow-interfaces>true</allow-interfaces>
+   <allow-subclasses>true</allow-subclasses>
+ </pof-config>
+

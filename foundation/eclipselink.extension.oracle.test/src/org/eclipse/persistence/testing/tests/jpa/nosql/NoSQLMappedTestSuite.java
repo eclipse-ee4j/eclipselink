@@ -332,7 +332,9 @@ public class NoSQLMappedTestSuite extends JUnitTestCase {
         }
         
         interaction = new MappedInteraction();
-        interaction.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.GET.name()); 
+        interaction.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.GET.name());
+        interaction.setProperty(OracleNoSQLPlatform.TIMEOUT, "1000");
+        interaction.setProperty(OracleNoSQLPlatform.CONSISTENCY, "ABSOLUTE");
         interaction.addArgumentValue("ID", existingOrder.id);
         query = em.unwrap(JpaEntityManager.class).createQuery(interaction, Order.class);
         result = query.getResultList();

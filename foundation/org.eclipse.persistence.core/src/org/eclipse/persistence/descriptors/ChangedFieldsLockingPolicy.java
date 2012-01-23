@@ -52,6 +52,7 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
      * Values to be included in the locking mechanism are added to the translation row.
      * For changed fields the normal build row is ok as only changed fields matter.
      */
+    @Override
     public void addLockValuesToTranslationRow(ObjectLevelModifyQuery query) {
         verifyUsage(query.getSession());
         Object object;
@@ -79,6 +80,7 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
      * This expression will be used in a delete call.
      * No new criteria will be added for changed fields.
      */
+    @Override
     public Expression buildDeleteExpression(DatabaseTable table, Expression mainExpression, AbstractRecord row) {
         return mainExpression;
     }
@@ -88,6 +90,7 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
      * Returns the fields that should be compared in the where clause.
      * In this case, it is only the fields that were changed.
      */
+    @Override
     protected List<DatabaseField> getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow) {
         List<DatabaseField> fields = getAllNonPrimaryKeyFields(table);
         List<DatabaseField> returnedFields = new ArrayList<DatabaseField>();

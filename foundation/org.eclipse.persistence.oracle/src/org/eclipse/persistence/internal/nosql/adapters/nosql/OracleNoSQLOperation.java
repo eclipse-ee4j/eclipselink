@@ -19,5 +19,5 @@ package org.eclipse.persistence.internal.nosql.adapters.nosql;
  * @since EclipseLink 2.4
  */
 public enum OracleNoSQLOperation {
-    GET, PUT, DELETE
+    GET, PUT, PUT_IF_ABSENT, PUT_IF_PRESENT, PUT_IF_VERSION, DELETE, DELETE_IF_VERSION, ITERATOR
 }

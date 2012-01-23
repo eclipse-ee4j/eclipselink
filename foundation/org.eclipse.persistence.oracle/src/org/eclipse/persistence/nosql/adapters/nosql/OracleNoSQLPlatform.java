@@ -24,8 +24,13 @@ import javax.resource.cci.InteractionSpec;
 import javax.resource.cci.MappedRecord;
 import javax.resource.cci.Record;
 
+import oracle.kv.Consistency;
+import oracle.kv.Durability;
+import oracle.kv.Version;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.eis.EISAccessor;
 import org.eclipse.persistence.eis.EISDOMRecord;
 import org.eclipse.persistence.eis.EISDescriptor;
@@ -42,6 +47,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.w3c.dom.Element;
 
 /**
@@ -54,6 +60,10 @@ public class OracleNoSQLPlatform extends EISPlatform {
 
     /** OracleNoSQL interaction spec properties. */
     public static String OPERATION = "nosql.operation";
+    public static String CONSISTENCY = "nosql.consistency";
+    public static String DURABILITY = "nosql.durability";
+    public static String TIMEOUT = "nosql.timeout";
+    public static String VERSION = "nosql.version";
 
     /**
      * Default constructor.
@@ -83,6 +93,84 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 operation = OracleNoSQLOperation.valueOf((String)operation);
             }
             noSqlSpec.setOperation((OracleNoSQLOperation)operation);
+            
+            // Allows setting of consistency as a property.
+            Object consistency = interaction.getProperty(CONSISTENCY);
+            if (consistency == null) {
+                // Default to session property.
+                consistency = interaction.getQuery().getSession().getProperty(CONSISTENCY);
+            }
+            if (consistency instanceof Consistency) {
+                noSqlSpec.setConsistency((Consistency)consistency);
+            } else if (consistency instanceof String) {
+                String constant = (String)consistency;
+                if (constant.equals("ABSOLUTE")) {
+                    noSqlSpec.setConsistency(Consistency.ABSOLUTE);
+                } else if (constant.equals("NONE_REQUIRED")) {
+                    noSqlSpec.setConsistency(Consistency.NONE_REQUIRED );
+                } else {
+                    throw new EISException("Invalid consistency property value: " + constant);                    
+                }
+            }
+            
+            // Allows setting of durability as a property.
+            Object durability = interaction.getProperty(DURABILITY);
+            if (durability == null) {
+                // Default to session property.
+                durability = interaction.getQuery().getSession().getProperty(DURABILITY);
+            }
+            if (durability instanceof Durability) {
+                noSqlSpec.setDurability((Durability)durability);
+            } else if (durability instanceof String) {
+                String constant = (String)durability;
+                if (constant.equals("COMMIT_NO_SYNC")) {
+                    noSqlSpec.setDurability(Durability.COMMIT_NO_SYNC);
+                } else if (constant.equals("COMMIT_SYNC")) {
+                    noSqlSpec.setDurability(Durability.COMMIT_SYNC );
+                }  else if (constant.equals("COMMIT_WRITE_NO_SYNC")) {
+                    noSqlSpec.setDurability(Durability.COMMIT_WRITE_NO_SYNC );
+                } else {
+                    throw new EISException("Invalid durability property value: " + constant);                    
+                }
+            }
+            
+            // Allows setting of timeout as a property.
+            Object timeout = interaction.getProperty(TIMEOUT);
+            if (timeout == null) {
+                // Default to session property.
+                timeout = interaction.getQuery().getSession().getProperty(TIMEOUT);
+            }
+            if (timeout instanceof Number) {
+                noSqlSpec.setTimeout(((Number)timeout).longValue());
+            } else if (timeout instanceof String) {
+                noSqlSpec.setTimeout(Long.valueOf(((String)timeout)));
+            } else if (interaction.getQuery().getQueryTimeout() > 0) {
+                noSqlSpec.setTimeout(interaction.getQuery().getQueryTimeout());
+            }
+            
+            // Allows setting of version as a property.
+            Object version = interaction.getProperty(VERSION);
+            if (version == null) {
+                // Default to session property.
+                version = interaction.getQuery().getSession().getProperty(VERSION);
+            }
+            if (version == null) {
+                if (interaction.getQuery().getDescriptor() != null) {
+                    ClassDescriptor descriptor = interaction.getQuery().getDescriptor();
+                    if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy() instanceof SelectedFieldsLockingPolicy) {
+                        DatabaseField field = (DatabaseField)((SelectedFieldsLockingPolicy)descriptor.getOptimisticLockingPolicy()).getLockFields().get(0);
+                        if (interaction.getInputRow() != null) {
+                            version = interaction.getInputRow().get(field);
+                        }
+                    }
+                }
+            }
+            if (version instanceof Version) {
+                noSqlSpec.setVersion((Version)version);
+            } else if (version instanceof byte[]) {
+                noSqlSpec.setVersion(Version.fromByteArray((byte[])version));
+            }
+            
             spec = noSqlSpec;
         }
         return spec;
@@ -139,6 +227,21 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 }
                 return rows;
             }
+        }
+        if (interaction.getQuery().getDescriptor() != null) {
+            // Check for a map of values.
+            Vector rows = new Vector();
+            for (Object value : output.values()) {
+                if (value instanceof OracleNoSQLRecord) {
+                    convertRecordBytesToString((OracleNoSQLRecord)value);
+                    rows.add(interaction.buildRow((OracleNoSQLRecord)value, accessor));
+                } else if (value instanceof byte[]) {
+                    EISDOMRecord domRecord = new EISDOMRecord();
+                    domRecord.transformFromXML(new String((byte[])value));
+                    rows.add(domRecord);
+                }
+            }
+            return rows;
         }
         return interaction.buildRows(record, accessor);
     }
@@ -262,7 +365,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
         } else {
             domRecord = new EISDOMRecord();
             for (Map.Entry entry : (Set<Map.Entry>)noSqlRecord.entrySet()) {
-                Object value = (String)entry.getValue();
+                Object value = entry.getValue();
                 String xml = null;
                 if (value instanceof byte[]) {
                     xml = new String ((byte[])value);
@@ -291,14 +394,14 @@ public class OracleNoSQLPlatform extends EISPlatform {
         // Insert
         if (!queryManager.hasInsertQuery()) {
             EISInteraction call = isXML ? new XMLInteraction() : new MappedInteraction();
-            call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.PUT);
+            call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.PUT_IF_ABSENT);
             queryManager.setInsertCall(call);
         }
         
         // Update
         if (!queryManager.hasUpdateQuery()) {
             EISInteraction call = isXML ? new XMLInteraction() : new MappedInteraction();
-            call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.PUT);
+            call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.PUT_IF_PRESENT);
             queryManager.setUpdateCall(call);
         }
 
@@ -315,7 +418,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
         // Read-all
         if (!queryManager.hasReadAllQuery()) {
             MappedInteraction call = isXML ? new XMLInteraction() : new MappedInteraction();
-            call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.GET);
+            call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.ITERATOR);
             queryManager.setReadAllCall(call);
         }
         
@@ -328,5 +431,13 @@ public class OracleNoSQLPlatform extends EISPlatform {
             }
             queryManager.setDeleteCall(call);
         }        
+    }
+    
+    /**
+     * Do not prepare to avoid errors being triggered for id and all queries.
+     */
+    @Override
+    public boolean shouldPrepare(DatabaseQuery query) {
+        return (query.getDatasourceCall() instanceof EISInteraction);
     }
 }

@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests;
 
 import org.eclipse.persistence.testing.tests.jpa.mongo.MongoTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.mongo.MongoXMLTestSuite;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
@@ -24,6 +25,7 @@ public class NoSQLJPATestSuite extends TestSuite{
         fullSuite.setName("NoSQLJPATestSuite");
 
         fullSuite.addTest(MongoTestSuite.suite());
+        fullSuite.addTest(MongoXMLTestSuite.suite());
         return fullSuite;
     }
 }

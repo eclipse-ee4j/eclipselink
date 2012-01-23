@@ -27,10 +27,8 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.sql.Date;
@@ -48,7 +46,6 @@ import javax.persistence.EntityNotFoundException;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy; 
@@ -676,12 +673,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
             
             if (policy instanceof SelectedFieldsLockingPolicy) {
-                Vector<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
+                List<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
                 
                 if (lockFields.isEmpty() || lockFields.size() > 1) {
                     fail("Invalid amount of lock fields were set on Project's selected fields locking policy.");
                 } else {
-                    DatabaseField lockField = lockFields.firstElement();
+                    DatabaseField lockField = lockFields.get(0);
                     assertTrue("Incorrect lock field was set on Project's selected fields locking policy.", lockField.getName().equals("VERSION"));
                 }
             } else {

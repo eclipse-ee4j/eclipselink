@@ -23,7 +23,6 @@ import java.lang.reflect.Array;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -33,7 +32,6 @@ import javax.persistence.EntityNotFoundException;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
@@ -43,8 +41,6 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants; 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -697,12 +693,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
             
             if (policy instanceof SelectedFieldsLockingPolicy) {
-                Vector<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
+                List<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
                 
                 if (lockFields.isEmpty() || lockFields.size() > 1) {
                     fail("Invalid amount of lock fields were set on Project's selected fields locking policy.");
                 } else {
-                    DatabaseField lockField = lockFields.firstElement();
+                    DatabaseField lockField = lockFields.get(0);
                     assertTrue("Incorrect lock field was set on Project's selected fields locking policy.", lockField.getName().equals("VERSION"));
                 }
             } else {
@@ -795,7 +791,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             assertTrue("CIBC credit line did not persist correctly.", emp.hasCanadianImperialCreditLine(cibc));
             
             boolean found = false;
-            for (String responsibility : (Collection<String>) emp.getResponsibilities()) {
+            for (String responsibility : emp.getResponsibilities()) {
                 if (responsibility.equals("A very important responsibility")) {
                     found = true;
                     break;
@@ -1811,6 +1807,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             String puName = getComponentMemberPuName(i);
             try {
                 EntityManager em = createEntityManager(puName);
+                closeEntityManager(em);
                 if (i == 1) {
                     // "xml-composite-advanced-member_1" is not marked as mustBeCompositeMember - should work standalone, too.
                 } else {
