@@ -292,7 +292,21 @@
                 <isset property="is.netweaver"/>
             </not>
         </condition>
-
+	<condition property="is.jaxrs.testing">
+	    <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
+    	</condition>
+	<condition property="is.jaxrs.testing.on.glassfish">
+		<and>
+			<isset property="is.jaxrs.testing"/>
+			<contains string="${server.name}" substring="glassfish"/>
+		</and>
+    	</condition>
+	<condition property="is.jaxrs.testing.on.weblogic">
+		<and>
+			<isset property="is.jaxrs.testing"/>
+			<isset property="is.weblogic"/>
+		</and>
+    	</condition>
     </target>
 
     <!-- Configures paths for trunk checkout. -->
@@ -344,6 +358,7 @@
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
+	    <pathelement path="${eclipselink.jpa.test}/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar"/>          
             <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>
@@ -2347,9 +2362,12 @@
 
     <target name="create-ejb-jar-without-static-weaving" unless="is.static.server.weaving">
         <antcall target="remove-composite-classes"/>
+        <antcall target="copy-jaxb-properties-file-for-jaxrs"/>
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
     </target>
-
+    <target name="copy-jaxb-properties-file-for-jaxrs" if="is.jaxrs.testing.on.glassfish">
+	<copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="stage/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+    </target>
     <target name="create-ejb-jar-with-static-weaving" if="is.static.server.weaving">
         <antcall target="remove-composite-classes"/>
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/unwoven-${MODEL_NAME}_ejb.jar" basedir="stage"/>
@@ -2485,9 +2503,60 @@
             <arg line="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
         </exec>
     </target>
+    <target name="server-jaxrsconfig">
+	    <!-- Hardcoding server-specific URL in JAX-RS test cases -->
+	    <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-jaxrsconfig" inheritRefs="true"/>
+	    <replace file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%database-platform%%' value="${db.platform}"/>	    
+    </target>
 
+    <!-- Build war file for JAX-RS -->
+    <target name="create-jaxrs-war-file">
+	    <mkdir dir="${eclipselink.jpa.test}/stage/META-INF"/>
+	    <mkdir dir="${eclipselink.jpa.test}/stage/WEB-INF"/>
+	    <mkdir dir="${eclipselink.jpa.test}/stage/WEB-INF/lib"/>
+	    <mkdir dir="${eclipselink.jpa.test}/stage/WEB-INF/classes/org/eclipse/persistence/testing/tests/jpa/jaxrs"/>
+	    <mkdir dir="${build.dir}/META-INF"/>
+	    <copy overwrite="true" file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/application.xml" tofile="${build.dir}/META-INF/application.xml"/>
+	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/WEB-INF/web.xml" todir="${eclipselink.jpa.test}/stage/WEB-INF"/>
+	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/binding-address.xml" todir="${eclipselink.jpa.test}/stage/WEB-INF/classes/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/binding-phonenumber.xml" todir="${eclipselink.jpa.test}/stage/WEB-INF/classes/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+	    <copy todir="${eclipselink.jpa.test}/stage/WEB-INF/classes/org/eclipse/persistence/testing/models/jpa/jaxrs/">
+		    <fileset dir="${eclipselink.jpa.test}/classes/org/eclipse/persistence/testing/models/jpa/jaxrs/" includes="*.class" excludes="Address.class,Customer.class,PhoneNumber.class"/>
+	    </copy>
+	    <copy file="${eclipselink.jpa.test}/stage/CustomerJPA.jar" todir="${eclipselink.jpa.test}/stage/WEB-INF/lib"/>
+	    <delete file="${eclipselink.jpa.test}/stage/CustomerJPA.jar"/>
+	    <jar destfile="${eclipselink.jpa.test}/stage/${MODEL_NAME}.war" basedir="${eclipselink.jpa.test}/stage"/>
+    </target>
+    <target name="copy-jaxb-properties-file-for-jaxrs2" if="is.jaxrs.testing.on.glassfish">
+	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="${eclipselink.jpa.test}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+    </target>
+
+    <!-- Build server test ear file specific to JAX-RS -->
+    <target name="server-build-ear-jaxrs" if="is.jaxrs.testing">
+	    <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
+	    <replace dir="${build.dir}/META-INF" token="%%modelname%%" value="${MODEL_NAME}">
+		    <include name="*.xml"/>
+	    </replace>
+	    <mkdir dir="${eclipselink.jpa.test}/stage"/>
+	    <delete dir="${eclipselink.jpa.test}/CustomerJPA_jar"/>
+	    <mkdir dir="${eclipselink.jpa.test}/CustomerJPA_jar/META-INF"/>
+	    <mkdir dir="${eclipselink.jpa.test}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="${eclipselink.jpa.test}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+	    <antcall target="copy-jaxb-properties-file-for-jaxrs2"/>
+	    <copy todir="${eclipselink.jpa.test}/CustomerJPA_jar/org/eclipse/persistence/testing/models/jpa/jaxrs/">
+		    <fileset dir="${eclipselink.jpa.test}/classes/org/eclipse/persistence/testing/models/jpa/jaxrs/" includes="Address.class,Customer.class,PhoneNumber.class"/>
+	    </copy>
+	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml" todir="${eclipselink.jpa.test}/CustomerJPA_jar/META-INF"/>
+	    <jar destfile="${eclipselink.jpa.test}/stage/CustomerJPA.jar" basedir="${eclipselink.jpa.test}/CustomerJPA_jar"/>
+	    <antcall target="create-jaxrs-war-file"/>
+	    <copy overwrite="true" file="${eclipselink.jpa.test}/stage/${MODEL_NAME}.war" todir="${build.dir}"/>
+	    <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
+		    <fileset dir="${eclipselink.jpa.test}/${build.dir}" includes="${MODEL_NAME}_ejb.jar, *.war"/>
+	    </ear>
+	    <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
+    </target>    
     <!-- Build server test ear. -->
-    <target name="server-build-ear">
+    <target name="server-build-ear" unless="is.jaxrs.testing">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
         <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="${MODEL_NAME}">
             <include name="*.xml"/>
@@ -2499,7 +2568,7 @@
     </target>
 
     <!-- Build the client jar, ejb jar, and ear. -->
-    <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
+    <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-jar,server-build-ear,server-build-ear-jaxrs"/>
 
     <target name="server-build-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-composite-advanced-jar,server-build-composite-advanced-ear"/>
 
@@ -3058,6 +3127,24 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.inherited.InheritedServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+    </target>
+    
+    <target name="server-test-jaxrs" depends="clean-test">
+    
+	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/persistence-jaxrs.xml" tofile="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
+	    <antcall target="server-jaxrsconfig" inheritRefs="true"/>
+	    <antcall target="server-run-all" inheritRefs="true">
+		    <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+		    <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+		    <param name="MODEL_NAME" value="eclipselink-jaxrs-model"/>
+		    <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/jaxrs"/>
+		    <param name="TEST_NAME" value="eclipselink-jaxrs-model"/>
+		    <param name="EAR_NAME" value="eclipselink-jaxrs-model"/>
+		    <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.jaxrs.JAXRSTestSuite"/>
+		    <param name="eclipselink.jpa.test.dir" value="."/>
+	    </antcall>
+	    <antcall target="generate-servertest-report" inheritRefs="true"/>
+	    <delete file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
     </target>
     
     <target name="server-test-plsql">

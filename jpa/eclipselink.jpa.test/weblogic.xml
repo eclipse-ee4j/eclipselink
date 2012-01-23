@@ -71,6 +71,15 @@
         <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
     </path>
 
+    <!-- This replaces URL in JAX-RS testcases -->
+    <target name="weblogic-jaxrsconfig">
+	    <property name="jaxrs-url" value="${weblogic.host}:${weblogic.port}"/>
+	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+	    <replace file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
+    </target>
+    
     <!-- This creates the server domain. -->
     <target name="weblogic-install">
         <delete dir="${weblogic.domain}"/>

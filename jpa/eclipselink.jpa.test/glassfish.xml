@@ -78,7 +78,16 @@
         <unzip src="${installer.dir}/${latest-glassfish-file-name}" dest="${install.dir}/.."/>
         <chmod dir="${glassfish.home}/bin" perm="ugo+rx"  includes="**/*"/>
     </target>
-
+    
+    <!-- This replaces URL in JAX-RS testcases -->
+    <target name="glassfish-jaxrsconfig">
+	    <property name="jaxrs-url" value="${glassfish.host}:8080"/>
+	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+	    <replace file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
+    </target>
+    
     <!-- Copies libraries to domain1 -->
     <target name="glassfish-install" depends="install-latest-glassfish">
         <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
