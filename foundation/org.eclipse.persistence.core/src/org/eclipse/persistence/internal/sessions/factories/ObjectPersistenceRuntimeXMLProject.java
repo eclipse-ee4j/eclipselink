@@ -717,6 +717,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             private Map platformList;
             private String oldPrefix = "oracle.toplink.";
             private String newPrefix = "org.eclipse.persistence.";
+            private String oldOxmPrefix = oldPrefix + "ox.";
+            private String newOxmPrefix = newPrefix + "oxm.";
 
             public Object convertObjectValueToDataValue(Object objectValue, Session session) {
                 if (objectValue == null) {
@@ -730,7 +732,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                     return null;
                 }
                 if(((String)fieldValue).startsWith(oldPrefix)) {
-                    fieldValue = ((String)fieldValue).replaceFirst(oldPrefix, newPrefix);
+                    if(((String)fieldValue).startsWith(oldOxmPrefix)) {
+                        fieldValue = ((String)fieldValue).replaceFirst(oldOxmPrefix, newOxmPrefix);
+                    } else {
+                        fieldValue = ((String)fieldValue).replaceFirst(oldPrefix, newPrefix);
+                    }
                 }
                 // convert deprecated platforms to new platforms
                 Object result = platformList.get(fieldValue);

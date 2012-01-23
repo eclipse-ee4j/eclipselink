@@ -829,6 +829,8 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
             private Map platformList;
             private String oldPrefix = "oracle.toplink.";
             private String newPrefix = "org.eclipse.persistence.";
+            private String oldOxmPrefix = oldPrefix + "ox.";
+            private String newOxmPrefix = newPrefix + "oxm.";
             public Object convertObjectValueToDataValue(Object objectValue, Session session){
                 //if this code is writin out, write out the converted value
                 return objectValue;
@@ -840,7 +842,11 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
                 }
                 // convert deprecated platforms to new platforms
                 if(((String)dataValue).startsWith(oldPrefix)) {
-                    dataValue = ((String)dataValue).replaceFirst(oldPrefix, newPrefix);
+                    if(((String)dataValue).startsWith(oldOxmPrefix)) {
+                        dataValue = ((String)dataValue).replaceFirst(oldOxmPrefix, newOxmPrefix);
+                    } else {
+                        dataValue = ((String)dataValue).replaceFirst(oldPrefix, newPrefix);
+                    }
                 }
                 Object result = platformList.get(dataValue);
                 if (result == null){
