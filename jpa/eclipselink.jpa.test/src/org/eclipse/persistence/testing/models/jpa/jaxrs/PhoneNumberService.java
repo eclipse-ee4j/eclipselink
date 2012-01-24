@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/phonenumber_war")
 public class PhoneNumberService {
 
-	@PersistenceContext(unitName = "default")
+	@PersistenceContext(unitName = "jaxrs")
 	EntityManager entityManager;
 
 	@POST

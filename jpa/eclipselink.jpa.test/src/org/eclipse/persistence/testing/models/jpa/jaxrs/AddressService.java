@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/address_war")
 public class AddressService {
 
-	@PersistenceContext(unitName = "default")
+	@PersistenceContext(unitName = "jaxrs")
 	EntityManager entityManager;
 
 	@POST

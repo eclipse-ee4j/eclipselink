@@ -3134,7 +3134,7 @@
 	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/persistence-jaxrs.xml" tofile="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
 	    <antcall target="server-jaxrsconfig" inheritRefs="true"/>
 	    <antcall target="server-run-all" inheritRefs="true">
-		    <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+		    <param name="PERSISTENCE_UNIT_NAME" value="jaxrs"/>
 		    <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/jaxrs"/>
 		    <param name="MODEL_NAME" value="eclipselink-jaxrs-model"/>
 		    <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/jaxrs"/>

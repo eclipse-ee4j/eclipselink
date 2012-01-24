@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/customer_war")
 public class CustomerService {
 
-	@PersistenceContext(unitName = "default")
+	@PersistenceContext(unitName = "jaxrs")
 	EntityManager entityManager;
 
 	@POST
