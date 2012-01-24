@@ -137,34 +137,37 @@ public class ShadowDDLGenerator {
         }
         @Override
         public void beginVisit(FieldType fieldType) {
-            PLSQLRecordType currentRecordType = recordTypes.peek();
-            if (currentRecordType != null) {
-                DDLWrapper ddlWrapper = createDDLs.get(currentRecordType);
-                if (!ddlWrapper.finished) {
-                    String fieldName = fieldType.getFieldName();
-                    for (int i = 0, len = currentRecordType.getFields().size(); i < len; i++) {
-                        FieldType f = currentRecordType.getFields().get(i);
-                        if (fieldName.equals(f.getFieldName())) {
-                            ddlWrapper.ddl += SPACES + fieldName + SINGLE_SPACE;
-                            DatabaseType fieldDataType = f.getDataType();
-                            String fieldShadowName = null;
-                            if (fieldDataType instanceof PLSQLType) {
-                                fieldShadowName = ((PLSQLType)fieldDataType).getParentType().
-                                    getPackageName() + UNDERSCORE + fieldDataType.
-                                    getTypeName().toUpperCase();
-                            }
-                            else {
-                                fieldShadowName = getShadowTypeName(fieldDataType);
-                            }
-                            ddlWrapper.ddl += fieldShadowName;
-                            if (i < len -1) {
-                                ddlWrapper.ddl += COMMA + NL;
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
+        	//skip fields from ObjectType's
+        	if (!recordTypes.isEmpty()) {
+        		PLSQLRecordType currentRecordType = recordTypes.peek();
+	            if (currentRecordType != null) {
+	                DDLWrapper ddlWrapper = createDDLs.get(currentRecordType);
+	                if (!ddlWrapper.finished) {
+	                    String fieldName = fieldType.getFieldName();
+	                    for (int i = 0, len = currentRecordType.getFields().size(); i < len; i++) {
+	                        FieldType f = currentRecordType.getFields().get(i);
+	                        if (fieldName.equals(f.getFieldName())) {
+	                            ddlWrapper.ddl += SPACES + fieldName + SINGLE_SPACE;
+	                            DatabaseType fieldDataType = f.getDataType();
+	                            String fieldShadowName = null;
+	                            if (fieldDataType instanceof PLSQLType) {
+	                                fieldShadowName = ((PLSQLType)fieldDataType).getParentType().
+	                                    getPackageName() + UNDERSCORE + fieldDataType.
+	                                    getTypeName().toUpperCase();
+	                            }
+	                            else {
+	                                fieldShadowName = getShadowTypeName(fieldDataType);
+	                            }
+	                            ddlWrapper.ddl += fieldShadowName;
+	                            if (i < len -1) {
+	                                ddlWrapper.ddl += COMMA + NL;
+	                            }
+	                            break;
+	                        }
+	                    }
+	                }
+	            }
+        	}
         }
         @Override
         public void beginVisit(PLSQLCollectionType collectionType) {
