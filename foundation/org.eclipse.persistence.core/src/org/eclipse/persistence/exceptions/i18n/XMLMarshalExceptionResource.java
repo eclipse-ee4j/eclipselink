@@ -51,7 +51,9 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25026", "Unable to update node [{0}], object not found in cache." },
                                            { "25027", "Unable to retrieve attachment with cid {0} because no AttachmentUnmarshaller was set."},
                                            { "25028", "No reference descriptor found for mapping {1} due to an unknown xsi:type value: {0}."},
-                                           { "25029", "For the prefix [{0}] class [{1}] attempted to assign the namespace URI [{2}], but its parent class [{3}] has already assigned the namespace URI [{4}]."}
+                                           { "25029", "For the prefix [{0}] class [{1}] attempted to assign the namespace URI [{2}], but its parent class [{3}] has already assigned the namespace URI [{4}]."},
+                                           { "25030", "An error occured while invoking the {0} method on the custom NamespacePrefixMapper: {1}."},
+                                           { "25031", "An error occured while processing the namespace prefix mapper: {1}. The method {0} was not found."}
     };
 
     /**

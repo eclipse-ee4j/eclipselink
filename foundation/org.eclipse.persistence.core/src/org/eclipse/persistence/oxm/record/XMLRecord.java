@@ -42,6 +42,8 @@ public abstract class XMLRecord extends AbstractRecord {
     private NamespaceResolver namespaceResolver;
     protected AbstractSession session;
     private boolean isXOPPackage;
+    private boolean hasCustomNamespaceMapper;
+    
 
     /**
      * INTERNAL:
@@ -248,5 +250,13 @@ public abstract class XMLRecord extends AbstractRecord {
     public void setXOPPackage(boolean isXOPPackage) {
         this.isXOPPackage = isXOPPackage;
     }
+	
+    public boolean hasCustomNamespaceMapper() {
+        return hasCustomNamespaceMapper;
+    }
 
+    public void setCustomNamespaceMapper(boolean customNamespaceMapper) {
+        this.hasCustomNamespaceMapper = customNamespaceMapper;
+    }
+    
 }

@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.DOMReader;
+import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -101,6 +102,7 @@ public class XMLMarshaller implements Cloneable {
     private ErrorHandler errorHandler;
     private Properties marshalProperties;
     private Schema schema;
+    private NamespacePrefixMapper mapper;
     
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -845,7 +847,13 @@ public class XMLMarshaller implements Cloneable {
             marshalRecord.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
         }
 
-        addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
+        if(this.mapper == null) {
+            addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
+        } else if(this.mapper != null) {
+            marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, descriptor.getNamespaceResolver()));
+            marshalRecord.setCustomNamespaceMapper(true);
+        }
+        
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         XMLRoot root = null;
         if(isXMLRoot) {
@@ -1439,5 +1447,13 @@ public class XMLMarshaller implements Cloneable {
         clone.setSchemaLocation(schemaLocation);
         return clone;
     }
+
+	public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
+	    this.mapper = mapper;
+	}
+	
+	public NamespacePrefixMapper getNamespacePrefixMapper() {
+	    return this.mapper;
+	}
 
 }

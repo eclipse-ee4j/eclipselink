@@ -156,7 +156,10 @@ public class OutputStreamRecord extends MarshalRecord {
         }
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
-        outputStreamWrite(xPathFragment.getShortNameBytes());
+        try {
+            outputStreamWrite(getNameForFragment(xPathFragment).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+        } catch (UnsupportedEncodingException e) {
+        }
     }
 
     /**
@@ -168,7 +171,10 @@ public class OutputStreamRecord extends MarshalRecord {
             isStartElementOpen = false;
         }
         outputStreamWrite(OPEN_START_ELEMENT);
-        outputStreamWrite(frag.getShortNameBytes());
+        try {
+            outputStreamWrite(getNameForFragment(frag).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+        } catch (UnsupportedEncodingException e) {
+        }
         outputStreamWrite((byte)'/');
         outputStreamWrite((byte)'>');
     }
@@ -177,7 +183,7 @@ public class OutputStreamRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
-        attribute(null, xPathFragment.getLocalName(), xPathFragment.getShortName(), value);
+        attribute(null, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), value);
     }
 
     /**
@@ -212,7 +218,10 @@ public class OutputStreamRecord extends MarshalRecord {
         } else {
             outputStreamWrite((byte)'<');
             outputStreamWrite((byte)'/');
-            outputStreamWrite(xPathFragment.getShortNameBytes());
+            try {
+                outputStreamWrite(getNameForFragment(xPathFragment).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+            }
             outputStreamWrite(CLOSE_ELEMENT);
         }
         isStartElementOpen = false;

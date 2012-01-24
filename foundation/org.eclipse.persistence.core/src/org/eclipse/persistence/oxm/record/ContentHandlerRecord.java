@@ -187,7 +187,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             if(namespaceUri == null) {
                 namespaceUri = XMLConstants.EMPTY_STRING;
             }
-            contentHandler.startElement(namespaceUri, xPathFragment.getLocalName(), xPathFragment.getShortName(), attributes);
+            contentHandler.startElement(namespaceUri, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), attributes);
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -225,7 +225,7 @@ public class ContentHandlerRecord extends MarshalRecord {
                 namespaceURI = XMLConstants.EMPTY_STRING;
             }
             String localName = frag.getLocalName();
-            String shortName = frag.getShortName();
+            String shortName = getNameForFragment(frag);
             contentHandler.startElement(namespaceURI, localName, shortName, attributes);
             contentHandler.endElement(namespaceURI, localName, shortName);
         } catch (SAXException e) {
@@ -238,7 +238,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
         String namespaceURI = resolveNamespacePrefix(xPathFragment, namespaceResolver);
-        attribute(namespaceURI, xPathFragment.getLocalName(), xPathFragment.getShortName(), value);
+        attribute(namespaceURI, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), value);
     }
 
     /**
@@ -275,7 +275,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             if(uri == null) {
                 uri = XMLConstants.EMPTY_STRING;
             }
-            contentHandler.endElement(uri, xPathFragment.getLocalName(), xPathFragment.getShortName());
+            contentHandler.endElement(uri, xPathFragment.getLocalName(), getNameForFragment(xPathFragment));
             List<String> currentLevelPrefixMappings = prefixMappings.remove(prefixMappings.size()-1);
             if(null != currentLevelPrefixMappings) {
                 for(String prefix : currentLevelPrefixMappings) {

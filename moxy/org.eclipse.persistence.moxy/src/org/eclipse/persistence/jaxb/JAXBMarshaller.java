@@ -38,6 +38,7 @@ import java.lang.reflect.Type;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
+import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -49,6 +50,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
 
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.*;
@@ -81,6 +83,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private XMLMarshaller xmlMarshaller;
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
+    public static final String JAXB_NAMESPACE_PREFIX_MAPPER = "namespace-prefix-mapper";
+    public static final String RI_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+    public static final String JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
+    
     //XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true
     private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
 
@@ -588,6 +594,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
+            } else if(JAXB_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
+                xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
+            } else if(RI_NAMESPACE_PREFIX_MAPPER.equals(key) || JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
+                xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
             } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());

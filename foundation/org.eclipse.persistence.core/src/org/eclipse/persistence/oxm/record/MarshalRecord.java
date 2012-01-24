@@ -433,4 +433,32 @@ public abstract class MarshalRecord extends XMLRecord {
         }
     }
 
+    protected String getNameForFragment(XPathFragment xPathFragment) {
+        if(!this.hasCustomNamespaceMapper()) {
+            return xPathFragment.getShortName();
+        }
+        if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
+            String prefix = this.getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
+            return prefix + ":" + xPathFragment.getLocalName();
+        }
+        return xPathFragment.getLocalName();
+    } 
+    
+    protected String getPrefixForFragment(XPathFragment xPathFragment) {
+        if(!this.hasCustomNamespaceMapper()) {
+            return xPathFragment.getPrefix();
+        }
+        String uri = xPathFragment.getNamespaceURI();
+        if(uri == null || uri.length() == 0) {
+            return "";
+        }
+        String prefix = this.getNamespaceResolver().resolveNamespaceURI(uri);
+        if(prefix != null) {
+            return prefix;
+        } 
+        return xPathFragment.getPrefix();
+    }
+
+    
+
 }

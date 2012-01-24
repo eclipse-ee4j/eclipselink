@@ -46,6 +46,8 @@ public class XMLMarshalException extends ValidationException {
     public static final int NO_ATTACHMENT_UNMARSHALLER_SET = 25027;
     public static final int UNKNOWN_XSI_TYPE = 25028;
     public static final int SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION = 25029;
+    public static final int ERROR_INVOKING_NAMESPACE_PREFIX_MAPPER = 25030;
+    public static final int ERROR_PROCESSING_PREFIX_MAPPER = 25031;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -299,5 +301,20 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION);
         return exception;
     }
-
+    
+    public static XMLMarshalException errorInvokingPrefixMapperMethod(String methodName, Object prefixMapper) {
+        Object[] args = {methodName, prefixMapper};
+        
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_INVOKING_NAMESPACE_PREFIX_MAPPER, args));
+        exception.setErrorCode(ERROR_INVOKING_NAMESPACE_PREFIX_MAPPER);
+        return exception;
+    }
+    
+    public static XMLMarshalException errorProcessingPrefixMapper(String methodName, Object prefixMapper) {
+        Object[] args = {methodName, prefixMapper};
+        
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_PROCESSING_PREFIX_MAPPER, args));
+        exception.setErrorCode(ERROR_PROCESSING_PREFIX_MAPPER);
+        return exception;
+    }    
 }
