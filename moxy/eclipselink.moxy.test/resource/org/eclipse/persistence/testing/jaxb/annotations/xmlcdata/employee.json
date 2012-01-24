@@ -1,4 +1,4 @@
 {"employee":{
   "name":"Jane Doe",
-  "xmlData":"<root><child>A string wrapped in cdata</child></root>"
+  "xmlData":"<root><child>A string wrapped in cdata<\/child><\/root>"
 }}

@@ -495,24 +495,67 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     protected void writeValue(String value) {
-        try {
-            if(value.indexOf('"') > -1)  {
-                  char[] chars = value.toCharArray();
-                  for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
-                      char character = chars[x];
-                      if('"' == character) {
-                          writer.write("\\\"");
-                      } else {
-                          writer.write(character);
+        try {        
+              char[] chars = value.toCharArray();
+              for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
+                  char character = chars[x];
+                  switch (character){
+                      case '"' : {
+                    	  writer.write("\\\"");
+                    	  break;
                       }
-                  }
-            } else {
-                writer.write(value);
-            }
+                      case '\b': {
+                          writer.write("\\");
+                          writer.write("b");
+                          break;
+                      }
+                      case '\f': {
+                          writer.write("\\");
+                          writer.write("f");
+                          break;
+                      }
+                      case '\n': {
+                          writer.write("\\");
+                          writer.write("n");
+                          break;
+                      }
+                      case '\r': {
+                          writer.write("\\");
+                          writer.write("r");
+                          break;
+                      }
+                      case '\t': {
+                          writer.write("\\");
+                          writer.write("t");
+                          break;
+                      }
+                      case '\\': {
+                          writer.write("\\");
+                          writer.write("\\");
+                          break;
+                      }
+                      case '/': {
+                          writer.write("\\/");
+                          break;
+                      }                       
+                      default: {
+                    	  if(Character.isISOControl(character)){
+                    		  writer.write("\\u");
+                              String hex = Integer.toHexString(character).toUpperCase();
+                              for(int i=hex.length(); i<4; i++){
+                                  writer.write("0");
+                              }
+                              writer.write(hex);
+                    	  }else{
+                              writer.write(character);
+                    	  }
+                      }                                           
+                  }                                  
+              }            
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
-    }
+    }  
 
     /**
      * Receive notification of a node.

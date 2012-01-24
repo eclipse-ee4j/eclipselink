@@ -1,0 +1,24 @@
+<numberHolder>
+   <intTest>2</intTest>
+   <integerTest>3</integerTest>
+   <bigDecimalTest>3.455999999999999960920149533194489777088165283203125</bigDecimalTest>
+   <bigIntegerTest>6</bigIntegerTest>
+   <doubleTest>2.2</doubleTest>
+   <floatTest>4.0</floatTest>
+   <shortTest>5</shortTest>
+   <longTest>6</longTest>
+   <listIntegersTest>7</listIntegersTest>
+   <listIntegersTest>9</listIntegersTest>
+   <listNumbersTest>3</listNumbersTest>
+   <listNumbersTest>3.456</listNumbersTest>
+   <listNumbersTest>4E+1</listNumbersTest>
+   <listNumbersTest>4E+3</listNumbersTest>
+   <listNumbersTest>0.004</listNumbersTest>
+   <listNumbersTest>5E+1</listNumbersTest>
+   <listNumbersTest>6E+2</listNumbersTest>
+   <listNumbersTest>0.007</listNumbersTest>
+   <listNumbersTest>8.56E+56</listNumbersTest>
+   <listNumbersTest>-3</listNumbersTest>
+   <listNumbersTest>-3.5</listNumbersTest>
+   <listNumbersTest>0</listNumbersTest>
+</numberHolder>

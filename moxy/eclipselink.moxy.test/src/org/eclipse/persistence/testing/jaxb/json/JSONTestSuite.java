@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.jaxb.json;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixEmptyStringTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
+import org.eclipse.persistence.testing.jaxb.json.characters.EscapeCharactersTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.DifferentNamespacesTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnContextTestCases;
@@ -25,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementNSTe
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
+import org.eclipse.persistence.testing.oxm.xmlconversionmanager.NumberTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -45,6 +47,8 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(IncludeRootTrueWithXMLRootElementTestCases.class);
           suite.addTestSuite(XMLValuePropTestCases.class);
           suite.addTestSuite(XMLValuePropDifferentTestCases.class);
+          suite.addTestSuite(NumberTestCases.class);
+          suite.addTestSuite(EscapeCharactersTestCases.class);
           return suite;
 	}
 }

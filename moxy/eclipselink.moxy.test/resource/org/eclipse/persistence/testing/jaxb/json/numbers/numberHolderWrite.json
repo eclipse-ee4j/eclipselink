@@ -1,0 +1,13 @@
+{"numberHolder":{
+   "intTest":2,
+   "integerTest":3,
+   "bigDecimalTest":3.455999999999999960920149533194489777088165283203125,
+   "bigIntegerTest":6,
+   "doubleTest":2.2,
+   "floatTest":4.0,
+   "shortTest":5,
+   "longTest":6,
+   "listIntegersTest":[7,9],
+   "listNumbersTest":[3,3.456,4E+1, 4E+3, 0.004, 5E+1, 6E+2, 0.007, 8.56E+56,-3,-3.5,0]
+   }
+ }

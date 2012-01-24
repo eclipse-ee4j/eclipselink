@@ -197,11 +197,78 @@ public class JSONReader extends XMLReaderAdapter {
         }
         }
     }
-
+    
     private String string(String string) {
-        string = string.substring(1, string.length() - 1);
-        string = string.replace("\\\"", "\"");
-        return string;
+    	string = string.substring(1, string.length()-1);
+    	String returnString = "";                
+        int slashIndex = string.indexOf('\\');     
+        if(slashIndex == -1){
+            return string;
+        }
+      
+        int position = 0;
+        while(slashIndex > -1){              	        	
+        	String subString = string.substring(position, slashIndex);
+            returnString += subString;
+            position = slashIndex;
+            
+            char nextChar = string.charAt(slashIndex + 1);
+            switch (nextChar){
+               case 'b':{
+            	   position += 2;
+                   returnString += '\b';
+                   break;
+               }
+               case 'r':{
+            	   position += 2;
+                   returnString += '\r';
+                   break;
+               }
+               case 'f':{
+            	   position += 2;
+                   returnString += '\f';
+                   break;
+               }
+               case 'n':{
+            	   position += 2;
+                   returnString += '\n';
+                   break;
+               }
+               case 't': {
+            	   position += 2;
+                   returnString += '\t';
+                   break;
+               }
+               case '"': {
+            	    position += 2;
+                    returnString += '"';
+                    break;
+               }
+               case '\\':{
+            	   position += 2;
+                   returnString += '\\';
+                   break;
+               }
+               case '/':{
+            	   position += 2;
+                   returnString += '/';
+                   break;
+               }
+               case 'u':{
+            	   position += 6;
+                   String hexValue = string.substring(slashIndex+2, slashIndex+6);
+                   returnString += Character.toString((char)Integer.parseInt(hexValue, 16));
+                   break;
+               }
+            }            
+            slashIndex = string.indexOf('\\', position);
+        }
+        //If there is content after the last '\' then append it.
+        if(position < string.length()){
+        	String subString = string.substring(position, string.length());
+        	returnString += subString;
+        }
+        return returnString;
     }
 
     private static class JSONAttributes extends IndexedAttributeList {
