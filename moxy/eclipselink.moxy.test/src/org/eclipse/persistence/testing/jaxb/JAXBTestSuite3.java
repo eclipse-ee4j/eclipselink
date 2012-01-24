@@ -23,6 +23,8 @@ import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContex
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByPackageWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBIntrospectorGetElementNameTestCases;
+import org.eclipse.persistence.testing.jaxb.prefixmapper.NonELPrefixMapperTestCases;
+import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
@@ -93,6 +95,10 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(JAXBIntrospectorGetElementNameTestCases.class);
         suite.addTest(CollectionsTestSuite.suite());
         suite.addTest(DefaultValueTestSuite.suite());
+        
+        suite.addTestSuite(PrefixMapperTestCases.class);
+        suite.addTestSuite(NonELPrefixMapperTestCases.class);
+        
         return suite;
     }
 

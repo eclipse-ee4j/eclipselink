@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<newPrefix:employee xmlns:newPrefix="someuri" xmlns:somePrefix="my.uri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <firstName>John</firstName>
+   <lastName>Doe</lastName>
+   <address>123 Fake Street</address>
+   <employeeId>4321</employeeId>
+   <manager xsi:type="newPrefix:emp-type">
+      <firstName>Bob</firstName>
+      <lastName>Jones</lastName>
+      <address>234 Some Street</address>
+      <employeeId>9876</employeeId>
+   </manager>
+</newPrefix:employee>

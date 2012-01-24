@@ -110,7 +110,7 @@ public class WriterRecord extends MarshalRecord {
             }
             isStartElementOpen = true;
             writer.write('<');
-            writer.write(xPathFragment.getShortName());
+            writer.write(getNameForFragment(xPathFragment));
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -138,7 +138,7 @@ public class WriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, String value) {
-        attribute(null, xPathFragment.getLocalName(), xPathFragment.getShortName(), value);
+        attribute(null, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), value);
     }
 
     /**
@@ -188,7 +188,7 @@ public class WriterRecord extends MarshalRecord {
             } else {
                 writer.write('<');
                 writer.write('/');
-                writer.write(xPathFragment.getShortName());
+                writer.write(getNameForFragment(xPathFragment));
                 writer.write('>');
             }
             isStartElementOpen = false;
@@ -383,7 +383,7 @@ public class WriterRecord extends MarshalRecord {
             }
             writeValue(characters.toString());
         }
-
+        
         // --------------------- LEXICALHANDLER METHODS --------------------- //
         public void comment(char[] ch, int start, int length) throws SAXException {
             try {

@@ -48,6 +48,9 @@ public abstract class XMLRecord extends AbstractRecord {
     protected char namespaceSeparator;
     protected boolean namespaceAware;
     
+    private boolean hasCustomNamespaceMapper;
+    
+
     /**
      * INTERNAL:
      * Nil: This is used to indicate that this field represents xsi:nil="true"
@@ -317,4 +320,12 @@ public abstract class XMLRecord extends AbstractRecord {
     	return namespaceSeparator;
     }
 	
+    public boolean hasCustomNamespaceMapper() {
+        return hasCustomNamespaceMapper;
+    }
+
+    public void setCustomNamespaceMapper(boolean customNamespaceMapper) {
+        this.hasCustomNamespaceMapper = customNamespaceMapper;
+    }
+    
 }

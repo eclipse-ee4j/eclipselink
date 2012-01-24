@@ -75,7 +75,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                     xmlStreamWriter.writeNamespace(xPathFragment.getLocalName(), value);
                 }
             }  else {
-                String prefix = xPathFragment.getPrefix();
+                String prefix = getPrefixForFragment(xPathFragment);
                 if(prefix == null) {
                     xmlStreamWriter.writeAttribute(namespaceURI, xPathFragment.getLocalName(), value);
                 } else {
@@ -142,7 +142,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                     }
                 }
             } else {
-                String prefix = xPathFragment.getPrefix();
+                String prefix = getPrefixForFragment(xPathFragment);
                 if(prefix == null) {
                     prefix = XMLConstants.EMPTY_STRING;
                 }
@@ -156,7 +156,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
 
     public void element(XPathFragment frag) {
         try {
-            xmlStreamWriter.writeStartElement(frag.getShortName());
+            xmlStreamWriter.writeStartElement(getNameForFragment(frag));
             xmlStreamWriter.writeEndElement();
         } catch(XMLStreamException e) {
             throw XMLMarshalException.marshalException(e);

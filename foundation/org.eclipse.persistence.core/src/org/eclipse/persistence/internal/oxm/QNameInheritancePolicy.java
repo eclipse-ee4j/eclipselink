@@ -231,7 +231,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         DatabaseField field = getClassIndicatorField();
         
         Object value = getClassIndicatorValue();
-        boolean namespaceAware = ((XMLRecord)databaseRow).isNamespaceAware();
+        boolean namespaceAware = ((XMLRecord)databaseRow).isNamespaceAware() || ((XMLRecord)databaseRow).hasCustomNamespaceMapper();
         if(!namespaceAware && value instanceof String){
             int colonIndex = ((String)value).indexOf(XMLConstants.COLON);
             if(colonIndex > -1){
