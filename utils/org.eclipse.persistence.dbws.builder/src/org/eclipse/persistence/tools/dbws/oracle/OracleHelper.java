@@ -118,6 +118,7 @@ import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentat
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
@@ -706,8 +707,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     // handle pl/sql record and pl/sql table fields
                     if (fType.getDataType() instanceof PLSQLRecordType) {
                         buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + DOT + fType.getDataType()).toLowerCase());
-                    }
-                    else if (fType.getDataType() instanceof PLSQLCollectionType) {
+                    } else if (fType.getDataType() instanceof PLSQLCollectionType) {
                         PLSQLCollectionType tableType = (PLSQLCollectionType) fType.getDataType();
                         if (tableType.getNestedType().isComposite()) {
                             buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, (catalogPattern + DOT + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
@@ -717,8 +717,19 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             if (refDesc != null) {
                                 attributeElementClass = ((XMLCompositeDirectCollectionMapping)refDesc.getMappingForAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME)).getAttributeElementClass();
                             }
-                            buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + "/item/text()", attributeElementClass);
+                            buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME + SLASH + TEXT, attributeElementClass);
                         }
+                    } else if (fType.getDataType() instanceof ObjectType) {
+                        buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, getGeneratedJavaClassName(fType.getDataType().getTypeName(), dbwsBuilder.getProjectName()));
+                    } else if (fType.getDataType() instanceof VArrayType) {
+                        buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME + SLASH + TEXT, getAttributeClassForDatabaseType(fType.getDataType()));
+                    } else if (fType.getDataType() instanceof ObjectTableType) {
+                        // assumes ObjectTableType has an enclosed ObjectType type
+                        ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getDataType()).getEnclosedType();
+                        String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
+                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+                        // ObjectType is composite
+                        buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
                     }
                 } else {
                     // direct mapping
@@ -763,16 +774,27 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 if (fType.isComposite()) {
                     if (fType.getDataType() instanceof PLSQLRecordType) {
                     	buildAndAddStructureMapping(ordtDesc, lFieldName, fieldName, recordName.toLowerCase());
-                    }
-                    else if (fType.getDataType() instanceof PLSQLCollectionType) {
+                    } else if (fType.getDataType() instanceof PLSQLCollectionType) {
                         PLSQLCollectionType tableType = (PLSQLCollectionType) fType.getDataType();
                         if (tableType.getNestedType().isComposite()) {
                         	buildAndAddObjectArrayMapping(ordtDesc, lFieldName, fieldName, (catalogPattern + "." + tableType.getTypeName()).toLowerCase() + COLLECTION_WRAPPER_SUFFIX, getStructureNameForField(fType, catalogPattern));
                         } else {
                         	buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, getStructureNameForField(fType, catalogPattern));
                         }
+                    } else if (fType.getDataType() instanceof ObjectType) {
+                        buildAndAddStructureMapping(ordtDesc, lFieldName, fieldName, getGeneratedJavaClassName(fType.getDataType().getTypeName(), dbwsBuilder.getProjectName()));
+                    } else if (fType.getDataType() instanceof VArrayType) {
+                        buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, getStructureNameForField(fType, null));
+                    } else if (fType.getDataType() instanceof ObjectTableType) {
+                        // assumes ObjectTableType has an enclosed ObjectType type
+                    	ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getDataType()).getEnclosedType();
+                        String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
+                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+                        // ObjectType is composite
+                        buildAndAddObjectArrayMapping(ordtDesc, lFieldName, fieldName, nestedTypeName, nestedTypeAlias.toUpperCase());
                     }
                 } else {
+                	// direct mapping
                     ordtDesc.addDirectMapping(lFieldName, fieldName);
                 }
             }
@@ -799,6 +821,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 	String refTypeName = catalogPattern + UNDERSCORE + ((PLSQLRecordType)nestedType).getTypeName();
                     addToOXProjectForPLSQLRecordArg(nestedType, oxProject, referenceClassName, refTypeName.toLowerCase(), refTypeName, catalogPattern);
                 }
+            } else if (nestedType instanceof ObjectType) {
+                buildAndAddXMLCompositeCollectionMapping(xdesc, getGeneratedJavaClassName(nestedType.getTypeName(), dbwsBuilder.getProjectName()));
             } else {
                 if (nestedType.isComposite()) {
                     buildAndAddXMLCompositeCollectionMapping(xdesc, tableName.toLowerCase() + COLLECTION_WRAPPER_SUFFIX);
@@ -829,6 +853,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 	String refTypeName = catalogPattern + UNDERSCORE + ((PLSQLRecordType)nestedType).getTypeName();
                 	addToORProjectForPLSQLRecordArg(nestedType, orProject, referenceClassName, refTypeName.toLowerCase(), refTypeName, catalogPattern);
                 }
+            } else if (nestedType instanceof ObjectType) {
+                buildAndAddObjectArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, getGeneratedJavaClassName(nestedType.getTypeName(), dbwsBuilder.getProjectName()), targetTypeName);
             } else {
             	buildAndAddArrayMapping(ordt, ITEMS_MAPPING_ATTRIBUTE_NAME, ITEMS_MAPPING_FIELD_NAME, targetTypeName);
             }
@@ -933,7 +959,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         	xdesc2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
                             addToOXProjectForVArrayArg(field.getDataType(), oxProject, xdesc2.getJavaClassName(), alias);
                         }
-                        buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + "/text()", getAttributeClassForDatabaseType(field.getDataType()));
+                        // TODO:  Is this correct?  VArray typically uses <item>, so do we want 
+                        //        fieldname/item/text()?
+                        buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + TEXT, getAttributeClassForDatabaseType(field.getDataType()));
                     }
                 } else {
                     // direct mapping
@@ -1315,19 +1343,40 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     	xdesc.addMapping(buildXMLCompositeObjectMapping(attributeName, referenceClassName));
     }
     /**
+     * Build an XMLCompositeObjectMapping based on given attribute and reference
+     * class names, and add the newly created mapping to the given descriptor.
+     */
+    protected void buildAndAddXMLCompositeObjectMapping(XMLDescriptor xdesc, String attributeName, String xpath, String referenceClassName) {
+    	xdesc.addMapping(buildXMLCompositeObjectMapping(attributeName, referenceClassName));
+    }
+    /**
      * Build an XMLCompositeObjectMapping based on given attribute
      * and reference class names.
      */
     protected XMLCompositeObjectMapping buildXMLCompositeObjectMapping(String attributeName, String referenceClassName) {
+        return buildXMLCompositeObjectMapping(attributeName, attributeName, referenceClassName);
+    }
+    /**
+     * Build an XMLCompositeObjectMapping based on given attribute
+     * and reference class names.
+     */
+    protected XMLCompositeObjectMapping buildXMLCompositeObjectMapping(String attributeName, String xpath, String referenceClassName) {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setAttributeName(attributeName);
-        mapping.setXPath(attributeName);
+        mapping.setXPath(xpath);
         XMLField xField = (XMLField)mapping.getField();
         xField.setRequired(true);
         mapping.setReferenceClassName(referenceClassName);
         return mapping;
     }
 
+    /**
+     * Build an XMLCompositeCollectionMapping based on a given attribute name,  xpath,
+     * and reference class, and add the newly created mapping to the given descriptor.
+     */
+    protected void buildAndAddXMLCompositeCollectionMapping(XMLDescriptor xdesc, String attributeName, String xPath, String referenceClassName) {
+    	xdesc.addMapping(buildXMLCompositeCollectionMapping(attributeName, xPath, referenceClassName));
+    }
     /**
      * Build an XMLCompositeCollectionMapping based on a given reference class
      * name, and add the newly created mapping to the given descriptor.
@@ -1336,19 +1385,26 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     	xdesc.addMapping(buildXMLCompositeCollectionMapping(referenceClassName));
     }
     /**
-     * Build an XMLCompositeCollectionMapping based on a given
-     * reference class name.
+     * Build an XMLCompositeCollectionMapping based on a given reference class name.  
+     * The attribute name will be set to 'items', and the xpath set to 'item'.
      */
     protected XMLCompositeCollectionMapping buildXMLCompositeCollectionMapping(String referenceClassName) {
+    	return buildXMLCompositeCollectionMapping(ITEMS_MAPPING_ATTRIBUTE_NAME, ITEM_MAPPING_NAME, referenceClassName);
+    }
+    /**
+     * Build an XMLCompositeCollectionMapping based on a given attribute name, xpath,
+     * and reference class.
+     */
+    protected XMLCompositeCollectionMapping buildXMLCompositeCollectionMapping(String attributeName, String xPath, String referenceClassName) {
         XMLCompositeCollectionMapping itemsMapping = new XMLCompositeCollectionMapping();
-        itemsMapping.setAttributeName(ITEMS_MAPPING_ATTRIBUTE_NAME);
-        itemsMapping.setXPath(ITEM_MAPPING_NAME);
+        itemsMapping.setAttributeName(attributeName);
+        itemsMapping.setXPath(xPath);
         ((XMLField)itemsMapping.getField()).setRequired(true);
         itemsMapping.useCollectionClass(ArrayList.class);
         itemsMapping.setReferenceClassName(referenceClassName);
         return itemsMapping;
     }
-
+    
     /**
      * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath,
      * and attribute element class.  The newly created mapping will be added to the given
