@@ -296,7 +296,7 @@
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <!-- arg value="-X"/ -->
-             <arg value="install"/>
+             <arg value="verify"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
