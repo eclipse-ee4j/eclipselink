@@ -295,7 +295,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                        }
 	                    }
                     }
-                    if (direction == IN) {
+                    if (direction == null || direction == IN) {
                         parm = new Parameter();
                         parm.setName(argName);
                         parm.setType(xmlType);
@@ -959,7 +959,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         	xdesc2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
                             addToOXProjectForVArrayArg(field.getDataType(), oxProject, xdesc2.getJavaClassName(), alias);
                         }
-                        // TODO:  Is this correct?  VArray typically uses <item>, so do we want 
+                        // TODO:  Is this correct?  VArray typically uses <item>, so do we want
                         //        fieldname/item/text()?
                         buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + TEXT, getAttributeClassForDatabaseType(field.getDataType()));
                     }
@@ -1385,7 +1385,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     	xdesc.addMapping(buildXMLCompositeCollectionMapping(referenceClassName));
     }
     /**
-     * Build an XMLCompositeCollectionMapping based on a given reference class name.  
+     * Build an XMLCompositeCollectionMapping based on a given reference class name.
      * The attribute name will be set to 'items', and the xpath set to 'item'.
      */
     protected XMLCompositeCollectionMapping buildXMLCompositeCollectionMapping(String referenceClassName) {
@@ -1404,7 +1404,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         itemsMapping.setReferenceClassName(referenceClassName);
         return itemsMapping;
     }
-    
+
     /**
      * Build an XMLCompositeDirectCollectionMapping based on a given attribute name, xpath,
      * and attribute element class.  The newly created mapping will be added to the given
