@@ -195,6 +195,7 @@ public class TestRunModel extends TestModel {
         models.add(buildLRGTestModel());
         models.add(buildNonLRGTestModel());
         models.add(buildOracleTestModel());
+        models.add(buildOracleNoSQLTestModel());
         models.add(buildNoSQLTestModel());
         models.add(buildJPATestModel());
         models.add(buildPerformanceTestModel());
@@ -267,6 +268,34 @@ public class TestRunModel extends TestModel {
         return model;
     }   
     
+    /**
+     * Build and return a model of all Oracle NoSQL tests.
+     */
+    public static TestModel buildOracleNoSQLTestModel() {
+        List tests = new ArrayList();
+        tests.add("org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLTestSuite");
+        tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLMappedTestSuite");
+
+        TestModel model = new TestModel();
+        model.setName("Oracle NoSQL Tests");
+        for (int index = 0; index < tests.size(); ++index) {
+            Class cls;
+            try {
+                cls = Class.forName((String)tests.get(index));
+                if(TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel)cls.newInstance());
+                } else {
+                    Method suite = cls.getDeclaredMethod("suite", new Class[]{});
+                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                }
+            } catch (Throwable exception) {
+                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+            }
+        }
+        return model;
+    }
+
     /**
      * Build and return a model of all EIS specific tests.
      */

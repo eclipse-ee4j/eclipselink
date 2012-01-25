@@ -465,6 +465,12 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <generate_report/>
     </target>
 
+    <!-- Runs Core Oracle NoSQL tests. -->
+    <target name="test-oracle-nosql" depends="init_run">
+        <run_test testclass="org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestModel"  dburl="${db.url}"/>
+        <generate_report/>
+    </target>
+
     <!-- Prompt runner test target, runs test.class from test.properties (default is OracleTestModel). -->
     <target name="test-prompt" depends="init_run">
         <run_test_prompt testclass="${test.class}" dburl="${db.url}"/>

@@ -1297,6 +1297,29 @@
         </antcall>
     </target>
 
+    <!-- Runs JPA Oracle NoSQL tests. -->
+    <target name="oracle-nosql-test" depends="clean-test, config-trunk, config-flat">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.oracle.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLMappedTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.oracle.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
     <!-- Runs SRG (EntityManagerJUnitTestSuite) with agent. -->
     <target name="test-srg" depends="clean-test,config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
