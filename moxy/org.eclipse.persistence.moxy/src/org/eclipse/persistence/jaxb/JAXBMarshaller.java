@@ -83,7 +83,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private XMLMarshaller xmlMarshaller;
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
-    public static final String JAXB_NAMESPACE_PREFIX_MAPPER = "namespace-prefix-mapper";
+    public static final String ECLIPSELINK_NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
     public static final String RI_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
     public static final String JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
     
@@ -594,7 +594,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if(JAXB_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
+            } else if(ECLIPSELINK_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
                 xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
             } else if(RI_NAMESPACE_PREFIX_MAPPER.equals(key) || JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
                 xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
