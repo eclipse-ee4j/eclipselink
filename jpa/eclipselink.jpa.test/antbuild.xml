@@ -632,6 +632,7 @@
                                org/eclipse/persistence/testing/models/jpa/performance2/**
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
                                org/eclipse/persistence/testing/models/jpa/composite/**
+                               org/eclipse/persistence/testing/models/jpa/jaxrs/**
                                org/eclipse/persistence/testing/models/weaving/**"/>
         </copy>
         <antcall target="prepare-spring-xmls" inheritRefs="true">
