@@ -199,6 +199,12 @@ public class XPathNode {
                 if(null != nonAttributeChildren && !nonAttributeChildren.contains(textXPathNode)) {
                     nonAttributeChildren.add(textXPathNode);
                 }
+                if(aNodeValue instanceof XMLCompositeObjectMappingNodeValue) {
+                    if (null == selfChildren) {
+                        selfChildren = new ArrayList<XPathNode>();
+                    }
+                    selfChildren.add(textXPathNode);
+                }
                 return textXPathNode;
             }
         }

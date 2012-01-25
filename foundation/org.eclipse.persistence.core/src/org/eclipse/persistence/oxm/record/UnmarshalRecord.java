@@ -998,7 +998,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public void characters(char[] ch, int start, int length) throws SAXException {
         try {
+            int strBufferInitialLength = -1; 
             if (null != selfRecords) {
+                strBufferInitialLength = getStringBuffer().length(); 
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
                     UnmarshalRecord selfRecord = selfRecords.get(x);
                     if(selfRecord != null){
@@ -1033,8 +1035,16 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 xPathNode = textNode;
                 unmarshalContext.characters(this);
             }
-            if (null != xPathNode.getUnmarshalNodeValue()) {
-                getStringBuffer().append(ch, start, length);
+            NodeValue unmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
+            if (null != unmarshalNodeValue) {
+                if(strBufferInitialLength == -1) {
+                    getStringBuffer().append(ch, start, length);
+                } else {
+                    StrBuffer strBuffer = getStringBuffer();
+                    if(strBufferInitialLength == strBuffer.length()) {
+                        strBuffer.append(ch, start, length);
+                    }
+                }
             }
         } catch (EclipseLinkException e) {
             if (null == xmlReader.getErrorHandler()) {

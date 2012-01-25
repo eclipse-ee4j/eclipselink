@@ -45,6 +45,7 @@ public class JavadocAnnotationExamplesTestSuite extends TestSuite {
 		// suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso.XmlSeeAlsoTest.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmltransient.XmlTransientTest.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmltype.XmlTypeCustomizedOrderingTest.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmltype.AttributeWithAnonymousTypeTest.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue.XmlValueSimpleContentTest.class);
 
 		// Phase-II
