@@ -811,6 +811,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
                 if (domainObject instanceof PersistenceEntity) {
                     ((PersistenceEntity)domainObject)._persistence_setId(primaryKey);
+                    ((PersistenceEntity)domainObject)._persistence_setCacheKey(cacheKey);
                 }
             } else {
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {

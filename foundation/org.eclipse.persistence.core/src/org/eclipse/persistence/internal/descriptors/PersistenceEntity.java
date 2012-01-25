@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+
 /**
  * Define an interface for utility methods weaved into the persistence classes.
  * These general methods are used to optimize performance, such as caching the key in the object.
@@ -23,4 +25,6 @@ package org.eclipse.persistence.internal.descriptors;
 public interface PersistenceEntity {    
     Object _persistence_getId();
     void _persistence_setId(Object primaryKey);    
+    CacheKey _persistence_getCacheKey();
+    void _persistence_setCacheKey(CacheKey cacheKey);
 }

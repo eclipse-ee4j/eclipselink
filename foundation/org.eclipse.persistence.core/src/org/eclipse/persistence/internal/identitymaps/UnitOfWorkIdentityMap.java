@@ -151,6 +151,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     public Object remove(CacheKey cacheKey) {
         if (cacheKey != null) {
             this.cacheKeys.remove(cacheKey.getKey());
+            cacheKey.setOwningMap(null);
         } else {
             return null;
         }

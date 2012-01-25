@@ -232,25 +232,31 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Return the object from the identity with the primary and class.
      */
     @Override
-    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Object object, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         if (!descriptor.getCachePolicy().isSharedIsolation()){
-            Object object = null;
+            Object cachedObject = null;
             if (this.identityMapManager != null){
-                object = getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+                cachedObject = getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
             }
             if (descriptor.getCachePolicy().isIsolated()) {
-                return object;
+                return cachedObject;
             }else{
-                return getAndCloneCacheKeyFromParent(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+                return getAndCloneCacheKeyFromParent(primaryKey, object, theClass, shouldReturnInvalidatedObjects, descriptor);
             }
         } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, object, theClass, shouldReturnInvalidatedObjects, descriptor);
         }
     }
 
-    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = session.getParent().getIdentityMapAccessorInstance();
-        CacheKey cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
+    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Object objectToClone, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+        CacheKey cacheKey = null;
+        if (objectToClone != null && objectToClone instanceof PersistenceEntity){
+            cacheKey = ((PersistenceEntity)objectToClone)._persistence_getCacheKey();
+        }
+        if (cacheKey == null || cacheKey.isIsolated() || cacheKey.getOwningMap() == null){
+            org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = session.getParent().getIdentityMapAccessorInstance();
+            cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
+        }
         Object objectFromCache = null;
         // this check could be simplified to one line but would create a window
         // in which GC could remove the object and we would end up with a null pointer
@@ -292,6 +298,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
         // otherwise lock the object and it related objects (not using indirection) as a unit.
         // If just a simple object (all indirection) a simple read-lock can be used.
         // PERF: Cache if check to write is required.
+        org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = session.getParent().getIdentityMapAccessorInstance();
         boolean identityMapLocked = parentIdentityMapAccessor.acquireWriteLock();
         boolean rootOfCloneRecursion = false;
         if (identityMapLocked) {
@@ -360,7 +367,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * This avoids checking the parent cache for the unit of work.
      */
     public Object getFromLocalIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+        return getFromIdentityMap(primaryKey, null, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
     /**

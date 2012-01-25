@@ -378,7 +378,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     public Object getFromIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
-        return getFromIdentityMap(primaryKey, theClass, true, descriptor);
+        return getFromIdentityMap(primaryKey, null, theClass, true, descriptor);
     }
 
     /**
@@ -397,7 +397,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
-        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
+        return getFromIdentityMap(primaryKey, null, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
     }
     
     /**
@@ -405,7 +405,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      * Only return invalidated objects if requested.
      */
-    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Object object, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
     

@@ -294,6 +294,8 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      */
     private Object primaryKey;
     
+    protected CacheKey cacheKey;
+    
     @SuppressWarnings("unchecked")
     public Object _persistence_getId() {
         return this.primaryKey;
@@ -301,6 +303,14 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     @SuppressWarnings("unchecked")
     public void _persistence_setId(Object pk) {
         this.primaryKey = pk;
+    }
+    
+    public CacheKey _persistence_getCacheKey(){
+        return this.cacheKey;
+    }
+    
+    public void _persistence_setCacheKey(CacheKey cacheKey){
+        this.cacheKey = cacheKey;
     }
     
     //ChangeTracker API

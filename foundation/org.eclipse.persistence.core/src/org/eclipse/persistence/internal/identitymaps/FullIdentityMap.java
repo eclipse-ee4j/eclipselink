@@ -215,6 +215,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
             // Cache key needs to be locked when removing from the map.
             cacheKey.acquire();
             this.cacheKeys.remove(cacheKey.getKey());
+            cacheKey.setOwningMap(null);
             // Cache key needs to be released after removing from the map.
             cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
             cacheKey.release();

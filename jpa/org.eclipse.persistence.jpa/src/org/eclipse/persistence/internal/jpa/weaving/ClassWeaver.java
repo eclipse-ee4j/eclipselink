@@ -687,6 +687,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
      */
     public void addPersistenceEntityVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_cacheKey", CACHEKEY_SIGNATURE, null, null);
     }
 
     /**
@@ -944,6 +945,19 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         cv_setPKVector.visitInsn(RETURN);
         cv_setPKVector.visitMaxs(0, 0);
+
+        MethodVisitor cv_getCacheKey = cv.visitMethod(ACC_PUBLIC, "_persistence_getCacheKey", "()" + CACHEKEY_SIGNATURE, null, null);
+        cv_getCacheKey.visitVarInsn(ALOAD, 0);
+        cv_getCacheKey.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
+        cv_getCacheKey.visitInsn(ARETURN);
+        cv_getCacheKey.visitMaxs(0, 0);
+
+        MethodVisitor cv_setCacheKey = cv.visitMethod(ACC_PUBLIC, "_persistence_setCacheKey", "(" + CACHEKEY_SIGNATURE + ")V", null, null);
+        cv_setCacheKey.visitVarInsn(ALOAD, 0);
+        cv_setCacheKey.visitVarInsn(ALOAD, 1);
+        cv_setCacheKey.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
+        cv_setCacheKey.visitInsn(RETURN);
+        cv_setCacheKey.visitMaxs(0, 0);
     }
 
     /**

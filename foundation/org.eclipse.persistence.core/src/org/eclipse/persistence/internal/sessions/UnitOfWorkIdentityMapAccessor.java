@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.expressions.*;
@@ -110,31 +111,39 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * In the parent session, only return the object if it has not been Invalidated
      */
     @Override
-    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        Object objectFromCache = super.getFromIdentityMap(primaryKey, theClass, true, descriptor);
+    public Object getFromIdentityMap(Object primaryKey, Object object, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+        Object objectFromCache = super.getFromIdentityMap(primaryKey, object, theClass, true, descriptor);
 
         if (objectFromCache != null) {
             return objectFromCache;
         }
         //Bug#4613774  In the parent session, only return the object if it has not been Invalidated
-        return getAndCloneCacheKeyFromParent(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+        return getAndCloneCacheKeyFromParent(primaryKey, object, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
     /**
      * INTERNAL:
      * This method will return the object from the parent and clone it.
      */
-    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    protected Object getAndCloneCacheKeyFromParent(Object primaryKey, Object objectToClone, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         // Note: Objects returned from the parent's identity map should include invalidated
         // objects. This is important because this internal method is used in the existence
         // check in the UnitOfWork.
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
-        org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = unitOfWork.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance();
-        CacheKey cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
+        CacheKey cacheKey = null;
+        if (objectToClone != null && objectToClone instanceof PersistenceEntity){
+            cacheKey = ((PersistenceEntity)objectToClone)._persistence_getCacheKey();
+        }
+            
+        if (cacheKey == null || cacheKey.getOwningMap() == null){
+            org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = unitOfWork.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance();
+            cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
+        }
         if ((cacheKey == null) && unitOfWork.getParentIdentityMapSession(descriptor, false, false).isUnitOfWork()) {
             //for nested unit of work
             //make parent clone and register object
-            ((UnitOfWorkIdentityMapAccessor)parentIdentityMapAccessor).getAndCloneCacheKeyFromParent(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+            org.eclipse.persistence.internal.sessions.IdentityMapAccessor parentIdentityMapAccessor = unitOfWork.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance();
+            ((UnitOfWorkIdentityMapAccessor)parentIdentityMapAccessor).getAndCloneCacheKeyFromParent(primaryKey, null, theClass, shouldReturnInvalidatedObjects, descriptor);
             //get the cachekey that was created in the parent.
             cacheKey = parentIdentityMapAccessor.getCacheKeyForObject(primaryKey, theClass, descriptor, false);
         }

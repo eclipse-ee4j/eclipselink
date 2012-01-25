@@ -3899,7 +3899,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // The primary key may be null for a new object in a nested unit of work (is existing in nested, new in parent).
                 if (primaryKey != null) {
                     // Always check the cache first.
-                    registeredObject = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, objectToRegister.getClass(), descriptor);
+                    registeredObject = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, objectToRegister, objectToRegister.getClass(), true, descriptor);
                 }
                 if (registeredObject == null) {
                     // This is a case where the object is not in the session cache,

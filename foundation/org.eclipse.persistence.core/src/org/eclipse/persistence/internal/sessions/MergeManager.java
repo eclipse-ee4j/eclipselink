@@ -22,6 +22,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.linkedlist.LinkedNode;
 import org.eclipse.persistence.queries.DoesExistQuery;
@@ -757,6 +758,10 @@ public class MergeManager {
                     } else {
                         cacheKey.setObject(original);
                     }
+                    if (original instanceof PersistenceEntity) {
+                        ((PersistenceEntity)original)._persistence_setCacheKey(cacheKey);
+                        ((PersistenceEntity)original)._persistence_setId(cacheKey.getKey());
+                    }
                     objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), originalWasNull);
 
                     if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
@@ -787,8 +792,11 @@ public class MergeManager {
                     } else {
                         objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, !descriptor.getCopyPolicy().buildsNewInstance(), true);
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
-                        objectBuilder.clearPrimaryKey(original);
                     }
+                }
+                if (original instanceof PersistenceEntity) {
+                    ((PersistenceEntity)original)._persistence_setCacheKey(cacheKey);
+                    ((PersistenceEntity)original)._persistence_setId(cacheKey.getKey());
                 }
                 updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
             } else if (objectChangeSet == null) {
@@ -980,7 +988,7 @@ public class MergeManager {
         // objects in the cache.  As of EJB 2.0.
         Object objectFromCache = null;
         if (primaryKey != null) {
-            objectFromCache = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, descriptor.getJavaClass(), false, descriptor);
+            objectFromCache = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, null, descriptor.getJavaClass(), false, descriptor);
         }
         if (objectFromCache == null) {
             // Ensure we return the working copy if this has already been registered.
