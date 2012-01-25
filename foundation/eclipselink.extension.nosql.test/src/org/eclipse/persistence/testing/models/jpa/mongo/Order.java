@@ -17,8 +17,10 @@ import java.util.*;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.DataFormatType;
 import org.eclipse.persistence.annotations.Field;
@@ -32,8 +34,14 @@ import org.eclipse.persistence.annotations.NoSql;
 @NoSql(dataFormat=DataFormatType.MAPPED)
 public class Order {
     @Id
-    @Column(name="Id")
-    public long id;
+    @GeneratedValue
+    // Test that column works too.
+    @Column(name="_id")
+    //@TypeConverter(name="hex", dataType=byte[].class)
+    //@Convert("hex")
+    public String id;
+    @Version
+    public long version;
     public String orderedBy;
     @Field(name="address")
     public Address address;

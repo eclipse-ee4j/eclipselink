@@ -13,9 +13,11 @@
 package org.eclipse.persistence.testing.models.jpa.mongo;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.eclipse.persistence.annotations.DataFormatType;
+import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.NoSql;
 
 
@@ -26,7 +28,10 @@ import org.eclipse.persistence.annotations.NoSql;
 @NoSql(dataFormat=DataFormatType.MAPPED)
 public class Customer {
     @Id
-    public String id;
+    @GeneratedValue
+    @Field(name="_id")
+    public byte[] id;
+    
     public String name;
 
     public String toString() {

@@ -1396,7 +1396,7 @@ public class SQLSelectStatement extends SQLStatement {
             if (descriptor != null) {
                 queryClass = descriptor.getJavaClass();
             }
-            DatabasePlatform platform = (DatabasePlatform)session.getPlatform(queryClass);
+            DatasourcePlatform platform = (DatasourcePlatform)session.getPlatform(queryClass);
             if (platform.shouldSelectIncludeOrderBy() || (shouldDistinctBeUsed() && platform.shouldSelectDistinctIncludeOrderBy())) {
                 addOrderByExpressionToSelectForDistinct();
             }

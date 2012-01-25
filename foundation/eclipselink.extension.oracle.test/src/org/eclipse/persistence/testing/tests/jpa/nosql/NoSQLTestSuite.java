@@ -47,7 +47,6 @@ import org.eclipse.persistence.testing.models.jpa.nosql.Address;
  */
 public class NoSQLTestSuite extends JUnitTestCase {
     
-    public static long nextId = 1;
     public static Order existingOrder;
     
     public NoSQLTestSuite(){
@@ -96,7 +95,6 @@ public class NoSQLTestSuite extends JUnitTestCase {
         try {
             for (int index = 0; index < 10; index++) {
                 existingOrder = new Order();
-                existingOrder.id = this.nextId++;
                 existingOrder.orderedBy = "ACME";
                 existingOrder.address = new Address();
                 existingOrder.address.city = "Ottawa";
@@ -135,13 +133,11 @@ public class NoSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
             em.persist(order);
             order.customer = new Customer();
-            order.customer.id = String.valueOf(this.nextId++);
             order.customer.name = "ACME";
             em.persist(order.customer);
             commitTransaction(em);
@@ -182,7 +178,6 @@ public class NoSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
@@ -221,7 +216,6 @@ public class NoSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
@@ -267,7 +261,6 @@ public class NoSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
@@ -346,7 +339,6 @@ public class NoSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";

@@ -17,6 +17,9 @@ import java.util.List;
 
 import javax.resource.cci.*;
 
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
+
 /**
  * Defines connection information for connecting to Mongo.
  *
@@ -38,6 +41,15 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
     /** Ports. */
     protected List<Integer> ports = new ArrayList<Integer>();
     
+    /** Database default query options. */
+    protected int options;
+    
+    /** Database default read preference. */
+    protected ReadPreference readPreference;
+    
+    /** Database default write concern. */
+    protected WriteConcern writeConcern;
+
     /**
      * PUBLIC:
      * Default constructor.
@@ -95,5 +107,29 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
     
     public String toString() {
         return getClass().getSimpleName() + "(" + this.db + ")";
+    }
+    
+    public int getOptions() {
+        return options;
+    }
+
+    public void setOptions(int options) {
+        this.options = options;
+    }
+
+    public ReadPreference getReadPreference() {
+        return readPreference;
+    }
+
+    public void setReadPreference(ReadPreference readPreference) {
+        this.readPreference = readPreference;
+    }
+
+    public WriteConcern getWriteConcern() {
+        return writeConcern;
+    }
+
+    public void setWriteConcern(WriteConcern writeConcern) {
+        this.writeConcern = writeConcern;
     }
 }

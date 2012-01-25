@@ -36,6 +36,7 @@ public class MongoXMLTestSuite extends MongoTestSuite {
         suite.addTest(new MongoXMLTestSuite("testFind"));
         suite.addTest(new MongoXMLTestSuite("testUpdate"));
         suite.addTest(new MongoXMLTestSuite("testMerge"));
+        suite.addTest(new MongoXMLTestSuite("testLockError"));
         suite.addTest(new MongoXMLTestSuite("testRefresh"));
         suite.addTest(new MongoXMLTestSuite("testDelete"));
         suite.addTest(new MongoXMLTestSuite("testJPQL"));

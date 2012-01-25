@@ -137,6 +137,7 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMapping
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
@@ -151,7 +152,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sequencing.TableSequence;
 
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
@@ -275,6 +275,7 @@ public class MetadataProject {
     private Map<MetadataClass, GeneratedValueMetadata> m_generatedValues;
     private Map<String, TableGeneratorMetadata> m_tableGenerators;
     private Map<String, SequenceGeneratorMetadata> m_sequenceGenerators;
+    private Map<String, UuidGeneratorMetadata> m_uuidGenerators;
     
     // Metadata converters, that is, EclipseLink converters.
     private Map<String, AbstractConverterMetadata> m_converters;
@@ -341,6 +342,7 @@ public class MetadataProject {
         m_generatedValues = new HashMap<MetadataClass, GeneratedValueMetadata>();
         m_tableGenerators = new HashMap<String, TableGeneratorMetadata>();
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
+        m_uuidGenerators = new HashMap<String, UuidGeneratorMetadata>();
         m_converters = new HashMap<String, AbstractConverterMetadata>();
         m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
         m_plsqlComplexTypes = new HashMap<String, PLSQLComplexTypeMetadata>();
@@ -705,6 +707,27 @@ public class MetadataProject {
         if (sequenceGenerator.shouldOverride(m_sequenceGenerators.get(name))) {
             m_sequenceGenerators.put(sequenceGenerator.getName(), sequenceGenerator);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a UUID generator metadata to the project. The actual processing 
+     * isn't done till processSequencing is called.
+     */
+    public void addUuidGenerator(UuidGeneratorMetadata uuidGenerator) {
+        String name = uuidGenerator.getName();
+        
+        // Check if the name is used with a table generator.
+        TableGeneratorMetadata tableGenerator = m_tableGenerators.get(name);
+        if (tableGenerator != null) {
+            if (uuidGenerator.shouldOverride(tableGenerator)) {
+                m_tableGenerators.remove(name);
+            } else {
+                throw ValidationException.conflictingSequenceAndTableGeneratorsSpecified(name, uuidGenerator.getLocation(), tableGenerator.getLocation());
+            }
+        }
+
+        m_uuidGenerators.put(uuidGenerator.getName(), uuidGenerator);
     }
 
     /**
@@ -1535,6 +1558,10 @@ public class MetadataProject {
             for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
                 sequences.put(sequenceGenerator.getName(), sequenceGenerator.process(m_logger));
             }
+            
+            for (UuidGeneratorMetadata uuidGenerator : m_uuidGenerators.values()) {
+                sequences.put(uuidGenerator.getName(), uuidGenerator.process(m_logger));
+            }
 
             for (TableGeneratorMetadata tableGenerator : m_tableGenerators.values()) {
                 sequences.put(tableGenerator.getGeneratorName(), tableGenerator.process(m_logger));
@@ -1545,15 +1572,13 @@ public class MetadataProject {
             if (! sequences.containsKey(DEFAULT_TABLE_GENERATOR)) {
                 TableGeneratorMetadata tableGenerator = new TableGeneratorMetadata(DEFAULT_TABLE_GENERATOR);
                 
-                // This will go through the same table defaulting as all other
-                // tables (table, secondary table, join table etc.) in the PU.
-                // Here the default table name should come from the platform 
-                // in case the current one is not legal for this platform (e.g.
-                // SEQUENCE for Symfoware). We should always try to avoid making
-                // metadata changes after processing and ensure we always 
-                // process with the correct and necessary metadata.
-                Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
-                String defaultTableGeneratorName = (seq instanceof TableSequence) ? ((TableSequence) seq).getTableName() : DEFAULT_TABLE_GENERATOR;
+                // This code was attempting to use the platform default sequence name,
+                // however the platform has not been set yet, so it would never work,
+                // it was also causing the platform default sequence to be set, causing the DatabasePlatform default to be used,
+                // so I am removing this code, as it breaks the platform default sequence and does not work.
+                // Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
+                // Using "" as the default should make the platform default it.
+                String defaultTableGeneratorName = "";
                 // Process the default values.
                 processTable(tableGenerator, defaultTableGeneratorName, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), tableGenerator);
                 
@@ -1573,7 +1598,7 @@ public class MetadataProject {
             // auto generator though.
             SequenceGeneratorMetadata tempGenerator = new SequenceGeneratorMetadata(DEFAULT_AUTO_GENERATOR, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema());
             DatasourceLogin login = m_session.getProject().getLogin();
-            login.getDefaultSequence().setQualifier(tempGenerator.processQualifier());
+            login.setTableQualifier(tempGenerator.processQualifier());
                 
             // 3 - Loop through generated values and set sequences for each. 
             for (MetadataClass entityClass : m_generatedValues.keySet()) {

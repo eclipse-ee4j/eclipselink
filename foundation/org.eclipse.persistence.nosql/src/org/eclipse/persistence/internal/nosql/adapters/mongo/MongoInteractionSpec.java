@@ -14,6 +14,9 @@ package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
 import javax.resource.cci.*;
 
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
+
 /**
  * Interaction spec for Mongo JCA adapter.
  *
@@ -23,7 +26,31 @@ import javax.resource.cci.*;
 public class MongoInteractionSpec implements InteractionSpec {
     protected MongoOperation operation;
     protected String collection;
+    
+    /** Operation query options. */
+    protected int options;
+    
+    /** Operation read preference. */
+    protected ReadPreference readPreference;
+    
+    /** Operation write concern. */
+    protected WriteConcern writeConcern;
+    
+    /** Operation skip for finds, number of rows to skip. */
+    protected int skip;
+    
+    /** Operation limit for finds, number of rows to fetch. */
+    protected int limit;
 
+    /** Operation batchSize for finds, fetch size. */
+    protected int batchSize;
+    
+    /** Operation upsert, to perform insert if document is missing. */
+    protected boolean upsert;
+    
+    /** Operation multi, to perform update all matching documents. */
+    protected boolean multi;
+    
     public String getCollection() {
         return collection;
     }
@@ -38,6 +65,70 @@ public class MongoInteractionSpec implements InteractionSpec {
 
     public void setOperation(MongoOperation operation) {
         this.operation = operation;
+    }
+    
+    public int getOptions() {
+        return options;
+    }
+
+    public void setOptions(int options) {
+        this.options = options;
+    }
+
+    public ReadPreference getReadPreference() {
+        return readPreference;
+    }
+
+    public void setReadPreference(ReadPreference readPreference) {
+        this.readPreference = readPreference;
+    }
+
+    public WriteConcern getWriteConcern() {
+        return writeConcern;
+    }
+
+    public void setWriteConcern(WriteConcern writeConcern) {
+        this.writeConcern = writeConcern;
+    }
+
+    public int getSkip() {
+        return skip;
+    }
+
+    public void setSkip(int skip) {
+        this.skip = skip;
+    }
+    
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public boolean isUpsert() {
+        return upsert;
+    }
+
+    public void setUpsert(boolean upsert) {
+        this.upsert = upsert;
+    }
+
+    public boolean isMulti() {
+        return multi;
+    }
+
+    public void setMulti(boolean multi) {
+        this.multi = multi;
     }
 
     public String toString() {

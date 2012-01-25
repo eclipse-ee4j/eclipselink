@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.models.jpa.nosql;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.eclipse.persistence.annotations.DataFormatType;
@@ -26,6 +27,7 @@ import org.eclipse.persistence.annotations.NoSql;
 @NoSql(dataFormat=DataFormatType.XML)
 public class Customer {
     @Id
+    @GeneratedValue
     public String id;
     public String name;
 

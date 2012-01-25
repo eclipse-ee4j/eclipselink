@@ -23,6 +23,8 @@ import javax.resource.cci.*;
  * @since EclipseLink 2.4
  */
 public class MongoRecord extends HashMap implements MappedRecord {
+    public static final String SORT = "$sort";
+    
     protected String description;
     protected String name;
 

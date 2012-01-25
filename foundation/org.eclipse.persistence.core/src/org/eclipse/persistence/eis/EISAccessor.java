@@ -157,15 +157,20 @@ public class EISAccessor extends DatasourceAccessor {
             }
             session.startOperationProfile(SessionProfiler.StatementExecute, eisCall.getQuery(), SessionProfiler.ALL);
             try {
+                boolean success = true;
                 InteractionSpec interactionSpec = getEISPlatform().buildInteractionSpec(eisCall);
                 if (output == null) {
                     output = interaction.execute(interactionSpec, input);
                 } else {
-                    interaction.execute(interactionSpec, input, output);
+                    success = interaction.execute(interactionSpec, input, output);
                 }
                 session.log(SessionLog.FINEST, SessionLog.QUERY, "adapter_result", output);
                 if (eisCall.isNothingReturned()) {
-                    result = Integer.valueOf(1);
+                    if (success) {
+                        result = Integer.valueOf(1);
+                    } else {
+                        result = Integer.valueOf(0);                        
+                    }
                     // Fire the output parameter row to allow app to handle return value.
                     if (output != null) {
                         AbstractRecord outputRow = getEISPlatform().buildRow(output, eisCall, this);

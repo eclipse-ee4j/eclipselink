@@ -40,7 +40,7 @@ public class MongoInteraction implements Interaction {
 
     /** Store the connection the interaction was created from. */
     protected MongoConnection connection;
-
+    
     /**
      * Default constructor.
      */
@@ -80,7 +80,7 @@ public class MongoInteraction implements Interaction {
             DBObject object = buildDBObject(record);
             DBObject translation = buildDBObject(translationRecord);
             if (operation == MongoOperation.UPDATE) {
-                WriteResult result = collection.update(translation, object);
+                WriteResult result = collection.update(translation, object, mongoSpec.isUpsert(), mongoSpec.isMulti());
                 return result.getN() > 0;
             } else {
                 throw new ResourceException("Invalid operation: " + operation);                
@@ -117,22 +117,59 @@ public class MongoInteraction implements Interaction {
         }
         try {
             DBCollection collection = this.connection.getDB().getCollection(collectionName);
-            DBObject object = buildDBObject(input);
+            if (mongoSpec.getOptions() > 0) {
+                collection.setOptions(mongoSpec.getOptions());
+            }
+            if (mongoSpec.getReadPreference() != null) {
+                collection.setReadPreference(mongoSpec.getReadPreference());
+            }
+            if (mongoSpec.getWriteConcern() != null) {
+                collection.setWriteConcern(mongoSpec.getWriteConcern());
+            }
             if (operation == MongoOperation.INSERT) {
+                DBObject object = buildDBObject(input);
                 collection.insert(object);
             } else if (operation == MongoOperation.REMOVE) {
+                DBObject object = buildDBObject(input);
                 collection.remove(object);
             } else if (operation == MongoOperation.FIND) {
-                DBCursor cursor = collection.find(object);
-                if (!cursor.hasNext()) {
-                    return null;
+                DBObject sort = null;
+                if (input.containsKey(MongoRecord.SORT)) {
+                    sort = buildDBObject((MongoRecord)input.get(MongoRecord.SORT));
+                    input.remove(MongoRecord.SORT);
                 }
-                MongoListRecord results = new MongoListRecord();
-                while (cursor.hasNext()) {
-                    DBObject result = cursor.next();
-                    results.add(buildRecordFromDBObject(result));
+                DBObject select = null;
+                if (input.containsKey("$select")) {
+                    select = buildDBObject((MongoRecord)input.get("$select"));
+                    input.remove("$select");
                 }
-                return results;
+                DBObject object = buildDBObject(input);
+                DBCursor cursor = collection.find(object, select);
+                if (sort != null) {
+                    cursor.sort(sort);
+                }
+                try {
+                    if (mongoSpec.getSkip() > 0) {
+                        cursor.skip(mongoSpec.getSkip());
+                    }
+                    if (mongoSpec.getLimit() != 0) {
+                        cursor.limit(mongoSpec.getLimit());
+                    }
+                    if (mongoSpec.getBatchSize() != 0) {
+                        cursor.batchSize(mongoSpec.getBatchSize());
+                    }
+                    if (!cursor.hasNext()) {
+                        return null;
+                    }
+                    MongoListRecord results = new MongoListRecord();
+                    while (cursor.hasNext()) {
+                        DBObject result = cursor.next();
+                        results.add(buildRecordFromDBObject(result));
+                    }
+                    return results;
+                } finally {
+                    cursor.close();
+                }
             } else {
                 throw new ResourceException("Invalid operation: " + operation);                
             }

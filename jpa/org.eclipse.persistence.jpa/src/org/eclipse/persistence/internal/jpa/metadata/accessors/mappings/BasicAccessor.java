@@ -57,6 +57,7 @@ import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;
+import org.eclipse.persistence.annotations.UuidGenerator;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -76,6 +77,7 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetada
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -109,6 +111,7 @@ public class BasicAccessor extends DirectAccessor {
     private ReturnInsertMetadata m_returnInsert;
     private SequenceGeneratorMetadata m_sequenceGenerator;
     private TableGeneratorMetadata m_tableGenerator;
+    private UuidGeneratorMetadata m_uuidGenerator;
     private IndexMetadata m_index;
     private CacheIndexMetadata m_cacheIndex;
     
@@ -163,6 +166,11 @@ public class BasicAccessor extends DirectAccessor {
             m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), this);
         }
         
+        // Set the table generator if one is present.        
+        if (isAnnotationPresent(UuidGenerator.class)) {
+            m_uuidGenerator = new UuidGeneratorMetadata(getAnnotation(UuidGenerator.class), this);
+        }
+        
         // Set the return insert if one is present.
         if (isAnnotationPresent(ReturnInsert.class)) {
             m_returnInsert = new ReturnInsertMetadata(getAnnotation(ReturnInsert.class), this);
@@ -211,6 +219,10 @@ public class BasicAccessor extends DirectAccessor {
             }
             
             if (! valuesMatch(m_sequenceGenerator, basicAccessor.getSequenceGenerator())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_uuidGenerator, basicAccessor.getUuidGenerator())) {
                 return false;
             }
             
@@ -301,6 +313,14 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public UuidGeneratorMetadata getUuidGenerator() {
+        return m_uuidGenerator;
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
@@ -308,11 +328,6 @@ public class BasicAccessor extends DirectAccessor {
 
         // Default a column if necessary.
         if (m_column == null) {
-            if (m_field != null) {
-                // @Field provides a simpler synonym for @Column for EIS and NoSQL data,
-                // if one was set, then use it.
-                m_column = m_field;
-            }
             m_column = new ColumnMetadata(this);
         } else {
             // Initialize single objects.
@@ -324,6 +339,7 @@ public class BasicAccessor extends DirectAccessor {
         initXMLObject(m_returnInsert, accessibleObject);
         initXMLObject(m_sequenceGenerator, accessibleObject);
         initXMLObject(m_tableGenerator, accessibleObject);
+        initXMLObject(m_uuidGenerator, accessibleObject);
     }
     
     /**
@@ -416,6 +432,11 @@ public class BasicAccessor extends DirectAccessor {
         // Add the sequence generator to the project if one is set.
         if (m_sequenceGenerator != null) {
             getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+        }
+
+        // Add the uuid generator to the project if one is set.
+        if (m_uuidGenerator != null) {
+            getProject().addUuidGenerator(m_uuidGenerator);
         }
         
         // Process the index metadata.
@@ -607,5 +628,13 @@ public class BasicAccessor extends DirectAccessor {
      */
     public void setTableGenerator(TableGeneratorMetadata tableGenerator) {
         m_tableGenerator = tableGenerator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setUuidGenerator(UuidGeneratorMetadata uuidGenerator) {
+        m_uuidGenerator = uuidGenerator;
     }
 }

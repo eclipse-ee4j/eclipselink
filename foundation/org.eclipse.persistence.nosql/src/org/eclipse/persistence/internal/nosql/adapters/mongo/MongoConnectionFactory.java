@@ -69,6 +69,15 @@ public class MongoConnectionFactory implements ConnectionFactory {
             if ((connectionSpec.getUser() != null) && (connectionSpec.getUser().length() > 0)) {
                 db.authenticate(connectionSpec.getUser(), connectionSpec.getPassword());
             }
+            if (connectionSpec.getOptions() > 0) {
+                db.setOptions(connectionSpec.getOptions());
+            }
+            if (connectionSpec.getReadPreference() != null) {
+                db.setReadPreference(connectionSpec.getReadPreference());
+            }
+            if (connectionSpec.getWriteConcern() != null) {
+                db.setWriteConcern(connectionSpec.getWriteConcern());
+            }
         } catch (Exception exception) {
             ResourceException resourceException = new ResourceException(exception.toString());
             resourceException.initCause(exception);

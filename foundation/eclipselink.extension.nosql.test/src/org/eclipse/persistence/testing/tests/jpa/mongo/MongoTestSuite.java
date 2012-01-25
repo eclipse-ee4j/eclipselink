@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.Query;
 
 import junit.framework.Test;
@@ -43,7 +44,6 @@ import com.mongodb.DB;
  */
 public class MongoTestSuite extends JUnitTestCase {
     
-    public static long nextId = 1;
     public static Order existingOrder;
     
     public MongoTestSuite(){
@@ -61,6 +61,7 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testFind"));
         suite.addTest(new MongoTestSuite("testUpdate"));
         suite.addTest(new MongoTestSuite("testMerge"));
+        suite.addTest(new MongoTestSuite("testLockError"));
         suite.addTest(new MongoTestSuite("testRefresh"));
         suite.addTest(new MongoTestSuite("testDelete"));
         suite.addTest(new MongoTestSuite("testJPQL"));
@@ -89,7 +90,6 @@ public class MongoTestSuite extends JUnitTestCase {
         try {
             for (int index = 0; index < 10; index++) {
                 existingOrder = new Order();
-                existingOrder.id = this.nextId++;
                 existingOrder.orderedBy = "ACME";
                 existingOrder.address = new Address();
                 existingOrder.address.city = "Ottawa";
@@ -128,13 +128,11 @@ public class MongoTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
             em.persist(order);
             order.customer = new Customer();
-            order.customer.id = String.valueOf(this.nextId++);
             order.customer.name = "ACME";
             em.persist(order.customer);
             commitTransaction(em);
@@ -176,7 +174,6 @@ public class MongoTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
@@ -215,7 +212,6 @@ public class MongoTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
@@ -247,9 +243,53 @@ public class MongoTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             Order fromDatabase = em.find(Order.class, order.id);
+            order.version = order.version + 1;
             compareObjects(order, fromDatabase);
         } finally {
             closeEntityManagerAndTransaction(em);
+        }
+    }
+    
+    /**
+     * Test locking.
+     */
+    public void testLockError() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Order order = new Order();
+        try {
+            order.orderedBy = "ACME";
+            order.address = new Address();
+            order.address.city = "Ottawa";
+            em.persist(order);
+            commitTransaction(em);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+        clearCache();
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Order updatedOrder = em.find(Order.class, order.id);
+            updatedOrder.orderedBy = "Fred Jones";
+            updatedOrder.address.addressee = "Fred Jones";
+            commitTransaction(em);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+        OptimisticLockException exception = null;
+        em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.merge(order);
+            commitTransaction(em);
+        } catch (OptimisticLockException expected) {
+            exception = expected;
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+        if (exception == null) {
+            fail("Lock error did not occur.");
         }
     }
     
@@ -261,7 +301,6 @@ public class MongoTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
@@ -299,16 +338,17 @@ public class MongoTestSuite extends JUnitTestCase {
             if (results.size() != 10) {
                 fail("Expected 10 results: " + results);
             }
+            Order order = (Order)results.get(0);
             // =
-            query = em.createQuery("Select o from Order o where o.id = :nextId");
-            query.setParameter("nextId", nextId - 1);
+            query = em.createQuery("Select o from Order o where o.id = :oid");
+            query.setParameter("oid", order.id);
             results = query.getResultList();
             if (results.size() != 1) {
                 fail("Expected 1 result: " + results);
             }
             // !=
             query = em.createQuery("Select o from Order o where o.id <> :nextId");
-            query.setParameter("nextId", nextId - 1);
+            query.setParameter("nextId", order.id);
             results = query.getResultList();
             if (results.size() != 9) {
                 fail("Expected 9 result: " + results);
@@ -329,21 +369,35 @@ public class MongoTestSuite extends JUnitTestCase {
             }
             // and
             query = em.createQuery("Select o from Order o where o.id = :nextId and o.orderedBy = 'ACME'");
-            query.setParameter("nextId", nextId - 1);
+            query.setParameter("nextId", order.id);
+            results = query.getResultList();
+            if (results.size() != 1) {
+                fail("Expected 1 result: " + results);
+            }
+            // or
+            query = em.createQuery("Select o from Order o where o.id = :nextId or o.orderedBy = 'ACME'");
+            query.setParameter("nextId", order.id);
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            // not
+            query = em.createQuery("Select o from Order o where o.id = :nextId or not(o.orderedBy = 'ACME')");
+            query.setParameter("nextId", order.id);
             results = query.getResultList();
             if (results.size() != 1) {
                 fail("Expected 1 result: " + results);
             }
             // > <
             query = em.createQuery("Select o from Order o where o.id > :nextId and o.id < :nextId");
-            query.setParameter("nextId", nextId - 1);
+            query.setParameter("nextId", order.id);
             results = query.getResultList();
             if (results.size() != 0) {
                 fail("Expected 0 result: " + results);
             }
             // >= <=
             query = em.createQuery("Select o from Order o where o.id >= :nextId and o.id <= :nextId");
-            query.setParameter("nextId", nextId - 1);
+            query.setParameter("nextId", order.id);
             results = query.getResultList();
             if (results.size() != 1) {
                 fail("Expected 1 result: " + results);
@@ -397,9 +451,39 @@ public class MongoTestSuite extends JUnitTestCase {
             if (results.size() != 10) {
                 fail("Expected 10 result: " + results);
             }
+            // order by
+            query = em.createQuery("Select o from Order o order by o.address.city");
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            query = em.createQuery("Select o from Order o order by o.orderedBy desc");
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            query = em.createQuery("Select o from Order o order by o.orderedBy desc, o.address.city asc");
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            // select
+            query = em.createQuery("Select o.id from Order o where o.orderedBy like :orderedBy");
+            query.setParameter("orderedBy", "ACME");
+            results = query.getResultList();
+            if (!(results.get(0) instanceof String)) {
+                fail("Incorrect result: " + results);
+            }
+            query = em.createQuery("Select o.id, o.address.city from Order o where o.orderedBy like :orderedBy");
+            query.setParameter("orderedBy", "ACME");
+            results = query.getResultList();
+            if (!(results.get(0) instanceof Object[])) {
+                fail("Incorrect result: " + results);
+            }
             // error
             try {
                 query = em.createQuery("Select count(o) from Order o");
+                query.setParameter("orderedBy", "ACME");
                 results = query.getResultList();
                 fail("Exception expected");
             } catch (Exception expected) {
@@ -419,12 +503,14 @@ public class MongoTestSuite extends JUnitTestCase {
         MappedInteraction interaction = new MappedInteraction();
         interaction.setProperty(MongoPlatform.OPERATION, MongoOperation.FIND.name());
         interaction.setProperty(MongoPlatform.COLLECTION, "ORDER");
-        interaction.addArgumentValue("Id", existingOrder.id);
+        interaction.setProperty(MongoPlatform.BATCH_SIZE, "10");
+        interaction.setProperty(MongoPlatform.READ_PREFERENCE, "PRIMARY");
+        interaction.addArgumentValue("_id", existingOrder.id);
         Query query = em.unwrap(JpaEntityManager.class).createQuery(interaction);
         List result = query.getResultList();
         if ((result.size() != 1)
                 || (!(result.get(0) instanceof Record))
-                || !(((Record)result.get(0)).get("Id").equals(String.valueOf(existingOrder.id)))) {
+                || !(((Record)result.get(0)).get("_id").equals(existingOrder.id))) {
             fail("Incorrect result: " + result);
         }
         
@@ -438,7 +524,6 @@ public class MongoTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Order order = new Order();
         try {
-            order.id = this.nextId++;
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";

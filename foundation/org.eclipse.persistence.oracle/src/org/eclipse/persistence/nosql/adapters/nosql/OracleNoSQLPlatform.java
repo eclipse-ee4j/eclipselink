@@ -48,6 +48,8 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.UUIDSequence;
 import org.w3c.dom.Element;
 
 /**
@@ -439,5 +441,14 @@ public class OracleNoSQLPlatform extends EISPlatform {
     @Override
     public boolean shouldPrepare(DatabaseQuery query) {
         return (query.getDatasourceCall() instanceof EISInteraction);
+    }
+
+    /**
+     * INTERNAL:
+     * NoSQL does not support id generation, so use UUID as the default.
+     */
+    @Override
+    protected Sequence createPlatformDefaultSequence() {
+        return new UUIDSequence();
     }
 }

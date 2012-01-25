@@ -8,8 +8,10 @@
         <no-sql data-format="MAPPED"/>
         <attributes>
             <id name="id">
-                <field name="Id"/>
+                <field name="_id"/>
+                <generated-value/>
             </id>
+            <version name="version"/>
             <one-to-one name="customer">
                 <join-field name="customerId" referenced-field-name="ID"/>
             </one-to-one>
@@ -27,7 +29,10 @@
     <entity class="Customer" access="FIELD">
         <no-sql data-format="MAPPED"/>
         <attributes>
-            <id name="id"/>
+            <id name="id">
+                <field name="_id"/>
+                <generated-value/>
+            </id>
         </attributes>
     </entity>
     <embeddable class="Address" access="FIELD">

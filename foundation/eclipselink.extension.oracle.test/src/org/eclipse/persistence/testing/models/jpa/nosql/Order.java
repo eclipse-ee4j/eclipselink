@@ -17,10 +17,12 @@ import java.util.*;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.annotations.UuidGenerator;
 
 /**
  * Model order class, maps to ORDER record.
@@ -30,7 +32,9 @@ import org.eclipse.persistence.annotations.NoSql;
 public class Order {
     @Id
     @Column(name="@id")
-    public long id;
+    @UuidGenerator(name="uuid")
+    @GeneratedValue(generator="uuid")
+    public String id;
     public String orderedBy;
     public Address address;
     @OneToOne

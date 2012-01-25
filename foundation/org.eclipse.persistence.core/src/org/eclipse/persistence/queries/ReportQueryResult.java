@@ -178,7 +178,12 @@ public class ReportQueryResult implements Serializable, Map {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
                 }
                 // If mapping is not null then it must be a direct mapping - see Reportitem.init.
-                value = row.getValues().get(itemIndex);
+                // Check for non database (EIS) records to use normal get.
+                if (row instanceof DatabaseRecord) {
+                    value = row.getValues().get(itemIndex);
+                } else {
+                    value = row.get(mapping.getField());                    
+                }
                 value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
                 // GF_ISSUE_395
                 if (this.key != null) {

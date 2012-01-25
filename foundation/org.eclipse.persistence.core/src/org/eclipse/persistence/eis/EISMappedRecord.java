@@ -14,6 +14,7 @@ package org.eclipse.persistence.eis;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
@@ -37,6 +38,24 @@ public class EISMappedRecord extends AbstractRecord {
         setAccessor(accessor);
     }
 
+    /**
+     * INTERNAL:
+     * getFields() is sued internally in a few places, so try to make that work for mapped records.
+     */
+    @Override
+    public Vector getFields() {
+        return new Vector(getRecord().keySet());
+    }
+
+    /**
+     * INTERNAL:
+     * getValues() is sued internally in a few places, so try to make that work for mapped records.
+     */
+    @Override
+    public Vector getValues() {
+        return new Vector(getRecord().values());
+    }
+    
     /**
      * Forward the request to the record.
      */

@@ -54,6 +54,14 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
     public JoinColumnMetadata() {
         super("<join-column>");
     }
+
+    /**
+     * INTERNAL:
+     * Used for XML loading.
+     */
+    protected JoinColumnMetadata(String xmlElement) {
+        super(xmlElement);
+    }
     
     /**
      * INTERNAL:

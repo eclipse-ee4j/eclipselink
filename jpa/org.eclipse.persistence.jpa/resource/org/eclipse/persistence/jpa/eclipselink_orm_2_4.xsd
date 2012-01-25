@@ -711,6 +711,8 @@
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="table-generator" type="orm:table-generator" 
                      minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="uuid-generator" type="orm:uuid-generator" 
+                     minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="partitioning" type="orm:partitioning" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="replication-partitioning" type="orm:replication-partitioning" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="round-robin-partitioning" type="orm:round-robin-partitioning" minOccurs="0" maxOccurs="unbounded"/>
@@ -941,6 +943,8 @@
                    minOccurs="0"/>
       <xsd:element name="table-generator" type="orm:table-generator" 
                    minOccurs="0"/>
+      <xsd:element name="uuid-generator" type="orm:uuid-generator" 
+                   minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
       <xsd:element name="named-query" type="orm:named-query" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -1155,6 +1159,7 @@
       </xsd:choice>
       <xsd:element name="table-generator" type="orm:table-generator" minOccurs="0"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0"/>
+      <xsd:element name="uuid-generator" type="orm:uuid-generator" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
       <xsd:element name="return-insert" type="orm:return-insert" minOccurs="0"/>
@@ -2719,6 +2724,8 @@
                    minOccurs="0"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator"
                    minOccurs="0"/>
+      <xsd:element name="uuid-generator" type="orm:uuid-generator" 
+                   minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
     </xsd:sequence>
@@ -3317,6 +3324,8 @@
       <xsd:element name="sequence-generator" type="orm:sequence-generator" 
                    minOccurs="0"/>
       <xsd:element name="table-generator" type="orm:table-generator" 
+                   minOccurs="0"/>
+      <xsd:element name="uuid-generator" type="orm:uuid-generator" 
                    minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
       <xsd:element name="named-query" type="orm:named-query" 
@@ -5082,6 +5091,22 @@
     <xsd:attribute name="pk-column-value" type="xsd:string"/>
     <xsd:attribute name="initial-value" type="xsd:int"/>
     <xsd:attribute name="allocation-size" type="xsd:int"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="uuid-generator">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface UuidGenerator {
+          String name();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->

@@ -106,6 +106,7 @@ import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.ReadOnly;
+import org.eclipse.persistence.annotations.UuidGenerator;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -139,6 +140,7 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredFunctionQueries;
@@ -198,6 +200,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private QueryRedirectorsMetadata m_queryRedirectors;
     private SequenceGeneratorMetadata m_sequenceGenerator;
     private TableGeneratorMetadata m_tableGenerator;
+    private UuidGeneratorMetadata m_uuidGenerator;
     
     private String m_existenceChecking;
     private String m_idClassName;
@@ -520,6 +523,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public UuidGeneratorMetadata getUuidGenerator() {
+        return m_uuidGenerator;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if any given field defines object relational persistence
      * mapping annotations. This method is used when determining the access type 
      * of this accessor. Note: Through the annotation target, it is invalid to 
@@ -605,6 +616,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         initXMLObject(m_queryRedirectors, accessibleObject);
         initXMLObject(m_sequenceGenerator, accessibleObject);
         initXMLObject(m_tableGenerator, accessibleObject);
+        initXMLObject(m_uuidGenerator, accessibleObject);
         initXMLObject(m_multitenant, accessibleObject);
         
         // Initialize lists of objects.
@@ -673,6 +685,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_queryRedirectors = (QueryRedirectorsMetadata) mergeORObjects(m_queryRedirectors, accessor.getQueryRedirectors());
         m_sequenceGenerator = (SequenceGeneratorMetadata) mergeORObjects(m_sequenceGenerator, accessor.getSequenceGenerator());
         m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
+        m_uuidGenerator = (UuidGeneratorMetadata) mergeORObjects(m_uuidGenerator, accessor.getUuidGenerator());
         m_multitenant = (MultitenantMetadata) mergeORObjects(m_multitenant, accessor.getMultitenant());
         
         // ORMetadata list merging.
@@ -740,6 +753,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                     
         // Process the table generator metadata.
         processTableGenerator();
+                    
+        // Process the uuid generator metadata.
+        processUuidGenerator();
             
         // Process the sequence generator metadata.
         processSequenceGenerator();
@@ -1514,7 +1530,23 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (isAnnotationPresent(TableGenerator.class)) {
             getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
-    } 
+    }
+    
+    /**
+     * INTERNAL:
+     * Process a TableGenerator annotation into a common metadata table 
+     * generator and add it to the project.
+     */
+    protected void processUuidGenerator() {
+        // Process the xml defined table generator first.
+        if (m_uuidGenerator != null) {
+            getProject().addUuidGenerator(m_uuidGenerator);
+        }
+        
+        if (isAnnotationPresent(UuidGenerator.class)) {
+            getProject().addUuidGenerator(new UuidGeneratorMetadata(getAnnotation(UuidGenerator.class), this));
+        }
+    }
     
     /**
      * INTERNAL:
@@ -1763,6 +1795,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setTableGenerator(TableGeneratorMetadata tableGenerator) {
         m_tableGenerator = tableGenerator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setUuidGenerator(UuidGeneratorMetadata uuidGenerator) {
+        m_uuidGenerator = uuidGenerator;
     }
 }
 

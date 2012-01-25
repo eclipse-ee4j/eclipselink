@@ -1120,8 +1120,8 @@ public class QueryKeyExpression extends ObjectExpression {
             if (descriptor == null) {
                 throw QueryException.invalidExpressionForQueryItem(this, query);
             }
-        } else if (mapping.isAggregateObjectMapping()) {
-            descriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+        } else if (mapping.isAggregateMapping()) {
+            descriptor = ((AggregateMapping)mapping).getReferenceDescriptor();
         } else if (mapping.isForeignReferenceMapping()) {
             descriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
         }

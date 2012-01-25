@@ -53,6 +53,14 @@ public class ColumnMetadata extends DirectColumnMetadata {
 
     /**
      * INTERNAL:
+     * Used for XML loading.
+     */
+    protected ColumnMetadata(String xmlElement) {
+        super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
      * Used for defaulting.
      */
     public ColumnMetadata(MetadataAccessor accessor) {

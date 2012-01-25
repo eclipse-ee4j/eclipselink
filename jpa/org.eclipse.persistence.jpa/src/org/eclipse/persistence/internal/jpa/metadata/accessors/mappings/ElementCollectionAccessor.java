@@ -68,7 +68,6 @@ import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.annotations.DeleteAll;
-import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;

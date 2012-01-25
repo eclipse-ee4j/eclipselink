@@ -30,6 +30,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoInteractionSpec;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
+import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoRecord;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -37,6 +38,7 @@ import org.eclipse.persistence.internal.expressions.LogicalExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -44,7 +46,12 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 
 /**
  * Platform for Mongo database.
@@ -57,6 +64,12 @@ public class MongoPlatform extends EISPlatform {
     /** Mongo interaction spec properties. */
     public static String OPERATION = "mongo.operation";
     public static String COLLECTION = "mongo.collection";
+    public static String OPTIONS = "mongo.options";
+    public static String READ_PREFERENCE = "mongo.read-preference";
+    public static String WRITE_CONCERN = "mongo.write-concern";
+    public static String SKIP = "mongo.skip";
+    public static String LIMIT = "mongo.limit";
+    public static String BATCH_SIZE = "mongo.batch-size";
 
     /** Configure if like should be SQL or regex. */
     protected boolean isLikeRegex;
@@ -107,6 +120,79 @@ public class MongoPlatform extends EISPlatform {
             if (collection != null) {
                 mongoSpec.setCollection((String)collection);
             }
+            
+            // Allows setting of read preference as a property.
+            Object preference = interaction.getProperty(READ_PREFERENCE);
+            if (preference instanceof ReadPreference) {
+                mongoSpec.setReadPreference((ReadPreference)preference);
+            } else if (preference instanceof String) {
+                String constant = (String)preference;
+                if (constant.equals("PRIMARY")) {
+                    mongoSpec.setReadPreference(ReadPreference.PRIMARY);
+                } else if (constant.equals("SECONDARY")) {
+                    mongoSpec.setReadPreference(ReadPreference.SECONDARY );
+                } else {
+                    throw new EISException("Invalid read preference property value: " + constant);                    
+                }
+            }
+            
+            // Allows setting of write concern as a property.
+            Object concern = interaction.getProperty(WRITE_CONCERN);
+            if (concern instanceof WriteConcern) {
+                mongoSpec.setWriteConcern((WriteConcern)concern);
+            } else if (concern instanceof String) {
+                String constant = (String)concern;
+                if (constant.equals("FSYNC_SAFE")) {
+                    mongoSpec.setWriteConcern(WriteConcern.FSYNC_SAFE);
+                } else if (constant.equals("JOURNAL_SAFE")) {
+                    mongoSpec.setWriteConcern(WriteConcern.JOURNAL_SAFE);
+                } else if (constant.equals("MAJORITY")) {
+                    mongoSpec.setWriteConcern(WriteConcern.MAJORITY);
+                } else if (constant.equals("NONE")) {
+                    mongoSpec.setWriteConcern(WriteConcern.NONE);
+                } else if (constant.equals("NORMAL")) {
+                    mongoSpec.setWriteConcern(WriteConcern.NORMAL);
+                } else if (constant.equals("REPLICAS_SAFE")) {
+                    mongoSpec.setWriteConcern(WriteConcern.REPLICAS_SAFE);
+                } else if (constant.equals("SAFE")) {
+                    mongoSpec.setWriteConcern(WriteConcern.SAFE);
+                } else {
+                    throw new EISException("Invalid read preference property value: " + constant);                    
+                }
+            }
+            
+            // Allows setting of options as a property.
+            Object options = interaction.getProperty(OPTIONS);
+            if (options instanceof Number) {
+                mongoSpec.setOptions(((Number)options).intValue());
+            } else if (options instanceof String) {
+                mongoSpec.setOptions(Integer.valueOf(((String)options)));
+            }
+            
+            // Allows setting of skip as a property.
+            Object skip = interaction.getProperty(SKIP);
+            if (skip instanceof Number) {
+                mongoSpec.setSkip(((Number)skip).intValue());
+            } else if (skip instanceof String) {
+                mongoSpec.setSkip(Integer.valueOf(((String)skip)));
+            }
+            
+            // Allows setting of limit as a property.
+            Object limit = interaction.getProperty(LIMIT);
+            if (limit instanceof Number) {
+                mongoSpec.setLimit(((Number)limit).intValue());
+            } else if (skip instanceof String) {
+                mongoSpec.setLimit(Integer.valueOf(((String)limit)));
+            }
+            
+            // Allows setting of batchSize as a property.
+            Object batchSize = interaction.getProperty(BATCH_SIZE);
+            if (batchSize instanceof Number) {
+                mongoSpec.setBatchSize(((Number)batchSize).intValue());
+            } else if (skip instanceof String) {
+                mongoSpec.setBatchSize(Integer.valueOf(((String)batchSize)));
+            }
+            
             spec = mongoSpec;
         }
         return spec;
@@ -179,20 +265,52 @@ public class MongoPlatform extends EISPlatform {
      * Override this method to throw an exception by default.
      * Platforms that support dynamic querying can override this to generate an EISInteraction.
      */
-    public DatasourceCall buildCallFromStatement(SQLStatement statement, final DatabaseQuery query, AbstractSession session) {
-        if (query.isObjectLevelReadQuery() && !query.isReportQuery()) {
+    public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
+        if (query.isObjectLevelReadQuery()) {
+            ObjectLevelReadQuery readQuery = (ObjectLevelReadQuery)query;
             MappedInteraction interaction = new MappedInteraction();
             interaction.setProperty(OPERATION, MongoOperation.FIND);
             interaction.setProperty(COLLECTION, ((EISDescriptor)query.getDescriptor()).getDataTypeName());
             if (statement.getWhereClause() == null) {
                 return interaction;
             }
+            if (readQuery.getFirstResult() > 0) {
+                interaction.setProperty(SKIP, readQuery.getFirstResult());                
+            }
+            if (readQuery.getMaxRows() > 0) {
+                interaction.setProperty(LIMIT, readQuery.getMaxRows());                
+            }
+            if (readQuery.getFetchSize() > 0) {
+                interaction.setProperty(BATCH_SIZE, readQuery.getMaxRows());                
+            }
             DatabaseRecord row = new DatabaseRecord();
             appendExpressionToQueryRow(statement.getWhereClause(), row, query);
+            if (readQuery.hasOrderByExpressions()) {
+                DatabaseRecord sort = new DatabaseRecord();
+                for (Expression orderBy : readQuery.getOrderByExpressions()) {
+                    appendExpressionToSortRow(orderBy, sort, query);                    
+                }
+                row.put(MongoRecord.SORT, sort);
+            }
+            if (readQuery.isReportQuery()) {
+                DatabaseRecord select = new DatabaseRecord();
+                for (Object field : ((SQLSelectStatement)statement).getFields()) {
+                    if (field instanceof DatabaseField) {
+                        select.put((DatabaseField)field, 1);
+                    } else if (field instanceof Expression) {
+                        Object value = extractValueFromExpression((Expression)field, readQuery);
+                        if (!(value instanceof DatabaseField)) {
+                            throw new EISException("Query too complex for Mongo translation, only field selects are supported in query: " + query);
+                        }
+                        select.put((DatabaseField)value, 1);
+                    }
+                }
+                row.put("$select", select);
+            }
             interaction.setInputRow(row);
             return interaction;
         }
-        throw new EISException("Query too complex for Mongo translation, select, or group by clause not supported in query: " + query);
+        throw new EISException("Query too complex for Mongo translation, only select queries are supported in query: " + query);
     }
     
     /**
@@ -259,11 +377,36 @@ public class MongoPlatform extends EISPlatform {
                 }
                 nested.put("$regex", pattern);
                 row.put(left, nested);
+            } else if (function.getOperator().getSelector() == ExpressionOperator.Not) {
+                DatabaseRecord nested = new DatabaseRecord();
+                appendExpressionToQueryRow((Expression)function.getChildren().get(0), nested, query);
+                row.put("$not", nested);
             } else {
                 throw new EISException("Query too complex for Mongo translation, function [" + expression + "] not supported in query: " + query);            
             }
         } else {
             throw new EISException("Query too complex for Mongo translation, expression [" + expression + "] not supported in query: " + query);            
+        }
+    }
+    
+    /**
+     * Append the order by expression to the sort row.
+     */
+    protected void appendExpressionToSortRow(Expression expression, AbstractRecord row, DatabaseQuery query) {
+        if (expression.isFunctionExpression()) {
+            FunctionExpression function = (FunctionExpression)expression;
+            if (function.getOperator().getSelector() == ExpressionOperator.Ascending) {
+                Object field = extractValueFromExpression((Expression)function.getChildren().get(0), query);
+                row.put(field, 1);
+            } else if (function.getOperator().getSelector() == ExpressionOperator.Descending) {
+                Object field = extractValueFromExpression((Expression)function.getChildren().get(0), query);
+                row.put(field, -1);
+            } else {
+                throw new EISException("Query too complex for Mongo translation, order by [" + expression + "] not supported in query: " + query);
+            }
+        } else {
+            Object field = extractValueFromExpression(expression, query);
+            row.put(field, 1);
         }
     }
     
@@ -314,5 +457,14 @@ public class MongoPlatform extends EISPlatform {
     @Override
     public boolean shouldPrepare(DatabaseQuery query) {
         return (query.getDatasourceCall() instanceof EISInteraction) || !query.hasArguments();
+    }
+
+    /**
+     * INTERNAL:
+     * Create platform-default Sequence
+     */
+    @Override
+    protected Sequence createPlatformDefaultSequence() {
+        return new OIDSequence();
     }
 }

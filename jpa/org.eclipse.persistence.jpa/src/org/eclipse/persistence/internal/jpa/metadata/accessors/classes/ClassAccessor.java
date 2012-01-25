@@ -228,7 +228,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     private StructMetadata m_struct;
     private NoSqlMetadata m_noSql;
-        
+
     /**
      * INTERNAL:
      */
@@ -905,6 +905,22 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */        
+    public NoSqlMetadata getNoSql() {
+        return m_noSql;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNoSql(NoSqlMetadata noSql) {
+        this.m_noSql = noSql;
+    }
+    
+    /**
+     * INTERNAL:
      * In most cases the owning descriptor is the descriptor associated with
      * this class accessor. Owning descriptors come into play when dealing
      * with embeddable classes and their accessors. Processing certain accessors 
@@ -1035,6 +1051,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         initXMLObject(m_instantiationCopyPolicy, accessibleObject);
         initXMLObject(m_attributes, accessibleObject);
         initXMLObject(m_struct, accessibleObject);
+        initXMLObject(m_noSql, accessibleObject);
         
         // Initialize lists of objects.
         initXMLObjects(m_associationOverrides, accessibleObject);
@@ -1108,6 +1125,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         m_instantiationCopyPolicy = (InstantiationCopyPolicyMetadata) mergeORObjects(m_instantiationCopyPolicy, accessor.getInstantiationCopyPolicy());
         m_changeTracking = (ChangeTrackingMetadata) mergeORObjects(m_changeTracking, accessor.getChangeTracking());
         m_struct = (StructMetadata) mergeORObjects(m_struct, accessor.getStruct());
+        m_noSql = (NoSqlMetadata) mergeORObjects(m_noSql, accessor.getNoSql());
         
         // ORMetadata list merging. 
         m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
@@ -1579,11 +1597,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Check for XML defined struct.
         if (m_struct != null) {
             m_struct.process(getDescriptor());
-        }        
-        // Check for a annotation
-        MetadataAnnotation struct = getAnnotation(Struct.class);
-        if (struct != null) {
-            new StructMetadata(struct, this).process(getDescriptor());
+        } else {
+            // Check for a annotation
+            MetadataAnnotation struct = getAnnotation(Struct.class);
+            if (struct != null) {
+                new StructMetadata(struct, this).process(getDescriptor());
+            }
         }
     }
     
@@ -1594,11 +1613,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Check for XML defined struct.
         if (m_noSql != null) {
             m_noSql.process(getDescriptor());
-        }        
-        // Check for a annotation
-        MetadataAnnotation eis = getAnnotation(NoSql.class);
-        if (eis != null) {
-            new NoSqlMetadata(eis, this).process(getDescriptor());
+        } else {
+            // Check for a annotation
+            MetadataAnnotation eis = getAnnotation(NoSql.class);
+            if (eis != null) {
+                new NoSqlMetadata(eis, this).process(getDescriptor());
+            }
         }
     }
 

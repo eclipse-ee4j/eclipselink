@@ -124,6 +124,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 
@@ -993,6 +994,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
         m_classAccessor = classAccessor;
         setEntityMappings(classAccessor.getEntityMappings());
         initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());   
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+
+        initXMLObject(m_field, accessibleObject);
     }
     
     /** 
