@@ -79,6 +79,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
@@ -491,7 +492,7 @@ public class Util {
      * string  will be  in the format  'projectname.Name'.   For  example,  given
      * the name 'EMPLOYEE'  and projectName 'TEST', the  method would return  the
      * string 'test.Employee'.
-     * 
+     *
      */
     public static String getGeneratedJavaClassName(String name, String projectName) {
         String first = name.substring(0, 1).toUpperCase();
@@ -504,7 +505,7 @@ public class Util {
      * string  will be  in the format  'projectname.Name_CollectionWrapper'.   For
      * example, given the name 'EMPLOYEE' and projectName 'TEST', the method would
      * return the string 'test.Employee_CollectionWrapper'.
-     * 
+     *
      */
     public static String getGeneratedWrapperClassName(String name, String projectName) {
         return getGeneratedJavaClassName(name, projectName) + COLLECTION_WRAPPER_SUFFIX;
@@ -611,6 +612,7 @@ public class Util {
     public static boolean isArgComplex(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
         return argType instanceof PLSQLType
+                || (argType instanceof PLSQLCursorType && !((PLSQLCursorType)argType).isWeaklyTyped())
                 || argType instanceof VArrayType
                 || argType instanceof ObjectType
                 || argType instanceof ObjectTableType;
@@ -618,9 +620,9 @@ public class Util {
 
     /**
      * Indicates if a given ArgumentType is considered a PL/SQL argument,
-     * i.e. it has a data type that is one of PLSQLRecordType, 
-     * PLSQLCollectionType, BOOLEAN_TYPE, BINARY_INTEGER_TYPE, 
-     * PLS_INTEGER_TYPE, etc. 
+     * i.e. it has a data type that is one of PLSQLRecordType,
+     * PLSQLCollectionType, BOOLEAN_TYPE, BINARY_INTEGER_TYPE,
+     * PLS_INTEGER_TYPE, etc.
      */
     public static boolean isArgPLSQL(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
@@ -630,12 +632,12 @@ public class Util {
 
     /**
      * Indicates if a given ArgumentType is considered a PL/SQL scalar
-     * argument, i.e. it has a data type that is one of BOOLEAN_TYPE, 
+     * argument, i.e. it has a data type that is one of BOOLEAN_TYPE,
      * BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
      */
     public static boolean isArgPLSQLScalar(ArgumentType argument) {
         DatabaseType argType = argument.getDataType();
-        return argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE        		
+        return argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE
             || argType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE
             || argType == ScalarDatabaseTypeEnum.NATURAL_TYPE
             || argType == ScalarDatabaseTypeEnum.PLS_INTEGER_TYPE
@@ -665,8 +667,8 @@ public class Util {
     }
 
     /**
-     * Indicates if a given ProcedureType contains  one or more  PL/SQL 
-     * arguments, i.e. PLSQLRecordType, PLSQLCollectionType, or scalars 
+     * Indicates if a given ProcedureType contains  one or more  PL/SQL
+     * arguments, i.e. PLSQLRecordType, PLSQLCollectionType, or scalars
      * BOOLEAN_TYPE, BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
      *
      * Note that for FunctionType the return argument is tested as well.
@@ -686,7 +688,7 @@ public class Util {
     }
 
     /**
-     * Indicates if a given list  of ArgumentTypes contains  one or more 
+     * Indicates if a given list  of ArgumentTypes contains  one or more
      * PL/SQL arguments, i.e.  PLSQLRecordType, PLSQLCollectionType,  or
      * scalars BOOLEAN_TYPE, BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
      */

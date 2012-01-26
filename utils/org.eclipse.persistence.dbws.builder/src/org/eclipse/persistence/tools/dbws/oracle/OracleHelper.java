@@ -90,6 +90,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
@@ -118,7 +119,6 @@ import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentat
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
@@ -270,7 +270,15 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     Parameter parm = null;
                     ArgumentTypeDirection direction = arg.getDirection();
                     if (!hasComplexArgs) {
+                        if (arg.getDataType() instanceof PLSQLCursorType) {
+                            PLSQLCursorType cursorType = (PLSQLCursorType)arg.getDataType();
+                            if (cursorType.isWeaklyTyped()) {
+                                xmlType = buildCustomQName("SYS_REFCURSOR", dbwsBuilder);
+                            }
+                        }
+                        else {
                     	xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+                        }
                     } else {
 	                    // handle PL/SQL records and collections
 	                    if (arg.getDataType() instanceof PLSQLType) {
