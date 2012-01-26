@@ -14,6 +14,9 @@ package dbws.testing.weakrefcursor;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -41,24 +44,48 @@ import dbws.testing.DBWSTestSuite;
  */
 public class WeakRefCursorTestSuite extends DBWSTestSuite {
 
+    static final String WEAKLY_TYPED_REF_CURSOR_TABLE = "WTRC_TABLE";
+
+    static final String CREATE_WEAKLY_TYPED_REF_CURSOR_TABLE =
+        "CREATE TABLE " + WEAKLY_TYPED_REF_CURSOR_TABLE + " (" +
+            "\nID NUMBER NOT NULL," +
+            "\nNAME VARCHAR(25)," +
+            "\nSINCE DATE," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_WEAKLY_TYPED_REF_CURSOR_TABLE = new String[] {
+        "INSERT INTO " + WEAKLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (1, 'mike', " +
+            "TO_DATE('2001-12-25 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO " + WEAKLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (2, 'blaise', " +
+            "TO_DATE('2002-02-12 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO " + WEAKLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (3, 'rick', " +
+            "TO_DATE('2001-10-30 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO " + WEAKLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (4, 'mikey', " +
+            "TO_DATE('2010-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'))"
+    };
     static final String WEAKLY_TYPED_REF_CURSOR = "WEAKLY_TYPED_REF_CURSOR";
     static final String WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE = WEAKLY_TYPED_REF_CURSOR + "_TEST";
     static final String CREATE_WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE =
         "CREATE OR REPLACE PACKAGE " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
             "\nTYPE " + WEAKLY_TYPED_REF_CURSOR + " IS REF CURSOR;" +
-            "\nPROCEDURE GET_EMPS(P_DEPTNO IN EMP.DEPTNO%TYPE, P_RECORDSET OUT " + WEAKLY_TYPED_REF_CURSOR + ");" +
+            "\nPROCEDURE GET_EMS(P_EMS " + WEAKLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " +
+            WEAKLY_TYPED_REF_CURSOR + ");" +
         "\nEND " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
     static final String CREATE_WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
-            "\nPROCEDURE GET_EMPS(P_DEPTNO IN EMP.DEPTNO%TYPE, P_RECORDSET OUT " + WEAKLY_TYPED_REF_CURSOR + ") AS" +
+            "\nPROCEDURE GET_EMS(P_EMS " + WEAKLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " +
+            WEAKLY_TYPED_REF_CURSOR + ") AS" +
             "\nBEGIN" +
-            "\n    OPEN P_RECORDSET FOR" +
-            "\n        SELECT ENAME, EMPNO, DEPTNO FROM EMP WHERE DEPTNO = P_DEPTNO ORDER BY ENAME;" +
-            "\nEND GET_EMPS;" +
+            "\n    OPEN P_EMS_SET FOR" +
+            "\n        SELECT ID, NAME, SINCE FROM " + WEAKLY_TYPED_REF_CURSOR_TABLE +
+              " WHERE NAME LIKE P_EMS;" +
+            "\nEND GET_EMS;" +
         "\nEND " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
 
     static final String DROP_WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE =
         "DROP PACKAGE " + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE;
+    static final String DROP_WEAKLY_TYPED_REF_CURSOR_TABLE =
+        "DROP TABLE " + WEAKLY_TYPED_REF_CURSOR_TABLE;
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -87,6 +114,17 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
+            runDdl(conn, CREATE_WEAKLY_TYPED_REF_CURSOR_TABLE, ddlDebug);
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_WEAKLY_TYPED_REF_CURSOR_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_WEAKLY_TYPED_REF_CURSOR_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+                //e.printStackTrace();
+            }
             runDdl(conn, CREATE_WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE_BODY, ddlDebug);
         }
@@ -112,7 +150,7 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
               "<plsql-procedure " +
                   "name=\"weakRefCursorTest\" " +
                   "catalogPattern=\"" + WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
-                  "procedurePattern=\"GET_EMPS\" " +
+                  "procedurePattern=\"GET_EMS\" " +
                   "isCollection=\"true\" " +
                   "isSimpleXMLFormat=\"true\" " +
               "/>" +
@@ -125,6 +163,7 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         if (ddlDrop) {
             runDdl(conn, DROP_WEAKLY_TYPED_REF_CURSOR_TEST_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_WEAKLY_TYPED_REF_CURSOR_TABLE, ddlDebug);
         }
     }
 
@@ -132,7 +171,7 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
     @Test
     public void weakRefCursorTest() {
         Invocation invocation = new Invocation("weakRefCursorTest");
-        invocation.setParameter("P_DEPTNO", Integer.valueOf(10));
+        invocation.setParameter("P_EMS", "mike%");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -145,21 +184,16 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
     public static final String EMPLOYEES_IN_DEPT10_XML =
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
-            "<simple-xml>" +
-                "<ENAME>CLARK</ENAME>" +
-                "<EMPNO>7782</EMPNO>" +
-                "<DEPTNO>10</DEPTNO>" +
-            "</simple-xml>" +
-            "<simple-xml>" +
-                "<ENAME>KING</ENAME>" +
-                "<EMPNO>7839</EMPNO>" +
-                "<DEPTNO>10</DEPTNO>" +
-            "</simple-xml>" +
-            "<simple-xml>" +
-                "<ENAME>MILLER</ENAME>" +
-                "<EMPNO>7934</EMPNO>" +
-                "<DEPTNO>10</DEPTNO>" +
-            "</simple-xml>" +
+           "<simple-xml>" +
+              "<ID>1</ID>" +
+              "<NAME>mike</NAME>" +
+              "<SINCE>2001-12-25T00:00:00.0</SINCE>" +
+           "</simple-xml>" +
+           "<simple-xml>" +
+              "<ID>4</ID>" +
+              "<NAME>mikey</NAME>" +
+              "<SINCE>2010-01-01T00:00:00.0</SINCE>" +
+           "</simple-xml>" +
         "</simple-xml-format>";
 
 }
