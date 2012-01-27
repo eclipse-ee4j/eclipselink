@@ -508,7 +508,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
             MetadataRefreshCommand command = new MetadataRefreshCommand(properties);
 
-            AbstractSession session = (AbstractSession)JpaHelper.getDatabaseSession(emf);
+            AbstractSession session = delegate.getDatabaseSession();
             command.executeWithSession(session);
 
             em = emf.createEntityManager();
