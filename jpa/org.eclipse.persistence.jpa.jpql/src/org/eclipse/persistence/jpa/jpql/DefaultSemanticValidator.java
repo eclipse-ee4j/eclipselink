@@ -13,6 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.jpql.parser.LiteralBNF;
+import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
+
 /**
  * This validator is responsible to gather the problems found in a JPQL query by validating the
  * content to make sure it is semantically valid. The grammar is not validated by this visitor.
@@ -37,5 +43,31 @@ public final class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 */
 	public DefaultSemanticValidator(JPQLQueryContext context) {
 		super(context);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateIdentificationVariable(IdentificationVariable expression, String variable) {
+
+		for (IEntity entity : getProvider().entities()) {
+
+			// An identification variable must not have the same name as any entity in the same
+			// persistence unit, unless it's representing an entity literal
+			String entityName = entity.getName();
+
+			if (variable.equalsIgnoreCase(entityName)) {
+
+				// An identification variable could represent an entity type literal,
+				// validate the parent to make sure it allows it
+				if (!isValidWithFindQueryBNF(expression, LiteralBNF.ID)) {
+					int startIndex = position(expression);
+					int endIndex   = startIndex + variable.length();
+					addProblem(expression, startIndex, endIndex, IdentificationVariable_EntityName);
+					break;
+				}
+			}
+		}
 	}
 }

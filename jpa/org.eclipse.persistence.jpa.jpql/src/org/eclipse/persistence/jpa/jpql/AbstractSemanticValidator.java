@@ -71,7 +71,6 @@ import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
-import org.eclipse.persistence.jpa.jpql.parser.LiteralBNF;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
@@ -140,6 +139,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@link CollectionValuedPathExpression}.
 	 */
 	protected CollectionValuedPathExpressionVisitor collectionValuedPathExpressionVisitor;
+
+	/**
+	 * This visitor is responsible to check if the entity type literal (parsed as an identification
+	 * variable) is part of a comparison expression.
+	 */
+	private ComparingEntityTypeLiteralVisitor comparingEntityTypeLiteralVisitor;
 
 	/**
 	 * This validator determines whether the {@link Expression} visited represents
@@ -240,6 +245,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		return true;
 	}
 
+	protected ComparingEntityTypeLiteralVisitor buildComparingEntityTypeLiteralVisitor() {
+		return new ComparingEntityTypeLiteralVisitor();
+	}
+
+	protected ResultVariableInOrderByVisitor buildResultVariableInOrderByVisitor() {
+		return new ResultVariableInOrderByVisitor();
+	}
+
 	protected Resolver buildStateFieldResolver(Resolver parentResolver, String path) {
 		Resolver resolver = parentResolver.getChild(path);
 		if (resolver == null) {
@@ -323,6 +336,13 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		return collectionValuedPathExpressionVisitor;
 	}
 
+	protected ComparingEntityTypeLiteralVisitor getComparingEntityTypeLiteralVisitor() {
+		if (comparingEntityTypeLiteralVisitor == null) {
+			comparingEntityTypeLiteralVisitor = buildComparingEntityTypeLiteralVisitor();
+		}
+		return comparingEntityTypeLiteralVisitor;
+	}
+
 	protected NullValueVisitor getNullValueVisitor() {
 		if (nullValueVisitor == null) {
 			nullValueVisitor = new NullValueVisitor();
@@ -394,6 +414,27 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		return isValid(expression, BooleanTypeValidator.class);
 	}
 
+	/**
+	 * Determines whether the given identification variable is used in a comparison expression:
+	 * "expression = LargeProject".
+	 *
+	 * @param expression The {@link IdentificationVariable} used to determine its purpose
+	 * @return <code>true</code> if the identification variable is used in a comparison expression;
+	 * <code>false</code> otherwise
+	 */
+	protected boolean isComparingEntityTypeLiteral(IdentificationVariable expression) {
+		ComparingEntityTypeLiteralVisitor visitor = getComparingEntityTypeLiteralVisitor();
+		try {
+			visitor.expression = expression;
+			expression.accept(visitor);
+			return visitor.result;
+		}
+		finally {
+			visitor.result     = false;
+			visitor.expression = null;
+		}
+	}
+
 	protected boolean isComparisonEquivalentType(Expression expression1, Expression expression2) {
 
 		IType type1 = getType(expression1);
@@ -456,9 +497,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			TypeHelper typeHelper = getTypeHelper();
 			IType type = getType(expression);
 
-			if (type != typeHelper.unknownType()) {
-				return typeHelper.isIntegralType(type);
-			}
+			return type == typeHelper.unknownType() ||
+			       typeHelper.isIntegralType(type);
 		}
 
 		return false;
@@ -596,6 +636,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Validates the given identification variable.
+	 *
+	 * @param expression The {@link IdentificationVariable} that is being visited
+	 * @param variable The actual identification variable, which is never an empty string
+	 */
+	protected void validateIdentificationVariable(IdentificationVariable expression, String variable) {
 	}
 
 	protected void validateIdentificationVariables() {
@@ -1286,41 +1335,36 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	@Override
 	public void visit(IdentificationVariable expression) {
 
-		boolean virtual = expression.isVirtual();
-
-		if (!virtual && registerIdentificationVariable) {
-			usedIdentificationVariables.add(expression);
-		}
-
 		// Only a non-virtual identification variable is validated
-		if (!virtual/* && isJavaPlatform()*/) {
+		if (!expression.isVirtual()) {
+
 			String variable = expression.getText();
+			boolean continueValidating = true;
 
-			if (ExpressionTools.stringIsNotEmpty(variable)) {
+			// A entity literal type is parsed as an identification variable, check for that case
+			if (isComparingEntityTypeLiteral(expression)) {
 
-				for (IEntity entity : getProvider().entities()) {
+				// The identification variable (or entity type literal) does not
+				// correspond  to an entity name, then continue validation
+				IEntity entity = getProvider().getEntityNamed(variable);
+				continueValidating = (entity == null);
+			}
 
-					// An identification variable must not have the same name as any entity in the same
-					// persistence unit, unless it's representing an entity literal
-					String entityName = entity.getName();
+			if (continueValidating) {
 
-					if (variable.equalsIgnoreCase(entityName)) {
+				// Validate a real identification variable
+				if (registerIdentificationVariable) {
+					usedIdentificationVariables.add(expression);
+				}
 
-						// An identification variable could represent an entity type literal,
-						// validate the parent to make sure it allows it
-						if (!isValidWithFindQueryBNF(expression, LiteralBNF.ID)) {
-							int startIndex = position(expression);
-							int endIndex   = startIndex + variable.length();
-							addProblem(expression, startIndex, endIndex, IdentificationVariable_EntityName);
-							break;
-						}
-					}
+				if (ExpressionTools.stringIsNotEmpty(variable)) {
+					validateIdentificationVariable(expression, variable);
 				}
 			}
 		}
 		// The identification variable actually represents a state field path expression that has
 		// a virtual identification, validate that state field path expression instead
-		else if (virtual) {
+		else {
 			StateFieldPathExpression pathExpression = expression.getStateFieldPathExpression();
 			if (pathExpression != null) {
 				pathExpression.accept(this);
@@ -1697,8 +1741,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ResultVariable expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+
+		try {
+			registerIdentificationVariable = false;
+
+			// Nothing semantically to validate
+			super.visit(expression);
+		}
+		finally {
+			registerIdentificationVariable = true;
+		}
 	}
 
 	/**
@@ -2148,6 +2200,39 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
+	protected class ComparingEntityTypeLiteralVisitor extends AbstractExpressionVisitor {
+
+		IdentificationVariable expression;
+		public boolean result;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ComparisonExpression expression) {
+			result = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
+			if (this.expression == expression) {
+				expression.getParent().accept(this);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			// Make sure to bypass any sub expression
+			expression.getParent().accept(this);
+		}
+	}
+
 	protected class ItemExpression extends AnonymousExpressionVisitor {
 
 		protected List<Expression> expressions;
@@ -2364,6 +2449,35 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		public void visit(SumFunction expression) {
 			// SUM always returns a long
 			valid = true;
+		}
+	}
+
+	protected class ResultVariableInOrderByVisitor extends AbstractExpressionVisitor {
+
+		public boolean result;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
+			expression.getParent().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(OrderByClause expression) {
+			result = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(OrderByItem expression) {
+			expression.getParent().accept(this);
 		}
 	}
 

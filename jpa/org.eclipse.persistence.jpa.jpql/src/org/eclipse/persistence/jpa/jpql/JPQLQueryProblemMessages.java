@@ -14,10 +14,9 @@
 package org.eclipse.persistence.jpa.jpql;
 
 /**
- * The list of messages used by {@link JPQLQueryProblem JPQLQueryProblems} when validating a
- * JPQL query.
+ * The list of messages used by {@link JPQLQueryProblem JPQLQueryProblems} when validating a JPQL query.
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */

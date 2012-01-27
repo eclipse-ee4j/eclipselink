@@ -230,12 +230,12 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"HERMES_PARSER_SEMANTIC_VALIDATOR_ERROR_MESSAGE", "Problem compiling the query [{0}]. {1}"},
 
 			// IdentificationVariable - Grammar
-			{"IDENTIFICATION_VARIABLE_INVALID_DUPLICATE",       "The identification variable ''{0}'' cannot be declared more than once."},
-			{"IDENTIFICATION_VARIABLE_INVALID_JAVA_IDENTIFIER", "The identification variable ''{0}'' is not following the rules for a Java identifier."},
-			{"IDENTIFICATION_VARIABLE_INVALID_RESERVED_WORD",   "The identification variable ''{0}'' cannot be a reserved word."},
+			{"IDENTIFICATION_VARIABLE_INVALID_DUPLICATE",           "The identification variable ''{0}'' cannot be declared more than once."},
+			{"IDENTIFICATION_VARIABLE_INVALID_JAVA_IDENTIFIER",     "The identification variable ''{0}'' is not following the rules for a Java identifier."},
+			{"IDENTIFICATION_VARIABLE_INVALID_RESERVED_WORD",       "The identification variable ''{0}'' cannot be a reserved word."},
 			// IdentificationVariable - Semantic
-			{"IDENTIFICATION_VARIABLE_ENTITY_NAME",             "An identification variable must not have the same name as any entity in the same persistence unit."},
-			{"IDENTIFICATION_VARIABLE_INVALID_NOT_DECLARED",    "The identification variable ''{0}'' is not defined in the FROM clause."},
+			{"IDENTIFICATION_VARIABLE_ENTITY_NAME",                 "An identification variable must not have the same name as any entity in the same persistence unit."},
+			{"IDENTIFICATION_VARIABLE_INVALID_NOT_DECLARED",        "The identification variable ''{0}'' is not defined in the FROM clause."},
 
 			// IdentificationVariableDeclaration - Grammar
 			{"IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION", "The range variable declaration must be specified."},

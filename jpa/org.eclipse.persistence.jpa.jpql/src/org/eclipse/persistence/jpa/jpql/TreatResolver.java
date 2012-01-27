@@ -75,6 +75,14 @@ public class TreatResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public IManagedType getManagedType() {
+		return getProvider().getEntityNamed(entityTypeName);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setNullAllowed(boolean nullAllowed) {
 		super.setNullAllowed(nullAllowed);
 		getParent().setNullAllowed(nullAllowed);

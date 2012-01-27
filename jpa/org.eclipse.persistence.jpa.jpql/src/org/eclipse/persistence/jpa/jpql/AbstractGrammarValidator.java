@@ -499,7 +499,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 			@Override
 			public boolean isThirdExpressionValid(LocateExpression expression) {
-				return isValid(expression.getThirdExpression(), StringPrimaryBNF.ID);
+				return isValid(expression.getThirdExpression(), SimpleArithmeticExpressionBNF.ID);
 			}
 			public String leftParenthesisMissingKey() {
 				return LocateExpression_MissingLeftParenthesis;
@@ -756,16 +756,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			public String firstExpressionMissingKey() {
 				return SubstringExpression_MissingFirstExpression;
 			}
-			@Override
-			public boolean hasThirdExpression(SubstringExpression expression) {
-				boolean hasThirdExpression = super.hasThirdExpression(expression);
-				// If there is no third expression and the JPA version is 2.0, then we trick the
-				// validator to think there is an expression because it is optional
-				if (!hasThirdExpression && getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_0)) {
-					hasThirdExpression = true;
-				}
-				return hasThirdExpression;
-			}
+//			@Override
+//			public boolean hasThirdExpression(SubstringExpression expression) {
+//				boolean hasThirdExpression = super.hasThirdExpression(expression);
+//				// If there is no third expression and the JPA version is 2.0, then we trick the
+//				// validator to think there is an expression because it is optional
+//				if (!hasThirdExpression && getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_0)) {
+//					hasThirdExpression = true;
+//				}
+//				return hasThirdExpression;
+//			}
 			public String identifier(SubstringExpression expression) {
 				return SUBSTRING;
 			}
@@ -1051,44 +1051,50 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 	}
 
-	protected boolean isIdentificationVariableDeclaredBefore(String variableName,
-	                                                       int variableNameIndex,
-	                                                       int joinIndex,
-	                                                       List<Declaration> declarations) {
+	protected boolean isIdentificationVariableDeclaredAfter(String variableName,
+	                                                        int variableNameIndex,
+	                                                        int joinIndex,
+	                                                        List<Declaration> declarations) {
 
-		// Stop before variableNameIndex if the variableName is not in a JOIN expression (which means
-		// joinIndex is -1), otherwise stop at variableNameIndex to verify the range variable name
-		// or the JOIN expression before joinIndex
-		boolean scanDeclaration = (joinIndex > -1);
-
-		for (int index = 0; scanDeclaration ? (index <= variableNameIndex) : (index < variableNameIndex); index++) {
+		for (int index = variableNameIndex, declarationCount = declarations.size(); index < declarationCount; index++) {
 
 			Declaration declaration = declarations.get(index);
-			String previousVariableName = declaration.getVariableName();
 
-			if (variableName.equalsIgnoreCase(previousVariableName)) {
-				return true;
+			// Ignore the current declaration since it's the same identification variable
+			if (index != variableNameIndex) {
+
+				String nextVariableName = declaration.getVariableName();
+
+				if (variableName.equalsIgnoreCase(nextVariableName)) {
+					return true;
+				}
 			}
 
+			// Scan the JOIN expressions
 			if (declaration.hasJoins()) {
-				List<Map.Entry<Join, String>> joinEntries = declaration.getJoinEntries();
 
-				// Scan all the JOIN expression if index is not variableNameIndex, otherwise
-				// scan up to joinIndex, exclusively
-				int endIndex = (index == variableNameIndex) ? joinIndex : joinEntries.size();
+				List<Map.Entry<Join, String>> joins = declaration.getJoinEntries();
+				int endIndex = (index == variableNameIndex) ? joinIndex : joins.size();
 
-				for (int subIndex = 0; subIndex < endIndex; subIndex++) {
-					Map.Entry<Join, String> join = joinEntries.get(subIndex);
-					previousVariableName = join.getValue();
+				for (int subIndex = joinIndex; subIndex < endIndex; subIndex++) {
 
-					if (variableName.equalsIgnoreCase(previousVariableName)) {
+					Map.Entry<Join, String> join = joins.get(subIndex);
+
+					if (variableName.equalsIgnoreCase(join.getValue())) {
 						return true;
 					}
 				}
 			}
 		}
 
+		// The identification variable was not found after the declaration being validated, that means
+		// it was defined before or it was not defined (which is validated by another rule)
 		return false;
+	}
+
+	protected boolean isInExpressionPathValid(Expression pathExpression) {
+		return isValid(pathExpression, StateFieldPathExpressionBNF.ID) ||
+		       isValid(pathExpression, TypeExpressionBNF.ID);
 	}
 
 	protected boolean isInputParameterInValidLocation(InputParameter expression) {
@@ -1497,7 +1503,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 						// Make sure the identification variable is defined before the JOIN expression
 						if (ExpressionTools.stringIsNotEmpty(variableName) &&
-						    !isIdentificationVariableDeclaredBefore(variableName, index, joinIndex, declarations)) {
+						    isIdentificationVariableDeclaredAfter(variableName, index, joinIndex, declarations)) {
 
 							int startPosition = position(join.getJoinAssociationPath());
 							int endPosition   = startPosition + variableName.length();
@@ -1522,7 +1528,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 					);
 
 					if (ExpressionTools.stringIsNotEmpty(variableName) &&
-					    !isIdentificationVariableDeclaredBefore(variableName, index, -1, declarations)) {
+					    isIdentificationVariableDeclaredAfter(variableName, index, -1, declarations)) {
 
 						int startPosition = position(declaration.getDeclarationExpression()) - variableName.length();
 						int endPosition   = startPosition + variableName.length();
@@ -2040,6 +2046,23 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			leftExpressionQueryBNF,
 			rightExpressionQueryBNF
 		);
+	}
+
+	protected void validateOwningClause(InputParameter expression, String parameter) {
+
+		OwningClauseVisitor visitor = getOwningClauseVisitor();
+		expression.accept(visitor);
+
+		try {
+			if (!isInputParameterInValidLocation(expression)) {
+				int startPosition = position(expression);
+				int endPosition   = startPosition + parameter.length();
+				addProblem(expression, startPosition, endPosition, InputParameter_WrongClauseDeclaration);
+			}
+		}
+		finally {
+			visitor.dispose();
+		}
 	}
 
 	protected void validatePathExpression(AbstractPathExpression expression) {
@@ -3065,11 +3088,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		else {
 			Expression pathExpression = expression.getExpression();
 
-			if (!isValid(pathExpression, StateFieldPathExpressionBNF.ID) &&
-			    !isValid(pathExpression, TypeExpressionBNF.ID)) {
-
+			if (!isInExpressionPathValid(pathExpression)) {
 				int startPosition = position(expression);
-				int endPosition   = startPosition + length(expression.getExpression());
+				int endPosition   = startPosition + length(pathExpression);
 				addProblem(expression, startPosition, endPosition, InExpression_MalformedExpression);
 			}
 		}
@@ -3202,19 +3223,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		// Input parameters can only be used in the WHERE or HAVING clause of a query.
 		// Skip the ORDER BY clause because it has its own validation rule. The exception
 		// to this rule is in a FUNC expression
-		OwningClauseVisitor visitor = getOwningClauseVisitor();
-		expression.accept(visitor);
-
-		try {
-			if (!isInputParameterInValidLocation(expression)) {
-				int startPosition = position(expression);
-				int endPosition   = startPosition + parameter.length();
-				addProblem(expression, startPosition, endPosition, InputParameter_WrongClauseDeclaration);
-			}
-		}
-		finally {
-			visitor.dispose();
-		}
+		validateOwningClause(expression, parameter);
 	}
 
 	/**
@@ -3311,9 +3320,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 		// Has an unknown ending statement
 		else if (expression.hasUnknownEndingStatement()) {
-			int startPosition = length(expression.getQueryStatement());
-			int endPosition   = startPosition + length(expression.getUnknownEndingStatement());
-			addProblem(expression, startPosition, endPosition, JPQLExpression_UnknownEnding);
+
+			String unknownStatement = expression.getUnknownEndingStatement().toActualText();
+
+			// Make sure the unknown ending statement is not a whitespace, one is kept for content assist
+			if (ExpressionTools.stringIsNotEmpty(unknownStatement)) {
+				int startPosition = length(expression.getQueryStatement());
+				int endPosition   = startPosition + length(expression.getUnknownEndingStatement());
+				addProblem(expression, startPosition, endPosition, JPQLExpression_UnknownEnding);
+			}
 		}
 
 		super.visit(expression);

@@ -17,8 +17,11 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseParent
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
+import org.eclipse.persistence.jpa.jpql.parser.InputParameterBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
@@ -106,22 +109,14 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		return funcExpressionVisitor;
 	}
 
-	protected boolean isInFuncExpressionInSelectClause(InputParameter expression) {
-
-		FuncExpressionVisitor visitor = funcExpressionVisitor();
-
-		try {
-			expression.accept(visitor);
-
-			return visitor.expression         != null &&
-			      (visitor.selectClause       != null ||
-			       visitor.simpleSelectClause != null);
-		}
-		finally {
-			visitor.expression = null;
-			visitor.selectClause = null;
-			visitor.simpleSelectClause = null;
-		}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isInExpressionPathValid(Expression pathExpression) {
+		return super.isInExpressionPathValid(pathExpression)         ||
+		       isValid(pathExpression, IdentificationVariableBNF.ID) ||
+		       isValid(pathExpression, InputParameterBNF.ID);
 	}
 
 	/**
@@ -129,8 +124,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 */
 	@Override
 	protected boolean isInputParameterInValidLocation(InputParameter expression) {
-		return isInFuncExpressionInSelectClause(expression) ||
-		       super.isInputParameterInValidLocation(expression);
+		return true;
 	}
 
 	/**

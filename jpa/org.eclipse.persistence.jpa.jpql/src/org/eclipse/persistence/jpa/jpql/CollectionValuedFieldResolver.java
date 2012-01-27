@@ -99,7 +99,11 @@ public class CollectionValuedFieldResolver extends AbstractPathResolver {
 		// Wrap the Map into a virtual IManagedType so it can be returned and the
 		// IType for the Map can be used to retrieve the type of the key and value
 		else if (getTypeHelper().isMapType(type)) {
-			return new MapManagedType(getProvider(), type);
+			ITypeDeclaration[] typeParameters = typeDeclaration.getTypeParameters();
+			if (typeParameters.length != 2) {
+				return null;
+			}
+			type = typeParameters[1].getType();
 		}
 
 		// Retrieve the corresponding managed type for the mapping's type

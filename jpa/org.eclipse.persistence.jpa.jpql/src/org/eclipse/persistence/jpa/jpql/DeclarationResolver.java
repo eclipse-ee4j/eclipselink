@@ -311,6 +311,17 @@ public class DeclarationResolver extends Resolver {
 	}
 
 	/**
+	 * Returns the map of result variables that got used to define a select expression. This only
+	 * applies to JPQL queries built for JPA 2.0.
+	 *
+	 * @return The variables identifying the select expressions, if any was defined or an empty map
+	 * if none were defined
+	 */
+	public Map<IdentificationVariable, String> getResultVariablesMap() {
+		return resultVariables;
+	}
+
+	/**
 	 * Determines whether the JPQL expression has <b>JOIN</b> expressions.
 	 *
 	 * @return <code>true</code> if the query or subquery being traversed contains <b>JOIN</b>
