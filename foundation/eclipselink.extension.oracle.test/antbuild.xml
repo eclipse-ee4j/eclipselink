@@ -161,9 +161,9 @@
                                           else="${extensions.depend.dir}/${oracle.ucp.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
         </condition>
-        <condition property="oracle.nosql.lib" value="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"
+        <condition property="oracle.nosql.lib" value="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"
                                           else="${extensions.depend.dir}/${oracle.nosql.jar}">
-            <available file="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
+            <available file="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
         </condition>
 
         <!-- Create needed directories
