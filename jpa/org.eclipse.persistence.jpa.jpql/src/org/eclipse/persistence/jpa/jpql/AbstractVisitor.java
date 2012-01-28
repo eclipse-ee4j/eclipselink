@@ -160,7 +160,7 @@ public abstract class AbstractVisitor extends AnonymousExpressionVisitor {
 	 * but by default, it's the same
 	 * @return The managed type that has the given name or <code>null</code> if none could be found
 	 */
-	protected IManagedType getEntityNamed(String entityName) {
+	protected IEntity getEntityNamed(String entityName) {
 		return getProvider().getEntityNamed(entityName);
 	}
 

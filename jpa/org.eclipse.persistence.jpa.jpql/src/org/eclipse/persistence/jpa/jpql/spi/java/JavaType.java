@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.TypeHelper;
 import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
@@ -138,7 +139,7 @@ public class JavaType implements IType {
 	 * {@inheritDoc}
 	 */
 	public boolean equals(IType type) {
-		return (this == type) ? true : typeName.equals(type.getName());
+		return (this == type) || typeName.equals(type.getName());
 	}
 
 	/**
@@ -146,7 +147,7 @@ public class JavaType implements IType {
 	 */
 	@Override
 	public boolean equals(Object object) {
-		return (this == object) || equals((IType) object);
+		return equals((IType) object);
 	}
 
 	/**
@@ -180,7 +181,12 @@ public class JavaType implements IType {
 	 */
 	public ITypeDeclaration getTypeDeclaration() {
 		if (typeDeclaration == null) {
-			typeDeclaration = new JavaTypeDeclaration(typeRepository, this, null, (type != null) ? type.isArray() : false);
+			typeDeclaration = new JavaTypeDeclaration(
+				typeRepository,
+				this,
+				null,
+				(type != null) ? type.isArray() : false
+			);
 		}
 		return typeDeclaration;
 	}
@@ -198,7 +204,7 @@ public class JavaType implements IType {
 	 * {@inheritDoc}
 	 */
 	public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
-		return (type == null) ? false : type.isAnnotationPresent(annotationType);
+		return (type != null) && type.isAnnotationPresent(annotationType);
 	}
 
 	/**
@@ -212,21 +218,26 @@ public class JavaType implements IType {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean isAssignableTo(IType type) {
+	public boolean isAssignableTo(IType otherType) {
 
-		// TODO: Maybe should iterate through the type hierarchy if IType and check
-		//       if className is present
-		if (this.type == null) {
+		if (equals(otherType)) {
+			return true;
+		}
+
+		if (!isResolvable() || !otherType.isResolvable()) {
 			return false;
 		}
 
-		Class<?> otherType = ((JavaType) type).type;
+		// Make sure both types are not primitives since isAssignableFrom() does not work.
+		// For instance long and Long can't be compared but they are valid for JPQL query
+		TypeHelper typeHelper = typeRepository.getTypeHelper();
+		IType thisType = typeHelper.convertPrimitive(this);
+		otherType = typeHelper.convertPrimitive(otherType);
 
-		if (otherType == null) {
-			return false;
-		}
+		Class<?> thisClass  = ((JavaType) thisType) .type;
+		Class<?> otherClass = ((JavaType) otherType).type;
 
-		return otherType.isAssignableFrom(this.type);
+		return otherClass.isAssignableFrom(thisClass);
 	}
 
 	/**

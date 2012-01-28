@@ -844,9 +844,13 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 			IType newValueType = getType(newValue);
 
+			// Do a quick check for known JDK types:
+			// 1) Date/Time/Timestamp
+			// 2) Any classes related to a number, eg long/Long etc
 			if (!newValueType.isResolvable() ||
-				 typeHelper.isDateType(type)    && typeHelper.isDateType(newValueType) ||
-				 typeHelper.isNumericType(type) && typeHelper.isNumericType(newValueType)) {
+			    typeHelper.isDateType(type) && typeHelper.isDateType(newValueType) ||
+			    (typeHelper.isNumericType(type)         || typeHelper.isPrimitiveType(type)) &&
+			    (typeHelper.isNumericType(newValueType) || typeHelper.isPrimitiveType(newValueType))) {
 
 				return;
 			}
@@ -1981,15 +1985,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	@SuppressWarnings("null")
 	public void visit(UpdateItem expression) {
 
- 		// Retrieve the abstract schema so we can check the state field is part of it
+ 		// Retrieve the entity to make sure the state field is part of it
 		AbstractSchemaName abstractSchemaName = findAbstractSchemaName(expression);
 		String name = (abstractSchemaName != null) ? abstractSchemaName.getText() : null;
 
  		if (ExpressionTools.stringIsNotEmpty(name)) {
-			IManagedType managedType = getEntityNamed(name);
+ 			IEntity entity = getEntityNamed(name);
 
-			// Check the existence of the state field on the abstract schema
-			if (managedType != null) {
+			// Check the existence of the state field on the entity
+			if (entity != null) {
 				StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getStateFieldPathExpression());
 				String stateFieldValue = (pathExpression != null) ? pathExpression.toParsedText() : null;
 
@@ -1997,7 +2001,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 					// State field without a dot
 					if (stateFieldValue.indexOf(".") == -1) {
-						IMapping mapping = managedType.getMappingNamed(stateFieldValue);
+						IMapping mapping = entity.getMappingNamed(stateFieldValue);
 
  						if (mapping == null) {
  							addProblem(pathExpression, UpdateItem_NotResolvable, stateFieldValue);
