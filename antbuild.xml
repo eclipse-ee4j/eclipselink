@@ -859,8 +859,8 @@
             <!-- jpa persistence jar -->
             <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence10.jar}" prefix="eclipselink/jlib/jpa"/ -->
             <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
-            <!-- jpa persistence 2.0 prototype jar -->
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${persistence20.jar}" prefix="eclipselink/jlib/jpa"/>
+            <!-- jpa persistence 2.0 jars -->
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence_2.*.jar" excludes="*preview*" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>

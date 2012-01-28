@@ -11,26 +11,20 @@
     <packaging>pom</packaging>
 
     <properties>
+        <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>0.11.1</tycho.version>
         <maven.compiler.version>2.3.2</maven.compiler.version>
         <!-- maven.test.version>1.8</maven.test.version -->
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format -->
+        <!-- PROJECT Properties -->
     	<release.version>2.4.0</release.version>
-        <!-- build.qualifier>qualifier</build.qualifier -->
     	<build.type>SNAPSHOT</build.type>
 	    <svn.revision>NA</svn.revision>
     	<src>./src</src>
-        <javax-activation-version>1.1.0.v201005080500</javax-activation-version>
-        <javax-mail-version>1.4.0.v201005080615</javax-mail-version>
-        <javax-persistence-version>2.0.3.v201010191057</javax-persistence-version>
-        <javax-resource-version>1.5.0</javax-resource-version>
-        <javax-xml-stream-version>1.0.1.v201004272200</javax-xml-stream-version>
-        <javax-servlet-version>2.4.0.v200806031604</javax-servlet-version>
-        <javax-transaction-version>1.1.0.v201002051055</javax-transaction-version>
-        <junit4-version>4.8.1</junit4-version>
-        <oep-antlr-version>2.3.0.v20110129-r8902</oep-antlr-version>
-        <oep-asm-version>2.3.0.v20110129-r8902</oep-asm-version>
+    	<!-- BUILD Properties -->
+        <orbit.drop>R20110523182458</orbit.drop>
+        <eclipse.drop>indigo</eclipse.drop>
     </properties>
   
     <modules>
@@ -48,7 +42,7 @@
     </modules>
 
     <build>
-        <defaultGoal>install</defaultGoal>
+        <defaultGoal>verify</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -74,6 +68,43 @@
                 <version>${tycho.version}</version>
                 <configuration>
                     <resolver>p2</resolver>
+                    <environments>
+                        <environment>
+                            <os>linux</os>
+                            <ws>gtk</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>linux</os>
+                            <ws>gtk</ws>
+                            <arch>x86</arch>
+                        </environment>
+                        <environment>
+                            <os>macosx</os>
+                            <ws>carbon</ws>
+                            <arch>x86</arch>
+                        </environment>
+                        <environment>
+                            <os>macosx</os>
+                            <ws>cocoa</ws>
+                            <arch>x86</arch>
+                        </environment>
+                        <environment>
+                            <os>macosx</os>
+                            <ws>cocoa</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86</arch>
+                        </environment>
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                    </environments>
                     <!-- target>
                         <artifact>
                             <groupId>${project.groupId}</groupId>
@@ -84,20 +115,6 @@
                     </target -->
                 </configuration>
             </plugin>
-            <!-- recommented source bundle generation   (http://wiki.eclipse.org/Tycho/Reference_Card) -->
-            <!-- Doesn't work! plugin>
-                <groupId>org.eclipse.tycho</groupId>
-                <artifactId>tycho-source-plugin</artifactId>
-                <version>${tycho.version}</version>
-                <executions>
-                    <execution>
-                        <id>plugin-source</id>
-                        <goals>
-                            <goal>plugin-source</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin -->
             <!-- Mostly working source bundle   generation -->
             <plugin>
                 <groupId>org.sonatype.tycho</groupId>
@@ -146,20 +163,20 @@
         </pluginRepository>
         <!-- pluginRepository>
             <id>maven-eclipse</id>
-            <url>https://maven.eclipse.org</url>
+            <url>http://repo1.maven.org</url>
         </pluginRepository -->
     </pluginRepositories>
     
     <repositories>
         <repository>
-            <id>indigo</id>
+            <id>Eclipse</id>
             <layout>p2</layout>
-            <url>http://download.eclipse.org/releases/indigo</url>
+            <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
         </repository>
         <repository>
             <id>Orbit</id>
             <layout>p2</layout>
-	    <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20110523182458/repository</url>
+	    <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
         </repository>
         <repository>
             <id>EL_CompDeps</id>
