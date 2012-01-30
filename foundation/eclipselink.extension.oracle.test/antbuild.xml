@@ -107,6 +107,7 @@
     <target name="init">
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="oracle.extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.oracle.lib.external"/>
+        <property name="oracle.nosql.jar.dir" value="${oracle.extensions.depend.dir}"/>
         <property name="extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
         <echo message="oracle_test.src.dir     ='${oracle_test.src.dir}'"/>
