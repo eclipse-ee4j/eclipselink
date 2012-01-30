@@ -92,4 +92,12 @@ public class NoSQLTestModel extends TestModel {
         getDatabaseSession().logout();
         getExecutor().setSession(this.oldSession);
     }
+
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     */
+    public static junit.framework.TestSuite suite() {
+        return new NoSQLTestModel();
+    }
+    
 }
