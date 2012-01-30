@@ -25,6 +25,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -67,14 +68,25 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         ContainerPolicy cp = getContainerPolicy();
         Object collection = xmlCompositeDirectCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
-            return false;
+            AbstractNullPolicy wrapperNP = xmlCompositeDirectCollectionMapping.getWrapperNullPolicy();
+            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+                marshalRecord.nilSimple(namespaceResolver);
+                return true;
+            } else {
+                return false;
+            }
         }
         Object iterator = cp.iteratorFor(collection);
         if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            return false;
+            if (!xmlCompositeDirectCollectionMapping.usesSingleNode() && xmlCompositeDirectCollectionMapping.getWrapperNullPolicy() != null) {
+                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+                marshalRecord.closeStartGroupingElements(groupingFragment);
+            } else {
+                return false;
+            }
         }
         Object objectValue;
         StringBuilder stringValueStringBuilder = new StringBuilder();

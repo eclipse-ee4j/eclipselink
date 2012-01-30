@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.mappings;
 
 import java.util.Enumeration;
 import java.util.Vector;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -24,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -68,6 +70,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
     private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isWriteOnly;
     private boolean reuseContainer;
+    private AbstractNullPolicy wrapperNullPolicy;
 
     public XMLFragmentCollectionMapping() {
         super();
@@ -252,6 +255,14 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      */
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
+    }
+
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
     }
 
 }

@@ -13,12 +13,14 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.List;
+
 import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -35,6 +37,8 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
@@ -65,14 +69,25 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         ContainerPolicy cp = xmlAnyCollectionMapping.getContainerPolicy();
         Object collection = xmlAnyCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
-            return false;
+            AbstractNullPolicy wrapperNP = xmlAnyCollectionMapping.getWrapperNullPolicy();
+            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+                marshalRecord.nilSimple(namespaceResolver);
+                return true;
+            } else {
+                return false;
+            }
         }
         Object iterator = cp.iteratorFor(collection);
         if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            return false;
+            if (xmlAnyCollectionMapping.getWrapperNullPolicy() != null ) {
+                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+                marshalRecord.closeStartGroupingElements(groupingFragment);
+            } else {
+                return false;
+            }
         }
         Object objectValue;
         while (cp.hasNext(iterator)) {

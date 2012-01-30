@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -45,6 +46,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -70,6 +72,7 @@ import org.w3c.dom.Node;
  *
  */
 public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping {
+    private AbstractNullPolicy wrapperNullPolicy;
     private XMLField field;
     private MappedKeyMapContainerPolicy containerPolicy;
     private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
@@ -471,6 +474,14 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      */
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.isDefaultEmptyContainer = defaultEmptyContainer;
+    }
+
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
     }
 
 }

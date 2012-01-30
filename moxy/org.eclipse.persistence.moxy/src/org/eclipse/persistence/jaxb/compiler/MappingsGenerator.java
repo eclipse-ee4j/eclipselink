@@ -822,6 +822,10 @@ public class MappingsGenerator {
         }
         mapping.useCollectionClassName(collectionType.getRawName());
 
+        if (property.isSetXmlElementWrapper()) {
+            mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
+        }
+
         boolean isIdRef = property.isXmlIdRef();
         Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
         while (choiceProperties.hasNext()) {
@@ -839,7 +843,7 @@ public class MappingsGenerator {
                     type = theClass;
                     converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
                 }
-            }            
+            }
             
             if (next.getXmlJoinNodes() != null) {
                 // handle XmlJoinNodes
@@ -910,6 +914,9 @@ public class MappingsGenerator {
             ((XMLChoiceCollectionMapping) mapping).setConverter(jaxbERConverter);
             if (property.isSetWriteOnly()) {
                 ((XMLChoiceCollectionMapping) mapping).setIsWriteOnly(property.isWriteOnly());
+            }
+            if (property.isSetXmlElementWrapper()) {
+                ((XMLChoiceCollectionMapping) mapping).setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
             }
         } else {
             mapping = new XMLChoiceObjectMapping();
@@ -1077,6 +1084,14 @@ public class MappingsGenerator {
         // if the XPath is set (via xml-path) use it
         if (property.getXmlPath() != null) {
             mapping.setField(new XMLField(property.getXmlPath()));
+        } else {
+            if (property.isSetXmlElementWrapper()) {
+                mapping.setField(getXPathForField(property, namespaceInfo, false, true));
+            }
+        }
+
+        if (property.isSetXmlElementWrapper()) {
+            mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
         }
 
         Class declaredType = helper.getClassForJavaClass(property.getActualType());
@@ -1357,6 +1372,9 @@ public class MappingsGenerator {
         // handle write-only set via metadata
         if (property.isSetWriteOnly()) {
             mapping.setIsWriteOnly(property.isWriteOnly());
+        }
+        if (property.isSetXmlElementWrapper()) {
+            mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
         }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
@@ -1817,6 +1835,10 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         }
         
+        if (property.isSetXmlElementWrapper()) {
+            mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
+        }
+
         JavaClass collectionType = property.getType();
 
         if (collectionType.isArray()){
@@ -1971,6 +1993,10 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         }
         mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+
+        if (property.isSetXmlElementWrapper()) {
+            mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
+        }
 
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
@@ -2457,6 +2483,10 @@ public class MappingsGenerator {
     }
 
     public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping) {
+        return this.getXPathForField(property, namespaceInfo, isTextMapping, false);
+    }
+
+    public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping, boolean isAny) {
         XMLField xmlField = null;
         if (property.getXmlPath() != null) {
             xmlField = new XMLField(property.getXmlPath());
@@ -2472,12 +2502,20 @@ public class MappingsGenerator {
                         namespace = "";
                     }
                 }
+                
                 if (namespace.equals("")) {
                     xPath += (wrapper.getName() + "/");
                 } else {
                 	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
                 	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
                 }
+
+                if (isAny) {
+                    xPath = xPath.substring(0, xPath.length() - 1);
+                    xmlField = new XMLField(xPath);
+                    return xmlField;
+                }
+
             }
             if (property.isAttribute()) {
                 if (property.isSetXmlPath()) {
@@ -2950,6 +2988,26 @@ public class MappingsGenerator {
     		valueClassName = valueClass;
     	}
 	}
+
+    private AbstractNullPolicy getWrapperNullPolicyFromProperty(Property property) {
+        NullPolicy nullPolicy = null;
+
+        if (property.isSetXmlElementWrapper()) {
+            nullPolicy = new NullPolicy();
+            nullPolicy.setNullRepresentedByEmptyNode(false);
+            nullPolicy.setSetPerformedForAbsentNode(false);
+
+            if (property.getXmlElementWrapper().isNillable()) {
+                nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+                nullPolicy.setNullRepresentedByXsiNil(true);
+            } else {
+                nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.ABSENT_NODE);
+                nullPolicy.setNullRepresentedByXsiNil(false);
+            }
+        }
+
+        return nullPolicy;
+    }
 
     /**
      * Convenience method which returns an AbstractNullPolicy built from an XmlAbstractNullPolicy.

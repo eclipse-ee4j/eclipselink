@@ -16,10 +16,12 @@
         <item id="1">
             <firstName>Jane</firstName>
             <lastName>Doe</lastName>
+            <responsibilities />
         </item>
         <item id="2">
             <firstName>John</firstName>
             <lastName>Smith</lastName>
+            <responsibilities />
         </item>
     </employee2dArray>
     <innerClass2dArray>

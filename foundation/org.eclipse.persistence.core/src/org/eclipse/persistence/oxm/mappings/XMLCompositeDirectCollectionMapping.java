@@ -14,10 +14,9 @@ package org.eclipse.persistence.oxm.mappings;
 
 import java.util.Enumeration;
 import java.util.Vector;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
@@ -29,6 +28,8 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -231,6 +232,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     protected boolean reuseContainer;
     private boolean isCollapsingStringValues;
     private boolean isNormalizingStringValues;
+    private AbstractNullPolicy wrapperNullPolicy;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
@@ -540,6 +542,14 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      */
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.isDefaultEmptyContainer = defaultEmptyContainer;
+    }
+
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
     }
 
 }
