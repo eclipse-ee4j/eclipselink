@@ -3156,6 +3156,9 @@
     <target name="server-test-jaxrs" depends="clean-test">
     
 	    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/persistence-jaxrs.xml" tofile="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
+	    <copy todir="${eclipselink.jpa.test}" overwrite="true" failonerror="false">
+	                <fileset dir="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/tests/jpa/jaxrs" includes="*TestCases.java"/>
+        </copy>
 	    <antcall target="server-jaxrsconfig" inheritRefs="true"/>
 	    <antcall target="server-run-all" inheritRefs="true">
 		    <param name="PERSISTENCE_UNIT_NAME" value="jaxrs"/>
@@ -3168,6 +3171,12 @@
 		    <param name="eclipselink.jpa.test.dir" value="."/>
 	    </antcall>
 	    <antcall target="generate-servertest-report" inheritRefs="true"/>
+	    <copy todir="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/tests/jpa/jaxrs" overwrite="true" failonerror="false">
+	                <fileset dir="${eclipselink.jpa.test}" includes="*TestCases.java"/>
+        </copy>
+	    <delete failonerror="false">
+               <fileset dir="${eclipselink.jpa.test}" includes="*TestCases.java"/>
+        </delete>
 	    <delete file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
     </target>
     
