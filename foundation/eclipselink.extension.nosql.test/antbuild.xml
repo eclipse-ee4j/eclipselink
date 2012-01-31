@@ -259,6 +259,8 @@
         <!-- Define 'Helper' path refids -->
         <path id="nosql_test.runtime.only.path">
             <pathelement path="${nosql_test.build.location}/${eclipselink.nosql.depend.test.jar}"/>
+            <pathelement path="${nosql_test.build.location}/eclipselink-mongo-model.jar"/>
+            <pathelement path="${nosql_test.build.location}/eclipselink-jpa-nosql-tests.jar"/>
             <pathelement path="${nosql_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${nosql_test.2.core.test.dir}/resource"/>
