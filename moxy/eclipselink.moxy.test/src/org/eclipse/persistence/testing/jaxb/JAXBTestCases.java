@@ -498,14 +498,18 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
 
     public void xmlToObjectTest(Object testObject) throws Exception {
+    	xmlToObjectTest(testObject, getReadControlObject());
+    }
+
+    public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
-        log(getReadControlObject().toString());
+        log(controlObject.toString());
         log("Actual:");
         log(testObject.toString());
 
-        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-            JAXBElement controlObj = (JAXBElement)getReadControlObject();
+        if ((controlObject instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
+            JAXBElement controlObj = (JAXBElement)controlObject;
             JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj);
         } else {

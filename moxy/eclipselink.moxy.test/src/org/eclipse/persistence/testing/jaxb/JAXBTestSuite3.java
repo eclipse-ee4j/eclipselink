@@ -36,6 +36,7 @@ import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.RepeatedUnmarshalTestCases;
+import org.eclipse.persistence.testing.jaxb.unmarshaller.space.UnmarshalWithSpaceEventTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsWithExternalMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
@@ -117,6 +118,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(XMLBindingsWithExternalMetadataTestCases.class);
         suite.addTestSuite(XMLSchemaModelTestCases.class);
         suite.addTestSuite(JAXBIntrospectorGetElementNameTestCases.class);
+        suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
         suite.addTestSuite(PrefixMapperTestCases.class);
         suite.addTestSuite(NonELPrefixMapperTestCases.class);
         
