@@ -2154,7 +2154,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * INTERNAL:
-     * Not sure were this is used, MW?
+     * Used to set the collection class by name.
+     * This is required when building from metadata to allow the correct class loader to be used.
      */
     public void useCollectionClassName(String concreteClassName) {
         setContainerPolicy(new CollectionContainerPolicy(concreteClassName));
@@ -2162,7 +2163,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * Not sure were this is used, MW?
+     * Used to set the collection class by name.
+     * This is required when building from metadata to allow the correct class loader to be used.
      */
     public void useListClassName(String concreteClassName) {
         setContainerPolicy(new ListContainerPolicy(concreteClassName));

@@ -416,8 +416,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * isAnnotationPresent calls can return a false when true because of the
      * meta-data complete feature.
      */
-    public boolean isAnnotationNotPresent(Class annotation) {
-        return ! isAnnotationPresent(annotation);
+    public boolean isAnnotationNotPresent(Class annotation, ClassAccessor accessor) {
+        return ! isAnnotationPresent(annotation, accessor);
    }
     
     /** 
@@ -497,7 +497,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * annotation is found on the raw/reference class.
      */
     public boolean isEmbedded(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(Embedded.class) && isAnnotationNotPresent(EmbeddedId.class) && ! classAccessor.excludeDefaultMappings()) {
+        if (isAnnotationNotPresent(Embedded.class, classAccessor) && isAnnotationNotPresent(EmbeddedId.class, classAccessor) && ! classAccessor.excludeDefaultMappings()) {
             MetadataClass rawClass = getRawClass(classAccessor.getDescriptor());
             return (rawClass.isAnnotationPresent(Embeddable.class) || classAccessor.getProject().hasEmbeddable(rawClass));
         } else {
@@ -586,7 +586,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessor represents a 1-m relationship.
      */
     public boolean isOneToMany(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(OneToMany.class) && ! classAccessor.excludeDefaultMappings()) {
+        if (isAnnotationNotPresent(OneToMany.class, classAccessor) && ! classAccessor.excludeDefaultMappings()) {
             if (isGenericCollectionType() && isSupportedToManyCollectionClass(getRawClass(classAccessor.getDescriptor())) && classAccessor.getProject().hasEntity(getReferenceClassFromGeneric(classAccessor.getDescriptor()))) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, this);
                 return true;
@@ -605,7 +605,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return true if this accessor represents a 1-1 relationship.
      */
     public boolean isOneToOne(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(OneToOne.class) && ! classAccessor.excludeDefaultMappings()) {    
+        if (isAnnotationNotPresent(OneToOne.class, classAccessor) && ! classAccessor.excludeDefaultMappings()) {    
             if (classAccessor.getProject().hasEntity(getRawClass(classAccessor.getDescriptor())) && ! isEmbedded(classAccessor)) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, this);
                 return true;
@@ -695,7 +695,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      *    ValueHolderInterface (and an exclude default mappings flag is not set)
      */
     public boolean isVariableOneToOne(ClassAccessor classAccessor) {
-        if (isAnnotationNotPresent(VariableOneToOne.class) && ! classAccessor.excludeDefaultMappings()) {
+        if (isAnnotationNotPresent(VariableOneToOne.class, classAccessor) && ! classAccessor.excludeDefaultMappings()) {
             MetadataClass rawClass = getRawClass(classAccessor.getDescriptor());
             
             if (rawClass.isInterface() && 

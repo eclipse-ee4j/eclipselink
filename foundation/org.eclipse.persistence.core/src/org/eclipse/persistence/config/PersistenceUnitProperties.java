@@ -2351,6 +2351,14 @@ public class PersistenceUnitProperties {
     public static final String NOSQL_CONNECTION_SPEC = "eclipselink.nosql.connection-spec";
     
     /**
+     * Allows the JCA ConnectionFactory to be specified for a NoSQL or EIS adapter.
+     * An NoSQL datasource is a non-relationship datasource such as a legacy database, NoSQL database,
+     * XML database, transactional and messaging systems, or ERP systems.
+     * @see javax.resource.cci.ConnectionFactory
+     */
+    public static final String NOSQL_CONNECTION_FACTORY = "eclipselink.nosql.connection-factory";
+    
+    /**
      * Allows a custom connector to be used to define how to connect to the database.
      * This is not required if a DataSource or JDBC DriverManager is used.
      * It can be used to connect to a non standard connection pool,

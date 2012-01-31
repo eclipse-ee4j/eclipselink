@@ -21,6 +21,8 @@ import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
+import org.eclipse.persistence.mappings.structures.ArrayCollectionMappingHelper;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
@@ -35,7 +37,7 @@ import org.eclipse.persistence.sessions.CopyGroup;
  * @author Big Country
  * @since TOPLink/Java 3.0
  */
-public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseMapping implements ContainerMapping {
+public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseMapping implements ContainerMapping, ArrayCollectionMapping {
 
     /** This is the field holding the nested collection. */
     protected DatabaseField field;
@@ -246,71 +248,6 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
         return this.compareElements(element1, element2, session);
     }
 
-    /**
-     * INTERNAL:
-     * Build and return the change record that results
-     * from comparing the two direct collection attributes.
-     */
-    public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
-        Object cloneAttribute = null;
-        Object backUpAttribute = null;
-
-        cloneAttribute = getAttributeValueFromObject(clone);
-
-        if (!owner.isNew()) {
-            backUpAttribute = getAttributeValueFromObject(backup);
-            if ((backUpAttribute == null) && (cloneAttribute == null)) {
-                return null;
-            }
-            ContainerPolicy cp = getContainerPolicy();
-            Object backupCollection = null;
-            Object cloneCollection = null;
-
-            cloneCollection = getRealCollectionAttributeValueFromObject(clone, session);
-            backupCollection = getRealCollectionAttributeValueFromObject(backup, session);
-
-            if (cp.sizeFor(backupCollection) != cp.sizeFor(cloneCollection)) {
-                return convertToChangeRecord(cloneCollection, owner, session);
-            }
-            Object cloneIterator = cp.iteratorFor(cloneCollection);
-            Object backUpIterator = cp.iteratorFor(backupCollection);
-            boolean change = false;
-
-            while (cp.hasNext(cloneIterator)) {
-                Object cloneObject = cp.next(cloneIterator, session);
-
-                // For CR#2285 assume that if null is added the collection has changed.
-                if (cloneObject == null) {
-                    change = true;
-                    break;
-                }
-                Object backUpObject = null;
-                if (cp.hasNext(backUpIterator)) {
-                    backUpObject = cp.next(backUpIterator, session);
-                } else {
-                    change = true;
-                    break;
-                }
-                if (cloneObject.getClass().equals(backUpObject.getClass())) {
-                    if (!(cloneObject.equals(backUpObject))) {
-                        change = true;
-                        break;
-                    }
-                } else {
-                    change = true;
-                    break;
-                }
-            }
-            if ((change == true) || (cp.hasNext(backUpIterator))) {
-                return convertToChangeRecord(cloneCollection, owner, session);
-            } else {
-                return null;
-            }
-        }
-
-        return convertToChangeRecord(getRealCollectionAttributeValueFromObject(clone, session), owner, session);
-    }
-
     protected ChangeRecord convertToChangeRecord(Object cloneCollection, ObjectChangeSet owner, AbstractSession session) {
         //since a minimal update for composites can't be done, we are only recording
         //an all-or-none change. Therefore, this can be treated as a simple direct
@@ -327,42 +264,6 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
         changeRecord.setMapping(this);
         changeRecord.setNewValue(container);
         return changeRecord;
-    }
-
-    /**
-     * INTERNAL:
-     * Compare the attributes belonging to this mapping for the objects.
-     */
-    public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
-        Object firstCollection = getRealCollectionAttributeValueFromObject(object1, session);
-        Object secondCollection = getRealCollectionAttributeValueFromObject(object2, session);
-        ContainerPolicy containerPolicy = getContainerPolicy();
-
-        if (containerPolicy.sizeFor(firstCollection) != containerPolicy.sizeFor(secondCollection)) {
-            return false;
-        }
-
-        if (containerPolicy.sizeFor(firstCollection) == 0) {
-            return true;
-        }
-        Object iterFirst = containerPolicy.iteratorFor(firstCollection);
-        Object iterSecond = containerPolicy.iteratorFor(secondCollection);
-
-        //iterator the first aggregate collection, comparing direct values.
-        //paying attention to order.
-        while (containerPolicy.hasNext(iterFirst)) {
-            //fetch the next object from the first iterator.
-            Object firstAggregateObject = containerPolicy.next(iterFirst, session);
-
-            Object secondAggregateObject = containerPolicy.next(iterSecond, session);
-
-            //matched object found, break to outer FOR loop			
-            if (!firstAggregateObject.equals(secondAggregateObject)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -496,45 +397,6 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     }
 
     /**
-     * INTERNAL:
-     * Merge changes from the source to the target object. Treat the collection as a
-    * simple direct value, since minimal update isn't possible.
-     */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (changeRecord == null) {// I have not calculated changes then simply merge value into target
-            Object targetValue = getRealAttributeValueFromObject(source, mergeManager.getSession());
-            ContainerPolicy cp = this.getContainerPolicy();
-            Object container = cp.containerInstance();
-
-            Object iter = cp.iteratorFor(targetValue);
-            while (cp.hasNext(iter)) {
-                cp.addInto(cp.next(iter, mergeManager.getSession()), container, mergeManager.getSession());
-            }
-            setAttributeValueInObject(target, container);
-        } else {
-            setAttributeValueInObject(target, ((DirectToFieldChangeRecord)changeRecord).getNewValue());
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Merge changes from the source to the target object. This merge is only called when a changeSet for the target
-     * does not exist or the target is uninitialized.
-    * Treat the collection as a simple direct value.
-     */
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        Object attributeValue = getAttributeValueFromObject(source);
-        ContainerPolicy cp = this.getContainerPolicy();
-        Object container = cp.containerInstance();
-
-        Object iter = cp.iteratorFor(attributeValue);
-        while (cp.hasNext(iter)) {
-            cp.addInto(cp.next(iter, mergeManager.getSession()), container, mergeManager.getSession());
-        }
-        setAttributeValueInObject(target, container);
-    }
-
-    /**
      * PUBLIC:
      * Set the class each element in the object's
      * collection should be converted to, before the collection
@@ -588,44 +450,6 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     }
 
     /**
-     * ADVANCED:
-     * This method is used to have an object add to a collection once the changeSet is applied
-     * The referenceKey parameter should only be used for direct Maps.
-     */
-    public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
-        DirectToFieldChangeRecord collectionChangeRecord = (DirectToFieldChangeRecord)changeSet.getAttributesToChanges().get(getAttributeName());
-        if (collectionChangeRecord == null) {
-            //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
-            // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
-            Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
-            collectionChangeRecord = (DirectToFieldChangeRecord)convertToChangeRecord(cloneCollection, changeSet, session);
-            changeSet.addChange(collectionChangeRecord);
-        } else {
-            getContainerPolicy().addInto(changeSetToAdd, collectionChangeRecord.getNewValue(), session);
-        }
-    }
-
-    /**
-     * ADVANCED:
-     * This method is used to have an object removed from a collection once the changeSet is applied
-     * The referenceKey parameter should only be used for direct Maps.
-     */
-    public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
-        DirectToFieldChangeRecord collectionChangeRecord = (DirectToFieldChangeRecord)changeSet.getAttributesToChanges().get(getAttributeName());
-        if (collectionChangeRecord == null) {
-            //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
-            // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
-            Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
-            collectionChangeRecord = (DirectToFieldChangeRecord)convertToChangeRecord(cloneCollection, changeSet, session);
-            changeSet.addChange(collectionChangeRecord);
-        } else {
-            getContainerPolicy().removeFrom(changeSetToRemove, collectionChangeRecord.getNewValue(), session);
-        }
-    }
-
-    /**
      * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
      * to hold the nested objects.
@@ -635,6 +459,24 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     public void useCollectionClass(Class concreteClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteClass));
     }
+    
+    /**
+     * INTERNAL:
+     * Used to set the collection class by name.
+     * This is required when building from metadata to allow the correct class loader to be used.
+     */
+    public void useCollectionClassName(String concreteClassName) {
+        setContainerPolicy(new CollectionContainerPolicy(concreteClassName));
+    }
+
+    /**
+     * INTERNAL:
+     * Used to set the collection class by name.
+     * This is required when building from metadata to allow the correct class loader to be used.
+     */
+    public void useListClassName(String concreteClassName) {
+        setContainerPolicy(new ListContainerPolicy(concreteClassName));
+    }
 
     /**
      * PUBLIC:
@@ -643,6 +485,10 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      */
     public void useMapClass(Class concreteClass, String methodName) {
         throw new UnsupportedOperationException(this.getClass().getName() + ".useMapClass(Class, String)");
+    }
+
+    public void useMapClassName(String concreteContainerClassName, String methodName) {
+        throw new UnsupportedOperationException(this.getClass().getName() + ".useMapClass(String, String)");
     }
 
     /**
@@ -820,6 +666,70 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
                 ((ObjectTypeConverter) valueConverter).convertClassNamesToClasses(classLoader);
             }
         }         
+    }
+    
+    /**
+     * INTERNAL:
+     * Build and return the change record that results
+     * from comparing the two direct collection attributes.
+     */
+    public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
+        return (new ArrayCollectionMappingHelper(this)).compareForChange(clone, backup, owner, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Compare the attributes belonging to this mapping for the objects.
+     */
+    public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
+        return (new ArrayCollectionMappingHelper(this)).compareObjects(object1, object2, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     */
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager, targetSession);
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     * Simply replace the entire target collection.
+     */
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager, targetSession);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object add to a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleAddToCollectionChangeRecord(referenceKey, changeSetToAdd, changeSet, session);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object removed from a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
+    }
+
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
+        Object key = dbRow.get(getField());
+        if (getValueConverter() != null){
+            key = getValueConverter().convertDataValueToObjectValue(key, session);
+        }
+        return key;
     }
 
 }

@@ -92,6 +92,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
@@ -822,11 +823,12 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Make sure to mark the descriptor as an embeddable collection descriptor.
         referenceDescriptor.setIsEmbeddable();
         
+        processContainerPolicyAndIndirection((ContainerMapping)mapping);
+        
         if (mapping instanceof AggregateCollectionMapping) {
             AggregateCollectionMapping collectionMapping = (AggregateCollectionMapping)mapping;
             
             // Process the fetch type and set the correct indirection on the mapping.
-            processContainerPolicyAndIndirection(collectionMapping);
             
             // Process the mappings from the embeddable to setup the field name 
             // translations. Before we do that lets process the attribute and

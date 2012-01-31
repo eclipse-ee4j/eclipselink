@@ -27,7 +27,8 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.ContainerMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * Object to hold onto map key metadata.
@@ -98,7 +99,7 @@ public class MapKeyMetadata extends ORMetadata {
      * Process a map key for a 1-M or M-M mapping. Will return the map key
      * method name that should be use, null otherwise.
      */
-    public String process(CollectionMapping mapping, MappingAccessor mappingAccessor) {
+    public String process(ContainerMapping mapping, MappingAccessor mappingAccessor) {
         MetadataDescriptor referenceDescriptor = mappingAccessor.getReferenceDescriptor();
         MetadataLogger logger = mappingAccessor.getLogger();
         
@@ -121,7 +122,7 @@ public class MapKeyMetadata extends ORMetadata {
                 if (referenceDescriptor.isMappedSuperclass()) {
                     return null;
                 } else {
-                    throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
+                    throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), (DatabaseMapping)mapping);
                 }
             }
         

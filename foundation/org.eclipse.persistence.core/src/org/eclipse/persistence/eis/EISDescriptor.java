@@ -433,6 +433,13 @@ public class EISDescriptor extends ClassDescriptor {
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
+    public CollectionMapping newUnidirectionalOneToManyMapping() {
+        return new EISOneToManyMapping();
+    }
+    
+    /**
+     * Return a new one to many mapping for this type of descriptor.
+     */
     @Override
     public CollectionMapping newManyToManyMapping() {
         return new EISOneToManyMapping();

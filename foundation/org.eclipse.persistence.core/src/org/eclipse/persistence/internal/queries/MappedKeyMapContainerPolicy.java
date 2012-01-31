@@ -617,7 +617,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     @Override
     public void processAdditionalWritableMapKeyFields(AbstractSession session) {
-        if (!((DatabaseMapping)getKeyMapping()).isReadOnly()) {
+        if (!((DatabaseMapping)getKeyMapping()).isReadOnly() && (this.valueMapping instanceof CollectionMapping)) {
             CollectionMapping mapping = (CollectionMapping)valueMapping;
             Iterator<DatabaseField> i = getIdentityFieldsForMapKey().iterator();
             while (i.hasNext()){

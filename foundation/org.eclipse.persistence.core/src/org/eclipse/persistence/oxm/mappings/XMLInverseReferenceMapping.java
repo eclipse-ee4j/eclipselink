@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -224,7 +225,19 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
         this.containerPolicy = new CollectionContainerPolicy(concreteClass);
     }
 
+    public void useCollectionClassName(String concreteClass) {
+        this.containerPolicy = new CollectionContainerPolicy(concreteClass);
+    }
+
+    public void useListClassName(String concreteClass) {
+        this.containerPolicy = new ListContainerPolicy(concreteClass);
+    }
+
     public void useMapClass(Class concreteClass, String methodName) {
+        this.containerPolicy = new MapContainerPolicy(concreteClass);
+    }
+
+    public void useMapClassName(String concreteClass, String methodName) {
         this.containerPolicy = new MapContainerPolicy(concreteClass);
     }
 

@@ -456,7 +456,7 @@ public class MongoPlatform extends EISPlatform {
      */
     @Override
     public boolean shouldPrepare(DatabaseQuery query) {
-        return (query.getDatasourceCall() instanceof EISInteraction) || !query.hasArguments();
+        return (query.getDatasourceCall() instanceof EISInteraction);
     }
 
     /**

@@ -130,6 +130,7 @@ import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -1406,7 +1407,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * @see CollectionAccessor
      * @see ElementCollectionAccessor
      */
-    protected void processContainerPolicyAndIndirection(CollectionMapping mapping) {
+    protected void processContainerPolicyAndIndirection(ContainerMapping mapping) {
         if (isMappedKeyMapAccessor()) {
             // If we are a map key map accessor then the following is true:
             // 1 - we implement the mapped key map accessor interface
@@ -1529,7 +1530,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // embeddable; "_"; "KEY"
         String defaultFKFieldName = getAttributeName() + DEFAULT_MAP_KEY_COLUMN_SUFFIX;
         
-        processOneToOneForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), mapKeyClassDescriptor, defaultFKFieldName, getDefaultTableForEntityMapKey());
+        processForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), mapKeyClassDescriptor, defaultFKFieldName, getDefaultTableForEntityMapKey());
 
         return keyMapping;
     }
@@ -1596,7 +1597,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process a map key class for the given map key map accessor.
      */
-    protected void processMapKeyClass(CollectionMapping mapping, MappedKeyMapAccessor mappedKeyMapAccessor) {
+    protected void processMapKeyClass(ContainerMapping mapping, MappedKeyMapAccessor mappedKeyMapAccessor) {
         MapKeyMapping keyMapping;
         MetadataClass mapKeyClass = mappedKeyMapAccessor.getMapKeyClass();
         
@@ -1609,12 +1610,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
           
         Class containerClass;
-        if (usesIndirection()) {
-            containerClass = ClassConstants.IndirectMap_Class;
-            mapping.setIndirectionPolicy(new TransparentIndirectionPolicy());
+        if (mapping instanceof ForeignReferenceMapping) {
+            if (usesIndirection()) {
+                containerClass = ClassConstants.IndirectMap_Class;
+                ((ForeignReferenceMapping)mapping).setIndirectionPolicy(new TransparentIndirectionPolicy());
+            } else {
+                containerClass = java.util.Hashtable.class;
+                ((ForeignReferenceMapping)mapping).dontUseIndirection();
+            }
         } else {
             containerClass = java.util.Hashtable.class;
-            mapping.dontUseIndirection();
         }
 
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(containerClass);
@@ -1670,7 +1675,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * entities that have a composite primary key (validation exception will be 
      * thrown).
      */
-    protected void processOneToOneForeignKeyRelationship(OneToOneMapping mapping, List<JoinColumnMetadata> joinColumns, MetadataDescriptor referenceDescriptor, String defaultFKFieldName, DatabaseTable defaultFKTable) {
+    protected void processForeignKeyRelationship(ForeignReferenceMapping mapping, List<JoinColumnMetadata> joinColumns, MetadataDescriptor referenceDescriptor, String defaultFKFieldName, DatabaseTable defaultFKTable) {
         // We need to know if all the mappings are read-only so we can determine 
         // if we use target foreign keys to represent read-only parts of the 
         // join, or if we simply set the whole mapping as read-only
@@ -1869,31 +1874,34 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * assume that the reference class has been set on the mapping before
      * calling this method.
      */
-    protected void setIndirectionPolicy(CollectionMapping mapping, String mapKey, boolean usesIndirection) {
+    protected void setIndirectionPolicy(ContainerMapping mapping, String mapKey, boolean usesIndirection) {
         MetadataClass rawClass = getRawClass();
         
-        if (usesIndirection) {            
+        if (usesIndirection && (mapping instanceof ForeignReferenceMapping)) {
+            CollectionMapping collectionMapping = (CollectionMapping)mapping;
             if (rawClass.equals(Map.class)) {
-                if (mapping.isDirectMapMapping()) {
+                if (collectionMapping.isDirectMapMapping()) {
                     ((DirectMapMapping) mapping).useTransparentMap();
                 } else {
-                    mapping.useTransparentMap(mapKey);
+                    collectionMapping.useTransparentMap(mapKey);
                 }
             } else if (rawClass.equals(List.class)) {
-                mapping.useTransparentList();
+                collectionMapping.useTransparentList();
             } else if (rawClass.equals(Collection.class)) {
-                mapping.useTransparentCollection();
+                collectionMapping.useTransparentCollection();
             } else if (rawClass.equals(Set.class)) {
-                mapping.useTransparentSet();
+                collectionMapping.useTransparentSet();
             } else {
                 //bug221577: This should be supported when a transparent indirection class can be set through eclipseLink_orm.xml, or basic indirection is used
                 getLogger().logWarningMessage(MetadataLogger.WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, getJavaClass(), getAnnotatedElement(), rawClass);
             }
         } else {
-            mapping.dontUseIndirection();
+            if (mapping instanceof CollectionMapping) {
+                ((CollectionMapping)mapping).dontUseIndirection();
+            }
             
             if (rawClass.equals(Map.class)) {
-                if (mapping.isDirectMapMapping()) {
+                if (mapping instanceof DirectMapMapping) {
                     ((DirectMapMapping) mapping).useMapClass(java.util.Hashtable.class);
                 } else {
                     mapping.useMapClass(java.util.Hashtable.class, mapKey);

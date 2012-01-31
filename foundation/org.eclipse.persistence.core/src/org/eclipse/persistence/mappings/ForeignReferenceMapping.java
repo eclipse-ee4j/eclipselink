@@ -2238,4 +2238,20 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public void setBatchFetchType(BatchFetchType batchFetchType) {
         this.batchFetchType = batchFetchType;
     }
+
+    /**
+     * INTERNAL:
+     * Allow subclass to define a foreign key in the target's table.
+     */
+    public void addTargetForeignKeyField(DatabaseField targetForeignKeyField, DatabaseField sourcePrimaryKeyField) {
+        throw new UnsupportedOperationException("addTargetForeignKeyField");
+    }
+
+    /**
+     * INTERNAL:
+     * Allow subclass to define a foreign key in the source's table.
+     */
+    public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetPrimaryKeyField) {
+        throw new UnsupportedOperationException("addForeignKeyField");
+    }
 }

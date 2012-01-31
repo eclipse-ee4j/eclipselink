@@ -13,10 +13,14 @@
             </id>
             <version name="version"/>
             <one-to-one name="customer">
-                <join-field name="customerId" referenced-field-name="ID"/>
+                <join-field name="customerId" referenced-field-name="_id"/>
             </one-to-one>
             <element-collection name="lineItems">
                 <field name="items"/>
+            </element-collection>
+            <element-collection name="lineItemsByNumber">
+                <map-key name="lineNumber"/>
+                <field name="lineItemsByNumber"/>
             </element-collection>
             <element-collection name="comments">
                 <field name="comments"/>
@@ -33,6 +37,13 @@
                 <field name="_id"/>
                 <generated-value/>
             </id>
+        </attributes>
+    </entity>
+    <entity class="Buyer" access="FIELD">
+        <no-sql data-format="MAPPED"/>
+        <attributes>
+            <id name="id1"/>
+            <id name="id2"/>
         </attributes>
     </entity>
     <embeddable class="Address" access="FIELD">

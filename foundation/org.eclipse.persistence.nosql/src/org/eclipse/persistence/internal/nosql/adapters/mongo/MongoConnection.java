@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
+ *     Gunnar Wagenknecht - isExternal support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
@@ -30,15 +31,17 @@ public class MongoConnection implements Connection {
     protected MongoJCAConnectionSpec spec;
     protected MongoTransaction transaction;
     protected DB db;
+    protected boolean isExternal;
 
     /**
      * Create the connection on a native AQ session.
      * The session must be connected to a JDBC connection.
      */
-    public MongoConnection(DB db, MongoJCAConnectionSpec spec) {
+    public MongoConnection(DB db, boolean isExternal, MongoJCAConnectionSpec spec) {
         this.db = db;
         this.transaction = new MongoTransaction(this);
         this.spec = spec;
+        this.isExternal = isExternal;
     }
     
     public DB getDB() {
@@ -83,5 +86,13 @@ public class MongoConnection implements Connection {
      */
     public ResultSetInfo getResultSetInfo() {
         throw ValidationException.operationNotSupported("getResultSetInfo");
+    }
+
+    public boolean isExternal() {
+        return isExternal;
+    }
+
+    public void setExternal(boolean isExternal) {
+        this.isExternal = isExternal;
     }
 }

@@ -70,6 +70,7 @@ import javax.persistence.OrderColumn;
 
 import org.eclipse.persistence.annotations.DeleteAll;
 import org.eclipse.persistence.annotations.MapKeyConvert;
+import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -629,7 +630,21 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         if (m_deleteAll != null && mapping.isPrivateOwned()){
             mapping.setMustDeleteReferenceObjectsOneByOne(!m_deleteAll);
         }
+    }            
+        
+    /**
+     * Configure the EISOneToManyMapping properties based on the metadata.
+     */
+    protected void processEISOneToManyMapping(EISOneToManyMapping mapping) {
+        // EIS mappings always use foreign keys.
+        String defaultFKFieldName = getDefaultAttributeName() + "_" + getReferenceDescriptor().getPrimaryKeyFieldName();        
+        processForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), getReferenceDescriptor(), defaultFKFieldName, getDescriptor().getPrimaryTable());
+        if (getReferenceDescriptor().getPrimaryKeyFields().size() > 1) {
+            mapping.setForeignKeyGroupingElement((getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN)));
+        }
     }
+
+    
     
     /**
      * INTERNAL:

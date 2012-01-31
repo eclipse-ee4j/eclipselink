@@ -113,6 +113,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * Both the source foreign key field name and the corresponding
      * target primary key field name must be specified.
      */
+    @Override
     public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetKeyField) {
         getSourceToTargetKeyFields().put(sourceForeignKeyField, targetKeyField);
         getTargetToSourceKeyFields().put(targetKeyField, sourceForeignKeyField);
@@ -530,25 +531,5 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     @Override
     public void setSelectionSQLString(String sqlString) {
         throw DescriptorException.invalidMappingOperation(this, "setSelectionSQLString");
-    }
-
-    /**
-     * INTERNAL:
-     * This method is not supported in an EIS environment.
-     */
-    @Override
-    public void setUsesBatchReading(boolean usesBatchReading) {
-        if (usesBatchReading) {
-            throw DescriptorException.invalidMappingOperation(this, "setUsesBatchReading");
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * This method is not supported in an EIS environment.
-     */
-    @Override
-    public void useBatchReading() {
-        throw DescriptorException.invalidMappingOperation(this, "useBatchReading");
     }
 }

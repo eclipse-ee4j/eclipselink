@@ -218,6 +218,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Define the target foreign key relationship in the 1-M aggregate collection mapping.
      * Both the target foreign key field and the source primary key field must be specified.
      */
+    @Override
     public void addTargetForeignKeyField(DatabaseField targetForeignKey, DatabaseField sourceKey) {
         getTargetForeignKeyFields().addElement(targetForeignKey);
         getSourceKeyFields().addElement(sourceKey);

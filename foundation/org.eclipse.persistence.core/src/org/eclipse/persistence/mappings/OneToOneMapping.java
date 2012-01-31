@@ -139,6 +139,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * the database. If the foreign key is also mapped through a direct-to-field 
      * then the direct-to-field must be set read-only.
      */
+    @Override
     public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetPrimaryKeyField) {
         setIsForeignKeyRelationship(true);
         getForeignKeyFields().addElement(sourceForeignKeyField);
@@ -180,6 +181,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * a foreign key part and a target foreign key part, in this case both 
      * method will be called with the correct parts.
      */
+    @Override
     public void addTargetForeignKeyField(DatabaseField targetForeignKeyField, DatabaseField sourcePrimaryKeyField) {
         getSourceToTargetKeyFields().put(sourcePrimaryKeyField, targetForeignKeyField);
         getTargetToSourceKeyFields().put(targetForeignKeyField, sourcePrimaryKeyField);

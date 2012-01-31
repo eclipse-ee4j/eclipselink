@@ -53,6 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -239,6 +240,9 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     @Override
     protected DatabaseTable getReferenceDatabaseTable() {
+        if (m_collectionTable == null) {
+            return null;
+        }
         return m_collectionTable.getDatabaseTable();
     }
     
@@ -425,10 +429,11 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // the collection table be processed before hand.
         process(mapping);
 
+        processContainerPolicyAndIndirection((ContainerMapping)mapping);
+        
         if (mapping instanceof DirectCollectionMapping) {
             DirectCollectionMapping directCollectionMapping = (DirectCollectionMapping)mapping;
             // Process the container and indirection policies.
-            processContainerPolicyAndIndirection(directCollectionMapping);
             
             // Process the value column (we must process this field before the 
             // call to processConverter, since it may set a field classification)

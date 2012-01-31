@@ -28,6 +28,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -155,6 +156,8 @@ public class ManyToManyAccessor extends CollectionAccessor {
         } else if (mapping instanceof ManyToManyMapping) { 
             // Processing the owning side of a M-M, process the join table.
             processJoinTable(mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), getJoinTableMetadata());
+        } else if (mapping instanceof EISOneToManyMapping) {
+            processEISOneToManyMapping((EISOneToManyMapping)mapping);
         }
     }
 }

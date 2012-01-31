@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -327,6 +328,10 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
     }
 
+    public void useListClassName(String concreteContainerClassName) {
+        this.setContainerPolicy(new ListContainerPolicy(concreteContainerClassName));
+    }
+
     /**
      * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
@@ -344,6 +349,27 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             throw DescriptorException.referenceClassNotSpecified(this);
         }
         ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteContainerClass);
+        policy.setKeyName(methodName, getReferenceClass().getName());
+        this.setContainerPolicy(policy);
+    }
+
+    /**
+     * PUBLIC:
+     * Configure the mapping to use an instance of the specified container class
+     * to hold the target objects. The key used to index the value in the Map
+     * is the value returned by a call to the specified zero-argument method.
+     * The method must be implemented by the class (or a superclass) of the
+     * value to be inserted into the Map.
+     * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Map interface.
+     * <p>jdk1.1.x: The container class must be a subclass of Hashtable.
+     * <p>The referenceClass must be set before calling this method.
+     */
+    public void useMapClassName(String concreteContainerClass, String methodName) {
+        // the reference class has to be specified before coming here
+        if (this.getReferenceClass() == null) {
+            throw DescriptorException.referenceClassNotSpecified(this);
+        }
+        MapContainerPolicy policy = new MapContainerPolicy(concreteContainerClass);
         policy.setKeyName(methodName, getReferenceClass().getName());
         this.setContainerPolicy(policy);
     }

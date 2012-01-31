@@ -40,12 +40,12 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * <tr>
  * <td headers="c1">Indexed</td>
  * <td headers="c2">Ordered collection of record elements.  The indexed record EIS format 
- * enables Java class attribute values to be retreived by position or index.</td>
+ * enables Java class attribute values to be retrieved by position or index.</td>
  * </tr>
  * <tr>
  * <td headers="c1">Mapped</td>
  * <td headers="c2">Key-value map based representation of record elements.  The mapped record
- * EIS format enables Java class attribute values to be retreived by an object key.</td>
+ * EIS format enables Java class attribute values to be retrieved by an object key.</td>
  * </tr>
  * <tr>
  * <td headers="c1">XML</td>

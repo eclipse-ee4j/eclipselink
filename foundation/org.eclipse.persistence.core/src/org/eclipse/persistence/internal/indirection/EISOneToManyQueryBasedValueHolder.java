@@ -37,7 +37,7 @@ public class EISOneToManyQueryBasedValueHolder extends QueryBasedValueHolder {
     }
 
     protected Object instantiate(AbstractSession session) throws DatabaseException {
-        Vector rows = mapping.getForeignKeyRows(this.getRow());
+        Vector rows = this.mapping.getForeignKeyRows(this.getRow(), session);
 
         int size = rows.size();
         ContainerPolicy cp = ((ReadAllQuery)this.getQuery()).getContainerPolicy();

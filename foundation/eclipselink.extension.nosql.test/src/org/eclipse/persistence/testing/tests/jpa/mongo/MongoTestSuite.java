@@ -18,25 +18,31 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnection;
+import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.mongo.Buyer;
 import org.eclipse.persistence.testing.models.jpa.mongo.Customer;
 import org.eclipse.persistence.testing.models.jpa.mongo.LineItem;
 import org.eclipse.persistence.testing.models.jpa.mongo.Order;
 import org.eclipse.persistence.testing.models.jpa.mongo.Address;
 
 import com.mongodb.DB;
+import com.mongodb.Mongo;
 
 /**
  * TestSuite to test Mongo database
@@ -66,6 +72,7 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testDelete"));
         suite.addTest(new MongoTestSuite("testJPQL"));
         suite.addTest(new MongoTestSuite("testNativeQuery"));
+        suite.addTest(new MongoTestSuite("testExternalFactory"));
         return suite;
     }
     
@@ -131,10 +138,61 @@ public class MongoTestSuite extends JUnitTestCase {
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
+            
+            LineItem item = new LineItem();
+            item.itemName = "stuff";
+            item.itemPrice = new BigDecimal("9.99");
+            item.lineNumber = 1;
+            item.quantity = 50;
+            order.lineItems.add(item);
+            
+            item = new LineItem();
+            item.itemName = "more stuff";
+            item.itemPrice = new BigDecimal(500);
+            item.lineNumber = 2;
+            item.quantity = 1;
+            order.lineItems.add(item);
+            
+            item = new LineItem();
+            item.itemName = "stuff";
+            item.itemPrice = new BigDecimal("9.99");
+            item.lineNumber = 1;
+            item.quantity = 50;
+            order.lineItemsByNumber.put(1L, item);
+            
+            item = new LineItem();
+            item.itemName = "more stuff";
+            item.itemPrice = new BigDecimal(500);
+            item.lineNumber = 2;
+            item.quantity = 1;
+            order.lineItemsByNumber.put(2L, item);
+                        
             em.persist(order);
-            order.customer = new Customer();
-            order.customer.name = "ACME";
-            em.persist(order.customer);
+            
+            Customer customer = new Customer();
+            customer.name = "ACME";
+            em.persist(customer);
+            order.customer = customer;
+            order.customers.add(customer);
+            customer = new Customer();
+            customer.name = "Startup";
+            em.persist(customer);
+            order.customers.add(customer);
+            
+            Buyer buyer = new Buyer();
+            buyer.id1 = 1;
+            buyer.id2 = 1;
+            buyer.name = "FOO Inc.";
+            em.persist(buyer);
+            order.buyer = buyer;
+            order.buyers.add(buyer);
+            buyer = new Buyer();
+            buyer.id1 = 2;
+            buyer.id2 = 2;
+            buyer.name = "BAR Corp.";
+            em.persist(buyer);
+            order.buyers.add(buyer);
+            
             commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
@@ -148,6 +206,21 @@ public class MongoTestSuite extends JUnitTestCase {
         } finally {
             closeEntityManagerAndTransaction(em);
         }        
+    }
+    
+    /**
+     * Test pass an external factory when connecting.
+     */
+    public void testExternalFactory() throws Exception {
+        Map properties = new HashMap();
+        Mongo mongo = new Mongo();
+        DB db = mongo.getDB("mydb");
+        properties.put(PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY, new MongoConnectionFactory(db));
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+        EntityManager em = factory.createEntityManager();
+        em.close();
+        factory.close();
+        mongo.close();
     }
     
     /**

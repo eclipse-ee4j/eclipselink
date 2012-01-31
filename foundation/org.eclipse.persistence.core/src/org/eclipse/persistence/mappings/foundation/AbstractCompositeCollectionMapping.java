@@ -27,11 +27,18 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
+import org.eclipse.persistence.mappings.structures.ArrayCollectionMappingHelper;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
 
-public abstract class AbstractCompositeCollectionMapping extends AggregateMapping implements ContainerMapping {
+/**
+ * Define an embedded collection of objects.
+ * This is used in structured data-types, such as EIS, NoSQL and object-relational Array (varray, nested table) data-types.
+ * The target objects must be aggregate (embedded) and are stored with the parent object.
+ */
+public abstract class AbstractCompositeCollectionMapping extends AggregateMapping implements ContainerMapping, ArrayCollectionMapping {
 
     /** The aggregate objects are stored in a single field. */
     protected DatabaseField field;
@@ -61,6 +68,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Build and return a backup clone of the attribute.
      */
+    @Override
     protected Object buildBackupClonePart(Object attributeValue, UnitOfWorkImpl unitOfWork) {
         ContainerPolicy cp = this.getContainerPolicy();
         if (attributeValue == null) {
@@ -87,6 +95,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Build and return a clone of the attribute.
      */
+    @Override
     protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, AbstractSession clonningSession) {
         ContainerPolicy cp = this.getContainerPolicy();
         if (attributeValue == null) {
@@ -105,6 +114,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
+    @Override
     protected Object buildCopyOfAttributeValue(Object attributeValue, CopyGroup group) {
         ContainerPolicy cp = this.getContainerPolicy();
         if (attributeValue == null) {
@@ -155,6 +165,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
@@ -180,6 +191,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
+    @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if (cloneAttribute == null ) {
@@ -201,6 +213,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = null;
@@ -227,6 +240,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Return the fields handled by the mapping.
      */
+    @Override
     protected Vector collectFields() {
         Vector fields = new Vector(1);
         fields.addElement(this.getField());
@@ -251,85 +265,6 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     public boolean compareElementsForChange(Object element1, Object element2, AbstractSession session) {
         return this.compareElements(element1, element2, session);
     }
-
-    /**
-     * INTERNAL:
-     * Build and return the change record that results
-     * from comparing the two aggregate collection attributes.
-     */
-    public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
-        Object cloneAttribute = null;
-        Object backUpAttribute = null;
-        
-        // Fixed to match build-update-row.
-        if (session.isClassReadOnly(this.getReferenceClass())) {
-            return null;
-        }
-        
-        cloneAttribute = getAttributeValueFromObject(clone);
-
-        if (!owner.isNew()) {
-            backUpAttribute = getAttributeValueFromObject(backup);
-            if ((backUpAttribute == null) && (cloneAttribute == null)) {
-                return null;
-            }
-            ContainerPolicy cp = getContainerPolicy();
-            Object backupCollection = null;
-            Object cloneCollection = null;
-
-            cloneCollection = getRealCollectionAttributeValueFromObject(clone, session);
-            backupCollection = getRealCollectionAttributeValueFromObject(backup, session);
-
-            if (cp.sizeFor(backupCollection) != cp.sizeFor(cloneCollection)) {
-                return convertToChangeRecord(cloneCollection, owner, session);
-            }
-            Object cloneIterator = cp.iteratorFor(cloneCollection);
-            Object backUpIterator = cp.iteratorFor(backupCollection);
-            boolean change = false;
-
-            // For bug 2863721 must use a different UnitOfWorkChangeSet as here just
-            // seeing if changes are needed.  If changes are needed then a
-            // real changeSet will be created later.
-            UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet(session);
-            while (cp.hasNext(cloneIterator)) {
-                Object cloneObject = cp.next(cloneIterator, session);
-
-                // For CR#2285 assume that if null is added the collection has changed.
-                if (cloneObject == null) {
-                    change = true;
-                    break;
-                }
-                Object backUpObject = null;
-                if (cp.hasNext(backUpIterator)) {
-                    backUpObject = cp.next(backUpIterator, session);
-                } else {
-                    change = true;
-                    break;
-                }
-                if (cloneObject.getClass().equals(backUpObject.getClass())) {
-                    ObjectBuilder builder = getReferenceDescriptor(cloneObject.getClass(), session).getObjectBuilder();
-                    ObjectChangeSet initialChanges = builder.createObjectChangeSet(cloneObject, uowComparisonChangeSet, owner.isNew(), session);
-
-                    //compare for changes will return null if no change is detected and I need to remove the changeSet
-                    ObjectChangeSet changes = builder.compareForChange(cloneObject, backUpObject, uowComparisonChangeSet, session);
-                    if (changes != null) {
-                        change = true;
-                        break;
-                    }
-                } else {
-                    change = true;
-                    break;
-                }
-            }
-            if ((change == true) || (cp.hasNext(backUpIterator))) {
-                return convertToChangeRecord(cloneCollection, owner, session);
-            } else {
-                return null;
-            }
-        }
-
-        return convertToChangeRecord(getRealCollectionAttributeValueFromObject(clone, session), owner, session);
-    }
   
     /**
      * INTERNAL:
@@ -338,6 +273,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * with class names to a project with classes.
      * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class referenceClass = null;
         if(getReferenceClassName()!= null){
@@ -383,45 +319,11 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     }
 
     /**
-     * INTERNAL:
-     * Compare the attributes belonging to this mapping for the objects.
-     */
-    public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
-        Object firstCollection = getRealCollectionAttributeValueFromObject(object1, session);
-        Object secondCollection = getRealCollectionAttributeValueFromObject(object2, session);
-        ContainerPolicy containerPolicy = getContainerPolicy();
-
-        if (containerPolicy.sizeFor(firstCollection) != containerPolicy.sizeFor(secondCollection)) {
-            return false;
-        }
-
-        if (containerPolicy.sizeFor(firstCollection) == 0) {
-            return true;
-        }
-        Object iterFirst = containerPolicy.iteratorFor(firstCollection);
-        Object iterSecond = containerPolicy.iteratorFor(secondCollection);
-
-        //loop through the elements in both collections and compare elements at the
-        //same index. This ensures that a change to order registers as a change.
-        while (containerPolicy.hasNext(iterFirst)) {
-            //fetch the next object from the first iterator.
-            Object firstAggregateObject = containerPolicy.next(iterFirst, session);
-            Object secondAggregateObject = containerPolicy.next(iterSecond, session);
-
-            //fetch the next object from the second iterator.
-            //matched object found, break to outer FOR loop			
-            if (!getReferenceDescriptor().getObjectBuilder().compareObjects(firstAggregateObject, secondAggregateObject, session)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * An object has been serialized from the server to the remote client.
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         if (attributeValue == null) {
             return;
@@ -444,6 +346,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * which will cause a new, empty, instance to be built and used
      * for comparison.
      */
+    @Override
     protected Object getAttributeValueFromBackupClone(Object backupClone) {
         return null;
     }
@@ -452,6 +355,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Return the mapping's containerPolicy.
      */
+    @Override
     public ContainerPolicy getContainerPolicy() {
         return containerPolicy;
     }
@@ -469,6 +373,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Return the field mapped by this mapping.
      */
+    @Override
     public DatabaseField getField() {
         return field;
     }
@@ -479,6 +384,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Return the value of an attribute, unwrapping value holders if necessary.
      * If the value is null, build a new container.
      */
+    @Override
     public Object getRealCollectionAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
         Object value = this.getRealAttributeValueFromObject(object, session);
         if (value == null) {
@@ -506,6 +412,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isAbstractCompositeCollectionMapping() {
         return true;
     }
@@ -515,6 +422,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * The mapping is initialized with the given session. This mapping is fully initialized
      * after this.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (getField() == null) {
@@ -530,6 +438,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Iterate on the specified attribute value.
      */
+    @Override
     protected void iterateOnAttributeValue(DescriptorIterator descriptorIterator, Object attributeValue) {
         if (attributeValue == null) {
             return;
@@ -551,59 +460,9 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     }
 
     /**
-     * INTERNAL:
-     * Merge changes from the source to the target object.
-     */
-    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        ContainerPolicy containerPolicy = getContainerPolicy();
-        AbstractSession session = mergeManager.getSession();
-        // Iterate over the changes and merge the collections
-        Vector aggregateObjects = ((AggregateCollectionChangeRecord)changeRecord).getChangedValues();
-        Object valueOfTarget = containerPolicy.containerInstance();
-        // Next iterate over the changes and add them to the container
-        ObjectChangeSet objectChanges = null;
-        int size = aggregateObjects.size();
-        for (int index = 0; index < size; ++index) {
-            objectChanges = (ObjectChangeSet)aggregateObjects.get(index);
-            // Since the CompositeCollectionMapping only registers an all or none
-            // change set, we can simply replace the entire collection;
-            containerPolicy.addInto(buildElementFromChangeSet(objectChanges, mergeManager, targetSession), valueOfTarget, session);
-        }
-        setRealAttributeValueInObject(target, valueOfTarget);
-    }
-
-    /**
-     * INTERNAL:
-     * Merge changes from the source to the target object.
-     * Simply replace the entire target collection.
-     */
-    @Override
-    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        if (!mergeManager.shouldCascadeReferences()) {
-            // This is only going to happen on mergeClone, and we should not attempt to merge the reference
-            return;
-        }
-
-        ContainerPolicy containerPolicy = getContainerPolicy();
-        Object valueOfSource = getRealCollectionAttributeValueFromObject(source, mergeManager.getSession());
-        Object valueOfTarget = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
-        for (Object sourceValuesIterator = containerPolicy.iteratorFor(valueOfSource);
-                 containerPolicy.hasNext(sourceValuesIterator);) {
-            Object sourceValue = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
-
-            //CR#2896 - TW
-            Object originalValue = getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().buildNewInstance();
-            getReferenceDescriptor(sourceValue.getClass(), mergeManager.getSession()).getObjectBuilder().mergeIntoObject(originalValue, true, sourceValue, mergeManager, targetSession);
-            containerPolicy.addInto(originalValue, valueOfTarget, mergeManager.getSession());
-        }
-
-        // Must re-set variable to allow for set method to re-morph changes if the collection is not being stored directly.
-        setRealAttributeValueInObject(target, valueOfTarget);
-    }
-
-    /**
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void postDeleteAttributeValue(DeleteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
@@ -617,6 +476,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void postInsertAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
@@ -630,6 +490,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void postUpdateAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
@@ -643,6 +504,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void preDeleteAttributeValue(DeleteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
@@ -656,6 +518,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void preInsertAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
@@ -669,6 +532,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void preUpdateAttributeValue(WriteObjectQuery query, Object attributeValue) throws DatabaseException, OptimisticLockException {
         if (attributeValue == null) {
             return;
@@ -704,47 +568,6 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     }
 
     /**
-     * ADVANCED:
-     * This method is used to have an object add to a collection once the changeSet is applied
-     * The referenceKey parameter should only be used for direct Maps. PLEASE ENSURE that the changes
-     * have been made in the object model first.
-     */
-    public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
-        AggregateCollectionChangeRecord collectionChangeRecord = (AggregateCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
-        if (collectionChangeRecord == null) {
-            //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
-            // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
-            Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
-            collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, changeSet, session);
-            changeSet.addChange(collectionChangeRecord);
-        } else {
-            collectionChangeRecord.getChangedValues().add(changeSetToAdd);
-        }
-    }
-
-    /**
-     * ADVANCED:
-     * This method is used to have an object removed from a collection once the changeSet is applied
-     * The referenceKey parameter should only be used for direct Maps.  PLEASE ENSURE that the changes
-     * have been made in the object model first.
-     */
-    public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
-        AggregateCollectionChangeRecord collectionChangeRecord = (AggregateCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
-
-        if (collectionChangeRecord == null) {
-            //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
-            // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
-            Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
-            collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, changeSet, session);
-            changeSet.addChange(collectionChangeRecord);
-        } else {
-            collectionChangeRecord.getChangedValues().remove(changeSetToRemove);
-        }
-    }
-
-    /**
      * PUBLIC:
      * Configure the mapping to use an instance of the specified container class
      * to hold the target objects.
@@ -776,7 +599,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      */
     public void useMapClass(Class concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
-        if (this.getReferenceClass() == null) {
+        if (this.getReferenceClassName() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
         }
         ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteContainerClass);
@@ -798,6 +621,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Build and return an aggregate collection from the specified row.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey cacheKey, AbstractSession executionSession, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()){
             if (this.isCacheable && isTargetProtected && cacheKey != null){
@@ -856,6 +680,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Return whether the specified object and all its components have been deleted.
      */
+    @Override
     protected boolean verifyDeleteOfAttributeValue(Object attributeValue, AbstractSession session) throws DatabaseException {
         if (attributeValue == null) {
             return true;
@@ -912,6 +737,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Get the attribute value from the object and add the changed
      * values to the specified database row.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery writeQuery, AbstractRecord row) throws DescriptorException {
         AbstractSession session = writeQuery.getSession();
 
@@ -943,6 +769,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Write fields needed for insert into the template with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord record, AbstractSession session) {
         if (this.isReadOnly()) {
             return;
@@ -950,8 +777,69 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         record.put(this.getField(), null);
     }
 
+    @Override
     public boolean isCollectionMapping() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Build and return the change record that results
+     * from comparing the two direct collection attributes.
+     */
+    public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
+        return (new ArrayCollectionMappingHelper(this)).compareForChange(clone, backup, owner, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Compare the attributes belonging to this mapping for the objects.
+     */
+    public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
+        return (new ArrayCollectionMappingHelper(this)).compareObjects(object1, object2, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     */
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager, targetSession);
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     * Simply replace the entire target collection.
+     */
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager, targetSession);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object add to a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleAddToCollectionChangeRecord(referenceKey, changeSetToAdd, changeSet, session);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object removed from a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
+    }
+
+    /**
+     * INTERNAL
+     * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
+     */
+    public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
+        return valueFromRow(dbRow, null, query, parentCacheKey, query.getExecutionSession(), isTargetProtected, null);
     }
 
 }

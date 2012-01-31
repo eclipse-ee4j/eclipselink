@@ -33,7 +33,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -156,8 +155,8 @@ public class OneToOneAccessor extends ObjectAccessor {
         } else if (mapping instanceof OneToOneMapping) {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
             processOwningMappingKeys(((OneToOneMapping)mapping));
-        } else if (mapping instanceof EISOneToOneMapping) {
-            processEISOneToOneForeignKeyRelationship(((EISOneToOneMapping)mapping));
+        } else {
+            processForeignKeyRelationship(mapping);
         }
     }   
     

@@ -19,12 +19,17 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.DataFormatType;
 import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.JoinField;
+import org.eclipse.persistence.annotations.JoinFields;
 import org.eclipse.persistence.annotations.NoSql;
 
 /**
@@ -37,8 +42,6 @@ public class Order {
     @GeneratedValue
     // Test that column works too.
     @Column(name="_id")
-    //@TypeConverter(name="hex", dataType=byte[].class)
-    //@Convert("hex")
     public String id;
     @Version
     public long version;
@@ -46,11 +49,32 @@ public class Order {
     @Field(name="address")
     public Address address;
     @OneToOne
-    @JoinField(name="customerId", referencedFieldName="ID")
+    @JoinField(name="customerId", referencedFieldName="_id")
     public Customer customer;
+    @ManyToOne
+    @JoinFields({
+        @JoinField(name="buyerId1", referencedFieldName="ID1"),
+        @JoinField(name="buyerId2", referencedFieldName="ID2")
+    })
+    @Field(name="buyer")
+    public Buyer buyer;
+    @OneToMany
+    @JoinField(name="customerIds", referencedFieldName="_id")
+    public List<Customer> customers = new ArrayList();
+    @ManyToMany
+    @JoinFields({
+        @JoinField(name="buyerId1", referencedFieldName="ID1"),
+        @JoinField(name="buyerId2", referencedFieldName="ID2")
+    })
+    @Field(name="buyers")
+    public Set<Buyer> buyers = new HashSet();
     @ElementCollection
     @Field(name="items")
     public List<LineItem> lineItems = new ArrayList();
+    @ElementCollection
+    @MapKey(name="lineNumber")
+    @Field(name="lineItemsByNumber")
+    public Map<Long, LineItem> lineItemsByNumber = new HashMap();
     @ElementCollection
     @Field(name="comments")
     public List<String> comments = new ArrayList();

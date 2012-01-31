@@ -140,6 +140,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Add the associated fields to the appropriate collections.
      */
+    @Override
     public void addTargetForeignKeyField(DatabaseField targetForeignKeyField, DatabaseField sourceKeyField) {
         getTargetForeignKeyFields().addElement(targetForeignKeyField);
         getSourceKeyFields().addElement(sourceKeyField);

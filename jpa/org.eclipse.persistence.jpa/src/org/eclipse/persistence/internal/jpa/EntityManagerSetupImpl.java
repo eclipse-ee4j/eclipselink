@@ -108,6 +108,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.EISPlatform;
 import org.eclipse.persistence.exceptions.*;
@@ -236,6 +237,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         PersistenceUnitProperties.NON_JTA_DATASOURCE,
         PersistenceUnitProperties.JDBC_URL,
         PersistenceUnitProperties.JDBC_USER,
+        PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY
     };
     
     /*
@@ -323,23 +325,25 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         
     protected static String buildSessionNameSuffixFromConnectionProperties(Map properties) {        
         String suffix = "";
-        for(int i=0; i < connectionPropertyNames.length; i++) {
+        for (int i=0; i < connectionPropertyNames.length; i++) {
             String name = connectionPropertyNames[i];
             Object value = properties.get(name);
-            if(value != null) {
+            if (value != null) {
                 String strValue = null;
-                if(value instanceof String) {
+                if (value instanceof String) {
                     strValue = (String)value;
                 } else {
-                    if(value instanceof javax.sql.DataSource) {
+                    if (value instanceof javax.sql.DataSource) {
                         // value of JTA_DATASOURCE / NON_JTA_DATASOURCE may be a DataSource (we would prefer DataSource name)
                         strValue = Integer.toString(System.identityHashCode(value));
-                    } else if(value instanceof PersistenceUnitTransactionType) {
+                    } else if (value instanceof PersistenceUnitTransactionType) {
                         strValue = value.toString();
+                    } else {
+                        strValue = Integer.toString(System.identityHashCode(value));                        
                     }
                 }
                 // don't set an empty String
-                if(strValue.length() > 0) {
+                if (strValue.length() > 0) {
                     suffix += "_" + Helper.getShortClassName(name) + "=" + strValue;
                 }
             }
@@ -1626,24 +1630,38 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         
         // Check for EIS or custom (JDBC) Connector class.
-        String connectorName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.NOSQL_CONNECTION_SPEC, m, this.session);
+        Object connectorValue = getConfigPropertyLogDebug(PersistenceUnitProperties.NOSQL_CONNECTION_SPEC, m, this.session);
         String connectorProperty = PersistenceUnitProperties.NOSQL_CONNECTION_SPEC;
-        if (connectorName == null) {
-            connectorName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_CONNECTOR, m, this.session);
+        if (connectorValue == null) {
+            connectorValue = getConfigPropertyLogDebug(PersistenceUnitProperties.JDBC_CONNECTOR, m, this.session);
             connectorProperty = PersistenceUnitProperties.JDBC_CONNECTOR;
         }
-        if (connectorName != null) {
-            Class cls = findClassForProperty(connectorName, connectorProperty, this.persistenceUnitInfo.getClassLoader());
+        if (connectorValue instanceof Connector) {
+            login.setConnector((Connector)connectorValue);
+        } else if (connectorValue instanceof String) {
+            Class cls = findClassForProperty((String)connectorValue, connectorProperty, this.persistenceUnitInfo.getClassLoader());
             Connector connector = null;
             try {
                 Constructor constructor = cls.getConstructor();
                 connector = (Connector)constructor.newInstance();
             } catch (Exception exception) {
-                throw EntityManagerSetupException.failedToInstantiateProperty(connectorName, connectorProperty, exception);
+                throw EntityManagerSetupException.failedToInstantiateProperty((String)connectorValue, connectorProperty, exception);
             }
             if (connector != null) {
                 login.setConnector(connector);
             }
+        } else if (connectorValue != null) {
+            // Assume JCA connection spec.
+            ((EISConnectionSpec)login.getConnector()).setConnectionSpecObject(connectorValue);
+        }
+        
+        // Check for EIS ConnectionFactory.
+        Object factoryValue = getConfigPropertyLogDebug(PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY, m, this.session);
+        if (factoryValue instanceof String) {
+            // JNDI name.
+            ((EISConnectionSpec)login.getConnector()).setName((String)factoryValue);
+        } else if (factoryValue != null) {
+            ((EISConnectionSpec)login.getConnector()).setConnectionFactoryObject(factoryValue);
         }
         
         // Process EIS or JDBC connection properties.
@@ -1654,7 +1672,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         for (Iterator iterator = propertiesMap.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             String property = (String)entry.getKey();
-            String value = (String)entry.getValue();
+            Object value = entry.getValue();
             login.setProperty(property, value);
         }        
         

@@ -47,27 +47,34 @@ public class OracleNoSQLConnectionSpec extends EISConnectionSpec {
      * Connect with the specified properties and return the Connection.
      */
     public Connection connectToDataSource(EISAccessor accessor, Properties properties) throws DatabaseException, ValidationException {
-        setConnectionFactory(new OracleNoSQLConnectionFactory());
-        String store = (String)properties.get(STORE);
-        String host = (String)properties.get(HOST);
-        if (getConnectionSpec() == null) {
-            if (host.indexOf(',') == -1) {
-                OracleNoSQLJCAConnectionSpec spec = new OracleNoSQLJCAConnectionSpec(store, host);
-                setConnectionSpec(spec);                
-            } else {
-                OracleNoSQLJCAConnectionSpec spec = new OracleNoSQLJCAConnectionSpec();
+        if ((this.connectionFactory == null) && (this.name == null)) {
+            this.connectionFactory = new OracleNoSQLConnectionFactory();
+        }
+        if (!properties.isEmpty()) {
+            if (this.connectionSpec == null) {
+                this.connectionSpec = new OracleNoSQLJCAConnectionSpec();
+            }
+            OracleNoSQLJCAConnectionSpec spec = (OracleNoSQLJCAConnectionSpec)this.connectionSpec;
+            String store = (String)properties.get(STORE);
+            if (store != null) {
                 spec.setStore(store);
-                int startIndex = 0;
-                while (startIndex < (host.length() - 1)) {
-                    int endIndex = host.indexOf(',', startIndex);
-                    if (endIndex == -1) {
-                        endIndex = host.length();
+            }
+            String host = (String)properties.get(HOST);
+            if (host !=  null) {
+                if (host.indexOf(',') == -1) {
+                    spec.getHosts().add(host);
+                } else {
+                    int startIndex = 0;
+                    while (startIndex < (host.length() - 1)) {
+                        int endIndex = host.indexOf(',', startIndex);
+                        if (endIndex == -1) {
+                            endIndex = host.length();
+                        }
+                        String nextHost = host.substring(startIndex, endIndex);
+                        spec.getHosts().add(nextHost);
+                        startIndex = endIndex + 1;
                     }
-                    String nextHost = host.substring(startIndex, endIndex);
-                    spec.getHosts().add(nextHost);
-                    startIndex = endIndex + 1;
                 }
-                setConnectionSpec(spec);
             }
         }
 

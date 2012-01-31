@@ -30,8 +30,10 @@ import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -676,6 +678,18 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
 
     public void useMapClass(Class concreteContainerClass, String methodName) {
         throw DescriptorException.invalidMappingOperation(this, "useMapClass");
+    }
+
+    public void useMapClassName(String concreteContainerClass, String methodName) {
+        throw DescriptorException.invalidMappingOperation(this, "useMapClass");
+    }
+
+    public void useCollectionClassName(String concreteContainerClassName) {
+        this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
+    }
+
+    public void useListClassName(String concreteContainerClassName) {
+        this.setContainerPolicy(new ListContainerPolicy(concreteContainerClassName));
     }
 
     public void setUseXMLRoot(boolean useXMLRoot) {

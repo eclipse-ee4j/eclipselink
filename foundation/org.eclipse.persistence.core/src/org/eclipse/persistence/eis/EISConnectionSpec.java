@@ -239,12 +239,30 @@ public class EISConnectionSpec implements Connector {
 
     /**
      * PUBLIC:
+     * Set the javax.resource.cci.ConnectionFactory.
+     */
+    public void setConnectionFactoryObject(Object connectionFactory) {
+        setConnectionFactory((ConnectionFactory)connectionFactory);
+    }
+
+    /**
+     * PUBLIC:
      * Set the javax.resource.cci.ConnectionSpec.
      * This is only required if the default getConnection() on the connection factory is not used.
      * This must be set to the EIS adapter specific connection spec.
      */
     public void setConnectionSpec(ConnectionSpec connectionSpec) {
         this.connectionSpec = connectionSpec;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the javax.resource.cci.ConnectionSpec.
+     * This is only required if the default getConnection() on the connection factory is not used.
+     * This must be set to the EIS adapter specific connection spec.
+     */
+    public void setConnectionSpecObject(Object connectionFactory) {
+        setConnectionSpec((ConnectionSpec)connectionFactory);
     }
 
     /**

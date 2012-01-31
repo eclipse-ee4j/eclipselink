@@ -370,6 +370,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "attempted_to_open_entry_in_url_as_jar", "{2} was thrown on attempt to open {0} as a jar and access entry: {1}."},
         { "attempted_to_open_file_url_as_directory", "{2} was thrown on attempt to open {0} as a directory and access entry: {1}."},
         { "invalid_datasource_property_value", "{1} is not a valid object to be passed in for property {0}.  Valid values are String or instances of javax.sql.DataSource."},
+        { "invalid_property_value", "{1} is not a valid object to be passed in for property {0}."},
         // class name is preceeded by "class" - we need to hardcode the full package name
         { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type [{1}] java get/set method name changed to [{2}] to follow class naming conventions."},                                            
         { "sdo_type_generation_modified_class_naming_format_to", "{0}: Generated Type [{1}] java class name changed to [{2}] to follow class naming conventions."},                                            

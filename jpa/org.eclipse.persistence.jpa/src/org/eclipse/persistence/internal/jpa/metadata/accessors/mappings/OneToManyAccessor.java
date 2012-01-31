@@ -39,6 +39,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -190,6 +191,8 @@ public class OneToManyAccessor extends CollectionAccessor {
                     
             // Process the JoinTable metadata.
             processJoinTable(mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), getJoinTableMetadata());
+        } else if (mapping instanceof EISOneToManyMapping) {
+            processEISOneToManyMapping((EISOneToManyMapping)mapping);
         }
     }
     

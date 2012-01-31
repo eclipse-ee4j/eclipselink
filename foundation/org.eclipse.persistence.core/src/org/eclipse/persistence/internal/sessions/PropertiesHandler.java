@@ -295,9 +295,9 @@ public class PropertiesHandler {
             while(it.hasNext()) {
                 Map.Entry entry = (Map.Entry)it.next();
                 String suffix = (String)entry.getKey();
-                String value = (String)entry.getValue();
-                if (prop != null) {
-                    value = prop.getValueToApply(value, shouldUseDefault(value), suffix, session);
+                Object value = entry.getValue();
+                if ((prop != null) && (value instanceof String)) {
+                    value = prop.getValueToApply((String)value, shouldUseDefault((String)value), suffix, session);
                 }
                 mapOut.put(suffix, value);
             }

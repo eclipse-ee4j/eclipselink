@@ -422,6 +422,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
+    public CollectionMapping newUnidirectionalOneToManyMapping() {
+        return new UnidirectionalOneToManyMapping();
+    }
+    
+    /**
+     * Return a new one to many mapping for this type of descriptor.
+     */
     public CollectionMapping newManyToManyMapping() {
         return new ManyToManyMapping();
     }

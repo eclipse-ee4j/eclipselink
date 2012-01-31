@@ -31,5 +31,5 @@ import java.lang.annotation.Target;
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface JoinFields {
-    Field[] value() default {};
+    JoinField[] value() default {};
 }

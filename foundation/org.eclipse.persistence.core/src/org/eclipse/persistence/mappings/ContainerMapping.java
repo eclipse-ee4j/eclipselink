@@ -45,6 +45,24 @@ public interface ContainerMapping {
      * <code>java.util.Collection</code> interface.
      */
     void useCollectionClass(Class concreteClass);
+    
+    /**
+     * PUBLIC:
+     * Configure the mapping to use an instance of the specified container class
+     * to hold the target objects.
+     * <p>The container class must implement (directly or indirectly) the
+     * <code>java.util.Collection</code> interface.
+     */
+    void useCollectionClassName(String concreteClass);
+    
+    /**
+     * PUBLIC:
+     * Configure the mapping to use an instance of the specified container class
+     * to hold the target objects.
+     * <p>The container class must implement (directly or indirectly) the
+     * <code>java.util.List</code> interface.
+     */
+    void useListClassName(String concreteClass);
 
     /**
      * PUBLIC:
@@ -60,4 +78,19 @@ public interface ContainerMapping {
      * must set before calling this method.
      */
     void useMapClass(Class concreteClass, String methodName);
+    
+    /**
+     * PUBLIC:
+     * Configure the mapping to use an instance of the specified container class
+     * to hold the target objects. The key used to index a value in the
+     * <code>Map</code> is the value returned by a call to the specified
+     * zero-argument method.
+     * The method must be implemented by the class (or a superclass) of any
+     * value to be inserted into the <code>Map</code>.
+     * <p>The container class must implement (directly or indirectly) the
+     * <code>java.util.Map</code> interface.
+     * <p>To facilitate resolving the method, the mapping's referenceClass
+     * must set before calling this method.
+     */
+    void useMapClassName(String concreteClass, String methodName);
 }
