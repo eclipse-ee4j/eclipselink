@@ -387,6 +387,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testAddAndDeleteSameObject");
         tests.add("testDeleteAllProjects");
         tests.add("testEMFBuiltWithSession");
+        tests.add("testLazyOneToOneFetchInitialization");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -11510,6 +11511,56 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         if (loadingException == null){
             fail("Proper exception not thrown when refreshing metadata: ");
+        }
+    }
+    
+    public void testLazyOneToOneFetchInitialization() {
+        EntityManager em = createEntityManager();
+        Room room = null;
+        try {
+            beginTransaction(em);
+            room = new Room();
+            room.setId(1);
+            room.setLength(20);
+            room.setHeight(10);
+            room.setWidth(18);
+            
+            Door east = new Door();
+            east.setId(100);
+            east.setHeight(8);
+            east.setWidth(5);
+            east.setRoom(room);
+            room.addDoor(east);
+            
+            em.persist(room);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            fail("Failed to create data for testLazyOneToOneFetchInitialization");
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            Door d = em.find(Door.class, 100);
+            assertTrue("Lazy Field has been initialized referencing to an object of shared cache", d.isRoomInstanceInitialized());
+            // Trigger indirection to fetch the object and verify that it has been
+            // initialized with correct value.
+            Room r = d.getRoom();
+            assertTrue("Unable to fetch the lazy field.", r != null);
+            assertTrue("The lazy field has been fetched incorrectly", r.equals(room));
+        } catch (RuntimeException ex) {
+            fail("Failed to fetch data for testLazyOneToOneFetchInitialization");
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 }

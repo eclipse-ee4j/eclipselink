@@ -763,18 +763,35 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
     /**
      * Add an internal shallow clone method. This can be used to optimize uow
-     * cloning.
+     * cloning. It will set lazy OneToOne attributes to null.
      * 
-     * public Object _persistence_shallow_clone() { return super.clone(); }
+     * public Object _persistence_shallow_clone() { 
+     * ClassType object = (ClassType)super.clone(); 
+     * object._attribute_lazy = null; ... 
+     * return object; }
      */
     public void addShallowClone(ClassDetails classDetails) {
         // create the _persistence_shallow_clone() method
         MethodVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
 
-        // return super.clone();
+        // ClassType object = (ClassType)super.clone();
         cv_clone.visitVarInsn(ALOAD, 0);
         cv_clone.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "clone", "()Ljava/lang/Object;");
-
+        cv_clone.visitTypeInsn(CHECKCAST, classDetails.getClassName());
+        cv_clone.visitVarInsn(ASTORE, 1);
+        
+        // object._attribute_lazy = null;
+        for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+            AttributeDetails attributeDetails = (AttributeDetails) iterator.next();
+            if (attributeDetails.isOneToOneMapping() && attributeDetails.isLazy()) {
+                cv_clone.visitVarInsn(ALOAD, 1);
+                cv_clone.visitInsn(ACONST_NULL);
+                cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attributeDetails.getAttributeName(), attributeDetails.getReferenceClassType().getDescriptor());
+            }
+        }
+        
+        // return object;
+        cv_clone.visitVarInsn(ALOAD, 1);
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
     }

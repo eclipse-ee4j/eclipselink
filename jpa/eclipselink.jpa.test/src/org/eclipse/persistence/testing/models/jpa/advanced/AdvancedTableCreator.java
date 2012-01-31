@@ -86,6 +86,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_JIGSAW_PIECETable());
         addTableDefinition(buildRABBITTable());
         addTableDefinition(buildRABBITFOOTTable());
+        addTableDefinition(buildCMP3_ROOMTable());
+        addTableDefinition(buildCMP3_DOORTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -2470,4 +2472,104 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public TableDefinition buildCMP3_ROOMTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ROOM");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldWIDTH = new FieldDefinition();
+        fieldWIDTH.setName("WIDTH");
+        fieldWIDTH.setTypeName("NUMBER");
+        fieldWIDTH.setSize(10);
+        fieldWIDTH.setIsPrimaryKey(false);
+        fieldWIDTH.setIsIdentity(false);
+        fieldWIDTH.setUnique(false);
+        fieldWIDTH.setShouldAllowNull(true);
+        table.addField(fieldWIDTH);
+
+        FieldDefinition fieldLENGTH = new FieldDefinition();
+        fieldLENGTH.setName("LENGTH");
+        fieldLENGTH.setTypeName("NUMBER");
+        fieldLENGTH.setSize(10);
+        fieldLENGTH.setIsPrimaryKey(false);
+        fieldLENGTH.setIsIdentity(false);
+        fieldLENGTH.setUnique(false);
+        fieldLENGTH.setShouldAllowNull(true);
+        table.addField(fieldLENGTH);
+
+        FieldDefinition fieldHEIGHT = new FieldDefinition();
+        fieldHEIGHT.setName("HEIGHT");
+        fieldHEIGHT.setTypeName("NUMBER");
+        fieldHEIGHT.setSize(10);
+        fieldHEIGHT.setIsPrimaryKey(false);
+        fieldHEIGHT.setIsIdentity(false);
+        fieldHEIGHT.setUnique(false);
+        fieldHEIGHT.setShouldAllowNull(true);
+        table.addField(fieldHEIGHT);
+
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_DOORTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_DOOR");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldWIDTH = new FieldDefinition();
+        fieldWIDTH.setName("WIDTH");
+        fieldWIDTH.setTypeName("NUMBER");
+        fieldWIDTH.setSize(10);
+        fieldWIDTH.setIsPrimaryKey(false);
+        fieldWIDTH.setIsIdentity(false);
+        fieldWIDTH.setUnique(false);
+        fieldWIDTH.setShouldAllowNull(true);
+        table.addField(fieldWIDTH);
+
+        FieldDefinition fieldHEIGHT = new FieldDefinition();
+        fieldHEIGHT.setName("HEIGHT");
+        fieldHEIGHT.setTypeName("NUMBER");
+        fieldHEIGHT.setSize(10);
+        fieldHEIGHT.setIsPrimaryKey(false);
+        fieldHEIGHT.setIsIdentity(false);
+        fieldHEIGHT.setUnique(false);
+        fieldHEIGHT.setShouldAllowNull(true);
+        table.addField(fieldHEIGHT);
+
+        FieldDefinition fieldROOM_ID = new FieldDefinition();
+        fieldROOM_ID.setName("ROOM_ID");
+        fieldROOM_ID.setTypeName("NUMBER");
+        fieldROOM_ID.setSize(15);
+        fieldROOM_ID.setIsPrimaryKey(false);
+        fieldROOM_ID.setIsIdentity(false);
+        fieldROOM_ID.setUnique(false);
+        fieldROOM_ID.setShouldAllowNull(true);
+        table.addField(fieldROOM_ID);
+        
+        ForeignKeyConstraint foreignKeyCMP3_DOOR_CMP3_ROOM = new ForeignKeyConstraint();
+        foreignKeyCMP3_DOOR_CMP3_ROOM.setName("CMP3_DOOR_CMP3_ROOM");
+        foreignKeyCMP3_DOOR_CMP3_ROOM.setTargetTable("CMP3_ROOM");
+        foreignKeyCMP3_DOOR_CMP3_ROOM.addSourceField("ROOM_ID");
+        foreignKeyCMP3_DOOR_CMP3_ROOM.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyCMP3_DOOR_CMP3_ROOM);
+ 
+        return table;
+    }
 }
