@@ -35,11 +35,16 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.util.Iterator;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Time;
 
 import javax.persistence.EntityExistsException;
@@ -59,6 +64,7 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.ProviderUtil;
+import javax.sql.DataSource;
 
 import junit.framework.*;
 
@@ -156,6 +162,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
+import org.eclipse.persistence.testing.tests.feature.TestDataSource;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -383,6 +390,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testAddAndDeleteSameObject");
         tests.add("testDeleteAllProjects");
         tests.add("testEMFBuiltWithSession");
+        tests.add("testSequenceObjectWithSchemaName");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -11338,6 +11346,78 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("Proper exception not thrown when refreshing metadata: ");
         }
     }
+
+    // Bug 368653
+    public void testSequenceObjectWithSchemaName(){
+        // platform that supports sequence objects is required for this test
+        // properties work only in Java SE 
+        if(!getServerSession().getPlatform().supportsSequenceObjects() || isOnServer()) {
+            return;
+        }
+
+        // close the entire factory in order to set the session customizer
+        closeEntityManagerFactory();
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.putAll(TableQualifierSessionCustomizer.database_properties);
+        properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, TableQualifierSessionCustomizer.class.getName());
+        EntityManager em = createEntityManager(properties);
+        
+        beginTransaction(em);
+        Address address = new Address();
+        try {
+            em.persist(address);
+            commitTransaction(em);
+            // no exception thrown -> passed
+            closeEntityManager(em);
+        } catch (RuntimeException exception) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw exception;
+        } finally {
+            // close the entire factory in order to clean up the session customizer
+            closeEntityManagerFactory();
+        }
+    }
+
+    public static class TableQualifierSessionCustomizer implements SessionCustomizer {
+        public static Map<String, String> database_properties = JUnitTestCaseHelper.getDatabaseProperties();
+        
+        public void customize(Session session) throws Exception {
+            String schema = getCurrentSchemaName(session);
+            session.getPlatform().setTableQualifier(schema);
+        }
+    }
+    
+    protected static String getCurrentSchemaName(Session session) {
+        Map<String, String> properties = TableQualifierSessionCustomizer.database_properties;
+        String driver = properties.get(PersistenceUnitProperties.JDBC_DRIVER);
+        String url = properties.get(PersistenceUnitProperties.JDBC_URL);
+        String user = properties.get(PersistenceUnitProperties.JDBC_USER);
+        String pw = properties.get(PersistenceUnitProperties.JDBC_PASSWORD);
+
+        DataSource dataSource = new TestDataSource(driver, url, new Properties());
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection(user, pw);
+            PreparedStatement stmt = conn.prepareStatement("SELECT ADDRESS_ID FROM CMP3_ADDRESS WHERE ADDRESS_ID = 1");
+            ResultSet rs = stmt.executeQuery();
+            String schema = rs.getMetaData().getSchemaName(1);
+            return schema;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                //ignore exception
+            }
+        }
+    }
+
 
 }
 

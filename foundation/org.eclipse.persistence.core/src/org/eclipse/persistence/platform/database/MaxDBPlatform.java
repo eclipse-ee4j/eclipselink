@@ -269,7 +269,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
     
     @Override
     public final ValueReadQuery buildSelectQueryForSequenceObject(final String sequenceName, final Integer size) {
-        return new ValueReadQuery("SELECT " + this.getQualifiedSequenceName(sequenceName) + ".NEXTVAL FROM DUAL");
+        return new ValueReadQuery("SELECT " + sequenceName + ".NEXTVAL FROM DUAL");
     }
 
     @Override
@@ -280,10 +280,6 @@ public final class MaxDBPlatform extends DatabasePlatform {
     @Override
     public final int getMaxFieldNameSize() {
         return 32;
-    }
-
-    private final String getQualifiedSequenceName(final String sequenceName) {
-        return this.getTableQualifier().length() == 0 ? sequenceName : this.getTableQualifier() + "." + sequenceName;
     }
 
     @Override
