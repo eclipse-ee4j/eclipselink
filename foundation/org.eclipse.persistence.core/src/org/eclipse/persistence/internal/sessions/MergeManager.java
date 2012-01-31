@@ -758,10 +758,6 @@ public class MergeManager {
                     } else {
                         cacheKey.setObject(original);
                     }
-                    if (original instanceof PersistenceEntity) {
-                        ((PersistenceEntity)original)._persistence_setCacheKey(cacheKey);
-                        ((PersistenceEntity)original)._persistence_setId(cacheKey.getKey());
-                    }
                     objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), originalWasNull);
 
                     if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
@@ -795,8 +791,7 @@ public class MergeManager {
                     }
                 }
                 if (original instanceof PersistenceEntity) {
-                    ((PersistenceEntity)original)._persistence_setCacheKey(cacheKey);
-                    ((PersistenceEntity)original)._persistence_setId(cacheKey.getKey());
+                    objectBuilder.updateCachedAttributes((PersistenceEntity) original, cacheKey);
                 }
                 updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
             } else if (objectChangeSet == null) {
@@ -821,7 +816,9 @@ public class MergeManager {
                         }
                     } else {
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
-                        objectBuilder.clearPrimaryKey(original);
+                        if (original instanceof PersistenceEntity) {
+                            objectBuilder.updateCachedAttributes((PersistenceEntity) original, cacheKey);
+                        }
                     }
                     // #1, 2, 3, merge from the change set into the existing cached object, or new original
                     // Note for new objects the change set may be empty, and object builder may merge from the clone into the original.

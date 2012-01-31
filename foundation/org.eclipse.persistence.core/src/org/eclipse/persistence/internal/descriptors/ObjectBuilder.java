@@ -810,8 +810,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
                 if (domainObject instanceof PersistenceEntity) {
-                    ((PersistenceEntity)domainObject)._persistence_setId(primaryKey);
-                    ((PersistenceEntity)domainObject)._persistence_setCacheKey(cacheKey);
+                    updateCachedAttributes((PersistenceEntity) domainObject, cacheKey);
                 }
             } else {
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
@@ -3743,6 +3742,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
         return this.descriptor.getWrapperPolicy().unwrapObject(proxy, session);        
     }
 
+    /**
+     * INTERNAL:
+     * Used to updated any attributes that may be cached on a woven entity
+     */
+    public void updateCachedAttributes(PersistenceEntity persistenceEntity, CacheKey cacheKey){
+        persistenceEntity._persistence_setCacheKey(cacheKey);
+        persistenceEntity._persistence_setId(cacheKey.getKey());
+    }
+    
     /**
      * Validates the object builder. This is done once the object builder initialized and descriptor
      * fires this validation.
