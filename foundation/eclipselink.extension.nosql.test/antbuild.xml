@@ -341,7 +341,7 @@
     </target>
 
     <!-- Default test target, runs test.class from test.properties (default is nosqlJPATestModel). -->
-    <target name="test" depends="init_run">
+    <target name="test" depends="init_run, build">
         <run_test testclass="${test.class}"  dburl="${db.url}"/>
         <generate.report/>
     </target>
