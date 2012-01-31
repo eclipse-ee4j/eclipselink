@@ -1001,6 +1001,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
+    	if(getCurrentObject() == null){
+    		return;
+    	}
         try {
             int strBufferInitialLength = -1; 
             if (null != selfRecords) {
