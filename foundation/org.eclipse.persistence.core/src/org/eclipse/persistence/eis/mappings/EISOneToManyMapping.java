@@ -358,6 +358,21 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             this.getDeleteAllQuery().setSelectionCriteria(this.getSelectionCriteria());
         }
     }
+    
+    /**
+     * Fix field names for XML data descriptors.
+     * Since fields are fixed to use text() by default in descriptor, ensure the correct non text field is used here.
+     */
+    @Override
+    public void preInitialize(AbstractSession session) {
+        super.preInitialize(session);
+        if (((EISDescriptor)this.descriptor).isXMLFormat()) {
+            if (!(this.foreignKeyGroupingElement instanceof XMLField)) {
+                XMLField newField = new XMLField(this.foreignKeyGroupingElement.getName());
+                this.foreignKeyGroupingElement = newField;
+            }
+        }
+    }
 
     /**
      * Return whether any process leading to object modification
