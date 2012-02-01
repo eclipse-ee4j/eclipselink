@@ -1208,6 +1208,15 @@
             <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-dcn-model.jar"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
+         <path id="run.oracle.nosql.classpath">
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
+            <path refid="compile.path"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-jpa-oracle-tests.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-nosql-model.jar"/>
+        </path>
     </target>
 
     <!-- Clean all build generated content. -->
@@ -1305,7 +1314,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.oracle.classpath"/>
+            <param name="RUN_PATH" value="run.oracle.nosql.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="run-test" inheritRefs="true">
@@ -1314,7 +1323,7 @@
             <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.oracle.classpath"/>
+            <param name="RUN_PATH" value="run.oracle.nosql.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
