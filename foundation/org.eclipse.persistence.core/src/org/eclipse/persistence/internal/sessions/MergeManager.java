@@ -791,7 +791,13 @@ public class MergeManager {
                     }
                 }
                 if (original instanceof PersistenceEntity) {
-                    objectBuilder.updateCachedAttributes((PersistenceEntity) original, cacheKey);
+                    Object pk = null;
+                    if (cacheKey == null){
+                        pk = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
+                    }else{
+                        pk = cacheKey.getKey();
+                    }
+                    objectBuilder.updateCachedAttributes((PersistenceEntity) original, cacheKey, pk);
                 }
                 updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
             } else if (objectChangeSet == null) {
@@ -817,7 +823,13 @@ public class MergeManager {
                     } else {
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                         if (original instanceof PersistenceEntity) {
-                            objectBuilder.updateCachedAttributes((PersistenceEntity) original, cacheKey);
+                            Object pk = null;
+                            if (cacheKey == null){
+                                pk = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
+                            }else{
+                                pk = cacheKey.getKey();
+                            }
+                            objectBuilder.updateCachedAttributes((PersistenceEntity) original, cacheKey, pk);
                         }
                     }
                     // #1, 2, 3, merge from the change set into the existing cached object, or new original
