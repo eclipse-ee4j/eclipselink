@@ -25,13 +25,10 @@ public class SelectionQueryExceptionTestCases extends OXTestCase {
         SelectionQueryBadProject project = new SelectionQueryBadProject();
         boolean caughtException = false;
 
-        try {
-            DatabaseSession session = project.createDatabaseSession();
-            session.login();
-        } catch (org.eclipse.persistence.exceptions.ValidationException vex) {
-            caughtException = true;
-        }
+        DatabaseSession session = project.createDatabaseSession();
+        session.login();
 
-        assertTrue("A ValidationException was not thrown upon login as expected.", caughtException);
+		// This is now valid, as EIS now support query generation from expressions (dependent on the platform).
+        //assertTrue("A ValidationException was not thrown upon login as expected.", caughtException);
     }
 }
