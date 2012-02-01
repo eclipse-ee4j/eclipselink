@@ -458,12 +458,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
-            	List choiceContainerValues = treeObjectBuilder.getChoiceContainerValues();
-            	if(choiceContainerValues!=null){
-            		containerInstances = new Object[containerValues.size() + choiceContainerValues.size()];
-            	}else{
-            		containerInstances = new Object[containerValues.size()];
-            	}
+                containerInstances = new Object[containerValues.size()];
                 for (int x = 0, containerValuesSize = containerValues.size(); x < containerValuesSize; x++) {
                     ContainerValue containerValue = (ContainerValue)containerValues.get(x);
                     Object containerInstance = null;
@@ -475,13 +470,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         containerInstance = containerValue.getContainerInstance();
                     }
                     containerInstances[containerValue.getIndex()] = containerInstance;
-                    if(containerValue.getMapping() instanceof XMLChoiceCollectionMapping) {
-                        XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)containerValue;
-                        for(NodeValue next:nodeValue.getAllNodeValues()) {
-                            NodeValue nestedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)next).getChoiceElementNodeValue();
-                            containerInstances[((ContainerValue)nestedNodeValue).getIndex()] = containerInstance;
-                        }
-                    }
                 }
             }
 
