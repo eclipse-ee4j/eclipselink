@@ -70,7 +70,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     private XPathNode rootXPathNode;
     private List transformationMappings;
     private List containerValues;
-    private List<ContainerValue> choiceContainerValues;
     private List nullCapableValues;
     private volatile boolean initialized = false;
     private int counter = 0;
@@ -124,19 +123,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         containerValue.setIndex(counter++);
         this.containerValues.add(containerValue);
     }
-    
-    public void addChoiceContainerValue(ContainerValue containerValue) {
-        if (null == this.choiceContainerValues) {        	
-            this.choiceContainerValues = new ArrayList();            
-        }
-        containerValue.setIndex(counter++);
-        this.choiceContainerValues.add(containerValue);
-    }
-    
-    public List getChoiceContainerValues() {
-        return this.choiceContainerValues;
-    }
-
     public List getNullCapableValues() {
         return this.nullCapableValues;
     }
@@ -316,7 +302,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             marshalValue.setIsMixedNodeValue(true);
                         }
                         this.addContainerValue(unmarshalValue);
-                        this.addChoiceContainerValue((ContainerValue)unmarshalValue.getChoiceElementNodeValue());
+                        ((ContainerValue)unmarshalValue.getChoiceElementNodeValue()).setIndex(unmarshalValue.getIndex());
                         fieldToNodeValues.put(firstField, unmarshalValue);
                         addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
                         addChild(firstField.getXPathFragment(), marshalValue, xmlDescriptor.getNamespaceResolver());
@@ -324,7 +310,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             XMLField next = (XMLField)fields.next();
                             XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, next);
                             nodeValue.setContainerNodeValue(unmarshalValue);
-                            addChoiceContainerValue((ContainerValue)nodeValue.getChoiceElementNodeValue());
+                            ((ContainerValue)nodeValue.getChoiceElementNodeValue()).setIndex(unmarshalValue.getIndex());
                             addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
                             fieldToNodeValues.put(next, nodeValue);
                             if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == xmlChoiceMapping.getChoiceElementMappings().get(next))) {

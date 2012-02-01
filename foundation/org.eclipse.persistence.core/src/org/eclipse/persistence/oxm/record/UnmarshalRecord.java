@@ -306,14 +306,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if(null == containerInstance && createContainerIfNecessary) {
                 containerInstance = c.getContainerInstance();
             }
-            containerInstances[c.getIndex()] = containerInstance;
-            if(c.getMapping() instanceof XMLChoiceCollectionMapping) {
-                XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue) c;
-                for(NodeValue next:nodeValue.getAllNodeValues()) {
-                    NodeValue nestedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue) next).getChoiceElementNodeValue();
-                    containerInstances[((ContainerValue) nestedNodeValue).getIndex()] = containerInstance;
-                }
-            }
+            containerInstances[c.getIndex()] = containerInstance;    
         }
 
         return containerInstance;
@@ -529,12 +522,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
-            	List choiceContainerValues = treeObjectBuilder.getChoiceContainerValues();
-            	if(choiceContainerValues!=null){
-            		containerInstances = new Object[containerValues.size() + choiceContainerValues.size()];
-            	}else{
-            		containerInstances = new Object[containerValues.size()];
-            	}
+            	containerInstances = new Object[containerValues.size()];
             	
                 for (int x = 0, containerValuesSize = containerValues.size(); x < containerValuesSize; x++) {
                     ContainerValue containerValue = (ContainerValue)containerValues.get(x);
