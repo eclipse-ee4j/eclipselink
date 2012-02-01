@@ -1633,8 +1633,8 @@ public class PersistenceUnitProperties {
 
     /**
      * Allows the database schema to be generated on deployment. Valid values,
-     * CREATE_ONLY, DROP_AND_CREATE, NONE ("create-tables",
-     * "drop-and-create-tables", "none"). Default is NONE.
+     * CREATE_ONLY, DROP_AND_CREATE, CREATE_OR_EXTEND, NONE ("create-tables",
+     * "drop-and-create-tables", "create-or-extend-tables", "none"). Default is NONE.
      */
     public static final String DDL_GENERATION = "eclipselink.ddl-generation";
 
@@ -1657,6 +1657,17 @@ public class PersistenceUnitProperties {
      * @see #DDL_GENERATION
      */
     public static final String DROP_AND_CREATE = "drop-and-create-tables";
+    
+    /**
+     * The parameter value <code>"create-or-extend-tables"</code>
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation"</code> property.</p>
+     * <p>Specifies that database tables should be created and if existing, missing columns will be added.</p>
+     * <p>This can only be used with eclipselink.ddl-generation.output-mode with value of "database".</p>
+     * 
+     * @see #DDL_GENERATION
+     */
+    public static final String CREATE_OR_EXTEND = "create-or-extend-tables";
     
     /**
      * The parameter value <code>"none"</code>

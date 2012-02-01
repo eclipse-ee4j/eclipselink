@@ -43,6 +43,12 @@ public class FieldDefinition implements Serializable, Cloneable {
      * This is translated to a particular database type based on platform.
      */
     protected String typeName; 
+    /**
+     * DatabaseField stores the field name with case and delimiting information. 
+     * Used if the field needs to be found in the table metadata, for extending tables.  
+     * if null, name is used for comparison to determine if this field already exists.  
+     */
+    protected DatabaseField field;
     /** 
      * Database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".  
      * If this is given, other additional type constraint fields(size, unique, null) are meaningless.  
@@ -257,6 +263,14 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
+     * Return the databasefield.
+     */
+    public DatabaseField getDatabaseField() {
+        return field;
+    }
+
+    /**
      * PUBLIC:
      * Return the size of the field, this is only required for some field types.
      */
@@ -381,6 +395,15 @@ public class FieldDefinition implements Serializable, Cloneable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the DatabaseField that is associated to this FieldDefinition object.
+     * The databaesField is used when extending tables to see if this field already exists.  
+     */
+    public void setDatabaseField(DatabaseField field) {
+        this.field = field;
     }
 
     /**

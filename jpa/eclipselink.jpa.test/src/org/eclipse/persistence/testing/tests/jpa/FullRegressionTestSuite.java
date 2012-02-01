@@ -86,6 +86,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
@@ -223,6 +224,7 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // DDL model
         fullSuite.addTest(DDLGenerationJUnitTestSuite.suite());
+        fullSuite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
 
         // JPA Advanced Properties model
         fullSuite.addTest(JPAAdvPropertiesJUnitTestCase.suite());

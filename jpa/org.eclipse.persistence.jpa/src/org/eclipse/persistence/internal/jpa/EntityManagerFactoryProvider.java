@@ -20,6 +20,7 @@ import java.util.HashMap;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
@@ -85,11 +86,18 @@ public class EntityManagerFactoryProvider {
         }
     }
     
-    protected static void createOrReplaceDefaultTables(SchemaManager mgr, boolean shouldDropFirst) {          
-        if (shouldDropFirst){
-            mgr.replaceDefaultTables(true, true); 
-        } else { 
+    /**
+     * Calls the appropriate create,replace or alter SchemaManager api.  
+     * @param mgr
+     * @param ddlType - ddl operation to be performed
+     */
+    protected static void generateDefaultTables(SchemaManager mgr, TableCreationType ddlType) {          
+        if (ddlType == null || ddlType == TableCreationType.CREATE) {
             mgr.createDefaultTables(true); 
+        } else if (ddlType == TableCreationType.DROP) {
+            mgr.replaceDefaultTables(true, true); 
+        } else if (ddlType == TableCreationType.EXTEND) { 
+            mgr.extendDefaultTables(true);
         }
     }
 
@@ -356,32 +364,32 @@ public class EntityManagerFactoryProvider {
         }
     }
     
-    protected static void writeDDLToDatabase(SchemaManager mgr, boolean shouldDropFirst) {
+    protected static void writeDDLToDatabase(SchemaManager mgr, TableCreationType ddlType) {
         String str = getConfigPropertyAsString(PersistenceUnitProperties.JAVASE_DB_INTERACTION, null ,"true");
         boolean interactWithDB = Boolean.valueOf(str.toLowerCase()).booleanValue();
         if (!interactWithDB){
             return;
         }
-        createOrReplaceDefaultTables(mgr, shouldDropFirst);
+        generateDefaultTables(mgr, ddlType);
     }
     
     protected static void writeDDLsToFiles(SchemaManager mgr,  String appLocation, String createDDLJdbc, String dropDDLJdbc) {
-    	// Ensure that the appLocation string ends with  File.separator 
+        // Ensure that the appLocation string ends with  File.separator 
         appLocation = addFileSeperator(appLocation);
         if (null != createDDLJdbc) {
-        	String createJdbcFileName = appLocation + createDDLJdbc;
+            String createJdbcFileName = appLocation + createDDLJdbc;
             mgr.outputCreateDDLToFile(createJdbcFileName);
         }
 
         if (null != dropDDLJdbc) {
-        	String dropJdbcFileName = appLocation + dropDDLJdbc;              
+            String dropJdbcFileName = appLocation + dropDDLJdbc;              
             mgr.outputDropDDLToFile(dropJdbcFileName);
         }
 
         mgr.setCreateSQLFiles(false);
         // When running in the application server environment always ensure that
         // we write out both the drop and create table files.
-        createOrReplaceDefaultTables(mgr, true);
+        generateDefaultTables(mgr, TableCreationType.DROP);
         mgr.closeDDLWriter();
     }    
 }

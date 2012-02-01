@@ -213,8 +213,8 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                 ServerSession session = getServerSession();
                 CommandManager rcm = session.getCommandManager();
                 if (rcm != null && newSetupImpl.shouldSendMetadataRefreshCommand(deployProperties)) {
-                     MetadataRefreshCommand command = new MetadataRefreshCommand(properties);
-                     rcm.propagateCommand(command);
+                    MetadataRefreshCommand command = new MetadataRefreshCommand(properties);
+                    rcm.propagateCommand(command);
                 }
                 session.setRefreshMetadataListener(newSetupImpl);
             }

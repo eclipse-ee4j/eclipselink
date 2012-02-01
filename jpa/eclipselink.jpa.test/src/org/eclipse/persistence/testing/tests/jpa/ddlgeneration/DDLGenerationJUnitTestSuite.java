@@ -55,8 +55,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Boss;
@@ -91,7 +94,7 @@ import javax.persistence.TypedQuery;
  */
 public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     // the persistence unit name which is used in this test suite
-    private static final String DDL_PU = "ddlGeneration";
+    protected static final String DDL_PU = "ddlGeneration";
     private static final String DDL_TPC_PU = "ddlTablePerClass";
 
     private static final String DDL_TABLE_CREATION_SUFFIX_PU = "ddlTableSuffix";
@@ -1597,6 +1600,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             
             // Store the ids to verify
             family707 = family.getId();
+            family707Mafiosos = new ArrayList<Integer>();
             family707Mafiosos.add(boss.getId());
             family707Mafiosos.add(underboss.getId());
             family707Mafiosos.add(capo1.getId());
@@ -1606,6 +1610,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             family707Mafiosos.add(soldier3.getId());
             family707Mafiosos.add(soldier4.getId());
             family707Mafiosos.add(soldier5.getId());
+
+            family707Contracts = new ArrayList<Integer>();
             family707Contracts.add(contract1.getId());
             family707Contracts.add(contract2.getId());
             family707Contracts.add(contract3.getId());
@@ -1751,6 +1757,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             // Will cascade through the whole family.
             em.persist(family);
             family007 = family.getId();
+            family007Mafiosos = new ArrayList<Integer>();
             family007Mafiosos.add(boss.getId());
             family007Mafiosos.add(underboss.getId());
             family007Mafiosos.add(capo1.getId());
@@ -1762,6 +1769,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             family007Mafiosos.add(soldier5.getId());
             family007Mafiosos.add(soldier6.getId());
             family007Mafiosos.add(soldier7.getId());
+
+            family007Contracts = new ArrayList<Integer>();
             family007Contracts.add(contract1.getId());
             family007Contracts.add(contract2.getId());
             family007Contracts.add(contract3.getId());
@@ -1946,7 +1955,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         byte[] pic = car.getPic();
         assertTrue("Blob was null after flush, refresh, commit.", pic != null);
     }
-    
+
+    public void testSimpleSelectFoo() {
+        EntityManager em = createEntityManager(DDL_PU);
+        //simple test to make sure the table was created.  We do not care about the results, 
+        // only that the query can be run without an exception
+        em.createQuery("Select f from Foo f").getResultList();
+    }
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }

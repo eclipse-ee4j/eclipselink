@@ -15,9 +15,12 @@ package org.eclipse.persistence.tools.schemaframework;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 
@@ -342,6 +345,11 @@ public class TableCreator {
         this.ignoreDatabaseException = ignoreDatabaseException;
     }
 
+    /**
+     * This returns the Sequence Table's qualified name, without delimiting.
+     * @param session
+     * @return the qualified table name  
+     */
     protected String getSequenceTableName(Session session) {
         String sequenceTableName = null;
         if (session.getProject().usesSequencing()) {
@@ -351,5 +359,111 @@ public class TableCreator {
             }
         }
         return sequenceTableName;
+    }
+    
+    /**
+     * Create or extend the tables on the database.
+     * This will alter existing tables to add missing fields or create the table otherwise.
+     * It will also create Sequences tables and objects. 
+     */
+    public void extendTables(DatabaseSession session, SchemaManager schemaManager) {
+        extendTablesAndConstraints(schemaManager, session);
+        schemaManager.createOrReplaceSequences(true, true);
+    }
+    
+    protected void extendTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {
+        buildConstraints(schemaManager, true);
+        boolean ignore = shouldIgnoreDatabaseException();
+        setIgnoreDatabaseException(true);
+        try {
+            extendTables(session, schemaManager, false);
+        } finally {
+            setIgnoreDatabaseException(ignore);            
+        }
+        
+    }
+    
+    /**
+     * This creates/extends the tables on the database.
+     */
+    public void extendTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
+        buildConstraints(schemaManager, build);
+
+        String sequenceTableName = getSequenceTableName(session);
+        for (TableDefinition table : getTableDefinitions()) {
+            // Must not create sequence table as done in createSequences.
+            if (!table.getName().equals(sequenceTableName)) {
+                AbstractSession abstractSession = (AbstractSession) session;
+                //While SQL is case insensitive, getColumnInfo is and will not return the table info unless the name is passed in
+                //as it is stored internally.  
+                String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
+                boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
+                Vector<DatabaseRecord> columnInfo = null;
+
+                //I need the actual table catalogue, schema and tableName for getTableInfo.  Ignoring schema and catalogue for now - see bug 367887 
+                columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
+                
+                if (!usesDelimiting && (columnInfo == null || columnInfo.isEmpty()) ){
+                    tableName = tableName.toUpperCase();
+                    columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
+                    if (( columnInfo == null || columnInfo.isEmpty()) ){
+                        tableName = tableName.toLowerCase();
+                        columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
+                    }
+                }
+                //table.getTable().  
+                if (columnInfo==null || columnInfo.isEmpty()) {
+                    //table does not exist
+                    try {
+                        schemaManager.createObject(table);
+                        session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_created", table.getFullName());
+                    } catch (DatabaseException ex) {
+                        //TODO: not sure what to log or do here
+                        session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "cannot_create_table", table.getFullName(), ex.getMessage());
+                        if (!shouldIgnoreDatabaseException()) {
+                            throw ex;
+                        }
+                    }
+                } else {
+                    //Table exists, add individual fields as necessary
+
+                    //hash the table's existing columns by name
+                    HashMap columns = new HashMap(columnInfo.size());
+                    DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
+                    for (DatabaseRecord record: columnInfo) {
+                        String fieldName = (String)record.get(columnNameLookupField);
+                        if (fieldName !=null && fieldName.length()>0){
+                            DatabaseField column = new DatabaseField(fieldName);
+                            if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
+                                column.useUpperCaseForComparisons(true);
+                            }
+                            columns.put(column,  record);
+                        }
+                    }
+
+                    //Go through each field we need to have in the table to see if it already exists
+                    for (FieldDefinition fieldDef: table.getFields()){
+                        DatabaseField dbField = fieldDef.getDatabaseField();
+                        if ( dbField == null ) {
+                            dbField = new DatabaseField(fieldDef.getName());
+                        }
+                        if (columns.get(dbField)== null) {
+                            //field does not exist so add it to the table
+                            try {
+                                table.addFieldOnDatabase(abstractSession, fieldDef);
+                            } catch(DatabaseException ex) {
+                                session.getSessionLog().log(SessionLog.FINEST,  SessionLog.DDL, "table_cannot_add_field", dbField.getName(), table.getFullName(), ex.getMessage());
+                                if (!shouldIgnoreDatabaseException()) {
+                                    throw ex;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        createConstraints(session, schemaManager, false);
+
+        schemaManager.createSequences();
     }
 }

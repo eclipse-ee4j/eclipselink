@@ -680,7 +680,7 @@ public class QueryHints {
     public static final String LOAD_GROUP = "eclipselink.load-group";
     
     /**
-     * "eclipselink.fetch-group.attribute"
+     * "eclipselink.load-group.attribute"
      * <p>Configures the query to use load group that includes a list of attributes.
      * Each attribute must be defined using a separate hint.
      * The query will load all relational attributes defined in the load group.

@@ -35,6 +35,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.SQLCall;
@@ -54,6 +55,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
     private boolean createSQLFiles;
     private boolean createVPDCalls;
     private String tenantFieldName;
+    //holds onto the name and delimiting info.
+    protected DatabaseTable table;
 
     public TableDefinition() {
         createVPDCalls = false;
@@ -107,6 +110,31 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void addField(FieldDefinition field) {
         getFields().add(field);
+    }
+
+    /**
+     * INTERNAL:
+     * Execute the SQL alter table to add the field to the table.  
+     */
+    public void addFieldOnDatabase(final AbstractSession session, FieldDefinition field){
+        session.priviledgedExecuteNonSelectingCall(
+                new SQLCall( buildAddFieldWriter(session, field, new StringWriter()).toString() ) );
+    }
+
+    /**
+     * INTERNAL:
+     * Return the alter table statement to add a field to the table.
+     */
+    public Writer buildAddFieldWriter(AbstractSession session, FieldDefinition field, Writer writer) throws ValidationException {
+        try {
+            writer.write("ALTER TABLE " + getFullName());
+            writer.write(" ADD (" );
+            field.appendDBString(writer, session, this);
+            writer.write(" )");
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+        return writer;
     }
 
     /**
@@ -1160,5 +1188,13 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void setCreateSQLFiles(boolean genFlag) {
         this.createSQLFiles = genFlag;
-    }    
+    }
+
+    public DatabaseTable getTable() {
+        return table;
+    }
+    
+    public void setTable(DatabaseTable table) {
+        this.table = table;
+    }
 }

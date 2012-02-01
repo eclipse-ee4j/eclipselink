@@ -2529,7 +2529,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Write used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project (DDL generation).  This writes the passed in string argument as 
-     * well as the value returned from the DatabasePlatform's getTableCreationSuffix(0  
+     * well as the value returned from the DatabasePlatform's getTableCreationSuffix()
      */
     public void writeTableCreationSuffix(Writer writer, String tableCreationSuffix) throws IOException {
         if(tableCreationSuffix!=null && tableCreationSuffix.length() > 0) {
@@ -2615,7 +2615,7 @@ public class DatabasePlatform extends DatasourcePlatform {
              //returning false is ok as there is no connection management requirement
              return false;
          } else if (this.pingSQL == null) {
-             // By default us the JDBC isValid API unless a ping SQL has been set.
+             // By default use the JDBC isValid API unless a ping SQL has been set.
              // The ping SQL is set by most platforms, but user could set to null to used optimized JDBC check if desired.
              try {
                  return connection.isValid(IS_VALID_TIMEOUT);

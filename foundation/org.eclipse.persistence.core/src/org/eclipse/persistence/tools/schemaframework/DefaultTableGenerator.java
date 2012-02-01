@@ -691,6 +691,7 @@ public class DefaultTableGenerator {
         if (tableDefinition == null) {
             //table not built yet, simply built it
             tableDefinition = new TableDefinition();
+            tableDefinition.setTable(databaseTable);
             tableDefinition.setName(databaseTable.getNameDelimited(databasePlatform));
             tableDefinition.setQualifier(databaseTable.getTableQualifier());
             if (databaseTable.hasUniqueConstraints()) {
@@ -764,6 +765,8 @@ public class DefaultTableGenerator {
             //not built yet, build one
             fieldDef = new FieldDefinition();
             fieldDef.setName(dbField.getNameDelimited(databasePlatform));
+            //added for extending tables where the field needs to be looked up
+            fieldDef.setDatabaseField(dbField);
 
             if (dbField.getColumnDefinition() != null && dbField.getColumnDefinition().length() > 0) {
                 // This column definition would include the complete definition of the  

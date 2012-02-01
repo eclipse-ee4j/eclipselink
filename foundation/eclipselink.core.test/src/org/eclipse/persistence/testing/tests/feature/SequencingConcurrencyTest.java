@@ -19,7 +19,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.sessions.Login;
 
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;

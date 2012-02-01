@@ -273,6 +273,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * will no longer be associated with new EntityManagerFactories
      */
     protected boolean isMetadataExpired = false;
+    /*
+     * Used to distinguish the various DDL options
+     */
+    protected enum TableCreationType {NONE, CREATE, DROP, EXTEND};
 
     public EntityManagerSetupImpl(String persistenceUnitUniqueName, String sessionName) {
         this.persistenceUnitUniqueName = persistenceUnitUniqueName;
@@ -1467,7 +1471,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
     
     /**
-     * Return if the session should be deployed and connected during the creation of the EtntiyManagerFactory,
+     * Return if the session should be deployed and connected during the creation of the EntityManagerFactory,
      * or if it should be deferred until createEntityManager().
      * The default is to defer, but is only validating, or can be configured to deploy upfront to avoid hanging the
      * application at runtime.
@@ -2900,39 +2904,39 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     protected void generateDDL(Map props) {
         if (this.compositeMemberEmSetupImpls == null) {
-            boolean createTables = false, shouldDropFirst = false;
-           
+            TableCreationType ddlType = TableCreationType.NONE;
+
             String ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
             ddlGeneration = ddlGeneration.toLowerCase();
             if(ddlGeneration.equals(PersistenceUnitProperties.NONE)) {
                 return;
             }
-    
-            if(ddlGeneration.equals(PersistenceUnitProperties.CREATE_ONLY) || 
-                ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
-                createTables = true;
-                if(ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
-                    shouldDropFirst = true;
-                }
-            } 
-            
-            if (createTables) {
+
+            if (ddlGeneration.equals(PersistenceUnitProperties.CREATE_ONLY)) {
+                ddlType = TableCreationType.CREATE;
+            } else if (ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
+                ddlType = TableCreationType.DROP;
+            } else if (ddlGeneration.equals(PersistenceUnitProperties.CREATE_OR_EXTEND)) {
+                ddlType = TableCreationType.EXTEND;
+            }
+
+            if (ddlType != TableCreationType.NONE) {
                 String ddlGenerationMode = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION_MODE, props, PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE);
                 // Optimize for cases where the value is explicitly set to NONE 
                 if (ddlGenerationMode.equals(PersistenceUnitProperties.NONE)) {                
                     return;
                 }
-    
+
                 if (isCompositeMember()) {
                     // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
                 }
                 SchemaManager mgr = new SchemaManager(session);
-                
+
                 if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
-                    writeDDLToDatabase(mgr, shouldDropFirst);                
+                    writeDDLToDatabase(mgr, ddlType);
                 }
-    
+
                 if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)|| ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
                     String appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
                     String createDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
@@ -2954,7 +2958,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /*
      * For required properties overrides values with those from composite properties. 
      */

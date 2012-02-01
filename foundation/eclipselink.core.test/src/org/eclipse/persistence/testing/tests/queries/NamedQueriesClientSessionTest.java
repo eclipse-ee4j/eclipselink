@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.tests.queries;
 import java.util.*;
 
 // TopLink imports
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.server.*;
 
 /**

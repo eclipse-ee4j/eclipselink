@@ -17,7 +17,7 @@ import org.eclipse.persistence.internal.helper.*;
 
 /**
  * INTERNAL:
- *    <b>Purpose</b>: Define a database platform specific definition for a platform independant Java class type.
+ *    <b>Purpose</b>: Define a database platform specific definition for a platform independent Java class type.
  *    This is used for the field creation within a table creation statement.
  *    <p><b>Responsibilities</b>:<ul>
  *    <li> Store a default size and know if the size option is required or optional.

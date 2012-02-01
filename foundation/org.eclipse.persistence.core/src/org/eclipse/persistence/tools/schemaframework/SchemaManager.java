@@ -909,8 +909,8 @@ public class SchemaManager {
     }
     
     /**
-    * Create the default table schema for the project this session associated with.
-    */
+     * Create the default table schema for the project this session associated with.
+     */
     public void createDefaultTables(boolean generateFKConstraints) {
         //Create each table w/o throwing exception and/or exit if some of them are already existed in the db. 
         //If a table is already existed, skip the creation.
@@ -1006,6 +1006,28 @@ public class SchemaManager {
             if (usesBatchWriting) {
                 getSession().getPlatform().setUsesBatchWriting(true);
             }
+        }
+    }
+
+    /**
+     * Create or extend the default table schema for the project this session associated with.
+     */
+    public void extendDefaultTables(boolean generateFKConstraints) throws EclipseLinkException {
+        boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
+        this.session.getSessionLog().setShouldLogExceptionStackTrace(false);
+
+        try {
+            TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
+            tableCreator.extendTables(this.session, this);
+        } catch (DatabaseException exception) {
+            // Ignore error
+        } finally {
+            this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
+        }
+        // Reset database change events to new tables.
+        if (this.session.getDatabaseEventListener() != null) {
+            this.session.getDatabaseEventListener().remove(this.session);
+            this.session.getDatabaseEventListener().register(this.session);
         }
     }
 
