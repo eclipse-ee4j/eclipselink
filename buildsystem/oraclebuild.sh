@@ -75,10 +75,9 @@ TEMP_FILE=${tmp}/SVNLOG-${BRANCH_NM}_${TARG_NM}_${START_DATE}.txt
 #Post-processing
 MAIL_EXEC=/usr/bin/mail
 MAILFROM=eric.gwin@oracle.com
-MAILLIST="ejgwin@gmail.com"
+MAILLIST=${MAILFROM}
 SUCC_MAILLIST="eric.gwin@oracle.com"
-#FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
-FAIL_MAILLIST="eric.gwin@oracle.com ejgwin@gmail.com"
+FAIL_MAILLIST=${MAILLIST}
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
 PROJ_LOG_FILE=${tmp}/projlog-${BRANCH_NM}_${TARG_NM}.txt
