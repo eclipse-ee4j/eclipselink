@@ -367,7 +367,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     public void preInitialize(AbstractSession session) {
         super.preInitialize(session);
         if (((EISDescriptor)this.descriptor).isXMLFormat()) {
-            if (!(this.foreignKeyGroupingElement instanceof XMLField)) {
+            if ((this.foreignKeyGroupingElement != null) && !(this.foreignKeyGroupingElement instanceof XMLField)) {
                 XMLField newField = new XMLField(this.foreignKeyGroupingElement.getName());
                 this.foreignKeyGroupingElement = newField;
             }
