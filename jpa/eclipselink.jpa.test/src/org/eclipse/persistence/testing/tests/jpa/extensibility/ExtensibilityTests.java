@@ -520,7 +520,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             em.clear();
             add = em.find(Address.class, add.getId());
             assertTrue(add.get("appartmentNumber").equals("444"));
-            this.assertNotNull("RCM Refresh command listener was not added to the new session", ((AbstractSession)JpaHelper.getDatabaseSession(emf)).getRefreshMetadataListener());
+            this.assertNotNull("RCM Refresh command listener was not added to the new session", ((AbstractSession)delegate.getDatabaseSession()).getRefreshMetadataListener());
             this.assertNull("RCM Refresh command listener was not removed from old session", session.getRefreshMetadataListener());
         } finally {
             if (isTransactionActive(em)){
