@@ -33,15 +33,14 @@ import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 
-public class SQLOperationModel extends OperationModel {
+public class SQLOperationModel extends ModelWithBuildSql {
 
     protected String sql;
-    protected String buildSql;
     protected ArrayList<BindingModel> bindings = new ArrayList<BindingModel>();
 
     public SQLOperationModel() {
     }
-    
+
     @Deprecated
     public String getSQLText() {
         return getSql();
@@ -57,21 +56,6 @@ public class SQLOperationModel extends OperationModel {
         setSql(sql);
     }
 
-    public String getBuildSql() {
-        return buildSql;
-    }
-    public void setBuildSql(String buildSql) {
-        if (buildSql != null && buildSql.length() > 0) {
-            this.buildSql = buildSql;
-            setIsSimpleXMLFormat(false);
-        }
-        else {
-            // clears build SQL string; back to simple XML
-            this.buildSql = null;
-            setIsSimpleXMLFormat(true);
-        }
-    }
-    
     public void addBinding(BindingModel binding) {
         bindings.add(binding);
     }
@@ -86,13 +70,6 @@ public class SQLOperationModel extends OperationModel {
     @Override
     public boolean isSQLOperation() {
         return true;
-    }
-
-    public boolean hasBuildSql() {
-        if (buildSql != null && buildSql.length() > 0) {
-            return true;
-        }
-        return false;
     }
 
     @Override

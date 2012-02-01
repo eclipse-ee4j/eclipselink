@@ -297,6 +297,12 @@ public class DBWSBuilderModelProject extends Project {
         isAdvancedJDBCMapping.setXPath("@isAdvancedJDBC");
         descriptor.addMapping(isAdvancedJDBCMapping);
 
+        XMLDirectMapping buildStatementMapping = new XMLDirectMapping();
+        buildStatementMapping.setAttributeName("buildSql");
+        buildStatementMapping.setXPath("build-statement/text()");
+        buildStatementMapping.setIsCDATA(true);
+        descriptor.addMapping(buildStatementMapping);
+
         return descriptor;
     }
     protected ClassDescriptor buildPLSQLProcedureOperationModelDescriptor() {
@@ -362,7 +368,7 @@ public class DBWSBuilderModelProject extends Project {
         descriptor.addMapping(returnTypeMapping);
 
         // bug 322949
-        
+
         XMLChoiceObjectMapping statementMapping = new XMLChoiceObjectMapping();
         statementMapping.setAttributeName("sql");
         // support old element name 'text' and new name 'statement'
@@ -373,7 +379,7 @@ public class DBWSBuilderModelProject extends Project {
         f2.setIsCDATA(true);
         statementMapping.addChoiceElement(f2, String.class);
         descriptor.addMapping(statementMapping);
-        
+
         XMLDirectMapping buildStatementMapping = new XMLDirectMapping();
         buildStatementMapping.setAttributeName("buildSql");
         buildStatementMapping.setXPath("build-statement/text()");
@@ -414,7 +420,7 @@ public class DBWSBuilderModelProject extends Project {
         XMLField f1 = new XMLField("batch-statement/text()");
         f1.setIsCDATA(true);
         statementsMapping.setField(f1);
-        // need to setup a custom accessor to convert to/from a List and an '\n' separated string  
+        // need to setup a custom accessor to convert to/from a List and an '\n' separated string
         statementsMapping.setAttributeAccessor(new AttributeAccessor() {
             public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
                 String rawBatchStatements = (String) value;
@@ -427,7 +433,7 @@ public class DBWSBuilderModelProject extends Project {
             }
         });
         descriptor.addMapping(statementsMapping);
-        
+
         return descriptor;
     }
 

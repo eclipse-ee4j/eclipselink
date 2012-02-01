@@ -21,7 +21,7 @@ import java.util.List;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 
-public class ProcedureOperationModel extends OperationModel {
+public class ProcedureOperationModel extends ModelWithBuildSql {
 
     protected String catalogPattern;
     protected String schemaPattern;

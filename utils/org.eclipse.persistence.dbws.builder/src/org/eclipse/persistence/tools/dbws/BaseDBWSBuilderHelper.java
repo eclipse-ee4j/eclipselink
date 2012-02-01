@@ -221,10 +221,10 @@ public abstract class BaseDBWSBuilderHelper {
     protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject,
         Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs);
 
-    protected void addToOROXProjectsForSecondarySql(SQLOperationModel sqlOm,
+    protected void addToOROXProjectsForSecondarySql(ModelWithBuildSql modelWithBuildSql,
         Project orProject, Project oxProject, NamingConventionTransformer nct) {
-        List<DbColumn> columns = buildDbColumns(dbwsBuilder.getConnection(), sqlOm.getBuildSql());
-        String tableName = sqlOm.getReturnType();
+        List<DbColumn> columns = buildDbColumns(dbwsBuilder.getConnection(), modelWithBuildSql.getBuildSql());
+        String tableName = modelWithBuildSql.getReturnType();
         NamingConventionTransformer customNct = setUpCustomTransformer(tableName, nct);
         RelationalDescriptor desc = buildORDescriptor(tableName, dbwsBuilder.getProjectName(),
             null, customNct);
