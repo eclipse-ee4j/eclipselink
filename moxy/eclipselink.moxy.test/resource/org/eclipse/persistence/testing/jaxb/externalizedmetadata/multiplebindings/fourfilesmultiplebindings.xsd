@@ -27,9 +27,9 @@
       </xsd:complexContent>
    </xsd:complexType>
    <xsd:complexType name="person-type">
-      <xsd:all>
+      <xsd:sequence>
          <xsd:element minOccurs="0" name="the_id" type="xsd:string"/>
-      </xsd:all>
+      </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="empRoot4" type="employee-type"/>
    <xsd:simpleType name="department">

@@ -20,7 +20,7 @@
       </xsd:complexContent>
    </xsd:complexType>
    <xsd:complexType name="person-type">
-      <xsd:all/>
+      <xsd:sequence/>
       <xsd:attribute name="id" type="xsd:string"/>
    </xsd:complexType>
    <xsd:element name="empRoot2" type="employee-type"/>

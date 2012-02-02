@@ -17,6 +17,7 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -36,9 +37,10 @@ import org.w3c.dom.Text;
  *  @author  mmacivor
  *  @since   release specific (what release of product did this appear in)
  */
-public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
+public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLContainerMapping {
     private boolean isWriteOnly;
     private boolean reuseContainer;
+    private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;    
 
     public XMLFragmentCollectionMapping() {
         super();
@@ -205,4 +207,24 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         this.reuseContainer = reuseContainer;
     }
 
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return defaultEmptyContainer;
+    }
+
+    /**
+     * INTERNAL
+     * Indicate whether by default an empty container should be set on the 
+     * field/property if the collection is not present in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
+        this.defaultEmptyContainer = defaultEmptyContainer;
+    }
+    
 }

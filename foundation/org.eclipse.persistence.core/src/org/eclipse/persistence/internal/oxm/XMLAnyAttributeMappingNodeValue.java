@@ -94,9 +94,6 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
-        ContainerPolicy cp = xmlAnyAttributeMapping.getContainerPolicy();
-        Object containerInstance = unmarshalRecord.getContainerInstance(this);
-            
         boolean includeAttribute = true;
         if(!xmlAnyAttributeMapping.isNamespaceDeclarationIncluded() && XMLConstants.XMLNS_URL.equals(namespaceURI)){
             includeAttribute = false;               
@@ -105,7 +102,9 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         }
                     
         if(includeAttribute){
-            QName key = new QName(namespaceURI, localName);            
+            ContainerPolicy cp = xmlAnyAttributeMapping.getContainerPolicy();
+            Object containerInstance = unmarshalRecord.getContainerInstance(this);
+        	QName key = new QName(namespaceURI, localName);            
             cp.addInto(key, value, containerInstance, unmarshalRecord.getSession());
         }          
     }
@@ -154,4 +153,15 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
     public int getIndex(){
     	return index;
     }
+
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return getMapping().isDefaultEmptyContainer();
+    }
+
 }

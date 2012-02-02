@@ -74,6 +74,7 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
         List listValue = (List) value;
         if(null == listValue || listValue.isEmpty()) {
             nestedAccessor.setAttributeValueInObject(object, null);
+            return;
         }
         List<Integer> dimensionsList = new ArrayList<Integer>();
         int size = listValue.size();

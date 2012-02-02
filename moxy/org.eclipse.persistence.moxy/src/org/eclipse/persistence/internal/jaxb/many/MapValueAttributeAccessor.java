@@ -74,12 +74,14 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
         } catch (IllegalAccessException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
-        Object iterator = containerPolicy.iteratorFor(value);
-        while(containerPolicy.hasNext(iterator)){
-            Object next = containerPolicy.next(iterator, null);
-            Object nextKey = ((MapEntry)next).getKey();
-            Object nextValue = ((MapEntry)next).getValue(); 
-            mapValue.put(nextKey, nextValue);
+        if (value != null) {
+	        Object iterator = containerPolicy.iteratorFor(value);
+	        while(containerPolicy.hasNext(iterator)){
+	            Object next = containerPolicy.next(iterator, null);
+	            Object nextKey = ((MapEntry)next).getKey();
+	            Object nextValue = ((MapEntry)next).getValue(); 
+	            mapValue.put(nextKey, nextValue);
+	        }
         }
         nestedAccessor.setAttributeValueInObject(object, mapValue);         
     }

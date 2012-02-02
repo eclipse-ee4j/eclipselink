@@ -233,8 +233,8 @@ public class ListofObjects {
 			return false;
 		}
 
-		if(floatArray == null && compareListofObjects.floatArray !=null){
-			if(compareListofObjects.floatArray.length >0){
+		if (floatArray == null ) {
+			if (compareListofObjects.floatArray != null) {
 				return false;
 			}
 		}else if (floatArray.length == compareListofObjects.floatArray.length) {

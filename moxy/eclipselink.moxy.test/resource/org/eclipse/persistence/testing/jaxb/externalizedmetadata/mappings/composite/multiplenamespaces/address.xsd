@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:ns0="http://www.example.com/address" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/address">
    <xsd:complexType name="address">
-      <xsd:all>
+      <xsd:sequence>
          <xsd:element form="qualified" name="city" type="xsd:string"/>
          <xsd:element name="street" type="xsd:string" minOccurs="0"/>
          <xsd:element name="province" type="xsd:string" minOccurs="0"/>
          <xsd:element name="postalCode" type="xsd:string" minOccurs="0"/>
-      </xsd:all>
+      </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="home-address" type="ns0:address"/>
 </xsd:schema>

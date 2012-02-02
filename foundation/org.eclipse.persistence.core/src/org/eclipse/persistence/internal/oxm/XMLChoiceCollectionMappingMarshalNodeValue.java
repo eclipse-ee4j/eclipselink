@@ -262,4 +262,15 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     public int getIndex(){
     	return index;
     }
+
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return getMapping().isDefaultEmptyContainer();
+    }
+    
 }

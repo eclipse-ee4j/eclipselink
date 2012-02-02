@@ -24,6 +24,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -154,9 +155,10 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XMLMapping, ContainerMapping {
+public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XMLMapping, ContainerMapping, XMLContainerMapping {
     private XMLField field;
     private ContainerPolicy containerPolicy;
+    private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;    
     private boolean useXMLRoot;
     private boolean mixedContent = true;
     private boolean isWhitespacePreservedForMixedContent = false;
@@ -807,4 +809,24 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         this.reuseContainer = reuseContainer;
     }
 
+    /**
+     * INTERNAL
+     * Return true if an empty container should be set on the object if there
+     * is no presence of the collection in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public boolean isDefaultEmptyContainer() {
+        return defaultEmptyContainer;
+    }
+
+    /**
+     * INTERNAL
+     * Indicate whether by default an empty container should be set on the 
+     * field/property if the collection is not present in the XML document.
+     * @since EclipseLink 2.3.3
+     */
+    public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
+        this.defaultEmptyContainer = defaultEmptyContainer;
+    }
+    
 }

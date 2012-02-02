@@ -64,6 +64,7 @@ import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestC
 import org.eclipse.persistence.testing.jaxb.xmlvalue.none.InvalidTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.none.ValidTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder.PropOrderTestCases;
+import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
 
 public class JAXBTestSuite3 extends TestCase {
 
@@ -123,7 +124,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
         suite.addTestSuite(PrefixMapperTestCases.class);
         suite.addTestSuite(NonELPrefixMapperTestCases.class);
-        
+        suite.addTest(CollectionsTestSuite.suite());       
         return suite;
     }
 
