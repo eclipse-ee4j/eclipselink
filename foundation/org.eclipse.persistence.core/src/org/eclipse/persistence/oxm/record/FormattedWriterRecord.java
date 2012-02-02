@@ -89,7 +89,7 @@ public class FormattedWriterRecord extends WriterRecord {
             }
             isStartElementOpen = true;
             writer.write('<');
-            writer.write(xPathFragment.getShortName());
+            writer.write(getNameForFragment(xPathFragment));
             numberOfTabs++;
             isLastEventText = false;
         } catch (IOException e) {

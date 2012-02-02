@@ -513,8 +513,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             object = createXMLRootFromJAXBElement((JAXBElement) object);
         }
         try {
-            //System.out.println("[el-debug]marshal(Object object, MarshalRecord record)");
-            //xmlMarshaller.marshal(object,  System.out);
             record.setMarshaller(xmlMarshaller);
             xmlMarshaller.marshal(object, record);
         } catch (Exception e) {
@@ -600,11 +598,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
-            } /*else if(ECLIPSELINK_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
+            } else if(ECLIPSELINK_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
                 xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
             } else if(RI_NAMESPACE_PREFIX_MAPPER.equals(key) || JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
                 xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
-            }*/ else if (XML_DECLARATION.equals(key)) {
+            } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (JAXBContext.MEDIA_TYPE.equals(key)) {

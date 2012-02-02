@@ -156,10 +156,7 @@ public class OutputStreamRecord extends MarshalRecord {
         }
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
-        try {
-            outputStreamWrite(getNameForFragment(xPathFragment).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
-        } catch (UnsupportedEncodingException e) {
-        }
+        outputStreamWrite(getNameForFragmentBytes(xPathFragment));
     }
 
     /**
@@ -218,10 +215,7 @@ public class OutputStreamRecord extends MarshalRecord {
         } else {
             outputStreamWrite((byte)'<');
             outputStreamWrite((byte)'/');
-            try {
-                outputStreamWrite(getNameForFragment(xPathFragment).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-            }
+            outputStreamWrite(getNameForFragmentBytes(xPathFragment));
             outputStreamWrite(CLOSE_ELEMENT);
         }
         isStartElementOpen = false;

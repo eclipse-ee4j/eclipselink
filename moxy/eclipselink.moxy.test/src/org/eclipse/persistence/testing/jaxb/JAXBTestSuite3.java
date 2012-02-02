@@ -100,8 +100,8 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTest(DefaultValueTestSuite.suite());
         suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
         
-        //suite.addTestSuite(PrefixMapperTestCases.class);
-        //suite.addTestSuite(NonELPrefixMapperTestCases.class);
+        suite.addTestSuite(PrefixMapperTestCases.class);
+        suite.addTestSuite(NonELPrefixMapperTestCases.class);
         
         return suite;
     }

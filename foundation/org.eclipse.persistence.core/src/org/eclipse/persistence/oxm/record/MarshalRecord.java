@@ -12,12 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
@@ -55,6 +57,7 @@ public abstract class MarshalRecord extends XMLRecord {
     
     protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
     protected static final String TRUE = "true";
+    
     
     public MarshalRecord() {
         super();
@@ -602,11 +605,31 @@ public abstract class MarshalRecord extends XMLRecord {
             return xPathFragment.getShortName();
         }
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
-            String prefix = this.getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
-            return prefix + ":" + xPathFragment.getLocalName();
+            String prefix = this.getPrefixForFragment(xPathFragment);
+            if(prefix != null && prefix.length() > 0) {
+                return prefix + ":" + xPathFragment.getLocalName();
+            }
         }
         return xPathFragment.getLocalName();
-    } 
+    }
+    
+    protected byte[] getNameForFragmentBytes(XPathFragment xPathFragment) {
+        if(!this.hasCustomNamespaceMapper()) {
+            return xPathFragment.getShortNameBytes();
+        }
+        String name = xPathFragment.getLocalName();
+        if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
+            String prefix = this.getPrefixForFragment(xPathFragment);
+            if(prefix != null && prefix.length() > 0) {
+                name = prefix + ":" + xPathFragment.getLocalName();
+            }
+        }
+        byte[] bytes = null;
+        try {
+            bytes = name.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+        } catch(UnsupportedEncodingException ex) {}
+        return bytes;
+    }    
     
     protected String getPrefixForFragment(XPathFragment xPathFragment) {
         if(!this.hasCustomNamespaceMapper()) {
@@ -614,12 +637,24 @@ public abstract class MarshalRecord extends XMLRecord {
         }
         String uri = xPathFragment.getNamespaceURI();
         if(uri == null || uri.length() == 0) {
-            return "";
+            return XMLConstants.EMPTY_STRING;
+        }
+        
+        String defaultNamespace = getNamespaceResolver().getDefaultNamespaceURI();
+        
+        if(defaultNamespace != null && defaultNamespace.equals(uri)) {
+            return XMLConstants.EMPTY_STRING;
         }
         String prefix = this.getNamespaceResolver().resolveNamespaceURI(uri);
+        
         if(prefix != null) {
             return prefix;
         } 
+        for(Object next:getNamespaceResolver().getNamespaces()) {
+            Namespace ns = (Namespace)next;
+            uri = ns.getNamespaceURI();
+            prefix = ns.getPrefix();
+        }
         return xPathFragment.getPrefix();
     }
 

@@ -126,7 +126,7 @@ public class WriterRecord extends MarshalRecord {
                 isStartElementOpen = false;
             }
             writer.write('<');
-            writer.write(frag.getShortName());
+            writer.write(getNameForFragment(frag));
             writer.write('/');
             writer.write('>');
         } catch (IOException e) {
