@@ -218,10 +218,10 @@
         <say  message="persistence.lib:      '${persistence.lib}'"     if="persistence.bundle.exist"/>
         <say  message="core.lib:             '${core.lib}'"            if="core.bundle.exist"/>
         <say  message="resource.lib:         '${resource.lib}'"        if="resource.bundle.exist"/>
-        <say  message="aqapi.lib:            '${aqapi.lib}'"           if="aqapi.bundle.exist"/>   
-        <say  message="ojdbc.lib:            '${ojdbc.lib}'"           if="ojdbc.bundle.exist"/>    
-        <say  message="sdoapi.lib:           '${sdoapi.lib}'"          if="sdoapi.bundle.exist"/>   
-        <say  message="xdb.lib:              '${xdb.lib}'"             if="xdb.bundle.exist"/>      
+        <say  message="aqapi.lib:            '${aqapi.lib}'"           if="aqapi.bundle.exist"/>
+        <say  message="ojdbc.lib:            '${ojdbc.lib}'"           if="ojdbc.bundle.exist"/>
+        <say  message="sdoapi.lib:           '${sdoapi.lib}'"          if="sdoapi.bundle.exist"/>
+        <say  message="xdb.lib:              '${xdb.lib}'"             if="xdb.bundle.exist"/>
         <say  message="xmlparser.lib:        '${xmlparser.lib}'"       if="xmlparser.bundle.exist"/>
         <say  message="ucp.lib:              '${ucp.lib}'"             if="ucp.bundle.exist"/>
         <say  message="orcl_nosql.lib:       '${orcl_nosql.lib}'"      if="nosql.bundle.exist"/>
@@ -229,15 +229,15 @@
         <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find:          '${core.lib}'"        unless="core.bundle.exist"/>
         <fail message="Cannot find:          '${resource.lib}'"    unless="resource.bundle.exist"/>
-        <fail message="Cannot find:          '${aqapi.lib}'"       unless="aqapi.bundle.exist"/>   
-        <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>    
-        <fail message="Cannot find:          '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>   
-        <fail message="Cannot find:          '${xdb.lib}'"         unless="xdb.bundle.exist"/>      
+        <fail message="Cannot find:          '${aqapi.lib}'"       unless="aqapi.bundle.exist"/>
+        <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>
+        <fail message="Cannot find:          '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>
+        <fail message="Cannot find:          '${xdb.lib}'"         unless="xdb.bundle.exist"/>
         <fail message="Cannot find:          '${xmlparser.lib}'"   unless="xmlparser.bundle.exist"/>
         <fail message="Cannot find:          '${ucp.lib}'"         unless="ucp.bundle.exist"/>
         <fail message="Cannot find:          '${orcl_nosql.lib}'"  unless="nosql.bundle.exist"/>
         <fail message="Cannot find:          '${dms.lib}'"         unless="dms.bundle.exist"/>
-        
+
         <!-- Set Compile Path-->
         <path id="oracle.compile.path">
             <pathelement path="${core.lib}"/>
@@ -277,7 +277,7 @@
         </condition>
         <condition property="bnd-package.ok">
             <and>
-                <!-- isset property="oracle.depend.dir.exist"/ --> 
+                <!-- isset property="oracle.depend.dir.exist"/ -->
                 <isset property="classes.dir.exist"/>
                 <isset property="bnd.bld"/>
             </and>
@@ -350,7 +350,7 @@
             </fileset>
         </jar>
     </target>
-        
+
     <target name="package" if="package.ok" depends="init-package, package-src, bnd-package" description="jar OSGI bundle">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
