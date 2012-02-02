@@ -56,10 +56,10 @@
     <echo message="nosql.2.base.dir = '${nosql.2.base.dir}'"/>
     <property name="nosql.2.common.plugins.dir"     value="${nosql.2.base.dir}/plugins"/>
     <property name="nosql.2.foundation.plugins.dir" value="../plugins"/>
-    <condition property="nosql.2.jpa.plugins.dir"     value="${nosql.2.base.dir}/jpa/plugins" else="../plugins">
+    <condition property="nosql.2.jpa.plugins.dir"   value="${nosql.2.base.dir}/jpa/plugins" else="../plugins">
         <available file="${nosql.2.base.dir}/jpa/plugins" type="dir"/>
     </condition>
-    <property name="nosql.2.buildsys.dir" value="${nosql.2.base.dir}/buildsystem"/>
+    <property name="nosql.2.buildsys.dir"           value="${nosql.2.base.dir}/buildsystem"/>
 
     <!-- local property overrides -->
     <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
@@ -68,11 +68,6 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
-    <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
-    <condition property="nosql.extensions.depend.dir" value="../../../extension.lib.external" else="../../extension.lib.external">
-        <contains string="${nosql.build.location}" substring="foundation"/>
-    </condition>
     <property file="${nosql.build.location}/antbuild.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
@@ -104,7 +99,7 @@
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
         <condition property="extensions.depend.dir" value="${nosql.2.base.dir}/../extension.lib.external"
-                                                    else="${nosql.build.location}">
+                                                     else="${nosql.build.location}">
             <available file="${nosql.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
@@ -121,7 +116,7 @@
         <property name="release.designation"    value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"   value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor"  value="${specification.vendor}"/>
-        <say  message="'nobnd' is set."        if="nobnd"/>
+        <say  message="'nobnd' is set."         if="nobnd"/>
 
         <!-- Check for BND library -->
         <property name="nobndtool.manifest.dir" value="${nosql.build.location}/META-INF"/>
@@ -153,19 +148,17 @@
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init-compile" depends="init">
-        <echo message="nosql.extensions.depend.dir = '${nosql.extensions.depend.dir}'"/>
-
         <!-- dependency properties -->
         <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
         <!-- property name="persistence.lib"    value="${nosql.2.common.plugins.dir}/${persistence10.jar}"/ -->
         <property name="persistence.lib"  value="${nosql.2.jpa.plugins.dir}/${persistence20.jar}"/>
         <property name="core.lib"         value="${nosql.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <!-- Common "Core" dependency definitions from "eclipselink.core.depend" -->
-        <property name="resource.lib"    value="${nosql.2.common.plugins.dir}/${resource.jar}"/>
+        <property name="resource.lib"     value="${nosql.2.common.plugins.dir}/${resource.jar}"/>
         <!-- "nosql" dependency definitions from "nosql.extensions.depend.jars" -->
-        <condition property="mongo.lib"     value="${nosql.extensions.depend.dir}/${mongo.jar}"
-                                                   else="${extensions.depend.dir}/${mongo.jar}">
-            <available file="${nosql.extensions.depend.dir}/${mongo.jar}"/>
+        <condition property="mongo.lib"   value="${nosql.2.common.plugins.dir}/${mongo.jar}"
+                                                else="${extensions.depend.dir}/${mongo.jar}">
+            <available file="${nosql.2.common.plugins.dir}/${mongo.jar}"/>
         </condition>
 
         <!-- dependency tests -->
@@ -176,17 +169,15 @@
         <!-- nosql dependency tests -->
         <available file="${mongo.lib}"         property="mongo.bundle.exist"/>
         <!-- nosql extension dir test -->
-        <available file="${nosql.extensions.depend.dir}" type="dir" property="nosql.depend.dir.exist"/>
 
-        <say  message="persistence.lib: '${persistence.lib}'"     if="persistence.bundle.exist"/>
-        <say  message="core.lib:        '${core.lib}'"            if="core.bundle.exist"/>
-        <say  message="resource.lib:    '${resource.lib}'"        if="resource.bundle.exist"/>
-        <say  message="mongo.lib:       '${mongo.lib}'"           if="mongo.bundle.exist"/>
-        <fail message="Cannot find:     '${persistence.lib}'" unless="persistence.bundle.exist"/>
-        <fail message="Cannot find:     '${core.lib}'"        unless="core.bundle.exist"/>
-        <fail message="Cannot find:     '${resource.lib}'"    unless="resource.bundle.exist"/>
-        <fail message="Cannot find:     '${mongo.lib}'"       unless="mongo.bundle.exist"/>
-        <say  message="'${nosql.extensions.depend.dir}' found."   if="nosql.depend.dir.exist"/>
+        <say  message="persistence.lib:      '${persistence.lib}'"     if="persistence.bundle.exist"/>
+        <say  message="core.lib:             '${core.lib}'"            if="core.bundle.exist"/>
+        <say  message="resource.lib:         '${resource.lib}'"        if="resource.bundle.exist"/>
+        <say  message="mongo.lib:            '${mongo.lib}'"           if="mongo.bundle.exist"/>
+        <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find:          '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find:          '${resource.lib}'"    unless="resource.bundle.exist"/>
+        <fail message="Cannot find:          '${mongo.lib}'"       unless="mongo.bundle.exist"/>
         
         <!-- Set Compile Path-->
         <path id="nosql.compile.path">
@@ -213,22 +204,21 @@
         <!-- Check for nosql compile dependencies -->
         <condition property="package.ok">
             <and>
-                <isset property="nosql.depend.dir.exist"/>
                 <isset property="classes.dir.exist"/>
                 <isset property="nobnd"/>
             </and>
         </condition>
         <condition property="bnd-package.ok">
             <and>
-                <isset property="nosql.depend.dir.exist"/>
                 <isset property="classes.dir.exist"/>
                 <isset property="bnd.bld"/>
             </and>
         </condition>
-        <say message="'nobnd' is set."          if="nobnd"/>
-        <say message="'package.ok' is set."     if="package.ok"/>
-        <say message="'bnd.bld' is set."        if="bnd.bld"/>
-        <say message="'bnd-package.ok' is set." if="bnd-package.ok"/>
+        <say message="'nobnd' is set. (Override to use jar tool set)"               if="nobnd"/>
+        <say message="'bnd.bld' is set. (BND tool found, and override not set)"     if="bnd.bld"/>
+        <say message="'package.ok' is set. (Packaging will use jar tool)"           if="package.ok"/>
+        <say message="'bnd-package.ok' is set. (Packaging will use BND tool)"       if="bnd-package.ok"/>
+        <say message="No classes found, packaging will be skipped."             unless="classes.dir.exist"/>
     </target>
 
     <target name="fail-on-no-bnd" unless="bld">
@@ -249,7 +239,7 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" if="nosql.depend.dir.exist" depends="init-compile, fail-on-no-bnd" description="Compile bundle code">
+    <target name="compile" depends="init-compile, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"

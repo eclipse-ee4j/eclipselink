@@ -76,7 +76,7 @@
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
     <target name="build-oracle"     description="Trigger the automated oracle build"
-            depends="init, build-oracle-extension, publish-oracle"
+            depends="init, build-oracle-extension, build-nosql-extension, publish-oracle"
     />
 
     <target name="init" depends="pre-init, common-init"/>
@@ -331,6 +331,9 @@
 
     <target name="build-oracle-extension">
         <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
+    </target>
+
+    <target name="build-nosql-extension">
         <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-nosql-extension"/>
     </target>
 

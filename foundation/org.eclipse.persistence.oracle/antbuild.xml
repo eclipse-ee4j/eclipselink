@@ -56,10 +56,10 @@
     <echo message="oracle.2.base.dir = '${oracle.2.base.dir}'"/>
     <property name="oracle.2.common.plugins.dir"     value="${oracle.2.base.dir}/plugins"/>
     <property name="oracle.2.foundation.plugins.dir" value="../plugins"/>
-    <condition property="oracle.2.jpa.plugins.dir"     value="${oracle.2.base.dir}/jpa/plugins" else="../plugins">
+    <condition property="oracle.2.jpa.plugins.dir"   value="${oracle.2.base.dir}/jpa/plugins" else="../plugins">
         <available file="${oracle.2.base.dir}/jpa/plugins" type="dir"/>
     </condition>
-    <property name="oracle.2.buildsys.dir" value="${oracle.2.base.dir}/buildsystem"/>
+    <property name="oracle.2.buildsys.dir"           value="${oracle.2.base.dir}/buildsystem"/>
 
     <!-- local property overrides -->
     <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
@@ -104,10 +104,10 @@
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
         <condition property="extensions.depend.dir" value="${oracle.2.base.dir}/../extension.lib.external"
-                                                    else="${oracle.build.location}">
+                                                     else="${oracle.build.location}">
             <available file="${oracle.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
-        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
         <tstamp>
@@ -121,43 +121,40 @@
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor" value="${specification.vendor}"/>
+        <say  message="'nobnd' is set."        if="nobnd"/>
 
         <!-- Check for BND library -->
-        <property name="nobndtool.manifest.dir"      value="${oracle.build.location}/META-INF"/>
+        <property name="nobndtool.manifest.dir" value="${oracle.build.location}/META-INF"/>
         <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
          **  once bnd is added to the buildsystem directory.                                       -->
         <echo message="bndtool.prefix        = '${bndtool.prefix}'"/>
-        <echo message="oracle.2.buildsys.dir   = '${oracle.2.buildsys.dir}'"/>
         <echo message="bndtool.separator     = '${bndtool.separator}'"/>
         <echo message="bndtool.criteria      = '${bndtool.criteria}'"/>
-        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
         <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <echo message="bndtool.prefix      = '${bndtool.prefix}'"/>
-        <echo message="oracle.2.buildsys.dir = '${oracle.2.buildsys.dir}'"/>
-        <echo message="bndtool.separator   = '${bndtool.separator}'"/>
-        <echo message="bndtool.criteria    = '${bndtool.criteria}'"/>
         <echo message="oracle.2.buildsys.dir = '${oracle.2.buildsys.dir}'"/>
         <selectbundle basename="${bndtool.prefix}" directory="${oracle.2.buildsys.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <say message="bndtool.lib                     = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say  message="bndtool.lib           = '${bndtool.lib}'" if="bndtool.lib"/>
         <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
+        <say  message="'nobnd' is set."        if="nobnd"/>
 
-        <echo message="bndtool.lib                     = '${bndtool.lib}'"/>
         <condition property="bld">
             <or>
                 <isset property="bndtool.lib"/>
                 <isset property="nobnd"/>
             </or>
         </condition>
+        <say  message="'bld' is set."          if="bld"/>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init-compile" depends="init">
         <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
         <!-- dependency properties -->
         <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
@@ -217,17 +214,29 @@
         <!-- oracle extension dir test -->
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
 
-        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
-        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
-        <fail message="Cannot find: '${resource.lib}'"    unless="resource.bundle.exist"/>
-        <fail message="Cannot find: '${aqapi.lib}'"       unless="aqapi.bundle.exist"/>   
-        <fail message="Cannot find: '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>    
-        <fail message="Cannot find: '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>   
-        <fail message="Cannot find: '${xdb.lib}'"         unless="xdb.bundle.exist"/>      
-        <fail message="Cannot find: '${xmlparser.lib}'"   unless="xmlparser.bundle.exist"/>
-        <fail message="Cannot find: '${ucp.lib}'"         unless="ucp.bundle.exist"/>
-        <fail message="Cannot find: '${orcl_nosql.lib}'"  unless="nosql.bundle.exist"/>
-        <fail message="Cannot find: '${dms.lib}'"         unless="dms.bundle.exist"/>
+        <say  message="'${oracle.extensions.depend.dir}' found."       if="oracle.depend.dir.exist"/>
+        <say  message="persistence.lib:      '${persistence.lib}'"     if="persistence.bundle.exist"/>
+        <say  message="core.lib:             '${core.lib}'"            if="core.bundle.exist"/>
+        <say  message="resource.lib:         '${resource.lib}'"        if="resource.bundle.exist"/>
+        <say  message="aqapi.lib:            '${aqapi.lib}'"           if="aqapi.bundle.exist"/>   
+        <say  message="ojdbc.lib:            '${ojdbc.lib}'"           if="ojdbc.bundle.exist"/>    
+        <say  message="sdoapi.lib:           '${sdoapi.lib}'"          if="sdoapi.bundle.exist"/>   
+        <say  message="xdb.lib:              '${xdb.lib}'"             if="xdb.bundle.exist"/>      
+        <say  message="xmlparser.lib:        '${xmlparser.lib}'"       if="xmlparser.bundle.exist"/>
+        <say  message="ucp.lib:              '${ucp.lib}'"             if="ucp.bundle.exist"/>
+        <say  message="orcl_nosql.lib:       '${orcl_nosql.lib}'"      if="nosql.bundle.exist"/>
+        <say  message="dms.lib:              '${dms.lib}'"             if="dms.bundle.exist"/>
+        <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find:          '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find:          '${resource.lib}'"    unless="resource.bundle.exist"/>
+        <fail message="Cannot find:          '${aqapi.lib}'"       unless="aqapi.bundle.exist"/>   
+        <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>    
+        <fail message="Cannot find:          '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>   
+        <fail message="Cannot find:          '${xdb.lib}'"         unless="xdb.bundle.exist"/>      
+        <fail message="Cannot find:          '${xmlparser.lib}'"   unless="xmlparser.bundle.exist"/>
+        <fail message="Cannot find:          '${ucp.lib}'"         unless="ucp.bundle.exist"/>
+        <fail message="Cannot find:          '${orcl_nosql.lib}'"  unless="nosql.bundle.exist"/>
+        <fail message="Cannot find:          '${dms.lib}'"         unless="dms.bundle.exist"/>
         
         <!-- Set Compile Path-->
         <path id="oracle.compile.path">
@@ -261,18 +270,23 @@
         <!-- Check for Oracle compile dependencies -->
         <condition property="package.ok">
             <and>
-                <isset property="oracle.depend.dir.exist"/>
+                <!-- isset property="oracle.depend.dir.exist"/ -->
                 <isset property="classes.dir.exist"/>
                 <isset property="nobnd"/>
             </and>
         </condition>
         <condition property="bnd-package.ok">
             <and>
-                <isset property="oracle.depend.dir.exist"/>
+                <!-- isset property="oracle.depend.dir.exist"/ --> 
                 <isset property="classes.dir.exist"/>
                 <isset property="bnd.bld"/>
             </and>
         </condition>
+        <say message="'nobnd' is set. (Override to use jar tool set)"               if="nobnd"/>
+        <say message="'bnd.bld' is set. (BND tool found, and override not set)"     if="bnd.bld"/>
+        <say message="'package.ok' is set. (Packaging will use jar tool)"           if="package.ok"/>
+        <say message="'bnd-package.ok' is set. (Packaging will use BND tool)"       if="bnd-package.ok"/>
+        <say message="No classes found, packaging will be skipped."             unless="classes.dir.exist"/>
     </target>
 
     <target name="fail-on-no-bnd" unless="bld">
@@ -293,7 +307,7 @@
     </target>
 
     <!-- compile -->
-    <target name="compile" if="oracle.depend.dir.exist" depends="init-compile, fail-on-no-bnd" description="Compile bundle code">
+    <target name="compile" depends="init-compile, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
