@@ -204,12 +204,32 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
     
          // SECTION: TABLE
             tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
-            tabledefinition.setName("TMP_MATERIAL");
+            tabledefinition.setName("DDL_CKENTA");
     
-            // SECTION: ID FIELD
+            // SECTION: ID FIELDS
             field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
-            field.setName("COURSE_ID");
-            field.setType(Long.class);
+            field.setName("SEQ");
+            field.setType(Integer.class);
+            field.setShouldAllowNull(false);
+            field.setIsPrimaryKey(true);
+            field.setUnique(false);
+            field.setIsIdentity(true);
+            tabledefinition.addField(field);
+            
+            field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+            field.setName("F_NAME");
+            field.setType(String.class);
+            field.setSize(64);
+            field.setShouldAllowNull(false);
+            field.setIsPrimaryKey(true);
+            field.setUnique(false);
+            field.setIsIdentity(true);
+            tabledefinition.addField(field);
+            
+            field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+            field.setName("L_NAME");
+            field.setType(String.class);
+            field.setSize(64);
             field.setShouldAllowNull(false);
             field.setIsPrimaryKey(true);
             field.setUnique(false);

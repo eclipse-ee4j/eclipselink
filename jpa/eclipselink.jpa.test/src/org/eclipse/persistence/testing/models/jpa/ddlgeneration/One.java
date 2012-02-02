@@ -19,6 +19,10 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.Index;
 
+/**
+ * This class is only usable within the ddlTableSuffix persistence unit since 
+ * the columnDefinition prevents it from being created on DB2
+ */
 @Entity(name = "One")
 @Table(name = "o")
 public class One implements Serializable {

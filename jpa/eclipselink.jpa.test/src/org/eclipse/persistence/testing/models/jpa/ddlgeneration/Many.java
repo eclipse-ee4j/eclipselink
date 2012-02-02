@@ -20,6 +20,9 @@ import java.util.List;
 
 import javax.persistence.*;
 
+/**
+ * This class is only usable within the ddlTableSuffix persistence unit
+ */
 @Entity(name = "Many")
 @Table(name = "m")
 public class Many implements Serializable {
