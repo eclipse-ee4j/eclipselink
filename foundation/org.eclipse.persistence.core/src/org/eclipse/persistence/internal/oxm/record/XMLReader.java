@@ -14,11 +14,13 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import java.io.IOException;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
@@ -51,7 +53,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     private org.xml.sax.XMLReader reader;
     private boolean supportsLexicalHandler;
     private LexicalHandlerWrapper lexicalHandlerWrapper;
-    protected ValidatorHandler validatorHandler;   
+    protected ValidatingContentHandler validatingContentHandler;
 
     public XMLReader(org.xml.sax.XMLReader internalReader) {
         this();
@@ -67,8 +69,8 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public void setContentHandler (ContentHandler handler) {
-        if(validatorHandler != null) {
-            validatorHandler.setContentHandler(handler);
+        if(validatingContentHandler != null) {
+            validatingContentHandler.setContentHandler(handler);
         } else {
             reader.setContentHandler(handler);
         }
@@ -95,8 +97,8 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public void setErrorHandler (ErrorHandler handler) {
-        if(validatorHandler != null) {
-            validatorHandler.setErrorHandler(handler);
+        if(validatingContentHandler != null) {
+            validatingContentHandler.setErrorHandler(handler);
         } else {
             reader.setErrorHandler(handler);
         }
@@ -181,18 +183,33 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public void setValidatorHandler(ValidatorHandler validatorHandler) {
-        if(reader != null) {
-            reader.setContentHandler(validatorHandler);
+        ErrorHandler errorHandler = getErrorHandler();
+        ContentHandler contentHandler;
+        if(null == this.validatingContentHandler) {
+            contentHandler = getContentHandler();
+        } else {
+            contentHandler = validatorHandler.getContentHandler();
+            this.validatingContentHandler = null;
         }
-        this.validatorHandler = validatorHandler;
-        if(validatorHandler != null) {
-            validatorHandler.setErrorHandler(getErrorHandler());
+        ValidatingContentHandler validatingContentHandler = null;
+        if(null != validatorHandler) {
+            validatingContentHandler = new ValidatingContentHandler(validatorHandler);
+            validatingContentHandler.setContentHandler(contentHandler);
+            contentHandler = validatingContentHandler;
         }
-
+        if(null != reader) {
+            reader.setContentHandler(contentHandler);
+        }
+        setContentHandler(contentHandler);
+        this.validatingContentHandler = validatingContentHandler;
+        setErrorHandler(errorHandler);
     }
-    
+
     public ValidatorHandler getValidatorHandler() {
-        return this.validatorHandler;
+        if(null == validatingContentHandler) {
+            return null;
+        }
+        return this.validatingContentHandler.getValidatorHandler();
     }
     
     public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
@@ -274,6 +291,97 @@ public class XMLReader implements org.xml.sax.XMLReader {
             if(null != lexicalHandler) {
                 lexicalHandler.startEntity(name);
             }
+        }
+
+    }
+
+    /**
+     * Validate the SAX events reported to the ContentHandler.  This class is 
+     * being used rather than a ValidatorHandler in order to prevent default 
+     * values from being populated.
+     */
+    protected static class ValidatingContentHandler implements ContentHandler {
+
+        private ValidatorHandler validatorHandler;
+        private ContentHandler contentHandler;
+
+        public ValidatingContentHandler(ValidatorHandler validatorHandler) {
+            this.validatorHandler = validatorHandler;
+        }
+
+        public ContentHandler getContentHandler() {
+            return contentHandler;
+        }
+
+        public void setContentHandler(ContentHandler contentHandler) {
+            this.contentHandler = contentHandler;
+        }
+
+        public void setErrorHandler(ErrorHandler errorHandler) {
+            validatorHandler.setErrorHandler(errorHandler);
+        }
+
+        public ValidatorHandler getValidatorHandler() {
+            return validatorHandler;
+        }
+
+        public void setValidatorHandler(ValidatorHandler validatorHandler) {
+            this.validatorHandler = validatorHandler;
+        }
+
+        public void setDocumentLocator(Locator locator) {
+            validatorHandler.setDocumentLocator(locator);
+            contentHandler.setDocumentLocator(locator);
+        }
+
+        public void startDocument() throws SAXException {
+            validatorHandler.startDocument();
+            contentHandler.startDocument();
+        }
+
+        public void endDocument() throws SAXException {
+            validatorHandler.endDocument();
+            contentHandler.endDocument();
+        }
+
+        public void startPrefixMapping(String prefix, String uri) throws SAXException {
+            validatorHandler.startPrefixMapping(prefix, uri);
+            contentHandler.startPrefixMapping(prefix, uri);
+        }
+
+        public void endPrefixMapping(String prefix) throws SAXException {
+            validatorHandler.endPrefixMapping(prefix);
+            contentHandler.endPrefixMapping(prefix);
+        }
+
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            validatorHandler.startElement(uri, localName, qName, atts);
+            contentHandler.startElement(uri, localName, qName, atts);
+        }
+
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            validatorHandler.endElement(uri, localName, qName);
+            contentHandler.endElement(uri, localName, qName);
+        }
+
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            validatorHandler.characters(ch, start, length);
+            contentHandler.characters(ch, start, length);
+        }
+
+        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+            validatorHandler.ignorableWhitespace(ch, start, length);
+            contentHandler.characters(ch, start, length);
+        }
+
+        public void processingInstruction(String target, String data) throws SAXException {
+            validatorHandler.processingInstruction(target, data);
+            contentHandler.processingInstruction(target, data);
+        }
+
+        public void skippedEntity(String name) throws SAXException {
+            validatorHandler.skippedEntity(name);
+            contentHandler.skippedEntity(name);
         }
 
     }

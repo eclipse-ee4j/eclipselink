@@ -69,42 +69,37 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
     }
 
     public void testFailOnSecondErrorFile() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         File file = new File(DOUBLE_ERROR_XML);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(file);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorInputSource() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         InputSource inputSource = new InputSource(stream);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(inputSource);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2,eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorNode() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         XMLParser xmlParser = xmlPlatform.newXMLParser();
@@ -114,18 +109,15 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(node);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorNodeWithClass() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         XMLParser xmlParser = xmlPlatform.newXMLParser();
@@ -135,54 +127,45 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(node, Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorReader() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         InputStreamReader reader = new InputStreamReader(stream);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(reader);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(eventHandler.getErrorCount(), 2);
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorSource() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         Source source = new StreamSource(stream);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(eventHandler.getErrorCount(), 2);
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorSAXSource() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
@@ -194,18 +177,15 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorSAXSourceWithClass() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
         SAXParser sp = spf.newSAXParser();
@@ -216,18 +196,15 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source, Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorSAXSourceWithType() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
         SAXParser sp = spf.newSAXParser();
@@ -238,64 +215,51 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source, (Type) Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorURL() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         URL url = ClassLoader.getSystemResource(DOUBLE_ERROR_XML);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(url);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorSourceWithClass() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         Source source = new StreamSource(stream);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source, Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorSourceWithType() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         Source source = new StreamSource(stream);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(source, (Type) Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
@@ -307,16 +271,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         if(null == xmlEventReader) {
             return;
         }
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         try {
             unmarshaller.setSchema(this.schema);
-            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
@@ -328,16 +289,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         if(null == xmlEventReader) {
             return;
         }
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         try {
             unmarshaller.setSchema(this.schema);
-            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader, Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
@@ -349,16 +307,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         if(null == xmlEventReader) {
             return;
         }
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         try {
             unmarshaller.setSchema(this.schema);
-            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlEventReader, (Type) Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
@@ -370,16 +325,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         if(null == xmlStreamReader) {
             return;
         }
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         try {
             unmarshaller.setSchema(this.schema);
-            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
@@ -391,16 +343,13 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         if(null == xmlStreamReader) {
             return;
         }
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         try {
             unmarshaller.setSchema(this.schema);
-            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader, Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
@@ -412,33 +361,27 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
         if(null == xmlStreamReader) {
             return;
         }
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         try {
             unmarshaller.setSchema(this.schema);
-            unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
             unmarshaller.unmarshal(xmlStreamReader, (Type) Employee.class);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
     }
 
     public void testFailOnSecondErrorInputStream() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        CustomErrorValidationEventHandler eventHandler = new CustomErrorValidationEventHandler();
+        unmarshaller.setEventHandler(eventHandler);
         InputStream stream = ClassLoader.getSystemResourceAsStream(DOUBLE_ERROR_XML);
         try {
             unmarshaller.setSchema(this.schema);
             unmarshaller.unmarshal(stream);
         } catch (UnmarshalException ex) {
-            assertTrue(true);
-            return;
-        } catch (UnsupportedOperationException uoe) {
-            // XDK does not support setSchema, so just pass in this case
-            assertTrue(true);
+            assertEquals(2, eventHandler.getErrorCount());
             return;
         }
         fail("No Exceptions thrown.");
