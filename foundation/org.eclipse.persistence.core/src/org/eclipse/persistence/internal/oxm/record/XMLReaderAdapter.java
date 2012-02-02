@@ -48,8 +48,8 @@ public abstract class XMLReaderAdapter extends XMLReader {
         if(null != xmlUnmarshaller) {
             Schema schema = xmlUnmarshaller.getSchema();
             if(null != schema) {
-                validatorHandler = schema.newValidatorHandler();
-                this.contentHandler = new ExtendedContentHandlerAdapter(validatorHandler);
+                validatingContentHandler = new ValidatingContentHandler(schema.newValidatorHandler());
+                this.contentHandler = new ExtendedContentHandlerAdapter(validatingContentHandler);
             }
             setErrorHandler(xmlUnmarshaller.getErrorHandler());
         }
@@ -62,14 +62,14 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     @Override
     public void setContentHandler(ContentHandler contentHandler) {
-        if(null == validatorHandler) {
+        if(null == validatingContentHandler) {
             if(contentHandler instanceof  ExtendedContentHandler) {
                 this.contentHandler = (ExtendedContentHandler) contentHandler;
             } else {
                 this.contentHandler = new ExtendedContentHandlerAdapter(contentHandler);
             }
         } else {
-            validatorHandler.setContentHandler(contentHandler);
+            validatingContentHandler.setContentHandler(contentHandler);
         }
     }
 
@@ -101,8 +101,8 @@ public abstract class XMLReaderAdapter extends XMLReader {
     @Override
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
-        if(null != validatorHandler) {
-            validatorHandler.setErrorHandler(errorHandler);
+        if(null != validatingContentHandler) {
+            validatingContentHandler.setErrorHandler(errorHandler);
         }
     }
 
