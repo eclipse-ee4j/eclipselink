@@ -11354,6 +11354,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if(!getServerSession().getPlatform().supportsSequenceObjects() || isOnServer()) {
             return;
         }
+        
+        // Avoid test on certain platforms due to Bug 370487 
+        if (getServerSession().getPlatform().isDerby() || getServerSession().getPlatform().isDB2() || getServerSession().getPlatform().isPostgreSQL()){
+            return;
+        }
 
         // close the entire factory in order to set the session customizer
         closeEntityManagerFactory();
