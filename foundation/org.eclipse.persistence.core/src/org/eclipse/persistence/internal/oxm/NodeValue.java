@@ -262,4 +262,8 @@ public abstract class NodeValue {
         return false;
     }
 
+    public boolean isWrapperNodeValue() {
+    	return false;
+    }
+    
 }

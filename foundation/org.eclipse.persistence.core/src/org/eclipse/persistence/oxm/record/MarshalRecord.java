@@ -49,6 +49,9 @@ public abstract class MarshalRecord extends XMLRecord {
     private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 
+    protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
+    protected static final String TRUE = "true";
+    
     public MarshalRecord() {
         super();
     }
@@ -459,6 +462,45 @@ public abstract class MarshalRecord extends XMLRecord {
         return xPathFragment.getPrefix();
     }
 
-    
+    /**
+     * Used when an nil attribute should be written
+     * @since EclipseLink 2.3.3
+     */    
+    public void nilSimple(NamespaceResolver namespaceResolver){
+    	 XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
+         StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
+         qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
+         XPathFragment nilFragment = new XPathFragment(qName.toString());
+         nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+         attribute(nilFragment, namespaceResolver, TRUE);
+         closeStartGroupingElements(groupingFragment);
+    }
 
+    /**
+     * INTERNAL:
+     * Private function to process or create an entry in the NamespaceResolver for the xsi prefix.
+     * @param namespaceResolver
+     * @return xsi prefix
+     * @since EclipseLink 2.3.3
+     */
+    protected String processNamespaceResolverForXSIPrefix(NamespaceResolver namespaceResolver) {
+        String xsiPrefix;
+        if (null == namespaceResolver) {
+            // add new xsi entry into the properties map
+            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
+            namespaceResolver = new NamespaceResolver();
+            namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        } else {
+            // find an existing xsi entry in the map
+            xsiPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            if (null == xsiPrefix) {
+                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+                attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            }
+        }
+        return xsiPrefix;
+    }
+    
 }

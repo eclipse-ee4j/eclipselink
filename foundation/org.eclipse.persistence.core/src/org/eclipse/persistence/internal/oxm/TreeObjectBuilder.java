@@ -204,9 +204,17 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     } else if (xmlMapping.isAbstractCompositeObjectMapping()) {
                         mappingNodeValue = new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
                     } else if (xmlMapping.isAbstractCompositeDirectCollectionMapping()) {
-                        mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
+                        XMLCompositeDirectCollectionMapping collectionMapping = (XMLCompositeDirectCollectionMapping) xmlMapping;
+                        mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue(collectionMapping);
+                        if (collectionMapping.getWrapperNullPolicy() != null) {
+                            addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
+                        }
                     } else if (xmlMapping.isAbstractCompositeCollectionMapping()) {
-                        mappingNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
+                        XMLCompositeCollectionMapping collectionMapping = (XMLCompositeCollectionMapping) xmlMapping;
+                        mappingNodeValue = new XMLCompositeCollectionMappingNodeValue(collectionMapping);
+                        if (collectionMapping.getWrapperNullPolicy() != null) {
+                            addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
+                        }
                     } else if (xmlMapping instanceof XMLAnyObjectMapping) {
                         mappingNodeValue = new XMLAnyObjectMappingNodeValue((XMLAnyObjectMapping)xmlMapping);
                     } else if (xmlMapping instanceof XMLAnyCollectionMapping) {

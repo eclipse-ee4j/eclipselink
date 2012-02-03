@@ -57,6 +57,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMa
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -100,6 +101,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private ContainerPolicy containerPolicy;
     private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isMixedContent;
+    private AbstractNullPolicy wrapperNullPolicy;
     
     private boolean isWriteOnly;
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
@@ -881,4 +883,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         this.isDefaultEmptyContainer = defaultEmptyContainer;
     }
 
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
+    }
+    
 }

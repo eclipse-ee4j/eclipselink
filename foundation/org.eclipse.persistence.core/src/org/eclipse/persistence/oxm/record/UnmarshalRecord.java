@@ -273,11 +273,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         }
     }
 
+    public void setContainerInstance(int index, Object containerInstance) {
+    	containerInstances[index] = containerInstance;
+    }
+    
     public Object getContainerInstance(ContainerValue c) {
     	return getContainerInstance(c, true);    	
     }
 
-    private Object getContainerInstance(ContainerValue c, boolean createContainerIfNecessary) {
+    public Object getContainerInstance(ContainerValue c, boolean createContainerIfNecessary) {
         Object containerInstance = containerInstances[c.getIndex()];
 
 
@@ -956,7 +960,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 unmarshalContext.characters(this);
             }
             NodeValue unmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
-            if (null != unmarshalNodeValue) {
+            if (null != unmarshalNodeValue && !unmarshalNodeValue.isWrapperNodeValue()) {
                 if(strBufferInitialLength == -1) {
                     getStringBuffer().append(ch, start, length);
                 } else {

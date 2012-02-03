@@ -231,6 +231,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;    
     private boolean isCollapsingStringValues;
     private boolean isNormalizingStringValues;
+    private AbstractNullPolicy wrapperNullPolicy;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
@@ -539,4 +540,12 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         this.isDefaultEmptyContainer = defaultEmptyContainer;
     }
 
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
+    }    
+    
 }

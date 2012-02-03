@@ -45,6 +45,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -72,6 +73,7 @@ import org.w3c.dom.Node;
 public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping {
     private XMLField field;
     private MappedKeyMapContainerPolicy containerPolicy;
+    private AbstractNullPolicy wrapperNullPolicy;    
     private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isNamespaceDeclarationIncluded;
     private boolean isSchemaInstanceIncluded;
@@ -471,6 +473,14 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      */
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.isDefaultEmptyContainer = defaultEmptyContainer;
+    }
+
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
     }
     
 }

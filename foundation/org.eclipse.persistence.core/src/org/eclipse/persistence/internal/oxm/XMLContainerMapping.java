@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+
 /**
  * This interface represents behaviour that is common to all XML mappings that
  * involve containers:  Collection, Map, Arrays, etc.
@@ -47,5 +49,15 @@ public interface XMLContainerMapping {
      * Specify if a pre-existing container on the field/property should be used.
      */
     void setReuseContainer(boolean reuseContainer);
+    
+    /**
+     * Get the Wrapper NullPolicy from the Mapping.
+     */
+    public AbstractNullPolicy getWrapperNullPolicy();
+
+    /**
+     * Set the Wrapper NullPolicy on the Mapping.
+     */
+    void setWrapperNullPolicy(AbstractNullPolicy policy);
 
 }

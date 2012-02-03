@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -41,6 +42,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
     private boolean isWriteOnly;
     private boolean reuseContainer;
     private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;    
+    private AbstractNullPolicy wrapperNullPolicy;
 
     public XMLFragmentCollectionMapping() {
         super();
@@ -225,6 +227,14 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
      */
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
+    }
+    
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
     }
     
 }

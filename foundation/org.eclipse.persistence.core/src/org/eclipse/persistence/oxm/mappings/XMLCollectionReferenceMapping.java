@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -70,6 +71,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
     private DatabaseField field;
     private boolean usesSingleNode;
     private boolean reuseContainer;
+    private AbstractNullPolicy wrapperNullPolicy;
 
     /**
      * PUBLIC:
@@ -486,6 +488,14 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      */
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
+    }
+
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
     }
     
 }

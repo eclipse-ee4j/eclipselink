@@ -31,6 +31,8 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.XMLRoot;
 import java.util.Iterator;
@@ -89,7 +91,13 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         
         Object value = xmlChoiceCollectionMapping.getAttributeValueFromObject(object);
         if(value == null) {
-            return false;
+            AbstractNullPolicy wrapperNP = xmlChoiceCollectionMapping.getWrapperNullPolicy();
+            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+                marshalRecord.nilSimple(namespaceResolver);
+                return true;
+            } else {
+                return false;
+            }
         }
         ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(value);
@@ -99,7 +107,12 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             }
         } else {
-            return false;
+            if (xmlChoiceCollectionMapping.getWrapperNullPolicy() != null ) {
+                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+                marshalRecord.closeStartGroupingElements(groupingFragment);
+            } else {
+                return false;
+            }
         }
         
         while(cp.hasNext(iterator)) {

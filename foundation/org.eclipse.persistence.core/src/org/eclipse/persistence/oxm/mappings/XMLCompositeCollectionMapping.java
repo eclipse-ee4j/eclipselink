@@ -151,7 +151,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     AbstractNullPolicy nullPolicy;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
     private XMLInverseReferenceMapping inverseReferenceMapping;
-
+    private AbstractNullPolicy wrapperNullPolicy;
+    
     private boolean isWriteOnly;
     private boolean reuseContainer = false;
     private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
@@ -759,5 +760,13 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     public void setDefaultEmptyContainer(boolean defaultEmptyContainer) {
         this.defaultEmptyContainer = defaultEmptyContainer;
     }
+
+    public AbstractNullPolicy getWrapperNullPolicy() {
+        return this.wrapperNullPolicy;
+    }
+
+    public void setWrapperNullPolicy(AbstractNullPolicy policy) {
+        this.wrapperNullPolicy = policy;
+    }    
     
 }
