@@ -310,7 +310,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     public void occurred(String operationName, DatabaseQuery query){
         Sensor event = getSensorByName(operationName);
         if (event != null) {
-            ((Event)event).occurred(operationName);
+            ((Event)event).occurred();
             occurred(query.getMonitorName());
         }
     }
