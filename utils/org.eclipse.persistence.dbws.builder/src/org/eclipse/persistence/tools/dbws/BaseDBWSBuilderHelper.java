@@ -221,7 +221,7 @@ public abstract class BaseDBWSBuilderHelper {
     protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject,
         Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs);
 
-    protected void addToOROXProjectsForSecondarySql(ModelWithBuildSql modelWithBuildSql,
+    protected void addToOROXProjectsForBuildSql(ModelWithBuildSql modelWithBuildSql,
         Project orProject, Project oxProject, NamingConventionTransformer nct) {
         List<DbColumn> columns = buildDbColumns(dbwsBuilder.getConnection(), modelWithBuildSql.getBuildSql());
         String tableName = modelWithBuildSql.getReturnType();
@@ -620,10 +620,9 @@ public abstract class BaseDBWSBuilderHelper {
                     if (tableModel.additionalOperations != null &&
                         tableModel.additionalOperations.size() > 0) {
                         for (OperationModel additionalOperation : tableModel.additionalOperations) {
-                            if (additionalOperation.isSQLOperation() &&
-                                ((SQLOperationModel)additionalOperation).hasBuildSql()) {
-                                addToOROXProjectsForSecondarySql(
-                                    (SQLOperationModel)additionalOperation, orProject, oxProject, nct);
+                            if (additionalOperation.hasBuildSql()) {
+                                addToOROXProjectsForBuildSql(
+                                    (ModelWithBuildSql)additionalOperation, orProject, oxProject, nct);
                             }
                             else {
                                 additionalOperation.buildOperation(dbwsBuilder);
@@ -966,10 +965,10 @@ public abstract class BaseDBWSBuilderHelper {
      * complex arguments.  Set the projects on the DBWSBuilder instance.
      */
     protected void finishUpProjects(Project orProject, Project oxProject) {
-        // handle secondary SQL
+        // handle build SQL
         for (OperationModel opModel : dbwsBuilder.operations) {
-            if (opModel.isSQLOperation() && ((SQLOperationModel)opModel).hasBuildSql()) {
-                addToOROXProjectsForSecondarySql((SQLOperationModel)opModel, orProject, oxProject,
+            if (opModel.hasBuildSql()) {
+                addToOROXProjectsForBuildSql((ModelWithBuildSql)opModel, orProject, oxProject,
                     nct);
             }
         }

@@ -104,12 +104,16 @@ public class OperationModel {
     public boolean isSQLOperation() {
         return false;
     }
-    
+
     public boolean isBatchSQLOperation() {
         return false;
     }
 
     public boolean isProcedureOperation() {
+        return false;
+    }
+
+    public boolean hasBuildSql() {
         return false;
     }
 

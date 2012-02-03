@@ -39,6 +39,6 @@ public class ModelWithBuildSql extends OperationModel {
         if (buildSql != null && buildSql.length() > 0) {
             return true;
         }
-        return false;
+        return super.hasBuildSql();
     }
 }

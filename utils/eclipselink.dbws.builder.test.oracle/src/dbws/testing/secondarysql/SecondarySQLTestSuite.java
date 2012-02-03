@@ -151,6 +151,14 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         };
     static final String DROP_SECONDARY_TABLE =
         "DROP TABLE DBWS_SECONDARY";
+    static final String GET_SECONDARY_BY_NAME = "DBWS_SECONDARY_GETBYNAME";
+    static final String CREATE_GET_SECONDARY_BY_NAME_PROC =
+        "CREATE OR REPLACE PROCEDURE " + GET_SECONDARY_BY_NAME+ "(N IN VARCHAR2, RESULTS OUT SYS_REFCURSOR) AS" +
+        "\nBEGIN" +
+            "\nOPEN RESULTS FOR SELECT EMPNO, ENAME, HIREDATE FROM DBWS_SECONDARY WHERE ENAME LIKE N;"+
+        "\nEND " + GET_SECONDARY_BY_NAME + ";";
+    static final String DROP_GET_SECONDARY_BY_NAME_PROC =
+        "DROP PROCEDURE " + GET_SECONDARY_BY_NAME;
 
     static final String NONSENCE_WHERE_SQL = " WHERE 0=1";
     static final String SECONDARY = "secondarySQL";
@@ -165,6 +173,11 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
     static final String SECONDARY_ALL_SQL =
         "select * from DBWS_SECONDARY";
     static final String SECONDARY_ALL_SCHEMA_TYPE = "dbws_secondaryType";
+    static final String GETBYNAME_SCHEMA_TYPE = "empType";
+    static final String GETBYNAME_SCHEMA_SQL =
+        "SELECT CAST(NULL AS NUMERIC(4)) AS EMPNO, " +
+            "CAST(NULL AS  VARCHAR(10)) AS  ENAME, " +
+            "CAST(NULL AS DATE) AS HIREDATE FROM DUAL";
     static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SECONDARY_TEST;
 
     static final String DBWS_BUILDER_XML_USERNAME =
@@ -201,6 +214,14 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
               "<build-statement><![CDATA[" + SECONDARY_COUNT_SQL +
                 NONSENCE_WHERE_SQL + "]]></build-statement>" +
           "</sql>" +
+          "<procedure " +
+              "name=\"getByName\" " +
+              "catalogPattern=\"TOPLEVEL\" " +
+              "procedurePattern=\"" + GET_SECONDARY_BY_NAME + "\" " +
+              "isCollection=\"true\" " +
+              "returnType=\"" + GETBYNAME_SCHEMA_TYPE + "\"> " +
+              "<build-statement><![CDATA[" + GETBYNAME_SCHEMA_SQL + "]]></build-statement>" +
+          "</procedure>" +
         "</dbws-builder>";
 
     // JUnit test fixtures
@@ -246,6 +267,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         }
         if (ddlCreate) {
             runDdl(conn, CREATE_SECONDARY_TABLE, ddlDebug);
+            runDdl(conn, CREATE_GET_SECONDARY_BY_NAME_PROC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SECONDARY_TABLE.length; i++) {
@@ -295,6 +317,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
             endpoint.stop();
         }
         if (ddlDrop) {
+            runDdl(conn, DROP_GET_SECONDARY_BY_NAME_PROC, ddlDebug);
             runDdl(conn, DROP_SECONDARY_TABLE, ddlDebug);
         }
     }
@@ -379,6 +402,13 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
      public static final String SCHEMA_CONTROL_DOC =
          REGULAR_XML_HEADER +
          "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:secondarySQL\" xmlns=\"urn:secondarySQL\" elementFormDefault=\"qualified\">\n" +
+         "   <xsd:complexType name=\"empType\">\n" +
+         "      <xsd:sequence>\n" +
+         "         <xsd:element name=\"empno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"ename\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "         <xsd:element name=\"hiredate\" type=\"xsd:dateTime\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+         "      </xsd:sequence>\n" +
+         "   </xsd:complexType>\n" +
          "   <xsd:complexType name=\"secondaryAggregate\">\n" +
          "      <xsd:sequence>\n" +
          "         <xsd:element name=\"count\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
@@ -397,6 +427,7 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          "         <xsd:element name=\"deptno\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>\n" +
          "      </xsd:sequence>\n" +
          "   </xsd:complexType>\n" +
+         "   <xsd:element name=\"empType\" type=\"empType\"/>\n" +
          "   <xsd:element name=\"secondaryAggregate\" type=\"secondaryAggregate\"/>\n" +
          "   <xsd:element name=\"dbws_secondaryType\" type=\"dbws_secondaryType\"/>\n" +
          "</xsd:schema>";
@@ -695,5 +726,70 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         catch (Exception e) {
             assertEquals("Duplicate ResultSet columns not supported", e.getMessage());
         }
+     }
+
+     static final String GETBYNAME_REQUEST_MSG =
+         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+           "<env:Header/>" +
+           "<env:Body>" +
+             "<getByName xmlns=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
+                "<N>J%</N>" +
+             "</getByName>" +
+           "</env:Body>" +
+         "</env:Envelope>";
+     static final String GETBYNAME_RESPONSE_MSG =
+         REGULAR_XML_HEADER +
+         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+         "<SOAP-ENV:Header/>" +
+         "<SOAP-ENV:Body>" +
+             "<srvc:getByNameResponse xmlns=\"urn:secondarySQL\" xmlns:srvc=\"urn:secondarySQLService\">" +
+                 "<srvc:result>" +
+                     "<empType>" +
+                         "<empno>7566</empno>" +
+                         "<ename>JONES</ename>" +
+                         "<hiredate>1981-04-02T00:00:00.0</hiredate>" +
+                     "</empType>" +
+                     "<empType>" +
+                         "<empno>7900</empno>" +
+                         "<ename>JAMES</ename>" +
+                         "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
+                     "</empType>" +
+                 "</srvc:result>" +
+             "</srvc:getByNameResponse>" +
+         "</SOAP-ENV:Body>" +
+         "</SOAP-ENV:Envelope>";
+     @Test
+     public void getByNameTest() throws SOAPException, SAXException, IOException, TransformerException {
+         MessageFactory factory = MessageFactory.newInstance();
+         SOAPMessage request = factory.createMessage();
+         SOAPPart part = request.getSOAPPart();
+         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
+             new InputSource(new StringReader(GETBYNAME_REQUEST_MSG))));
+         part.setContent(domSource);
+         Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
+             Service.Mode.MESSAGE);
+         SOAPMessage response = null;
+         try {
+             response = dispatch.invoke(request);
+         }
+         catch (SOAPFaultException sfe) {
+             sfe.printStackTrace();
+             fail("An unexpected exception occurred: " + sfe.getMessage());
+         }
+         if (response != null) {
+             Source src = response.getSOAPPart().getContent();
+             TransformerFactory tf = TransformerFactory.newInstance();
+             Transformer transformer = tf.newTransformer();
+             DOMResult result = new DOMResult();
+             transformer.transform(src, result);
+             Document resultDoc = (Document)result.getNode();
+             Document controlDoc = xmlParser.parse(new StringReader(GETBYNAME_RESPONSE_MSG));
+             assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(resultDoc),
+                 comparer.isNodeEqual(controlDoc, resultDoc));
+         }
+         else {
+             fail("Response is null");
+         }
      }
 }

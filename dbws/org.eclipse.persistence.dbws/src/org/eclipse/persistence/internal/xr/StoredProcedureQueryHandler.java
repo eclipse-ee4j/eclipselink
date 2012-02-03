@@ -84,8 +84,15 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                         databaseQueryToInitialize = new DataReadQuery();
                     }
                     else {
-                        // read-all query for the class mapped to the type
-                        databaseQueryToInitialize = new ReadAllQuery(xrService.getTypeClass(type));
+                        //check if descriptor is aggregate
+                        Class<?> typeClass = xrService.getTypeClass(type);
+                        if (xrService.getORSession().getDescriptor(typeClass).isAggregateDescriptor()) {
+                            databaseQueryToInitialize = new DataReadQuery();
+                        }
+                        else {
+                            // read-all query for the class mapped to the type
+                            databaseQueryToInitialize = new ReadAllQuery(typeClass);
+                        }
                     }
                 }
             }
@@ -209,7 +216,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
         if (getOutArguments().size() == 1) {
             ProcedureArgument arg = getOutArguments().get(0);
             // check query's returnType or arg's returnType
-            if (isCursorType(xrService, resultType) || 
+            if (isCursorType(xrService, resultType) ||
                 ( arg instanceof ProcedureOutputArgument && isCursorType(xrService,
                     ((ProcedureOutputArgument)arg).getResultType())))  {
                 spCall.useNamedCursorOutputAsResultSet(arg.getName());
