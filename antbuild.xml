@@ -492,12 +492,12 @@
                 <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
                 <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
             </manifest>
+                <!--exclude name="*jpa.jpql*.jar"/ -->
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
                 <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <exclude name="*source*.jar"/>
-                <exclude name="*jpa.jpql*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
             </zipgroupfileset>
