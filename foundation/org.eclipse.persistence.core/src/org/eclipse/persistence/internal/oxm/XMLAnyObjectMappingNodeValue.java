@@ -109,7 +109,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             XMLDescriptor descriptor = (XMLDescriptor) childSession.getDescriptor(objectValue);
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
 
-            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
+            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
             if (wasXMLRoot) {
                 Namespace generatedNamespace = setupFragment(((XMLRoot) originalValue), xmlRootFragment, marshalRecord);
                 if (generatedNamespace != null) {

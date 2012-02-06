@@ -455,7 +455,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         List extraNamespaces = null;
         if (isXmlDescriptor()) {
             XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
-            extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session, false);
+            extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session, false, false);
             writeExtraNamespaces(extraNamespaces, record);
             addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, refDesc, xmlField, originalObject, object, wasXMLRoot, false);
         }
@@ -572,11 +572,11 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session) {
-        return addExtraNamespacesToNamespaceResolver(desc, marshalRecord, session, true);
+        return addExtraNamespacesToNamespaceResolver(desc, marshalRecord, session, true, false);
     }
     
-    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session, boolean allowOverride) {
-        if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers()) {
+    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+        if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers() && !ignoreEqualResolvers) {
             return null;
         }
 
@@ -599,15 +599,23 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 //if there is no prefix already declared for this uri in the nr add this one
                 //unless that prefix is already bound to another namespace uri
                 prefix = entry.getKey();
+                if(marshalRecord.hasCustomNamespaceMapper()) {
+                    String newPrefix = marshalRecord.getMarshaller().getNamespacePrefixMapper().getPreferredPrefix(entry.getValue(), prefix, true);
+                    if(newPrefix != null && !(newPrefix.length() == 0)) {
+                        prefix = newPrefix;
+                    }
+                }
                 String uri = marshalRecordNamespaceResolver.resolveNamespacePrefix(prefix);
-                if(allowOverride || uri == null || uri.length() == 0) {
+                if(marshalRecord.hasCustomNamespaceMapper() || allowOverride || uri == null || uri.length() == 0) {
+                    //if this uri is unknown, the cutom mapper will return the preferred prefix for this uri
                     marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
-                    returnList.add(new Namespace(entry.getKey(), entry.getValue()));
+                    returnList.add(new Namespace(prefix, entry.getValue()));
                 }
             } else if(allowOverride) {
                 //if overrides are allowed, add the prefix if the URI is different
-                if (!prefix.equals(entry.getKey())) {
+                if (!prefix.equals(entry.getKey()) && !(marshalRecord.hasCustomNamespaceMapper())) {
                     //if prefix exists for uri but is different then add this
+                    //unless using a custom namespace prefix mapper. Then prefix is expected to be different
                     marshalRecordNamespaceResolver.put(entry.getKey(), entry.getValue());
                     returnList.add(new Namespace(entry.getKey(), entry.getValue()));
                 }
