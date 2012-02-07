@@ -88,7 +88,7 @@ public class JCEEncryptor implements Securable {
      * Handles backwards compatibility for older encrypted strings.
      */
     public synchronized String decryptPassword(String encryptedPswd) {
-        String password = "";
+        String password = null;
         ObjectInputStream ois = null;
         
         try {
