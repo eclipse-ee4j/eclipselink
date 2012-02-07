@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
@@ -24,6 +26,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import org.w3c.dom.Document;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerPropertiesTestCases extends OXTestCase {
@@ -97,6 +100,32 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         emp.setID(456);
         marshaller.marshal(emp, marshalled);
         assertXMLIdentical(control, marshalled);
+    }
+
+    public void testIndentString() throws Exception {
+        String customIndentString = "(((custom-<indent)))";
+        String escapedIndentString = "(((custom-&lt;indent)))";
+
+        Employee emp = new Employee();
+        Address a = new Address();
+        a.setCity("aCity");
+        a.setState("aState");
+        emp.setHomeAddress(a);
+
+        StringWriter sw = new StringWriter();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        marshaller.setProperty(JAXBMarshaller.ECLIPSELINK_INDENT_STRING, customIndentString);
+        marshaller.marshal(emp, sw);
+        assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
+
+        marshaller.setProperty(JAXBMarshaller.SUN_INDENT_STRING, customIndentString);
+        marshaller.marshal(emp, sw);
+        assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
+
+        marshaller.setProperty(JAXBMarshaller.SUN_JSE_INDENT_STRING, customIndentString);
+        marshaller.marshal(emp, sw);
+        assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
     }
 
     public void testSetNullPropertyException() {

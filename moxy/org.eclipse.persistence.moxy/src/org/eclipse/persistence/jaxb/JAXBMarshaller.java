@@ -84,9 +84,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String ECLIPSELINK_NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
-    public static final String RI_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
-    public static final String JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
-    
+    public static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+    public static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
+    public static final String ECLIPSELINK_INDENT_STRING = "eclipselink.indent-string";
+    public static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
+    public static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
+
     //XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true
     private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
 
@@ -596,8 +599,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if(ECLIPSELINK_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
                 xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
-            } else if(RI_NAMESPACE_PREFIX_MAPPER.equals(key) || JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
+            } else if(SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
                 xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
+            } else if (ECLIPSELINK_INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+                xmlMarshaller.setIndentString((String) value);
             } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());

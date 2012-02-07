@@ -47,6 +47,7 @@ import org.xml.sax.SAXException;
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
+    private String tab;
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
@@ -56,6 +57,13 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         numberOfTabs = 0;
         complexType = true;
         isLastEventText = false;
+    }
+
+    private String tab() {
+        if (tab == null) {
+            tab = getMarshaller().getIndentString();
+        }
+        return tab;
     }
 
     /**
@@ -262,9 +270,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
     private void outputStreamWriteTab() {
         for (int x = 0; x < numberOfTabs; x++) {
-            outputStreamWrite(SPACE);
-            outputStreamWrite(SPACE);
-            outputStreamWrite(SPACE);
+            writeValue(tab(), true);
         }
     }
 

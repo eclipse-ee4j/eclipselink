@@ -103,7 +103,8 @@ public class XMLMarshaller implements Cloneable {
     private Properties marshalProperties;
     private Schema schema;
     private NamespacePrefixMapper mapper;
-    
+    private String indentString;
+
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
     private static final String GET_XML_EVENT_WRITER_METHOD_NAME = "getXMLEventWriter";
@@ -167,6 +168,7 @@ public class XMLMarshaller implements Cloneable {
         setEncoding(XMLConstants.DEFAULT_XML_ENCODING);
         setFormattedOutput(true);
         marshalProperties = new Properties();
+        indentString = "   "; // default indent is three spaces
     }
 
     /**
@@ -1455,5 +1457,22 @@ public class XMLMarshaller implements Cloneable {
 	public NamespacePrefixMapper getNamespacePrefixMapper() {
 	    return this.mapper;
 	}
+
+    /**
+     * Return the String that will be used to perform indenting in marshalled documents.
+     * Default is &quot;   &quot; (three spaces).
+     * @since 2.3.3
+     */
+    public String getIndentString() {
+        return this.indentString;
+    }
+
+    /**
+     * Set the String that will be used to perform indenting in marshalled documents.
+     * @since 2.3.3
+     */
+    public void setIndentString(String s) {
+        this.indentString = s;
+    }
 
 }
