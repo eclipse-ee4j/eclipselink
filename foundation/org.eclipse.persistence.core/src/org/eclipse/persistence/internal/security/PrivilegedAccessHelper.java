@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.lang.reflect.*;
 
+import org.eclipse.persistence.internal.helper.Helper;
+
 /**
  * INTERNAL:
  * Privileged Access Helper provides a utility so all calls that require privileged access can use the same code.
@@ -156,8 +158,10 @@ public class PrivilegedAccessHelper {
                 if (constructor.getParameterTypes().length == args.length) {
                     boolean found = true;
                     for (int index = 0; index < args.length; index++) {
-                        if ((!constructor.getParameterTypes()[index].isAssignableFrom(args[index]))
-                                && (!args[index].isAssignableFrom(constructor.getParameterTypes()[index]))) {
+                        Class parameterType = Helper.getObjectClass(constructor.getParameterTypes()[index]);
+                        Class argType = Helper.getObjectClass(args[index]);                      
+                        if ((!parameterType.isAssignableFrom(argType))
+                                && (!argType.isAssignableFrom(parameterType))) {
                             found = false; 
                             break;
                         }

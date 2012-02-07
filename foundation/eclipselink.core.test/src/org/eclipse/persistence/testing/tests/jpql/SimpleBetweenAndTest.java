@@ -32,7 +32,7 @@ class SimpleBetweenAndTest extends org.eclipse.persistence.testing.tests.jpql.JP
         raq.setSelectionCriteria(whereClause);
         setOriginalOject(getSession().executeQuery(raq));
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id BETWEEN " + emp1 + "AND " + emp2.id;
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id BETWEEN " + emp1 + " AND " + emp2.id;
         setEjbqlString(ejbqlString);
 
         super.setup();

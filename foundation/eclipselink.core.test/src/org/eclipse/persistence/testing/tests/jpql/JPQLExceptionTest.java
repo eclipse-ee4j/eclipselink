@@ -185,6 +185,10 @@ public class JPQLExceptionTest extends JPQLTestCase {
             throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was null! \n\n[EXPECTING] " + expectedException);
         }
 
+        if (caughtException instanceof JPQLException) {
+            return;
+        }
+
         if (caughtException.getErrorCode() == expectedException.getErrorCode()) {
             return;
         }

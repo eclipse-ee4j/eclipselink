@@ -1381,7 +1381,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// JOIN FETCH
 			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getJoinType(), stateObject.getJoinType());
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterFetch()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterJoin()) {
 				writer.append(SPACE);
 			}
 

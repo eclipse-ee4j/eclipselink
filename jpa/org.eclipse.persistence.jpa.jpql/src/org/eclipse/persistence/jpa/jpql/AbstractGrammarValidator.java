@@ -3287,7 +3287,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		if (!expression.hasJoinAssociationPath()) {
 			int startPosition = position(expression) + expression.getIdentifier().toString().length();
 
-			if (expression.hasSpaceAfterFetch()) {
+			if (expression.hasSpaceAfterJoin()) {
 				startPosition++;
 			}
 
@@ -3838,7 +3838,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 		// Subqueries may be used in the WHERE or HAVING clause
 		else {
-			addProblem(expression, SimpleSelectStatement_InvalidLocation);
+		        // Sub queries are now allowed anywhere.
+			//addProblem(expression, SimpleSelectStatement_InvalidLocation);
 		}
 
 		// - Note that some contexts in which a subquery can be used require that

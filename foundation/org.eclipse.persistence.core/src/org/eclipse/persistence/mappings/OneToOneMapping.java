@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
@@ -1986,5 +1987,21 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         } else {
             return super.collectFields();
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Order by foreign key fields if a foreign key mapping (avoids joins).
+     */
+    @Override
+    public List<Expression> getOrderByNormalizedExpressions(Expression base) {
+        if (this.foreignKeyFields.size() > 0) {
+            List<Expression> orderBys = new ArrayList(this.foreignKeyFields.size());
+            for (DatabaseField field : this.foreignKeyFields) {
+                orderBys.add(((QueryKeyExpression)base).getBaseExpression().getField(field));
+            }
+            return orderBys;
+        }
+        return super.getOrderByNormalizedExpressions(base);
     }
 }

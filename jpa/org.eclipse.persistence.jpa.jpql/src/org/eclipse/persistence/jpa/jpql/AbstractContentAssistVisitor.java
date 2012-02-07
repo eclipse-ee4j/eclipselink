@@ -2582,16 +2582,11 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			proposals.addIdentifier(LEFT_JOIN);
 			proposals.addIdentifier(LEFT_OUTER_JOIN);
 
-			// Only add the JOIN FETCH identifiers if there is no AS or identification variable
-			// otherwise the expression would become invalid
-			if (!expression.hasAs() &&
-			    !expression.hasIdentificationVariable()) {
-
-				proposals.addIdentifier(JOIN_FETCH);
-				proposals.addIdentifier(INNER_JOIN_FETCH);
-				proposals.addIdentifier(LEFT_JOIN_FETCH);
-				proposals.addIdentifier(LEFT_OUTER_JOIN_FETCH);
-			}
+			// Allow aliases with join fetch.
+			proposals.addIdentifier(JOIN_FETCH);
+			proposals.addIdentifier(INNER_JOIN_FETCH);
+			proposals.addIdentifier(LEFT_JOIN_FETCH);
+			proposals.addIdentifier(LEFT_OUTER_JOIN_FETCH);
 		}
 		// After "<join> "
 		else if (expression.hasSpaceAfterJoin()) {
@@ -2603,31 +2598,16 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 				if (identifier == LEFT) {
 					addIdentifier(LEFT_JOIN);
 					addIdentifier(LEFT_OUTER_JOIN);
-
-					if (!expression.hasAs() &&
-					    !expression.hasIdentificationVariable()) {
-
-						addIdentifier(LEFT_JOIN_FETCH);
-						addIdentifier(LEFT_OUTER_JOIN_FETCH);
-					}
+					addIdentifier(LEFT_JOIN_FETCH);
+					addIdentifier(LEFT_OUTER_JOIN_FETCH);
 				}
 				else if (identifier == INNER) {
 					      addIdentifier(INNER_JOIN);
-
-					if (!expression.hasAs() &&
-					    !expression.hasIdentificationVariable()) {
-
-						addIdentifier(INNER_JOIN_FETCH);
-					}
+					      addIdentifier(INNER_JOIN_FETCH);
 				}
 				else if (identifier.equals("LEFT_OUTER")) {
 					addIdentifier(LEFT_OUTER_JOIN);
-
-					if (!expression.hasAs() &&
-					    !expression.hasIdentificationVariable()) {
-
-						addIdentifier(LEFT_OUTER_JOIN_FETCH);
-					}
+					addIdentifier(LEFT_OUTER_JOIN_FETCH);
 				}
 				else {
 					addLeftIdentificationVariables(expression);
@@ -2662,7 +2642,7 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			addJoinIdentifiers();
 		}
 		// After "<join fetch> "
-		else if (expression.hasSpaceAfterFetch()) {
+		else if (expression.hasSpaceAfterJoin()) {
 			int length = identifier.length() + SPACE_LENGTH;
 
 			// Right after "<join fetch> "

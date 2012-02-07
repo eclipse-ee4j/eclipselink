@@ -2692,7 +2692,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         DatabaseMapping mapping = getMappingForField(databaseField);
 
         // Drill down through the mappings until we get the direct mapping to the databaseField.	
-        while (mapping.isAggregateObjectMapping()) {
+        while ((mapping != null) && mapping.isAggregateObjectMapping()) {
             mapping = ((AggregateObjectMapping)mapping).getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
         }
         return mapping;

@@ -790,6 +790,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected Vector<DatabaseField> collectFields() {
         return getReferenceFields();
     }
+    
+    /**
+     * INTERNAL:
+     * Aggregate order by all their fields by default.
+     */
+    @Override
+    public List<Expression> getOrderByNormalizedExpressions(Expression base) {
+        List<Expression> orderBys = new ArrayList(this.fields.size());
+        for (DatabaseField field : this.fields) {
+            orderBys.add(base.getField(field));
+        }
+        return orderBys;
+    }
 
     /**
      * INTERNAL: 

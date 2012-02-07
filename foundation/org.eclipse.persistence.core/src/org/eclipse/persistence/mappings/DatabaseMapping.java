@@ -592,6 +592,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public Vector<DatabaseField> getFields() {
         return this.fields;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the list of fields that should be used if this mapping is used in an order by.
+     * null means this mapping does not need to normalize it fields (it is a field). 
+     */
+    public List<Expression> getOrderByNormalizedExpressions(Expression base) {
+        return null;
+    }
 
     /**
      * PUBLIC:

@@ -32,7 +32,7 @@ class SimpleDoubleOrTest extends org.eclipse.persistence.testing.tests.jpql.JPQL
         employeesUsed.add(emp2);
         employeesUsed.add(emp3);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.id + "OR emp.id = " + emp2.id + "OR emp.id = " + emp3.id;
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.id + " OR emp.id = " + emp2.id + " OR emp.id = " + emp3.id;
         setEjbqlString(ejbqlString);
         setOriginalOject(employeesUsed);
 

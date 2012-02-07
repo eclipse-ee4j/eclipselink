@@ -29,47 +29,47 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class Join extends AbstractExpression {
+public class Join extends AbstractExpression {
 
 	/**
 	 * The actual <b>AS</b> identifier found in the string representation of the JPQL query.
 	 */
-	private String asIdentifier;
+	protected String asIdentifier;
 
 	/**
 	 * Determines whether the identifier <b>AS</b> was parsed.
 	 */
-	private boolean hasAs;
+	protected boolean hasAs;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>AS</b>.
 	 */
-	private boolean hasSpaceAfterAs;
+	protected boolean hasSpaceAfterAs;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>JOIN</b>.
 	 */
-	private boolean hasSpaceAfterJoin;
+	protected boolean hasSpaceAfterJoin;
 
 	/**
 	 * Determines whether a whitespace was parsed after the join association path expression.
 	 */
-	private boolean hasSpaceAfterJoinAssociation;
+	protected boolean hasSpaceAfterJoinAssociation;
 
 	/**
 	 * The {@link Expression} representing the identification variable.
 	 */
-	private AbstractExpression identificationVariable;
+	protected AbstractExpression identificationVariable;
 
 	/**
 	 * The {@link Expression} representing the join association path expression.
 	 */
-	private AbstractExpression joinAssociationPath;
+	protected AbstractExpression joinAssociationPath;
 
 	/**
 	 * The actual <b>JOIN</b> identifier found in the string representation of the JPQL query.
 	 */
-	private String joinIdentifier;
+	protected String joinIdentifier;
 
 	/**
 	 * Creates a new <code>Join</code>.
@@ -340,7 +340,18 @@ public final class Join extends AbstractExpression {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
-
+		
+		// Allow the identifier to be optional (as for join fetch)
+		String word = wordParser.word();
+		if (word.equalsIgnoreCase(WHERE)   ||
+                        word.equalsIgnoreCase(ORDER_BY) ||
+                        word.equalsIgnoreCase(GROUP_BY) ||
+                        word.equalsIgnoreCase(HAVING) ||
+                        word.equalsIgnoreCase(INNER) ||
+                        word.equalsIgnoreCase(JOIN)  ||
+                        word.equalsIgnoreCase(LEFT)) {
+		    return;
+		}
 		// Parse the identification variable
 		if (tolerant) {
 			identificationVariable = parse(
@@ -350,7 +361,7 @@ public final class Join extends AbstractExpression {
 			);
 		}
 		else {
-			identificationVariable = new IdentificationVariable(this, wordParser.word());
+			identificationVariable = new IdentificationVariable(this, word);
 			identificationVariable.parse(wordParser, tolerant);
 		}
 	}

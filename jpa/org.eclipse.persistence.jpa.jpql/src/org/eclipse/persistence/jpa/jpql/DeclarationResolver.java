@@ -917,6 +917,11 @@ public class DeclarationResolver extends Resolver {
 		 */
 		@Override
 		public void visit(JoinFetch expression) {
+                        if (expression.hasIdentificationVariable()) {
+                            Expression identificationVariable = expression.getIdentificationVariable();
+                            visitDeclaration(expression, identificationVariable);
+                            currentDeclaration.addJoin(expression, (IdentificationVariable) identificationVariable);
+                        }
 			currentDeclaration.addJoinFetch(expression);
 		}
 

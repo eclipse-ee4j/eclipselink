@@ -107,7 +107,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 * This array is used to store the type of the select {@link Expression JPQL Expression} that is
 	 * converted into an {@link Expression EclipseLink Expression}.
 	 */
-	final Class<?>[] type;
+	Class<?>[] type;
 
 	/**
 	 * Creates a new <code>ReportItemBuilder</code>.
@@ -467,8 +467,8 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
-		Expression queryExpression = queryContext.buildExpression(expression, type);
-		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
+		Expression queryExpression = queryContext.buildExpression(expression, this.type);
+		this.query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
 	}
 
 	/**

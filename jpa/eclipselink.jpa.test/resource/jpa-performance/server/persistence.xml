@@ -1,28 +1,31 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd"
     version="1.0">
-    <persistence-unit name="%%default%%" transaction-type="JTA">
+    <persistence-unit name="performance" transaction-type="JTA">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>%%data-source-name%%</jta-data-source>
         <mapping-file>META-INF/jpa-orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.target-server" value="%%server-platform%%" />
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+            <!--property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.logging.logger" value="DefaultLogger"/-->
             <!--property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.performance.CacheCoordinationSessionCustomizer"/-->
             <!--property name="eclipselink.cache.shared.default" value="false"/-->
             <property name="eclipselink.cache.type.default" value="Full" />
             <property name="eclipselink.cache.size.default" value="1000" />
+            <!--property name="eclipselink.cache.database-event-listener" value="org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"/-->
             <property name="eclipselink.cache.coordination.protocol" value="%%cachecoordination-protocol%%" />
-            <property name="eclipselink.cache.coordination.jms.host" value="%%topic-host-url%%" />
+            <!--property name="eclipselink.cache.coordination.propagate-asynchronously" value="false" /-->
+            <!--property name="eclipselink.cache.coordination.jms.host" value="%%topic-host-url%%" /-->
             <property name="eclipselink.cache.coordination.jms.topic" value="%%topic-name%%" />
             <property name="eclipselink.cache.coordination.jms.factory" value="%%topic-connection-factory%%" />
-            <property name="eclipselink.cache.coordination.jndi.user" value="%%server-user%%" />
+            <!--property name="eclipselink.cache.coordination.jndi.user" value="%%server-user%%" />
             <property name="eclipselink.cache.coordination.jndi.password" value="%%server-pwd%%" />
             <property name="eclipselink.cache.coordination.rmi.url" value="%%current-server-url%%" />
             <property name="eclipselink.cache.coordination.rmi.announcement-delay" value="%%announcement-delay%%" />
             <property name="eclipselink.cache.coordination.rmi.multicast-group" value="%%rcm-multicastgroup%%" />
             <property name="eclipselink.cache.coordination.rmi.multicast-group.port" value="%%rcm-multicastport%%" />
-            <property name="eclipselink.cache.coordination.packet-time-to-live" value="%%rcm-packet-timetolive%%" />
+            <property name="eclipselink.cache.coordination.packet-time-to-live" value="%%rcm-packet-timetolive%%" /-->
         </properties>
     </persistence-unit>
 </persistence>

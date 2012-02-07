@@ -1140,7 +1140,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			if (!type.isResolvable()) {
 				int startIndex = position(expression) + 4; // NEW + space
 				int endIndex   = startIndex + className.length();
-				addProblem(expression, startIndex, endIndex, ConstructorExpression_UnknownType);
+				addProblem(expression, startIndex, endIndex, ConstructorExpression_UnknownType, className);
 			}
 			// Test the arguments' types with the constructors' types
 			// TODO: Add support for ... (array)
@@ -1503,8 +1503,20 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(JoinFetch expression) {
-		validateCollectionValuedPathExpression(expression.getJoinAssociationPath(), false);
-		super.visit(expression);
+
+            Expression joinAssociationPath = expression.getJoinAssociationPath();
+            validateCollectionValuedPathExpression(joinAssociationPath, false);
+            joinAssociationPath.accept(this);
+
+            if (expression.hasIdentificationVariable()) {
+                try {
+                        registerIdentificationVariable = false;
+                        expression.getIdentificationVariable().accept(this);
+                }
+                finally {
+                        registerIdentificationVariable = true;
+                }
+            }
 	}
 
 	/**

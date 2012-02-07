@@ -2254,4 +2254,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetPrimaryKeyField) {
         throw new UnsupportedOperationException("addForeignKeyField");
     }
+    
+    /**
+     * INTERNAL:
+     * Relationships order by their target primary key fields by default.
+     */
+    @Override
+    public List<Expression> getOrderByNormalizedExpressions(Expression base) {
+        List<Expression> orderBys = new ArrayList(this.referenceDescriptor.getPrimaryKeyFields().size());
+        for (DatabaseField field : this.referenceDescriptor.getPrimaryKeyFields()) {
+            orderBys.add(base.getField(field));
+        }
+        return orderBys;
+    }
 }

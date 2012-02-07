@@ -275,9 +275,8 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = new DeleteAllQuery();
 				queryContext.setDatabasQuery(query);
+	                        query.setJPQLString(queryContext.getJPQLQuery());
 			}
-
-			query.setJPQLString(queryContext.getJPQLQuery());
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 
@@ -307,9 +306,8 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = buildReadAllQuery(expression);
 				queryContext.setDatabasQuery(query);
+	                        query.setJPQLString(queryContext.getJPQLQuery());
 			}
-
-			query.setJPQLString(queryContext.getJPQLQuery());
 
 			// Now populate it
 			if (query.isReportQuery()) {
@@ -334,9 +332,8 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = new UpdateAllQuery();
 				queryContext.setDatabasQuery(query);
+	                        query.setJPQLString(queryContext.getJPQLQuery());
 			}
-
-			query.setJPQLString(queryContext.getJPQLQuery());
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 

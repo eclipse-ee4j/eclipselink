@@ -105,7 +105,8 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	private void visitSelectClause(AbstractSelectClause expression) {
 
 		ReportItemBuilder builder = selectItemsBuilder();
-
+		Class previousType = builder.type[0];
+		ReportQuery previousQuery = builder.query;
 		try {
 			builder.type[0] = null;
 			builder.query   = (ReportQuery) query;
@@ -115,8 +116,8 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 			type[0] = builder.type[0];
 		}
 		finally {
-			builder.query   = null;
-			builder.type[0] = null;
+			builder.query   = previousQuery;
+			builder.type[0] = previousType;
 		}
 	}
 

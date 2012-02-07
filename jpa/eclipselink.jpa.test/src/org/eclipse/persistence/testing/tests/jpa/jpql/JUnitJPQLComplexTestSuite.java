@@ -66,6 +66,7 @@ import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.SalaryRate;
@@ -125,148 +126,157 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLComplexTestSuite");
         suite.addTest(new JUnitJPQLComplexTestSuite("testSetup"));
-        
-        suite.addTest(new JUnitJPQLComplexTestSuite("compexInTest2"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexABSTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexABSWithParameterTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("compexInTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexLengthTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexLikeTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNotInTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNotLikeTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexParameterTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexReverseAbsTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexReverseLengthTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexReverseParameterTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexReverseSqrtTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexSqrtTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexStringInTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexStringNotInTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexSubstringTest"));    
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexLocateTest"));    
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNestedOneToManyUsingInClause"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexUnusedVariableTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexJoinTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexJoinTest2"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexJoinTest3"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexMultipleJoinOfSameRelationship"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexMultipleLeftOuterJoinOfSameRelationship"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexFetchJoinTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexOneToOneFetchJoinTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexSelectRelationshipTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorVariableTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorRelationshipTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorEmbeddableTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorAggregatesTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorCountOnJoinedVariableTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorConstantTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorCaseTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorMapTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexResultPropertiesTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexExistsTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNotExistsTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryJoinTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryJoinInTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexMemberOfTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNotMemberOfTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNotMemberOfPathTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexMemberOfElementCollectionTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingEmbedded"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingTwoLevelOfEmbeddeds"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNamedQueryResultPropertiesTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexOuterJoinQuery"));
-        
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceUsingNamedQueryTest"));
-        
-        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapKeyInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapValueInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapEntryInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapKeyInSelectionCriteriaTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mapContainerPolicyMapValueInSelectionCriteriaTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapKeyInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyMapEntryInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinOneTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexThreeLevelJoinManyTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexIndexOfInSelectClauseTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexIndexOfInWhereClauseTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexCoalesceInWhereTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexCoalesceInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInWhereTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexNullIfInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexSimpleCaseInWhereTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInWhereTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexConditionCaseInUpdateTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInParamTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeInTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexTypeParameterTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("absInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("modInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("sqrtInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("sizeInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mathInSelectTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("paramNoVariableTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("mappedContainerPolicyCompoundMapKeyTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("updateWhereExistsTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("deleteWhereExistsTest"));
-        
-        suite.addTest(new JUnitJPQLComplexTestSuite("caseTypeTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("variableReferencedOnlyInParameterTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("standardFunctionCreateQueryTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("customFunctionNVLTest"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testFuncWithStoredFunc"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testFuncWithMySQLFuncs"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testNestedFUNCs"));
-        
-        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInSelect"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInOrderBy"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInGroupBy"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testBrackets"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testComplexBetween"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testComplexLike"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testComplexIn"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testQueryKeys"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("complexOneToOneJoinOptimization"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testCountOneToManyQueryKey"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testEnumNullNotNull"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testPessimisticLock"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testAliasedFunction"));
-        
-        suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInGroupBy"));
-        // TODO - add back when working.
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInSelect"));
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectInFrom"));
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testParralelFrom"));
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testGroupByInIn"));
-        
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testJoinFetchAlias"));
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testNestedJoinFetch"));
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testNestedJoinFetchAlias"));
-        
-        suite.addTest(new JUnitJPQLComplexTestSuite("testDistinctOrderByEmbedded"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testElementCollection"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testDoubleAggregateManyToMany"));
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testGroupByHavingFunction"));      
-        if (!isJPA10()) {
-            suite.addTest(new JUnitJPQLComplexTestSuite("testSubSelect"));
-            //suite.addTest(new JUnitJPQLComplexTestSuite("testSubSelect2"));
-        }
-        //suite.addTest(new JUnitJPQLComplexTestSuite("testOrderPackage"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testSubselectStackOverflow"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testAliasPlus"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionsWithParameters"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testEmbeddableDistinct"));
-        suite.addTest(new JUnitJPQLComplexTestSuite("testObjectIn"));
 
+        List<String> tests = new ArrayList<String>();
+        tests.add("compexInTest2");
+        tests.add("complexABSTest");
+        tests.add("complexABSWithParameterTest");
+        tests.add("compexInTest");
+        tests.add("complexLengthTest");
+        tests.add("complexLikeTest");
+        tests.add("complexNotInTest");
+        tests.add("complexNotLikeTest");
+        tests.add("complexParameterTest");
+        tests.add("complexReverseAbsTest");
+        tests.add("complexReverseLengthTest");
+        tests.add("complexReverseParameterTest");
+        tests.add("complexReverseSqrtTest");
+        tests.add("complexSqrtTest");
+        tests.add("complexStringInTest");
+        tests.add("complexStringNotInTest");
+        tests.add("complexSubstringTest");    
+        tests.add("complexLocateTest");    
+        tests.add("complexNestedOneToManyUsingInClause");
+        tests.add("complexUnusedVariableTest");
+        tests.add("complexJoinTest");
+        tests.add("complexJoinTest2");
+        tests.add("complexJoinTest3");
+        tests.add("complexMultipleJoinOfSameRelationship");
+        tests.add("complexMultipleLeftOuterJoinOfSameRelationship");
+        tests.add("complexFetchJoinTest");
+        tests.add("complexOneToOneFetchJoinTest");
+        tests.add("complexSelectRelationshipTest");
+        tests.add("complexConstructorTest");
+        tests.add("complexConstructorVariableTest");
+        tests.add("complexConstructorRelationshipTest");
+        tests.add("complexConstructorEmbeddableTest");
+        tests.add("complexConstructorAggregatesTest");
+        tests.add("complexConstructorCountOnJoinedVariableTest");
+        tests.add("complexConstructorConstantTest");
+        tests.add("complexConstructorCaseTest");
+        tests.add("complexConstructorMapTest");
+        tests.add("complexResultPropertiesTest");
+        tests.add("complexInSubqueryTest");
+        tests.add("complexExistsTest");
+        tests.add("complexNotExistsTest");
+        tests.add("complexInSubqueryJoinTest");
+        tests.add("complexInSubqueryJoinInTest");
+        tests.add("complexMemberOfTest");
+        tests.add("complexNotMemberOfTest");
+        tests.add("complexNotMemberOfPathTest");
+        tests.add("complexMemberOfElementCollectionTest");
+        tests.add("complexNavigatingEmbedded");
+        tests.add("complexNavigatingTwoLevelOfEmbeddeds");
+        tests.add("complexNamedQueryResultPropertiesTest");
+        tests.add("complexOuterJoinQuery");
+        
+        tests.add("complexInheritanceTest");
+        tests.add("complexInheritanceUsingNamedQueryTest");
+        
+        tests.add("mapContainerPolicyMapKeyInSelectTest");
+        tests.add("mapContainerPolicyMapValueInSelectTest");
+        tests.add("mapContainerPolicyMapEntryInSelectTest");
+        tests.add("mapContainerPolicyMapKeyInSelectionCriteriaTest");
+        tests.add("mapContainerPolicyMapValueInSelectionCriteriaTest");
+        tests.add("mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest");
+        tests.add("mappedKeyMapContainerPolicyMapKeyInSelectTest");
+        tests.add("mappedKeyMapContainerPolicyMapEntryInSelectTest");
+        tests.add("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest");
+        tests.add("mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest");
+        tests.add("mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest");
+        tests.add("mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest");
+        tests.add("complexThreeLevelJoinOneTest");
+        tests.add("complexThreeLevelJoinManyTest");
+        tests.add("complexIndexOfInSelectClauseTest");
+        tests.add("complexIndexOfInWhereClauseTest");
+        tests.add("complexCoalesceInWhereTest");
+        tests.add("complexCoalesceInSelectTest");
+        tests.add("complexNullIfInWhereTest");
+        tests.add("complexNullIfInSelectTest");
+        tests.add("complexSimpleCaseInSelectTest");
+        tests.add("complexSimpleCaseInWhereTest");
+        tests.add("complexConditionCaseInSelectTest");
+        tests.add("complexConditionCaseInWhereTest");
+        tests.add("complexConditionCaseInUpdateTest");
+        tests.add("complexTypeInParamTest");
+        tests.add("complexTypeInTest");
+        tests.add("complexTypeParameterTest");
+        tests.add("absInSelectTest");
+        tests.add("modInSelectTest");
+        tests.add("sqrtInSelectTest");
+        tests.add("sizeInSelectTest");
+        tests.add("mathInSelectTest");
+        tests.add("paramNoVariableTest");
+        tests.add("mappedContainerPolicyCompoundMapKeyTest");
+        tests.add("updateWhereExistsTest");
+        tests.add("deleteWhereExistsTest");
+        
+        tests.add("caseTypeTest");
+        tests.add("variableReferencedOnlyInParameterTest");
+        tests.add("standardFunctionCreateQueryTest");
+        tests.add("customFunctionNVLTest");
+        tests.add("testFuncWithStoredFunc");
+        tests.add("testFuncWithMySQLFuncs");
+        tests.add("testNestedFUNCs");
+        
+        tests.add("testFunctionInSelect");
+        tests.add("testFunctionInOrderBy");
+        tests.add("testFunctionInGroupBy");
+        tests.add("testBrackets");
+        tests.add("testComplexBetween");
+        tests.add("testComplexLike");
+        tests.add("testComplexIn");
+        tests.add("testQueryKeys");
+        tests.add("complexOneToOneJoinOptimization");
+        tests.add("testCountOneToManyQueryKey");
+        tests.add("testEnumNullNotNull");
+        tests.add("testPessimisticLock");
+        tests.add("testAliasedFunction");
+        
+        tests.add("testSubselectInGroupBy");
+        // TODO - add back when working.
+        tests.add("testSubselectInSelect");
+        tests.add("testSubselectInFrom");
+        tests.add("testParralelFrom");
+        tests.add("testGroupByInIn");
+        
+        tests.add("testJoinFetchAlias");
+        tests.add("testNestedJoinFetch");
+        tests.add("testNestedJoinFetchAlias");
+        
+        tests.add("testDistinctOrderByEmbedded");
+        tests.add("testElementCollection");
+        tests.add("testDoubleAggregateManyToMany");
+        tests.add("testGroupByHavingFunction");      
+        if (!isJPA10()) {
+            tests.add("testSubSelect");
+            tests.add("testSubSelect2");
+        }
+        tests.add("testOrderPackage");        
+        tests.add("testSubselectStackOverflow");
+        tests.add("testAliasPlus");
+        tests.add("testFunctionsWithParameters");
+        tests.add("testEmbeddableDistinct");
+        tests.add("testObjectIn");
+        tests.add("testMemberOf");
+        tests.add("testOrderByDistinct");
+        tests.add("testJoinFetchWithJoin");
+        tests.add("testNestedSubqueries");
+
+        Collections.sort(tests);
+        for (String test : tests) {
+            suite.addTest(new JUnitJPQLComplexTestSuite(test));
+        }
         return suite;
     }
     
@@ -3213,6 +3223,15 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select 1 from Employee e");
         query.getResultList();
+        // Bug#354344
+        if (!isHermesParser()) {
+            warning("testFunctionInSelect only works with Hermes");
+            return;
+        }
+        query = em.createQuery("Select concat(e2.firstName, e2.lastName) from Employee e2");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName in (Select concat(e2.firstName, e2.lastName) from Employee e2)");
+        query.getResultList();
         closeEntityManager(em);
     }
     
@@ -3253,9 +3272,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
 
-    // TODO Bug 350597
+    // Bug 350597
     // Test that subselects can be used in the select clause.
     public void testSubselectInSelect() {
+        if (!isHermesParser()) {
+            warning("testSubselectInSelect only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select (Select count(e2) from Employee e2 where e2.firstName = e.firstName), e.firstName from Employee e");
         query.getResultList();
@@ -3265,15 +3288,20 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // TODO Bug 350597
     // Test that subselects can be used in the from clause.
     public void testSubselectInFrom() {
-        EntityManager em = createEntityManager();
+        return;
+        /*EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e.firstName, avg(e3.count) from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
         query.getResultList();
-        closeEntityManager(em);
+        closeEntityManager(em);*/
     }
     
-    // TODO Bug 350597
+    // Bug 350597 - fixed in Hermes.
     // Test that an alias not used in the where clause is not ignored.
     public void testParralelFrom() {
+        if (!isHermesParser()) {
+            warning("testParralelFrom only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select count(e) from Employee e");
         long count = (Long)query.getSingleResult();
@@ -3285,9 +3313,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
     
-    // TODO Bug 333645
+    // Bug 333645
     // Test that brackets are parsed when using a group by and an in.
     public void testGroupByInIn() {
+        if (!isHermesParser()) {
+            warning("testGroupByInIn only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.id <> 4 and (e.id in (select max(e2.id) from Employee e2 group by e2.id having max(e2.id) > 1))");
         //Query query = em.createQuery("Select e from Employee e where e.id <> 4 and (e.id in (select max(e2.id) from Employee e2 group by e2.id having max(e2.id) > 1) or not exists (select e3 from Employee e3))");
@@ -3304,30 +3336,79 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
     
-    // TODO Bug 321722
+    // Bug 321722
     // Test that join fetch allows an alias.
     public void testJoinFetchAlias() {
+        if (!isHermesParser()) {
+            warning("testJoinFetchAlias only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e join fetch e.address a order by a.city");
         query.getResultList();
         closeEntityManager(em);
     }
 
-    // TODO Bug 321722
+    // Bug 321722
     // Test that nested join fetching works through using dot notation.
     public void testNestedJoinFetch() {
+        if (!isHermesParser()) {
+            warning("testNestedJoinFetch only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e join fetch e.manager.address");
         query.getResultList();
         closeEntityManager(em);
     }
 
-    // TODO Bug 321722
+    // Bug 321722
     // Test that nested join fetching works through using an alias.
     public void testNestedJoinFetchAlias() {
+        if (!isHermesParser()) {
+            warning("testNestedJoinFetchAlias only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e join fetch e.manager m join fetch m.address");
         query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // Bug 362063
+    // Test nested subqueries.
+    public void testNestedSubqueries() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.id = (Select Max(e2.id) from Employee e2 join e2.phoneNumbers p where e2.id = e.id and p.type in (Select p2.type from PhoneNumber p2))");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // Bug 303767 - fixed with Hermes.
+    // Test that the same attribute can be joined and join fetched.
+    public void testJoinFetchWithJoin() {
+        if (!isHermesParser()) {
+            warning("testJoinFetchWithJoin only works with Hermes");
+            return;
+        }
+        clearCache();
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e join fetch e.phoneNumbers join e.phoneNumbers p where p.areaCode <> '613'");
+        Employee employee = (Employee)query.getResultList().get(0);
+        if (isWeavingEnabled()) {
+            if ((employee.getPhoneNumbers() instanceof IndirectCollection) && !((IndirectCollection)employee.getPhoneNumbers()).isInstantiated()) {
+                fail("Join fetch did not occur.");
+            }
+        }
+        clearCache();
+        em.clear();
+        query = em.createQuery("Select e from Employee e join e.phoneNumbers p join fetch e.phoneNumbers where p.areaCode <> '613'");
+        employee = (Employee)query.getResultList().get(0);
+        if (isWeavingEnabled()) {
+            if ((employee.getPhoneNumbers() instanceof IndirectCollection) && !((IndirectCollection)employee.getPhoneNumbers()).isInstantiated()) {
+                fail("Join fetch did not occur.");
+            }
+        }
         closeEntityManager(em);
     }
     
@@ -3377,11 +3458,15 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
     
-    // TODO Bug 347562
+    // Bug 347562 - fixed on Hermes.
     // Test group by having works with aggregate functions (it disappears).
     public void testGroupByHavingFunction() {
+        if (!isHermesParser()) {
+            warning("testGroupByHavingFunction only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("Select e from Employee e group by e having count(e.phoneNumbers) > 100");
+        Query query = em.createQuery("Select e from Employee e join e.phoneNumbers p group by e having count(p)   > 100");
         if (query.getResultList().size() > 0) {
             fail("Group by not included");
         }
@@ -3392,7 +3477,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // Test subselect does not join table twice.
     public void testSubSelect() {
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("Select e from Employee e where e.id in (Select p.id from PhoneNumber p where p.owner = e)");
+        Query query = em.createQuery("Select e from Employee e where e.id in (Select p.id from PhoneNumber p where p.owner = e and e.id is not null)");
         query.getResultList().size();
         String sql = query.unwrap(DatabaseQuery.class).getSQLString();
         int index = sql.indexOf("CMP3_EMPLOYEE");
@@ -3402,16 +3487,30 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         index = sql.indexOf("CMP3_EMPLOYEE", index + 1);
         if (index != -1) {
             fail("CMP3_EMPLOYEE table incorrectly joined twice.");
+        }
+        if (isHermesParser()) {
+            // Also check that is not null is used.
+            // Fixed on Hermes
+            index = sql.indexOf("IS NOT NULL");
+            if (index == -1) {
+                fail("IS NOT NULL missing.");
+            }
+        } else {
+            warning("testSubSelect only works with Hermes");
         }
         closeEntityManager(em);
     }
     
     // Bug 301741
     // Test subselect does not join table twice.
-    // TODO
+    // Fixed in Hermes
     public void testSubSelect2() {
+        if (!isHermesParser()) {
+            warning("testSubSelect2 only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("Select e from Employee e where e.address.id in (Select a.id from e.address a)");
+        Query query = em.createQuery("Select e from Employee e where e.address in (Select a from e.address a)");
         query.getResultList().size();
         String sql = query.unwrap(DatabaseQuery.class).getSQLString();
         int index = sql.indexOf("CMP3_EMPLOYEE");
@@ -3422,14 +3521,45 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         if (index != -1) {
             fail("CMP3_EMPLOYEE table incorrectly joined twice.");
         }
+        index = sql.indexOf("CMP3_ADDRESS");
+        if (index == -1) {
+            fail("CMP3_ADDRESS table missing.");
+        }
+        index = sql.indexOf("CMP3_ADDRESS", index + 1);
+        if (index != -1) {
+            fail("CMP3_ADDRESS table incorrectly joined twice.");
+        }
+        query = em.createQuery("Select e from Employee e where e.address.ID in (Select a.ID from e.address a)");
+        query.getResultList().size();
+        sql = query.unwrap(DatabaseQuery.class).getSQLString();
+        index = sql.indexOf("CMP3_EMPLOYEE");
+        if (index == -1) {
+            fail("CMP3_EMPLOYEE table missing.");
+        }
+        index = sql.indexOf("CMP3_EMPLOYEE", index + 1);
+        if (index != -1) {
+            fail("CMP3_EMPLOYEE table incorrectly joined twice.");
+        }
+        query = em.createQuery("Select e from Employee e where e is null");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e is not null");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address in (Select a from Address a where a is null)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address in (Select a from Address a where a is not null)");
+        query.getResultList();
         closeEntityManager(em);
     }
     
-    // TODO Bug 300625
+    // Bug 300625
     // Test reserved words can be used in package names.
     public void testOrderPackage() {
+        if (!isHermesParser()) {
+            warning("testOrderPackage only works with Hermes");
+            return;
+        }
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("Select new org.order.where.select.from.Foo(e.id) from Employee e");
+        Query query = em.createQuery("Select new org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order(e.id) from Employee e");
         query.getResultList();
         closeEntityManager(em);
     }
@@ -3460,6 +3590,28 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Query query = em.createQuery("Select e from Employee e where exists (Select a from e.address a  where UPPER(:arg) = UPPER(:arg2))");
         query.setParameter("arg", "foo");
         query.setParameter("arg2", "FOO");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 307412
+    // Test member of.
+    public void testMemberOf() {
+        if (!isHermesParser()) {
+            warning("testMemberOf only works with Hermes");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e, IN(e.managedEmployees) m, IN(m.projects) p where e.id = 1234 and p not member of e.projects");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 303268
+    // Test order by with a distinct and object comparison, had issues with expression builder on right.
+    public void testOrderByDistinct() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select distinct(e) from Employee e, PhoneNumber p where p.owner = e order by e.firstName");
         query.getResultList();
         closeEntityManager(em);
     }
@@ -3557,7 +3709,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select count(c) from PhoneNumber c");
         long count2 = ((Number)query.getSingleResult()).longValue();
-        query = em.createQuery("Select count(distinct p) from PhoneNumber p");
+        query = em.createQuery("Select count(distinct p) from PhoneNumber  p");
         query.getResultList();
         query = em.createQuery("Select count(distinct c) from Captain c");
         query.getResultList();

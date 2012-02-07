@@ -100,6 +100,7 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
     /**
      * Get employees.
      */
+    @Override
     public void setup() {
         super.setup();
         this.local = new ThreadLocal();
@@ -112,11 +113,12 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
     /**
      * Update employee at random.
      */
+    @Override
     public void runTask() throws Exception {
         try {
         EmployeeService service = getEmployeeService();
         int random = (int)(Math.random() * 1000000);
-        int index = (int)(Math.random() * 1000);
+        int index = (int)(Math.random() * this.employees.size());
         double update = Math.random();
         boolean success = false;
         int count = 0;
@@ -132,7 +134,6 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
                     success = true;
                 } catch (Exception exception) {
                     this.errors++;
-                    System.out.println("" + this.errors + ":" + exception.getClass());
                 }
             } else {
                 success = true;
@@ -142,5 +143,12 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
             error.printStackTrace();
             throw error;
         }
+    }
+    
+    @Override
+    public void endTest() {
+        super.endTest();
+        System.out.println("Errors:" + this.errors);
+        this.errors = 0;
     }
 }

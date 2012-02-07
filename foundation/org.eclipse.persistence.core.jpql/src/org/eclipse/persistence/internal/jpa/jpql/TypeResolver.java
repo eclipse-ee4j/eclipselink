@@ -1457,6 +1457,14 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 			expression.getJoinAssociationPath().accept(this);
 		}
 
+                /**
+                 * {@link InputParameter}
+                 */
+                @Override
+                public void visit(JoinFetch expression) {
+                        expression.getJoinAssociationPath().accept(this);
+                }
+
 		/**
 		 * {@link InputParameter}
 		 */

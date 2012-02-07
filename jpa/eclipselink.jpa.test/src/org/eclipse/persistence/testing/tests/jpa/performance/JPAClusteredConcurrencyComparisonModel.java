@@ -26,6 +26,7 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
     
     public void addTests() {
         addTest(buildClusterValidationTest());
+        addTest(buildComputeLagTest());
         //addTest(new JPAClusteredEJBConcurrencyComparisonTest());
         //addTest(new JPAClusteredEJBConcurrencyComparisonTest(0.5));
         //addTest(new JPAClusteredEJBConcurrencyComparisonTest(0.1));
@@ -37,7 +38,10 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
      */
     public void setup() {
         JPAClusteredEJBConcurrencyComparisonTest test = new JPAClusteredEJBConcurrencyComparisonTest();
-        //test.getEmployeeService().setup();
+        test.getEmployeeService().createTables();
+        //for (int index = 0; index < 10; index++) {
+            test.getEmployeeService().populate();
+        //}
         test.nextEmployeeService();
         test.nextEmployeeService();
         test.nextEmployeeService();
@@ -53,37 +57,76 @@ public class JPAClusteredConcurrencyComparisonModel extends TestModel {
                 EmployeeService service = test.nextEmployeeService();
                 Employee employee = (Employee)service.findAll().get(0);
                 
-                service = test.nextEmployeeService();
-                employee = service.findById(employee.getId());
-                service = test.nextEmployeeService();
-                employee = service.findById(employee.getId());
-                service = test.nextEmployeeService();
-                employee = service.findById(employee.getId());
-                
-                int random = (int)(Math.random() * 1000000);
-                employee.setLastName(String.valueOf(random));
-                service.update(employee);
-                
-                service = test.nextEmployeeService();
-                random = (int)(Math.random() * 1000000);
-                employee = service.findById(employee.getId());
-                employee.setLastName(String.valueOf(random));
-                service.update(employee);
-                
-                service = test.nextEmployeeService();
-                random = (int)(Math.random() * 1000000);
-                employee = service.findById(employee.getId());
-                employee.setLastName(String.valueOf(random));
-                service.update(employee);
-                
-                service = test.nextEmployeeService();
-                random = (int)(Math.random() * 1000000);
-                employee = service.findById(employee.getId());
-                employee.setLastName(String.valueOf(random));
-                service.update(employee);                
+                for (int index = 0; index < 5; index++) {
+                    service = test.nextEmployeeService();
+                    employee = service.findById(employee.getId());
+                }
+
+                for (int index = 0; index < 5; index++) {
+                    service = test.nextEmployeeService();
+                    int random = (int)(Math.random() * 1000000);
+                    employee = service.findById(employee.getId());
+                    employee.setLastName(String.valueOf(random));
+                    service.update(employee);
+                    try {
+                        Thread.sleep(2000);
+                    }
+                    catch (Exception ignore) {}
+                }
             }
         };
         test.setName("ClusterValidationTest");
+        return test;
+    }
+    
+    /**
+     * Build a test that attempt to determine the coordination lag in a cluster.
+     */
+    public TestCase buildComputeLagTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                JPAClusteredEJBConcurrencyComparisonTest test = new JPAClusteredEJBConcurrencyComparisonTest();
+                EmployeeService service = test.nextEmployeeService();
+                Employee employee = (Employee)service.findAll().get(0);
+                
+                for (int index = 0; index < 5; index++) {
+                    service = test.nextEmployeeService();
+                    employee = service.findById(employee.getId());
+                }
+
+                int sleeps[] = new int[]{1, 50, 100, 500, 1000, 2000, 3000, 4000, 5000, 10000};
+                int sleep = 0;
+                boolean success = false;
+                boolean failed = false;
+                while (!success && (sleep < sleeps.length)) {
+                    for (int index = 0; index < 10; index++) {
+                        service = test.nextEmployeeService();
+                        int random = (int)(Math.random() * 1000000);
+                        employee = service.findById(employee.getId());
+                        employee.setLastName(String.valueOf(random));
+                        try {
+                            service.update(employee);
+                        } catch (Exception lockError) {
+                            System.out.println("Failed at sleep of:" + sleeps[sleep] + " on attmept:" + index);
+                            sleep = sleep + 1;
+                            failed = true;
+                            break;
+                        }
+                        try {
+                            Thread.sleep(sleeps[sleep]);
+                        } catch (Exception ignore) { }
+                    }
+                    if (!failed) {
+                        success = true;
+                        System.out.println("Success at sleep of:" + sleeps[sleep]);
+                        break;
+                    } else {
+                        failed = false;
+                    }
+                }
+            }
+        };
+        test.setName("ComputeLagTest");
         return test;
     }
 }

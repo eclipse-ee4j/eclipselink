@@ -12,10 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpql;
 
+import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
-    String errorMessage = null;
+    Exception error = null;
 
     public void setup() {
         String ejbqlString = "SELECT OBJECT(emp) Frow Employee emp";
@@ -25,12 +26,12 @@ class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTe
     }
 
     public void test() throws Exception {
-        errorMessage = null;
+        error = null;
         try {
             getSession().logMessage("Running EJBQL -> " + getEjbqlString());
             setReturnedObjects(getSession().executeQuery(getQuery()));
         } catch (Exception e) {
-            errorMessage = e.getMessage();
+            error = e;
         }
     }
 
@@ -38,10 +39,10 @@ class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTe
      * verify(): Make sure the error message is the right one
      **/
     public void verify() throws Exception {
-        if (errorMessage == null) {
+        if (error == null) {
             setTestException(new TestErrorException(getName() + " Verify Failed: " + "No error thrown"));
         }
-        if (errorMessage.indexOf("syntax error at [Employee]") == -1) {
+        if (!(error instanceof JPQLException)) {
             setTestException(new TestErrorException("Frow should have thrown exception"));
         }
     }

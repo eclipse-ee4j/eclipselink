@@ -845,6 +845,7 @@ public class FunctionExpression extends BaseExpression {
                         query.setExpressionBuilder(outerBuilder);
                         subSelect.setSelectionCriteria(baseExp.equal(outerBuilder));
                     }
+                    query.setNonFetchJoinAttributeExpressions(null);
                     query.setSelectionCriteria(outerBuilder.exists(subSelect));
                     setBaseExpression(outerBuilder);
                     getChildren().set(0, outerBuilder);

@@ -99,7 +99,12 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		// Example: ReadAllQuery = SELECT e FROM Employee e
 		// Example: ReportQuery  = SELECT e FROM Department d JOIN d.employees e
 		if (queryContext.isRangeIdentificationVariable(expression.getVariableName())) {
-			initializeReadAllQuery();
+		        if (((SelectStatement)queryContext.getJPQLExpression().getQueryStatement()).hasGroupByClause()
+		                || ((SelectStatement)queryContext.getJPQLExpression().getQueryStatement()).hasHavingClause()) {
+	                    initializeReportQuery();
+		        } else {
+                            initializeReadAllQuery();		            
+		        }
 		}
 		else {
 			initializeReportQuery();

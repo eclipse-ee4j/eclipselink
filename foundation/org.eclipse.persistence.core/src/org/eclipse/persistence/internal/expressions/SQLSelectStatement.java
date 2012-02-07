@@ -1272,7 +1272,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         // Process order by expressions.
         if (hasOrderByExpressions()) {
-            rebuildAndAddExpressions(getOrderByExpressions(), allExpressions, builder, clonedExpressions);
+            normalizeOrderBy(builder, allExpressions, clonedExpressions, session);
         }
 
         // Process outer join by expressions.
@@ -1428,6 +1428,50 @@ public class SQLSelectStatement extends SQLStatement {
         normalize(theSession, theDescriptor, clonedExpressions);
     }
 
+
+    /**
+     * Check the order by for object expressions.
+     * Order by the objects primary key or all fields for aggregates.
+     */
+    protected void normalizeOrderBy(Expression builder, List<Expression> allExpressions, Map<Expression, Expression> clonedExpressions, AbstractSession session) {
+        List<Expression> newOrderBys = new ArrayList(this.orderByExpressions.size());
+        for (Expression orderBy : this.orderByExpressions) {
+            orderBy = rebuildExpression(orderBy, builder, clonedExpressions);
+            Expression base = orderBy;
+            boolean asc = true;
+            if (orderBy.isFunctionExpression()) {
+                if (orderBy.getOperator().getSelector() == ExpressionOperator.Ascending) {
+                    base = (Expression)((FunctionExpression)orderBy).getChildren().get(0);
+                } else if (orderBy.getOperator().getSelector() == ExpressionOperator.Descending) {
+                    asc = false;
+                    base = (Expression)((FunctionExpression)orderBy).getChildren().get(0);
+                }
+            }
+            if (base.isQueryKeyExpression()) {
+                QueryKeyExpression expression = (QueryKeyExpression)base;
+                expression.getBuilder().setSession(session);
+                if (expression.getMapping() != null) {
+                    List<Expression> orderBys = expression.getMapping().getOrderByNormalizedExpressions(expression);
+                    if (orderBys != null) {
+                        for (Expression mappingOrderBy : orderBys) {
+                            if (asc) {
+                                mappingOrderBy = mappingOrderBy.ascending();
+                            } else {
+                                mappingOrderBy = mappingOrderBy.descending();                                    
+                            }
+                            newOrderBys.add(mappingOrderBy);
+                            allExpressions.add(mappingOrderBy);
+                        }
+                        continue;
+                    }
+                }
+            }
+            newOrderBys.add(orderBy);
+            allExpressions.add(orderBy);
+        }
+        this.orderByExpressions = newOrderBys;
+    }
+    
     /**
      * Print the SQL representation of the statement on a stream.
      */
@@ -1498,26 +1542,34 @@ public class SQLSelectStatement extends SQLStatement {
                 fieldOrExpression = ((FunctionField)fieldOrExpression).getExpression();
             }
             if (fieldOrExpression instanceof Expression) {
-                Expression expression = (Expression)fieldOrExpression;
-                ExpressionBuilder originalBuilder = expression.getBuilder();
-
-                if (originalBuilder != primaryBuilder) {
-                    // For bug 2612185 avoid rebuildOn if possible as it rebuilds all on a single base.
-                    // i.e. Report query items could be from parallel expressions.
-                    if (clonedExpressions.get(originalBuilder) != null) {
-                        expression = expression.copiedVersionFrom(clonedExpressions);
-                        //if there is no builder or it is a copy of the base builder then rebuild otherwise it is a parallel expression not joined
-                    } 
-                    if (originalBuilder.wasQueryClassSetInternally()) {
-                        // Possibly the expression was built with the wrong builder.
-                        expression = expression.rebuildOn(primaryBuilder);
-                    }
+                Expression expression = rebuildExpression((Expression)fieldOrExpression, primaryBuilder, clonedExpressions);
+                if (fieldOrExpression != expression) {
                     expressions.set(index, expression);
                 }
-
                 allExpressions.add(expression);
             }
         }
+    }
+    
+    /**
+     * Rebuild the expression if required.
+     */
+    public Expression rebuildExpression(Expression expression, Expression primaryBuilder, Map<Expression, Expression> clonedExpressions) {
+        ExpressionBuilder originalBuilder = expression.getBuilder();
+
+        if (originalBuilder != primaryBuilder) {
+            // For bug 2612185 avoid rebuildOn if possible as it rebuilds all on a single base.
+            // i.e. Report query items could be from parallel expressions.
+            if (clonedExpressions.get(originalBuilder) != null) {
+                expression = expression.copiedVersionFrom(clonedExpressions);
+                //if there is no builder or it is a copy of the base builder then rebuild otherwise it is a parallel expression not joined
+            } 
+            if (originalBuilder.wasQueryClassSetInternally()) {
+                // Possibly the expression was built with the wrong builder.
+                expression = expression.rebuildOn(primaryBuilder);
+            }
+        }
+        return expression;
     }
 
     /**

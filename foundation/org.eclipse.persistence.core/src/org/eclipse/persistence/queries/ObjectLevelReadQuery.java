@@ -2343,7 +2343,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the attributes that must be joined, but not fetched, that is,
      * do not trigger the value holder.
      */
-    protected void setNonFetchJoinAttributeExpressions(List<Expression> nonFetchJoinExpressions) {
+    public void setNonFetchJoinAttributeExpressions(List<Expression> nonFetchJoinExpressions) {
         this.nonFetchJoinAttributeExpressions = nonFetchJoinExpressions;
     }
 

@@ -145,7 +145,12 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(JoinFetch expression) {
-		expression.getJoinAssociationPath().accept(this);
+                if (expression.hasIdentificationVariable() && (type == LiteralType.IDENTIFICATION_VARIABLE)) {
+                    expression.getIdentificationVariable().accept(this);
+                }
+                else {
+                        expression.getJoinAssociationPath().accept(this);
+                }
 	}
 
 	/**

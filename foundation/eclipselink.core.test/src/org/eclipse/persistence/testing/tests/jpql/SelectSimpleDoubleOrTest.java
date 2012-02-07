@@ -33,7 +33,7 @@ class SelectSimpleDoubleOrTest extends org.eclipse.persistence.testing.tests.jpq
         employeesUsed.add(emp3);
 
         //String partialFirstName = emp.getFirstName().substring(0, 3) + "%";
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.id + "OR emp.id = " + emp2.id + "OR emp.id = " + emp3.id;
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.id + " OR emp.id = " + emp2.id + " OR emp.id = " + emp3.id;
 
         //testEJBQL("FROM EmployeeBean employee WHERE employee.id = 456 OR employee.id = 756 ", false);
         setEjbqlString(ejbqlString);

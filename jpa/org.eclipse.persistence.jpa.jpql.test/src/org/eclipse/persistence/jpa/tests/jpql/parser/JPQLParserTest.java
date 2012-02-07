@@ -4040,7 +4040,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			assertEquals(toString(),                    join.toParsedText());
 			assertEquals(joinType,                      join.getIdentifier());
 			assertEquals(!joinAssociationPath.isNull(), join.hasJoinAssociationPath());
-			assertEquals(hasSpaceAfterFetch,            join.hasSpaceAfterFetch());
+			assertEquals(hasSpaceAfterFetch,            join.hasSpaceAfterJoin());
 
 			joinAssociationPath.test(join.getJoinAssociationPath());
 		}

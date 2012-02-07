@@ -43,6 +43,7 @@ import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -1044,14 +1045,16 @@ final class JPQLQueryContext {
 	                         Class<?>[] type) {
 
 		ReportQueryVisitor visitor = reportQueryVisitor();
+		Class[] previousType = visitor.type;
+		ObjectLevelReadQuery previousQuery = visitor.query;
 		try {
 			visitor.type  = type;
 			visitor.query = query;
 			expression.accept(visitor);
 		}
 		finally {
-			visitor.type  = null;
-			visitor.query = null;
+			visitor.type  = previousType;
+			visitor.query = previousQuery;
 		}
 	}
 

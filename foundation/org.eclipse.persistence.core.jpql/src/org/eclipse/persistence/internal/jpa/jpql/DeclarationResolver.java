@@ -525,6 +525,14 @@ final class DeclarationResolver {
 		@Override
 		public void visit(JoinFetch expression) {
 			((RangeDeclaration) currentDeclaration).addJoinFetch(expression);
+			if (expression.hasIdentificationVariable()) {
+                            IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
+    
+                            JoinDeclaration declaration = new JoinDeclaration(queryContext);
+                            declaration.baseExpression = expression;
+                            declaration.identificationVariable = identificationVariable;
+                            declarations.put(identificationVariable.getVariableName(), declaration);
+			}
 		}
 
 		/**
