@@ -2354,16 +2354,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Load the Metadata Repository for Extensibility
      */
     protected void updateMetadataRepository(Map m, ClassLoader loader){
-        String repository = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.METADATA_SOURCE, m, null, session);
-        if (repository!=null) {
-            if (repository.equalsIgnoreCase("XML")) {
-                processor.setMetadataSource(new XMLMetadataSource());
-            } else {
-                Class transportClass = findClassForProperty(repository, PersistenceUnitProperties.METADATA_SOURCE, loader);
-                try {
-                    processor.setMetadataSource((MetadataSource)transportClass.newInstance());
-                } catch (Exception invalid) {
-                    session.handleException(EntityManagerSetupException.failedToInstantiateProperty(repository, PersistenceUnitProperties.METADATA_SOURCE,invalid));
+        Object metadataSource = EntityManagerFactoryProvider.getConfigPropertyLogDebug(PersistenceUnitProperties.METADATA_SOURCE, m, session);
+        if (metadataSource != null && metadataSource instanceof MetadataSource){
+            processor.setMetadataSource((MetadataSource)metadataSource);
+        } else {
+            if (metadataSource!=null) {
+                String repository = (String)metadataSource;
+                if (repository.equalsIgnoreCase("XML")) {
+                    processor.setMetadataSource(new XMLMetadataSource());
+                } else {
+                    Class transportClass = findClassForProperty(repository, PersistenceUnitProperties.METADATA_SOURCE, loader);
+                    try {
+                        processor.setMetadataSource((MetadataSource)transportClass.newInstance());
+                    } catch (Exception invalid) {
+                        session.handleException(EntityManagerSetupException.failedToInstantiateProperty(repository, PersistenceUnitProperties.METADATA_SOURCE,invalid));
+                    }
                 }
             }
         }
