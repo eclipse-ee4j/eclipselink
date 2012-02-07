@@ -122,18 +122,19 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
             return;
         }
 
-        session.log(SessionLog.FINER, SessionLog.SQL, "begin_batch_statements", null, this.databaseAccessor);
-        if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
-            for (Iterator sqlStringsIterator = this.sqlStrings.iterator();
-                     sqlStringsIterator.hasNext();) {
-                session.log(SessionLog.FINE, SessionLog.SQL, (String)sqlStringsIterator.next(), null, this.databaseAccessor, false);
-            }
-        }
-        session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
-
         try {
             this.databaseAccessor.writeStatementsCount++;
             this.databaseAccessor.incrementCallCount(session);// Decrement occurs in close.
+
+            if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
+                session.log(SessionLog.FINER, SessionLog.SQL, "begin_batch_statements", null, this.databaseAccessor);
+                for (Iterator sqlStringsIterator = this.sqlStrings.iterator();
+                         sqlStringsIterator.hasNext();) {
+                    session.log(SessionLog.FINE, SessionLog.SQL, (String)sqlStringsIterator.next(), null, this.databaseAccessor, false);
+                }
+                session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
+            }
+            
             if (!session.getPlatform().usesJDBCBatchWriting()) {
                 PreparedStatement statement = prepareBatchStatement(session);
                 this.databaseAccessor.executeBatchedStatement(statement, session);

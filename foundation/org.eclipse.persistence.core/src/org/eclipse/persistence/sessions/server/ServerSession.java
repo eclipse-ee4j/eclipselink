@@ -608,8 +608,15 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         query.checkDescriptor(this);
         ClassDescriptor descriptor = query.getDescriptor();
         AbstractRecord row = query.rowFromArguments(argumentValues, this);
-        if (query.isObjectBuildingQuery() && descriptor != null && !descriptor.getCachePolicy().isSharedIsolation()){
-            return acquireClientSession().executeQuery(query, row);
+        if (query.isObjectBuildingQuery() && descriptor != null && !descriptor.getCachePolicy().isSharedIsolation()) {
+            ClientSession client = acquireClientSession();
+            Object result = null;
+            try {
+                result = client.executeQuery(query, row);
+            } finally {
+                client.release();
+            }
+            return result;
         }
         return super.executeQuery( query,  row);
     }

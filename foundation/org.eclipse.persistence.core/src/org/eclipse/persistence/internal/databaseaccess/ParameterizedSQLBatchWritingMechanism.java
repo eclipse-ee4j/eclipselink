@@ -125,20 +125,21 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
             return;
         }
 
-        session.log(SessionLog.FINER, SessionLog.SQL, "begin_batch_statements", null, this.databaseAccessor);
-        if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
-            session.log(SessionLog.FINE, SessionLog.SQL, this.previousCall.getSQLString(), null, this.databaseAccessor, false);
-            // took this loggin part from SQLCall
-            for (Iterator iterator = this.parameters.iterator(); iterator.hasNext();) {
-                StringWriter writer = new StringWriter();
-                DatabaseCall.appendLogParameters((Collection)iterator.next(), this.databaseAccessor, writer, session);                
-                session.log(SessionLog.FINE, SessionLog.SQL, writer.toString(), null, this.databaseAccessor, false);
-            }
-        }
-        session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
-
         try {
             this.databaseAccessor.incrementCallCount(session);// Decrement occurs in close.
+
+            if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
+                session.log(SessionLog.FINER, SessionLog.SQL, "begin_batch_statements", null, this.databaseAccessor);
+                session.log(SessionLog.FINE, SessionLog.SQL, this.previousCall.getSQLString(), null, this.databaseAccessor, false);
+                // took this loggin part from SQLCall
+                for (Iterator iterator = this.parameters.iterator(); iterator.hasNext();) {
+                    StringWriter writer = new StringWriter();
+                    DatabaseCall.appendLogParameters((Collection)iterator.next(), this.databaseAccessor, writer, session);                
+                    session.log(SessionLog.FINE, SessionLog.SQL, writer.toString(), null, this.databaseAccessor, false);
+                }
+                session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
+            }
+            
             //bug 4241441: need to keep track of rows modified and throw opti lock exception if needed
             PreparedStatement statement = this.prepareBatchStatements(session);
             executionCount += this.databaseAccessor.executeJDK12BatchStatement(statement, this.lastCallAppended, session, true);

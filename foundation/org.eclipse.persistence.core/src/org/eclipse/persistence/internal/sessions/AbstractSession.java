@@ -1704,9 +1704,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                 return accessors;
             }
         }
-        if (accessors == null) {
-            return getAccessors();
-        }
         return accessors;
     }
 

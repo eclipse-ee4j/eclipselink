@@ -84,6 +84,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /** Stores the UnitOfWork representing the persistence context. */
     protected RepeatableWriteUnitOfWork extendedPersistenceContext;
 
+    /** Stores a session used for read-only queries. */
+    protected AbstractSession readOnlySession;
+    
     /**
      * References the DatabaseSession that this deployment is using.
      */
@@ -649,6 +652,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }
             if (!descriptor.shouldBeReadOnly() || !descriptor.isSharedIsolation()) {
                 session = (AbstractSession) getActiveSession();
+            } else {
+                session = (AbstractSession) getReadOnlySession();
             }
             return (T) findInternal(descriptor, session, primaryKey, lockMode, properties);
         } catch (LockTimeoutException e) {
@@ -1292,10 +1297,15 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (this.extendedPersistenceContext != null && this.extendedPersistenceContext.isActive()) {
             return this.extendedPersistenceContext.getParent();
         }
-        if(this.databaseSession.isServerSession()) {
-            return ((ServerSession)this.databaseSession).acquireClientSession(connectionPolicy, properties);
+        if (this.readOnlySession != null) {
+            return this.readOnlySession;
+        }
+        if (this.databaseSession.isServerSession()) {
+            this.readOnlySession = ((ServerSession)this.databaseSession).acquireClientSession(connectionPolicy, properties);
+            return this.readOnlySession;
         } else if(this.databaseSession.isBroker()) {
-            return ((SessionBroker)this.databaseSession).acquireClientSessionBroker(this.connectionPolicies, (Map)this.properties.get(EntityManagerProperties.COMPOSITE_UNIT_PROPERTIES));
+            this.readOnlySession = ((SessionBroker)this.databaseSession).acquireClientSessionBroker(this.connectionPolicies, (Map)this.properties.get(EntityManagerProperties.COMPOSITE_UNIT_PROPERTIES));
+            return this.readOnlySession;
         } else {
             // currently this can't happen - the databaseSession is either ServerSession or SessionBroker. 
             return this.databaseSession;
@@ -1527,30 +1537,34 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void close() {
         try {
             verifyOpen();
-            isOpen = false;
-            factory = null;
-            databaseSession = null;
+            this.isOpen = false;
+            this.factory = null;
+            this.databaseSession = null;
             // Do not invalidate the metaModel field 
             // (a reopened emf will re-populate the same metaModel)
             // (a new persistence unit will generate a new metaModel)
-            if (extendedPersistenceContext != null) {
+            if (this.extendedPersistenceContext != null) {
                 // bug210677, checkForTransaction returns null in
                 // afterCompletion - in this case check for uow being
                 // synchronized.
-                if (checkForTransaction(false) == null && !extendedPersistenceContext.isSynchronized()) {
+                if (checkForTransaction(false) == null && !this.extendedPersistenceContext.isSynchronized()) {
                     // uow.release clears change sets but keeps the cache.
                     // uow still could be used for instantiating of ValueHolders
                     // after it's released.
-                    extendedPersistenceContext.release();
-                    extendedPersistenceContext.getParent().release();
+                    this.extendedPersistenceContext.release();
+                    this.extendedPersistenceContext.getParent().release();
                 } else {
                     // when commit will be called uow will be released, all
                     // change sets will be cleared, but the cache will be kept.
                     // uow still could be used for instantiating of ValueHolders
                     // after it's released.
-                    extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(false);
+                    this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(false);
                 }
-                extendedPersistenceContext = null;
+                this.extendedPersistenceContext = null;
+            }
+            if (this.readOnlySession != null) {
+                this.readOnlySession.release();
+                this.readOnlySession = null;
             }
         } catch (RuntimeException e) {
             setRollbackOnly();
