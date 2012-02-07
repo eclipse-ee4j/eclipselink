@@ -107,6 +107,7 @@ public class XMLMarshaller implements Cloneable {
     private NamespaceResolver namespaceResolver;
     private String valueWrapper;
     private NamespacePrefixMapper mapper;
+    private String indentString;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -172,6 +173,7 @@ public class XMLMarshaller implements Cloneable {
         setFormattedOutput(true);
         marshalProperties = new Properties();
         includeRoot = true;
+        indentString = "   "; // default indent is three spaces
     }
 
     /**
@@ -1551,30 +1553,47 @@ public class XMLMarshaller implements Cloneable {
     }
 
    /**
-    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
-    * Ignored marshalling XML.   
+    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)
+    * Ignored marshalling XML.
     * @since 2.4
     * @return
     */
-	public NamespaceResolver getNamespaceResolver() {
-		return namespaceResolver;
-	}
+    public NamespaceResolver getNamespaceResolver() {
+        return namespaceResolver;
+    }
 
    /**
-    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)   
-    * Ignored marshalling XML.  
-    * @since 2.4	 
+    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)
+    * Ignored marshalling XML.
+    * @since 2.4
     */
-	public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
-		this.namespaceResolver = namespaceResolver;
-	}
-	
-	public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
-	    this.mapper = mapper;
-	}
-	
-	public NamespacePrefixMapper getNamespacePrefixMapper() {
-	    return this.mapper;
-	}
+    public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
+        this.namespaceResolver = namespaceResolver;
+    }
+
+    public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    public NamespacePrefixMapper getNamespacePrefixMapper() {
+        return this.mapper;
+    }
+
+    /**
+     * Return the String that will be used to perform indenting in marshalled documents.
+     * Default is &quot;   &quot; (three spaces).
+     * @since 2.3.3
+     */
+    public String getIndentString() {
+        return this.indentString;
+    }
+
+    /**
+     * Set the String that will be used to perform indenting in marshalled documents.
+     * @since 2.3.3
+     */
+    public void setIndentString(String s) {
+        this.indentString = s;
+    }
 
 }

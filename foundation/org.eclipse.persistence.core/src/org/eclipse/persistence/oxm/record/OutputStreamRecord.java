@@ -34,7 +34,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is an OutputStream and the
- * XML should be not be formatted with carriage returns and indenting.  This type is only
+ * XML should not be formatted with carriage returns or indenting.  This type is only
  * used if the encoding of the OutputStream is UTF-8</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>

@@ -49,7 +49,7 @@ import org.xml.sax.SAXException;
  */
 public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
-    private static final char[] TAB = "   ".toCharArray();
+    private String tab;
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
@@ -58,6 +58,13 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         numberOfTabs = 0;
         complexType = true;
         isLastEventText = false;
+    }
+
+    private String tab() {
+        if (tab == null) {
+            tab = getMarshaller().getIndentString();
+        }
+        return tab;
     }
 
     /**
@@ -105,7 +112,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     writer.write(Helper.cr());
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                    writer.write(TAB);
+                    writeValue(tab());
                 }
             }
             if(position == null || !position.isCollection() || position.isEmptyCollection()){            	
@@ -166,7 +173,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             }
             writer.write(Helper.cr());
             for (int x = 0; x < numberOfTabs; x++) {
-                writer.write(TAB);
+                writeValue(tab());
             }
             super.element(frag);
         } catch (IOException e) {
@@ -252,7 +259,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 if (!isLastEventText) {
                     writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                        writer.write(TAB);
+                        writeValue(tab());
                     }
                 }
                 writer.write('<');
@@ -283,7 +290,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 if (complexType) {
                     writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                        writer.write(TAB);
+                        writeValue(tab());
                     }
                 } else {
                     complexType = true;

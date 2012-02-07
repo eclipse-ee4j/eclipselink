@@ -47,7 +47,7 @@ import org.xml.sax.SAXException;
  */
 public class FormattedWriterRecord extends WriterRecord {
 
-    private static final char[] TAB = "   ".toCharArray();
+    private String tab;
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
@@ -57,6 +57,13 @@ public class FormattedWriterRecord extends WriterRecord {
         numberOfTabs = 0;
         complexType = true;
         isLastEventText = false;
+    }
+
+    private String tab() {
+        if (tab == null) {
+            tab = getMarshaller().getIndentString();
+        }
+        return tab;
     }
 
     /**
@@ -84,7 +91,7 @@ public class FormattedWriterRecord extends WriterRecord {
                     writer.write(Helper.cr());
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                    writer.write(TAB);
+                    writeValue(tab());
                 }
             }
             isStartElementOpen = true;
@@ -109,7 +116,7 @@ public class FormattedWriterRecord extends WriterRecord {
             }
             writer.write(Helper.cr());
             for (int x = 0; x < numberOfTabs; x++) {
-                writer.write(TAB);
+                writeValue(tab());
             }
             super.element(frag);
         } catch (IOException e) {
@@ -133,7 +140,7 @@ public class FormattedWriterRecord extends WriterRecord {
             if (complexType) {
                 writer.write(Helper.cr());
                 for (int x = 0; x < numberOfTabs; x++) {
-                    writer.write(TAB);
+                    writeValue(tab());
                 }
             } else {
                 complexType = true;
@@ -229,7 +236,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 if (!isLastEventText) {
                     writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                        writer.write(TAB);
+                        writeValue(tab());
                     }
                 }
                 writer.write('<');
@@ -260,7 +267,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 if (complexType) {
                     writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                        writer.write(TAB);
+                        writeValue(tab());
                     }
                 } else {
                     complexType = true;

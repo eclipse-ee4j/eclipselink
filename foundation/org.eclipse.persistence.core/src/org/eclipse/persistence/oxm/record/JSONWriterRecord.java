@@ -38,7 +38,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is a Writer and the
- * JSON should be not be formatted with carriage returns and indenting.</p>
+ * JSON should not be formatted with carriage returns or indenting.</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>
  * XMLMarshaller xmlMarshaller = xmlContext.createMarshaller();<br>
