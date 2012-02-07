@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm.record.namespaces;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLRoot;
 
 /**
  * INTERNAL:
@@ -42,10 +43,38 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
             }
         }
         
+        for(Object next:nestedResolver.getNamespaces()) {
+            Namespace ns = (Namespace)next;
+            String uri = ns.getNamespaceURI();
+            String originalPrefix = ns.getPrefix();
+            
+            //ask prefixMapper for a new prefix for this uri
+            String prefix = prefixMapper.getPreferredPrefix(uri, originalPrefix, true);
+            
+            if(prefix != null) {
+                this.put(prefix, uri);
+            } else {
+                this.put(originalPrefix, uri);
+            }
+        }
+        String defaultUri = nestedResolver.getDefaultNamespaceURI();
+        
+        if(defaultUri != null) {
+            String prefix = prefixMapper.getPreferredPrefix(defaultUri, "", false);
+            if("".equals(prefix) || prefix == null) {
+                //Use as default?
+                this.setDefaultNamespaceURI(defaultUri);
+            } else {
+                this.put(prefix, defaultUri);
+            }
+        } 
+        
         String[] uris = mapper.getPreDeclaredNamespaceUris();
+        
         if(uris != null && uris.length > 0) {
             for(int i = 0; i < uris.length; i++) {
                 String uri = uris[i];
+                
                 String prefix = prefixMapper.getPreferredPrefix(uri, null, true);
                 if(prefix != null) {
                     this.put(prefix, uri);
@@ -61,16 +90,6 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
                 this.put(prefix, uri);
             }
         }        
-        
-        //Any URIs from the nested resolver that don't have prefixes should be added
-        for(Object next:nestedResolver.getNamespaces()) {
-            Namespace ns = (Namespace)next;
-            String uri = ns.getNamespaceURI();
-            String prefix = this.resolveNamespaceURI(uri);
-            if(prefix == null) {
-                this.put(ns.getPrefix(), uri);
-            }
-        }
     }
     
     @Override

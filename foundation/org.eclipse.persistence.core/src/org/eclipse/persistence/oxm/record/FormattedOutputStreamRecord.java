@@ -89,7 +89,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         }
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
-        outputStreamWrite(xPathFragment.getShortNameBytes());
+        outputStreamWrite(getNameForFragmentBytes(xPathFragment));
         numberOfTabs++;
         isLastEventText = false;
     }
