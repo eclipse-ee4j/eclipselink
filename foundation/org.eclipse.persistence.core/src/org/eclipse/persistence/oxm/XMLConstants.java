@@ -147,4 +147,5 @@ public class XMLConstants {
     public static final String ANY_NAMESPACE_TARGETNS = "##targetNamespace";
 
     public final static Class UUID = java.util.UUID.class;
+    public static final Class URI = java.net.URI.class;
 }
