@@ -102,14 +102,16 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
         if(prefix == null) {
         	prefix = super.resolveNamespaceURI(uri);
         }
-        if(prefix == null) {
-            prefix = prefixMapper.getPreferredPrefix(uri, prefix, true);
-        }
         return prefix;
     }
     
     @Override
-    public void put(String a, String b) {
-        super.put(a, b);
+    public void put(String prefix, String uri) {
+        String newPrefix = prefixMapper.getPreferredPrefix(uri, prefix, true);
+        if(newPrefix == null || newPrefix.length() == 0) {
+            super.put(prefix, uri);
+        } else {
+            super.put(newPrefix, uri);
+        }
     }
 }

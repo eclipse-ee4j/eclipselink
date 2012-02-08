@@ -162,7 +162,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
         for (int i = 0, extraNamespacesSize=extraNamespaces.size(); i < extraNamespacesSize; i++) {
             Namespace next = (Namespace)extraNamespaces.get(i);
-            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, next.getPrefix(), XMLConstants.XMLNS + XMLConstants.COLON + next.getPrefix(), next.getNamespaceURI());
+            String prefix = next.getPrefix();
+            if(((MarshalRecord)xmlRecord).hasCustomNamespaceMapper()) {
+                prefix = ((MarshalRecord)xmlRecord).getNamespaceResolver().resolveNamespaceURI(next.getNamespaceURI());
+            }
+            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, next.getNamespaceURI());
         }
 
     }

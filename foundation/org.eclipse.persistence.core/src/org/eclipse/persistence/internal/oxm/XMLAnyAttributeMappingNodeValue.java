@@ -76,6 +76,12 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
                         qualifiedName = prefix + XMLConstants.COLON+ qualifiedName;
                     } else if (name.getNamespaceURI() != null && name.getNamespaceURI().length() > 0) {
                         String generatedPrefix = nr.generatePrefix();
+                        if(marshalRecord.hasCustomNamespaceMapper()) {
+                            String customPrefix = marshalRecord.getMarshaller().getNamespacePrefixMapper().getPreferredPrefix(name.getNamespaceURI(), generatedPrefix, true);
+                            if(customPrefix != null && customPrefix.length() > 0) {
+                                generatedPrefix = customPrefix;
+                            }
+                        }
                         qualifiedName = generatedPrefix + XMLConstants.COLON + qualifiedName;
                         nr.put(generatedPrefix, name.getNamespaceURI());
                         extraNamespaces.add(generatedPrefix);
