@@ -1,0 +1,9 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="testObject">
+      <xsd:sequence>
+         <xsd:element name="theURI" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="theURIs" type="xsd:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="testObject" type="testObject"/>
+</xsd:schema>

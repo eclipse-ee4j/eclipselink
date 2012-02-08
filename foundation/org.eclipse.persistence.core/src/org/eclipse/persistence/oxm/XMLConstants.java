@@ -153,6 +153,7 @@ public class XMLConstants {
     public static final String ANY_NAMESPACE_TARGETNS = "##targetNamespace";
 
     public static final Class UUID = java.util.UUID.class;
+    public static final Class URI = java.net.URI.class;
     public static final Class LOCATOR_CLASS = org.xml.sax.Locator.class;
     public static final String LOCATOR_CLASS_NAME = "org.xml.sax.Locator";
 
