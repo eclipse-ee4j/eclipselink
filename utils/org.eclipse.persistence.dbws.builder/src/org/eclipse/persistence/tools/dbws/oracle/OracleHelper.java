@@ -730,11 +730,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     } else if (fType.getDataType() instanceof ObjectType) {
                         buildAndAddXMLCompositeObjectMapping(xdesc, lFieldName, getGeneratedJavaClassName(fType.getDataType().getTypeName(), dbwsBuilder.getProjectName()));
                     } else if (fType.getDataType() instanceof VArrayType) {
-                        buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME + SLASH + TEXT, getAttributeClassForDatabaseType(fType.getDataType()));
+                    	if (((VArrayType)fType.getDataType()).getEnclosedType().isComposite()) {
+                            String nestedTypeAlias = ((VArrayType) fType.getDataType()).getEnclosedType().getTypeName().toLowerCase();
+                            String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+                            buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
+                    	} else {
+                    		buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME + SLASH + TEXT, getAttributeClassForDatabaseType(fType.getDataType()));
+                    	}
                     } else if (fType.getDataType() instanceof ObjectTableType) {
                         // assumes ObjectTableType has an enclosed ObjectType type
-                        ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getDataType()).getEnclosedType();
-                        String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
+                        String nestedTypeAlias = ((ObjectTableType) fType.getDataType()).getEnclosedType().getTypeName().toLowerCase();
                         String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
                         // ObjectType is composite
                         buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
@@ -792,7 +797,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     } else if (fType.getDataType() instanceof ObjectType) {
                         buildAndAddStructureMapping(ordtDesc, lFieldName, fieldName, getGeneratedJavaClassName(fType.getDataType().getTypeName(), dbwsBuilder.getProjectName()));
                     } else if (fType.getDataType() instanceof VArrayType) {
-                        buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, getStructureNameForField(fType, null));
+                    	if (((VArrayType)fType.getDataType()).getEnclosedType().isComposite()) {
+                        	buildAndAddObjectArrayMapping(ordtDesc, lFieldName, fieldName, getGeneratedJavaClassName(((VArrayType)fType.getDataType()).getEnclosedType().getTypeName(), dbwsBuilder.getProjectName()), getStructureNameForField(fType, null));
+                        } else {
+                        	buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, getStructureNameForField(fType, null));
+                        }
                     } else if (fType.getDataType() instanceof ObjectTableType) {
                         // assumes ObjectTableType has an enclosed ObjectType type
                     	ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getDataType()).getEnclosedType();

@@ -51,6 +51,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_A_PHONE2_TYPE_TABLE =
         "CREATE OR REPLACE TYPE A_PHONE2_TYPE_TABLE AS TABLE OF A_PHONE2_TYPE";
+    static final String CREATE_A_PHONE2_TYPE_VARRAY =
+        "CREATE OR REPLACE TYPE A_PHONE2_TYPE_VARRAY AS VARRAY(10) OF A_PHONE2_TYPE";
     static final String CREATE_A_CONTACT2_TYPE =
         "CREATE OR REPLACE TYPE A_CONTACT2_TYPE AS OBJECT (" +
             "\nADDRESS VARCHAR2(40)," +
@@ -76,6 +78,10 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nCR3 VARCHAR2ARRAY," +
             "\nCR4 A_PHONE2_TYPE_TABLE" +
         "\n)";
+    static final String CREATE_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE =
+        "CREATE OR REPLACE TYPE COMPLEXPKG2_MORECOMPLEXRECORD AS OBJECT (" +
+            "\nMCR1 A_PHONE2_TYPE_VARRAY" +
+        "\n)";
     static final String CREATE_COMPLEXPKG2_PACKAGE =
         "CREATE OR REPLACE PACKAGE COMPLEXPKG2 AS" +
             "\nTYPE TAB1 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
@@ -88,6 +94,9 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 	            "\nCR2 A_CONTACT2_TYPE," +
 	            "\nCR3 VARCHAR2ARRAY," +
 	            "\nCR4 A_PHONE2_TYPE_TABLE" +
+	        "\n);" +
+            "\nTYPE MORECOMPLEXRECORD IS RECORD (" +
+	            "\nMCR1 A_PHONE2_TYPE_VARRAY" +
 	        "\n);" +
             "\nFUNCTION TABLETOVARRAY(OLDTAB IN TAB1) RETURN VARCHAR2ARRAY;" +
             "\nFUNCTION TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1) RETURN VARCHAR2ARRAY;" +
@@ -107,6 +116,8 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "\nFUNCTION PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN SIMPLERECORD;" +
             "\nFUNCTION CREATECUSTOMER RETURN A_CUSTOMER2_TYPE;" +
 			"\nFUNCTION CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT2_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHAR2ARRAY, APHONETYPETABLE IN A_PHONE2_TYPE_TABLE) RETURN COMPLEXRECORD;" +
+            "\nFUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY;" +
+            "\nFUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD;" +
         "\nEND COMPLEXPKG2;";
     static final String CREATE_COMPLEXPKG2_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG2 AS" +
@@ -296,6 +307,22 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 			    "\nACOMPLEXREC.CR4 := APHONETYPETABLE;" +
 			    "\nRETURN ACOMPLEXREC;" +
 			"\nEND CREATE_COMPLEXRECORD;" +
+            "\nFUNCTION CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN A_PHONE2_TYPE_VARRAY AS" +
+			"\nPHONETYPEARRAY A_PHONE2_TYPE_VARRAY;" +
+            "\nBEGIN" +
+		        "\nPHONETYPEARRAY := A_PHONE2_TYPE_VARRAY();" +
+		        "\nPHONETYPEARRAY.EXTEND;" +
+		        "\nPHONETYPEARRAY(1) := APHONETYPE1;" +
+		        "\nPHONETYPEARRAY.EXTEND;" +
+		        "\nPHONETYPEARRAY(2) := APHONETYPE2;" +
+		        "\nRETURN PHONETYPEARRAY;" +
+			"\nEND CREATE_PHONETYPEVARRAY;" +
+            "\nFUNCTION CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE2_TYPE, APHONETYPE2 IN A_PHONE2_TYPE) RETURN MORECOMPLEXRECORD AS" +
+            "\nMORECOMPLEXREC MORECOMPLEXRECORD;" +
+            "\nBEGIN" +
+                "\nMORECOMPLEXREC.MCR1 := CREATE_PHONETYPEVARRAY(APHONETYPE1, APHONETYPE2);" +
+                "\nRETURN MORECOMPLEXREC;" +
+			"\nEND CREATE_MORECOMPLEXRECORD;" +
         "\nEND COMPLEXPKG2;";
     static final String DROP_COMPLEXPKG2_PACKAGE =
         "DROP PACKAGE COMPLEXPKG2";
@@ -317,6 +344,10 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "DROP TYPE A_CONTACT2_TYPE";
     static final String DROP_A_PHONE2_TYPE_TABLE = 
         "DROP TYPE A_PHONE2_TYPE_TABLE";
+    static final String DROP_A_PHONE2_TYPE_VARRAY = 
+        "DROP TYPE A_PHONE2_TYPE_VARRAY";
+    static final String DROP_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE =
+        "DROP TYPE COMPLEXPKG2_MORECOMPLEXRECORD";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -347,10 +378,12 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         if (ddlCreate) {
            	runDdl(conn, CREATE_VARCHAR2ARRAY_VARRAY, ddlDebug);
         	runDdl(conn, CREATE_A_PHONE2_TYPE, ddlDebug);        	runDdl(conn, CREATE_A_PHONE2_TYPE_TABLE, ddlDebug);
+        	runDdl(conn, CREATE_A_PHONE2_TYPE_VARRAY, ddlDebug);
         	runDdl(conn, CREATE_A_CONTACT2_TYPE, ddlDebug);
         	runDdl(conn, CREATE_A_CUSTOMER2_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_COMPLEXRECORD_TYPE, ddlDebug);
+        	runDdl(conn, CREATE_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_PACKAGE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG2_BODY, ddlDebug);
@@ -472,6 +505,17 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 		          "catalogPattern=\"COMPLEXPKG2\" " +
 		          "procedurePattern=\"CREATE_COMPLEXRECORD\" " +
 		      "/>" +
+              "<plsql-procedure " +
+		          "name=\"CreatePhoneTypeVArrayTest\" " +
+		          "catalogPattern=\"COMPLEXPKG2\" " +
+		          "procedurePattern=\"CREATE_PHONETYPEVARRAY\" " +
+		          "returnType=\"a_phone2_type_varrayType\" " +
+		      "/>" +
+              "<plsql-procedure " +
+		          "name=\"CreateMoreComplexRecordTest\" " +
+		          "catalogPattern=\"COMPLEXPKG2\" " +
+		          "procedurePattern=\"CREATE_MORECOMPLEXRECORD\" " +
+		      "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -484,8 +528,10 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         	runDdl(conn, DROP_COMPLEXPKG2_PACKAGE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_COMPLEXRECORD_TYPE, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG2_MORECOMPLEXRECORD_TYPE, ddlDebug);
             runDdl(conn, DROP_A_CUSTOMER2_TYPE, ddlDebug);
             runDdl(conn, DROP_A_CONTACT2_TYPE, ddlDebug);
+        	runDdl(conn, DROP_A_PHONE2_TYPE_VARRAY, ddlDebug);
             runDdl(conn, DROP_A_PHONE2_TYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_A_PHONE2_TYPE, ddlDebug);
         	runDdl(conn, DROP_COMPLEXPKG2_TAB1_TYPE, ddlDebug);
@@ -797,6 +843,42 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void createPhoneTypeVArrayTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPhone1 = unmarshaller.unmarshal(new StringReader(APHONE_XML));
+        Object inputPhone2 = unmarshaller.unmarshal(new StringReader(APHONE2_XML));
+        Invocation invocation = new Invocation("CreatePhoneTypeVArrayTest");
+        invocation.setParameter("APHONETYPE1", inputPhone1);
+        invocation.setParameter("APHONETYPE2", inputPhone2);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(APHONETYPEARRAY_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void createMoreComplexRecordTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPhone1 = unmarshaller.unmarshal(new StringReader(APHONE_XML));
+        Object inputPhone2 = unmarshaller.unmarshal(new StringReader(APHONE2_XML));
+        Invocation invocation = new Invocation("CreateMoreComplexRecordTest");
+        invocation.setParameter("APHONETYPE1", inputPhone1);
+        invocation.setParameter("APHONETYPE2", inputPhone2);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MORECOMPLEX_RECORD_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -885,6 +967,18 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
           "<home>(613)111-2222</home>" +
           "<cell>(613)333-4444</cell>" +
         "</a_phone2_typeType>";
+    public static final String APHONETYPEARRAY_XML =
+        STANDALONE_XML_HEADER +
+        "<a_phone2_type_varrayType xmlns=\"urn:ComplexPLSQLSF\">" +
+          "<item>" +
+          	"<home>(613)111-2222</home>" +
+          	"<cell>(613)222-3333</cell>" +
+          "</item>" +
+          "<item>" +
+          	"<home>(613)111-2222</home>" +
+          	"<cell>(613)333-4444</cell>" +
+          "</item>" +
+        "</a_phone2_type_varrayType>";
     public static final String SIMPLE_RECORD_XML =
 	    STANDALONE_XML_HEADER +
 	    "<COMPLEXPKG2_SIMPLERECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -960,4 +1054,19 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
             "</item>" +
           "</cr4>" +
         "</COMPLEXPKG2_COMPLEXRECORD>";
+    
+    public static final String MORECOMPLEX_RECORD_XML = 
+        STANDALONE_XML_HEADER +
+        "<COMPLEXPKG2_MORECOMPLEXRECORD xmlns=\"urn:ComplexPLSQLSF\">" +
+            "<mcr1>" +
+              "<item>" +
+              	"<home>(613)111-2222</home>" +
+                "<cell>(613)222-3333</cell>" +
+              "</item>" +
+              "<item>" +
+              	"<home>(613)111-2222</home>" +
+              	"<cell>(613)333-4444</cell>" +
+              "</item>" +
+            "</mcr1>" +
+        "</COMPLEXPKG2_MORECOMPLEXRECORD>";
 }

@@ -51,6 +51,8 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_A_PHONE_TYPE_TABLE =
         "CREATE OR REPLACE TYPE A_PHONE_TYPE_TABLE AS TABLE OF A_PHONE_TYPE";
+    static final String CREATE_A_PHONE_TYPE_VARRAY =
+        "CREATE OR REPLACE TYPE A_PHONE_TYPE_VARRAY AS VARRAY(10) OF A_PHONE_TYPE";
     static final String CREATE_A_CONTACT_TYPE =
         "CREATE OR REPLACE TYPE A_CONTACT_TYPE AS OBJECT (" +
             "\nADDRESS VARCHAR2(40)," +
@@ -64,8 +66,6 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_COMPLEXPKG_TAB1_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG_TAB1 AS TABLE OF VARCHAR2(20)";
-    static final String CREATE_COMPLEXPKG_TAB2_TYPE =
-        "CREATE OR REPLACE TYPE COMPLEXPKG_TAB2 AS TABLE OF A_CONTACT_TYPE";
     static final String CREATE_COMPLEXPKG_SIMPLERECORD_TYPE =
         "CREATE OR REPLACE TYPE COMPLEXPKG_SIMPLERECORD AS OBJECT (" +
             "\nSR1 VARCHAR2(20)," +
@@ -78,10 +78,13 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             "\nCR3 VARCHARARRAY," +
             "\nCR4 A_PHONE_TYPE_TABLE" +
         "\n)";
+    static final String CREATE_COMPLEXPKG_MORECOMPLEXRECORD_TYPE =
+        "CREATE OR REPLACE TYPE COMPLEXPKG_MORECOMPLEXRECORD AS OBJECT (" +
+            "\nMCR1 A_PHONE_TYPE_VARRAY" +
+        "\n)";
     static final String CREATE_COMPLEXPKG_PACKAGE =
         "CREATE OR REPLACE PACKAGE COMPLEXPKG AS" +
             "\nTYPE TAB1 IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
-            "\nTYPE TAB2 IS TABLE OF A_CONTACT_TYPE INDEX BY BINARY_INTEGER;" +
             "\nTYPE SIMPLERECORD IS RECORD (" +
                 "\nSR1 VARCHAR2(20)," +
                 "\nSR2 VARCHAR2(20)" +
@@ -91,6 +94,9 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 	            "\nCR2 A_CONTACT_TYPE," +
 	            "\nCR3 VARCHARARRAY," +
 	            "\nCR4 A_PHONE_TYPE_TABLE" +
+	        "\n);" +
+            "\nTYPE MORECOMPLEXRECORD IS RECORD (" +
+	            "\nMCR1 A_PHONE_TYPE_VARRAY" +
 	        "\n);" +
             "\nPROCEDURE TABLETOVARRAY(OLDTAB IN TAB1, NEWVARRAY OUT VARCHARARRAY);" +
             "\nPROCEDURE TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1, NEWVARRAY OUT VARCHARARRAY);" +
@@ -110,7 +116,8 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             "\nPROCEDURE PHONETYPETABLETOPLSQL(APHONETYPETABLE IN A_PHONE_TYPE_TABLE, NEWREC OUT SIMPLERECORD);" +
             "\nPROCEDURE CREATE_A_CUSTOMER(ACUSTOMER OUT A_CUSTOMER_TYPE);" +
 			"\nPROCEDURE CREATE_COMPLEXRECORD(ACONTACT IN A_CONTACT_TYPE, ANUMBER IN NUMBER, AVARRAY IN VARCHARARRAY, APHONETYPETABLE IN A_PHONE_TYPE_TABLE, ACOMPLEXREC OUT COMPLEXRECORD);" +
-			"\nPROCEDURE CREATE_CONTACT_COLLECTION(ACONTACT1 IN A_CONTACT_TYPE, ACONTACT2 IN A_CONTACT_TYPE, ACOMPLEXCOL OUT TAB2);" +
+            "\nPROCEDURE CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE_TYPE, APHONETYPE2 IN A_PHONE_TYPE, PHONETYPEARRAY OUT A_PHONE_TYPE_VARRAY);" +
+            "\nPROCEDURE CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE_TYPE, APHONETYPE2 IN A_PHONE_TYPE, MORECOMPLEXREC OUT MORECOMPLEXRECORD);" +
         "\nEND COMPLEXPKG;";
     static final String CREATE_COMPLEXPKG_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG AS" +
@@ -264,11 +271,20 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 			    "\nACOMPLEXREC.CR3 := AVARRAY;" +
 			    "\nACOMPLEXREC.CR4 := APHONETYPETABLE;" +
 			"\nEND CREATE_COMPLEXRECORD;" +
-			"\nPROCEDURE CREATE_CONTACT_COLLECTION(ACONTACT1 IN A_CONTACT_TYPE, ACONTACT2 IN A_CONTACT_TYPE, ACOMPLEXCOL OUT TAB2) AS" +
+            "\nPROCEDURE CREATE_PHONETYPEVARRAY(APHONETYPE1 IN A_PHONE_TYPE, APHONETYPE2 IN A_PHONE_TYPE, PHONETYPEARRAY OUT A_PHONE_TYPE_VARRAY) AS" +
 			"\nBEGIN" +
-			    "\nACOMPLEXCOL(1) := ACONTACT1;" +			
-			    "\nACOMPLEXCOL(2) := ACONTACT2;" +			
-			"\nEND CREATE_CONTACT_COLLECTION;" +
+		        "\nPHONETYPEARRAY := A_PHONE_TYPE_VARRAY();" +
+		        "\nPHONETYPEARRAY.EXTEND;" +
+		        "\nPHONETYPEARRAY(1) := APHONETYPE1;" +
+		        "\nPHONETYPEARRAY.EXTEND;" +
+		        "\nPHONETYPEARRAY(2) := APHONETYPE2;" +
+			"\nEND CREATE_PHONETYPEVARRAY;" +
+            "\nPROCEDURE CREATE_MORECOMPLEXRECORD(APHONETYPE1 IN A_PHONE_TYPE, APHONETYPE2 IN A_PHONE_TYPE, MORECOMPLEXREC OUT MORECOMPLEXRECORD) AS" +
+            "\nPHONETYPEARRAY A_PHONE_TYPE_VARRAY;" +
+            "\nBEGIN" +
+                "\nCREATE_PHONETYPEVARRAY(APHONETYPE1, APHONETYPE2, PHONETYPEARRAY);" +
+                "\nMORECOMPLEXREC.MCR1 := PHONETYPEARRAY;" +
+			"\nEND CREATE_MORECOMPLEXRECORD;" +
         "\nEND COMPLEXPKG;";
     static final String DROP_COMPLEXPKG_PACKAGE =
         "DROP PACKAGE COMPLEXPKG";
@@ -276,8 +292,6 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         "DROP PACKAGE BODY COMPLEXPKG";
     static final String DROP_COMPLEXPKG_TAB1_TYPE =
         "DROP TYPE COMPLEXPKG_TAB1";
-    static final String DROP_COMPLEXPKG_TAB2_TYPE =
-        "DROP TYPE COMPLEXPKG_TAB2";
     static final String DROP_COMPLEXPKG_SIMPLERECORD_TYPE =
         "DROP TYPE COMPLEXPKG_SIMPLERECORD";
     static final String DROP_COMPLEXPKG_COMPLEXRECORD_TYPE =
@@ -292,6 +306,10 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         "DROP TYPE A_CONTACT_TYPE";
     static final String DROP_A_PHONE_TYPE_TABLE = 
         "DROP TYPE A_PHONE_TYPE_TABLE";
+    static final String DROP_A_PHONE_TYPE_VARRAY = 
+        "DROP TYPE A_PHONE_TYPE_VARRAY";
+    static final String DROP_COMPLEXPKG_MORECOMPLEXRECORD_TYPE =
+        "DROP TYPE COMPLEXPKG_MORECOMPLEXRECORD";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -323,12 +341,13 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         	runDdl(conn, CREATE_VARCHARARRAY_VARRAY, ddlDebug);
         	runDdl(conn, CREATE_A_PHONE_TYPE, ddlDebug);
         	runDdl(conn, CREATE_A_PHONE_TYPE_TABLE, ddlDebug);
+        	runDdl(conn, CREATE_A_PHONE_TYPE_VARRAY, ddlDebug);
         	runDdl(conn, CREATE_A_CONTACT_TYPE, ddlDebug);
         	runDdl(conn, CREATE_A_CUSTOMER_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_SIMPLERECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_COMPLEXRECORD_TYPE, ddlDebug);
+        	runDdl(conn, CREATE_COMPLEXPKG_MORECOMPLEXRECORD_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_TAB1_TYPE, ddlDebug);
-        	runDdl(conn, CREATE_COMPLEXPKG_TAB2_TYPE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_PACKAGE, ddlDebug);
         	runDdl(conn, CREATE_COMPLEXPKG_BODY, ddlDebug);
         }
@@ -441,9 +460,14 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 		          "procedurePattern=\"CREATE_COMPLEXRECORD\" " +
 		      "/>" +
               "<plsql-procedure " +
-		          "name=\"CreateContactCollectionTest\" " +
+		          "name=\"CreatePhoneTypeVArrayTest\" " +
 		          "catalogPattern=\"COMPLEXPKG\" " +
-		          "procedurePattern=\"CREATE_CONTACT_COLLECTION\" " +
+		          "procedurePattern=\"CREATE_PHONETYPEVARRAY\" " +
+		      "/>" +
+              "<plsql-procedure " +
+		          "name=\"CreateMoreComplexRecordTest\" " +
+		          "catalogPattern=\"COMPLEXPKG\" " +
+		          "procedurePattern=\"CREATE_MORECOMPLEXRECORD\" " +
 		      "/>" +
             "</dbws-builder>";
           builder = null;
@@ -457,9 +481,10 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_COMPLEXPKG_PACKAGE, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG_SIMPLERECORD_TYPE, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG_COMPLEXRECORD_TYPE, ddlDebug);
-            runDdl(conn, DROP_COMPLEXPKG_TAB2_TYPE, ddlDebug);
+            runDdl(conn, DROP_COMPLEXPKG_MORECOMPLEXRECORD_TYPE, ddlDebug);
             runDdl(conn, DROP_A_CUSTOMER_TYPE, ddlDebug);
             runDdl(conn, DROP_A_CONTACT_TYPE, ddlDebug);
+        	runDdl(conn, DROP_A_PHONE_TYPE_VARRAY, ddlDebug);
             runDdl(conn, DROP_A_PHONE_TYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_A_PHONE_TYPE, ddlDebug);
             runDdl(conn, DROP_COMPLEXPKG_TAB1_TYPE, ddlDebug);
@@ -771,21 +796,39 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
-    //@Test
-    public void createContactCollectionTest() {
+    @Test
+    public void createPhoneTypeVArrayTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
-        Object inputContact1 = unmarshaller.unmarshal(new StringReader(CONTACT_TYPE_XML));
-        Object inputContact2 = unmarshaller.unmarshal(new StringReader(CONTACT_TYPE2_XML));
-        Invocation invocation = new Invocation("CreateContactCollectionTest");
-        invocation.setParameter("ACONTACT1", inputContact1);
-        invocation.setParameter("ACONTACT2", inputContact2);
+        Object inputPhone1 = unmarshaller.unmarshal(new StringReader(APHONE_XML));
+        Object inputPhone2 = unmarshaller.unmarshal(new StringReader(APHONE2_XML));
+        Invocation invocation = new Invocation("CreatePhoneTypeVArrayTest");
+        invocation.setParameter("APHONETYPE1", inputPhone1);
+        invocation.setParameter("APHONETYPE2", inputPhone2);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(COMPLEX_RECORD_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(APHONETYPEARRAY_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void createMoreComplexRecordTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputPhone1 = unmarshaller.unmarshal(new StringReader(APHONE_XML));
+        Object inputPhone2 = unmarshaller.unmarshal(new StringReader(APHONE2_XML));
+        Invocation invocation = new Invocation("CreateMoreComplexRecordTest");
+        invocation.setParameter("APHONETYPE1", inputPhone1);
+        invocation.setParameter("APHONETYPE2", inputPhone2);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MORECOMPLEX_RECORD_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
@@ -869,6 +912,18 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
           "<home>(613)111-2222</home>" +
           "<cell>(613)333-4444</cell>" +
         "</a_phone_typeType>";
+    public static final String APHONETYPEARRAY_XML =
+        STANDALONE_XML_HEADER +
+        "<a_phone_type_varrayType xmlns=\"urn:ComplexPLSQLSP\">" +
+          "<item>" +
+          	"<home>(613)111-2222</home>" +
+          	"<cell>(613)222-3333</cell>" +
+          "</item>" +
+          "<item>" +
+          	"<home>(613)111-2222</home>" +
+          	"<cell>(613)333-4444</cell>" +
+          "</item>" +
+        "</a_phone_type_varrayType>";
     public static final String SIMPLE_RECORD_XML =
 	    STANDALONE_XML_HEADER +
 	    "<COMPLEXPKG_SIMPLERECORD xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -926,6 +981,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 	          "<cell>(401)222-5432</cell>" +
 	        "</phone>" +
         "</a_contact_typeType>";
+    
     public static final String COMPLEX_RECORD_XML = 
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG_COMPLEXRECORD xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -953,4 +1009,19 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             "</item>" +
           "</cr4>" +
         "</COMPLEXPKG_COMPLEXRECORD>";
+
+    public static final String MORECOMPLEX_RECORD_XML = 
+        STANDALONE_XML_HEADER +
+        "<COMPLEXPKG_MORECOMPLEXRECORD xmlns=\"urn:ComplexPLSQLSP\">" +
+            "<mcr1>" +
+              "<item>" +
+              	"<home>(613)111-2222</home>" +
+                "<cell>(613)222-3333</cell>" +
+              "</item>" +
+              "<item>" +
+              	"<home>(613)111-2222</home>" +
+              	"<cell>(613)333-4444</cell>" +
+              "</item>" +
+            "</mcr1>" +
+        "</COMPLEXPKG_MORECOMPLEXRECORD>";
 }
