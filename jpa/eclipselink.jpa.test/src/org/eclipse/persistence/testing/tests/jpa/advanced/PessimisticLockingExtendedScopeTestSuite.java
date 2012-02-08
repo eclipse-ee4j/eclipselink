@@ -63,16 +63,18 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
 
     public static Test suite() {
         TestSuite suite = new TestSuite("PessimisticLocking ExtendedScope TestSuite");
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testSetup"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES1"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES2"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES3"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES4"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES5"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES6"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES7"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES8"));
-        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES9"));
+        if (! (JUnitTestCase.getServerSession()).getPlatform().isSQLServer()) {
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testSetup"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES1"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES2"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES3"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES4"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES5"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES6"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES7"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES8"));
+            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES9"));
+        }
         return suite;
     }
     
