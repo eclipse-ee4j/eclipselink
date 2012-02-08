@@ -170,6 +170,6 @@ public class TestGroupByOrderByHaving extends QueryTest {
 
     @Test
     public void testConstructorGroupBy1() {
-        /* 25 */assertInvalidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(max(c.id)) FROM City c group by c.id");
+        /* 25 */assertValidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(max(c.id)) FROM City c group by c.id");
     }
 }
