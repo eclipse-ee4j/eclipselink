@@ -15,17 +15,11 @@ package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.SDOType;
-
-import commonj.sdo.DataObject;
-import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
 
-public class ListEmptyElementTestCases extends LoadAndSaveTestCases {
+public class ListEmptyElementNullableTestCases extends LoadAndSaveTestCases {
 
-    public ListEmptyElementTestCases(String name) {
+    public ListEmptyElementNullableTestCases(String name) {
         super(name);
     }
 
@@ -43,7 +37,7 @@ public class ListEmptyElementTestCases extends LoadAndSaveTestCases {
 
     @Override
     protected String getSchemaName() {
-        return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/EmptyList.xsd";
+        return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/EmptyListNullable.xsd";
     }
 
     @Override
