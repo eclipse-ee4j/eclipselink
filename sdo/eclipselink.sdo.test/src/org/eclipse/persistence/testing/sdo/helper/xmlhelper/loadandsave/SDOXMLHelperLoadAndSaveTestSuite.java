@@ -49,6 +49,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveIncludeWithExtensionTestCases.class));
         suite.addTestSuite(GlobalAttributeTestCases.class);
         suite.addTest(new TestSuite(LoadAndSaveExceptionBug325353TestCases.class));
+        suite.addTestSuite(ListEmptyElementTestCases.class);
         return suite;
     }
 }

@@ -777,6 +777,7 @@ public class SDOProperty implements Property, Serializable {
 
         mapping.setXPath(xpath);
         mapping.setAttributeElementClass(getType().getInstanceClass());
+        mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
         if (getXsdType() != null) {
             ((XMLField)mapping.getField()).setSchemaType(getXsdType());
