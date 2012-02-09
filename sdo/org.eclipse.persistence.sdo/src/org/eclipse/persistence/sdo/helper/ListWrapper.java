@@ -392,6 +392,10 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @return boolean
      */
     public boolean addAll(Collection items) {
+        // Not allowed to add null if the property is non-nullable
+        if (items.contains(null) && (property != null && !property.isNullable())) {
+            throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
+        }
         return addAll(items, true);
     }
 
@@ -405,11 +409,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * @return
      */
     public boolean addAll(Collection items, boolean updateSequence) {
-        // Not allowed to add null if the property is non-nullable
-        if (items.contains(null) && (property != null && !property.isNullable())) {
-            throw new UnsupportedOperationException("Property [" + property.getName() + "] is non-nullable");
-        }
-        
         // update element arrays before we modify original object
         copyElements();
 
