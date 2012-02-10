@@ -809,7 +809,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     }
                 }
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
-                if (domainObject instanceof PersistenceEntity && cacheKey != null) {
+                if (domainObject instanceof PersistenceEntity) {
                     updateCachedAttributes((PersistenceEntity) domainObject, cacheKey, primaryKey);
                 }
             } else {
