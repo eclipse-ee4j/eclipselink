@@ -17,6 +17,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
  * <p>
@@ -36,17 +37,19 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
     /** Setting to force the instantiation of the Collection on modification */
     protected boolean shouldAllowInstantiationDeferral = true;
 
-    public CacheBasedValueHolder(Object[] pks, AbstractSession session, ForeignReferenceMapping mapping){
+    public CacheBasedValueHolder(Object[] pks, AbstractRecord foreignKeys, AbstractSession session, ForeignReferenceMapping mapping){
         super();
         this.references = pks;
         this.mapping = mapping;
         this.session = session;
+        this.row = foreignKeys;
     }
     
     public Object[] getCachedPKs(){
         return this.references;
     }
     
+
     protected Object instantiate() throws DatabaseException {
         return instantiate(this.session);
     }
@@ -55,7 +58,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
         if (session == null){
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
-        return mapping.valueFromPKList(references, localSession);
+        return mapping.valueFromPKList(references, row, localSession);
     }
 
     /**

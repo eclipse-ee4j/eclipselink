@@ -2432,9 +2432,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * may be available if the relationship has been cached.
      */
     @Override
-    public Object valueFromPKList(Object[] pks, AbstractSession session){
+    public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, AbstractSession session){
         ContainerPolicy cp = this.containerPolicy;
-        return cp.valueFromPKList(pks, this, session);
+        return cp.valueFromPKList(pks, foreignKeys, this, session);
     }
 
     /**

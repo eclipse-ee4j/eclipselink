@@ -1954,7 +1954,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
-    public abstract Object valueFromPKList(Object[] pks, AbstractSession session);
+    public abstract Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, AbstractSession session);
 
     /**
      * INTERNAL: Return the value of the reference attribute or a value holder.

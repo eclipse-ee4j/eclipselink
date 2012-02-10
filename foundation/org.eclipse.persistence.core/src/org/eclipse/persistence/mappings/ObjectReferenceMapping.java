@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -1307,7 +1308,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * This list may be available if the relationship has been cached.
      */
     @Override
-    public Object valueFromPKList(Object[] pks, AbstractSession session) {
+    public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, AbstractSession session) {
         if (pks.length == 0 || pks[0] == null) return null;
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(getReferenceClass());

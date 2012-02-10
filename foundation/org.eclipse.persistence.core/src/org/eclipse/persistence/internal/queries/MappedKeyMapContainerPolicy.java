@@ -875,7 +875,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * may be available if the relationship has been cached.
      */
     @Override
-    public Object valueFromPKList(Object[] pks, ForeignReferenceMapping mapping, AbstractSession session){
+    public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
         Object result = containerInstance(pks.length/2);
         Object[] keys = new Object[pks.length /2];
         Object[] values = new Object[pks.length /2];
@@ -911,6 +911,11 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
             query.setSession(session);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            if (temp.size() < foreignKeyValues.size()){
+                //Not enough results have been found, this must be a stale collection with a removed
+                //element.  Execute a reload based on FK.
+                return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
+            }
             for (Object element: temp){
                 Object pk = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
                 fromCache.put(pk, element);

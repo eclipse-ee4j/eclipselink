@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -205,7 +206,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
-    public Object valueFromPKList(Object[] pks, ForeignReferenceMapping mapping, AbstractSession session){
+    public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
         
         Object result = containerInstance(pks.length);
         Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
@@ -234,6 +235,11 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             query.setSession(session);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            if (temp.size() < foreignKeyValues.size()){
+                //Not enough results have been found, this must be a stale collection with a removed
+                //element.  Execute a reload based on FK.
+                return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
+            }
             for (Object element: temp){
                 Object pk = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
                 fromCache.put(pk, element);

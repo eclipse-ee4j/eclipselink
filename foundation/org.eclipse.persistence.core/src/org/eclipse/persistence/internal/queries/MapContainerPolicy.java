@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -834,7 +835,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
-    public Object valueFromPKList(Object[] pks, ForeignReferenceMapping mapping, AbstractSession session){
+    public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
         
         Object result = containerInstance(pks.length/2);
         Object[] values = new Object[pks.length /2];
@@ -868,6 +869,11 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             query.setSession(session);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+            if (temp.size() < foreignKeyValues.size()){
+                //Not enough results have been found, this must be a stale collection with a removed
+                //element.  Execute a reload based on FK.
+                return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
+            }
             for (Object element: temp){
                 addInto(null, element, result, session);
             }

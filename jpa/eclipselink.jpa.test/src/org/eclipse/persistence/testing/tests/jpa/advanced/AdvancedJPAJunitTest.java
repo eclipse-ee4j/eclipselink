@@ -517,7 +517,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("equipment");
         Object[] pks = mapping.buildReferencesPKList(dept, mapping.getAttributeValueFromObject(dept), session);
         assertTrue ("PK list is of incorrect size.  pks.size: " + pks.length + " expected: " + (dept.getEquipment().size() * 2), pks.length == (dept.getEquipment().size() * 2));
-        Map<Integer, Equipment> equipments = (Map<Integer, Equipment>) mapping.valueFromPKList(pks, session);
+        Map<Integer, Equipment> equipments = (Map<Integer, Equipment>) mapping.valueFromPKList(pks, null, session);
         assertTrue("ValueFromPKList returned list of different size from actual entity.", equipments.size() == dept.getEquipment().size());
         for (Equipment equip : dept.getEquipment().values()){
         	assertTrue("Equipment not found in ValueFromPKList list", equipments.containsKey(equip.getId()));
@@ -549,7 +549,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Object[] pks = mapping.buildReferencesPKList(foundJigsaw, mapping.getAttributeValueFromObject(foundJigsaw), session);
         assertEquals("PK list is of incorrect size", expectedNumber, pks.length);
         
-        List<JigsawPiece> elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, session);
+        List<JigsawPiece> elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, null, session);
         assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
         
         for (JigsawPiece element : elements){
