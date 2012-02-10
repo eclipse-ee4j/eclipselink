@@ -1051,48 +1051,65 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * Merge changes from the source to the target object. Because this is a 
      * collection mapping, values are added to or removed from the collection 
      * based on the change set.
+     * Synchronize if system property is specified. If not, default to clone the 
+     * target collection. No need to synchronize if the collection is new. 
      */
-    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
+    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession, boolean isSynchronizeOnMerge) {
+        if (isSynchronizeOnMerge && !changeRecord.getOwner().isNew()) {
+            // Ensure the collection is synchronized while changes are being made,
+            // clone also synchronizes on collection (does not have cache key read-lock for indirection).
+            // Must synchronize of the real collection as the clone does so.
+            Object synchronizedValueOfTarget = valueOfTarget;
+            if (valueOfTarget instanceof IndirectCollection) {
+                synchronizedValueOfTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
+            }
+            synchronized (synchronizedValueOfTarget) {
+                mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts, mergeManager, targetSession);
+            }
+        } else {
+            // Using cloned target object passed instead of synchronization.
+            mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts, mergeManager, targetSession);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object. Because this is a 
+     * collection mapping, values are added to or removed from the collection 
+     * based on the change set.
+     */
+    protected void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChanges;        
         // Step 1 - iterate over the removed changes and remove them from the container.
         Iterator removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
-        // Ensure the collection is synchronized while changes are being made,
-        // clone also synchronizes on collection (does not have cache key read-lock for indirection).
-        // Must synchronize of the real collection as the clone does so.
-        Object synchronizedValueOfTarget = valueOfTarget;
-        if (valueOfTarget instanceof IndirectCollection) {
-            synchronizedValueOfTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
-        }
-        synchronized (synchronizedValueOfTarget) {
-            while (removeObjects.hasNext()) {
-                objectChanges = (ObjectChangeSet) removeObjects.next();                
-                removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
-                if (!mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                    mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
-                }
+        while (removeObjects.hasNext()) {
+            objectChanges = (ObjectChangeSet) removeObjects.next();                
+            removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
+            if (!mergeManager.shouldMergeChangesIntoDistributedCache()) {
+                mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
             }
-            
-            // Step 2 - iterate over the added changes and add them to the container.
-            Iterator addObjects = changeRecord.getAddObjectList().keySet().iterator();                
-            while (addObjects.hasNext()) {
-                objectChanges = (ObjectChangeSet) addObjects.next();
-                Object object = null;                    
-                if (shouldMergeCascadeParts) {
-                    object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
-                }                    
-                if (object == null) {
-                    // Retrieve the object to be added to the collection.
-                    object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession, false);
+        }
+        
+        // Step 2 - iterate over the added changes and add them to the container.
+        Iterator addObjects = changeRecord.getAddObjectList().keySet().iterator();                
+        while (addObjects.hasNext()) {
+            objectChanges = (ObjectChangeSet) addObjects.next();
+            Object object = null;                    
+            if (shouldMergeCascadeParts) {
+                object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
+            }                    
+            if (object == null) {
+                // Retrieve the object to be added to the collection.
+                object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession, false);
+            }
+            // I am assuming that at this point the above merge will have created a new object if required
+            if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
+                //bug#4458089 and 4454532- check if collection contains new item before adding during merge into distributed cache					
+                if (!contains(object, valueOfTarget, mergeManager.getSession())) {
+                    addInto(objectChanges.getNewKey(), object, valueOfTarget, mergeManager.getSession());
                 }
-                // I am assuming that at this point the above merge will have created a new object if required
-                if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                    //bug#4458089 and 4454532- check if collection contains new item before adding during merge into distributed cache					
-                    if (!contains(object, valueOfTarget, mergeManager.getSession())) {
-                        addInto(objectChanges.getNewKey(), object, valueOfTarget, mergeManager.getSession());
-                    }
-                } else {
-                    addInto(objectChanges.getNewKey(), object, valueOfTarget, mergeManager.getSession());    
-                }
+            } else {
+                addInto(objectChanges.getNewKey(), object, valueOfTarget, mergeManager.getSession());    
             }
         }
     }

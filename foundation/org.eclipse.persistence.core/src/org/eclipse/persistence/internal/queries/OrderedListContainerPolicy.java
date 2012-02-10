@@ -441,130 +441,78 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * Merge changes from the source to the target object. Because this is a 
      * collection mapping, values are added to or removed from the collection 
      * based on the change set.
+     * Synchronize if system property is specified. If not, default to clone the 
+     * target collection. No need to synchronize if the collection is new. 
      */
     @Override
-    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
-        ObjectChangeSet objectChanges;
-        // Ensure the collection is synchronized while changes are being made,
-        // clone also synchronizes on collection (does not have cache key read-lock for indirection).
-        // Must synchronize of the real collection as the clone does so.
-        Object synchronizedValueOfTarget = valueOfTarget;
-        if (valueOfTarget instanceof IndirectCollection) {
-            synchronizedValueOfTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
-            if(changeRecord.orderHasBeenRepaired()) {
-                if(valueOfTarget instanceof IndirectList) {
-                    ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
-                }
+    public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession, boolean isSynchronizeOnMerge) {
+        if (isSynchronizeOnMerge && !changeRecord.getOwner().isNew()) {
+            // Ensure the collection is synchronized while changes are being made,
+            // clone also synchronizes on collection (does not have cache key read-lock for indirection).
+            // Must synchronize of the real collection as the clone does so.
+            Object synchronizedValueOfTarget = valueOfTarget;
+            if (valueOfTarget instanceof IndirectCollection) {
+                synchronizedValueOfTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
             }
+            synchronized(synchronizedValueOfTarget) {
+                mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts, mergeManager, targetSession);
+            }
+        } else {
+            mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts, mergeManager, targetSession);
         }
-        synchronized (synchronizedValueOfTarget) {
-            if (!changeRecord.getOrderedChangeObjectList().isEmpty()) {                
-                Iterator objects =changeRecord.getOrderedChangeObjectList().iterator();                
-                while (objects.hasNext()){
-                    OrderedChangeObject changeObject = (OrderedChangeObject)objects.next();
-                    objectChanges = changeObject.getChangeSet();
-                    if (changeObject.getChangeType() == CollectionChangeEvent.REMOVE){
-                        boolean objectRemoved = changeRecord.getRemoveObjectList().containsKey(objectChanges);
-                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
-                        
-                        //if objectToRemove is null, we can't look it up in the collection. 
-                        // This should not happen unless identity is lost.
-                        if (objectToRemove != null) {
-                            Integer index = changeObject.getIndex();
-                            if (index!=null){
-                                if (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()))) {
-                                    removeFromAtIndex(index, valueOfTarget);
-                                } else {
-                                    // Object is in the cache, but the collection doesn't have it at the location we expect
-                                    // Collection is invalid with respect to these changes, so invalidate the parent and abort 
-                                    Object key = changeRecord.getOwner().getId();
-                                    targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
-                                    return;
-                                }
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object. Because this is a 
+     * collection mapping, values are added to or removed from the collection 
+     * based on the change set.
+     */
+    @Override
+    protected void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
+        ObjectChangeSet objectChanges;
+        if(changeRecord.orderHasBeenRepaired() && valueOfTarget instanceof IndirectList) {
+            ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
+        }
+        if (!changeRecord.getOrderedChangeObjectList().isEmpty()) {                
+            Iterator objects =changeRecord.getOrderedChangeObjectList().iterator();                
+            while (objects.hasNext()){
+                OrderedChangeObject changeObject = (OrderedChangeObject)objects.next();
+                objectChanges = changeObject.getChangeSet();
+                if (changeObject.getChangeType() == CollectionChangeEvent.REMOVE){
+                    boolean objectRemoved = changeRecord.getRemoveObjectList().containsKey(objectChanges);
+                    Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
+                    
+                    //if objectToRemove is null, we can't look it up in the collection. 
+                    // This should not happen unless identity is lost.
+                    if (objectToRemove != null) {
+                        Integer index = changeObject.getIndex();
+                        if (index!=null){
+                            if (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()))) {
+                                removeFromAtIndex(index, valueOfTarget);
                             } else {
-                                removeFrom(objectToRemove, valueOfTarget, targetSession);
-                            }
-                            
-                            if ((! mergeManager.shouldMergeChangesIntoDistributedCache()) && changeRecord.getMapping().isPrivateOwned()) {
-                                // Check that the object was actually removed and not moved.
-                                if (objectRemoved) {
-                                    mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
-                                }
-                            }
-                        }
-                        
-                        
-                    } else { //getChangeType == add
-                        boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
-                        Object object = null;
-                        // The object was actually added and not moved.
-                        if (objectAdded && shouldMergeCascadeParts) {
-                            object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
-                        }
-                        
-                        if (object == null) {
-                            // Retrieve the object to be added to the collection.
-                            object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
-                        }
-                        
-                        // Assume at this point the above merge will have created a new 
-                        // object if required and that the object was actually added and 
-                        // not moved.
-                        if (objectAdded && mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                            // Bugs 4458089 & 4454532 - check if collection contains new item before adding 
-                            // during merge into distributed cache                  
-                            if (! contains(object, valueOfTarget, mergeManager.getSession())) {
-                                addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, mergeManager.getSession());                                
+                                // Object is in the cache, but the collection doesn't have it at the location we expect
+                                // Collection is invalid with respect to these changes, so invalidate the parent and abort 
+                                Object key = changeRecord.getOwner().getId();
+                                targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
+                                return;
                             }
                         } else {
-                            addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, targetSession);
+                            removeFrom(objectToRemove, valueOfTarget, targetSession);
                         }
-                    }
-                }
-            } else {
-                //Deferred change tracking merge behavior
-                // Step 1 - iterate over the removed changes and remove them from the container.
-                List<Integer> removedIndices = changeRecord.getOrderedRemoveObjectIndices();
-    
-                if (removedIndices.isEmpty()) {
-                    // Check if we have removed objects via a 
-                    // simpleRemoveFromCollectionChangeRecord API call.
-                    Iterator removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
-                
-                    while (removedObjects.hasNext()) {
-                        objectChanges = (ObjectChangeSet) removedObjects.next();
-                        removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
-                        registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
-                    }
-                } else {
-                    for (int i = removedIndices.size() - 1; i >= 0; i--) {
-                        Integer index = removedIndices.get(i);
-                        objectChanges = (ObjectChangeSet) changeRecord.getOrderedRemoveObject(index);
-                        Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
-                        if ( (objectToRemove!=null) && 
-                                    (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()) )) ) {
-                            removeFromAtIndex(index, valueOfTarget);
-                            // The object was actually removed and not moved.
-                            if (changeRecord.getRemoveObjectList().containsKey(objectChanges)) {
-                                registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
-                            }
-                        } else {
                         
-                            //Object is either not in the cache, or not at the location we expect
-                            // Collection is invalid with respect to these changes, so invalidate the parent and abort 
-                            Object key = changeRecord.getOwner().getId();
-                            targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
-                            return;
+                        if ((! mergeManager.shouldMergeChangesIntoDistributedCache()) && changeRecord.getMapping().isPrivateOwned()) {
+                            // Check that the object was actually removed and not moved.
+                            if (objectRemoved) {
+                                mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
+                            }
                         }
                     }
-                }
-                
-                // Step 2 - iterate over the added changes and add them to the container.
-                for (ObjectChangeSet addChangeSet : changeRecord.getOrderedAddObjects()) {
-                    objectChanges =  addChangeSet;
+                    
+                    
+                } else { //getChangeType == add
                     boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
                     Object object = null;
-                    
                     // The object was actually added and not moved.
                     if (objectAdded && shouldMergeCascadeParts) {
                         object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
@@ -574,19 +522,86 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         // Retrieve the object to be added to the collection.
                         object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
                     }
-    
+                    
                     // Assume at this point the above merge will have created a new 
                     // object if required and that the object was actually added and 
                     // not moved.
                     if (objectAdded && mergeManager.shouldMergeChangesIntoDistributedCache()) {
                         // Bugs 4458089 & 4454532 - check if collection contains new item before adding 
-                        // during merge into distributed cache					
+                        // during merge into distributed cache                  
                         if (! contains(object, valueOfTarget, mergeManager.getSession())) {
-                            addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());                                
+                            addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, mergeManager.getSession());                                
                         }
                     } else {
-                        addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, targetSession);
+                        addIntoAtIndex(changeObject.getIndex(), object, valueOfTarget, targetSession);
                     }
+                }
+            }
+        } else {
+            //Deferred change tracking merge behavior
+            // Step 1 - iterate over the removed changes and remove them from the container.
+            List<Integer> removedIndices = changeRecord.getOrderedRemoveObjectIndices();
+
+            if (removedIndices.isEmpty()) {
+                // Check if we have removed objects via a 
+                // simpleRemoveFromCollectionChangeRecord API call.
+                Iterator removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
+            
+                while (removedObjects.hasNext()) {
+                    objectChanges = (ObjectChangeSet) removedObjects.next();
+                    removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
+                    registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
+                }
+            } else {
+                for (int i = removedIndices.size() - 1; i >= 0; i--) {
+                    Integer index = removedIndices.get(i);
+                    objectChanges = (ObjectChangeSet) changeRecord.getOrderedRemoveObject(index);
+                    Object objectToRemove = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
+                    if ( (objectToRemove!=null) && 
+                                (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()) )) ) {
+                        removeFromAtIndex(index, valueOfTarget);
+                        // The object was actually removed and not moved.
+                        if (changeRecord.getRemoveObjectList().containsKey(objectChanges)) {
+                            registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
+                        }
+                    } else {
+                    
+                        //Object is either not in the cache, or not at the location we expect
+                        // Collection is invalid with respect to these changes, so invalidate the parent and abort 
+                        Object key = changeRecord.getOwner().getId();
+                        targetSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(targetSession));
+                        return;
+                    }
+                }
+            }
+            
+            // Step 2 - iterate over the added changes and add them to the container.
+            for (ObjectChangeSet addChangeSet : changeRecord.getOrderedAddObjects()) {
+                objectChanges =  addChangeSet;
+                boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
+                Object object = null;
+                
+                // The object was actually added and not moved.
+                if (objectAdded && shouldMergeCascadeParts) {
+                    object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
+                }
+                
+                if (object == null) {
+                    // Retrieve the object to be added to the collection.
+                    object = objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession);
+                }
+
+                // Assume at this point the above merge will have created a new 
+                // object if required and that the object was actually added and 
+                // not moved.
+                if (objectAdded && mergeManager.shouldMergeChangesIntoDistributedCache()) {
+                    // Bugs 4458089 & 4454532 - check if collection contains new item before adding 
+                    // during merge into distributed cache					
+                    if (! contains(object, valueOfTarget, mergeManager.getSession())) {
+                        addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, mergeManager.getSession());                                
+                    }
+                } else {
+                    addIntoAtIndex(changeRecord.getOrderedAddObjectIndex(objectChanges), object, valueOfTarget, targetSession);
                 }
             }
         }

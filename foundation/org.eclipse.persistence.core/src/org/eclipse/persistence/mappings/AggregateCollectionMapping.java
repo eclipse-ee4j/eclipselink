@@ -244,8 +244,17 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         Object clonedAttributeValue = containerPolicy.containerInstance(containerPolicy.sizeFor(attributeValue));
-        synchronized (attributeValue) {
-            for (Object valuesIterator = containerPolicy.iteratorFor(attributeValue);
+        if (isSynchronizeOnMerge) {
+            synchronized (attributeValue) {
+                for (Object valuesIterator = containerPolicy.iteratorFor(attributeValue);
+                         containerPolicy.hasNext(valuesIterator);) {
+                    Object wrappedElement = containerPolicy.nextEntry(valuesIterator, unitOfWork);
+                    Object cloneValue = buildElementBackupClone(containerPolicy.unwrapIteratorResult(wrappedElement), unitOfWork);
+                    containerPolicy.addInto(containerPolicy.keyFromIterator(valuesIterator), cloneValue, clonedAttributeValue, unitOfWork);
+                }
+            }
+        } else {
+             for (Object valuesIterator = containerPolicy.iteratorFor(attributeValue);
                      containerPolicy.hasNext(valuesIterator);) {
                 Object wrappedElement = containerPolicy.nextEntry(valuesIterator, unitOfWork);
                 Object cloneValue = buildElementBackupClone(containerPolicy.unwrapIteratorResult(wrappedElement), unitOfWork);
@@ -270,13 +279,17 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
         Object clonedAttributeValue = containerPolicy.containerInstance(containerPolicy.sizeFor(attributeValue));
 
-        // I need to synchronize here to prevent the collection from changing while I am cloning it.
-        // This will occur when I am merging into the cache and I am instantiating a UOW valueHolder at the same time
-        // I can not synchronize around the clone, as this will cause deadlocks, so I will need to copy the collection then create the clones
-        // I will use a temporary collection to help speed up the process
         Object temporaryCollection = null;
-        synchronized (attributeValue) {
-            temporaryCollection = containerPolicy.cloneFor(attributeValue);
+        if (isSynchronizeOnMerge) {
+            // I need to synchronize here to prevent the collection from changing while I am cloning it.
+            // This will occur when I am merging into the cache and I am instantiating a UOW valueHolder at the same time
+            // I can not synchronize around the clone, as this will cause deadlocks, so I will need to copy the collection then create the clones
+            // I will use a temporary collection to help speed up the process
+            synchronized (attributeValue) {
+                temporaryCollection = containerPolicy.cloneFor(attributeValue);
+            }
+        } else {
+            temporaryCollection = attributeValue;
         }
         for (Object valuesIterator = containerPolicy.iteratorFor(temporaryCollection);
                  containerPolicy.hasNext(valuesIterator);) {

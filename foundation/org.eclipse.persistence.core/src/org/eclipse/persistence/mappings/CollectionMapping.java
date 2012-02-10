@@ -74,6 +74,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     /** Store if the mapping can batch delete reference objects. */
     protected Boolean mustDeleteReferenceObjectsOneByOne = null;
     
+    /** Flag to indicate if collection needs to be synchronized instead of cloning during merge. */
+    protected static boolean isSynchronizeOnMerge = Boolean.getBoolean("eclipselink.synchronizeCollectionOnMerge");
+    
     /**
      * PUBLIC:
      * Default constructor.
@@ -193,13 +196,18 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         Object clonedAttributeValue = containerPolicy.containerInstance(containerPolicy.sizeFor(attributeValue));
 
-        // I need to synchronize here to prevent the collection from changing while I am cloning it.
-        // This will occur when I am merging into the cache and I am instantiating a UOW valueHolder at the same time
-        // I can not synchronize around the clone, as this will cause deadlocks, so I will need to copy the collection then create the clones
-        // I will use a temporary collection to help speed up the process
         Object temporaryCollection = null;
-        synchronized (attributeValue) {
-            temporaryCollection = containerPolicy.cloneFor(attributeValue);
+        if (isSynchronizeOnMerge) { 
+            // I need to synchronize here to prevent the collection from changing while I am cloning it.
+            // This will occur when I am merging into the cache and I am instantiating a UOW valueHolder at the same time
+            // I can not synchronize around the clone, as this will cause deadlocks, so I will need to copy the collection then create the clones
+            // I will use a temporary collection to help speed up the process
+            synchronized (attributeValue) {
+                temporaryCollection = containerPolicy.cloneFor(attributeValue);
+            } 
+        } else {
+            // Clone is used while merging into cache. It can operate directly without synchronize/clone.
+            temporaryCollection = attributeValue;
         }
         for (Object valuesIterator = containerPolicy.iteratorFor(temporaryCollection);containerPolicy.hasNext(valuesIterator);){
             containerPolicy.addNextValueFromIteratorInto(valuesIterator, clone, cacheKey, clonedAttributeValue, this, cloningSession, isExisting);
@@ -1329,10 +1337,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (changeRecord.getOwner().isNew()) {
                 valueOfTarget = containerPolicy.containerInstance(changeRecord.getAddObjectList().size());
             } else {
-                valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeManager.getSession());
+                if (isSynchronizeOnMerge) {
+                    valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeManager.getSession());
+                } else {
+                    // Clone instead of synchronization to avoid possible deadlocks.
+                    valueOfTarget = containerPolicy.cloneFor(getRealCollectionAttributeValueFromObject(target, mergeManager.getSession()));
+                }
             }
 
-            containerPolicy.mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts(mergeManager), mergeManager, targetSession);
+            containerPolicy.mergeChanges(changeRecord, valueOfTarget, shouldMergeCascadeParts(mergeManager), mergeManager, targetSession, isSynchronizeOnMerge);
         } else { 
             // The valueholder has not been instantiated
             if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
@@ -1457,13 +1470,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
             valueOfTarget = newContainer;
         } else {
-            // EL Bug 338504 - It needs to iterate on object which can possibly 
-            // cause a deadlock scenario while merging changes from original
-            // to the working copy during rollback of the transaction. So, clone 
-            // the original object instead of synchronizing on it and use cloned
-            // object to iterate and merge changes to the working copy.
-            synchronized(valueOfSource) {
-                valueOfSourceCloned = containerPolicy.cloneFor(valueOfSource);
+            if (isSynchronizeOnMerge) {
+                // EL Bug 338504 - It needs to iterate on object which can possibly 
+                // cause a deadlock scenario while merging changes from original
+                // to the working copy during rollback of the transaction. So, clone 
+                // the original object instead of synchronizing on it and use cloned
+                // object to iterate and merge changes to the working copy.
+                synchronized(valueOfSource) {
+                    valueOfSourceCloned = containerPolicy.cloneFor(valueOfSource);
+                }
+            } else {
+                valueOfSourceCloned = valueOfSource;
             }
             //bug 3953038 - set a new collection in the object until merge completes, this
             //              prevents rel-maint. from adding duplicates.
@@ -1496,7 +1513,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 }
             }
             wrappedObject = containerPolicy.createWrappedObjectFromExistingWrappedObject(wrappedObject, source, referenceDescriptor, mergeManager, targetSession);
-            synchronized (valueOfTarget) {
+            if (isSynchronizeOnMerge) {
+                synchronized (valueOfTarget) {
+                    if (fireChangeEvents) {
+                        //Collections may not be indirect list or may have been replaced with user collection.
+                        //bug 304251: let the ContainerPolicy decide what changeevent object to create
+                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++, false);
+                        listener.internalPropertyChange(event);
+                    }
+                    containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
+                }
+            } else {
                 if (fireChangeEvents) {
                     //Collections may not be indirect list or may have been replaced with user collection.
                     //bug 304251: let the ContainerPolicy decide what changeevent object to create

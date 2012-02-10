@@ -1849,17 +1849,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         ContainerPolicy containerPolicy = getContainerPolicy();
         Object valueOfTarget = null;
         AbstractSession session = mergeManager.getSession();
-
-        //collect the changes into a vector
-        HashMap addObjects = ((DirectCollectionChangeRecord)changeRecord).getAddObjectMap();
-        HashMap removeObjects = ((DirectCollectionChangeRecord)changeRecord).getRemoveObjectMap();
+        
+        DirectCollectionChangeRecord directCollectionChangeRecord = (DirectCollectionChangeRecord) changeRecord;
 
         //Check to see if the target has an instantiated collection
         if ((isAttributeValueInstantiated(target)) && (!changeRecord.getOwner().isNew())) {
-            valueOfTarget = getRealCollectionAttributeValueFromObject(target, session);
+            if (isSynchronizeOnMerge) {
+                valueOfTarget = getRealCollectionAttributeValueFromObject(target, session);
+            } else {
+                valueOfTarget = containerPolicy.cloneFor(getRealCollectionAttributeValueFromObject(target, session));
+            }
         } else {
             //if not create an instance of the collection
-            valueOfTarget = containerPolicy.containerInstance(addObjects.size());
+            valueOfTarget = containerPolicy.containerInstance(directCollectionChangeRecord.getAddObjectMap().size());
         }
         if (!isAttributeValueInstantiated(target)) {
             if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
@@ -1875,78 +1877,94 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             // not the wrapper as the clone synchs on the delegate, see bug#5685287.
             if (valueOfTarget instanceof IndirectCollection) {
                 synchronizationTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
-                if(((DirectCollectionChangeRecord)changeRecord).orderHasBeenRepaired()) {
-                    if(valueOfTarget instanceof IndirectList) {
-                        ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
-                    }
+                if (((DirectCollectionChangeRecord)changeRecord).orderHasBeenRepaired() && (valueOfTarget instanceof IndirectList)) {
+                    ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
                 }
             }
-            synchronized (synchronizationTarget) {
-                // Next iterate over the changes and add them to the container
-                for (Iterator iterator = addObjects.keySet().iterator(); iterator.hasNext();) {
-                    Object object = iterator.next();
-                    int objectCount = ((Integer)addObjects.get(object)).intValue();
-                    for (int i = 0; i < objectCount; ++i) {
-                        if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                            //bug#4458089 and 4544532- check if collection contains new item before adding during merge into distributed cache					
-                            if (!containerPolicy.contains(object, valueOfTarget, session)) {
-                                containerPolicy.addInto(object, valueOfTarget, session);
-                            }
-                        } else {
-                            containerPolicy.addInto(object, valueOfTarget, session);
-                        }
-                    }
+            if (isSynchronizeOnMerge) {
+                synchronized(synchronizationTarget) {
+                    mergeAddRemoveChanges(valueOfTarget, synchronizationTarget, directCollectionChangeRecord, mergeManager, session);
                 }
-                for (Iterator iterator = removeObjects.keySet().iterator(); iterator.hasNext();) {
-                    Object object = iterator.next();
-                    int objectCount = ((Integer)removeObjects.get(object)).intValue();
-                    for (int i = 0; i < objectCount; ++i) {
-                        containerPolicy.removeFrom(object, valueOfTarget, session);
-                    }
-                }
-                if(this.listOrderField != null && ((DirectCollectionChangeRecord)changeRecord).getChangedIndexes() == null) {
-                    this.compareListsForChange((List)((DirectCollectionChangeRecord)changeRecord).getOriginalCollection(), (List)((DirectCollectionChangeRecord)changeRecord).getLatestCollection(), changeRecord, session);
-                }
-                
-                if(((DirectCollectionChangeRecord)changeRecord).getChangedIndexes() != null) {
-                    int oldSize = ((DirectCollectionChangeRecord)changeRecord).getOldSize();
-                    int newSize = ((DirectCollectionChangeRecord)changeRecord).getNewSize();
-                    int delta = newSize - oldSize;
-                    Object newTail[] = null;
-                    if(delta > 0) {
-                        newTail = new Object[delta];
-                    }
-                    Iterator<Map.Entry<Object, Set[]>> it = ((DirectCollectionChangeRecord)changeRecord).getChangedIndexes().entrySet().iterator();
-                    while(it.hasNext()) {
-                        Map.Entry<Object, Set[]> entry = it.next();
-                        Object value = entry.getKey();
-                        Set[] indexes = entry.getValue();
-                        Set indexesAfter = indexes[1];
-                        if(indexesAfter != null) {
-                            Iterator<Integer> itIndexesAfter = indexesAfter.iterator();
-                            while(itIndexesAfter.hasNext()) {
-                                int index = itIndexesAfter.next();
-                                if(index < oldSize) {
-                                    ((List)synchronizationTarget).set(index, value);
-                                } else {
-                                    newTail[index - oldSize] = value;
-                                }
-                            }
-                        }
-                    }
-                    if(delta > 0) {
-                        for(int i=0; i < delta; i++) {
-                            ((List)synchronizationTarget).add(newTail[i]);
-                        }
-                    } else if(delta < 0) {
-                        for(int i=oldSize -1 ; i >= newSize; i--) {
-                            ((List)synchronizationTarget).remove(i);
-                        }
-                    }
-                }
+            } else {
+                mergeAddRemoveChanges(valueOfTarget, synchronizationTarget, directCollectionChangeRecord, mergeManager, session);
             }
         }
         setRealAttributeValueInObject(target, valueOfTarget);
+    }
+    
+    /**
+     * INTERNAL:
+     * Merge changes by adding and removing from the change record to the 
+     * target object, and its delegate object if instance of IndirectCollection.
+     * It will also reorder the collection if required.
+     */
+    protected void mergeAddRemoveChanges(Object valueOfTarget, Object delegateTarget, DirectCollectionChangeRecord changeRecord, MergeManager mergeManager, AbstractSession session) {
+        //collect the changes into a vector
+        HashMap addObjects = changeRecord.getAddObjectMap();
+        HashMap removeObjects = changeRecord.getRemoveObjectMap();
+
+        // Next iterate over the changes and add them to the container
+        for (Iterator iterator = addObjects.keySet().iterator(); iterator.hasNext();) {
+            Object object = iterator.next();
+            int objectCount = ((Integer)addObjects.get(object)).intValue();
+            for (int i = 0; i < objectCount; ++i) {
+                if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
+                    //bug#4458089 and 4544532- check if collection contains new item before adding during merge into distributed cache					
+                    if (!containerPolicy.contains(object, valueOfTarget, session)) {
+                        containerPolicy.addInto(object, valueOfTarget, session);
+                    }
+                } else {
+                    containerPolicy.addInto(object, valueOfTarget, session);
+                }
+            }
+        }
+        for (Iterator iterator = removeObjects.keySet().iterator(); iterator.hasNext();) {
+            Object object = iterator.next();
+            int objectCount = ((Integer)removeObjects.get(object)).intValue();
+            for (int i = 0; i < objectCount; ++i) {
+                containerPolicy.removeFrom(object, valueOfTarget, session);
+            }
+        }
+        if(this.listOrderField != null && changeRecord.getChangedIndexes() == null) {
+            this.compareListsForChange((List)changeRecord.getOriginalCollection(), (List)changeRecord.getLatestCollection(), changeRecord, session);
+        }
+        
+        if(changeRecord.getChangedIndexes() != null) {
+            int oldSize = changeRecord.getOldSize();
+            int newSize = changeRecord.getNewSize();
+            int delta = newSize - oldSize;
+            Object newTail[] = null;
+            if(delta > 0) {
+                newTail = new Object[delta];
+            }
+            Iterator<Map.Entry<Object, Set[]>> it = changeRecord.getChangedIndexes().entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<Object, Set[]> entry = it.next();
+                Object value = entry.getKey();
+                Set[] indexes = entry.getValue();
+                Set indexesAfter = indexes[1];
+                if(indexesAfter != null) {
+                    Iterator<Integer> itIndexesAfter = indexesAfter.iterator();
+                    while(itIndexesAfter.hasNext()) {
+                        int index = itIndexesAfter.next();
+                        if(index < oldSize) {
+                            ((List)delegateTarget).set(index, value);
+                        } else {
+                            newTail[index - oldSize] = value;
+                        }
+                    }
+                }
+            }
+            if(delta > 0) {
+                for(int i=0; i < delta; i++) {
+                    ((List)delegateTarget).add(newTail[i]);
+                }
+            } else if(delta < 0) {
+                for(int i=oldSize -1 ; i >= newSize; i--) {
+                    ((List)delegateTarget).remove(i);
+                }
+            }
+        }
     }
 
     /**
