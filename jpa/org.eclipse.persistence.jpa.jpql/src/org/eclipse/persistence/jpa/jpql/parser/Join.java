@@ -238,9 +238,10 @@ public final class Join extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>FETCH</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasFetch() {
-		String identifier = getIdentifier();
-		return identifier == JOIN_FETCH ||
-		       identifier == LEFT_JOIN_FETCH ||
+		String identifier = getText();
+		return identifier == JOIN_FETCH       ||
+		       identifier == INNER_JOIN_FETCH ||
+		       identifier == LEFT_JOIN_FETCH  ||
 		       identifier == LEFT_OUTER_JOIN_FETCH;
 	}
 

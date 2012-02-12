@@ -223,8 +223,9 @@ public class JoinStateObject extends AbstractStateObject {
 	 */
 	public boolean hasFetch() {
 		String joinType = getJoinType();
-		return joinType == JOIN_FETCH ||
-		       joinType == LEFT_JOIN_FETCH ||
+		return joinType == JOIN_FETCH       ||
+		       joinType == INNER_JOIN_FETCH ||
+		       joinType == LEFT_JOIN_FETCH  ||
 		       joinType == LEFT_OUTER_JOIN_FETCH;
 	}
 
