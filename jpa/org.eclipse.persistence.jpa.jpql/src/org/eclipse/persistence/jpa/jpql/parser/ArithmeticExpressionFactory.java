@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -80,7 +80,8 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 		Boolean type = wordParser.startsWithDigit();
 
 		// Return right away the number literal
-		if (type == Boolean.TRUE) {
+		// "1 + 1" can't be parsed as "1, +1"
+		if ((type == Boolean.TRUE) && (expression == null)) {
 			expression = new NumericLiteral(parent, wordParser.word());
 			expression.parse(wordParser, tolerant);
 			return expression;
@@ -141,7 +142,6 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 		if (visitor == null) {
 			visitor = new ArithmeticExpressionVisitor();
 		}
-
 		return visitor;
 	}
 

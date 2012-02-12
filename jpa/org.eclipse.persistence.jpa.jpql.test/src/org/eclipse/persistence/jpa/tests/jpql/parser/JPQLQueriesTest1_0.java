@@ -3248,7 +3248,6 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		// FROM Order AS o, in(o.lineItems) l
 		// WHERE (l.quantity < 2) AND ((o.totalPrice < (3 + 54 * 2 + -8)) OR (o.customer.name = 'Robert E. Bissett'))
 
-		// TODO: Is the order correct in (3 + 54 * 2 + -8 )????
 		ExpressionTester selectStatement = selectStatement(
 			selectDistinct(object("o")),
 			from(fromEntityAs("Order", "o"), fromIn("o.lineItems", "l")),
@@ -3260,7 +3259,13 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 								path("o.totalPrice")
 							.lowerThan(
 								sub(
-									numeric(3).add(numeric(54).multiplication(numeric(2).add(numeric(-8))))
+										numeric(3)
+									.add(
+											numeric(54).multiply(numeric(2))
+										.add(
+											numeric(-8)
+										)
+									)
 								)
 							)
 						)
@@ -3601,7 +3606,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			select(variable("r")),
 			fromAs("Reservation", "r"),
 			where(
-					sub(path("r.amountPaid").multiplication(numeric(".01")))
+					sub(path("r.amountPaid").multiply(numeric(".01")))
 				.greaterThan(
 					numeric("300.00")
 				)

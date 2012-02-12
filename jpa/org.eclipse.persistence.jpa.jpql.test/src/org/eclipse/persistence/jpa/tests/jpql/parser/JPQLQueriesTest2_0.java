@@ -62,12 +62,12 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 				path("e.salary"),
 				case_(
 					when(path("e.rating").equal(numeric(1)),
-					     path("e.salary").multiplication(numeric(1.1))
+					     path("e.salary").multiply(numeric(1.1))
 					),
 					when(path("e.rating").equal(numeric(2)),
-					     path("e.salary").multiplication(numeric(1.05))
+					     path("e.salary").multiply(numeric(1.05))
 					),
-					path("e.salary").multiplication(numeric(1.01))
+					path("e.salary").multiply(numeric(1.01))
 				)
 			))
 		);
@@ -268,10 +268,10 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 				set("e.salary", case_(
 					path("e.rating"),
 					new ExpressionTester[] {
-						when(numeric(1), path("e.salary").multiplication(numeric(1.1))),
-						when(numeric(2), path("e.salary").multiplication(numeric(1.05))),
+						when(numeric(1), path("e.salary").multiply(numeric(1.1))),
+						when(numeric(2), path("e.salary").multiply(numeric(1.05))),
 					},
-					path("e.salary").multiplication(numeric(1.01))
+					path("e.salary").multiply(numeric(1.01))
 				))
 			)
 		);
@@ -290,7 +290,7 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 		ExpressionTester selectStatement = selectStatement(
 			select(
 				path("o.quantity"),
-				selectItemAs(path("o.cost").multiplication(numeric(1.08)), "taxedCost"),
+				selectItemAs(path("o.cost").multiply(numeric(1.08)), "taxedCost"),
 				path("a.zipcode")
 			),
 			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
@@ -343,7 +343,7 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 		// From Employee e
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItem(path("e.salary").division(numeric("1000D")), "n")),
+			select(selectItem(path("e.salary").divide(numeric("1000D")), "n")),
 			from("Employee", "e")
 		);
 

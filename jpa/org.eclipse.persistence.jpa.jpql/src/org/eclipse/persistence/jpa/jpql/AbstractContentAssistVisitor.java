@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -88,7 +88,6 @@ import org.eclipse.persistence.jpa.jpql.parser.InternalWhenClauseBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -551,9 +550,7 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 
 						boolean shouldStop = declaration.declarationExpression.isAncestor(expression);
 
-						if (shouldStop && !declaration.getJoins().contains(expression) &&
-						                  !declaration.getJoinFetches().contains(expression)) {
-
+						if (shouldStop && !declaration.getJoins().contains(expression)) {
 							stop = true;
 							break;
 						}
@@ -582,9 +579,7 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 
 						boolean shouldStop = declaration.declarationExpression.isAncestor(expression);
 
-						if (shouldStop && (declaration.getJoins().contains(expression) &&
-						                   declaration.getJoinFetches().contains(expression))) {
-
+						if (shouldStop && (declaration.getJoins().contains(expression))) {
 							stop = true;
 							break;
 						}
@@ -1685,6 +1680,15 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	}
 
 	/**
+	 * Determines whether a <code><b>JOIN FETCH</b></code> expression can be identified by with an
+	 * identification variable or not.
+	 *
+	 * @return <code>true</code> if the expression can have an identification variable; false
+	 * otherwise
+	 */
+	protected abstract boolean isJoinFetchIdentifiable();
+
+	/**
 	 * Determines whether the given {@link Expression} has been set has the lock to prevent an
 	 * infinite recursion.
 	 *
@@ -2572,6 +2576,7 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		super.visit(expression);
 		int position = getPosition(expression) - corrections.peek();
 		String identifier = expression.getIdentifier();
+		boolean joinFetch = expression.hasFetch();
 
 		// Within "<join>"
 		if (isPositionWithin(position, identifier)) {
@@ -2582,11 +2587,16 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			proposals.addIdentifier(LEFT_JOIN);
 			proposals.addIdentifier(LEFT_OUTER_JOIN);
 
-			// Allow aliases with join fetch.
-			proposals.addIdentifier(JOIN_FETCH);
-			proposals.addIdentifier(INNER_JOIN_FETCH);
-			proposals.addIdentifier(LEFT_JOIN_FETCH);
-			proposals.addIdentifier(LEFT_OUTER_JOIN_FETCH);
+			// Add JOIN FETCH identifiers if allowed or
+			// if there is no 'AS identification_variable'
+			if (isJoinFetchIdentifiable() ||
+			   !expression.hasAs() && !expression.hasIdentificationVariable()) {
+
+				proposals.addIdentifier(JOIN_FETCH);
+				proposals.addIdentifier(INNER_JOIN_FETCH);
+				proposals.addIdentifier(LEFT_JOIN_FETCH);
+				proposals.addIdentifier(LEFT_OUTER_JOIN_FETCH);
+			}
 		}
 		// After "<join> "
 		else if (expression.hasSpaceAfterJoin()) {
@@ -2594,20 +2604,36 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 
 			// Right after "<join> "
 			if (position == length) {
+
 				// Only add some JOIN identifiers if the actual identifier is shorter or incomplete
 				if (identifier == LEFT) {
 					addIdentifier(LEFT_JOIN);
 					addIdentifier(LEFT_OUTER_JOIN);
-					addIdentifier(LEFT_JOIN_FETCH);
-					addIdentifier(LEFT_OUTER_JOIN_FETCH);
+
+					if (isJoinFetchIdentifiable() ||
+					    !expression.hasAs() && !expression.hasIdentificationVariable()) {
+
+						addIdentifier(LEFT_JOIN_FETCH);
+						addIdentifier(LEFT_OUTER_JOIN_FETCH);
+					}
 				}
 				else if (identifier == INNER) {
-					      addIdentifier(INNER_JOIN);
-					      addIdentifier(INNER_JOIN_FETCH);
+					addIdentifier(INNER_JOIN);
+
+					if (isJoinFetchIdentifiable() ||
+					    !expression.hasAs() && !expression.hasIdentificationVariable()) {
+
+						addIdentifier(INNER_JOIN_FETCH);
+					}
 				}
 				else if (identifier.equals("LEFT_OUTER")) {
 					addIdentifier(LEFT_OUTER_JOIN);
-					addIdentifier(LEFT_OUTER_JOIN_FETCH);
+
+					if (isJoinFetchIdentifiable() ||
+					    !expression.hasAs() && !expression.hasIdentificationVariable()) {
+
+						addIdentifier(LEFT_OUTER_JOIN_FETCH);
+					}
 				}
 				else {
 					addLeftIdentificationVariables(expression);
@@ -2621,33 +2647,12 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 				length += length(expression.getJoinAssociationPath()) + SPACE_LENGTH;
 
 				// Right after "join association path expression "
-				if (isPositionWithin(position, length, AS)) {
-					addIdentifier(AS);
+				// Make sure to verify if AS can be added if it's a JOIN FETCH expression
+				if (!joinFetch || joinFetch && isJoinFetchIdentifiable()) {
+					if (isPositionWithin(position, length, AS)) {
+						addIdentifier(AS);
+					}
 				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(JoinFetch expression) {
-		super.visit(expression);
-		int position = getPosition(expression) - corrections.peek();
-		String identifier = expression.getIdentifier();
-
-		// Within "<join fetch>"
-		if (isPositionWithin(position, identifier)) {
-			addJoinIdentifiers();
-		}
-		// After "<join fetch> "
-		else if (expression.hasSpaceAfterJoin()) {
-			int length = identifier.length() + SPACE_LENGTH;
-
-			// Right after "<join fetch> "
-			if (position == length) {
-				addLeftIdentificationVariables(expression);
 			}
 		}
 	}
@@ -5447,7 +5452,7 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(AbstractDoubleEncapsulatedExpression expression, int index) {
-			return expression.parameterExpressionBNF(index);
+			return getQueryBNF(expression.parameterExpressionBNF(index));
 		}
 	}
 
@@ -6077,14 +6082,6 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		 */
 		@Override
 		public void visit(Join expression) {
-			filter = getMappingCollectionFilter();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression) {
 			filter = getMappingCollectionFilter();
 		}
 
@@ -7316,15 +7313,18 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		 */
 		@Override
 		public void visit(Join expression) {
-			complete = expression.hasIdentificationVariable();
-		}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression) {
-			complete = expression.hasJoinAssociationPath();
+			if (expression.hasFetch()) {
+				if (expression.hasAs()) {
+					complete = expression.hasIdentificationVariable();
+				}
+				else {
+					complete = expression.hasJoinAssociationPath();
+				}
+			}
+			else {
+				complete = expression.hasIdentificationVariable();
+			}
 		}
 
 		/**
@@ -7690,7 +7690,7 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(AbstractTripleEncapsulatedExpression expression, int index) {
-			return expression.parameterExpressionBNF(index);
+			return getQueryBNF(expression.parameterExpressionBNF(index));
 		}
 	}
 

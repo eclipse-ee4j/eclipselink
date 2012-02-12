@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,7 +30,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
@@ -275,13 +274,13 @@ final class DeclarationResolver {
 	 * @return The <b>JOIN FETCH</b> expressions used in the same declaration or an empty collection
 	 * if none was defined
 	 */
-	Collection<JoinFetch> getJoinFetches(String variableName) {
+	Collection<Join> getJoinFetches(String variableName) {
 
 		Declaration declaration = getDeclaration(variableName);
 
 		if ((declaration != null) && declaration.isRange()) {
 			RangeDeclaration rangeDeclaration = (RangeDeclaration) declaration;
-			if (rangeDeclaration.hasJoinFetches()) {
+			if (rangeDeclaration.hasJoins()) {
 				return rangeDeclaration.getJoinFetches();
 			}
 		}
@@ -511,27 +510,14 @@ final class DeclarationResolver {
 		public void visit(Join expression) {
 
 			((AbstractRangeDeclaration) currentDeclaration).addJoin(expression);
-			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
 
-			JoinDeclaration declaration = new JoinDeclaration(queryContext);
-			declaration.baseExpression = expression;
-			declaration.identificationVariable = identificationVariable;
-			declarations.put(identificationVariable.getVariableName(), declaration);
-		}
+			if (!expression.hasFetch() || expression.hasIdentificationVariable()) {
+				IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression) {
-			((RangeDeclaration) currentDeclaration).addJoinFetch(expression);
-			if (expression.hasIdentificationVariable()) {
-                            IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
-    
-                            JoinDeclaration declaration = new JoinDeclaration(queryContext);
-                            declaration.baseExpression = expression;
-                            declaration.identificationVariable = identificationVariable;
-                            declarations.put(identificationVariable.getVariableName(), declaration);
+				JoinDeclaration declaration = new JoinDeclaration(queryContext);
+				declaration.baseExpression = expression;
+				declaration.identificationVariable = identificationVariable;
+				declarations.put(identificationVariable.getVariableName(), declaration);
 			}
 		}
 

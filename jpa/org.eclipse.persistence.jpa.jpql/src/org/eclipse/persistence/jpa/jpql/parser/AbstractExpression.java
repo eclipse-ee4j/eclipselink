@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -680,7 +680,7 @@ public abstract class AbstractExpression extends StringExpression
 					break;
 				}
 
-				// Parse using the factory
+				// Parse using the ExpressionFactory that is mapped with a JPQL identifier (word)
 				if (shouldParseWithFactoryFirst()) {
 					ExpressionFactory factory = queryBNF.getExpressionFactory(word);
 
@@ -1044,6 +1044,9 @@ public abstract class AbstractExpression extends StringExpression
 	 */
 	@Override
 	public final String toString() {
+		// toString() should only be called during debugging, hence the cached parsed text
+		// should always be recreated in order to reflect the current state while debugging
+		parsedText = null;
 		return toParsedText();
 	}
 

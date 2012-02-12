@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @author Pascal Filion
  */
 @SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
-public abstract class AbstractIdentificationVariableDeclarationStateObject extends AbstractListHolderStateObject<AbstractJoinStateObject>
+public abstract class AbstractIdentificationVariableDeclarationStateObject extends AbstractListHolderStateObject<JoinStateObject>
                                                                            implements VariableDeclarationStateObject {
 
 	/**
@@ -244,7 +244,7 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
 	public IterableListIterator<IdentificationVariableStateObject> identificationVariables() {
 		List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
 		stateObjects.add(rangeVariableDeclaration.getIdentificationVariableStateObject());
-		for (JoinStateObject join : joins()) {
+		for (JoinStateObject join : items()) {
 			stateObjects.add(join.getIdentificationVariableStateObject());
 		}
 		return new CloneListIterator<IdentificationVariableStateObject>(stateObjects);
@@ -272,30 +272,6 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
 		}
 
 		return false;
-	}
-
-	/**
-	 * Returns only the {@link JoinStateObject JoinStateObjects} that are defined in this
-	 * declaration.
-	 *
-	 * @return The {@link JoinStateObject JoinStateObjects} only
-	 */
-	public List<JoinStateObject> joins() {
-
-		final List<JoinStateObject> joins = new ArrayList<JoinStateObject>();
-
-		AbstractStateObjectVisitor visitor = new AbstractStateObjectVisitor() {
-			@Override
-			public void visit(JoinStateObject stateObject) {
-				joins.add(stateObject);
-			}
-		};
-
-		for (AbstractJoinStateObject child : items()) {
-			child.accept(visitor);
-		}
-
-		return joins;
 	}
 
 	/**

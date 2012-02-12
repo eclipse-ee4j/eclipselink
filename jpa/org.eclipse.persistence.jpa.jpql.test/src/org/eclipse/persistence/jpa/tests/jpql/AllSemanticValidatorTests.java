@@ -56,7 +56,7 @@ public final class AllSemanticValidatorTests {
 	}
 
 	@SuiteClasses({
-		AbstractEclipseLinkSemanticValidatorTest.class,
+		EclipseLinkSemanticValidatorTest.class,
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllEclipseLinkSemanticValidatorTest {

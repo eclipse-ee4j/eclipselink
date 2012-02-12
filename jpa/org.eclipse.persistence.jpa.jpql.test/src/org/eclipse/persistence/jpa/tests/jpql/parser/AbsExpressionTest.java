@@ -58,7 +58,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 					abs(path("e.age")
 				.add(
 						numeric("100")
-					.substract(
+					.subtract(
 						avg("e.age"))
 					)
 				)

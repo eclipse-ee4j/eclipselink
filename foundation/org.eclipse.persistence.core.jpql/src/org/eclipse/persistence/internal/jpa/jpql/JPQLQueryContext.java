@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,7 +38,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
+import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -325,10 +325,27 @@ final class JPQLQueryContext {
 		return expressionBuilder().buildExpression(expression, type);
 	}
 
+	/**
+	 * Creates a new EclipseLink {@link Expression} by visiting the given JPQL {@link
+	 * CollectionValuedPathExpression} that is used in the <code><b>GROUP BY</b></code> clause.
+	 *
+	 * @param expression The {@link CollectionValuedPathExpression} to convert into an EclipseLink
+	 * {@link Expression}
+	 * @return The EclipseLink {@link Expression} representation of that path expression
+	 */
 	Expression buildGroupByExpression(CollectionValuedPathExpression expression) {
 		return expressionBuilder().buildGroupByExpression(expression);
 	}
 
+	/**
+	 * Creates a new EclipseLink {@link Expression} by visiting the given JPQL {@link
+	 * StateFieldPathExpression}. This method temporarily changes the null allowed flag if the state
+	 * field is a foreign reference mapping
+	 *
+	 * @param expression The {@link StateFieldPathExpression} to convert into an EclipseLink {@link
+	 * Expression}
+	 * @return The EclipseLink {@link Expression} representation of that path expression
+	 */
 	Expression buildModifiedPathExpression(StateFieldPathExpression expression) {
 		return expressionBuilder().buildModifiedPathExpression(expression);
 	}
@@ -643,7 +660,7 @@ final class JPQLQueryContext {
 	 * @return The <b>JOIN FETCH</b> expressions used in the same declaration or an empty collection
 	 * if none was defined
 	 */
-	Collection<JoinFetch> getJoinFetches(String variableName) {
+	Collection<Join> getJoinFetches(String variableName) {
 		return getDeclarationResolver().getJoinFetches(variableName);
 	}
 
@@ -1045,7 +1062,7 @@ final class JPQLQueryContext {
 	                         Class<?>[] type) {
 
 		ReportQueryVisitor visitor = reportQueryVisitor();
-		Class[] previousType = visitor.type;
+		Class<?>[] previousType = visitor.type;
 		ObjectLevelReadQuery previousQuery = visitor.query;
 		try {
 			visitor.type  = type;

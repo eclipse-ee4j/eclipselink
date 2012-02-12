@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,7 +36,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
@@ -227,27 +226,27 @@ public class DeclarationResolver extends Resolver {
 	}
 
 	/**
-	 * Returns the parsed representation of a <b>JOIN FETCH</b> that were defined in the same
-	 * declaration than the given range identification variable name.
+	 * Returns the parsed representation of a <b>JOIN</b> and <b>JOIN FETCH</b> that were defined in
+	 * the same declaration than the given range identification variable name.
 	 *
 	 * @param variableName The name of the identification variable that should be used to define an
 	 * abstract schema name
-	 * @return The <b>JOIN FETCH</b> expressions used in the same declaration or an empty collection
-	 * if none was defined
+	 * @return The <b>JOIN</b> and <b>JOIN FETCH</b> expressions used in the same declaration or an
+	 * empty collection if none was defined
 	 */
-	public Collection<JoinFetch> getJoinFetches(String variableName) {
-		Collection<JoinFetch> joinFetches = getJoinFetchesImp(variableName);
-		if (joinFetches.isEmpty() && (getParent() != null)) {
-			joinFetches = getParent().getJoinFetchesImp(variableName);
+	public Collection<Join> getJoins(String variableName) {
+		Collection<Join> joins = getJoinsImp(variableName);
+		if (joins.isEmpty() && (getParent() != null)) {
+			joins = getParent().getJoinsImp(variableName);
 		}
-		return joinFetches;
+		return joins;
 	}
 
-	protected Collection<JoinFetch> getJoinFetchesImp(String variableName) {
+	protected Collection<Join> getJoinsImp(String variableName) {
 
 		for (Declaration declaration : declarations) {
 			if (declaration.getVariableName().equalsIgnoreCase(variableName)) {
-				return declaration.getJoinFetches();
+				return declaration.getJoins();
 			}
 		}
 
@@ -510,12 +509,6 @@ public class DeclarationResolver extends Resolver {
 		protected IdentificationVariable identificationVariable;
 
 		/**
-		 * The list of <b>JOIN FETCH</b> expressions that are declared in the same declaration than
-		 * the range variable declaration.
-		 */
-		protected List<JoinFetch> joinFetches;
-
-		/**
 		 * The identification variables that are defined in the <b>JOIN</b> expressions.
 		 */
 		protected Set<String> joinIdentificationVariables;
@@ -550,13 +543,6 @@ public class DeclarationResolver extends Resolver {
 				joins = new LinkedHashMap<Join, IdentificationVariable>();
 			}
 			joins.put(join, identificationVariable);
-		}
-
-		protected void addJoinFetch(JoinFetch joinFetch) {
-			if (joinFetches == null) {
-				joinFetches = new ArrayList<JoinFetch>();
-			}
-			joinFetches.add(joinFetch);
 		}
 
 		protected Set<String> buildJoinIdentificationVariables() {
@@ -617,17 +603,6 @@ public class DeclarationResolver extends Resolver {
 				entries.add(buildMapEntry(entry));
 			}
 			return entries;
-		}
-
-		/**
-		 * Returns the <b>JOIN FETCH</b> expressions that were part of the range variable declaration
-		 * in the ordered they were parsed.
-		 *
-		 * @return The ordered list of <b>JOIN FETCH</b> expressions or an empty collection if none
-		 * was present
-		 */
-		public List<JoinFetch> getJoinFetches() {
-			return joinFetches;
 		}
 
 		/**
@@ -700,18 +675,6 @@ public class DeclarationResolver extends Resolver {
 		}
 
 		/**
-		 * Determines whether the declaration contains <b>JOIN FETCH</b> expressions. This can be
-		 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
-		 * member declaration does not have <b>JOIN FETCH</b> expressions.
-		 *
-		 * @return <code>true</code> if at least one <b>JOIN FETCH</b> expression was parsed;
-		 * otherwise <code>false</code>
-		 */
-		public boolean hasJoinFetches() {
-			return !joinFetches.isEmpty();
-		}
-
-		/**
 		 * Determines whether the declaration contains <b>JOIN</b> expressions. This can be
 		 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
 		 * member declaration does not have <b>JOIN</b> expressions.
@@ -757,13 +720,6 @@ public class DeclarationResolver extends Resolver {
 			}
 			else {
 				joins = Collections.emptyMap();
-			}
-
-			if (joinFetches != null) {
-				joinFetches = Collections.unmodifiableList(joinFetches);
-			}
-			else {
-				joinFetches = Collections.emptyList();
 			}
 		}
 
@@ -902,27 +858,16 @@ public class DeclarationResolver extends Resolver {
 		 */
 		@Override
 		public void visit(Join expression) {
+
 			Expression identificationVariable = expression.getIdentificationVariable();
 			String variableName = visitDeclaration(expression, identificationVariable);
+
 			if (variableName.length() > 0) {
 				currentDeclaration.addJoin(expression, (IdentificationVariable) identificationVariable);
 			}
 			else {
 				currentDeclaration.addJoin(expression, null);
 			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression) {
-                        if (expression.hasIdentificationVariable()) {
-                            Expression identificationVariable = expression.getIdentificationVariable();
-                            visitDeclaration(expression, identificationVariable);
-                            currentDeclaration.addJoin(expression, (IdentificationVariable) identificationVariable);
-                        }
-			currentDeclaration.addJoinFetch(expression);
 		}
 
 		/**

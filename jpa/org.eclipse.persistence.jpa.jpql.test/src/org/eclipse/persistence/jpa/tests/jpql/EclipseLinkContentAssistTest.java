@@ -24,6 +24,14 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	boolean isJoinFetchIdentifiable() {
+		return true;
+	}
+
 	@Test
 	public void test_Func_01() {
 		test_AbstractSingleEncapsulatedExpression_01(FUNC);

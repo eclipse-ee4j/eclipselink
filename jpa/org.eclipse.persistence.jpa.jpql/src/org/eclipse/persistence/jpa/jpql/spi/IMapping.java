@@ -28,7 +28,6 @@ import java.lang.annotation.Annotation;
 public interface IMapping extends IExternalForm,
                                   Comparable<IMapping> {
 
-
 	/**
 	 * Returns the type of this mapping.
 	 *

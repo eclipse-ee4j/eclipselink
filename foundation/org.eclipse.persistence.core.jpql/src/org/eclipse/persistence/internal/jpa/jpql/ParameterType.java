@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -198,7 +198,57 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 */
 	@Override
 	public void visit(BetweenExpression expression) {
-		expression.getExpression().accept(this);
+
+		Expression betweenExpression = expression.getExpression();
+		Expression lowerBound        = expression.getLowerBoundExpression();
+		Expression upperBound        = expression.getUpperBoundExpression();
+
+		// The input parameter is the expression to be tested within the range of values
+		if (betweenExpression.isAncestor(inputParameter)) {
+
+			if (currentExpression == null) {
+				currentExpression = expression;
+				lowerBound.accept(this);
+				currentExpression = null;
+			}
+			else {
+				type = null;
+				ignoreType = true;
+				expression = null;
+			}
+
+			// TODO: Not sure how to test this, should get the type for the lower and upper bounds
+			//       and then we compare each other???
+		}
+		// The input parameter is on the lower bound side, traverse the upper bound
+		else if (lowerBound.isAncestor(inputParameter)) {
+			if (currentExpression == null) {
+				currentExpression = expression;
+				upperBound.accept(this);
+				currentExpression = null;
+			}
+			else {
+				type = null;
+				ignoreType = true;
+				expression = null;
+			}
+		}
+		// The input parameter is on the upper bound side, traverse the lower bound
+		else if (upperBound.isAncestor(inputParameter)) {
+			if (currentExpression == null) {
+				currentExpression = expression;
+				lowerBound.accept(this);
+				currentExpression = null;
+			}
+			else {
+				type = null;
+				ignoreType = true;
+				expression = null;
+			}
+		}
+		else {
+			type = Boolean.class;
+		}
 	}
 
 	/**
@@ -453,7 +503,7 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 		}
 		// A singled valued path expression always have a return type
 		else {
-			expression.getExpression().accept(this);
+			type = Object.class;
 		}
 	}
 

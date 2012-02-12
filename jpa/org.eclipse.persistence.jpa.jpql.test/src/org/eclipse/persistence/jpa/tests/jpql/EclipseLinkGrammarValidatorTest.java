@@ -106,4 +106,30 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 			JPQLQueryProblemMessages.OrderByItem_InvalidPath
 		);
 	}
+
+	@Test
+	public void test_SimpleSelectStatement_InvalidLocation_3() throws Exception {
+
+		String query = "SELECT (SELECT e FROM Employee e) FROM Employee e";
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
+		);
+	}
+
+	@Test
+	public void test_SimpleSelectStatement_InvalidLocation_4() throws Exception {
+
+		String query = "SELECT (SELECT e F) FROM Employee e";
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
+		);
+	}
 }

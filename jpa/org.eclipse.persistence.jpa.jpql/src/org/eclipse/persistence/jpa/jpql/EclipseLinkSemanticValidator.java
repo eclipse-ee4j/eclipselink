@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,19 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
-import org.eclipse.persistence.jpa.jpql.spi.IType;
 
 /**
  * This validator is responsible to gather the problems found in a JPQL query by validating the
@@ -37,7 +32,6 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
  * type of name is a string (the property signature is: "<code>private String name</code>").
  *
  * @see EclipseLinkGrammarValidator
- *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -70,6 +64,28 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		}
 	}
 
+	/**
+	 * EclipseLink does not validate types, but leaves it to the database. This is because some
+	 * databases such as Oracle allow different types to different functions and perform implicit
+	 * type conversion. i.e. CONCAT('test', 2) => 'test2'. Also the FUNC function has an unknown
+	 * type, so should be allowed with any function.
+	 */
+	@Override
+	protected boolean isComparisonEquivalentType(Expression expression1, Expression expression2) {
+		return true;
+	}
+
+	/**
+	 * EclipseLink does not validate types, but leaves it to the database. This is because some
+	 * databases such as Oracle allow different types to different functions and perform implicit
+	 * type conversion. i.e. CONCAT('test', 2) => 'test2'. Also the FUNC function has an unknown
+	 * type, so should be allowed with any function.
+	 */
+	@Override
+	protected boolean isEquivalentBetweenType(Expression expression1, Expression expression2) {
+		return true;
+	}
+
 	protected Set<IdentificationVariable> resultVariables(JPQLQueryContext queryContext) {
 		return queryContext.getActualDeclarationResolver().getResultVariablesMap().keySet();
 	}
@@ -81,6 +97,39 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	protected void validateIdentificationVariable(IdentificationVariable expression, String variable) {
 		// No need to validate the identification variable, EclipseLink supports an identification
 		// variable with the same name as any entity in the same persistence unit
+	}
+
+	/**
+	 * EclipseLink does not validate types, but leaves it to the database. This is because some
+	 * databases such as Oracle allow different types to different functions and perform implicit
+	 * type conversion. i.e. CONCAT('test', 2) => 'test2'. Also the FUNC function has an unknown
+	 * type, so should be allowed with any function.
+	 */
+	@Override
+	protected void validateIntegralType(Expression expression, String queryBNF, String messageKey) {
+		// Do not restrict the type
+	}
+
+	/**
+	 * EclipseLink does not validate types, but leaves it to the database. This is because some
+	 * databases such as Oracle allow different types to different functions and perform implicit
+	 * type conversion. i.e. CONCAT('test', 2) => 'test2'. Also the FUNC function has an unknown
+	 * type, so should be allowed with any function.
+	 */
+	@Override
+	protected void validateNumericType(Expression expression, String messageKey) {
+		// Do not restrict the type
+	}
+
+	/**
+	 * EclipseLink does not validate types, but leaves it to the database. This is because some
+	 * databases such as Oracle allow different types to different functions and perform implicit
+	 * type conversion. i.e. CONCAT('test', 2) => 'test2'. Also the FUNC function has an unknown
+	 * type, so should be allowed with any function.
+	 */
+	@Override
+	protected void validateStringType(Expression expression, String messageKey) {
+		// Do not restrict the type
 	}
 
 	/**
@@ -98,59 +147,4 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		// Nothing to validate semantically
 		super.visit(expression);
 	}
-
-        /**
-         * EclipseLink does not validate types, but leaves it to the database.
-         * This is because some databases such as Oracle allow different types to different functions
-         * and perform implicit type conversion. i.e. CONCAT('test', 2) => 'test2'
-         * Also the FUNC function has an unknown type, so should be allowed with any function.
-         */
-	@Override
-        protected void validateNumericType(Expression expression, String messageKey) {
-	    // Do not restrict the type.
-        }
-
-        /**
-         * EclipseLink does not validate types, but leaves it to the database.
-         * This is because some databases such as Oracle allow different types to different functions
-         * and perform implicit type conversion. i.e. CONCAT('test', 2) => 'test2'
-         * Also the FUNC function has an unknown type, so should be allowed with any function.
-         */
-        @Override
-        protected void validateStringType(Expression expression, String messageKey) {
-            // Do not restrict the type.
-        }
-
-        /**
-         * EclipseLink does not validate types, but leaves it to the database.
-         * This is because some databases such as Oracle allow different types to different functions
-         * and perform implicit type conversion. i.e. CONCAT('test', 2) => 'test2'
-         * Also the FUNC function has an unknown type, so should be allowed with any function.
-         */
-        @Override
-        protected void validateIntegralType(Expression expression, String messageKey) {
-            // Do not restrict the type.
-        }
-
-        /**
-         * EclipseLink does not validate types, but leaves it to the database.
-         * This is because some databases such as Oracle allow different types to different functions
-         * and perform implicit type conversion. i.e. CONCAT('test', 2) => 'test2'
-         * Also the FUNC function has an unknown type, so should be allowed with any function.
-         */
-        @Override
-        protected boolean isComparisonEquivalentType(Expression expression1, Expression expression2) {
-                return true;
-        }
-
-        /**
-         * EclipseLink does not validate types, but leaves it to the database.
-         * This is because some databases such as Oracle allow different types to different functions
-         * and perform implicit type conversion. i.e. CONCAT('test', 2) => 'test2'
-         * Also the FUNC function has an unknown type, so should be allowed with any function.
-         */
-        @Override
-        protected boolean isEquivalentBetweenType(Expression expression1, Expression expression2) {
-                return true;
-        }
 }

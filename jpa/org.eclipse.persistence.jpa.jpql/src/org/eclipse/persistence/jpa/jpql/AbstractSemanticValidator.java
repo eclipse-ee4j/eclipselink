@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -66,7 +66,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -687,13 +686,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * </ul>
 	 *
 	 * @param expression The {@link Expression} to validate
+	 * @param queryBNF The unique identifier of the query BNF used to validate the type
 	 * @param messageKey The key used to retrieve the localized message describing the problem
 	 */
-	protected void validateIntegralType(Expression expression, String messageKey) {
+	protected void validateIntegralType(Expression expression, String queryBNF, String messageKey) {
 
-		if (isValid(expression, SimpleArithmeticExpressionBNF.ID) &&
-		   !isIntegralType(expression)) {
-
+		if (isValid(expression, queryBNF) && !isIntegralType(expression)) {
 			addProblem(expression, messageKey);
 		}
 	}
@@ -1312,13 +1310,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	@Override
 	public void visit(GroupByClause expression) {
 
-		// - The requirements for the SELECT clause when GROUP BY is used follow
-		//   those of SQL: namely, any item that appears in the SELECT clause
-		//   (other than as an aggregate function or as an argument to an
-		//   aggregate function) must also appear in the GROUP BY clause.
-		// - Grouping by an entity is permitted. In this case, the entity must
-		//   contain no serialized state fields or lob-valued state fields that
-		//   are eagerly fetched.
+		// - The requirements for the SELECT clause when GROUP BY is used follow those of SQL: namely,
+		//   any item that appears in the SELECT clause (other than as an aggregate function or as an
+		//   argument to an aggregate function) must also appear in the GROUP BY clause.
+		// - Grouping by an entity is permitted. In this case, the entity must contain no serialized
+		//   state fields or lob-valued state fields that are eagerly fetched.
 		// - Grouping by embeddables is not supported.
 
 		super.visit(expression);
@@ -1502,27 +1498,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(JoinFetch expression) {
-
-            Expression joinAssociationPath = expression.getJoinAssociationPath();
-            validateCollectionValuedPathExpression(joinAssociationPath, false);
-            joinAssociationPath.accept(this);
-
-            if (expression.hasIdentificationVariable()) {
-                try {
-                        registerIdentificationVariable = false;
-                        expression.getIdentificationVariable().accept(this);
-                }
-                finally {
-                        registerIdentificationVariable = true;
-                }
-            }
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void visit(JPQLExpression expression) {
 		if (expression.hasQueryStatement()) {
 			expression.getQueryStatement().accept(this);
@@ -1615,8 +1590,19 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ModExpression expression) {
-		validateIntegralType(expression.getFirstExpression(),  ModExpression_FirstExpression_WrongType);
-		validateIntegralType(expression.getSecondExpression(), ModExpression_SecondExpression_WrongType);
+
+		validateIntegralType(
+			expression.getFirstExpression(),
+			expression.parameterExpressionBNF(0),
+			ModExpression_FirstExpression_WrongType
+		);
+
+		validateIntegralType(
+			expression.getSecondExpression(),
+			expression.parameterExpressionBNF(1),
+			ModExpression_SecondExpression_WrongType
+		);
+
 		super.visit(expression);
 	}
 
@@ -1900,11 +1886,19 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 		// The second and third arguments of the SUBSTRING function denote the starting position and
 		// length of the substring to be returned. These arguments are integers
-		validateIntegralType(expression.getSecondExpression(), SubstringExpression_SecondExpression_WrongType);
+		validateIntegralType(
+			expression.getSecondExpression(),
+			expression.parameterExpressionBNF(1),
+			SubstringExpression_SecondExpression_WrongType
+		);
 
 		// The third argument is optional for JPA 2.0
 		if (getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_0)) {
-			validateIntegralType(expression.getThirdExpression(), SubstringExpression_ThirdExpression_WrongType);
+			validateIntegralType(
+				expression.getThirdExpression(),
+				expression.parameterExpressionBNF(2),
+				SubstringExpression_ThirdExpression_WrongType
+			);
 		}
 
 		super.visit(expression);

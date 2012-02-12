@@ -190,7 +190,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(avg("e.age").division(path("mag.salary")))
+			where(avg("e.age").divide(path("mag.salary")))
 		);
 
 		testQuery(query, selectStatement);
@@ -204,7 +204,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(avg("e.age").multiplication(path("mag.salary")))
+			where(avg("e.age").multiply(path("mag.salary")))
 		);
 
 		testQuery(query, selectStatement);
@@ -232,7 +232,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(avg("e.age").substract(path("mag.salary")))
+			where(avg("e.age").subtract(path("mag.salary")))
 		);
 
 		testQuery(query, selectStatement, buildQueryFormatter_10());
@@ -246,7 +246,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(avg("e.age").multiplication(path("mag.salary")))
+			where(avg("e.age").multiply(path("mag.salary")))
 		);
 
 		testQuery(query, selectStatement);
@@ -260,7 +260,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(avg("e.age").division(path("mag.salary")))
+			where(avg("e.age").divide(path("mag.salary")))
 		);
 
 		testQuery(query, selectStatement);
@@ -274,7 +274,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(minus(avg("e.age")).division(path("mag.salary")))
+			where(minus(avg("e.age")).divide(path("mag.salary")))
 		);
 
 		testQuery(query, selectStatement);
@@ -288,7 +288,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(plus(avg("e.age")).division(path("mag.salary")))
+			where(plus(avg("e.age")).divide(path("mag.salary")))
 		);
 
 		testQuery(query, selectStatement);
@@ -302,7 +302,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(plus(avg("e.age")).division(minus(path("mag.salary"))))
+			where(plus(avg("e.age")).divide(minus(path("mag.salary"))))
 		);
 
 		testQuery(query, selectStatement);
@@ -316,7 +316,7 @@ public final class ConditionalExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(plus(avg("e.age")).substract(minus(path("mag.salary"))))
+			where(plus(avg("e.age")).subtract(minus(path("mag.salary"))))
 		);
 
 		testQuery(query, selectStatement);

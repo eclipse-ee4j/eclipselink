@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -275,8 +275,9 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = new DeleteAllQuery();
 				queryContext.setDatabasQuery(query);
-	                        query.setJPQLString(queryContext.getJPQLQuery());
+				query.setJPQLString(queryContext.getJPQLQuery());
 			}
+
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 
@@ -306,7 +307,7 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = buildReadAllQuery(expression);
 				queryContext.setDatabasQuery(query);
-	                        query.setJPQLString(queryContext.getJPQLQuery());
+				query.setJPQLString(queryContext.getJPQLQuery());
 			}
 
 			// Now populate it
@@ -332,8 +333,9 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = new UpdateAllQuery();
 				queryContext.setDatabasQuery(query);
-	                        query.setJPQLString(queryContext.getJPQLQuery());
+				query.setJPQLString(queryContext.getJPQLQuery());
 			}
+
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 

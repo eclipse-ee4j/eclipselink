@@ -18,5 +18,5 @@ package org.eclipse.persistence.jpa.tests.jpql;
  * @since 2.4
  * @author Pascal Filion
  */
-public class EclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
+public class EclipseLinkSemanticValidatorTest extends AbstractEclipseLinkSemanticValidatorTest {
 }

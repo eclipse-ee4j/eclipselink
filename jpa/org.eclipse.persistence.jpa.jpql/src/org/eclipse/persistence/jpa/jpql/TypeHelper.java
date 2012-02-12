@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 /**
  * This helper contains methods related to {@link IType} and can perform equivalency checks.
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
@@ -97,6 +97,15 @@ public final class TypeHelper {
 	 */
 	public IType byteType() {
 		return getType(Byte.class);
+	}
+
+	/**
+	 * Retrieves the {@link IType} for {@link Character}.
+	 *
+	 * @return The external form of the <code>Character</code> class
+	 */
+	public IType characterType() {
+		return getType(Character.class);
 	}
 
 	/**
@@ -310,8 +319,12 @@ public final class TypeHelper {
 	public boolean isIntegralType(IType type) {
 		return type.equals(integerType())      ||
 		       type.equals(longType())         ||
+		       type.equals(shortType())        ||
+		       type.equals(characterType())    ||
 		       type.equals(primitiveInteger()) ||
-		       type.equals(primitiveLong());
+		       type.equals(primitiveLong())    ||
+		       type.equals(primitiveShort())   ||
+		       type.equals(primitiveChar());
 	}
 
 	/**
@@ -453,6 +466,15 @@ public final class TypeHelper {
 	 */
 	public IType primitiveByte() {
 		return getType(Byte.TYPE);
+	}
+
+	/**
+	 * Retrieves the {@link IType} for the primitive char.
+	 *
+	 * @return The external form of the primitive char
+	 */
+	public IType primitiveChar() {
+		return getType(Character.TYPE);
 	}
 
 	/**

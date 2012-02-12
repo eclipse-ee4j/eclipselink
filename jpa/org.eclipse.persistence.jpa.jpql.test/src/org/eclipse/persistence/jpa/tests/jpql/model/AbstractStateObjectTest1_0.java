@@ -2747,7 +2747,6 @@ public abstract class AbstractStateObjectTest1_0 extends AbstractStateObjectTest
 		// FROM Order AS o, in(o.lineItems) l
 		// WHERE (l.quantity < 2) AND ((o.totalPrice < (3 + 54 * 2 + -8)) OR (o.customer.name = 'Robert E. Bissett'))
 
-		// TODO: Is the order correct in (3 + 54 * 2 + -8 )????
 		return selectStatement(
 			selectDistinct(object("o")),
 			from(fromEntityAs("Order", "o"), fromIn("o.lineItems", "l")),
@@ -2759,7 +2758,13 @@ public abstract class AbstractStateObjectTest1_0 extends AbstractStateObjectTest
 								path("o.totalPrice")
 							.lowerThan(
 								sub(
-									numeric(3).add(numeric(54).multiplication(numeric(2).add(numeric(-8))))
+										numeric(3)
+									.add(
+											numeric(54).multiplication(numeric(2))
+										.add(
+											numeric(-8)
+										)
+									)
 								)
 							)
 						)

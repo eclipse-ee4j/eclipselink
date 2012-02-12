@@ -24,7 +24,15 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class AbstractEclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
+public abstract class AbstractEclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean shouldValidateType() {
+		return false;
+	}
 
 	@Test
 	public void test_EntityTypeLiteral_NotResolvable_2() throws Exception {

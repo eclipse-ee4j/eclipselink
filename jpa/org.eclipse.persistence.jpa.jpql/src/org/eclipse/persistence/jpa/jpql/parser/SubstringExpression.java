@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,10 +69,10 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF parameterExpressionBNF(int index) {
+	public String parameterExpressionBNF(int index) {
 		switch (index) {
-			case 1:  return getQueryBNF(StringPrimaryBNF.ID);
-			default: return getQueryBNF(SimpleArithmeticExpressionBNF.ID);
+			case 0:  return InternalSubstringStringExpressionBNF.ID;
+			default: return InternalSubstringPositionExpressionBNF.ID;
 		}
 	}
 

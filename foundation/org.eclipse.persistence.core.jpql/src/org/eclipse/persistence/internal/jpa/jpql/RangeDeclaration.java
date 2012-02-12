@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,13 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
+import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -39,7 +39,7 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	 * The list of <b>JOIN FETCH</b> expressions that are declared in the same declaration than
 	 * the range variable declaration.
 	 */
-	private List<JoinFetch> joinFetches;
+	private List<Join> joinFetches;
 
 	/**
 	 * Creates a new <code>RangeDeclaration</code>.
@@ -52,15 +52,22 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	}
 
 	/**
-	 * Adds the given {@link JoinFetch} to this range declaration.
-	 *
-	 * @param joinFetch The {@link JoinFetch} that was found in the list of joins/join fetches
+	 * {@inheritDoc}
 	 */
-	void addJoinFetch(JoinFetch joinFetch) {
-		if (joinFetches == null) {
-			joinFetches = new ArrayList<JoinFetch>();
+	@Override
+	void addJoin(Join join) {
+		super.addJoin(join);
+
+		if (join.hasFetch()) {
+			addJoinFetch(join);
 		}
-		joinFetches.add(joinFetch);
+	}
+
+	private void addJoinFetch(Join join) {
+		if (joinFetches == null) {
+			joinFetches = new LinkedList<Join>();
+		}
+		joinFetches.add(join);
 	}
 
 	/**
@@ -113,20 +120,8 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	 * @return The ordered list of <b>JOIN FETCH</b> expressions or an empty collection if none
 	 * was present
 	 */
-	List<JoinFetch> getJoinFetches() {
-		return (joinFetches == null) ? Collections.<JoinFetch>emptyList() : joinFetches;
-	}
-
-	/**
-	 * Determines whether the declaration contains <b>JOIN FETCH</b> expressions. This can be
-	 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
-	 * member declaration does not have <b>JOIN FETCH</b> expressions.
-	 *
-	 * @return <code>true</code> if at least one <b>JOIN FETCH</b> expression was parsed;
-	 * otherwise <code>false</code>
-	 */
-	boolean hasJoinFetches() {
-		return (joinFetches != null);
+	List<Join> getJoinFetches() {
+		return (joinFetches == null) ? Collections.<Join>emptyList() : joinFetches;
 	}
 
 	/**

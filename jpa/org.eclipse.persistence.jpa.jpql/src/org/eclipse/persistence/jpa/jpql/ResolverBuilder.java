@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -62,7 +62,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -731,14 +730,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(Join expression) {
 		expression.getJoinAssociationPath().accept(this);
 		resolver.setNullAllowed(expression.isLeftJoin());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(JoinFetch expression) {
-		expression.getJoinAssociationPath().accept(this);
-		resolver.setNullAllowed(expression.isLeftJoinFetch());
 	}
 
 	/**

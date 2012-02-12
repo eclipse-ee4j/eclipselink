@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,7 +74,6 @@ import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.InternalOrderByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -491,15 +490,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 			@Override
 			public boolean isFirstExpressionValid(LocateExpression expression) {
-				return isValid(expression.getFirstExpression(), StringPrimaryBNF.ID);
+				return isValid(
+					expression.getFirstExpression(),
+					expression.parameterExpressionBNF(0)
+				);
 			}
 			@Override
 			public boolean isSecondExpressionValid(LocateExpression expression) {
-				return isValid(expression.getSecondExpression(), StringPrimaryBNF.ID);
+				return isValid(
+					expression.getSecondExpression(),
+					expression.parameterExpressionBNF(1)
+				);
 			}
 			@Override
 			public boolean isThirdExpressionValid(LocateExpression expression) {
-				return isValid(expression.getThirdExpression(), SimpleArithmeticExpressionBNF.ID);
+				return isValid(
+					expression.getThirdExpression(),
+					expression.parameterExpressionBNF(2)
+				);
 			}
 			public String leftParenthesisMissingKey() {
 				return LocateExpression_MissingLeftParenthesis;
@@ -771,15 +779,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 			@Override
 			public boolean isFirstExpressionValid(SubstringExpression expression) {
-				return isValid(expression.getFirstExpression(), SimpleArithmeticExpressionBNF.ID);
+				return isValid(
+					expression.getFirstExpression(),
+					expression.parameterExpressionBNF(0)
+				);
 			}
 			@Override
 			public boolean isSecondExpressionValid(SubstringExpression expression) {
-				return isValid(expression.getSecondExpression(), SimpleArithmeticExpressionBNF.ID);
+				return isValid(
+					expression.getSecondExpression(),
+					expression.parameterExpressionBNF(1)
+				);
 			}
 			@Override
 			public boolean isThirdExpressionValid(SubstringExpression expression) {
-				return isValid(expression.getThirdExpression(), SimpleArithmeticExpressionBNF.ID);
+				return isValid(
+					expression.getThirdExpression(),
+					expression.parameterExpressionBNF(2)
+				);
 			}
 			public String leftParenthesisMissingKey() {
 				return SubstringExpression_MissingLeftParenthesis;
@@ -1151,6 +1168,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 		return true;
 	}
+
+	/**
+	 * Determines whether a subquery is allowed only in the WHERE and HAVING clause or allowed
+	 * anywhere in a query.
+	 *
+	 * @return <code>true</code> if it can be defined anywhere in a query; <code>false</code> only
+	 * in the WHERE and HAVING clause defined by the JPA spec
+	 */
+	abstract boolean isSubqueryAllowedAnywhere();
 
 	protected AbstractSingleEncapsulatedExpressionHelper<KeyExpression> keyExpressionHelper() {
 		AbstractSingleEncapsulatedExpressionHelper<KeyExpression> helper = getHelper(KEY);
@@ -2672,7 +2698,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 			else {
 				for (Expression child : collectionExpression.children()) {
-					if (!isValid(child, StringPrimaryBNF.ID)) {
+					if (!isValid(child, expression.encapsulatedExpressionBNF())) {
 						addProblem(child, ConcatExpression_InvalidExpression, child.toParsedText());
 					}
 				}
@@ -3232,75 +3258,72 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(Join expression) {
 
-		// Missing join association path expression
-		if (!expression.hasJoinAssociationPath()) {
-			int startPosition = position(expression) + expression.getIdentifier().length();
+		if (expression.hasFetch()) {
 
-			if (expression.hasSpaceAfterJoin()) {
-				startPosition++;
+			// Missing join association path expression
+			if (!expression.hasJoinAssociationPath()) {
+				int startPosition = position(expression) + expression.getIdentifier().toString().length();
+
+				if (expression.hasSpaceAfterJoin()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, JoinFetch_MissingJoinAssociationPath);
 			}
 
-			int endPosition = startPosition;
+			// TODO: Might need to validate a JOIN FETCH expression that has AS but no identification variable
 
-			addProblem(expression, startPosition, endPosition, Join_MissingJoinAssociationPath);
+			// The FETCH JOIN construct must not be used in the FROM clause of a subquery
+			if (isOwnedBySubFromClause(expression)) {
+				int startPosition = position(expression);
+				int endPosition = startPosition + length(expression);
+				addProblem(expression, startPosition, endPosition, JoinFetch_WrongClauseDeclaration);
+			}
 		}
+		else {
+			// Missing join association path expression
+			if (!expression.hasJoinAssociationPath()) {
+				int startPosition = position(expression) + expression.getIdentifier().length();
 
-		// Missing identification variable
-		if (expression.hasJoinAssociationPath() &&
-		   !expression.hasIdentificationVariable()) {
+				if (expression.hasSpaceAfterJoin()) {
+					startPosition++;
+				}
 
-			int startPosition = position(expression) + expression.getIdentifier().length();
+				int endPosition = startPosition;
 
-			if (expression.hasSpaceAfterJoin()) {
-				startPosition++;
+				addProblem(expression, startPosition, endPosition, Join_MissingJoinAssociationPath);
 			}
 
-			startPosition += length(expression.getJoinAssociationPath());
+			// Missing identification variable
+			if (expression.hasJoinAssociationPath() &&
+			   !expression.hasIdentificationVariable()) {
 
-			if (expression.hasSpaceAfterJoinAssociation()) {
-				startPosition++;
+				int startPosition = position(expression) + expression.getIdentifier().length();
+
+				if (expression.hasSpaceAfterJoin()) {
+					startPosition++;
+				}
+
+				startPosition += length(expression.getJoinAssociationPath());
+
+				if (expression.hasSpaceAfterJoinAssociation()) {
+					startPosition++;
+				}
+
+				if (expression.hasAs()) {
+					startPosition += 2;
+				}
+
+				if (expression.hasSpaceAfterAs()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition;
+
+				addProblem(expression, startPosition, endPosition, Join_MissingIdentificationVariable);
 			}
-
-			if (expression.hasAs()) {
-				startPosition += 2;
-			}
-
-			if (expression.hasSpaceAfterAs()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, Join_MissingIdentificationVariable);
-		}
-
-		super.visit(expression);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(JoinFetch expression) {
-
-		// Missing join association path expression
-		if (!expression.hasJoinAssociationPath()) {
-			int startPosition = position(expression) + expression.getIdentifier().toString().length();
-
-			if (expression.hasSpaceAfterJoin()) {
-				startPosition++;
-			}
-
-			int endPosition = startPosition;
-
-			addProblem(expression, startPosition, endPosition, JoinFetch_MissingJoinAssociationPath);
-		}
-
-		// The FETCH JOIN construct must not be used in the FROM clause of a subquery
-		if (isOwnedBySubFromClause(expression)) {
-			int startPosition = position(expression);
-			int endPosition = startPosition + length(expression);
-			addProblem(expression, startPosition, endPosition, JoinFetch_WrongClauseDeclaration);
 		}
 
 		super.visit(expression);
@@ -3837,9 +3860,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 		}
 		// Subqueries may be used in the WHERE or HAVING clause
-		else {
-		        // Sub queries are now allowed anywhere.
-			//addProblem(expression, SimpleSelectStatement_InvalidLocation);
+		else if (!isSubqueryAllowedAnywhere()) {
+			addProblem(expression, SimpleSelectStatement_InvalidLocation);
 		}
 
 		// - Note that some contexts in which a subquery can be used require that

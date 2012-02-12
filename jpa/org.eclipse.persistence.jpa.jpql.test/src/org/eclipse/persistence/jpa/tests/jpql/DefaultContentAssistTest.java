@@ -19,4 +19,12 @@ package org.eclipse.persistence.jpa.tests.jpql;
  * @author Pascal Filion
  */
 public class DefaultContentAssistTest extends AbstractContentAssistTest {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	boolean isJoinFetchIdentifiable() {
+		return false;
+	}
 }

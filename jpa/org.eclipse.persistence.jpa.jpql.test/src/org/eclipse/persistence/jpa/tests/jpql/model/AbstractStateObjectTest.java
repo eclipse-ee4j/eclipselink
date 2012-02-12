@@ -70,7 +70,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.InExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IndexExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.InputParameterStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.JoinFetchStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JoinStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.KeyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.KeywordExpressionStateObject;
@@ -142,61 +141,61 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 	@IJPQLQueryBuilderTestHelper
 	private IJPQLQueryBuilder queryBuilder;
 
-	@IJPQLQueryFormatterTestHelper
+  	@IJPQLQueryFormatterTestHelper
 	private IJPQLQueryFormatter queryFormatter;
 
-	protected static AbsExpressionStateObjectTester abs(StateObjectTester expression) {
+  	protected static AbsExpressionStateObjectTester abs(StateObjectTester expression) {
 		return new AbsExpressionStateObjectTester(expression);
 	}
 
-	protected static AbstractSchemaNameStateObjectTester abstractSchemaName(String abstractSchemaName) {
+  	protected static AbstractSchemaNameStateObjectTester abstractSchemaName(String abstractSchemaName) {
 		return new AbstractSchemaNameStateObjectTester(abstractSchemaName);
 	}
 
-	protected static AdditionExpressionStateObjectTester add(StateObjectTester leftExpression,
+  	protected static AdditionExpressionStateObjectTester add(StateObjectTester leftExpression,
 	                                                         StateObjectTester rightExpression) {
 
 		return new AdditionExpressionStateObjectTester(leftExpression, rightExpression);
 	}
 
-	protected static AllOrAnyExpressionStateObjectTester all(StateObjectTester subquery) {
+  	protected static AllOrAnyExpressionStateObjectTester all(StateObjectTester subquery) {
 		return new AllOrAnyExpressionStateObjectTester(ALL, subquery);
 	}
 
-	protected static AndExpressionStateObjectTester and(StateObjectTester leftExpression,
+  	protected static AndExpressionStateObjectTester and(StateObjectTester leftExpression,
 	                                                    StateObjectTester rightExpression) {
 
 		return new AndExpressionStateObjectTester(leftExpression, rightExpression);
 	}
 
-	protected static AllOrAnyExpressionStateObjectTester any(StateObjectTester subquery) {
+  	protected static AllOrAnyExpressionStateObjectTester any(StateObjectTester subquery) {
 		return new AllOrAnyExpressionStateObjectTester(ANY, subquery);
 	}
 
-	protected static AllOrAnyExpressionStateObjectTester anyExpression(StateObjectTester subquery) {
+  	protected static AllOrAnyExpressionStateObjectTester anyExpression(StateObjectTester subquery) {
 		return new AllOrAnyExpressionStateObjectTester(ANY, subquery);
 	}
 
-	protected static AvgFunctionStateObjectTester avg(StateObjectTester expression) {
+  	protected static AvgFunctionStateObjectTester avg(StateObjectTester expression) {
 		return new AvgFunctionStateObjectTester(expression, false);
 	}
 
-	protected static AvgFunctionStateObjectTester avg(String statefieldPathExpression) {
+  	protected static AvgFunctionStateObjectTester avg(String statefieldPathExpression) {
 		return avg(path(statefieldPathExpression));
 	}
 
-	protected static AvgFunctionStateObjectTester avgDistinct(String statefieldPathExpression) {
+  	protected static AvgFunctionStateObjectTester avgDistinct(String statefieldPathExpression) {
 		return new AvgFunctionStateObjectTester(path(statefieldPathExpression), true);
 	}
 
-	protected static BetweenExpressionStateObjectTester between(StateObjectTester expression,
+  	protected static BetweenExpressionStateObjectTester between(StateObjectTester expression,
 	                                                            StateObjectTester lowerBoundExpression,
 	                                                            StateObjectTester upperBoundExpression) {
 
 		return new BetweenExpressionStateObjectTester(expression, false, lowerBoundExpression, upperBoundExpression);
 	}
 
-	protected static CaseExpressionStateObjectTester case_(StateObjectTester... caseOperands) {
+  	protected static CaseExpressionStateObjectTester case_(StateObjectTester... caseOperands) {
 
 		StateObjectTester[] copy = new StateObjectTester[caseOperands.length - 1];
 		System.arraycopy(caseOperands, 0, copy, 0, caseOperands.length - 1);
@@ -208,7 +207,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		);
 	}
 
-	protected static CaseExpressionStateObjectTester case_(StateObjectTester caseOperand,
+  	protected static CaseExpressionStateObjectTester case_(StateObjectTester caseOperand,
 	                                                       StateObjectTester[] whenClauses,
 	                                                       StateObjectTester elseExpression) {
 
@@ -219,21 +218,21 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		);
 	}
 
-	protected static CaseExpressionStateObjectTester case_(StateObjectTester[] whenClauses,
+  	protected static CaseExpressionStateObjectTester case_(StateObjectTester[] whenClauses,
 	                                                       StateObjectTester elseExpression) {
 
 		return case_(nullExpression(), whenClauses, elseExpression);
 	}
 
-	protected static CoalesceExpressionStateObjectTester coalesce(StateObjectTester expression) {
+  	protected static CoalesceExpressionStateObjectTester coalesce(StateObjectTester expression) {
 		return new CoalesceExpressionStateObjectTester(expression);
 	}
 
-	protected static CoalesceExpressionStateObjectTester coalesce(StateObjectTester... expressions) {
+  	protected static CoalesceExpressionStateObjectTester coalesce(StateObjectTester... expressions) {
 		return new CoalesceExpressionStateObjectTester(collection(expressions));
 	}
 
-	protected static CollectionExpressionStateObjectTester collection(StateObjectTester... expressions) {
+  	protected static CollectionExpressionStateObjectTester collection(StateObjectTester... expressions) {
 
 		Boolean[] spaces = new Boolean[expressions.length];
 		Boolean[] commas = new Boolean[expressions.length];
@@ -247,114 +246,114 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return collection(expressions, commas, spaces);
 	}
 
-	protected static CollectionExpressionStateObjectTester collection(StateObjectTester[] expressions,
+  	protected static CollectionExpressionStateObjectTester collection(StateObjectTester[] expressions,
 	                                                                  Boolean[] commas,
 	                                                                  Boolean[] spaces) {
 
 		return new CollectionExpressionStateObjectTester(expressions, commas, spaces);
 	}
 
-	protected static CollectionValuedPathExpressionStateObjectTester collectionPath(StateObjectTester identificationVariable,
-	                                                                                String collectionValuedPathExpression) {
+  	protected static CollectionValuedPathExpressionStateObjectTester collectionPath(StateObjectTester identificationVariable,
+	                                                                                String collectionPath) {
 
 		return new CollectionValuedPathExpressionStateObjectTester(
 			identificationVariable,
-			collectionValuedPathExpression
+			collectionPath
 		);
 	}
 
-	protected static CollectionValuedPathExpressionStateObjectTester collectionPath(String collectionValuedPathExpression) {
-		return collectionPath(nullExpression(), collectionValuedPathExpression);
+  	protected static CollectionValuedPathExpressionStateObjectTester collectionPath(String collectionPath) {
+		return collectionPath(nullExpression(), collectionPath);
 	}
 
-	private static ComparisonExpressionStateObjectTester comparison(StateObjectTester leftExpression,
+  	private static ComparisonExpressionStateObjectTester comparison(StateObjectTester leftExpression,
 	                                                                String comparator,
 	                                                                StateObjectTester rightExpression) {
 
 		return new ComparisonExpressionStateObjectTester(comparator, leftExpression, rightExpression);
 	}
 
-	protected static ConcatExpressionStateObjectTester concat(StateObjectTester... expressions) {
+  	protected static ConcatExpressionStateObjectTester concat(StateObjectTester... expressions) {
 		if (expressions.length > 1) {
 			return new ConcatExpressionStateObjectTester(collection(expressions));
 		}
 		return new ConcatExpressionStateObjectTester(expressions[0]);
 	}
 
-	protected static CountFunctionStateObjectTester count(StateObjectTester statefieldPathExpression) {
+  	protected static CountFunctionStateObjectTester count(StateObjectTester statefieldPathExpression) {
 		return new CountFunctionStateObjectTester(statefieldPathExpression, false);
 	}
 
-	protected static CountFunctionStateObjectTester count(String statefieldPathExpression) {
+  	protected static CountFunctionStateObjectTester count(String statefieldPathExpression) {
 		return count(path(statefieldPathExpression));
 	}
 
-	protected static CountFunctionStateObjectTester countDistinct(StateObjectTester statefieldPathExpression) {
+  	protected static CountFunctionStateObjectTester countDistinct(StateObjectTester statefieldPathExpression) {
 		return new CountFunctionStateObjectTester(statefieldPathExpression, true);
 	}
 
-	protected static DateTimeStateObjectTester CURRENT_DATE() {
+  	protected static DateTimeStateObjectTester CURRENT_DATE() {
 		return new DateTimeStateObjectTester(CURRENT_DATE);
 	}
 
-	protected static DateTimeStateObjectTester CURRENT_TIME() {
+  	protected static DateTimeStateObjectTester CURRENT_TIME() {
 		return new DateTimeStateObjectTester(CURRENT_TIME);
 	}
 
-	protected static DateTimeStateObjectTester CURRENT_TIMESTAMP() {
+  	protected static DateTimeStateObjectTester CURRENT_TIMESTAMP() {
 		return new DateTimeStateObjectTester(CURRENT_TIMESTAMP);
 	}
 
-	protected static DateTimeStateObjectTester dateTime(String jdbcEscapeFormat) {
+  	protected static DateTimeStateObjectTester dateTime(String jdbcEscapeFormat) {
 		return new DateTimeStateObjectTester(jdbcEscapeFormat);
 	}
 
-	protected static DeleteClauseStateObjectTester delete(StateObjectTester rangeVariableDeclaration) {
+  	protected static DeleteClauseStateObjectTester delete(StateObjectTester rangeVariableDeclaration) {
 		return new DeleteClauseStateObjectTester(rangeVariableDeclaration);
 	}
 
-	protected static DeleteClauseStateObjectTester delete(String abstractSchemaName,
+  	protected static DeleteClauseStateObjectTester delete(String abstractSchemaName,
 	                                                      String identificationVariable) {
 
 		return delete(rangeVariableDeclaration(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteClauseStateObjectTester deleteAs(StateObjectTester abstractSchemaName,
+  	protected static DeleteClauseStateObjectTester deleteAs(StateObjectTester abstractSchemaName,
 	                                                        StateObjectTester identificationVariable) {
 
 		return delete(rangeVariableDeclarationAs(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteClauseStateObjectTester deleteAs(String abstractSchemaName,
+  	protected static DeleteClauseStateObjectTester deleteAs(String abstractSchemaName,
 	                                                        String identificationVariable) {
 
 		return delete(rangeVariableDeclarationAs(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteStatementStateObjectTester deleteStatement(StateObjectTester deleteClause) {
+  	protected static DeleteStatementStateObjectTester deleteStatement(StateObjectTester deleteClause) {
 		return deleteStatement(deleteClause, nullExpression());
 	}
 
-	protected static DeleteStatementStateObjectTester deleteStatement(StateObjectTester deleteClause,
+  	protected static DeleteStatementStateObjectTester deleteStatement(StateObjectTester deleteClause,
 	                                                                  StateObjectTester whereClause) {
 
 		return new DeleteStatementStateObjectTester(deleteClause, whereClause);
 	}
 
-	protected static DeleteStatementStateObjectTester deleteStatement(String abstractSchemaName,
+  	protected static DeleteStatementStateObjectTester deleteStatement(String abstractSchemaName,
 	                                                                  String identificationVariable) {
 
 		return deleteStatement(delete(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteStatementStateObjectTester deleteStatement(String abstractSchemaName,
+  	protected static DeleteStatementStateObjectTester deleteStatement(String abstractSchemaName,
 	                                                                  String identificationVariable,
 	                                                                  StateObjectTester whereClause) {
 
 		return deleteStatement(delete(abstractSchemaName, identificationVariable), whereClause);
 	}
 
-	protected static DerivedPathIdentificationVariableDeclarationStateObjectTester derivedIdentificationVariableDeclaration(StateObjectTester derivedRangeVariableDeclaration,
+  	protected static DerivedPathIdentificationVariableDeclarationStateObjectTester derivedIdentificationVariableDeclaration(StateObjectTester derivedRangeVariableDeclaration,
 	                                                                                                                        StateObjectTester joins) {
 
 		return new DerivedPathIdentificationVariableDeclarationStateObjectTester(
@@ -363,62 +362,62 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		);
 	}
 
-	private static DerivedPathVariableDeclarationStateObjectTester derivedPathVariableDeclaration(StateObjectTester path,
+  	private static DerivedPathVariableDeclarationStateObjectTester derivedPathVariableDeclaration(StateObjectTester path,
 	                                                                                              boolean hasAs,
 	                                                                                              StateObjectTester identificationVariable) {
 
 		return new DerivedPathVariableDeclarationStateObjectTester(path, hasAs, identificationVariable);
 	}
 
-	protected static DerivedPathVariableDeclarationStateObjectTester derivedPathVariableDeclaration(StateObjectTester path,
+  	protected static DerivedPathVariableDeclarationStateObjectTester derivedPathVariableDeclaration(StateObjectTester path,
 	                                                                                                StateObjectTester identificationVariable) {
 
 		return derivedPathVariableDeclaration(path, false, identificationVariable);
 	}
 
-	protected static ComparisonExpressionStateObjectTester different(StateObjectTester leftExpression,
+  	protected static ComparisonExpressionStateObjectTester different(StateObjectTester leftExpression,
 	                                                                 StateObjectTester rightExpression) {
 
 		return comparison(leftExpression, Expression.DIFFERENT, rightExpression);
 	}
 
-	protected static DivisionExpressionStateObjectTester division(StateObjectTester leftExpression,
+  	protected static DivisionExpressionStateObjectTester division(StateObjectTester leftExpression,
 	                                                              StateObjectTester rightExpression) {
 
 		return new DivisionExpressionStateObjectTester(leftExpression, rightExpression);
 	}
 
-	protected static EntityTypeLiteralStateObjectTester entity(String entity) {
+  	protected static EntityTypeLiteralStateObjectTester entity(String entity) {
 		return new EntityTypeLiteralStateObjectTester(entity);
 	}
 
-	protected static EntryExpressionStateObjectTester entry(String identificationVariable) {
+  	protected static EntryExpressionStateObjectTester entry(String identificationVariable) {
 		return new EntryExpressionStateObjectTester(identificationVariable);
 	}
 
-	protected static ComparisonExpressionStateObjectTester equal(StateObjectTester leftExpression,
+  	protected static ComparisonExpressionStateObjectTester equal(StateObjectTester leftExpression,
 	                                                             StateObjectTester rightExpression) {
 
 		return comparison(leftExpression, Expression.EQUAL, rightExpression);
 	}
 
-	protected static ExistsExpressionStateObjectTester exists(StateObjectTester subquery) {
+  	protected static ExistsExpressionStateObjectTester exists(StateObjectTester subquery) {
 		return new ExistsExpressionStateObjectTester(subquery, false);
 	}
 
-	protected static KeywordExpressionStateObjectTester FALSE() {
+  	protected static KeywordExpressionStateObjectTester FALSE() {
 		return new KeywordExpressionStateObjectTester(FALSE);
 	}
 
-	protected static FromClauseStateObjectTester from(StateObjectTester declaration) {
+  	protected static FromClauseStateObjectTester from(StateObjectTester declaration) {
 		return new FromClauseStateObjectTester(declaration);
 	}
 
-	protected static FromClauseStateObjectTester from(StateObjectTester... declarations) {
+  	protected static FromClauseStateObjectTester from(StateObjectTester... declarations) {
 		return new FromClauseStateObjectTester(collection(declarations));
 	}
 
-	/**
+  	/**
 	 * Example: from("Employee", "e", "Product", "p")
 	 */
 	protected static FromClauseStateObjectTester from(String... declarations) {
@@ -435,7 +434,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return from(identificationVariableDeclarations);
 	}
 
-	/**
+  	/**
 	 * Example: from("Employee", "e")
 	 */
 	protected static FromClauseStateObjectTester from(String abstractSchemaName,
@@ -444,25 +443,25 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return from(fromEntity(abstractSchemaName, identificationVariable));
 	}
 
-	protected static FromClauseStateObjectTester from(String abstractSchemaName,
+  	protected static FromClauseStateObjectTester from(String abstractSchemaName,
 	                                                  String identificationVariable,
 	                                                  StateObjectTester... joins) {
 
 		return from(identificationVariableDeclaration(abstractSchemaName, identificationVariable, joins));
 	}
 
-	protected static FromClauseStateObjectTester from(String abstractSchemaName,
+  	protected static FromClauseStateObjectTester from(String abstractSchemaName,
 	                                                  String identificationVariable,
 	                                                  StateObjectTester joins) {
 
 		return from(fromEntity(abstractSchemaName, identificationVariable, joins));
 	}
 
-	protected static FromClauseStateObjectTester fromAs(String abstractSchemaName, String identificationVariable) {
+  	protected static FromClauseStateObjectTester fromAs(String abstractSchemaName, String identificationVariable) {
 		return from(identificationVariableDeclarationAs(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DerivedPathIdentificationVariableDeclarationStateObjectTester fromDerivedPath(String path,
+  	protected static DerivedPathIdentificationVariableDeclarationStateObjectTester fromDerivedPath(String path,
 	                                                                                               String identificationVariable) {
 
 		return derivedIdentificationVariableDeclaration(
@@ -474,13 +473,13 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		);
 	}
 
-	protected static IdentificationVariableDeclarationStateObjectTester fromEntity(String abstractSchemaName,
+  	protected static IdentificationVariableDeclarationStateObjectTester fromEntity(String abstractSchemaName,
 	                                                                               String identificationVariable) {
 
 		return identificationVariableDeclaration(abstractSchemaName, identificationVariable);
 	}
 
-	protected static IdentificationVariableDeclarationStateObjectTester fromEntity(String abstractSchemaName,
+  	protected static IdentificationVariableDeclarationStateObjectTester fromEntity(String abstractSchemaName,
 	                                                                               String identificationVariable,
 	                                                                               StateObjectTester... joins) {
 
@@ -514,39 +513,39 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return identificationVariableDeclarationAs(abstractSchemaName, identificationVariable, join);
 	}
 
-	protected static CollectionMemberDeclarationStateObjectTester fromIn(StateObjectTester collectionValuedPathExpression,
+	protected static CollectionMemberDeclarationStateObjectTester fromIn(StateObjectTester collectionPath,
 	                                                                     StateObjectTester identificationVariable) {
 
 		return new CollectionMemberDeclarationStateObjectTester(
-			collectionValuedPathExpression,
+			collectionPath,
 			false,
 			identificationVariable,
 			false
 		);
 	}
 
-	protected static CollectionMemberDeclarationStateObjectTester fromIn(String collectionValuedPathExpression,
+	protected static CollectionMemberDeclarationStateObjectTester fromIn(String collectionPath,
 	                                                                     String identificationVariable) {
 
-		return fromIn(collectionPath(collectionValuedPathExpression), variable(identificationVariable));
+		return fromIn(collectionPath(collectionPath), variable(identificationVariable));
 	}
 
-	protected static CollectionMemberDeclarationStateObjectTester fromInAs(StateObjectTester collectionValuedPathExpression,
+	protected static CollectionMemberDeclarationStateObjectTester fromInAs(StateObjectTester collectionPath,
 	                                                                       StateObjectTester identificationVariable) {
 
 		return new CollectionMemberDeclarationStateObjectTester(
-			collectionValuedPathExpression,
+			collectionPath,
 			true,
 			identificationVariable,
 			false
 		);
 	}
 
-	protected static CollectionMemberDeclarationStateObjectTester fromInAs(String collectionValuedPathExpression,
+	protected static CollectionMemberDeclarationStateObjectTester fromInAs(String collectionPath,
 	                                                                       String identificationVariable) {
 
 		return fromInAs(
-			collectionPath(collectionValuedPathExpression),
+			collectionPath(collectionPath),
 			variable(identificationVariable)
 		);
 	}
@@ -677,62 +676,166 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return new IndexExpressionStateObjectTester(identificationVariable);
 	}
 
-	protected static JoinStateObjectTester innerJoin(StateObjectTester collectionValuedPathExpression,
-	                                      StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester innerJoin(StateObjectTester collectionPath,
+	                                                 StateObjectTester identificationVariable) {
 
-		return join(INNER_JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+  		return join(
+  			INNER_JOIN,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
 
-	protected static JoinStateObjectTester innerJoin(String collectionValuedPathExpression,
-	                                      String identificationVariable) {
+	protected static JoinStateObjectTester innerJoin(StateObjectTester collectionPath,
+  	                                                 String identificationVariable) {
 
-		return innerJoin(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+  		return innerJoin(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester innerJoinAs(StateObjectTester collectionValuedPathExpression,
-	                                        StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester innerJoin(String collectionPath,
+  	                                                 String identificationVariable) {
 
-		return joinAs(INNER_JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+  		return innerJoin(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester innerJoinAs(String collectionValuedPathExpression,
-	                                        String identificationVariable) {
+	protected static JoinStateObjectTester innerJoinAs(StateObjectTester collectionPath,
+  	                                                   StateObjectTester identificationVariable) {
 
-		return innerJoinAs(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+  		return join(
+  			INNER_JOIN,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
 
-	protected static JoinFetchStateObjectTester innerJoinFetch(StateObjectTester collectionValuedPathExpression) {
-		return joinFetch(INNER_JOIN_FETCH, collectionValuedPathExpression);
-	}
+	protected static JoinStateObjectTester innerJoinAs(StateObjectTester collectionPath,
+  	                                                   String identificationVariable) {
 
-	protected static JoinFetchStateObjectTester innerJoinFetch(String collectionValuedPathExpression) {
-		return innerJoinFetch(collectionPath(collectionValuedPathExpression));
-	}
+  		return innerJoinAs(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinAs(String collectionPath,
+  	                                                   String identificationVariable) {
+
+  		return innerJoinAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetch(StateObjectTester collectionPath) {
+  		return innerJoinFetch(
+  			collectionPath,
+  			nullExpression()
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetch(StateObjectTester collectionPath,
+  	                                                      StateObjectTester identificationVariable) {
+
+  		return join(
+  			INNER_JOIN_FETCH,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetch(StateObjectTester collectionPath,
+  	                                                      String identificationVariable) {
+
+  		return innerJoinFetch(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetch(String collectionPath) {
+  		return innerJoinFetch(
+  			collectionPath(collectionPath)
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetch(String collectionPath,
+  	                                                      String identificationVariable) {
+
+  		return innerJoinFetch(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetchAs(StateObjectTester collectionPath) {
+  		return innerJoinFetchAs(
+  			collectionPath,
+  			nullExpression()
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetchAs(StateObjectTester collectionPath,
+  	                                                        StateObjectTester identificationVariable) {
+
+  		return join(
+  			INNER_JOIN_FETCH,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetchAs(StateObjectTester collectionPath,
+  	                                                        String identificationVariable) {
+
+  		return innerJoinFetchAs(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetchAs(String collectionPath) {
+  		return innerJoinFetchAs(
+  			collectionPath(collectionPath)
+  		);
+  	}
+
+	protected static JoinStateObjectTester innerJoinFetchAs(String collectionPath,
+  	                                                        String identificationVariable) {
+
+  		return innerJoinFetchAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
 	protected static InputParameterStateObjectTester inputParameter(String inputParameter) {
 		return new InputParameterStateObjectTester(inputParameter);
 	}
 
-	protected static EmptyCollectionComparisonExpressionStateObjectTester isEmpty(StateObjectTester collectionValuedPathExpression) {
-		return new EmptyCollectionComparisonExpressionStateObjectTester(collectionValuedPathExpression, false);
+	protected static EmptyCollectionComparisonExpressionStateObjectTester isEmpty(StateObjectTester collectionPath) {
+		return new EmptyCollectionComparisonExpressionStateObjectTester(collectionPath, false);
 	}
 
-	protected static EmptyCollectionComparisonExpressionStateObjectTester isEmpty(String collectionValuedPathExpression) {
-		return isEmpty(collectionPath(collectionValuedPathExpression));
+	protected static EmptyCollectionComparisonExpressionStateObjectTester isEmpty(String collectionPath) {
+		return isEmpty(collectionPath(collectionPath));
 	}
 
-	protected static EmptyCollectionComparisonExpressionStateObjectTester isNotEmpty(StateObjectTester collectionValuedPathExpression) {
-		return new EmptyCollectionComparisonExpressionStateObjectTester(collectionValuedPathExpression, true);
+	protected static EmptyCollectionComparisonExpressionStateObjectTester isNotEmpty(StateObjectTester collectionPath) {
+		return new EmptyCollectionComparisonExpressionStateObjectTester(collectionPath, true);
 	}
 
-	protected static EmptyCollectionComparisonExpressionStateObjectTester isNotEmpty(String collectionValuedPathExpression) {
-		return isNotEmpty(collectionPath(collectionValuedPathExpression));
+	protected static EmptyCollectionComparisonExpressionStateObjectTester isNotEmpty(String collectionPath) {
+		return isNotEmpty(collectionPath(collectionPath));
 	}
 
 	protected static NullComparisonExpressionStateObjectTester isNotNull(StateObjectTester expression) {
@@ -743,98 +846,147 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return new NullComparisonExpressionStateObjectTester(expression, false);
 	}
 
-	protected static JoinStateObjectTester join(StateObjectTester collectionValuedPathExpression,
-	                                            StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester join(StateObjectTester collectionPath,
+  	                                            StateObjectTester identificationVariable) {
 
-		return join(JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+  		return join(
+  			JOIN,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
 
-	protected static JoinStateObjectTester join(StateObjectTester collectionValuedPathExpression,
-	                                            String identificationVariable) {
+	protected static JoinStateObjectTester join(StateObjectTester collectionPath,
+  	                                            String identificationVariable) {
 
-		return join(
-			collectionValuedPathExpression,
-			variable(identificationVariable)
-		);
-	}
-
-	private static JoinStateObjectTester join(String joinType,
-	                                          boolean hasAs,
-	                                          StateObjectTester collectionValuedPathExpression,
-	                                          StateObjectTester identificationVariable) {
-
-		return new JoinStateObjectTester(
-			joinType,
-			collectionValuedPathExpression,
-			hasAs,
-			identificationVariable
-		);
-	}
+  		return join(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
 
 	private static JoinStateObjectTester join(String joinType,
-	                                          StateObjectTester collectionValuedPathExpression,
-	                                          StateObjectTester identificationVariable) {
+  	                                          StateObjectTester collectionPath,
+  	                                          boolean hasAs,
+  	                                          StateObjectTester identificationVariable) {
 
-		return join(
-			joinType,
-			false,
-			collectionValuedPathExpression,
-			identificationVariable
-		);
-	}
+  		return new JoinStateObjectTester(
+  			joinType,
+  			collectionPath,
+  			hasAs,
+  			identificationVariable
+  		);
+  	}
 
-	protected static JoinStateObjectTester join(String collectionValuedPathExpression,
-	                                            String identificationVariable) {
+	protected static JoinStateObjectTester join(String collectionPath,
+  	                                            String identificationVariable) {
 
-		return join(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+  		return join(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester joinAs(StateObjectTester collectionValuedPathExpression,
-	                                              StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester joinAs(StateObjectTester collectionPath,
+  	                                              StateObjectTester identificationVariable) {
 
-		return joinAs(JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+  		return join(
+  			JOIN,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
 
-	private static JoinStateObjectTester joinAs(String joinType,
-	                                            StateObjectTester collectionValuedPathExpression,
-	                                            StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester joinAs(StateObjectTester collectionPath,
+  	                                              String identificationVariable) {
 
-		return join(
-			joinType,
-			true,
-			collectionValuedPathExpression,
-			identificationVariable
-		);
-	}
+  		return joinAs(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester joinAs(String collectionValuedPathExpression,
-	                                              String identificationVariable) {
+	protected static JoinStateObjectTester joinAs(String collectionPath,
+  	                                              String identificationVariable) {
 
-		return joinAs(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+  		return joinAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinFetchStateObjectTester joinFetch(StateObjectTester collectionValuedPathExpression) {
-		return joinFetch(JOIN_FETCH, collectionValuedPathExpression);
-	}
+	protected static JoinStateObjectTester joinFetch(StateObjectTester collectionPath) {
+  		return joinFetch(
+  			collectionPath,
+  			nullExpression()
+  		);
+  	}
 
-	protected static JoinFetchStateObjectTester joinFetch(String collectionValuedPathExpression) {
-		return joinFetch(collectionPath(collectionValuedPathExpression));
-	}
+	protected static JoinStateObjectTester joinFetch(StateObjectTester collectionPath,
+  	                                                 StateObjectTester identificationVariable) {
 
-	private static JoinFetchStateObjectTester joinFetch(String joinFetchType,
-	                                                    StateObjectTester collectionValuedPathExpression) {
+  		return join(
+  			JOIN_FETCH,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
 
-		return new JoinFetchStateObjectTester(
-			joinFetchType,
-			collectionValuedPathExpression
-		);
-	}
+	protected static JoinStateObjectTester joinFetch(StateObjectTester collectionPath,
+  	                                                 String identificationVariable) {
+
+  		return joinFetch(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester joinFetch(String collectionPath) {
+  		return joinFetch(
+  			collectionPath(collectionPath)
+  		);
+  	}
+
+	protected static JoinStateObjectTester joinFetch(String collectionPath,
+  	                                                 String identificationVariable) {
+
+  		return joinFetch(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester joinFetchAs(StateObjectTester collectionPath,
+  	                                                   StateObjectTester identificationVariable) {
+
+  		return join(
+  			JOIN_FETCH,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester joinFetchAs(StateObjectTester collectionPath,
+  	                                                   String identificationVariable) {
+
+  		return joinFetchAs(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester joinFetchAs(String collectionPath,
+  	                                                   String identificationVariable) {
+
+  		return joinFetchAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
 	protected static JPQLQueryStateObjectTester jpqlQuery(StateObjectTester queryStatement) {
 		return new JPQLQueryStateObjectTester(queryStatement);
@@ -844,81 +996,261 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return new KeyExpressionStateObjectTester(identificationVariable);
 	}
 
-	protected static JoinStateObjectTester leftJoin(StateObjectTester collectionValuedPathExpression,
-	                                                StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester leftJoin(StateObjectTester collectionPath,
+  	                                                StateObjectTester identificationVariable) {
 
-		return join(LEFT_JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+  		return join(
+  			LEFT_JOIN,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
 
-	protected static JoinStateObjectTester leftJoin(String collectionValuedPathExpression,
-	                                                String identificationVariable) {
+	protected static JoinStateObjectTester leftJoin(StateObjectTester collectionPath,
+  	                                                String identificationVariable) {
 
-		return leftJoin(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+  		return leftJoin(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester leftJoinAs(StateObjectTester collectionValuedPathExpression,
-	                                                  StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester leftJoin(String collectionPath,
+  	                                                String identificationVariable) {
 
-		return joinAs(LEFT_JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+  		return leftJoin(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester leftJoinAs(String collectionValuedPathExpression,
-	                                                  String identificationVariable) {
+	protected static JoinStateObjectTester leftJoinAs(StateObjectTester collectionPath,
+  	                                                  StateObjectTester identificationVariable) {
 
-		return leftJoinAs(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+  		return join(
+  			LEFT_JOIN,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
 
-	protected static JoinFetchStateObjectTester leftJoinFetch(StateObjectTester collectionValuedPathExpression) {
-		return joinFetch(LEFT_JOIN_FETCH, collectionValuedPathExpression);
-	}
+	protected static JoinStateObjectTester leftJoinAs(StateObjectTester collectionPath,
+  	                                                  String identificationVariable) {
 
-	protected static JoinFetchStateObjectTester leftJoinFetch(String collectionValuedPathExpression) {
-		return leftJoinFetch(collectionPath(collectionValuedPathExpression));
-	}
+  		return leftJoinAs(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester leftOuterJoin(StateObjectTester collectionValuedPathExpression,
-	                                                     StateObjectTester identificationVariable) {
+	protected static JoinStateObjectTester leftJoinAs(String collectionPath,
+  	                                                  String identificationVariable) {
 
-		return join(LEFT_OUTER_JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+  		return leftJoinAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
-	protected static JoinStateObjectTester leftOuterJoin(String collectionValuedPathExpression,
-	                                                     String identificationVariable) {
+	protected static JoinStateObjectTester leftJoinFetch(StateObjectTester collectionPath) {
+  		return leftJoinFetch(
+  			collectionPath,
+  			nullExpression()
+  		);
+  	}
 
-		return leftOuterJoin(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+	protected static JoinStateObjectTester leftJoinFetch(StateObjectTester collectionPath,
+  	                                                     StateObjectTester identificationVariable) {
 
-	protected static JoinStateObjectTester leftOuterJoinAs(StateObjectTester collectionValuedPathExpression,
-	                                                       StateObjectTester identificationVariable) {
+  		return join(
+  			LEFT_JOIN_FETCH,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
 
-		return joinAs(LEFT_OUTER_JOIN, collectionValuedPathExpression, identificationVariable);
-	}
+	protected static JoinStateObjectTester leftJoinFetch(StateObjectTester collectionPath,
+  	                                                     String identificationVariable) {
 
-	protected static JoinStateObjectTester leftOuterJoinAs(String collectionValuedPathExpression,
-	                                                       String identificationVariable) {
+  		return leftJoinFetch(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
 
-		return leftOuterJoinAs(
-			collectionPath(collectionValuedPathExpression),
-			variable(identificationVariable)
-		);
-	}
+	protected static JoinStateObjectTester leftJoinFetch(String collectionPath) {
+  		return leftJoinFetch(
+  			collectionPath(collectionPath)
+  		);
+  	}
 
-	protected static JoinFetchStateObjectTester leftOuterJoinFetch(StateObjectTester collectionValuedPathExpression) {
-		return joinFetch(LEFT_OUTER_JOIN_FETCH, collectionValuedPathExpression);
-	}
+	protected static JoinStateObjectTester leftJoinFetch(String collectionPath,
+  	                                                     String identificationVariable) {
 
-	protected static JoinFetchStateObjectTester leftOuterJoinFetch(String collectionValuedPathExpression) {
-		return leftOuterJoinFetch(collectionPath(collectionValuedPathExpression));
-	}
+  		return leftJoinFetch(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftJoinFetchAs(StateObjectTester collectionPath,
+  	                                                       StateObjectTester identificationVariable) {
+
+  		return join(
+  			LEFT_JOIN_FETCH,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftJoinFetchAs(StateObjectTester collectionPath,
+  	                                                       String identificationVariable) {
+
+  		return leftJoinFetchAs(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftJoinFetchAs(String collectionPath,
+  	                                                       String identificationVariable) {
+
+  		return leftJoinFetchAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoin(StateObjectTester collectionPath,
+  	                                                     StateObjectTester identificationVariable) {
+
+  		return join(
+  			LEFT_OUTER_JOIN,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoin(StateObjectTester collectionPath,
+  	                                                     String identificationVariable) {
+
+  		return leftOuterJoin(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoin(String collectionPath,
+  	                                                     String identificationVariable) {
+
+  		return leftOuterJoin(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinAs(StateObjectTester collectionPath,
+  	                                                       StateObjectTester identificationVariable) {
+
+  		return join(
+  			LEFT_OUTER_JOIN,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinAs(String collectionPath,
+  	                                                       String identificationVariable) {
+
+  		return leftOuterJoinAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetch(StateObjectTester collectionPath) {
+  		return leftOuterJoinFetch(
+  			collectionPath,
+  			nullExpression()
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetch(StateObjectTester collectionPath,
+  	                                                          StateObjectTester identificationVariable) {
+
+  		return join(
+  			LEFT_OUTER_JOIN_FETCH,
+  			collectionPath,
+  			false,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetch(StateObjectTester collectionPath,
+  	                                                          String identificationVariable) {
+
+  		return leftOuterJoinFetch(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetch(String collectionPath) {
+  		return leftOuterJoinFetch(
+  			collectionPath(collectionPath)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetch(String collectionPath,
+  	                                                          String identificationVariable) {
+
+  		return leftOuterJoinFetch(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetchAs(StateObjectTester collectionPath) {
+  		return leftOuterJoinFetchAs(
+  			collectionPath,
+  			nullExpression()
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetchAs(StateObjectTester collectionPath,
+  	                                                            StateObjectTester identificationVariable) {
+
+  		return join(
+  			LEFT_OUTER_JOIN_FETCH,
+  			collectionPath,
+  			true,
+  			identificationVariable
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetchAs(StateObjectTester collectionPath,
+  	                                                            String identificationVariable) {
+
+  		return leftOuterJoinFetchAs(
+  			collectionPath,
+  			variable(identificationVariable)
+  		);
+  	}
+
+	protected static JoinStateObjectTester leftOuterJoinFetchAs(String collectionPath,
+  	                                                            String identificationVariable) {
+
+  		return leftOuterJoinFetchAs(
+  			collectionPath(collectionPath),
+  			variable(identificationVariable)
+  		);
+  	}
 
 	protected static LengthExpressionStateObjectTester length(StateObjectTester stringPrimary) {
 		return new LengthExpressionStateObjectTester(stringPrimary);
@@ -991,49 +1323,49 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester member(StateObjectTester entityExpression,
-	                                                                    StateObjectTester collectionValuedPathExpression) {
+	                                                                    StateObjectTester collectionPath) {
 
 		return new CollectionMemberExpressionStateObjectTester(
 			entityExpression,
 			false,
 			false,
-			collectionValuedPathExpression
+			collectionPath
 		);
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester member(StateObjectTester entityExpression,
-	                                                                    String collectionValuedPathExpression) {
+	                                                                    String collectionPath) {
 
-		return member(entityExpression, collectionPath(collectionValuedPathExpression));
+		return member(entityExpression, collectionPath(collectionPath));
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester member(String identificationVariable,
-	                                                                    String collectionValuedPathExpression) {
+	                                                                    String collectionPath) {
 
-		return member(variable(identificationVariable), collectionValuedPathExpression);
+		return member(variable(identificationVariable), collectionPath);
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester memberOf(StateObjectTester entityExpression,
-	                                                                      StateObjectTester collectionValuedPathExpression) {
+	                                                                      StateObjectTester collectionPath) {
 
 		return new CollectionMemberExpressionStateObjectTester(
 			entityExpression,
 			false,
 			true,
-			collectionValuedPathExpression
+			collectionPath
 		);
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester memberOf(StateObjectTester entityExpression,
-	                                                                      String collectionValuedPathExpression) {
+	                                                                      String collectionPath) {
 
-		return memberOf(entityExpression, collectionPath(collectionValuedPathExpression));
+		return memberOf(entityExpression, collectionPath(collectionPath));
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester memberOf(String identificationVariable,
-	                                                                      String collectionValuedPathExpression) {
+	                                                                      String collectionPath) {
 
-		return memberOf( variable(identificationVariable), collectionValuedPathExpression);
+		return memberOf( variable(identificationVariable), collectionPath);
 	}
 
 	protected static MinFunctionStateObjectTester min(StateObjectTester expression) {
@@ -1139,36 +1471,36 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester notMember(StateObjectTester entityExpression,
-	                                                                       StateObjectTester collectionValuedPathExpression) {
+	                                                                       StateObjectTester collectionPath) {
 
 		return new CollectionMemberExpressionStateObjectTester(
 			entityExpression,
 			true,
 			false,
-			collectionValuedPathExpression
+			collectionPath
 		);
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester notMember(StateObjectTester entityExpression,
-	                                                                       String collectionValuedPathExpression) {
+	                                                                       String collectionPath) {
 
-		return notMember(entityExpression, collectionValuedPathExpression);
+		return notMember(entityExpression, collectionPath);
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester notMember(String identificationVariable,
-	                                                                       String collectionValuedPathExpression) {
+	                                                                       String collectionPath) {
 
-		return notMember(variable(identificationVariable), collectionValuedPathExpression);
+		return notMember(variable(identificationVariable), collectionPath);
 	}
 
 	protected static CollectionMemberExpressionStateObjectTester notMemberOf(StateObjectTester entityExpression,
-	                                                                         StateObjectTester collectionValuedPathExpression) {
+	                                                                         StateObjectTester collectionPath) {
 
 		return new CollectionMemberExpressionStateObjectTester(
 			entityExpression,
 			true,
 			true,
-			collectionValuedPathExpression
+			collectionPath
 		);
 	}
 
@@ -1416,12 +1748,12 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return set(path(stateFieldPathExpression), newValue);
 	}
 
-	protected static SizeExpressionStateObjectTester size(StateObjectTester collectionValuedPathExpression) {
-		return new SizeExpressionStateObjectTester(collectionValuedPathExpression);
+	protected static SizeExpressionStateObjectTester size(StateObjectTester collectionPath) {
+		return new SizeExpressionStateObjectTester(collectionPath);
 	}
 
-	protected static SizeExpressionStateObjectTester size(String collectionValuedPathExpression) {
-		return size(collectionPath(collectionValuedPathExpression));
+	protected static SizeExpressionStateObjectTester size(String collectionPath) {
+		return size(collectionPath(collectionPath));
 	}
 
 	protected static AllOrAnyExpressionStateObjectTester some(StateObjectTester subquery) {
@@ -1493,18 +1825,18 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		));
 	}
 
-	protected static CollectionMemberDeclarationStateObjectTester subFromDerivedIn(StateObjectTester collectionValuedPathExpression) {
+	protected static CollectionMemberDeclarationStateObjectTester subFromDerivedIn(StateObjectTester collectionPath) {
 
 		return new CollectionMemberDeclarationStateObjectTester(
-			collectionValuedPathExpression,
+			collectionPath,
 			false,
 			null,
 			true
 		);
 	}
 
-	protected static CollectionMemberDeclarationStateObjectTester subFromDerivedIn(String collectionValuedPathExpression) {
-		return subFromDerivedIn(collectionPath(collectionValuedPathExpression));
+	protected static CollectionMemberDeclarationStateObjectTester subFromDerivedIn(String collectionPath) {
+		return subFromDerivedIn(collectionPath(collectionPath));
 	}
 
 	protected static SimpleSelectStatementStateObjectTester subquery(StateObjectTester selectClause,
@@ -2506,12 +2838,12 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			return AbstractStateObjectTest.lowerThanOrEqual(this, expression);
 		}
 
-		public final CollectionMemberExpressionStateObjectTester member(StateObjectTester collectionValuedPathExpression) {
-			return AbstractStateObjectTest.member(this, collectionValuedPathExpression);
+		public final CollectionMemberExpressionStateObjectTester member(StateObjectTester collectionPath) {
+			return AbstractStateObjectTest.member(this, collectionPath);
 		}
 
-		public final CollectionMemberExpressionStateObjectTester memberOf(StateObjectTester collectionValuedPathExpression) {
-			return AbstractStateObjectTest.memberOf(this, collectionValuedPathExpression);
+		public final CollectionMemberExpressionStateObjectTester memberOf(StateObjectTester collectionPath) {
+			return AbstractStateObjectTest.memberOf(this, collectionPath);
 		}
 
 		public final MultiplicationExpressionStateObjectTester multiplication(StateObjectTester expression) {
@@ -2541,12 +2873,12 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			return AbstractStateObjectTest.notLike(this, expression, escapeCharacter);
 		}
 
-		public final StateObjectTester notMember(StateObjectTester collectionValuedPathExpression) {
-			return AbstractStateObjectTest.notMember(this, collectionValuedPathExpression);
+		public final StateObjectTester notMember(StateObjectTester collectionPath) {
+			return AbstractStateObjectTest.notMember(this, collectionPath);
 		}
 
-		public final StateObjectTester notMemberOf(StateObjectTester collectionValuedPathExpression) {
-			return AbstractStateObjectTest.notMemberOf(this, collectionValuedPathExpression);
+		public final StateObjectTester notMemberOf(StateObjectTester collectionPath) {
+			return AbstractStateObjectTest.notMemberOf(this, collectionPath);
 		}
 
 		public final OrExpressionStateObjectTester or(StateObjectTester expression) {
@@ -3023,7 +3355,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
 	protected static final class CollectionMemberExpressionStateObjectTester extends AbstractStateObjectTester {
 
-		private StateObjectTester collectionValuedPathExpression;
+		private StateObjectTester collectionPath;
 		private StateObjectTester entityExpression;
 		private boolean hasNot;
 		private boolean hasOf;
@@ -3031,13 +3363,13 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		protected CollectionMemberExpressionStateObjectTester(StateObjectTester entityExpression,
 		                                           boolean hasNot,
 		                                           boolean hasOf,
-		                                           StateObjectTester collectionValuedPathExpression) {
+		                                           StateObjectTester collectionPath) {
 
 			super();
 			this.hasNot                         = hasNot;
 			this.hasOf                          = hasOf;
 			this.entityExpression               = entityExpression;
-			this.collectionValuedPathExpression = collectionValuedPathExpression;
+			this.collectionPath = collectionPath;
 		}
 
 		public void test(StateObject stateObject) {
@@ -3049,7 +3381,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			assertEquals(hasOf,                      collectionMemberExpressionStateObject.hasOf());
 
 			entityExpression.test(collectionMemberExpressionStateObject.getEntityStateObject());
-			collectionValuedPathExpression.test(collectionMemberExpressionStateObject.getCollectionValuedPath());
+			collectionPath.test(collectionMemberExpressionStateObject.getCollectionValuedPath());
 		}
 
 		@Override
@@ -3071,7 +3403,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 				sb.append(MEMBER);
 				sb.append(SPACE);
 			}
-			sb.append(collectionValuedPathExpression);
+			sb.append(collectionPath);
 			return sb.toString();
 		}
 	}
@@ -3391,15 +3723,15 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
 	protected static final class EmptyCollectionComparisonExpressionStateObjectTester extends AbstractStateObjectTester {
 
-		private StateObjectTester collectionValuedPathExpression;
+		private StateObjectTester collectionPath;
 		private boolean hasNot;
 
-		protected EmptyCollectionComparisonExpressionStateObjectTester(StateObjectTester collectionValuedPathExpression,
+		protected EmptyCollectionComparisonExpressionStateObjectTester(StateObjectTester collectionPath,
 		                                                    boolean hasNot) {
 
 			super();
 			this.hasNot = hasNot;
-			this.collectionValuedPathExpression = collectionValuedPathExpression;
+			this.collectionPath = collectionPath;
 		}
 
 		public void test(StateObject stateObject) {
@@ -3408,14 +3740,14 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			EmptyCollectionComparisonExpressionStateObject emptyCollection = (EmptyCollectionComparisonExpressionStateObject) stateObject;
 			assertEquals(hasNot, emptyCollection.hasNot());
 
-			collectionValuedPathExpression.test(emptyCollection.getStateObject());
+			collectionPath.test(emptyCollection.getStateObject());
 		}
 
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			sb.append(collectionValuedPathExpression);
-			if (!collectionValuedPathExpression.isNull()) {
+			sb.append(collectionPath);
+			if (!collectionPath.isNull()) {
 				sb.append(SPACE);
 			}
 			sb.append(IS);
@@ -3718,37 +4050,6 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		}
 	}
 
-	protected static final class JoinFetchStateObjectTester extends AbstractStateObjectTester {
-
-		private StateObjectTester joinAssociationPath;
-		private String joinType;
-
-		protected JoinFetchStateObjectTester(String joinType, StateObjectTester joinAssociationPath) {
-			super();
-			this.joinType            = joinType;
-			this.joinAssociationPath = joinAssociationPath;
-		}
-
-		public void test(StateObject stateObject) {
-
-			assertInstance(stateObject, JoinFetchStateObject.class);
-
-			JoinFetchStateObject join = (JoinFetchStateObject) stateObject;
-			assertEquals(joinType, join.getJoinType());
-
-			joinAssociationPath.test(join.getJoinAssociationPathStateObject());
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(joinType);
-			sb.append(SPACE);
-			sb.append(joinAssociationPath);
-			return sb.toString();
-		}
-	}
-
 	protected static final class JoinStateObjectTester extends AbstractStateObjectTester {
 
 		private boolean hasAs;
@@ -3757,15 +4058,21 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		private String joinType;
 
 		protected JoinStateObjectTester(String joinType,
-		                     StateObjectTester joinAssociationPath,
-		                     boolean hasAs,
-		                     StateObjectTester identificationVariable) {
+		                                StateObjectTester joinAssociationPath,
+		                                boolean hasAs,
+		                                StateObjectTester identificationVariable) {
 
 			super();
 			this.joinType               = joinType;
-			this.joinAssociationPath    = joinAssociationPath;
 			this.hasAs                  = hasAs;
+			this.joinAssociationPath    = joinAssociationPath;
 			this.identificationVariable = identificationVariable;
+		}
+
+		private boolean hasFetch() {
+			return joinType == JOIN_FETCH ||
+			       joinType == LEFT_JOIN_FETCH ||
+			       joinType == LEFT_OUTER_JOIN_FETCH;
 		}
 
 		public void test(StateObject stateObject) {
@@ -3776,7 +4083,14 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			assertEquals(hasAs,    join.hasAs());
 
 			joinAssociationPath.test(join.getJoinAssociationPathStateObject());
-			identificationVariable.test(join.getIdentificationVariableStateObject());
+
+			// Check for JOIN FETCH without an identification variable (pure JPA)
+			if (hasFetch() && identificationVariable.isNull()) {
+				assertFalse(join.hasIdentificationVariable());
+			}
+			else {
+				identificationVariable.test(join.getIdentificationVariableStateObject());
+			}
 		}
 
 		@Override
@@ -4446,8 +4760,8 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
 	protected static final class SizeExpressionStateObjectTester extends AbstractSingleEncapsulatedExpressionStateObjectTester {
 
-		protected SizeExpressionStateObjectTester(StateObjectTester collectionValuedPathExpression) {
-			super(collectionValuedPathExpression);
+		protected SizeExpressionStateObjectTester(StateObjectTester collectionPath) {
+			super(collectionPath);
 		}
 
 		@Override
@@ -4524,15 +4838,15 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		LikeExpressionStateObjectTester like(StateObjectTester patternValue, String escapeCharacter);
 		ComparisonExpressionStateObjectTester lowerThan(StateObjectTester expression);
 		ComparisonExpressionStateObjectTester lowerThanOrEqual(StateObjectTester expression);
-		StateObjectTester member(StateObjectTester collectionValuedPathExpression);
-		StateObjectTester memberOf(StateObjectTester collectionValuedPathExpression);
+		StateObjectTester member(StateObjectTester collectionPath);
+		StateObjectTester memberOf(StateObjectTester collectionPath);
 		MultiplicationExpressionStateObjectTester multiplication(StateObjectTester expression);
 		BetweenExpressionStateObjectTester notBetween(StateObjectTester lowerBoundExpression, StateObjectTester upperBoundExpression);
 		InExpressionStateObjectTester notIn(StateObjectTester... inItems);
 		LikeExpressionStateObjectTester notLike(StateObjectTester expression);
 		LikeExpressionStateObjectTester notLike(StateObjectTester expression, String escapeCharacter);
-		StateObjectTester notMember(StateObjectTester collectionValuedPathExpression);
-		StateObjectTester notMemberOf(StateObjectTester collectionValuedPathExpression);
+		StateObjectTester notMember(StateObjectTester collectionPath);
+		StateObjectTester notMemberOf(StateObjectTester collectionPath);
 		OrExpressionStateObjectTester or(StateObjectTester expression);
 		SubstractionExpressionStateObjectTester substract(StateObjectTester expression);
 
@@ -4929,4 +5243,5 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			return WHERE;
 		}
 	}
+
 }

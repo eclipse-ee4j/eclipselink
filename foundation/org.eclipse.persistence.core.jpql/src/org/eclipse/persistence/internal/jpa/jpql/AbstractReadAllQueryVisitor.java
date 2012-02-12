@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,8 +12,6 @@
  *
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
-
-import java.util.Collection;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -31,7 +29,6 @@ import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
@@ -52,7 +49,6 @@ import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadAllQuery;
 
 /**
  * This visitor is responsible to populate a {@link ReadAllQuery} by traversing a {@link
@@ -348,9 +344,11 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 				queryExpression = queryContext.buildExpression(expression);
 				queryContext.addQueryExpression(variableName, queryExpression);
 			}
-			ObjectLevelReadQuery query = (ObjectLevelReadQuery)queryContext.getDatabaseQuery();
+
+			ObjectLevelReadQuery query = (ObjectLevelReadQuery) queryContext.getDatabaseQuery();
+
 			if (query.getExpressionBuilder() != queryExpression) {
-			    query.addNonFetchJoinedAttribute(queryExpression);
+				query.addNonFetchJoinedAttribute(queryExpression);
 			}
 		}
 
@@ -386,19 +384,11 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		 */
 		@Override
 		public void visit(IdentificationVariableDeclaration expression) {
-		        IdentificationVariable variable = (IdentificationVariable)((RangeVariableDeclaration)expression.getRangeVariableDeclaration()).getIdentificationVariable();
-                        addNonFetchJoinedAttribute(
-                                ((RangeVariableDeclaration)expression.getRangeVariableDeclaration()).getAbstractSchemaName(),
-                                variable
-                        );
+
+			expression.getRangeVariableDeclaration().accept(this);
+
 			if (expression.hasJoins()) {
 				expression.getJoins().accept(this);
-			}
-			Collection<JoinFetch> joinFetches = queryContext.getJoinFetches(variable.getVariableName());
-			if (joinFetches != null) {
-                            for (JoinFetch joinFetch : joinFetches) {
-                                visit(joinFetch);
-                            }
 			}
 		}
 
@@ -407,28 +397,39 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		 */
 		@Override
 		public void visit(Join expression) {
+
+			if (expression.hasIdentificationVariable()) {
+
+				addNonFetchJoinedAttribute(
+					expression,
+					(IdentificationVariable) expression.getIdentificationVariable()
+				);
+
+				if (expression.hasFetch()) {
+
+					IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
+					String variableName = identificationVariable.getVariableName();
+
+					Expression queryExpression = queryContext.getQueryExpression(variableName);
+
+					if (queryExpression == null) {
+						queryExpression = queryContext.buildExpression(expression);
+						queryContext.addQueryExpression(variableName, queryExpression);
+					}
+				}
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(RangeVariableDeclaration expression) {
 			addNonFetchJoinedAttribute(
 				expression,
 				(IdentificationVariable) expression.getIdentificationVariable()
 			);
 		}
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public void visit(JoinFetch expression) {
-                        // Define the identification variable if present.
-                        if (expression.hasIdentificationVariable()) {
-                            String variableName = ((IdentificationVariable)expression.getIdentificationVariable()).getVariableName();
-                            Expression queryExpression = queryContext.getQueryExpression(variableName);
-    
-                            if (queryExpression == null) {
-                                    queryExpression = queryContext.buildExpression(expression);
-                                    queryContext.addQueryExpression(variableName, queryExpression);
-                            }
-                        }
-                }
 
 		/**
 		 * {@inheritDoc}

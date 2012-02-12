@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,8 +15,10 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -27,6 +29,11 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * entities.
  * <p>
  * <div nowrap><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code><p>
+ * <p>
+ * A <b>JOIN FETCH</b> enables the fetching of an association as a side effect of the execution of
+ * a query. A <b>JOIN FETCH</b> is specified over an entity and its related entities.
+ * <p>
+ * <div nowrap><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><p>
  *
  * @see Join
  *
@@ -35,7 +42,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @author Pascal Filion
  */
 @SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
-public class JoinStateObject extends AbstractJoinStateObject {
+public class JoinStateObject extends AbstractStateObject {
 
 	/**
 	 * Flag used to determine if the <code><b>AS</b></code> identifier is used or not.
@@ -48,12 +55,22 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	private IdentificationVariableStateObject identificationVariable;
 
 	/**
+	 * The state object holding the join association path.
+	 */
+	private CollectionValuedPathExpressionStateObject joinAssociationPath;
+
+	/**
+	 * One of the joining types used by this state object.
+	 */
+	private String joinType;
+
+	/**
 	 * Notifies the visibility of the <code><b>AS</b></code> identifier has changed.
 	 */
 	public static final String AS_PROPERTY = "as";
 
 	/**
-	 * Notifies the <code><b>JOIN</b></code> property has changed.
+	 * Notifies the join type property has changed.
 	 */
 	public static final String JOIN_TYPE_PROPERTY = "joinType";
 
@@ -61,8 +78,7 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	 * Creates a new <code>JoinStateObject</code>.
 	 *
 	 * @param parent The parent of this state object
-	 * @param joinType One of the joining types: <code><b>LEFT JOIN</b></code>, <code><b>LEFT OUTER
-	 * JOIN</b></code>, <code><b>INNER JOIN</b></code> or <code><b>JOIN</b></code>
+	 * @param joinType One of the joining types
 	 */
 	public JoinStateObject(AbstractIdentificationVariableDeclarationStateObject parent,
 	                       String joinType) {
@@ -74,15 +90,16 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	 * Creates a new <code>JoinStateObject</code>.
 	 *
 	 * @param parent The parent of this state object
-	 * @param joinType One of the joining types: <code><b>LEFT JOIN</b></code>, <code><b>LEFT OUTER
-	 * JOIN</b></code>, <code><b>INNER JOIN</b></code> or <code><b>JOIN</b></code>
+	 * @param joinType One of the joining types
 	 * @param as Determine whether the <code><b>AS</b></code> identifier is used or not
 	 */
 	public JoinStateObject(AbstractIdentificationVariableDeclarationStateObject parent,
 	                       String joinType,
 	                       boolean as) {
 
-		super(parent, joinType);
+		super(parent);
+		validateJoinType(joinType);
+		this.joinType = joinType;
 		this.as = as;
 	}
 
@@ -111,7 +128,18 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	@Override
 	protected void addChildren(List<StateObject> children) {
 		super.addChildren(children);
+		children.add(joinAssociationPath);
 		children.add(identificationVariable);
+	}
+
+	/**
+	 * Adds the given segments to the end of the join association path expression. The identification
+	 * variable will not be affected.
+	 *
+	 * @param paths The new path expression
+	 */
+	public void addJoinAssociationPaths(List<String> paths) {
+		joinAssociationPath.addItems(paths);
 	}
 
 	/**
@@ -141,6 +169,44 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	}
 
 	/**
+	 * Returns the {@link StateObject} representing the identification variable that starts the path
+	 * expression, which can be a sample identification variable, a map value, map key or map entry
+	 * expression.
+	 *
+	 * @return The root of the path expression
+	 */
+	public StateObject getJoinAssociationIdentificationVariable() {
+		return joinAssociationPath.getIdentificationVariable();
+	}
+
+	/**
+	 * Returns the {@link CollectionValuedPathExpressionStateObject} representing the join
+	 * association path.
+	 *
+	 * @return The state object representing the join association path
+	 */
+	public CollectionValuedPathExpressionStateObject getJoinAssociationPathStateObject() {
+		return joinAssociationPath;
+	}
+
+	/**
+	 * Returns the joining type.
+	 *
+	 * @return The joining type of this joining expression
+	 */
+	public String getJoinType() {
+		return joinType;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public AbstractIdentificationVariableDeclarationStateObject getParent() {
+		return (AbstractIdentificationVariableDeclarationStateObject) super.getParent();
+	}
+
+	/**
 	 * Determines whether the <code><b>AS</b></code> identifier is used or not.
 	 *
 	 * @return <code>true</code> if the <code><b>AS</b></code> identifier is part of the expression;
@@ -148,6 +214,18 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	 */
 	public boolean hasAs() {
 		return as;
+	}
+
+	/**
+	 * Determines whether the identifier <b>FETCH</b> was parsed.
+	 *
+	 * @return <code>true</code> if the identifier <b>FETCH</b> was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasFetch() {
+		String joinType = getJoinType();
+		return joinType == JOIN_FETCH ||
+		       joinType == LEFT_JOIN_FETCH ||
+		       joinType == LEFT_OUTER_JOIN_FETCH;
 	}
 
 	/**
@@ -165,6 +243,7 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	@Override
 	protected void initialize() {
 		super.initialize();
+		joinAssociationPath    = new CollectionValuedPathExpressionStateObject(this);
 		identificationVariable = new IdentificationVariableStateObject(this);
 	}
 
@@ -176,10 +255,31 @@ public class JoinStateObject extends AbstractJoinStateObject {
 
 		if (super.isEquivalent(stateObject)) {
 			JoinStateObject join = (JoinStateObject) stateObject;
-			return (as = join.as) && identificationVariable.isEquivalent(join.identificationVariable);
+			return joinType.equals(join.joinType) &&
+			       areEquivalent(joinAssociationPath, join.joinAssociationPath) &&
+			       (as == join.as) &&
+			       identificationVariable.isEquivalent(join.identificationVariable);
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns the segments in the state field path in order.
+	 *
+	 * @return An <code>Iterator</code> over the segments of the state field path
+	 */
+	public IterableListIterator<String> joinAssociationPaths() {
+		return joinAssociationPath.items();
+	}
+
+	/**
+	 * Returns the number of segments in the path expression.
+	 *
+	 * @return The number of segments
+	 */
+	public int joinAssociationPathSize() {
+		return joinAssociationPath.itemsSize();
 	}
 
 	/**
@@ -225,6 +325,59 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	}
 
 	/**
+	 * Sets the {@link StateObject} representing the identification variable that starts the path
+	 * expression, which can be a sample identification variable, a map value, map key or map entry
+	 * expression.
+	 *
+	 * @param identificationVariable The root of the path expression
+	 */
+	public void setJoinAssociationIdentificationVariable(StateObject identificationVariable) {
+		joinAssociationPath.setIdentificationVariable(identificationVariable);
+	}
+
+	/**
+	 * Changes the path expression with the list of segments, the identification variable will also
+	 * be updated with the first segment.
+	 *
+	 * @param path The new path expression
+	 */
+	public void setJoinAssociationPath(String path) {
+		joinAssociationPath.setPath(path);
+	}
+
+	/**
+	 * Changes the path expression with the list of segments, the identification variable will also
+	 * be updated with the first segment.
+	 *
+	 * @param paths The new path expression
+	 */
+	public void setJoinAssociationPaths(ListIterator<String> paths) {
+		joinAssociationPath.setPaths(paths);
+	}
+
+	/**
+	 * Changes the path expression with the list of segments, the identification variable will also
+	 * be updated with the first segment.
+	 *
+	 * @param paths The new path expression
+	 */
+	public void setJoinAssociationPaths(String[] paths) {
+		joinAssociationPath.setPaths(paths);
+	}
+
+	/**
+	 * Sets the joining type.
+	 *
+	 * @param joinType One of the joining types
+	 */
+	public void setJoinType(String joinType) {
+		validateJoinType(joinType);
+		String oldJoinType = this.joinType;
+		this.joinType = joinType;
+		firePropertyChanged(JOIN_TYPE_PROPERTY, oldJoinType, joinType);
+	}
+
+	/**
 	 * Toggles the usage of the <code><b>AS</b></code> identifier.
 	 */
 	public void toggleAs() {
@@ -236,20 +389,32 @@ public class JoinStateObject extends AbstractJoinStateObject {
 	 */
 	@Override
 	protected void toTextInternal(Appendable writer) throws IOException {
-		super.toTextInternal(writer);
-		if (as) {
-			writer.append(SPACE);
-			writer.append(AS);
-		}
+
+		writer.append(joinType);
 		writer.append(SPACE);
+
+		joinAssociationPath.toString(writer);
+		writer.append(SPACE);
+
+		if (as) {
+			writer.append(AS);
+			writer.append(SPACE);
+		}
+
 		identificationVariable.toString(writer);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Validates the given join type.
+	 *
+	 * @param joinType One of the possible joining types
 	 */
-	@Override
 	protected void validateJoinType(String joinType) {
-		Assert.isValid(joinType, "The join type is not valid", JOIN, LEFT_JOIN, LEFT_OUTER_JOIN, INNER_JOIN);
+		Assert.isValid(
+			joinType,
+			"The join type is not valid",
+			JOIN,       LEFT_JOIN,       LEFT_OUTER_JOIN,       INNER_JOIN,
+			JOIN_FETCH, LEFT_JOIN_FETCH, LEFT_OUTER_JOIN_FETCH, INNER_JOIN_FETCH
+		);
 	}
 }

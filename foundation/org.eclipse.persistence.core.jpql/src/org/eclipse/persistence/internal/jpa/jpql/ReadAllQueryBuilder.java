@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,6 +45,11 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 * cached information.
 	 */
 	private final JPQLQueryContext queryContext;
+
+	/**
+	 * The {@link Expression} being visited.
+	 */
+	private SelectStatement selectStatement;
 
 	/**
 	 * Creates a new <code>ReadAllQueryBuilder</code>.
@@ -99,12 +104,15 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		// Example: ReadAllQuery = SELECT e FROM Employee e
 		// Example: ReportQuery  = SELECT e FROM Department d JOIN d.employees e
 		if (queryContext.isRangeIdentificationVariable(expression.getVariableName())) {
-		        if (((SelectStatement)queryContext.getJPQLExpression().getQueryStatement()).hasGroupByClause()
-		                || ((SelectStatement)queryContext.getJPQLExpression().getQueryStatement()).hasHavingClause()) {
-	                    initializeReportQuery();
-		        } else {
-                            initializeReadAllQuery();		            
-		        }
+
+			if (selectStatement.hasGroupByClause() ||
+			    selectStatement.hasHavingClause()) {
+
+				initializeReportQuery();
+			}
+			else {
+				initializeReadAllQuery();
+			}
 		}
 		else {
 			initializeReportQuery();
@@ -143,6 +151,7 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 */
 	@Override
 	public void visit(SelectStatement expression) {
+		this.selectStatement = expression;
 		expression.getSelectClause().accept(this);
 	}
 }

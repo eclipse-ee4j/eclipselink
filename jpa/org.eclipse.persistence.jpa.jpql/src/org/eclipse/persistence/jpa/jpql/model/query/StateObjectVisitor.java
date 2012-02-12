@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -280,13 +280,6 @@ public interface StateObjectVisitor {
 	 * @param stateObject The {@link InputParameterStateObject} to visit
 	 */
 	void visit(InputParameterStateObject stateObject);
-
-	/**
-	 * Visits the given {@link JoinFetchStateObject}.
-	 *
-	 * @param stateObject The {@link JPQLQueryStateObject} to visit
-	 */
-	void visit(JoinFetchStateObject stateObject);
 
 	/**
 	 * Visits the given {@link JoinStateObject}.

@@ -35,10 +35,10 @@ public final class CaseExpressionTest extends JPQLParserTest {
 					path("e.salary"),
 					case_(
 						new ExpressionTester[] {
-							when(path("e.rating").equal(numeric(1)), path("e.salary").multiplication(numeric("1.1"))),
-							when(path("e.rating").equal(numeric(2)), path("e.salary").multiplication(numeric("1.05")))
+							when(path("e.rating").equal(numeric(1)), path("e.salary").multiply(numeric("1.1"))),
+							when(path("e.rating").equal(numeric(2)), path("e.salary").multiply(numeric("1.05")))
 						},
-						path("e.salary").multiplication(numeric(1.01))
+						path("e.salary").multiply(numeric(1.01))
 					)
 				)
 			)

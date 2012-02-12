@@ -13,21 +13,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.tests.jpql.JPQLQueries;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
 public final class BadExpressionTest extends JPQLParserTest {
 
-	private void buildQuery(CharSequence query, String[] result) {
-		JPQLExpression jpqlExpression = new JPQLExpression(query, DefaultJPQLGrammar.instance());
-		result[0] = jpqlExpression.toParsedText();
-	}
+//	private void buildQuery(CharSequence query, String[] result) {
+//		JPQLExpression jpqlExpression = new JPQLExpression(query, DefaultJPQLGrammar.instance());
+//		result[0] = jpqlExpression.toParsedText();
+//	}
 
 //	private JPQLQueryStringFormatter buildQueryStringFormatter_10() {
 //		return new JPQLQueryStringFormatter() {
@@ -45,21 +39,21 @@ public final class BadExpressionTest extends JPQLParserTest {
 //		};
 //	}
 
-	private Collection<String> queries() throws Exception {
-		Method[] methods = JPQLQueries.class.getDeclaredMethods();
-		Collection<String> queries = new ArrayList<String>(methods.length / 2);
-
-		for (Method method : methods) {
-			if (!method.getName().startsWith("query_")) {
-				continue;
-			}
-
-			String query = (String) method.invoke(null, new Object[0]);
-			queries.add(query);
-		}
-
-		return queries;
-	}
+//	private Collection<String> queries() throws Exception {
+//		Method[] methods = JPQLQueries.class.getDeclaredMethods();
+//		Collection<String> queries = new ArrayList<String>(methods.length / 2);
+//
+//		for (Method method : methods) {
+//			if (!method.getName().startsWith("query_")) {
+//				continue;
+//			}
+//
+//			String query = (String) method.invoke(null, new Object[0]);
+//			queries.add(query);
+//		}
+//
+//		return queries;
+//	}
 
 	@Test
 	public void testBadExpression_01() {
@@ -180,66 +174,66 @@ public final class BadExpressionTest extends JPQLParserTest {
 
 	private void testQueries(QueryModifier queryModifier) throws Exception {
 
-		Collection<String> queries = queries();
-		int queryIndex = 0;
-
-		for (String query : queries) {
-			for (int index = query.length(); --index >= 0;) {
-				StringBuilder sb = new StringBuilder(query);
-				queryModifier.modify(sb, index);
-
-//				String expectedQuery = JPQLQueryBuilder.toParsedText(sb.toString());
-//				String actualQuery = testQuery(expectedQuery);
-
-				// The query was built, check the generated string
-//				if (actualQuery != null) {
-					// This is valid, tweak the expected query
-//					expectedQuery = expectedQuery.replace("','", "', '");
-//					expectedQuery = expectedQuery.replace("IN(", "IN (");
-//					expectedQuery = expectedQuery.replace("EXISTS(", "EXISTS (");
-//					expectedQuery = expectedQuery.replace("'AND", "' AND");
+//		Collection<String> queries = queries();
+//		int queryIndex = 0;
 //
-//					// Perform the check
-//					assertEquals("Query (" + queryIndex + ", " + index + ")", expectedQuery, actualQuery);
-				}
-//				else {
-//					fail("Timeout: [" + queryIndex + ", " + index + "] = " + expectedQuery);
+//		for (String query : queries) {
+//			for (int index = query.length(); --index >= 0;) {
+//				StringBuilder sb = new StringBuilder(query);
+//				queryModifier.modify(sb, index);
+//
+////				String expectedQuery = JPQLQueryBuilder.toParsedText(sb.toString());
+////				String actualQuery = testQuery(expectedQuery);
+//
+//				// The query was built, check the generated string
+////				if (actualQuery != null) {
+//					// This is valid, tweak the expected query
+////					expectedQuery = expectedQuery.replace("','", "', '");
+////					expectedQuery = expectedQuery.replace("IN(", "IN (");
+////					expectedQuery = expectedQuery.replace("EXISTS(", "EXISTS (");
+////					expectedQuery = expectedQuery.replace("'AND", "' AND");
+////
+////					// Perform the check
+////					assertEquals("Query (" + queryIndex + ", " + index + ")", expectedQuery, actualQuery);
 //				}
+////				else {
+////					fail("Timeout: [" + queryIndex + ", " + index + "] = " + expectedQuery);
+////				}
+////			}
+//
+//			queryIndex++;
+//		}
+	}
+
+//	@SuppressWarnings("deprecation")
+//	private String testQuery(final CharSequence query) throws Exception {
+//		final String[] result = new String[1];
+//		final Boolean[] terminated = { false };
+//
+//		// Start a thread that will parse the query
+//		Thread thread = new Thread(query.toString()) {
+//			@Override
+//			public void run() {
+//				buildQuery(query, result);
+//				terminated[0] = true;
 //			}
-
-			queryIndex++;
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private String testQuery(final CharSequence query) throws Exception {
-		final String[] result = new String[1];
-		final Boolean[] terminated = { false };
-
-		// Start a thread that will parse the query
-		Thread thread = new Thread(query.toString()) {
-			@Override
-			public void run() {
-				buildQuery(query, result);
-				terminated[0] = true;
-			}
-		};
-		thread.start();
-
-		int count = 0;
-
-		// Sleep for a maximum of 10 seconds or until the test completed
-		while (count < 100 && result[0] == null) {
-			Thread.sleep(10);
-			count++;
-		}
-
-		if (!terminated[0]) {
-			thread.stop();
-		}
-
-		return result[0];
-	}
+//		};
+//		thread.start();
+//
+//		int count = 0;
+//
+//		// Sleep for a maximum of 10 seconds or until the test completed
+//		while (count < 100 && result[0] == null) {
+//			Thread.sleep(10);
+//			count++;
+//		}
+//
+//		if (!terminated[0]) {
+//			thread.stop();
+//		}
+//
+//		return result[0];
+//	}
 
 //	@Test // No Timeout: done internally
 	public void testRemoveCharacter() throws Exception {

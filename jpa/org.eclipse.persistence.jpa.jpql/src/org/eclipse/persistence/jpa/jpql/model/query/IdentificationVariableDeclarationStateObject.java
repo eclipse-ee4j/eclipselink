@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model.query;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
@@ -91,9 +89,9 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * Adds a new <code><b>INNER JOIN FETCH</b></code> expression to this declaration.
 	 *
 	 * @param path The join association path expression
-	 * @return A new {@link JoinFetchStateObject}
+	 * @return A new {@link JoinStateObject}
 	 */
-	public JoinFetchStateObject addInnerJoinFetch(String path) {
+	public JoinStateObject addInnerJoinFetch(String path) {
 		return addJoinFetch(INNER_JOIN, path);
 	}
 
@@ -101,9 +99,9 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * Adds a new <code><b>JOIN FETCH</b></code> expression to this declaration.
 	 *
 	 * @param path The join association path expression
-	 * @return A new {@link JoinFetchStateObject}
+	 * @return A new {@link JoinStateObject}
 	 */
-	public JoinFetchStateObject addJoinFetch(String path) {
+	public JoinStateObject addJoinFetch(String path) {
 		return addJoinFetch(JOIN_FETCH, path);
 	}
 
@@ -115,10 +113,10 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * @param paths The join association path expression
 	 * @return A new {@link JoinStateObject}
 	 */
-	public JoinFetchStateObject addJoinFetch(String joinFetchType,
+	public JoinStateObject addJoinFetch(String joinFetchType,
 	                                         ListIterator<String> paths) {
 
-		JoinFetchStateObject stateObject = addJoinFetch(joinFetchType);
+		JoinStateObject stateObject = addJoinFetch(joinFetchType);
 		stateObject.setJoinAssociationPaths(paths);
 		addItem(stateObject);
 		return stateObject;
@@ -132,8 +130,8 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * @param path The join association path expression
 	 * @return A new {@link JoinStateObject}
 	 */
-	public JoinFetchStateObject addJoinFetch(String joinFetchType, String path) {
-		JoinFetchStateObject stateObject = new JoinFetchStateObject(this, joinFetchType);
+	public JoinStateObject addJoinFetch(String joinFetchType, String path) {
+		JoinStateObject stateObject = new JoinStateObject(this, joinFetchType);
 		stateObject.setJoinAssociationPath(path);
 		addItem(stateObject);
 		return stateObject;
@@ -146,8 +144,8 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * OUTER JOIN FETCH</b></code>, <code><b>INNER JOIN FETCH</b></code> or <code><b>JOIN FETCH</b></code>
 	 * @return A new {@link JoinStateObject}
 	 */
-	public JoinFetchStateObject addJoinFetchType(String joinFetchType) {
-		JoinFetchStateObject stateObject = new JoinFetchStateObject(this, joinFetchType);
+	public JoinStateObject addJoinFetchType(String joinFetchType) {
+		JoinStateObject stateObject = new JoinStateObject(this, joinFetchType);
 		addItem(stateObject);
 		return stateObject;
 	}
@@ -158,7 +156,7 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * @param path The join association path expression
 	 * @return A new {@link FetchJoinStateObject}
 	 */
-	public JoinFetchStateObject addLeftJoinFetch(String path) {
+	public JoinStateObject addLeftJoinFetch(String path) {
 		return addJoinFetch(LEFT_JOIN_FETCH, path);
 	}
 
@@ -166,9 +164,9 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * Adds a new <code><b>LEFT OUTER JOIN FETCH</b></code> expression to this declaration.
 	 *
 	 * @param path The join association path expression
-	 * @return A new {@link JoinFetchStateObject}
+	 * @return A new {@link JoinStateObject}
 	 */
-	public JoinFetchStateObject addLeftOuterJoinFetch(String path) {
+	public JoinStateObject addLeftOuterJoinFetch(String path) {
 		return addJoinFetch(LEFT_OUTER_JOIN_FETCH, path);
 	}
 
@@ -224,30 +222,6 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	@Override
 	public AbstractSchemaNameStateObject getRootStateObject() {
 		return (AbstractSchemaNameStateObject) super.getRootStateObject();
-	}
-
-	/**
-	 * Returns only the {@link JoinFetchStateObject JoinFetchStateObjects} that are defined in this
-	 * declaration.
-	 *
-	 * @return The {@link JoinFetchStateObject JoinFetchStateObjects} only
-	 */
-	public List<JoinFetchStateObject> joinFetches() {
-
-		final List<JoinFetchStateObject> joins = new ArrayList<JoinFetchStateObject>();
-
-		AbstractStateObjectVisitor visitor = new AbstractStateObjectVisitor() {
-			@Override
-			public void visit(JoinFetchStateObject stateObject) {
-				joins.add(stateObject);
-			}
-		};
-
-		for (AbstractJoinStateObject child : items()) {
-			child.accept(visitor);
-		}
-
-		return joins;
 	}
 
 	/**

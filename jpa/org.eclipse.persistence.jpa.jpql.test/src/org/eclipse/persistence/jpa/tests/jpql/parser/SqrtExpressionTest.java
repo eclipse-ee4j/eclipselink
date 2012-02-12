@@ -54,7 +54,7 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(sqrt(path("e.age").add(numeric(100).substract(avg(path("e.age"))))))
+			where(sqrt(path("e.age").add(numeric(100).subtract(avg(path("e.age"))))))
 		);
 
 		testQuery(query, selectStatement);

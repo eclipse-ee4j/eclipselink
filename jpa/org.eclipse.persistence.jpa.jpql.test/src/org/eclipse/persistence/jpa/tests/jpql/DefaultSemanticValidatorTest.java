@@ -19,4 +19,12 @@ package org.eclipse.persistence.jpa.tests.jpql;
  * @author Pascal Filion
  */
 public class DefaultSemanticValidatorTest extends AbstractSemanticValidatorTest {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean shouldValidateType() {
+		return true;
+	}
 }

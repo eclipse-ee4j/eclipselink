@@ -29,6 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	AbsExpressionTest.class,
 	AbstractSchemaNameTest.class,
 	AllOrAnyExpressionTest.class,
+	ArithmeticExpressionTest.class,
 	AvgFunctionTest.class,
 	BetweenExpressionTest.class,
 	CollectionMemberDeclarationTest.class,

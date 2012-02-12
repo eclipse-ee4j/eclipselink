@@ -29,6 +29,8 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTest {
 
+	protected abstract boolean shouldValidateType();
+
 	@Test
 	public void test_AbsExpression_InvalidNumericExpression_1() throws Exception {
 
@@ -38,12 +40,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.AbsExpression_InvalidNumericExpression,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.AbsExpression_InvalidNumericExpression,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.AbsExpression_InvalidNumericExpression
+			);
+		}
 	}
 
 	@Test
@@ -116,12 +126,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.AdditionExpression_LeftExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.AdditionExpression_LeftExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.AdditionExpression_LeftExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -145,12 +163,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.AdditionExpression_RightExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.AdditionExpression_RightExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.AdditionExpression_RightExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -174,12 +200,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.AvgFunction_InvalidNumericExpression,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.AvgFunction_InvalidNumericExpression,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.AvgFunction_InvalidNumericExpression
+			);
+		}
 	}
 
 	@Test
@@ -203,12 +237,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.BetweenExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.BetweenExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.BetweenExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -220,12 +262,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.BetweenExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.BetweenExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.BetweenExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -237,12 +287,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.BetweenExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.BetweenExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.BetweenExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -469,12 +527,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType
+			);
+		}
 	}
 
 	@Test
@@ -486,12 +552,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType
+			);
+		}
 	}
 
 	@Test
@@ -515,12 +589,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType
+			);
+		}
 	}
 
 	@Test
@@ -532,12 +614,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ComparisonExpression_WrongComparisonType
+			);
+		}
 	}
 
 	@Test
@@ -597,12 +687,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ConcatExpression_Expression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ConcatExpression_Expression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ConcatExpression_Expression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -626,12 +724,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ConcatExpression_Expression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ConcatExpression_Expression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ConcatExpression_Expression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -735,12 +841,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.DivisionExpression_LeftExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.DivisionExpression_LeftExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.DivisionExpression_LeftExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -764,12 +878,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.DivisionExpression_RightExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.DivisionExpression_RightExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.DivisionExpression_RightExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1069,12 +1191,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.LengthExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.LengthExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.LengthExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1098,12 +1228,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.LocateExpression_FirstExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1131,12 +1269,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.LocateExpression_SecondExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1164,12 +1310,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.LocateExpression_ThirdExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.LocateExpression_ThirdExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.LocateExpression_ThirdExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1217,12 +1371,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.LowerExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.LowerExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.LowerExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1234,12 +1396,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ModExpression_FirstExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ModExpression_FirstExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ModExpression_FirstExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1275,12 +1445,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ModExpression_SecondExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.ModExpression_SecondExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.ModExpression_SecondExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1316,12 +1494,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.MultiplicationExpression_LeftExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.MultiplicationExpression_LeftExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.MultiplicationExpression_LeftExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1345,12 +1531,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.MultiplicationExpression_RightExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.MultiplicationExpression_RightExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.MultiplicationExpression_RightExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1483,12 +1677,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SqrtExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SqrtExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SqrtExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1512,12 +1714,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SqrtExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SqrtExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SqrtExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1691,12 +1901,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubstringExpression_FirstExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_FirstExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_FirstExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1720,12 +1938,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubstringExpression_SecondExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_SecondExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_SecondExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1749,12 +1975,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubstringExpression_ThirdExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_ThirdExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_ThirdExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1778,12 +2012,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubtractionExpression_LeftExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubtractionExpression_LeftExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubtractionExpression_LeftExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1807,12 +2049,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SubtractionExpression_RightExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubtractionExpression_RightExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubtractionExpression_RightExpression_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1836,12 +2086,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SumFunction_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SumFunction_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SumFunction_WrongType
+			);
+		}
 	}
 
 	@Test
@@ -1959,12 +2217,20 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.UpperExpression_WrongType,
-			startPosition,
-			endPosition
-		);
+		if (shouldValidateType()) {
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.UpperExpression_WrongType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.UpperExpression_WrongType
+			);
+		}
 	}
 
 	@Override

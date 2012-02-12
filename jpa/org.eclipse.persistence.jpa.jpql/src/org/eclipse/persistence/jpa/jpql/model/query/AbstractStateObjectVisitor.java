@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -243,12 +243,6 @@ public abstract class AbstractStateObjectVisitor implements StateObjectVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(InputParameterStateObject stateObject) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(JoinFetchStateObject stateObject) {
 	}
 
 	/**

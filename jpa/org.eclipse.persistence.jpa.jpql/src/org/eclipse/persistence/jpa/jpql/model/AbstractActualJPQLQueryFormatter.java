@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,7 +65,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.InExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IndexExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.InputParameterStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.JoinFetchStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JoinStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.KeyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.KeywordExpressionStateObject;
@@ -138,7 +137,6 @@ import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
@@ -159,10 +157,10 @@ import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link IJPQLQueryFormatter} is used to output a string representation of a {@link StateObject}
- * based on how it was parsed, which means this formatter can only be used when the {@link StateObject}
- * was created from parsing a JPQL query because it needs to retrieve parsing information from the
- * corresponding {@link Expression}.
+ * This {@link IJPQLQueryFormatter} is used to generate a string representation of a {@link
+ * StateObject} based on how it was parsed, which means this formatter can only be used when the
+ * {@link StateObject} was created by parsing a JPQL query because it needs to retrieve parsing
+ * information from the corresponding {@link Expression}.
  * <p>
  * It is possible to partially match the JPQL query that was parsed, the value of <em>exactMatch</em>
  * will determine whether the string representation of any given {@link StateObject} should reflect
@@ -1370,29 +1368,6 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(JoinFetchStateObject stateObject) {
-
-		if (stateObject.isDecorated()) {
-			toText(stateObject);
-		}
-		else {
-			JoinFetch expression = stateObject.getExpression();
-
-			// JOIN FETCH
-			appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getJoinType(), stateObject.getJoinType());
-
-			if (shouldOutput(expression) || expression.hasSpaceAfterJoin()) {
-				writer.append(SPACE);
-			}
-
-			// Join association path
-			stateObject.getJoinAssociationPathStateObject().accept(this);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(JoinStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
@@ -1411,8 +1386,17 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// Join association path
 			stateObject.getJoinAssociationPathStateObject().accept(this);
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterJoinAssociation()) {
-				writer.append(SPACE);
+			// Check first if the JOIN FETCH is allowed to have an identification variable
+			if (stateObject.hasFetch()) {
+				if (expression.hasAs()) {
+					writer.append(SPACE);
+				}
+			}
+			// JOIN always needs a whitespace
+			else {
+				if (shouldOutput(expression) || expression.hasSpaceAfterJoinAssociation()) {
+					writer.append(SPACE);
+				}
 			}
 
 			// AS

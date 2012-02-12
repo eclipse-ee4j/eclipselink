@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,7 +59,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.InExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IndexExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.InputParameterStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.JoinFetchStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JoinStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.KeyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.KeywordExpressionStateObject;
@@ -148,7 +147,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -232,11 +230,6 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	 * clause by converting the information contained in the parsed JPQL query.
 	 */
 	private IBuilder<JoinStateObject, AbstractIdentificationVariableDeclarationStateObject> joinBuilder;
-
-	/**
-	 *
-	 */
-	private IBuilder<JoinFetchStateObject, IdentificationVariableDeclarationStateObject> joinFetchBuilder;
 
 	/**
 	 *
@@ -340,10 +333,6 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 		return new JoinBuilder();
 	}
 
-	protected IBuilder<JoinFetchStateObject, IdentificationVariableDeclarationStateObject> buildJoinFetchBuilder() {
-		return new JoinFetchBuilder();
-	}
-
 	/**
 	 * Creates the visitor that can retrieve the "literal" value from a given {@link Expression}
 	 * based on the desired {@link LiteralType}.
@@ -431,13 +420,6 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 			joinBuilder = buildJoinBuilder();
 		}
 		return joinBuilder;
-	}
-
-	protected IBuilder<JoinFetchStateObject, IdentificationVariableDeclarationStateObject> getJoinFetchBuilder() {
-		if (joinFetchBuilder == null) {
-			joinFetchBuilder = buildJoinFetchBuilder();
-		}
-		return joinFetchBuilder;
 	}
 
 	protected LiteralVisitor getLiteralVisitor() {
@@ -1060,16 +1042,6 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	 */
 	public final void visit(Join expression) {
 		stateObject = getJoinBuilder().buildStateObject(
-			(IdentificationVariableDeclarationStateObject) stateObject,
-			expression
-		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void visit(JoinFetch expression) {
-		stateObject = getJoinFetchBuilder().buildStateObject(
 			(IdentificationVariableDeclarationStateObject) stateObject,
 			expression
 		);
@@ -2144,77 +2116,6 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 			expression.getJoinAssociationPath().accept(this);
 			expression.getIdentificationVariable().accept(this);
 		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression) {
-			// Do nothing since both Join and JoinFetch use CollectionValuedPathExpression
-		}
-	}
-
-	protected class JoinFetchBuilder extends AbstractExpressionVisitor
-	                                 implements IBuilder<JoinFetchStateObject, IdentificationVariableDeclarationStateObject> {
-
-		protected IdentificationVariableDeclarationStateObject parent;
-		protected JoinFetchStateObject stateObject;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public JoinFetchStateObject buildStateObject(IdentificationVariableDeclarationStateObject parent,
-		                                             Expression expression) {
-
-			try {
-				this.parent = parent;
-				expression.accept(this);
-				return stateObject;
-			}
-			finally {
-				this.parent      = null;
-				this.stateObject = null;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			expression.acceptChildren(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariableDeclaration expression) {
-			expression.getJoins().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(Join expression) {
-			// Do nothing since both Join and JoinFetch use CollectionValuedPathExpression
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression) {
-
-			JoinFetchStateObject stateObject = parent.addJoinFetch(
-				expression.getIdentifier(),
-				literal(expression.getJoinAssociationPath(), LiteralType.PATH_EXPRESSION_ALL_PATH)
-			);
-
-			stateObject.setExpression(expression);
-			this.stateObject = stateObject;
-		}
 	}
 
 	/**
@@ -2239,20 +2140,6 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 			super.visit(expression);
 			IdentificationVariableDeclarationStateObject stateObject = (IdentificationVariableDeclarationStateObject) this.stateObject;
 			stateObject.getRootStateObject().setExpression(expression);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariableDeclaration expression) {
-
-			super.visit(expression);
-
-			getJoinFetchBuilder().buildStateObject(
-				(IdentificationVariableDeclarationStateObject) stateObject,
-				expression.getJoins()
-			);
 		}
 	}
 

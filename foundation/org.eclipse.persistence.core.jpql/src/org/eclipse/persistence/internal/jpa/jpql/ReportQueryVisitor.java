@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -105,8 +105,9 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	private void visitSelectClause(AbstractSelectClause expression) {
 
 		ReportItemBuilder builder = selectItemsBuilder();
-		Class previousType = builder.type[0];
+		Class<?> previousType = builder.type[0];
 		ReportQuery previousQuery = builder.query;
+
 		try {
 			builder.type[0] = null;
 			builder.query   = (ReportQuery) query;

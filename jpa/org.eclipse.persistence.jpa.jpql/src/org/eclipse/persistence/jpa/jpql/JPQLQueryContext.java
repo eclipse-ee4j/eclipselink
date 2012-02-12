@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
+import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
@@ -414,16 +414,16 @@ public abstract class JPQLQueryContext {
 	}
 
 	/**
-	 * Returns the parsed representation of a <b>JOIN FETCH</b> that were defined in the same
-	 * declaration than the given range identification variable name.
+	 * Returns the parsed representation of a <b>JOIN</b> and <b>JOIN FETCH</b> that were defined in
+	 * the same declaration than the given range identification variable name.
 	 *
 	 * @param variableName The name of the identification variable that should be used to define an
 	 * abstract schema name
-	 * @return The <b>JOIN FETCH</b> expressions used in the same declaration or an empty collection
-	 * if none was defined
+	 * @return The <b>JOIN</b> and <b>JOIN FETCH</b> expressions used in the same declaration or an
+	 * empty collection if none was defined
 	 */
-	public Collection<JoinFetch> getJoinFetches(String variableName) {
-		return getDeclarationResolver().getJoinFetches(variableName);
+	public Collection<Join> getJoins(String variableName) {
+		return getDeclarationResolver().getJoins(variableName);
 	}
 
 	/**

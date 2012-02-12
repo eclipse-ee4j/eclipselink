@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -165,12 +165,15 @@ public final class DateTime extends AbstractExpression {
 	private String parseIdentifier(WordParser wordParser) {
 
 		int position = wordParser.position();
+		char character = wordParser.character(position + 8);
 
-		if (wordParser.character(position + 8) == 'D') {
+		if (character == 'd' || character == 'D') {
 			return CURRENT_DATE;
 		}
 
-		if (wordParser.character(position + 12) == 'S') {
+		character = wordParser.character(position + 12);
+
+		if (character == 's' || character == 'S') {
 			return CURRENT_TIMESTAMP;
 		}
 

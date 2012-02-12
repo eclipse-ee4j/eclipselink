@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -61,7 +61,7 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
 		char character = word.charAt(0);
 
@@ -70,8 +70,14 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 			return true;
 		}
 
+		// Addition/Subtraction will create a chain of operations
 		if (character == '+' || character == '-') {
 			return false;
+		}
+
+		// Multiplication/Division will group the expression together to follow the order of operation
+		if (character == '*' || character == '/') {
+			return (expression == null);
 		}
 
 		return (expression != null);

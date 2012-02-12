@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -355,10 +355,19 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerBNF(new InternalCountBNF());
 		registerBNF(new InternalFromClauseBNF());
 		registerBNF(new InternalJoinBNF());
+		registerBNF(new InternalLengthExpressionBNF());
+		registerBNF(new InternalLocateStringExpressionBNF());
+		registerBNF(new InternalLocateThirdExpressionBNF());
+		registerBNF(new InternalLowerExpressionBNF());
+		registerBNF(new InternalModExpressionBNF());
 		registerBNF(new InternalOrderByClauseBNF());
 		registerBNF(new InternalOrderByItemBNF());
 		registerBNF(new InternalSimpleFromClauseBNF());
+		registerBNF(new InternalSqrtExpressionBNF());
+		registerBNF(new InternalSubstringPositionExpressionBNF());
+		registerBNF(new InternalSubstringStringExpressionBNF());
 		registerBNF(new InternalUpdateClauseBNF());
+		registerBNF(new InternalUpperExpressionBNF());
 		registerBNF(new JoinAssociationPathExpressionBNF());
 		registerBNF(new JoinBNF());
 		registerBNF(new JoinFetchBNF());

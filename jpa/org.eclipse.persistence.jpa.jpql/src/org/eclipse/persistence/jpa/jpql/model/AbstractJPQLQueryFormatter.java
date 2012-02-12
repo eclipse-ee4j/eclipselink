@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,7 +14,104 @@
 package org.eclipse.persistence.jpa.jpql.model;
 
 import java.util.ListIterator;
-import org.eclipse.persistence.jpa.jpql.model.query.*;
+import org.eclipse.persistence.jpa.jpql.model.query.AbsExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractConditionalClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractDoubleEncapsulatedExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractFromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractIdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractModifyStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractPathExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractRangeVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractSchemaNameStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractSelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractSingleEncapsulatedExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AbstractTripleEncapsulatedExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AdditionExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AggregateFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AllOrAnyExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AndExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ArithmeticFactorStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.AvgFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.BadExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.BetweenExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CaseExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CoalesceExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CollectionMemberDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CollectionMemberExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CollectionValuedPathExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ComparisonExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CompoundExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ConcatExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ConstructorExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.CountFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DateTimeStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DeleteClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DeleteStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DerivedPathIdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DerivedPathVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.DivisionExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EmptyCollectionComparisonExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EncapsulatedIdentificationVariableExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EntityTypeLiteralStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EntryExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.EnumTypeStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ExistsExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.FromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.GroupByClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.HavingClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.InExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.IndexExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.InputParameterStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.JoinStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.KeyExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.KeywordExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LengthExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LikeExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ListHolderStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LocateExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.LowerExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.MaxFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.MinFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ModExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.MultiplicationExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NotExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NullComparisonExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NullIfExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.NumericLiteralStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ObjectExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OrExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OrderByClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OrderByItemStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.RangeVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ResultVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SelectClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleFromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleSelectClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleSelectStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SimpleStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SizeExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SqrtExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.StringLiteralStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SubtractionExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SumFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.TrimExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.TypeExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UnknownExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpdateClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpdateItemStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpdateStatementStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.UpperExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ValueExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.WhenClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.WhereClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -186,18 +283,6 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
 				writer.append(SPACE);
 				toStringChildren(stateObject, false);
 			}
-		}
-	}
-
-	protected void toStringJoin(AbstractJoinStateObject stateObject) {
-
-		if (stateObject.isDecorated()) {
-			toText(stateObject);
-		}
-		else {
-			writer.append(formatIdentifier(stateObject.getJoinType()));
-			writer.append(SPACE);
-			stateObject.getJoinAssociationPathStateObject().accept(this);
 		}
 	}
 
@@ -870,17 +955,25 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(JoinFetchStateObject stateObject) {
-		toStringJoin(stateObject);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(JoinStateObject stateObject) {
-		toStringJoin(stateObject);
-		writer.append(SPACE);
-		stateObject.getIdentificationVariableStateObject().accept(this);
+
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
+		}
+		else {
+			writer.append(formatIdentifier(stateObject.getJoinType()));
+			writer.append(SPACE);
+			stateObject.getJoinAssociationPathStateObject().accept(this);
+
+			if (stateObject.hasAs()) {
+				writer.append(formatIdentifier(AS));
+			}
+
+			if (stateObject.hasIdentificationVariable()) {
+				writer.append(SPACE);
+				stateObject.getIdentificationVariableStateObject().accept(this);
+			}
+		}
 	}
 
 	/**

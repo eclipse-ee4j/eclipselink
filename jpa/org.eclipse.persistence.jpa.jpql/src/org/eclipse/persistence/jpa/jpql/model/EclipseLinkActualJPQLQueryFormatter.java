@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,10 +22,10 @@ import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link IJPQLQueryFormatter} is used to output a string representation of a {@link StateObject}
- * based on how it was parsed, which means this formatter can only be used when the {@link StateObject}
- * was created from parsing a JPQL query because it needs to retrieve parsing information from the
- * corresponding {@link Expression}.
+ * This {@link IJPQLQueryFormatter} is used to generate a string representation of a {@link
+ * StateObject} based on how it was parsed, which means this formatter can only be used when the
+ * {@link StateObject} was created by parsing a JPQL query because it needs to retrieve parsing
+ * information from the corresponding {@link Expression}.
  * <p>
  * This version adds support for EclipseLink extension.
  * <p>

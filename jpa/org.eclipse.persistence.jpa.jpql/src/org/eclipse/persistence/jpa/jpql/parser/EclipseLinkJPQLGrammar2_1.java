@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -103,6 +103,18 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		addChildBNF(FunctionsReturningDatetimeBNF.ID, FuncExpressionBNF.ID);
 		addChildBNF(FunctionsReturningNumericsBNF.ID, FuncExpressionBNF.ID);
 		addChildBNF(FunctionsReturningStringsBNF.ID,  FuncExpressionBNF.ID);
+
+		// Now supports scalar_expression
+		addChildBNF(InternalConcatExpressionBNF.ID,            ScalarExpressionBNF.ID);
+		addChildBNF(InternalLengthExpressionBNF.ID,            ScalarExpressionBNF.ID);
+		addChildBNF(InternalLocateStringExpressionBNF.ID,      ScalarExpressionBNF.ID);
+		addChildBNF(InternalLocateThirdExpressionBNF.ID,       ScalarExpressionBNF.ID);
+		addChildBNF(InternalLowerExpressionBNF.ID,             ScalarExpressionBNF.ID);
+		addChildBNF(InternalModExpressionBNF.ID,               ScalarExpressionBNF.ID);
+		addChildBNF(InternalSqrtExpressionBNF.ID,              ScalarExpressionBNF.ID);
+		addChildBNF(InternalSubstringStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
+		addChildBNF(InternalSubstringPositionExpressionBNF.ID, ScalarExpressionBNF.ID);
+		addChildBNF(InternalUpperExpressionBNF.ID,             ScalarExpressionBNF.ID);
 
 		// Extend the query BNF to add support for TREAT
 		addChildBNF(JoinAssociationPathExpressionBNF.ID, TreatExpressionBNF.ID);

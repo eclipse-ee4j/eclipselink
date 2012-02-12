@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -76,7 +76,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -153,8 +152,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	private Comparator<Class<?>> numericTypeComparator;
 
 	/**
-	 * This visitor resolves a path expression by retrieving the mapping and descriptor of the last
-	 * segment.
+	 * This visitor resolves a path expression by retrieving the mapping and descriptor of the last segment.
 	 */
 	private PathResolver pathResolver;
 
@@ -225,16 +223,26 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 
 	Class<?> convertSumFunctionType(Class<?> type) {
 
-		// Integral types: int/Integer, long/Long => the result is a Long
-		if ((type == Integer.TYPE) ||
-		    (type == Integer.class)) {
+		// Integral types
+		if ((type == Integer.TYPE)   ||
+		    (type == Integer.class)  ||
+		    (type == Long.TYPE)      ||
+		    (type == Long.class)     ||
+		    (type == Byte.TYPE)      ||
+		    (type == Byte.class)     ||
+		    (type == Short.TYPE)     ||
+		    (type == Short.class)    ||
+		    (type == Character.TYPE) ||
+		    (type == Character.class)) {
 
 			type = Long.class;
 		}
 
-		// Floating types: float/Float, double/Double => the result is a Double
-		else if ((type == Float.TYPE) ||
-		         (type == Float.class)) {
+		// Floating types
+		else if ((type == Float.TYPE)  ||
+		         (type == Float.class) ||
+		         (type == Double.TYPE) ||
+		         (type == Double.class)) {
 
 			type = Double.class;
 		}
@@ -246,7 +254,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 			type = Object.class;
 		}
 
-		// BigInteger or BigDecimal, the result is the same
 		return type;
 	}
 
@@ -862,13 +869,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(JoinFetch expression) {
-		expression.getJoinAssociationPath().accept(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(JPQLExpression expression) {
 		expression.getQueryStatement().accept(this);
 	}
@@ -1456,14 +1456,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		public void visit(Join expression) {
 			expression.getJoinAssociationPath().accept(this);
 		}
-
-                /**
-                 * {@link InputParameter}
-                 */
-                @Override
-                public void visit(JoinFetch expression) {
-                        expression.getJoinAssociationPath().accept(this);
-                }
 
 		/**
 		 * {@link InputParameter}

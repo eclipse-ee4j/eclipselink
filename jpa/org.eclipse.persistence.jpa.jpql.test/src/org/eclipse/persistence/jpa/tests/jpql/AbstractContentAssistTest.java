@@ -106,6 +106,15 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 		return virtualQuery;
 	}
 
+	/**
+	 * Determines whether a <code><b>JOIN FETCH</b></code> expression can be identified with an
+	 * identification variable.
+	 *
+	 * @return <code>true</code> if it can be identified by an identification variable; <code>false</code>
+	 * otherwise
+	 */
+	abstract boolean isJoinFetchIdentifiable();
+
 	protected final Iterable<String> joinIdentifiers() {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(INNER_JOIN);
@@ -3666,13 +3675,21 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_Join_37() {
+
 		String query = "SELECT e FROM Employee e INNER JOIN e.mags mags";
 		int position = "SELECT e FROM Employee e INNER".length();
-		testHasOnlyTheseProposals(query, position, joinOnlyIdentifiers());
+
+		if (isJoinFetchIdentifiable()) {
+			testHasOnlyTheseProposals(query, position, joinIdentifiers());
+		}
+		else {
+			testHasOnlyTheseProposals(query, position, joinOnlyIdentifiers());
+		}
 	}
 
 	@Test
 	public void test_Join_38() {
+
 		String query = "SELECT o from Countries o JOIN o.locationsList e LEFT ";
 		int position = query.length();
 

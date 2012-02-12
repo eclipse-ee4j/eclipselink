@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,7 @@
  *
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
@@ -79,7 +80,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.JoinFetch;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -130,8 +130,6 @@ import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.ReportQuery;
 
-import static org.eclipse.persistence.jpa.jpql.LiteralType.*;
-
 /**
  * This {@link ExpressionVisitor} visits an {@link org.eclipse.jpa.query.parser.Expression JPQL
  * Expression} and creates an {@link org.eclipse.persistence.expressions.Expression Expression}.
@@ -151,28 +149,24 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	private ChildrenExpressionVisitor childrenExpressionVisitor;
 
 	/**
-	 * This visitor is used to create a modified version of a {@link PathExpressionResolver} that
-	 * does not wrap the last path, which is the collection-valued property name.
-	 */
-	private EmptyCollectionComparisonExpressionVisitor emptyCollectionComparisonExpressionVisitor;
-
-	/**
 	 * This builder visits the {@link InExpression} in order to create the EclipseLink {@link Expression}.
 	 */
 	private InExpressionBuilder inExpressionBuilder;
 
 	/**
-	 *
+	 * Determines whether the target relationship is allowed to be <code>null</code>.
 	 */
-	private JoinVisitor joinVisitor;
+	private boolean nullAllowed;
 
 	/**
-	 *
+	 * This {@link Comparator} compares two {@link Class} values and returned the appropriate numeric
+	 * type that takes precedence.
 	 */
 	private Comparator<Class<?>> numericTypeComparator;
 
 	/**
-	 *
+	 * This resolver is responsible to traverse a path expression and to create the EclipseLink
+	 * {@link Expression} representation of that path.
 	 */
 	private PathResolver pathResolver;
 
@@ -188,7 +182,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	private Expression queryExpression;
 
 	/**
-	 *
+	 * Keeps track of the type of an expression while traversing it.
 	 */
 	private final Class<?>[] type;
 
@@ -212,8 +206,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	ExpressionBuilderVisitor(JPQLQueryContext queryContext) {
 		super();
-		this.queryContext = queryContext;
 		this.type = new Class<?>[1];
+		this.queryContext = queryContext;
 	}
 
 	private void appendJoinVariables(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
@@ -249,6 +243,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 	}
 
+	/**
+	 * Creates a new EclipseLink {@link Expression} by visiting the given JPQL {@link org.eclipse.
+	 * persistence.jpa.jpql.parser.Expression Expression}.
+	 *
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to
+	 * convert into an EclipseLink {@link Expression}
+	 * @param type The type of the expression
+	 * @return The EclipseLink {@link Expression} of the JPQL fragment
+	 */
 	Expression buildExpression(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
 	                           Class<?>[] type) {
 
@@ -257,65 +260,90 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		Expression oldQueryExpression = queryExpression;
 
 		try {
-			this.type[0] = null;
-			this.typeExpression = false;
+			this.type[0]         = null;
+			this.typeExpression  = false;
 			this.queryExpression = null;
+
 			expression.accept(this);
+
 			type[0] = this.type[0];
 			return queryExpression;
 		}
 		finally {
-			this.type[0] = oldType;
-			this.typeExpression = oldTypeExpression;
+			this.type[0]         = oldType;
+			this.typeExpression  = oldTypeExpression;
 			this.queryExpression = oldQueryExpression;
 		}
 	}
 
+	/**
+	 * Creates a new EclipseLink {@link Expression} by visiting the given JPQL {@link
+	 * CollectionValuedPathExpression} that is used in the <code><b>GROUP BY</b></code> clause.
+	 *
+	 * @param expression The {@link CollectionValuedPathExpression} to convert into an EclipseLink
+	 * {@link Expression}
+	 * @return The EclipseLink {@link Expression} representation of that path expression
+	 */
 	Expression buildGroupByExpression(CollectionValuedPathExpression expression) {
 
 		PathResolver resolver = pathResolver();
 
 		try {
-			resolver.length = expression.pathSize() - 1;
-			resolver.nullAllowed = false;
-			resolver.localExpression = null;
+			resolver.length           = expression.pathSize() - 1;
+			resolver.nullAllowed      = false;
+			resolver.localExpression  = null;
 			resolver.checkMappingType = false;
+
 			expression.accept(resolver);
+
 			return resolver.localExpression;
 		}
 		finally {
-			resolver.length = -1;
-			resolver.nullAllowed = false;
+			resolver.length           = -1;
+			resolver.descriptor       = null;
+			resolver.nullAllowed      = false;
 			resolver.checkMappingType = false;
-			resolver.localExpression = null;
-			resolver.descriptor = null;
-			this.type[0] = null;
+			resolver.localExpression  = null;
+
+			this.type[0]         = null;
+			this.typeExpression  = false;
 			this.queryExpression = null;
-			this.typeExpression = false;
 		}
 	}
 
+	/**
+	 * Creates a new EclipseLink {@link Expression} by visiting the given JPQL {@link
+	 * StateFieldPathExpression}. This method temporarily changes the null allowed flag if the state
+	 * field is a foreign reference mapping
+	 *
+	 * @param expression The {@link StateFieldPathExpression} to convert into an EclipseLink {@link
+	 * Expression}
+	 * @return The EclipseLink {@link Expression} representation of that path expression
+	 */
 	Expression buildModifiedPathExpression(StateFieldPathExpression expression) {
 
 		PathResolver resolver = pathResolver();
 
 		try {
-			resolver.length = expression.pathSize();
-			resolver.nullAllowed = false;
-			resolver.localExpression = null;
+			resolver.length           = expression.pathSize();
+			resolver.nullAllowed      = false;
+			resolver.localExpression  = null;
 			resolver.checkMappingType = true;
+
 			expression.accept(resolver);
+
 			return resolver.localExpression;
 		}
 		finally {
-			resolver.length = -1;
-			resolver.nullAllowed = false;
+			resolver.length           = -1;
+			resolver.nullAllowed      = false;
 			resolver.checkMappingType = false;
-			resolver.localExpression = null;
-			resolver.descriptor = null;
-			this.type[0] = null;
+			resolver.localExpression  = null;
+			resolver.descriptor       = null;
+
+			this.type[0]         = null;
+			this.typeExpression  = false;
 			this.queryExpression = null;
-			this.typeExpression = false;
 		}
 	}
 
@@ -370,25 +398,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		return variableNames;
 	}
 
-	private EmptyCollectionComparisonExpressionVisitor emptyCollectionComparisonExpressionVisitor() {
-		if (emptyCollectionComparisonExpressionVisitor == null) {
-			emptyCollectionComparisonExpressionVisitor = new EmptyCollectionComparisonExpressionVisitor();
-		}
-		return emptyCollectionComparisonExpressionVisitor;
-	}
-
 	private InExpressionBuilder inExpressionBuilder() {
 		if (inExpressionBuilder == null) {
 			inExpressionBuilder = new InExpressionBuilder();
 		}
 		return inExpressionBuilder;
-	}
-
-	private JoinVisitor joinVisitor() {
-		if (joinVisitor == null) {
-			joinVisitor = new JoinVisitor();
-		}
-		return joinVisitor;
 	}
 
 	private Comparator<Class<?>> numericTypeComparator() {
@@ -665,18 +679,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 			// Retrieve the ExpressionBuilder from the collection-valued path expression's
 			// identification variable and the variable name
-			String variableName = queryContext.literal(
-				expression.getCollectionValuedPathExpression(),
-				PATH_EXPRESSION_IDENTIFICATION_VARIABLE
-			);
-
-			Expression parentExpression = queryContext.getQueryExpression(variableName);
+			pathExpression.getIdentificationVariable().accept(this);
+			Expression parentExpression = queryExpression;
 
 			// Now create the actual expression
-			variableName = pathExpression.getPath(pathExpression.pathSize() - 1);
-
+			String lastPath = pathExpression.getPath(pathExpression.pathSize() - 1);
 			queryExpression = new ExpressionBuilder().equal(entityExpression);
-			queryExpression = parentExpression.noneOf(variableName, queryExpression);
+			queryExpression = parentExpression.noneOf(lastPath, queryExpression);
 		}
 		else {
 			// Create the expression for the collection-valued path expression
@@ -691,7 +700,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(CollectionValuedPathExpression expression) {
-		visitPathExpression(expression, false);
+		visitPathExpression(expression, nullAllowed, expression.pathSize());
 	}
 
 	/**
@@ -736,6 +745,9 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// <=
 		else if (comparaison == ComparisonExpression.GREATER_THAN_OR_EQUAL) {
 			queryExpression = leftExpression.greaterThanEqual(rightExpression);
+		}
+		else {
+			throw new IllegalArgumentException("The comparison operator is unknown: " + comparaison);
 		}
 
 		// Set the expression type
@@ -827,9 +839,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				queryExpression = queryExpression.currentTime();
 				type[0] = Time.class;
 			}
-			else /* if (expression.isCurrentTimestamp()) */{
+			else if (expression.isCurrentTimestamp()) {
 				queryExpression = queryExpression.currentTimeStamp();
 				type[0] = Timestamp.class;
+			}
+			else {
+				throw new IllegalArgumentException("The DateTime is unknown: " + expression);
 			}
 		}
 	}
@@ -878,11 +893,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(EmptyCollectionComparisonExpression expression) {
 
-		// Retrieve the collection-valued field name
-		String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
+		CollectionValuedPathExpression collectionPath = (CollectionValuedPathExpression) expression.getExpression();
+		int lastPathIndex = collectionPath.pathSize() - 1;
+		String name = collectionPath.getPath(lastPathIndex);
 
-		// Create the expression for the collection-valued path expression
-		expression.getExpression().accept(emptyCollectionComparisonExpressionVisitor());
+		// Create the expression for the collection-valued path expression (except the last path)
+		visitPathExpression(collectionPath, false, lastPathIndex);
 
 		// Create the IS EMPTY expression
 		if (expression.hasNot()) {
@@ -1044,6 +1060,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				queryExpression = queryContext.getQueryExpression(variableName);
 			}
 			else {
+
 				// Check if it's an entity type name
 				if (!expression.isVirtual()) {
 					ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
@@ -1059,12 +1076,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				// Identification variable
 				queryExpression = queryContext.findQueryExpression(variableName);
 
-				if (queryExpression == null) {
-					Declaration declaration = queryContext.findDeclaration(variableName);
+				// Retrieve the Declaration mapped to the variable name
+				Declaration declaration = queryContext.findDeclaration(variableName);
 
-					// null would most likely mean it's coming from a state field
-					// path expression that represents an enum constant
-					if (declaration != null) {
+				// null would most likely mean it's coming from a state field
+				// path expression that represents an enum constant
+				if (declaration != null) {
+
+					// The Expression was not created yet, create it and cache its information
+					if (queryExpression == null) {
 
 						// Create the Expression by visiting the base expression
 						declaration.getBaseExpression().accept(this);
@@ -1073,10 +1093,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 						queryContext.addUsedIdentificationVariable(variableName);
 						queryContext.addQueryExpression(variableName, queryExpression);
 					}
-				}
-				else {
-					Declaration declaration = queryContext.findDeclaration(variableName);
 
+					// Retrieve the Entity type
 					if (declaration.isRange()) {
 						type[0] = declaration.getDescriptor().getJavaClass();
 					}
@@ -1145,14 +1163,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(Join expression) {
-		expression.accept(joinVisitor());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(JoinFetch expression) {
-		expression.accept(joinVisitor());
+		try {
+			nullAllowed = expression.isLeftJoin();
+			expression.getJoinAssociationPath().accept(this);
+		}
+		finally {
+			nullAllowed = false;
+		}
 	}
 
 	/**
@@ -1560,12 +1577,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	public void visit(SizeExpression expression) {
 
 		CollectionValuedPathExpression pathExpression = (CollectionValuedPathExpression) expression.getExpression();
+		int lastIndex = pathExpression.pathSize() - 1;
 
 		// Create the right chain of expressions
-		pathExpression.accept(this);
+		visitPathExpression(pathExpression, false, lastIndex - 1);
 
 		// Now create the SIZE expression
-		String name = pathExpression.getPath(pathExpression.pathSize() - 1);
+		String name = pathExpression.getPath(lastIndex);
 		queryExpression = queryExpression.size(name);
 
 		// Set the expression type
@@ -1591,7 +1609,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(StateFieldPathExpression expression) {
-		visitPathExpression(expression, false);
+		visitPathExpression(expression, false, expression.pathSize());
 	}
 
 	/**
@@ -1692,7 +1710,14 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(TreatExpression expression) {
-		expression.accept(joinVisitor());
+
+		// First visit the parent Expression
+		expression.getCollectionValuedPathExpression().accept(this);
+
+		// Now downcast the Expression
+		EntityTypeLiteral entityTypeLiteral = (EntityTypeLiteral) expression.getEntityType();
+		ClassDescriptor entityType = queryContext.getDescriptor(entityTypeLiteral.getEntityTypeName());
+		queryExpression = queryExpression.as(entityType.getJavaClass());
 	}
 
 	/**
@@ -1842,7 +1867,9 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 	}
 
-	private void visitPathExpression(AbstractPathExpression expression, boolean nullAllowed) {
+	private void visitPathExpression(AbstractPathExpression expression,
+	                                 boolean nullAllowed,
+	                                 int lastIndex) {
 
 		PathResolver resolver = pathResolver();
 
@@ -1853,7 +1880,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		ClassDescriptor oldDescriptor = resolver.descriptor;
 
 		try {
-			resolver.length           = expression.pathSize();
+			resolver.length           = lastIndex;
 			resolver.nullAllowed      = nullAllowed;
 			resolver.checkMappingType = false;
 			resolver.localExpression  = null;
@@ -1923,41 +1950,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		@Override
 		protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 			expressions.add(expression);
-		}
-	}
-
-	/**
-	 * This is used to traverse the empty collection's collection-valued path expression in order to
-	 * create the right EclipseLink {@link Expression}.
-	 */
-	private class EmptyCollectionComparisonExpressionVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-
-			// Start at 1 since the first path is always an identification variable, and
-			// its resolver was created by traversing it
-			for (int index = 0, count = expression.pathSize(); index < count; index++) {
-
-				// The first path is the identification variable, lets ExpressionBuilderVisitor
-				// create the EclipseLink expression
-				if (index == 0) {
-					expression.getIdentificationVariable().accept(ExpressionBuilderVisitor.this);
-				}
-
-				// Any path between the identification variable and the last path (which is a
-				// state field path expression) is always a single valued object field path
-				else if (index + 1 < count) {
-					queryExpression.get(expression.getPath(index));
-				}
-				// The last path is ignored
-				else {
-					break;
-				}
-			}
 		}
 	}
 
@@ -2081,62 +2073,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 	}
 
-	private class JoinVisitor extends AbstractEclipseLinkExpressionVisitor {
-
-		private boolean nullAllowed;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-			visitPathExpression(expression, nullAllowed);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(Join expression) {
-			try {
-				nullAllowed = expression.isLeftJoin();
-				expression.getJoinAssociationPath().accept(this);
-			}
-			finally {
-				nullAllowed = false;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(JoinFetch expression) {
-			try {
-				nullAllowed = expression.isLeftJoinFetch();
-				expression.getJoinAssociationPath().accept(this);
-			}
-			finally {
-				nullAllowed = false;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(TreatExpression expression) {
-
-			// First visit the parent Expression
-			expression.getCollectionValuedPathExpression().accept(this);
-
-			// Now downcast the Expression
-			EntityTypeLiteral entityTypeLiteral = (EntityTypeLiteral) expression.getEntityType();
-			ClassDescriptor entityType = queryContext.getDescriptor(entityTypeLiteral.getEntityTypeName());
-			queryExpression = queryExpression.as(entityType.getJavaClass());
-		}
-	}
-
 	/**
 	 * This {@link Comparator} compares two {@link Class} values and returned the appropriate numeric
 	 * type that takes precedence.
@@ -2183,35 +2119,44 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 	private class PathResolver extends AbstractEclipseLinkExpressionVisitor {
 
+		/**
+		 * Determines whether
+		 */
 		boolean checkMappingType;
 
 		/**
-		 *
+		 * Keeps track of the descriptor while traversing the path expression.
 		 */
 		private ClassDescriptor descriptor;
 
 		/**
-		 *
+		 * The actual number of paths within the path expression that will be traversed in order to
+		 * create the EclipseLink {@link Expression}.
 		 */
 		int length;
 
 		/**
-		 *
+		 * The EclipseLink {@link Expression} that was retrieved or created while traversing the path
+		 * expression.
 		 */
 		Expression localExpression;
 
 		/**
-		 *
+		 * Determines whether the target relationship is allowed to be <code>null</code>.
 		 */
 		boolean nullAllowed;
 
-		private Enum<?> retrieveEnumConstant(Class<?> type, String constant) {
+		/**
+		 * Retrieves the actual {@link Enum} constant with the given name.
+		 *
+		 * @param type The {@link Enum} class used to retrieve the given name
+		 * @param name The name of the constant to retrieve
+		 * @return The {@link Enum} constant
+		 */
+		private Enum<?> retrieveEnumConstant(Class<?> type, String name) {
 
-			Object[] constants = type.getEnumConstants();
-
-			for (int index = constants.length; --index >= 0;) {
-				Enum<?> enumConstant = (Enum<?>) constants[index];
-				if (constant.equals(enumConstant.name())) {
+			for (Enum<?> enumConstant : (Enum<?>[]) type.getEnumConstants()) {
+				if (name.equals(enumConstant.name())) {
 					return enumConstant;
 				}
 			}

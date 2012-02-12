@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,53 +23,58 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * A <b>JOIN</b> is specified over an entity and its related entities.
  * <p>
  * <div nowrap><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code><p>
+ * <p>
+ * A <b>JOIN FETCH</b> enables the fetching of an association as a side effect of the execution of
+ * a query. A <b>JOIN FETCH</b> is specified over an entity and its related entities.
+ * <p>
+ * <div nowrap><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><p>
  *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class Join extends AbstractExpression {
+public final class Join extends AbstractExpression {
 
 	/**
 	 * The actual <b>AS</b> identifier found in the string representation of the JPQL query.
 	 */
-	protected String asIdentifier;
+	private String asIdentifier;
 
 	/**
 	 * Determines whether the identifier <b>AS</b> was parsed.
 	 */
-	protected boolean hasAs;
+	private boolean hasAs;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>AS</b>.
 	 */
-	protected boolean hasSpaceAfterAs;
+	private boolean hasSpaceAfterAs;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>JOIN</b>.
 	 */
-	protected boolean hasSpaceAfterJoin;
+	private boolean hasSpaceAfterJoin;
 
 	/**
 	 * Determines whether a whitespace was parsed after the join association path expression.
 	 */
-	protected boolean hasSpaceAfterJoinAssociation;
+	private boolean hasSpaceAfterJoinAssociation;
 
 	/**
 	 * The {@link Expression} representing the identification variable.
 	 */
-	protected AbstractExpression identificationVariable;
+	private AbstractExpression identificationVariable;
 
 	/**
 	 * The {@link Expression} representing the join association path expression.
 	 */
-	protected AbstractExpression joinAssociationPath;
+	private AbstractExpression joinAssociationPath;
 
 	/**
 	 * The actual <b>JOIN</b> identifier found in the string representation of the JPQL query.
 	 */
-	protected String joinIdentifier;
+	private String joinIdentifier;
 
 	/**
 	 * Creates a new <code>Join</code>.
@@ -228,6 +233,18 @@ public class Join extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether the identifier <b>FETCH</b> was parsed.
+	 *
+	 * @return <code>true</code> if the identifier <b>FETCH</b> was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasFetch() {
+		String identifier = getIdentifier();
+		return identifier == JOIN_FETCH ||
+		       identifier == LEFT_JOIN_FETCH ||
+		       identifier == LEFT_OUTER_JOIN_FETCH;
+	}
+
+	/**
 	 * Determines whether the identification variable was parsed.
 	 *
 	 * @return <code>true</code> if the identification variable was parsed; <code>false</code> otherwise
@@ -262,8 +279,7 @@ public class Join extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after <b>JOIN</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>JOIN</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>JOIN</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterJoin() {
 		return hasSpaceAfterJoin;
@@ -280,16 +296,20 @@ public class Join extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether this {@link Join} is a left join, i.e. {@link Expression#LEFT_JOIN} or
-	 * {@link Expression#LEFT_OUTER_JOIN}.
+	 * Determines whether this {@link Join} is a left join, i.e. {@link Expression#LEFT_JOIN},
+	 * {@link Expression#LEFT_JOIN_FETCH},  {@link Expression#LEFT_OUTER_JOIN}, {@link
+	 * Expression#LEFT_OUTER_JOIN_FETCH}.
 	 *
-	 * @return <code>true</code> if this {@link Join} expression is a {@link Expression#LEFT_JOIN} or
-	 * {@link Expression#LEFT_OUTER_JOIN}; <code>false</code> otherwise
+	 * @return <code>true</code> if this {@link Join} expression is a {@link Expression#LEFT_JOIN},
+	 * {@link Expression#LEFT_JOIN_FETCH},  {@link Expression#LEFT_OUTER_JOIN}, {@link
+	 * Expression#LEFT_OUTER_JOIN_FETCH}; <code>false</code> otherwise
 	 */
 	public boolean isLeftJoin() {
 		String identifier = getIdentifier();
 		return identifier == LEFT_JOIN ||
-		       identifier == LEFT_OUTER_JOIN;
+		       identifier == LEFT_OUTER_JOIN ||
+		       identifier == LEFT_JOIN_FETCH ||
+		       identifier == LEFT_OUTER_JOIN_FETCH;
 	}
 
 	/**
@@ -297,7 +317,10 @@ public class Join extends AbstractExpression {
 	 */
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(AS) ||
+		return word.equalsIgnoreCase(AS)    ||
+		       word.equalsIgnoreCase(INNER) ||
+		       word.equalsIgnoreCase(JOIN)  ||
+		       word.equalsIgnoreCase(LEFT)  ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 
@@ -331,7 +354,8 @@ public class Join extends AbstractExpression {
 			joinAssociationPath.parse(wordParser, tolerant);
 		}
 
-		hasSpaceAfterJoinAssociation = wordParser.skipLeadingWhitespace() > 0;
+		int count = wordParser.skipLeadingWhitespace();
+		hasSpaceAfterJoinAssociation = count > 0;
 
 		// Parse 'AS'
 		hasAs = wordParser.startsWithIdentifier(AS);
@@ -340,18 +364,7 @@ public class Join extends AbstractExpression {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
-		
-		// Allow the identifier to be optional (as for join fetch)
-		String word = wordParser.word();
-		if (word.equalsIgnoreCase(WHERE)   ||
-                        word.equalsIgnoreCase(ORDER_BY) ||
-                        word.equalsIgnoreCase(GROUP_BY) ||
-                        word.equalsIgnoreCase(HAVING) ||
-                        word.equalsIgnoreCase(INNER) ||
-                        word.equalsIgnoreCase(JOIN)  ||
-                        word.equalsIgnoreCase(LEFT)) {
-		    return;
-		}
+
 		// Parse the identification variable
 		if (tolerant) {
 			identificationVariable = parse(
@@ -361,8 +374,23 @@ public class Join extends AbstractExpression {
 			);
 		}
 		else {
-			identificationVariable = new IdentificationVariable(this, word);
-			identificationVariable.parse(wordParser, tolerant);
+			String word = wordParser.word();
+
+			if ((word.length() > 0) && !isParsingComplete(wordParser, word, null)) {
+				identificationVariable = new IdentificationVariable(this, word);
+				identificationVariable.parse(wordParser, tolerant);
+			}
+		}
+
+		// A JOIN FETCH without '[AS] identification_variable' will not keep the
+		// whitespace after the join association for backward compatibility (for now)
+		if (!hasAs &&
+		    hasSpaceAfterJoinAssociation   &&
+		    identificationVariable == null &&
+		    hasFetch()) {
+
+			hasSpaceAfterJoinAssociation = false;
+			wordParser.moveBackward(count);
 		}
 	}
 

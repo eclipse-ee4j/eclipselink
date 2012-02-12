@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -294,10 +294,10 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * Returns the BNF to be used to parse one of the encapsulated expression.
 	 *
 	 * @param index The position of the encapsulated {@link Expression} that needs to be parsed
-	 * within the parenthesis
+	 * within the parenthesis, which starts at position 0
 	 * @return The BNF to be used to parse one of the encapsulated expression
 	 */
-	public abstract JPQLQueryBNF parameterExpressionBNF(int index);
+	public abstract String parameterExpressionBNF(int index);
 
 	/**
 	 * {@inheritDoc}
@@ -310,7 +310,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		// Parse the first expression
 		firstExpression = parse(
 			wordParser,
-			parameterExpressionBNF(1),
+			getQueryBNF(parameterExpressionBNF(0)),
 			tolerant
 		);
 
@@ -330,7 +330,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		// Parse the second expression
 		secondExpression = parse(
 			wordParser,
-			parameterExpressionBNF(2),
+			getQueryBNF(parameterExpressionBNF(1)),
 			tolerant
 		);
 
@@ -352,7 +352,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		// Parse the third expression
 		thirdExpression = parse(
 			wordParser,
-			parameterExpressionBNF(3),
+			getQueryBNF(parameterExpressionBNF(2)),
 			tolerant
 		);
 
