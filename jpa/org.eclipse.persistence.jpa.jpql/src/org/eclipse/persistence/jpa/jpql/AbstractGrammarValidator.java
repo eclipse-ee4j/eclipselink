@@ -47,6 +47,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
@@ -2631,6 +2632,47 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				CollectionMemberExpression_MissingCollectionValuedPathExpression
 			);
 		}
+		else {
+			Expression pathExpression = expression.getCollectionValuedPathExpression();
+
+			// The expression is not a path expression
+			if (!isValid(pathExpression, CollectionValuedPathExpressionBNF.ID)) {
+
+				int startPosition = position(expression);
+
+				if (expression.hasEntityExpression()) {
+					startPosition += length(expression.getEntityExpression()) + 1;
+				}
+
+				if (expression.hasNot()) {
+					startPosition += 4; // NOT = 3 + 1 space
+				}
+
+				startPosition += MEMBER.length();
+
+				if (expression.hasSpaceAfterMember()) {
+					startPosition++;
+				}
+
+				if (expression.hasOf()) {
+					startPosition += 2;
+				}
+
+				if (expression.hasSpaceAfterOf()) {
+					startPosition++;
+				}
+
+				int endPosition = startPosition + length(pathExpression);
+
+				addProblem(
+					expression,
+					startPosition,
+					endPosition,
+					CollectionValuedPathExpression_NotCollectionType,
+					expression.toParsedText()
+				);
+			}
+		}
 
 		super.visit(expression);
 	}
@@ -2960,7 +3002,25 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			addProblem(expression, startPosition, endPosition, EmptyCollectionComparisonExpression_MissingExpression);
 		}
 		else {
-			super.visit(expression);
+			Expression pathExpression = expression.getExpression();
+
+			// The expression is not a path expression
+			if (!isValid(pathExpression, CollectionValuedPathExpressionBNF.ID)) {
+
+				int startIndex = position(expression);
+				int endIndex   = startIndex + length(pathExpression);
+
+				addProblem(
+					expression,
+					startIndex,
+					endIndex,
+					CollectionValuedPathExpression_NotCollectionType,
+					expression.toParsedText()
+				);
+			}
+			else {
+				super.visit(expression);
+			}
 		}
 	}
 

@@ -591,8 +591,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
+	/**
+	 * Validates the given {@link Expression} and makes sure it's a valid collection value path expression.
+	 *
+	 * @param expression The {@link Expression} to validate
+	 * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
+	 * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
+	 */
 	protected void validateCollectionValuedPathExpression(Expression expression,
-	                                                    boolean collectionTypeOnly) {
+	                                                      boolean collectionTypeOnly) {
 
 		// The path expression resolves to a collection-valued path expression
 		CollectionValuedPathExpression collectionValuedPathExpression = getCollectionValuedPathExpression(expression);

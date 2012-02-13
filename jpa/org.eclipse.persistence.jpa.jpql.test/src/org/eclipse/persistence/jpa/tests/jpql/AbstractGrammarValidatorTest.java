@@ -710,6 +710,23 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		);
 	}
 
+	@Test
+	public void test_ArithmeticFactor_MissingExpression_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age + -";
+		int startPosition = "SELECT e FROM Employee e WHERE e.age + -".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.ArithmeticFactor_MissingExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
 //	@Test
 //	public void test_ArithmeticExpression_MissingLeftExpression()
 //	{
@@ -728,23 +745,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 //			endPosition
 //		);
 //	}
-
-	@Test
-	public void test_ArithmeticFactor_MissingExpression_2() throws Exception {
-
-		String query = "SELECT e FROM Employee e WHERE e.age + -";
-		int startPosition = "SELECT e FROM Employee e WHERE e.age + -".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ArithmeticFactor_MissingExpression,
-			startPosition,
-			endPosition
-		);
-	}
 
 	@Test
 	public void test_AvgFunction_InvalidExpression() throws Exception {
@@ -1328,6 +1328,40 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		testHasOnlyOneProblem(
 			problems,
 			JPQLQueryProblemMessages.CollectionMemberExpression_MissingEntityExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_CollectionValuedPathExpression_NotCollectionType_01() throws Exception {
+
+		String query = "SELECT c FROM Customer c WHERE c.lastName MEMBER 6";
+		int startPosition = "SELECT c FROM Customer c WHERE c.lastName MEMBER ".length();
+		int endPosition   = query.length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.CollectionValuedPathExpression_NotCollectionType,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_CollectionValuedPathExpression_NotCollectionType_02() throws Exception {
+
+		String query = "SELECT c FROM Customer c WHERE 6 IS EMPTY";
+		int startPosition = "SELECT c FROM Customer c WHERE ".length();
+		int endPosition   = "SELECT c FROM Customer c WHERE 6".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.CollectionValuedPathExpression_NotCollectionType,
 			startPosition,
 			endPosition
 		);
