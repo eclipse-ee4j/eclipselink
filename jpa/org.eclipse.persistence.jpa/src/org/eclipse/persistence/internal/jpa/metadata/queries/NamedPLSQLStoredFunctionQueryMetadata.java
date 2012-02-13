@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,12 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.util.Map;
 
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -121,13 +123,13 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         // Process the result class.
         if (getResultClass().isVoid()) {
             if (hasResultSetMapping(session)) {
-                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, loader, session));
+                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, loader, session));
             } else {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(call, hints, loader, session));
+                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, loader, session));
             }
         } else {
-            session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, hints, loader, session));
+            session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, hints, loader, session));
         }
     }
 

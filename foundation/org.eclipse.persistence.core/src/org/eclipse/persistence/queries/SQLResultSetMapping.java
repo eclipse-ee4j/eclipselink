@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -28,7 +30,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author Gordon Yorke
  * @since TopLink Java Essentials
  */
-
 public class SQLResultSetMapping {
     /** Stores the name of this SQLResultSetMapping.  This name is unique within
      * The project.
@@ -38,7 +39,7 @@ public class SQLResultSetMapping {
     /** Stores the list of SQLResult in the order they were
      * added to the Mapping
      */
-    protected List results;
+    protected List<SQLResult> results;
     
    
     public SQLResultSetMapping(String name){
@@ -56,9 +57,9 @@ public class SQLResultSetMapping {
      * @param classLoader 
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Iterator iterator = getResults().iterator();
+        Iterator<SQLResult> iterator = getResults().iterator();
         while (iterator.hasNext()){
-            ((SQLResult)iterator.next()).convertClassNamesToClasses(classLoader);
+            iterator.next().convertClassNamesToClasses(classLoader);
         }
     };   
 
@@ -71,17 +72,17 @@ public class SQLResultSetMapping {
             return;
         }
         getResults().add(result);
+        result.setSQLResultMapping(this);
     }
     
     /**
      * Accessor for the internally stored list of ColumnResult.  Calling this
      * method will result in a collection being created to store the ColumnResult
      */
-    public List getResults(){
+    public List<SQLResult> getResults(){
         if (this.results == null){
             this.results = new ArrayList();
         }
         return this.results;
     }
-
 }

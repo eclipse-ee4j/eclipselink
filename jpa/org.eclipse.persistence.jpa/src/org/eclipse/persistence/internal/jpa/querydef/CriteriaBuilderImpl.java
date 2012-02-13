@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2009, 2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Gordon Yorke - Initial development
+ *
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
@@ -11,14 +24,23 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CompoundSelection;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Metamodel;
@@ -2403,6 +2425,50 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
             return this;
         }
     }
-    
+
+    public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <X, T extends X> Path<T> treat(Path<X> path, Class<T> type) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <X, T extends X> Root<T> treat(Root<X> root, Class<T> type) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }    
 }
 

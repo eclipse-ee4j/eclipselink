@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
+ *
  * Contributors:
- *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
- *     Specification available from http://jcp.org/en/jsr/detail?id=317
+ *     Linda DeMichiel - Java Persistence 2.1
+ *     Linda DeMichiel - Java Persistence 2.0
  *
  ******************************************************************************/
 package javax.persistence;
@@ -131,4 +131,47 @@ public interface EntityManagerFactory {
      * @since Java Persistence 2.0
      */
     public PersistenceUnitUtil getPersistenceUnitUtil();
+
+    /**
+     * Define the query, typed query, or stored procedure query as
+     * a named query such that future query objects can be created
+     * from it using the <code>createNamedQuery</code> methods.
+     * <p>Any configuration of the query object (except for actual
+     * parameter binding) in effect when the named query is added
+     * is retained as part of the named query definition.
+     * This includes configuration information such as max results,
+     * hints, flush mode, lock mode, result set mapping information,
+     * and information about stored procedure parameters.
+     * <p>When the query is executed, information that can be set
+     * by means of the <code>Query</code> API can be overridden. Information
+     * that is overridden does not affect the named query as
+     * registered with the entity manager factory, and thus does
+     * not affect subsequent query objects created from it by
+     * means of the <code>createNamedQuery</code> method.
+     * <p>If a named query of the same name has been previously
+     * defined, either statically via metadata or via this method,
+     * that query definition is replaced.
+     *
+     * @param name name for the query
+     * @param query Query, TypedQuery, or StoredProcedureQuery object
+     *
+     * @since Java Persistence 2.1
+     */
+    public void addNamedQuery(String name, Query query);
+
+    /**
+     * Return an object of the specified type to allow access to the
+     * provider-specific API. If the provider's EntityManagerFactory
+     * implementation does not support the specified class, the
+     * PersistenceException is thrown.
+     * @param cls the class of the object to be returned. This is
+     * normally either the underlying EntityManagerFactory
+     * implementation class or an interface that it implements.
+     * @return an instance of the specified class
+     * @throws PersistenceException if the provider does not
+     * support the call
+     * @since Java Persistence 2.1
+     */
+    public <T> T unwrap(Class<T> cls);
+
 }

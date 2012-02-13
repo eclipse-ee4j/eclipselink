@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -21,12 +23,13 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * 
  * @see EntityResult
  * @see ColumnResult
+ * @see ConstructorResult
  * @author Gordon Yorke
  * @since TopLink Java Essentials
  */
-
 public abstract class SQLResult {
-
+    protected SQLResultSetMapping sqlResultSetMapping;
+    
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this SQLResult to actual class-based
@@ -36,13 +39,41 @@ public abstract class SQLResult {
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){};
 
-
+    /**
+     * INTERNAL:
+     * Return the SQLResultSetMapping this SQLResult is part of.
+     */
+    public SQLResultSetMapping getSQLResultMapping() {
+        return sqlResultSetMapping;
+    }
+    
+    /**
+     * Return true if this is a column result.
+     */
     public boolean isColumnResult(){
         return false;
     }
     
+    /**
+     * Return true if this is a constructor result.
+     */
+    public boolean isConstructorResult(){
+        return false;
+    }
+    
+    /**
+     * Return true if this is an entity result.
+     */
     public boolean isEntityResult(){
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the SQLResultSetMapping this SQLResult is part of.
+     */
+    public void setSQLResultMapping(SQLResultSetMapping mapping) {
+        sqlResultSetMapping = mapping;
     }
     
     /**

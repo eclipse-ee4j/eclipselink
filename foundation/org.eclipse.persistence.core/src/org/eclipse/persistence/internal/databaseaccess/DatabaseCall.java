@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/24/2011-2.3 Guy Pelletier 
  *       - 345962: Join fetch query when using tenant discriminator column fails.
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -115,6 +117,12 @@ public abstract class DatabaseCall extends DatasourceCall {
     
     /** Support multiple result sets. */
     protected boolean hasMultipleResultSets;
+    
+    /**
+     * Support returning multiple results sets instead of just one list, i.e.
+     * support multiple results set mappings.
+     */
+    protected boolean returnMultipleResultSetCollections;
 
     /** The SQL string to execute. */
     protected String sqlString;
@@ -720,6 +728,13 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
+     * Return true if the multiple results 'lists' should be returned.
+     */
+    public boolean returnMultipleResultSetCollections() {
+        return returnMultipleResultSetCollections;
+    }
+    
+    /**
      * The fields expected by the calls result set.
      */
     public void setFields(Vector fields) {
@@ -853,6 +868,13 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.returnsResultSet = Boolean.valueOf(returnsResultSet);
     }
 
+    /**
+     * Set if the call returns multiple result sets.
+     */
+    public void setReturnMultipleResultSetCollections(boolean returnMultipleResultSetCollections) {
+        this.returnMultipleResultSetCollections = returnMultipleResultSetCollections;
+    }
+    
     /**
      * INTERNAL:
      * Set whether the call has to build output row

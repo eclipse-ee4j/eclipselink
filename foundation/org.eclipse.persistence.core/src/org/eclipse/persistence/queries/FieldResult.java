@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,9 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
-
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -34,7 +35,7 @@ public class FieldResult {
     /** Stores passed in field name split on the '.' character */
     protected String[] multipleFieldIdentifiers;
     /** FieldResult now can contain multiple FieldResults in a collection if an attribute has multiple fields */
-    java.util.Vector fieldResults;
+    java.util.Vector<FieldResult> fieldResults;
     
     /** Stores the Columns name from the result set that contains the attribute value */
     protected DatabaseField column;
@@ -76,7 +77,7 @@ public class FieldResult {
     /**
      * INTERNAL:
      */
-    public java.util.Vector getFieldResults(){
+    public java.util.Vector<FieldResult> getFieldResults(){
         return fieldResults;
     }
     
@@ -94,7 +95,7 @@ public class FieldResult {
      */
     public void add(FieldResult newFieldResult){
       if( fieldResults ==null){
-          fieldResults = new java.util.Vector();
+          fieldResults = new java.util.Vector<FieldResult>();
           fieldResults.add(this);
       }
       fieldResults.add(newFieldResult);

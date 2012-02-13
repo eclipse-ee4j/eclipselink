@@ -14,8 +14,8 @@
 	<classpathentry kind="var" path="XML_LIB"/>
 	<classpathentry kind="var" path="XMLPARSERV2_LIB"/>
 	<classpathentry kind="var" path="AQAPI_LIB"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
 	<classpathentry kind="var" path="UCP_LIB"/>
 	<classpathentry kind="var" path="NOSQL_LIB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.1.0"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

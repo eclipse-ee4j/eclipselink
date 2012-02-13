@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.*;
+
 import org.eclipse.persistence.config.ReferenceMode;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
@@ -682,5 +683,15 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      */
     public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
         this.shouldOrderUpdates = shouldOrderUpdates;
+    }
+    
+    public void addNamedQuery(String name, Query query) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");    
+    }
+
+    public <T> T unwrap(Class<T> cls) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 }

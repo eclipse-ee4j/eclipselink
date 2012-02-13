@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -23,7 +25,6 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
-import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.FieldResult;
 
 /**
@@ -105,14 +106,14 @@ public class FieldResultMetadata extends ORMetadata {
      * NOTE: Both the name and column are required in XML and annotations
      * so that makes processing easier (no need for defaults).
      */
-    public void process(EntityResult entityResult) {
+    public FieldResult process() {
         DatabaseField field = new DatabaseField();
         
         // Process the name (taking into consideration delimiters etc.)
         setFieldName(field, getColumn());
         
-        // Add a field result to the entity result.
-        entityResult.addFieldResult(new FieldResult(getName(), field));
+        // Return a new field result to the entity result.
+        return new FieldResult(getName(), field);
     }
     
     /**

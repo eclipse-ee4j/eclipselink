@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,8 +14,10 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
@@ -56,5 +58,15 @@ public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X>{
     */
     public javax.persistence.metamodel.SetAttribute<? super Z, X> getModel(){
         return (javax.persistence.metamodel.SetAttribute<? super Z, X>)this.modelArtifact;
+    }
+    
+    public SetJoinImpl<Z, X> on(Expression<Boolean> restriction) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public SetJoinImpl<Z, X> on(Predicate... restrictions) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 }

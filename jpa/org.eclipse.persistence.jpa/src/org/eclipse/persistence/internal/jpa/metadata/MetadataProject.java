@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -81,6 +81,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     09/20/2011-2.3.1 Guy Pelletier 
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1527,7 +1529,7 @@ public class MetadataProject {
     public void processQueries(ClassLoader loader) {
         // Step 1 - process the sql result set mappings first.
         for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings.values()) {
-            sqlResultSetMapping.process(m_session, loader);
+            m_session.getProject().addSQLResultSetMapping(sqlResultSetMapping.process(loader));
         }
         
         // Step 2 - process the named queries second, some may need to validate

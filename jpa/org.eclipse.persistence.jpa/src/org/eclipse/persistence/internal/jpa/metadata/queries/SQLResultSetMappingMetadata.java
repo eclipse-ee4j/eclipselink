@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -23,10 +25,9 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
-import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 
 /**
@@ -47,7 +48,8 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class SQLResultSetMappingMetadata extends ORMetadata {
-    private List<String> m_columnResults = new ArrayList<String>();
+    private List<ColumnResultMetadata> m_columnResults = new ArrayList<ColumnResultMetadata>();
+    private List<ConstructorResultMetadata> m_constructorResults = new ArrayList<ConstructorResultMetadata>();
     private List<EntityResultMetadata> m_entityResults = new ArrayList<EntityResultMetadata>();
     private String m_name;
     
@@ -72,9 +74,25 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
             m_entityResults.add(new EntityResultMetadata((MetadataAnnotation) entityResult, accessor));
         }
         
-        for (Object columnResult : (Object[]) sqlResultSetMapping.getAttributeArray("columns")) {
-            m_columnResults.add((String)((MetadataAnnotation)columnResult).getAttribute("name"));
+        for (Object constructorResult : (Object[]) sqlResultSetMapping.getAttributeArray("classes")) {
+            m_constructorResults.add(new ConstructorResultMetadata((MetadataAnnotation) constructorResult, accessor));
         }
+        
+        for (Object columnResult : (Object[]) sqlResultSetMapping.getAttributeArray("columns")) {
+            m_columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for result class processing.
+     */
+    public SQLResultSetMappingMetadata(MetadataClass entityClass) {
+        // Since a result set mapping requires a name, set it to the entity 
+        // class name.
+        m_name = entityClass.getName();
+        
+        m_entityResults.add(new EntityResultMetadata(entityClass));
     }
     
     /**
@@ -93,6 +111,10 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
                 return false;
             }
             
+            if (! valuesMatch(m_constructorResults, sqlResultSetMapping.getConstructorResults())) {
+                return false;
+            }
+            
             return valuesMatch(m_entityResults, sqlResultSetMapping.getEntityResults());
         }
         
@@ -103,8 +125,16 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<String> getColumnResults() {
+    public List<ColumnResultMetadata> getColumnResults() {
         return m_columnResults;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ConstructorResultMetadata> getConstructorResults() {
+        return m_constructorResults;
     }
     
     /**
@@ -140,42 +170,49 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
         
         // Initialize lists of objects.
         initXMLObjects(m_entityResults, accessibleObject);
+        initXMLObjects(m_constructorResults, accessibleObject);
+        initXMLObjects(m_columnResults, accessibleObject);
     }
     
     /**
      * INTERNAL:
      * Process an sql result set mapping metadata into a EclipseLink 
-     * SqlResultSetMapping and store it on the session.
+     * SqlResultSetMapping and store it on the session. The order of processing
+     * the results and adding them is important to be spec compliant.
+     * 
+     * NOTE: SQLResultSetMapping and queries are processed with the real
+     * classloader and therefore, any class dependencies must be loaded
+     * during processing. You can not rely on setting a class name and hope 
+     * rely on convert class names to classes to be called (it's already been 
+     * called)
      */
-    public void process(AbstractSession session, ClassLoader loader) {        
+    public SQLResultSetMapping process(ClassLoader loader) {        
         // Initialize a new SqlResultSetMapping (with the metadata name)
         SQLResultSetMapping mapping = new SQLResultSetMapping(getName());
         
-        // Process the entity results.
+        // Process the entity results first.
         for (EntityResultMetadata entityResult : m_entityResults) {
-            entityResult.process(mapping, loader);
+            mapping.addResult(entityResult.process(loader));
+        }
+            
+        // Process the constructor results second.
+        for (ConstructorResultMetadata constructorResult : m_constructorResults) {
+            mapping.addResult(constructorResult.process(loader));
         }
         
-        // Process the column results.
-        for (String columnResult : m_columnResults) {
-            ColumnResult result = new ColumnResult(columnResult);
-            if (getProject().useDelimitedIdentifier()) {
-                result.getColumn().setUseDelimiters(true);
-            }
-            if (getProject().getShouldForceFieldNamesToUpperCase()) {
-                result.getColumn().useUpperCaseForComparisons(true);
-            }
-            mapping.addResult(result);
+        // Process the column results third.
+        for (ColumnResultMetadata columnResult : m_columnResults) {
+            mapping.addResult(columnResult.process(loader));
         }
         
-        session.getProject().addSQLResultSetMapping(mapping);
+        return mapping;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setColumnResults(List<String> columnResults) {            
+    public void setColumnResults(List<ColumnResultMetadata> columnResults) {            
         m_columnResults = columnResults; 
     }
     
@@ -183,6 +220,9 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setConstructorResults(List<ConstructorResultMetadata> constructorResults) {
+        m_constructorResults = constructorResults;
+    }
     
     /**
      * INTERNAL:

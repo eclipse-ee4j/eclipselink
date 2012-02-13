@@ -1,23 +1,23 @@
 Manifest-Version: 1.0
-Export-Package: javax.persistence.spi;jpa="2.0";uses:="javax.persistence,javax.sql";version="2.0.4",
- javax.persistence;jpa="2.0";uses:="javax.persistence.criteria,javax.persistence.metamodel,javax.persistence.spi";version="2.0.4",
- javax.persistence.criteria;jpa="2.0";uses:="javax.persistence.metamodel,javax.persistence";version="2.0.4",
- javax.persistence.metamodel;jpa="2.0";version="2.0.4",
- org.osgi.service.jpa;uses:="javax.persistence";version="1.0.0"
+Export-Package: javax.persistence;jpa="2.0";version="2.0.100";uses:="javax.persistence.criteria,javax.persistence.metamodel,javax.persistence.spi",
+ javax.persistence.criteria;jpa="2.0";version="2.0.100";uses:="javax.persistence.metamodel,javax.persistence",
+ javax.persistence.metamodel;jpa="2.0";version="2.0.100",
+ javax.persistence.spi;jpa="2.0";version="2.0.100";uses:="javax.persistence,javax.sql",
+ org.osgi.service.jpa;version="1.0.0";uses:="javax.persistence"
 Private-Package: .,org.eclipse.persistence.javax.persistence.osgi
-Implementation-Version: 2.0.4
+Implementation-Version: 2.0.100
 Bundle-ClassPath: .
 Specification-Vendor: Sun Microsystems Inc.
 Tool: Bnd-0.0.366
 DSTAMP: 20111216
-Bundle-Name: Java Persistence API 2.0
+Bundle-Name: Java Persistence API 2.1
 TODAY: December 16 2011
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
 TSTAMP: 1009
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.0.4.v201112161009
+Bundle-Version: 2.0.100.qualifier
 Bnd-LastModified: 1324048194634
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activator
@@ -33,6 +33,6 @@ Include-Resource: ../../../about.html,
 Import-Package: javax.sql;resolution:=optional,
  org.osgi.framework;resolution:=optional,
  org.osgi.service.jpa;version="1.0.0"
-Specification-Version: 2.0
+Specification-Version: 2.1
 Bundle-SymbolicName: javax.persistence
 

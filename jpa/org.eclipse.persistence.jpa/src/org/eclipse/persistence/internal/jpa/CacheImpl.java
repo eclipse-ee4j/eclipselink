@@ -458,4 +458,9 @@ public class CacheImpl implements JpaCache {
             return getEntityManagerFactory().getIdentifier(object);
         }
     }
+    
+    public <T> T unwrap(Class<T> cls) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
 }

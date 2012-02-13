@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.antlr"/>
@@ -15,5 +14,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.validation"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.modelgen.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa.osgi"/>
+	<classpathentry kind="var" path="JAXRS_LIB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.1.0"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

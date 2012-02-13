@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,7 +14,9 @@
  *     05/24/2011-2.3 Guy Pelletier 
  *       - 345962: Join fetch query when using tenant discriminator column fails.
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls 
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -195,6 +197,7 @@ public class QueryException extends ValidationException {
     public final static int FAILOVER_FAILED = 6173;
     public final static int MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION = 6174;
     public static final int NATIVE_SQL_QUERIES_ARE_DISABLED = 6175;
+    public final static int EXCEPTION_WHILE_LOADING_CONSTRUCTOR = 6176;
     
     /**
      * INTERNAL:
@@ -491,6 +494,19 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXAMPLE_AND_REFERENCE_OBJECT_CLASS_MISMATCH, args));
         queryException.setErrorCode(EXAMPLE_AND_REFERENCE_OBJECT_CLASS_MISMATCH);
+        queryException.setQuery(query);
+        return queryException;
+    }
+
+    /**
+     * An exception was thrown while initializing the constructor from the class.
+     */
+    public static QueryException exceptionWhileInitializingConstructor(Exception thrownException, DatabaseQuery query, Class targetClass) {
+        Object[] args = { targetClass, thrownException };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_LOADING_CONSTRUCTOR, args));
+        queryException.setErrorCode(EXCEPTION_WHILE_LOADING_CONSTRUCTOR);
+        queryException.setInternalException(thrownException);
         queryException.setQuery(query);
         return queryException;
     }
@@ -998,7 +1014,7 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(REDIRECTION_CLASS_OR_METHOD_NOT_SET);
         return queryException;
     }
-
+    
     public static QueryException unableToSetRedirectorOnQueryFromHint(DatabaseQuery query, String hint, String redirectorClass, Exception ex) {
         Object[] args = {hint, redirectorClass  };
 

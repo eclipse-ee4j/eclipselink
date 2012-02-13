@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -40,7 +42,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author Gordon Yorke
  * @since TopLink Java Essentials
  */
-
 public class EntityResult extends SQLResult {
     /** Stores the class name of result  */
     protected String entityClassName;
@@ -160,7 +161,7 @@ public class EntityResult extends SQLResult {
             } else {
                 value = record.getIndicatingNoEntry(this.discriminatorColumn);
                 if (value == AbstractRecord.noEntry){
-                    throw QueryException.discriminatorColumnNotSelected(this.discriminatorColumn.getName(), query.getSQLResultSetMapping().getName());
+                    throw QueryException.discriminatorColumnNotSelected(this.discriminatorColumn.getName(), getSQLResultMapping().getName());
                 }
             }            
             entityRecord.put(descriptor.getInheritancePolicy().getClassIndicatorField(), value);

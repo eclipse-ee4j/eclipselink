@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -65,6 +65,8 @@
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *     08/18/2011-2.3.1 Guy Pelletier 
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -149,6 +151,8 @@ import org.eclipse.persistence.internal.jpa.metadata.partitioning.RoundRobinPart
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.UnionPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitionMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitioningMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.ColumnResultMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.ConstructorResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FetchAttributeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
@@ -259,6 +263,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildQueryHintDescriptor());
         addDescriptor(buildEntityResultDescriptor());
         addDescriptor(buildFieldResultDescriptor());
+        addDescriptor(buildColumnResultDescriptor());
+        addDescriptor(buildConstructorResultDescriptor());
         addDescriptor(buildDefaultRedirectorsDescriptor());
 
         addDescriptor(buildNamedStoredProcedureQueryDescriptor());
@@ -911,7 +917,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
     
-    
     /**
      * INTERNAL:
      * XSD: collection-table
@@ -961,35 +966,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: field
+     * XSD: column-result
      */
-    protected ClassDescriptor buildFieldDescriptor() {
+    protected ClassDescriptor buildColumnResultDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(FieldMetadata.class);
-    
+        descriptor.setJavaClass(ColumnResultMetadata.class);
+        
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTypeNameAttributeMapping());
         
         return descriptor;
     }
     
     /**
      * INTERNAL:
-     * XSD: field
+     * XSD: column-result
      */
-    protected ClassDescriptor buildJoinFieldDescriptor() {
+    protected ClassDescriptor buildConstructorResultDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(JoinFieldMetadata.class);
-    
-        // Attribute mappings.
-        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.setJavaClass(ConstructorResultMetadata.class);
         
-        XMLDirectMapping referencedFieldNameMapping = new XMLDirectMapping();
-        referencedFieldNameMapping.setAttributeName("m_referencedColumnName");
-        referencedFieldNameMapping.setGetMethodName("getReferencedColumnName");
-        referencedFieldNameMapping.setSetMethodName("setReferencedColumnName");
-        referencedFieldNameMapping.setXPath("@referenced-field-name");
-        descriptor.addMapping(referencedFieldNameMapping);
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getColumnResultsMapping());
+        
+        // Attribute mappings.
+        descriptor.addMapping(getTargetClassAttributeMapping());
         
         return descriptor;
     }
@@ -1705,7 +1707,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: fetch-group
+     * XSD: fetch-attribute
      */
     protected ClassDescriptor buildFetchAttributeDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1751,6 +1753,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: field
+     */
+    protected ClassDescriptor buildFieldDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(FieldMetadata.class);
+    
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: field-result
      */
     protected ClassDescriptor buildFieldResultDescriptor() {
@@ -1789,6 +1805,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
      * XSD: hash-partitioning
      */
     protected ClassDescriptor buildHashPartitioningDescriptor() {
@@ -1919,6 +1936,27 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getUpdatableAttributeMapping());
         descriptor.addMapping(getColumnDefinitionAttributeMapping());
         descriptor.addMapping(getTableAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: join-field
+     */
+    protected ClassDescriptor buildJoinFieldDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(JoinFieldMetadata.class);
+    
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        XMLDirectMapping referencedFieldNameMapping = new XMLDirectMapping();
+        referencedFieldNameMapping.setAttributeName("m_referencedColumnName");
+        referencedFieldNameMapping.setGetMethodName("getReferencedColumnName");
+        referencedFieldNameMapping.setSetMethodName("setReferencedColumnName");
+        referencedFieldNameMapping.setXPath("@referenced-field-name");
+        descriptor.addMapping(referencedFieldNameMapping);
         
         return descriptor;
     }
@@ -2278,6 +2316,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(NamedStoredProcedureQueryMetadata.class);
 
         // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getResultClasses());
+        descriptor.addMapping(getResultSetMappings());
         descriptor.addMapping(getHintMapping());
         descriptor.addMapping(getParametersMapping());
         
@@ -2301,6 +2341,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         multipleResultSetsMapping.setSetMethodName("setMultipleResultSets");
         multipleResultSetsMapping.setXPath("@multiple-result-sets");
         descriptor.addMapping(multipleResultSetsMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: no-sql
+     */
+    protected ClassDescriptor buildNoSqlDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NoSqlMetadata.class);
+        
+        // Attribute mappings.
+        XMLDirectMapping dataTypeMapping = new XMLDirectMapping();
+        dataTypeMapping.setAttributeName("m_dataType");
+        dataTypeMapping.setGetMethodName("getDataType");
+        dataTypeMapping.setSetMethodName("setDataType");
+        dataTypeMapping.setXPath("@data-type");
+        descriptor.addMapping(dataTypeMapping);
+        
+        XMLDirectMapping dataFormatMapping = new XMLDirectMapping();
+        dataFormatMapping.setAttributeName("m_dataFormat");
+        dataFormatMapping.setGetMethodName("getDataFormat");
+        dataFormatMapping.setSetMethodName("setDataFormat");
+        dataFormatMapping.setXPath("@data-format");
+        descriptor.addMapping(dataFormatMapping);
         
         return descriptor;
     }
@@ -2507,6 +2573,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
      * XSD: partitioning
      */
     protected ClassDescriptor buildPartitioningDescriptor() {
@@ -2593,6 +2660,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
      * XSD: pinned-partitioning
      */
     protected ClassDescriptor buildPinnedPartitioningDescriptor() {
@@ -2760,6 +2828,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }    
     
     /**
+     * INTERNAL:
      * XSD: range-partition
      */
     protected ClassDescriptor buildRangePartitionDescriptor() {
@@ -2786,6 +2855,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
      * XSD: range-partitioning
      */
     protected ClassDescriptor buildRangePartitioningDescriptor() {
@@ -2829,6 +2899,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
 
     /**
+     * INTERNAL:
      * XSD: replication-partitioning
      */
     protected ClassDescriptor buildReplicationPartitioningDescriptor() {
@@ -2860,6 +2931,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
      * XSD: round-robin-partitioning
      */
     protected ClassDescriptor buildRoundRobinPartitioningDescriptor() {
@@ -2918,39 +2990,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: sequence-generator
-     */
-    protected ClassDescriptor buildUuidGeneratorDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(UuidGeneratorMetadata.class);
-
-        descriptor.addMapping(getNameAttributeMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * INTERNAL:
      * XSD: sql-result-set-mapping
      */
     protected ClassDescriptor buildSqlResultSetMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(SQLResultSetMappingMetadata.class);
         
-        XMLCompositeCollectionMapping entityResultsMapping = new XMLCompositeCollectionMapping();
-        entityResultsMapping.setAttributeName("m_entityResults");
-        entityResultsMapping.setGetMethodName("getEntityResults");
-        entityResultsMapping.setSetMethodName("setEntityResults");
-        entityResultsMapping.setReferenceClass(EntityResultMetadata.class);
-        entityResultsMapping.setXPath("orm:entity-result");
-        descriptor.addMapping(entityResultsMapping);
-        
-        XMLCompositeDirectCollectionMapping columnResultsMapping = new XMLCompositeDirectCollectionMapping();
-        columnResultsMapping.setAttributeName("m_columnResults");
-        columnResultsMapping.setGetMethodName("getColumnResults");
-        columnResultsMapping.setSetMethodName("setColumnResults");
-        columnResultsMapping.setXPath("orm:column-result/@name");
-        descriptor.addMapping(columnResultsMapping);
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getEntityResultsMapping());
+        descriptor.addMapping(getConstructorResultsMapping());
+        descriptor.addMapping(getColumnResultsMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
@@ -2968,6 +3017,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Attribute mappings.
         descriptor.addMapping(getDirectionAttributeMapping());
+        descriptor.addMapping(getModeAttributeMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getQueryParameterAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
@@ -3032,32 +3082,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
         descriptor.addMapping(getCreationSuffixMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * XSD: no-sql
-     */
-    protected ClassDescriptor buildNoSqlDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(NoSqlMetadata.class);
-        
-        // Attribute mappings.
-        XMLDirectMapping dataTypeMapping = new XMLDirectMapping();
-        dataTypeMapping.setAttributeName("m_dataType");
-        dataTypeMapping.setGetMethodName("getDataType");
-        dataTypeMapping.setSetMethodName("setDataType");
-        dataTypeMapping.setXPath("@data-type");
-        descriptor.addMapping(dataTypeMapping);
-        
-        XMLDirectMapping dataFormatMapping = new XMLDirectMapping();
-        dataFormatMapping.setAttributeName("m_dataFormat");
-        dataFormatMapping.setGetMethodName("getDataFormat");
-        dataFormatMapping.setSetMethodName("setDataFormat");
-        dataFormatMapping.setXPath("@data-format");
-        descriptor.addMapping(dataFormatMapping);
         
         return descriptor;
     }
@@ -3283,6 +3307,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
      * XSD: union-partitioning
      */
     protected ClassDescriptor buildUnionPartitioningDescriptor() {
@@ -3314,6 +3339,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
+     * XSD: uuid-generator
+     */
+    protected ClassDescriptor buildUuidGeneratorDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(UuidGeneratorMetadata.class);
+
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: value-partition
      */
     protected ClassDescriptor buildValuePartitionDescriptor() {
@@ -3333,6 +3372,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
      * XSD: value-partitioning
      */
     protected ClassDescriptor buildValuePartitioningDescriptor() {
@@ -3368,7 +3408,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
 
-    
     /**
      * INTERNAL:
      * XSD: variable-one-to-one
@@ -3835,6 +3874,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeCollectionMapping getColumnResultsMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_columnResults");
+        mapping.setGetMethodName("getColumnResults");
+        mapping.setSetMethodName("setColumnResults");
+        mapping.setReferenceClass(ColumnResultMetadata.class);
+        mapping.setXPath("orm:column-result");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getCompatibleTypeAttributeMapping() {
         XMLDirectMapping typeMapping = new XMLDirectMapping();
         typeMapping.setAttributeName("compatibleType");
@@ -3883,6 +3935,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeCollectionMapping getConstructorResultsMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_constructorResults");
+        mapping.setGetMethodName("getConstructorResults");
+        mapping.setSetMethodName("setConstructorResults");
+        mapping.setReferenceClass(ConstructorResultMetadata.class);
+        mapping.setXPath("orm:constructor-result");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getContextPropertyAttributeMapping() {
         XMLDirectMapping contextPropertyMapping = new XMLDirectMapping();
         contextPropertyMapping.setAttributeName("m_contextProperty");
@@ -3902,19 +3967,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setSetMethodName("setStruct");
         mapping.setReferenceClass(StructMetadata.class);
         mapping.setXPath("orm:struct");
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLCompositeObjectMapping getNoSqlMapping() {
-        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
-        mapping.setAttributeName("m_noSql");
-        mapping.setGetMethodName("getNoSql");
-        mapping.setSetMethodName("setNoSql");
-        mapping.setReferenceClass(NoSqlMetadata.class);
-        mapping.setXPath("orm:no-sql");
         return mapping;
     }
     
@@ -4095,6 +4147,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return entityListenersMapping;
     }
 
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getEntityResultsMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_entityResults");
+        mapping.setGetMethodName("getEntityResults");
+        mapping.setSetMethodName("setEntityResults");
+        mapping.setReferenceClass(EntityResultMetadata.class);
+        mapping.setXPath("orm:entity-result");
+        return mapping;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -4646,6 +4711,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getModeAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_mode");
+        mapping.setGetMethodName("getMode");
+        mapping.setSetMethodName("setMode");
+        mapping.setXPath("@mode");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getMultitenantMapping() {
         XMLCompositeObjectMapping multitenantMapping = new XMLCompositeObjectMapping();
         multitenantMapping.setAttributeName("m_multitenant");
@@ -4774,6 +4851,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return noncacheable;
     }
 
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getNoSqlMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName("m_noSql");
+        mapping.setGetMethodName("getNoSql");
+        mapping.setSetMethodName("setNoSql");
+        mapping.setReferenceClass(NoSqlMetadata.class);
+        mapping.setXPath("orm:no-sql");
+        return mapping;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -5288,6 +5378,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeDirectCollectionMapping getResultClasses() {
+        XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
+        mapping.setAttributeName("m_resultClassNames");
+        mapping.setGetMethodName("getResultClassNames");
+        mapping.setSetMethodName("setResultClassNames");
+        mapping.setXPath("orm:result-class");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getResultSetMappingAttributeMapping() {
         XMLDirectMapping resultSetMappingMapping = new XMLDirectMapping();
         resultSetMappingMapping.setAttributeName("m_resultSetMapping");
@@ -5308,6 +5410,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         sqlResultSetMappingMapping.setReferenceClass(SQLResultSetMappingMetadata.class);
         sqlResultSetMappingMapping.setXPath("orm:sql-result-set-mapping");
         return sqlResultSetMappingMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeDirectCollectionMapping getResultSetMappings() {
+        XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
+        mapping.setAttributeName("m_resultSetMappings");
+        mapping.setGetMethodName("getResultSetMappings");
+        mapping.setSetMethodName("setResultSetMappings");
+        mapping.setXPath("orm:result-set-mapping");
+        return mapping;
     }
     
     /**
@@ -5408,19 +5522,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         tableGeneratorMapping.setReferenceClass(TableGeneratorMetadata.class);
         tableGeneratorMapping.setXPath("orm:table-generator");
         return tableGeneratorMapping;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected XMLCompositeObjectMapping getUuidGeneratorMapping() {
-        XMLCompositeObjectMapping uuidGeneratorMapping = new XMLCompositeObjectMapping();
-        uuidGeneratorMapping.setAttributeName("m_uuidGenerator");
-        uuidGeneratorMapping.setGetMethodName("getUuidGenerator");
-        uuidGeneratorMapping.setSetMethodName("setUuidGenerator");
-        uuidGeneratorMapping.setReferenceClass(UuidGeneratorMetadata.class);
-        uuidGeneratorMapping.setXPath("orm:uuid-generator");
-        return uuidGeneratorMapping;
     }
     
     /**
@@ -5525,6 +5626,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getTypeNameAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_typeName");
+        mapping.setGetMethodName("getTypeName");
+        mapping.setSetMethodName("setTypeName");
+        mapping.setXPath("@type");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getUnionPartitioningMapping() {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setAttributeName("m_unionPartitioning");
@@ -5582,6 +5695,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         updatableMapping.setSetMethodName("setUpdatable");
         updatableMapping.setXPath("@updatable");
         return updatableMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getUuidGeneratorMapping() {
+        XMLCompositeObjectMapping uuidGeneratorMapping = new XMLCompositeObjectMapping();
+        uuidGeneratorMapping.setAttributeName("m_uuidGenerator");
+        uuidGeneratorMapping.setGetMethodName("getUuidGenerator");
+        uuidGeneratorMapping.setSetMethodName("setUuidGenerator");
+        uuidGeneratorMapping.setReferenceClass(UuidGeneratorMetadata.class);
+        uuidGeneratorMapping.setXPath("orm:uuid-generator");
+        return uuidGeneratorMapping;
     }
     
     /**

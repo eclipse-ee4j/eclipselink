@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
@@ -63,6 +64,16 @@ public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X
 
     public Expression<Integer> index() {
         return new ExpressionImpl<Integer>(this.metamodel, ClassConstants.INTEGER, this.currentNode.index());
+    }
+    
+    public ListJoinImpl<Z, X> on(Expression<Boolean> restriction) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public ListJoinImpl<Z, X> on(Predicate... restrictions) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 
 }

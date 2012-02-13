@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -76,6 +78,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "null_values_for_field_result", "Both Attribute Name and Column Name must be provided for a FieldResult"},
                                            { "null_value_for_column_result", "Column Name must be provided for a ColumnResult"},
                                            { "null_value_for_entity_result", "Entity Class name must be provided for Entity Result"},
+                                           { "null_value_for_constructor_result", "Target Class name must be provided for Constructor Result"},
                                            { "null_value_in_sqlresultsetmapping", "A name must be provided for the SQLResultSetMapping.  This name is used to reference the SQLResultSetMapping from a query."},
                                            { "null_sqlresultsetmapping_in_query", "The ResultSetMappingQuery must have a SQLResultSetMapping set to be valid"},
                                            { "called_get_entity_manager_from_non_jta", "getEntityManager() is being called from a non-JTA enable EntityManagerFactory.  Please ensure JTA is properly set-up on your EntityManagerFactory."},

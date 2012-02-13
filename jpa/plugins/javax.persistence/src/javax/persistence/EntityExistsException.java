@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
- * Contributors:
- *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
- *     Specification available from http://jcp.org/en/jsr/detail?id=317
+ * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
  *
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Linda DeMichiel - Java Persistence 2.1
+ *     Linda DeMichiel - Java Persistence 2.0
+ *
+ ******************************************************************************/ 
 package javax.persistence;
 
 /**
@@ -23,7 +23,8 @@ package javax.persistence;
  * If the entity already exists, the <code>EntityExistsException</code> may be thrown when
  * the persist operation is invoked, or the <code>EntityExistsException</code> or another
  * <code>PersistenceException</code> may be thrown at flush or commit time.
- * <p> The current transaction, if one is active, will be marked for rollback.
+ * <p> The current transaction, if one is active and the persistence context
+ * has been joined to it, will be marked for rollback.
  *
  * @see javax.persistence.EntityManager#persist(Object)
  * 

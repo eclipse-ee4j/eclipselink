@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -587,5 +588,15 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      */
     public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
         delegate.setShouldOrderUpdates(shouldOrderUpdates);
+    }
+    
+    public void addNamedQuery(String name, Query query) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <T> T unwrap(Class<T> cls) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 }

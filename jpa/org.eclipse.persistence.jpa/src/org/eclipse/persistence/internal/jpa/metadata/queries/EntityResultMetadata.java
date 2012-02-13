@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -28,7 +30,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.queries.EntityResult;
-import org.eclipse.persistence.queries.SQLResultSetMapping;
 
 /**
  * INTERNAL:
@@ -60,7 +61,7 @@ public class EntityResultMetadata extends ORMetadata {
     public EntityResultMetadata() {
         super("<entity-result>");
     }
-
+    
     /**
      * INTERNAL:
      * Used for annotation loading.
@@ -74,6 +75,14 @@ public class EntityResultMetadata extends ORMetadata {
         for (Object fieldResult : (Object[]) entityResult.getAttributeArray("fields")) {
             m_fieldResults.add(new FieldResultMetadata((MetadataAnnotation) fieldResult, accessor));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for result class processing.
+     */
+    public EntityResultMetadata(MetadataClass entityClass) {
+        m_entityClass = entityClass;
     }
     
     /**
@@ -146,13 +155,13 @@ public class EntityResultMetadata extends ORMetadata {
      * INTERNAL:
      * Process the entity result for the given sql result set mapping.
      */
-    public void process(SQLResultSetMapping mapping, ClassLoader loader) {
+    public EntityResult process(ClassLoader loader) {
         // Create a new entity result.
         EntityResult entityResult = new EntityResult(MetadataHelper.getClassForName(getEntityClass().getName(), loader));
     
         // Process the field results.
         for (FieldResultMetadata fieldResult : getFieldResults()) {
-            fieldResult.process(entityResult);
+            entityResult.addFieldResult(fieldResult.process());
         }
     
         // Process the discriminator value;
@@ -166,8 +175,8 @@ public class EntityResultMetadata extends ORMetadata {
             entityResult.setDiscriminatorColumn(discriminatorField);
         }
     
-        // Add the result to the SqlResultSetMapping.
-        mapping.addResult(entityResult);
+        // Return the entity result to the caller.
+        return entityResult;
     }
     
     /**

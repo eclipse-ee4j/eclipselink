@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Vikram Bhatia - bug fix for releasing temporary LOBs after conversion
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -728,9 +730,18 @@ public class DatabaseAccessor extends DatasourceAccessor {
                         results = new Vector(0);
                     }
                     if (result == null) {
-                        result = results;
+                        if (call.returnMultipleResultSetCollections()) {
+                            result = new Vector();
+                            ((List) result).add(results);
+                        } else {
+                            result = results;
+                        }
                     } else {
-                        ((List)result).addAll(results);
+                        if (call.returnMultipleResultSetCollections()) {
+                            ((List)result).add(results);
+                        } else {
+                            ((List)result).addAll(results);
+                        }
                     }
                     if (hasMultipleResultsSets) {
                         hasMoreResultsSets = statement.getMoreResults();

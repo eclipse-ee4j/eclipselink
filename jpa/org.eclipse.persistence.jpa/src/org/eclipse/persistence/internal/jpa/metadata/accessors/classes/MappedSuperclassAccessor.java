@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -66,6 +66,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 8)
  *     07/03/2011-2.3.1 Guy Pelletier 
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -88,6 +90,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.TableGenerator;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.NamedStoredProcedureQueries;
 
 import org.eclipse.persistence.annotations.AdditionalCriteria;
 import org.eclipse.persistence.annotations.Cache;
@@ -102,8 +106,6 @@ import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.QueryRedirectors;
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.Multitenant;
-import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
-import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.ReadOnly;
 import org.eclipse.persistence.annotations.UuidGenerator;
@@ -1368,9 +1370,24 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             getProject().addQuery(namedStoredProcedureQuery);
         }
         
+        // Process the JPA named stored procedure query annotations.
+        // Look for a JPA @NamedStoredProcedureQueries.
+        MetadataAnnotation jpaNamedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
+        if (jpaNamedStoredProcedureQueries != null) {
+            for (Object jpaNamedStoredProcedureQuery : (Object[]) jpaNamedStoredProcedureQueries.getAttribute("value")) { 
+                getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation) jpaNamedStoredProcedureQuery, this));
+            }
+        }
+        
+        // Look for a JPA @NamedStoredProcedureQuery.
+        MetadataAnnotation jpaNamedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
+        if (jpaNamedStoredProcedureQuery != null) {
+            getProject().addQuery(new NamedStoredProcedureQueryMetadata(jpaNamedStoredProcedureQuery, this));
+        }
+        
         // Process the named stored procedure query annotations.
         // Look for a @NamedStoredProcedureQueries.
-        MetadataAnnotation namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
+        MetadataAnnotation namedStoredProcedureQueries = getAnnotation(org.eclipse.persistence.annotations.NamedStoredProcedureQueries.class);
         if (namedStoredProcedureQueries != null) {
             for (Object namedStoredProcedureQuery : (Object[]) namedStoredProcedureQueries.getAttribute("value")) { 
                 getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation) namedStoredProcedureQuery, this));
@@ -1378,7 +1395,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
         
         // Look for a @NamedStoredProcedureQuery.
-        MetadataAnnotation namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
+        MetadataAnnotation namedStoredProcedureQuery = getAnnotation(org.eclipse.persistence.annotations.NamedStoredProcedureQuery.class);
         if (namedStoredProcedureQuery != null) {
             getProject().addQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, this));
         }

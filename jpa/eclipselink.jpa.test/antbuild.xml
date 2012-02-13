@@ -386,6 +386,7 @@
     <target name="init">
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${classes.dir}"/>
+    	<mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.jpa21.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.only.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.model}"/>
@@ -557,14 +558,20 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, 
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, 
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, 
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
-                              org/eclipse/persistence/testing/tests/**/*.class"/>
+                              org/eclipse/persistence/testing/tests/**/*.class"
+                    excludes="org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
+        </jar>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.jpa21.tests.jar}">
+           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                    includes="org/eclipse/persistence/testing/framework/**/*.class,
+                              org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar>
     </target>
 
@@ -633,7 +640,8 @@
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
                                org/eclipse/persistence/testing/models/jpa/composite/**
                                org/eclipse/persistence/testing/models/jpa/jaxrs/**
-                               org/eclipse/persistence/testing/models/weaving/**"/>
+                               org/eclipse/persistence/testing/models/weaving/**
+                               org/eclipse/persistence/testing/models/jpa21/**"/>
         </copy>
         <antcall target="prepare-spring-xmls" inheritRefs="true">
             <param name="MODEL_NAME" value="${eclipselink.annotation.model}"/>
@@ -692,6 +700,20 @@
         </jar>
     </target>
 
+    <target name="package-jpa21-model" depends="">
+      <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.jpa21.model}/META-INF">
+          <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.jpa21.model}" includes="*.xml"/>
+      </copy>
+      <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.jpa21.model}">
+          <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                   includes="org/eclipse/persistence/testing/models/jpa21/**"/>
+      </copy>
+      <jar jarfile="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar">
+          <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.jpa21.model}">
+          </fileset>
+      </jar>
+    </target>
+    	
     <target name="package-xml-extended" depends="">
       <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.extended.model}/META-INF">
           <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink.xml.extended.model}" includes="*.xml"/>
@@ -1091,6 +1113,8 @@
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
             <fileset dir="${eclipselink.jpa.test}/${build.dir}"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+        	<fileset file="${eclipselink.jpa.test}/${eclipselink.jpa21.tests.jar}"/>
+        	<fileset file="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar"/>
@@ -1171,6 +1195,13 @@
             <pathelement path="../../../extension.lib.external/${slf4j.api.jar}"/>
             <pathelement path="../../../extension.lib.external/${slf4j.jdk.jar}"/>
             <pathelement path="../../../extension.lib.external/${validation.api.jar}"/>
+        </path>
+        <path id="run.jpa21.classpath">
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.jpa21.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"/>
         </path>
         <path id="run.extended.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
@@ -1847,6 +1878,13 @@
                <classpath>
                     <path refid="run.classpath"/>
                     <pathelement path="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
+               </classpath>
+        </weave>
+        <weave source="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"
+               target="${eclipselink.jpa.test}/woven-${eclipselink.jpa21.model}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                    <path refid="run.jpa21.classpath"/>
                </classpath>
         </weave>
         <weave source="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"

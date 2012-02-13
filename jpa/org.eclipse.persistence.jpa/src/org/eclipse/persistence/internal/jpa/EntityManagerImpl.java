@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,6 +21,8 @@
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *     07/13/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     02/08/2012-2.4 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -28,8 +30,10 @@ import java.util.*;
 
 import javax.persistence.*;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 import javax.sql.DataSource;
 
@@ -940,7 +944,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws PersistenceException
      *             if an unsupported lock call is made
      */
-    public void refresh(Object entity, LockModeType lockMode, Map properties) {
+    public void refresh(Object entity, LockModeType lockMode, Map<String, Object> properties) {
         try {
             verifyOpen();
             UnitOfWorkImpl uow = getActivePersistenceContext(checkForTransaction(false));
@@ -1068,6 +1072,27 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return (TypedQuery<T>) createNamedQuery(name);
     }
 
+    /**
+     * Create an instance of StoredProcedureQuery for executing a
+     * stored procedure in the database.
+     * @param name name assigned to the stored procedure query
+     * in metadata
+     * @return the new stored procedure query instance
+     * @throws IllegalArgumentException if a query has not been
+     * defined with the given name
+     */
+    public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
+        try {
+            verifyOpen();
+            StoredProcedureQueryImpl query = new StoredProcedureQueryImpl(name, this);
+            query.getDatabaseQueryInternal();
+            return query;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+    
     /**
      * Create an instance of Query for executing a native SQL query.
      * 
@@ -1454,7 +1479,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw e;
         }
     }
-
+    
     /**
      * This method is used to create a query using a EclipseLink Call.
      */
@@ -1620,7 +1645,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws javax.persistence.TransactionRequiredException
      *             if there is no transaction
      */
-    public void lock(Object entity, LockModeType lockMode, Map properties) {
+    public void lock(Object entity, LockModeType lockMode, Map<String, Object> properties) {
         try {
             verifyOpen();
 
@@ -2582,5 +2607,35 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if(errorMsg != null) {
             throw new javax.persistence.EntityNotFoundException(errorMsg);
         }
+    }
+    
+    public Query createQuery(CriteriaUpdate updateQuery) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public Query createQuery(CriteriaDelete deleteQuery) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, String... resultSetMappings) {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public boolean isJoinedToTransaction() {
+        // TODO: implement
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 }
