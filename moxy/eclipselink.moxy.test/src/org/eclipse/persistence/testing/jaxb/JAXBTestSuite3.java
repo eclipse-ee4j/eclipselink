@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimple
 import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.JAXBElementEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBIntrospectorGetElementNameTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.NonELPrefixMapperTestCases;
+import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperMapTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
@@ -125,6 +126,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(JAXBIntrospectorGetElementNameTestCases.class);
         suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
         suite.addTestSuite(PrefixMapperTestCases.class);
+        suite.addTestSuite(PrefixMapperMapTestCases.class);
         suite.addTestSuite(NonELPrefixMapperTestCases.class);
         suite.addTestSuite(ChildURITestCases.class);
         suite.addTestSuite(URITestCases.class);

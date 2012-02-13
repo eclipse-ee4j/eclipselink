@@ -848,11 +848,16 @@ public class XMLMarshaller implements Cloneable {
         if (getAttachmentMarshaller() != null) {
             marshalRecord.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
         }
-
+        marshalRecord.setMarshaller(this);
+        
         if(this.mapper == null) {
             addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
         } else if(this.mapper != null) {
-            marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, descriptor.getNamespaceResolver()));
+            if(descriptor == null){
+                marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, null));
+            }else{
+                marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, descriptor.getNamespaceResolver()));
+            }
             marshalRecord.setCustomNamespaceMapper(true);
         }
         
@@ -865,7 +870,7 @@ public class XMLMarshaller implements Cloneable {
         if (!isFragment()) {
             String encoding = getEncoding();
             String version = DEFAULT_XML_VERSION;
-            if (!isXMLRoot) {
+            if (!isXMLRoot && descriptor!= null) {
                 marshalRecord.setLeafElementType(descriptor.getDefaultRootElementType());
             } else {
                 if (root.getEncoding() != null) {
@@ -921,7 +926,7 @@ public class XMLMarshaller implements Cloneable {
         
         if (null != rootFragment) {
             marshalRecord.startPrefixMappings(nr);
-            if (!isXMLRoot && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
+            if (!isXMLRoot && descriptor != null && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
                 // throw an exception if the name has a : in it but the namespaceresolver is null
                 throw XMLMarshalException.namespaceResolverNotSpecified(rootFragment.getShortName());
             }
@@ -1450,13 +1455,23 @@ public class XMLMarshaller implements Cloneable {
         return clone;
     }
 
-	public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
-	    this.mapper = mapper;
-	}
-	
-	public NamespacePrefixMapper getNamespacePrefixMapper() {
-	    return this.mapper;
-	}
+    /**
+     * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
+     * @since 2.3.3
+     * @return
+     */
+    public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    /**
+     * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
+     * @since 2.3.3
+     * @return
+     */
+    public NamespacePrefixMapper getNamespacePrefixMapper() {
+        return this.mapper;
+    }
 
     /**
      * Return the String that will be used to perform indenting in marshalled documents.

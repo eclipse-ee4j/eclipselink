@@ -50,6 +50,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
 
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
@@ -83,12 +84,23 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private XMLMarshaller xmlMarshaller;
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
-    public static final String ECLIPSELINK_NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
-    public static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
-    public static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
-    public static final String ECLIPSELINK_INDENT_STRING = "eclipselink.indent-string";
-    public static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
-    public static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
+    /** The Constant NAMESPACE_PREFIX_MAPPER.  This can be set to control the prefix and 
+     * uri pairs used during a marshal operation. Applies to both application/xml and application/json.
+     * Value should be an org.eclipse.persistence.oxm.NamespacePrefixMapper or can be a 
+     * Map<String, String> of uris to prefixes.
+     * @since 2.3.3
+     */
+    public static final String NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";   
+    private static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+    private static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
+    
+    /**The Constant INDENT_STRING. Property used to set the string used when indenting formatted marshalled documents.
+    * If not set and the default for formatted documents is &quot;   &quot; (three spaces)
+    * @since 2.3.3.
+    */
+    public static final String INDENT_STRING = "eclipselink.indent-string";    
+    private static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
+    private static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
     //XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true
     private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
@@ -597,11 +609,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if(ECLIPSELINK_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
-                xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
+            } else if(NAMESPACE_PREFIX_MAPPER.equals(key)) { 
+            	if(value instanceof Map){
+            		NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);
+            		xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
+            	}else{
+                    xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
+            	}
             } else if(SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
                 xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
-            } else if (ECLIPSELINK_INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+            } else if (INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
                 xmlMarshaller.setIndentString((String) value);
             } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
