@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
@@ -292,6 +293,13 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 	 */
 	public JPAVersion getJPAVersion() {
 		return JPAVersion.VERSION_1_0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getProviderVersion() {
+		return ExpressionTools.EMPTY_STRING;
 	}
 
 	/**

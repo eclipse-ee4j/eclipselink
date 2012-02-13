@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -169,6 +169,8 @@ public interface JPQLQueryProblemMessages {
 	String InputParameter_WrongClauseDeclaration = "INPUT_PARAMETER_WRONG_CLAUSE_DECLARATION";
 	String Join_MissingIdentificationVariable = "JOIN_MISSING_IDENTIFICATION_VARIABLE";
 	String Join_MissingJoinAssociationPath = "JOIN_MISSING_JOIN_ASSOCIATION_PATH";
+	String JoinFetch_InvalidIdentification = "JOIN_FETCH_INVALID_IDENTIFICATION";
+	String JoinFetch_MissingIdentificationVariable = "JOIN_FETCH_MISSING_IDENTIFICATION_VARIABLE";
 	String JoinFetch_MissingJoinAssociationPath = "JOIN_FETCH_MISSING_JOIN_ASSOCIATION_PATH";
 	String JoinFetch_WrongClauseDeclaration = "JOIN_FETCH_WRONG_CLAUSE_DECLARATION";
 	String JPQLExpression_InvalidQuery = "JPQL_EXPRESSION_INVALID_QUERY";

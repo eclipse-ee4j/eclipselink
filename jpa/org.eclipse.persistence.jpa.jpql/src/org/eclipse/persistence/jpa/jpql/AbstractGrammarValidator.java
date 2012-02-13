@@ -3258,76 +3258,114 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(Join expression) {
 
-		if (expression.hasFetch()) {
+		boolean joinFetch = expression.hasFetch();
 
-			// Missing join association path expression
-			if (!expression.hasJoinAssociationPath()) {
-				int startPosition = position(expression) + expression.getIdentifier().toString().length();
+		// Missing join association path expression
+		if (!expression.hasJoinAssociationPath()) {
+			int startPosition = position(expression) + expression.getIdentifier().length();
 
-				if (expression.hasSpaceAfterJoin()) {
-					startPosition++;
-				}
-
-				int endPosition = startPosition;
-
-				addProblem(expression, startPosition, endPosition, JoinFetch_MissingJoinAssociationPath);
+			if (expression.hasSpaceAfterJoin()) {
+				startPosition++;
 			}
 
-			// TODO: Might need to validate a JOIN FETCH expression that has AS but no identification variable
+			int endPosition = startPosition;
 
-			// The FETCH JOIN construct must not be used in the FROM clause of a subquery
-			if (isOwnedBySubFromClause(expression)) {
-				int startPosition = position(expression);
-				int endPosition = startPosition + length(expression);
-				addProblem(expression, startPosition, endPosition, JoinFetch_WrongClauseDeclaration);
-			}
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				joinFetch ? JoinFetch_MissingJoinAssociationPath : Join_MissingJoinAssociationPath
+			);
 		}
-		else {
-			// Missing join association path expression
-			if (!expression.hasJoinAssociationPath()) {
-				int startPosition = position(expression) + expression.getIdentifier().length();
 
-				if (expression.hasSpaceAfterJoin()) {
-					startPosition++;
-				}
+		// Missing identification variable
+		// A JOIN expression always needs an identification variable
+		// A JOIN FETCH expression does not always require an identification, only if 'AS' is present
+		if (expression.hasJoinAssociationPath() &&
+		   !expression.hasIdentificationVariable() &&
+		    (!joinFetch || expression.hasAs() && isJoinFetchIdentifiable())) {
 
-				int endPosition = startPosition;
+			int startPosition = position(expression) + expression.getIdentifier().length();
 
-				addProblem(expression, startPosition, endPosition, Join_MissingJoinAssociationPath);
+			if (expression.hasSpaceAfterJoin()) {
+				startPosition++;
 			}
 
-			// Missing identification variable
-			if (expression.hasJoinAssociationPath() &&
-			   !expression.hasIdentificationVariable()) {
+			startPosition += length(expression.getJoinAssociationPath());
 
-				int startPosition = position(expression) + expression.getIdentifier().length();
-
-				if (expression.hasSpaceAfterJoin()) {
-					startPosition++;
-				}
-
-				startPosition += length(expression.getJoinAssociationPath());
-
-				if (expression.hasSpaceAfterJoinAssociation()) {
-					startPosition++;
-				}
-
-				if (expression.hasAs()) {
-					startPosition += 2;
-				}
-
-				if (expression.hasSpaceAfterAs()) {
-					startPosition++;
-				}
-
-				int endPosition = startPosition;
-
-				addProblem(expression, startPosition, endPosition, Join_MissingIdentificationVariable);
+			if (expression.hasSpaceAfterJoinAssociation()) {
+				startPosition++;
 			}
+
+			if (expression.hasAs()) {
+				startPosition += 2;
+			}
+
+			if (expression.hasSpaceAfterAs()) {
+				startPosition++;
+			}
+
+			int endPosition = startPosition;
+
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				joinFetch ? JoinFetch_MissingIdentificationVariable : Join_MissingIdentificationVariable
+			);
+		}
+		// A JOIN FETCH expression that cannot be identified with an identification variable
+		else if (joinFetch &&
+		         !isJoinFetchIdentifiable() &&
+		         (expression.hasAs() || expression.hasIdentificationVariable())) {
+
+			int startPosition = position(expression) + expression.getIdentifier().length();
+
+			if (expression.hasSpaceAfterJoin()) {
+				startPosition++;
+			}
+
+			startPosition += length(expression.getJoinAssociationPath());
+
+			if (expression.hasSpaceAfterJoinAssociation()) {
+				startPosition++;
+			}
+
+			int endPosition = startPosition;
+
+			if (expression.hasAs()) {
+				endPosition += 2;
+			}
+
+			if (expression.hasSpaceAfterAs()) {
+				endPosition++;
+			}
+
+			if (expression.hasIdentificationVariable()) {
+				endPosition += length(expression.getIdentificationVariable());
+			}
+
+			addProblem(expression, startPosition, endPosition, JoinFetch_InvalidIdentification);
+		}
+
+		// A JOIN FETCH expression can only be defined in the top-level query
+		if (joinFetch && isOwnedBySubFromClause(expression)) {
+			int startPosition = position(expression);
+			int endPosition = startPosition + length(expression);
+			addProblem(expression, startPosition, endPosition, JoinFetch_WrongClauseDeclaration);
 		}
 
 		super.visit(expression);
 	}
+
+	/**
+	 * Determines whether a <code><b>JOIN FETCH</b></code> expression can be identified by with an
+	 * identification variable or not.
+	 *
+	 * @return <code>true</code> if the expression can have an identification variable; false
+	 * otherwise
+	 */
+	protected abstract boolean isJoinFetchIdentifiable();
 
 	/**
 	 * {@inheritDoc}

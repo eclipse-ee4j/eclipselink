@@ -42,4 +42,12 @@ public final class DefaultGrammarValidator extends AbstractGrammarValidator {
 	boolean isSubqueryAllowedAnywhere() {
 		return false;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isJoinFetchIdentifiable() {
+		return false;
+	}
 }

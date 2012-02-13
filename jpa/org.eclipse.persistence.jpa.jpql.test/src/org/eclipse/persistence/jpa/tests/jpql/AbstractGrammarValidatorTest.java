@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 			}
 		};
 	}
+
+	protected abstract boolean isJoinFetchIdentifiable();
 
 	@Test
 	public void test_AbsExpression_InvalidExpression() throws Exception {
@@ -708,23 +710,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		);
 	}
 
-	@Test
-	public void test_ArithmeticFactor_MissingExpression_2() throws Exception {
-
-		String query = "SELECT e FROM Employee e WHERE e.age + -";
-		int startPosition = "SELECT e FROM Employee e WHERE e.age + -".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.ArithmeticFactor_MissingExpression,
-			startPosition,
-			endPosition
-		);
-	}
-
 //	@Test
 //	public void test_ArithmeticExpression_MissingLeftExpression()
 //	{
@@ -743,6 +728,23 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 //			endPosition
 //		);
 //	}
+
+	@Test
+	public void test_ArithmeticFactor_MissingExpression_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age + -";
+		int startPosition = "SELECT e FROM Employee e WHERE e.age + -".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.ArithmeticFactor_MissingExpression,
+			startPosition,
+			endPosition
+		);
+	}
 
 	@Test
 	public void test_AvgFunction_InvalidExpression() throws Exception {
@@ -2769,7 +2771,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		String query = "SELECT e FROM Employee e JOIN e.employees ";
 
-		int startPosition = "SELECT e FROM Employee e JOIN e.employees ".length();
+		int startPosition = query.length();
 		int endPosition   = startPosition;
 
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2805,7 +2807,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		String query = "SELECT e FROM Employee e JOIN e.employees AS ";
 
-		int startPosition = "SELECT e FROM Employee e JOIN e.employees AS ".length();
+		int startPosition = query.length();
 		int endPosition   = startPosition;
 
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2852,6 +2854,103 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public void test_JoinFetch_MissingIdentificationVariable_1() throws Exception {
+
+		String query = "SELECT e FROM Employee e JOIN e.employees ";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable
+		);
+	}
+
+	@Test
+	public void test_JoinFetch_MissingIdentificationVariable_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e JOIN FETCH e.employees AS";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		if (isJoinFetchIdentifiable()) {
+			int startPosition = query.length();
+			int endPosition   = startPosition;
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			int startPosition = "SELECT e FROM Employee e JOIN FETCH e.employees ".length();
+			int endPosition   = query.length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.JoinFetch_InvalidIdentification,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public void test_JoinFetch_MissingIdentificationVariable_3() throws Exception {
+
+		String query = "SELECT e FROM Employee e JOIN FETCH e.employees AS ";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		if (isJoinFetchIdentifiable()) {
+			int startPosition = query.length();
+			int endPosition   = startPosition;
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			int startPosition = "SELECT e FROM Employee e JOIN FETCH e.employees ".length();
+			int endPosition   = query.length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.JoinFetch_InvalidIdentification,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public void test_JoinFetch_MissingIdentificationVariable_4() throws Exception {
+
+		String query = "SELECT e FROM Employee e JOIN FETCH e.employees AS emp";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		if (isJoinFetchIdentifiable()) {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable
+			);
+		}
+		else {
+			int startPosition = "SELECT e FROM Employee e JOIN FETCH e.employees ".length();
+			int endPosition   = query.length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.JoinFetch_InvalidIdentification,
+				startPosition,
+				endPosition
+			);
+		}
 	}
 
 	@Test

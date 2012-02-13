@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,6 +33,11 @@ public final class EclipseLinkJPQLGrammar1 extends AbstractJPQLGrammar {
 	private static final JPQLGrammar INSTANCE = new EclipseLinkJPQLGrammar1();
 
 	/**
+	 * The EclipseLink version, which is 1.
+	 */
+	public static final String VERSION = "1";
+
+	/**
 	 * Creates a new <code>EclipseLinkJPQLExtension1</code>.
 	 */
 	public EclipseLinkJPQLGrammar1() {
@@ -61,6 +66,13 @@ public final class EclipseLinkJPQLGrammar1 extends AbstractJPQLGrammar {
 	 */
 	public JPAVersion getJPAVersion() {
 		return JPAVersion.VERSION_1_0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getProviderVersion() {
+		return VERSION;
 	}
 
 	/**

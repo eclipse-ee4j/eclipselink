@@ -59,6 +59,11 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	private static final JPQLGrammar INSTANCE = new EclipseLinkJPQLGrammar2_1();
 
 	/**
+	 * The EclipseLink version, which is 2.1.
+	 */
+	public static final String VERSION = "2.1";
+
+	/**
 	 * Creates a new <code>EclipseLinkJPQLGrammar2_1</code>.
 	 */
 	public EclipseLinkJPQLGrammar2_1() {
@@ -87,6 +92,13 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	 */
 	public JPAVersion getJPAVersion() {
 		return JPAVersion.VERSION_2_0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getProviderVersion() {
+		return VERSION;
 	}
 
 	/**

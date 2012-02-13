@@ -17,6 +17,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseParent
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
@@ -54,6 +55,14 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 */
 	public EclipseLinkGrammarValidator(JPQLQueryContext context) {
 		super(context);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isJoinFetchIdentifiable() {
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<FuncExpression> buildFuncExpressionHelper() {

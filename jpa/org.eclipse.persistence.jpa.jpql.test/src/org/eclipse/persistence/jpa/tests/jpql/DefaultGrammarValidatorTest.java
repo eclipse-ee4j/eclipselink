@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,6 +25,11 @@ import org.junit.Test;
  */
 @SuppressWarnings("nls")
 public class DefaultGrammarValidatorTest extends AbstractGrammarValidatorTest {
+
+	@Override
+	protected boolean isJoinFetchIdentifiable() {
+		return false;
+	}
 
 	@Test
 	public void test_SimpleSelectStatement_InvalidLocation_3() throws Exception {

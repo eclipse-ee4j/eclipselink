@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,10 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.junit.Test;
 
 /**
@@ -26,6 +30,31 @@ import org.junit.Test;
  */
 @SuppressWarnings("nls")
 public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
+
+	protected boolean isEclipseLink2_0() {
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_0.instance().getProviderVersion();
+	}
+
+	protected boolean isEclipseLink2_1() {
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_1.instance().getProviderVersion();
+	}
+
+	protected boolean isEclipseLink2_2() {
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_2.instance().getProviderVersion();
+	}
+
+	protected boolean isEclipseLink2_3() {
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_3.instance().getProviderVersion();
+	}
+
+	protected boolean isEclipseLink2_4() {
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.instance().getProviderVersion();
+	}
+
+	@Override
+	protected boolean isJoinFetchIdentifiable() {
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.instance().getProviderVersion();
+	}
 
 	@Test
 	public void test_FuncExpression_MissingFunctionName() throws Exception {

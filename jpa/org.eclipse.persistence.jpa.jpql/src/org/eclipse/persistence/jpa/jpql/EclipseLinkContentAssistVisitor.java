@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
@@ -71,7 +72,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
-		return true;
+		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
 	}
 
 	/**

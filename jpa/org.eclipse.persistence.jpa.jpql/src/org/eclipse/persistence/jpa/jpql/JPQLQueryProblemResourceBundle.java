@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -252,7 +252,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			// InExpression - Grammar
 			{"IN_EXPRESSION_IN_ITEM_ENDS_WITH_COMMA",   "The items cannot end with a comma."},
 			{"IN_EXPRESSION_IN_ITEM_IS_MISSING_COMMA",  "The IN expression has ''{0}'' and ''{1}'' that are not separated by a comma."},
-			{"IN_EXPRESSION_MALFORMED_EXPRESSION",      "The IN expression does not have a valid state field path expression or TYPE expession."},
+			{"IN_EXPRESSION_MALFORMED_EXPRESSION",      "The IN expression does not have a valid state field path expression or TYPE expression."},
 			{"IN_EXPRESSION_MISSING_IN_ITEMS",          "A least one item must be defined for the IN expression."},
 			{"IN_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the IN expression."},
 			{"IN_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the IN expression."},
@@ -271,8 +271,10 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"JOIN_MISSING_JOIN_ASSOCIATION_PATH",   "The join association path is missing from the JOIN expression."},
 
 			// JoinFetch - Grammar
-			{"JOIN_FETCH_MISSING_JOIN_ASSOCIATION_PATH", "The join association path is missing from the JOIN FETCH expression."},
-			{"JOIN_FETCH_WRONG_CLAUSE_DECLARATION",      "JOIN FETCH expressions cannot be used in a FROM clause of a subquery."},
+			{"JOIN_FETCH_INVALID_IDENTIFICATION",          "JOIN FETCH expressions cannot be defined with an identification variable."},
+			{"JOIN_FETCH_MISSING_IDENTIFICATION_VARIABLE", "An identification variable must be defined for a JOIN FETCH expression."},
+			{"JOIN_FETCH_MISSING_JOIN_ASSOCIATION_PATH",   "The join association path is missing from the JOIN FETCH expression."},
+			{"JOIN_FETCH_WRONG_CLAUSE_DECLARATION",        "JOIN FETCH expressions cannot be used in a FROM clause of a subquery."},
 
 			// JPQLExpression - Grammar
 			{"JPQL_EXPRESSION_INVALID_QUERY",  "The query does not start with a valid identifier, has to be either SELECT, UPDATE or DELETE FROM."},
