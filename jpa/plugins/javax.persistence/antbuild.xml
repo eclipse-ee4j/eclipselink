@@ -56,11 +56,11 @@
        <format property="jpaproto.build.time" pattern="HHmm"/>
     </tstamp>
     <property name="jpaproto.qualifier"    value="v${jpaproto.build.date}${jpaproto.build.time}"/>
-    <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc."/>
+    <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc., Oracle"/>
     <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
-    <property name="jpaproto.spec.version" value="2.0"/>
-    <property name="jpaproto.version"      value="2.0.4"/>
-    <property name="jpaproto.bundle.name"  value="Java Persistence API 2.0"/>
+    <property name="jpaproto.spec.version" value="2.1"/>
+    <property name="jpaproto.version"      value="2.0.100"/>
+    <property name="jpaproto.bundle.name"  value="Java Persistence API 2.1 prototype"/>
     <!-- Project infrastructure properties -->
     <property name="src.dir"               value="src"/>
     <property name="package.dir"           value=".."/>
@@ -179,7 +179,35 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+    <target name="package-src" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${package.dir}/${jpaproto.src.jar}" duplicate="preserve">
+            <manifest>
+                <attribute name="Specification-Vendor"   value="${jpaproto.spec.vendor}"/>
+                <attribute name="Specification-Version"  value="${jpaproto.spec.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${jpaproto.version}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="${jpaproto.bundle.name} Source"/>
+                <attribute name="Bundle-SymbolicName"    value="javax.persistence.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${jpaproto.version}.${jpaproto.qualifier}"/>
+                <attribute name="Eclipse-SourceBundle"   value="javax.persistence;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;"/>
+            </manifest>
+            <fileset dir="${jpaproto.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="."
+                includes="readme.txt"
+            />
+            <fileset dir="${src.dir}"
+                includes="**"
+            />
+        </jar>
+    </target>
+
+    <target name="package" if="nobnd" depends="init, package-src" description="jar OSGI bundle">
         <jar jarfile="${package.dir}/${jpaproto.jar}" duplicate="preserve" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
             <fileset dir="${jpaproto.2.base.dir}">
                 <include name="about.html"/>
@@ -196,34 +224,9 @@
                 includes="**/*.class"
             />
         </jar>
-        <jar jarfile="${package.dir}/${jpaproto.src.jar}" duplicate="preserve">
-            <manifest>
-                <attribute name="Specification-Vendor"   value="${jpaproto.spec.vendor}"/>
-                <attribute name="Specification-Version"  value="${jpaproto.spec.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${jpaproto.version}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="${jpaproto.bundle.name} Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${jpaproto.version}.${jpaproto.qualifier}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;"/>
-            </manifest>
-            <fileset dir="${jpaproto.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="."
-                includes="readme.txt"
-            />
-            <fileset dir="${src.dir}"
-                includes="**"
-            />
-        </jar>
     </target>
 
-    <target name="bnd-package" if="bnd.bld" depends="init">
+    <target name="bnd-package" if="bnd.bld" depends="init, package-src">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${classes.dir}"
@@ -233,30 +236,5 @@
             exceptions="true"
             files="./javax.persistence.bnd"
             output="${package.dir}/${jpaproto.jar}"/>
-        <jar jarfile="${package.dir}/${jpaproto.src.jar}" duplicate="preserve">
-            <manifest>
-                <attribute name="Specification-Vendor"   value="${jpaproto.spec.vendor}"/>
-                <attribute name="Specification-Version"  value="${jpaproto.spec.version}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${jpaproto.version}"/>
-                <attribute name="Bundle-ManifestVersion" value="2"/>
-                <attribute name="Bundle-Name"            value="${jpaproto.bundle.name} Source"/>
-                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
-                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
-                <attribute name="Bundle-Version"         value="${jpaproto.version}.${jpaproto.qualifier}"/>
-                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;"/>
-            </manifest>
-            <fileset dir="${jpaproto.2.base.dir}">
-                <include name="about.html"/>
-                <include name="readme.html"/>
-                <include name="license.*"/>
-            </fileset>
-            <fileset dir="."
-                includes="readme.txt"
-            />
-            <fileset dir="${src.dir}"
-                includes="**"
-            />
-        </jar>
     </target>
 </project>
