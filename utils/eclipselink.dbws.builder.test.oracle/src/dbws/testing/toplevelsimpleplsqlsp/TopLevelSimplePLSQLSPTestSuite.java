@@ -50,6 +50,11 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
                 "\nY := 'false';" +
             "\nEND IF;"+
         "\nEND TOPLEVEL_BOOL_TEST;";
+    static final String CREATE_BOOL_IN_PROC =
+        "CREATE OR REPLACE PROCEDURE TOPLEVEL_BOOL_IN_TEST(X IN BOOLEAN) AS" +
+        "\nBEGIN" +
+            "\nNULL;"+
+        "\nEND TOPLEVEL_BOOL_IN_TEST;";
     static final String CREATE_BINARY_INT_PROC =
         "CREATE OR REPLACE PROCEDURE TOPLEVEL_BINARY_INT_TEST(X IN BINARY_INTEGER, Y OUT BINARY_INTEGER) AS" +
         "\nBEGIN" +
@@ -70,7 +75,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         "\nBEGIN" +
             "\nY := X;" +
         "\nEND TOPLEVEL_POSITIVE_TEST;";
-    
+
     static final String CREATE_SIGNTYPE_PROC =
         "CREATE OR REPLACE PROCEDURE TOPLEVEL_SIGNTYPE_TEST(X IN SIGNTYPE, Y OUT VARCHAR2) AS" +
         "\nBEGIN" +
@@ -85,6 +90,8 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
 
     static final String DROP_BOOL_PROC =
         "DROP PROCEDURE TOPLEVEL_BOOL_TEST";
+    static final String DROP_BOOL_IN_PROC =
+        "DROP PROCEDURE TOPLEVEL_BOOL_IN_TEST";
     static final String DROP_BINARY_INT_PROC =
         "DROP PROCEDURE TOPLEVEL_BINARY_INT_TEST";
     static final String DROP_PLS_INT_PROC =
@@ -124,6 +131,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         }
         if (ddlCreate) {
             runDdl(conn, CREATE_BOOL_PROC, ddlDebug);
+            runDdl(conn, CREATE_BOOL_IN_PROC, ddlDebug);
             runDdl(conn, CREATE_BINARY_INT_PROC, ddlDebug);
             runDdl(conn, CREATE_PLS_INT_PROC, ddlDebug);
             runDdl(conn, CREATE_NATURAL_PROC, ddlDebug);
@@ -154,6 +162,12 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"TOPLEVEL_BOOL_TEST\" " +
                   "isSimpleXMLFormat=\"true\" " +
                "/>" +
+               "<plsql-procedure " +
+                   "name=\"testBooleanIn\" " +
+                   "catalogPattern=\"TOPLEVEL\" " +
+                   "procedurePattern=\"TOPLEVEL_BOOL_IN_TEST\" " +
+                   "isSimpleXMLFormat=\"true\" " +
+                "/>" +
                "<plsql-procedure " +
                    "name=\"testBinaryInt\" " +
                    "catalogPattern=\"TOPLEVEL\" " +
@@ -191,9 +205,9 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
+        if (ddlDrop) {
             runDdl(conn, DROP_BOOL_PROC, ddlDebug);
+            runDdl(conn, DROP_BOOL_IN_PROC, ddlDebug);
             runDdl(conn, DROP_BINARY_INT_PROC, ddlDebug);
             runDdl(conn, DROP_PLS_INT_PROC, ddlDebug);
             runDdl(conn, DROP_NATURAL_PROC, ddlDebug);
@@ -222,7 +236,28 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
                 "<result>false</result>" +
             "</simple-xml>" +
         "</simple-xml-format>";
-    
+
+    @Test
+    public void testBooleanIn() {
+        Invocation invocation = new Invocation("testBooleanIn");
+        invocation.setParameter("X", Integer.valueOf(0));
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(TEST_BOOLEAN_IN_RESULT));
+        assertTrue("Control document not same as instance document. Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String TEST_BOOLEAN_IN_RESULT =
+        REGULAR_XML_HEADER +
+        "<simple-xml-format>" +
+            "<simple-xml>" +
+                "<result>1</result>" +
+            "</simple-xml>" +
+        "</simple-xml-format>";
+
     @Test
     public void testBinaryInt() {
         Invocation invocation = new Invocation("testBinaryInt");
@@ -270,7 +305,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(SIXTY_SIX_RESULT));
         assertTrue("Control document not same as instance document. Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void testPositive() {
         Invocation invocation = new Invocation("testPositive");
@@ -292,7 +327,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
             "</simple-xml>" +
         "</simple-xml-format>";
 
-    
+
     @Test
     public void testSignType() {
         Invocation invocation = new Invocation("testSignType");
@@ -313,5 +348,5 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
                 "<result>negative</result>" +
             "</simple-xml>" +
         "</simple-xml-format>";
-    
+
 }
