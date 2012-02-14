@@ -39,7 +39,7 @@ public class XmlValueWithAttributesTestCases extends JAXBWithJSONTestCases {
     
     public Map getProperties(){
     	Map props = new HashMap();
-    	props.put(JAXBContext.VALUE_WRAPPER, "value");
+    	props.put(JAXBContext.JSON_VALUE_WRAPPER, "value");
     	return props;
     }
 

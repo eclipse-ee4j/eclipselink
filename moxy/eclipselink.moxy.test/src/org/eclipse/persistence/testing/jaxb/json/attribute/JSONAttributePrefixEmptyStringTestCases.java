@@ -38,7 +38,7 @@ public class JSONAttributePrefixEmptyStringTestCases extends JSONMarshalUnmarsha
 	
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(JAXBContext.ATTRIBUTE_PREFIX, "");
+		props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "");
 		return props;
 	}
 		

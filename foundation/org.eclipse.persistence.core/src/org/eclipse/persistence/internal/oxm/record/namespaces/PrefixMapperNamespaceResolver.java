@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.oxm.record.namespaces;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLRoot;
 
 /**
  * INTERNAL:
@@ -42,22 +41,24 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
                 contextualNamespaces.put(prefix, uri);
             }
         }
-        
-        for(Object next:nestedResolver.getNamespaces()) {
-            Namespace ns = (Namespace)next;
-            String uri = ns.getNamespaceURI();
-            String originalPrefix = ns.getPrefix();
-            
-            //ask prefixMapper for a new prefix for this uri
-            String prefix = prefixMapper.getPreferredPrefix(uri, originalPrefix, true);
-            
-            if(prefix != null) {
-                this.put(prefix, uri);
-            } else {
-                this.put(originalPrefix, uri);
-            }
+        String defaultUri= null;
+        if(nestedResolver != null){
+	        for(Object next:nestedResolver.getNamespaces()) {
+	            Namespace ns = (Namespace)next;
+	            String uri = ns.getNamespaceURI();
+	            String originalPrefix = ns.getPrefix();
+	            
+	            //ask prefixMapper for a new prefix for this uri
+	            String prefix = prefixMapper.getPreferredPrefix(uri, originalPrefix, true);
+	            
+	            if(prefix != null) {
+	                this.put(prefix, uri);
+	            } else {
+	                this.put(originalPrefix, uri);
+	            }
+	        }
+	        defaultUri = nestedResolver.getDefaultNamespaceURI();
         }
-        String defaultUri = nestedResolver.getDefaultNamespaceURI();
         
         if(defaultUri != null) {
             String prefix = prefixMapper.getPreferredPrefix(defaultUri, "", false);
@@ -102,9 +103,6 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
         if(prefix == null) {
         	prefix = super.resolveNamespaceURI(uri);
         }
-        /*if(prefix == null) {
-            prefix = prefixMapper.getPreferredPrefix(uri, prefix, true);
-        }*/
         return prefix;
     }
     

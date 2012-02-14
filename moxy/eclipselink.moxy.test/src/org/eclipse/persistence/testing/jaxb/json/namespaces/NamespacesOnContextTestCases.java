@@ -51,17 +51,17 @@ public class NamespacesOnContextTestCases extends JSONMarshalUnmarshalTestCases{
 
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(JAXBContext.ATTRIBUTE_PREFIX, "@");
+		props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
 		
 		Map<String, String> namespaceMap = new HashMap<String, String>();
 		
-		namespaceMap.put("ns0", "namespace0");
-		namespaceMap.put("ns1", "namespace1");
-		namespaceMap.put("ns2", "namespace2");
-		namespaceMap.put("ns3", "namespace3");
+		namespaceMap.put("namespace0", "ns0");
+		namespaceMap.put("namespace1", "ns1");
+		namespaceMap.put("namespace2", "ns2");
+		namespaceMap.put("namespace3", "ns3");
 		
 		
-		props.put(JAXBContext.NAMESPACES, namespaceMap);
+		props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaceMap);
 		return props;
 	}
 

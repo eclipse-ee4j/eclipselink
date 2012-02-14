@@ -201,10 +201,11 @@ public abstract class XMLRecord extends AbstractRecord {
         this.marshaller = marshaller;
         if(marshaller != null){
             MediaType mediaType = marshaller.getMediaType();
-            if(marshaller.getNamespaceResolver() != null){
-               namespaceResolver = marshaller.getNamespaceResolver();
+            if(marshaller.getNamespacePrefixMapper() != null){
+            	namespaceAware = true;             	
+            }else{
+            	namespaceAware = mediaType == MediaType.APPLICATION_XML;
             }
-            namespaceAware = (mediaType == MediaType.APPLICATION_XML || namespaceResolver.getPrefixesToNamespaces().size() > 0);
         }
     }
 
@@ -308,7 +309,7 @@ public abstract class XMLRecord extends AbstractRecord {
      * @since 2.4
      */
     public boolean isNamespaceAware() {
-    	return namespaceAware;
+    	return namespaceAware;    	
     }
     
     /**
@@ -321,7 +322,7 @@ public abstract class XMLRecord extends AbstractRecord {
     }
 	
     public boolean hasCustomNamespaceMapper() {
-        return hasCustomNamespaceMapper;
+    	return hasCustomNamespaceMapper;    	
     }
 
     public void setCustomNamespaceMapper(boolean customNamespaceMapper) {

@@ -45,7 +45,7 @@ public class XmlAdapterCompositeTestCases extends JAXBWithJSONTestCases {
     
     protected Map getProperties(){
     	Map props = new HashMap();
-    	props.put(JAXBContext.VALUE_WRAPPER, "val");
+    	props.put(JAXBContext.JSON_VALUE_WRAPPER, "val");
     	return props;
     	
     }

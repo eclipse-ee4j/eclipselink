@@ -13,7 +13,10 @@
 package org.eclipse.persistence.testing.oxm.inheritance.classextractor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -33,12 +36,12 @@ public class CarClassExtractorTestCases extends XMLWithJSONMappingTestCases {
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.inheritance.classextractor.CarClassExtractorTestCases" };
         TestRunner.main(arguments);
-    }
+    }   
     
-    protected NamespaceResolver getNamespaceResolver(){
-    	NamespaceResolver nr = new NamespaceResolver();
-    	nr.put("prefix", "mynamespaceuri");
-    	return nr;
+    protected Map<String, String> getNamespaces(){
+    	Map map = new HashMap<String, String>();
+    	map.put("mynamespaceuri", "prefix");
+    	return map;
     }
 
     public Object getControlObject() {

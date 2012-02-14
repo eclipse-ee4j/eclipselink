@@ -29,8 +29,8 @@ public class JSONAttributePrefixOnMarshallerTestCases extends JSONAttributePrefi
 		super.setUp();
 		//this should override the properties set on the context in getProperties (called during inherited c-tor setClasses call)
 		try{
-		    jsonMarshaller.setProperty(JAXBContext.ATTRIBUTE_PREFIX, "@");
-		    jsonUnmarshaller.setProperty(JAXBContext.ATTRIBUTE_PREFIX, "@");
+		    jsonMarshaller.setProperty(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+		    jsonUnmarshaller.setProperty(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
 		}catch (PropertyException e){
 			e.printStackTrace();
 			fail("an error occurred during setup");
@@ -39,7 +39,7 @@ public class JSONAttributePrefixOnMarshallerTestCases extends JSONAttributePrefi
 
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(JAXBContext.ATTRIBUTE_PREFIX, "CONTEXT_PREFIX"); 
+		props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "CONTEXT_PREFIX"); 
 		return props;
 	}
 }

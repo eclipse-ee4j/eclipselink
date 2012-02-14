@@ -48,9 +48,9 @@ public class SimpleDocumentIntegerTestCases extends JAXBWithJSONTestCases {
 	    	Map props = new HashMap();
 		    	
 	    	Map namespaces = new HashMap();
-	    	namespaces.put("ns0", "myns");
+	    	namespaces.put("myns","ns0");
 
-	    	props.put(JAXBContext.NAMESPACES, namespaces);
+	    	props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaces);
 	    	
 		    return props;
 	}

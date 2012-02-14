@@ -115,15 +115,15 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         StringWriter sw = new StringWriter();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-        marshaller.setProperty(JAXBMarshaller.ECLIPSELINK_INDENT_STRING, customIndentString);
+        marshaller.setProperty(JAXBMarshaller.INDENT_STRING, customIndentString);
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
 
-        marshaller.setProperty(JAXBMarshaller.SUN_INDENT_STRING, customIndentString);
+        marshaller.setProperty("com.sun.xml.bind.indentString", customIndentString);
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
 
-        marshaller.setProperty(JAXBMarshaller.SUN_JSE_INDENT_STRING, customIndentString);
+        marshaller.setProperty("com.sun.xml.internal.bind.indentString", customIndentString);
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
     }

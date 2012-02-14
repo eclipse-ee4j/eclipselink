@@ -42,13 +42,13 @@ public class JSONAttributePrefixOnContextTestCases extends JSONMarshalUnmarshalT
 	
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(JAXBContext.ATTRIBUTE_PREFIX, "@");
+		props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
 		return props;
 	}
 	
 	public void testingTurnAttributesOnOff() throws Exception{
 		try{
-		    jsonMarshaller.setProperty(JAXBContext.ATTRIBUTE_PREFIX, "");
+		    jsonMarshaller.setProperty(JAXBContext.JSON_ATTRIBUTE_PREFIX, "");
 		}catch (PropertyException e){
 			e.printStackTrace();
 			fail("an error occurred during setup");
@@ -61,7 +61,7 @@ public class JSONAttributePrefixOnContextTestCases extends JSONMarshalUnmarshalT
 	    assertFalse(sw.getBuffer().toString().indexOf('@')>-1);
 				
 		try{
-		    jsonMarshaller.setProperty(JAXBContext.ATTRIBUTE_PREFIX, "@");
+		    jsonMarshaller.setProperty(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
 		}catch (PropertyException e){
 			e.printStackTrace();
 			fail("an error occurred during setup");

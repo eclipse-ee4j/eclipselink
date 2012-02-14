@@ -27,8 +27,8 @@ public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalse
 	
 	public void setUp() throws Exception{
 		super.setUp();
-	    jsonMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.INCLUDE_ROOT, true);	    	   
-	    jsonUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.INCLUDE_ROOT, true);
+	    jsonMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);	    	   
+	    jsonUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);
   	}
 	
 	public Object getReadControlObject() {	

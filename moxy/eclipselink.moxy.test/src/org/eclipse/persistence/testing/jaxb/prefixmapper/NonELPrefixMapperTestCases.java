@@ -22,7 +22,7 @@ public class NonELPrefixMapperTestCases extends JAXBTestCases {
     public NonELPrefixMapperTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
-        jaxbMarshaller.setProperty(JAXBMarshaller.SUN_NAMESPACE_PREFIX_MAPPER, new NonELPrefixMapperImpl());
+        jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NonELPrefixMapperImpl());
         setControlDocument(XML_RESOURCE);
     }
 

@@ -22,7 +22,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -48,6 +50,7 @@ import org.xml.sax.InputSource;
 
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -57,6 +60,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
+import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
@@ -97,6 +101,43 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private NamespaceResolver namespaceResolver;
     private String attributePrefix;
     private boolean includeRoot;
+    
+    /** The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a   
+     *  a Map<String, String> of uris to prefixes.  Alternatively can be an implementation 
+     *  of org.eclipse.persistence.oxm.NamespacePrefixMapper 
+     * @since 2.4      
+     */
+    public static final String JSON_NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
+    
+    /** The Constant MEDIA_TYPE. This can be used to set the media type.  
+     * Supported values are "application/xml" and "application/json" 
+     * @since 2.4 
+     */
+    public static final String MEDIA_TYPE = JAXBContext.MEDIA_TYPE;
+    
+    /** The Constant ID_RESOLVER.  This can be used to specify a custom
+     * IDResolver class, to allow customization of ID/IDREF processing.
+     * @since 2.4 
+     */
+    public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
+    
+    /** The Constant ATTRIBUTE_PREFIX. This can be used to specify a prefix that 
+     * is prepended to attributes.  Only applicable if media type ="application/json"
+     * @since 2.4  
+     */ 
+    public static final String JSON_ATTRIBUTE_PREFIX = JAXBContext.JSON_ATTRIBUTE_PREFIX;
+    
+    /** The Constant INCLUDE_ROOT. This can be used  to specify if the root element 
+     * should be unmarshalled.  Only applicable if media type ="application/json"
+     * @since 2.4   
+     */
+    public static final String JSON_INCLUDE_ROOT =JAXBContext.JSON_INCLUDE_ROOT;
+    
+    /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
+     *  that will be used around things mapped with @XmlValue.  Only applicable if media type ="application/json"
+     *  @since 2.4  
+     */
+    public static final String JSON_VALUE_WRAPPER = JAXBContext.JSON_VALUE_WRAPPER;
     
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
@@ -743,20 +784,24 @@ public class JAXBUnmarshaller implements Unmarshaller {
         	}else{
         	   throw new PropertyException(key, value);
         	}       
-        } else if(key.equals(JAXBContext.ATTRIBUTE_PREFIX)){ 
+        } else if(key.equals(JAXBContext.JSON_ATTRIBUTE_PREFIX)){ 
         	attributePrefix = (String)value;
-        } else if (JAXBContext.INCLUDE_ROOT.equals(key)) {            	
+        } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {            	
         	includeRoot = (Boolean)value;
-        } else if (JAXBContext.NAMESPACES.equals(key)) {
-        	if(value == null){
-        		setNamespaceResolver(null);        		
-        	} else {
-        	    Map<String, String> namespaces = (Map<String, String>)value;
-        	    NamespaceResolver nr = new NamespaceResolver();
-        	    nr.getPrefixesToNamespaces().putAll(namespaces);            
-        	    setNamespaceResolver(nr);
+        } else if(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
+        	if(value instanceof Map){
+                Map<String, String> namespaces = (Map<String, String>)value;
+         	    NamespaceResolver nr = new NamespaceResolver();
+         	    Iterator<Entry<String, String>> namesapcesIter = namespaces.entrySet().iterator();
+         	    for(int i=0;i<namespaces.size(); i++){
+         	    	Entry<String, String> nextEntry = namesapcesIter.next();
+         	    	nr.put(nextEntry.getValue(), nextEntry.getKey());
+         	    }
+         	    setNamespaceResolver(nr);
+        	}else if (value instanceof NamespacePrefixMapper){
+                    setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper)value, null));
         	}
-        } else if(JAXBContext.VALUE_WRAPPER.equals(key)){
+        } else if(JAXBContext.JSON_VALUE_WRAPPER.equals(key)){
         	xmlUnmarshaller.setValueWrapper((String)value); 
         } else if (JAXBContext.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);

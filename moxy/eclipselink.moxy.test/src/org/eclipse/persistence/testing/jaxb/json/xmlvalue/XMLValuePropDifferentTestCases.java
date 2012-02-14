@@ -30,8 +30,8 @@ public class XMLValuePropDifferentTestCases extends XMLValuePropTestCases {
 
 	public void setUp() throws Exception{
 		super.setUp();
-		jaxbMarshaller.setProperty(JAXBContext.VALUE_WRAPPER, "marshalWrapper");
-		jaxbUnmarshaller.setProperty(JAXBContext.VALUE_WRAPPER, "unmarshalWrapper");
+		jaxbMarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "marshalWrapper");
+		jaxbUnmarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "unmarshalWrapper");
 	}
 	
 	public Map getProperties(){

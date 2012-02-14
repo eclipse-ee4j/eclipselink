@@ -128,36 +128,45 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     /** The Constant MEDIA_TYPE. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
      * the properties supplied during JAXBContext creation to set the media type.  
-     * Supported values are "application/xml" and "application/json" */
+     * Supported values are "application/xml" and "application/json" 
+     * @since 2.4 
+     */
     public static final String MEDIA_TYPE = "eclipselink.media-type";
     
     /** The Constant ATTRIBUTE_PREFIX. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
      * the properties supplied during JAXBContext creation to specify a prefix to prepend
-     * to attributes.  No effect when media type is "application/xml" */ 
-    public static final String ATTRIBUTE_PREFIX = "eclipselink.attribute-prefix";    
-    
-    /** The Constant NAMESPACES. This can be used as the property name with 
-     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation to specify a map of 
-     * prefix, uri pairs to be used. */
-    public static final String NAMESPACES = "eclipselink.namespaces";
+     * to attributes.  No effect when media type is "application/xml" 
+     * @since 2.4 
+     */ 
+    public static final String JSON_ATTRIBUTE_PREFIX = "eclipselink.json.attribute-prefix";    
+        
+    /** The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the namespace prefixes used 
+     * while marshalling to XML.  Used for both marshal and unmarshal when mediaType is set to application/json.
+     * Value is a Map<String, String> of uris to prefixes or an implementation of org.eclipse.persistence.oxm.NamespacePrefixMapper
+     * @since 2.4 
+     */
+    public static final String NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
     
     /** The Constant INCLUDE_ROOT. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
      * the properties supplied during JAXBContext creation to specify if the 
-     * @XmlRootElement should be marshalled/unmarshaled.  Not applicable if 
-     * eclipselink.media-type is set to "application/xml" */
-    public static final String INCLUDE_ROOT = "eclipselink.include-root";
+     * @XmlRootElement should be marshalled/unmarshalled.  Not applicable if 
+     * eclipselink.media-type is set to "application/xml" 
+     * @since 2.4 
+     */
+    public static final String JSON_INCLUDE_ROOT = "eclipselink.json.include-root";
     
     /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
      *  that will be used around things mapped with @XmlValue.  Not applicable if the
-     *  eclipselink.media.type is set to "application/xml" 
+     *  eclipselink.media.type is set to "application/xml"
+     *  @since 2.4  
      */
-    public static final String VALUE_WRAPPER = "eclipselink.value-wrapper";
+    public static final String JSON_VALUE_WRAPPER = "eclipselink.json.value-wrapper";
 
     /** The Constant ID_RESOLVER.  This can be used to specify a custom
      * IDResolver class, to allow customization of ID/IDREF processing.
+     * @since 2.4 
      */
     public static final String ID_RESOLVER = "eclipselink.id-resolver";
 
@@ -1315,10 +1324,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             marshaller.setJaxbContext(jaxbContext);
             if(properties != null){
             	setPropertyOnMarshaller(JAXBContext.MEDIA_TYPE, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.ATTRIBUTE_PREFIX, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.NAMESPACES, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.INCLUDE_ROOT, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.VALUE_WRAPPER, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, marshaller);            	
+            	setPropertyOnMarshaller(JAXBContext.NAMESPACE_PREFIX_MAPPER, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.JSON_INCLUDE_ROOT, marshaller);
+            	setPropertyOnMarshaller(JAXBContext.JSON_VALUE_WRAPPER, marshaller);
 
             }
         
@@ -1339,10 +1348,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
              unmarshaller.setJaxbContext(jaxbContext);
              if(properties != null){
             	setPropertyOnUnmarshaller(JAXBContext.MEDIA_TYPE, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.ATTRIBUTE_PREFIX, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.NAMESPACES, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.INCLUDE_ROOT, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.VALUE_WRAPPER, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.NAMESPACE_PREFIX_MAPPER, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.JSON_INCLUDE_ROOT, unmarshaller);
+             	setPropertyOnUnmarshaller(JAXBContext.JSON_VALUE_WRAPPER, unmarshaller);
              }
              return unmarshaller;
         }

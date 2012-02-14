@@ -27,6 +27,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -34,6 +36,7 @@ import org.xml.sax.InputSource;
 public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObject.xml";
+	protected final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectWrite.xml";
 	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectInteger.json";
 
 	public JAXBSingleObjectIntegerNoXsiTestCases(String name) throws Exception {
@@ -43,20 +46,26 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setWriteControlDocument(XML_RESOURCE_WRITE);
 		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
 		setClasses(classes);
+		Map namespaces = new HashMap();
+    	namespaces.put("rootNamespace","ns1");
+		jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 
    public Map getProperties(){
     	Map props = new HashMap();
 	    	
     	Map namespaces = new HashMap();
-    	namespaces.put("ns0", "rootNamespace");
+    	namespaces.put("ns1", "rootNamespace");
 
-    	props.put(JAXBContext.NAMESPACES, namespaces);
-    	props.put(JAXBContext.INCLUDE_ROOT, true);
+    	//props.put(JAXBContext.NAMESPACES, namespaces);
+    	//props.put(JAXBContext.NAMESPACES, namespaces);
+    	props.put(JAXBContext.JSON_INCLUDE_ROOT, true);
 
 	    return props;
 }

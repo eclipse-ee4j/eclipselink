@@ -60,9 +60,9 @@ public class NoRootElementNSTestCases extends JSONWithUnmarshalToClassTestCases 
 			
 			Map<String, String> namespaceMap = new HashMap<String, String>();
 			
-			namespaceMap.put("ns0", "namespace1");
+			namespaceMap.put("namespace1","ns0");
 			
-			props.put(JAXBContext.NAMESPACES, namespaceMap);
+			props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaceMap);
 			return props;
 		}
 

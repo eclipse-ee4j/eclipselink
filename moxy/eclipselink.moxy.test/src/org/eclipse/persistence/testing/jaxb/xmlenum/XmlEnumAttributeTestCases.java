@@ -44,7 +44,7 @@ public class XmlEnumAttributeTestCases extends JAXBWithJSONTestCases {
     
     protected Map getProperties(){
     	Map<String, String> props = new HashMap<String, String>();
-    	props.put(JAXBContext.ATTRIBUTE_PREFIX, "@");
+    	props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
     	return props;
     }
 }

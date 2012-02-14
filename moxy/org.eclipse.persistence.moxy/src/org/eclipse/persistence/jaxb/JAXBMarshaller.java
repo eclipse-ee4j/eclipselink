@@ -40,7 +40,6 @@ import org.xml.sax.ContentHandler;
 
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -52,6 +51,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
 
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
@@ -85,15 +85,56 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private XMLMarshaller xmlMarshaller;
     private JAXBContext jaxbContext;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
-    public static final String ECLIPSELINK_NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
-    public static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
-    public static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
-    public static final String ECLIPSELINK_INDENT_STRING = "eclipselink.indent-string";
-    public static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
-    public static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
+    /** The Constant NAMESPACE_PREFIX_MAPPER.  This can be set to control the prefix and 
+     * uri pairs used during a marshal operation. Applies to both application/xml and application/json.
+     * Value should be an org.eclipse.persistence.oxm.NamespacePrefixMapper or can be a 
+     * Map<String, String> of uris to prefixes.
+     * @since 2.3.3
+     */
+    public static final String NAMESPACE_PREFIX_MAPPER = JAXBContext.NAMESPACE_PREFIX_MAPPER;   
+    private static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+    private static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
+    
+    /**The Constant INDENT_STRING. Property used to set the string used when indenting formatted marshalled documents.
+    * If not set and the default for formatted documents is &quot;   &quot; (three spaces)
+    * @since 2.3.3.
+    */
+    public static final String INDENT_STRING = "eclipselink.indent-string";    
+    private static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
+    private static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
     //XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true
     private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
+    
+    /** The Constant MEDIA_TYPE. This can be used to set the media type.  
+     * Supported values are "application/xml" and "application/json" 
+     * @since 2.4 
+     */
+    public static final String MEDIA_TYPE = JAXBContext.MEDIA_TYPE;  
+    
+    /** The Constant ID_RESOLVER.  This can be used to specify a custom
+     * IDResolver class, to allow customization of ID/IDREF processing.
+     * @since 2.4 
+     */
+    public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
+    
+    /** The Constant ATTRIBUTE_PREFIX. This can be used to specify a prefix to prepend
+     * to attributes.  Only applicable if media type ="application/json"
+     * @since 2.4 
+     */ 
+    public static final String JSON_ATTRIBUTE_PREFIX = JAXBContext.JSON_ATTRIBUTE_PREFIX;
+    
+    /** The Constant INCLUDE_ROOT. This can be used  to specify if the 
+     * @XmlRootElement should be marshalled.  Only applicable if media type ="application/json"
+     * @since 2.4  
+     */
+    public static final String JSON_INCLUDE_ROOT =JAXBContext.JSON_INCLUDE_ROOT;
+    
+    /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
+     *  that will be used around things mapped with @XmlValue.  Only applicable if media type ="application/json"
+     *  @since 2.4 
+     */
+    public static final String JSON_VALUE_WRAPPER = JAXBContext.JSON_VALUE_WRAPPER;
 
     /**
      * This constructor initializes various settings on the XML marshaller, and
@@ -601,10 +642,17 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if(ECLIPSELINK_NAMESPACE_PREFIX_MAPPER.equals(key)) { 
-                xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
+            } else if(NAMESPACE_PREFIX_MAPPER.equals(key)) { 
+            	if(value instanceof Map){
+            		NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);
+            		xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
+            	}else{
+                    xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
+            	}
             } else if(SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
                 xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
+            } else if (INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+                xmlMarshaller.setIndentString((String) value);
             } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
@@ -615,21 +663,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	}else{
             	   throw new PropertyException(key, value);
             	}
-            } else if (JAXBContext.ATTRIBUTE_PREFIX.equals(key)) {            	
+            } else if (JAXBContext.JSON_ATTRIBUTE_PREFIX.equals(key)) {            	
             	xmlMarshaller.setAttributePrefix((String)value);            	
-            } else if (JAXBContext.INCLUDE_ROOT.equals(key)) {            	
+            } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {            	
             	xmlMarshaller.setIncludeRoot((Boolean)value);     
-            } else if (JAXBContext.NAMESPACES.equals(key)) {    
-            	if(value != null){
-            	    Map<String, String> namespaces = (Map<String, String>)value;
-            	    NamespaceResolver nr = new NamespaceResolver();
-            	    nr.getPrefixesToNamespaces().putAll(namespaces);            
-                    xmlMarshaller.setNamespaceResolver(nr);
-            	}
-            } else if(JAXBContext.VALUE_WRAPPER.equals(key)){
+            } else if(JAXBContext.JSON_VALUE_WRAPPER.equals(key)){
             	xmlMarshaller.setValueWrapper((String)value); 
-            } else if (ECLIPSELINK_INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
-                xmlMarshaller.setIndentString((String) value);
             } else {
                 throw new PropertyException(key, value);
             }

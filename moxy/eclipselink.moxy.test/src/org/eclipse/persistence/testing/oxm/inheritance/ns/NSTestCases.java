@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.inheritance.ns;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -31,12 +34,12 @@ public class NSTestCases extends XMLWithJSONMappingTestCases {
     	return true;
     }
     
-    protected NamespaceResolver getNamespaceResolver(){
-    	NamespaceResolver nr = new NamespaceResolver();
-    	nr.put("parent", "urn:parent");
-    	nr.put("child", "urn:child");
-    	nr.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
-    	return nr;
+    protected Map<String, String> getNamespaces(){
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("urn:parent", "parent");
+        namespaces.put("urn:child", "child");
+        namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+    	return namespaces;
     }
 
     

@@ -78,23 +78,24 @@ public class NamespaceInheritanceTestCases extends JSONMarshalUnmarshalTestCases
 	public void setUp() throws Exception{
 		super.setUp();
 		
-        Map<String, String> marshalNamespaceMap = new HashMap<String, String>();		
-        marshalNamespaceMap.put("aaa", "namespace0");
-        marshalNamespaceMap.put("bbb", "namespace1");
-        marshalNamespaceMap.put("ccc", "namespace2");
-        marshalNamespaceMap.put("ddd", "namespace3");
-        marshalNamespaceMap.put("eee", XMLConstants.SCHEMA_INSTANCE_URL);
+        Map<String, String> marshalNamespaceMap = new HashMap<String, String>();	
+        marshalNamespaceMap.put("namespace0", "aaa");
+        marshalNamespaceMap.put("namespace1", "bbb");
+        marshalNamespaceMap.put("namespace2", "ccc");
+        marshalNamespaceMap.put("namespace3", "ddd");
+        marshalNamespaceMap.put(XMLConstants.SCHEMA_INSTANCE_URL, "eee");
+   
+		Map<String, String> unmarshalNamespaceMap = new HashMap<String, String>();	
+		unmarshalNamespaceMap.put("namespace0", "ns0");
+		unmarshalNamespaceMap.put("namespace1", "ns1");
+		unmarshalNamespaceMap.put("namespace2", "ns2");
+		unmarshalNamespaceMap.put("namespace3", "ns3");
+		unmarshalNamespaceMap.put(XMLConstants.SCHEMA_INSTANCE_URL, "ns4");
+	
 		
-		Map<String, String> unmarshalNamespaceMap = new HashMap<String, String>();		
-		unmarshalNamespaceMap.put("ns0", "namespace0");
-		unmarshalNamespaceMap.put("ns1", "namespace1");
-		unmarshalNamespaceMap.put("ns2", "namespace2");
-		unmarshalNamespaceMap.put("ns3", "namespace3");
-		unmarshalNamespaceMap.put("ns4", XMLConstants.SCHEMA_INSTANCE_URL);
-				
 		try{
-		    jsonMarshaller.setProperty(JAXBContext.NAMESPACES, marshalNamespaceMap);
-		    jsonUnmarshaller.setProperty(JAXBContext.NAMESPACES, unmarshalNamespaceMap);
+		    jsonMarshaller.setProperty(JAXBContext.NAMESPACE_PREFIX_MAPPER, marshalNamespaceMap);
+		    jsonUnmarshaller.setProperty(JAXBContext.NAMESPACE_PREFIX_MAPPER, unmarshalNamespaceMap);
 		}catch(PropertyException e){
 			e.printStackTrace();
 			fail("An error occurred setting properties during setup.");

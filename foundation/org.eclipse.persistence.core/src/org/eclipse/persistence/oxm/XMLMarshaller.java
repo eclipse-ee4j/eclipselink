@@ -104,7 +104,6 @@ public class XMLMarshaller implements Cloneable {
     private MediaType mediaType = MediaType.APPLICATION_XML;
     private String attributePrefix;
     private boolean includeRoot;
-    private NamespaceResolver namespaceResolver;
     private String valueWrapper;
     private NamespacePrefixMapper mapper;
     private String indentString;
@@ -889,10 +888,14 @@ public class XMLMarshaller implements Cloneable {
         }
         marshalRecord.setMarshaller(this);
         
-        if(this.mapper == null && namespaceResolver == null) {
+        if(this.mapper == null) {
             addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
         } else if(this.mapper != null) {
-            marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, descriptor.getNamespaceResolver()));
+            if(descriptor == null){
+                marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, null));
+            }else{
+                marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, descriptor.getNamespaceResolver()));
+            }
             marshalRecord.setCustomNamespaceMapper(true);
         }
         
@@ -905,7 +908,7 @@ public class XMLMarshaller implements Cloneable {
         if (!isFragment()) {
             String encoding = getEncoding();
             String version = DEFAULT_XML_VERSION;
-            if (!isXMLRoot) {
+            if (!isXMLRoot && descriptor!= null) {
                 marshalRecord.setLeafElementType(descriptor.getDefaultRootElementType());
             } else {
                 if (root.getEncoding() != null) {
@@ -961,7 +964,7 @@ public class XMLMarshaller implements Cloneable {
         
         if (null != rootFragment && !(rootFragment.getLocalName().equals(XMLConstants.EMPTY_STRING))) {
             marshalRecord.startPrefixMappings(nr);
-            if (!isXMLRoot && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
+            if (!isXMLRoot && descriptor != null && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
                 // throw an exception if the name has a : in it but the namespaceresolver is null
                 throw XMLMarshalException.namespaceResolverNotSpecified(rootFragment.getShortName());
             }
@@ -1552,29 +1555,20 @@ public class XMLMarshaller implements Cloneable {
          this.includeRoot = includeRoot;
     }
 
-   /**
-    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)
-    * Ignored marshalling XML.
-    * @since 2.4
-    * @return
-    */
-    public NamespaceResolver getNamespaceResolver() {
-        return namespaceResolver;
-    }
-
-   /**
-    * NamespaceResovler that can be used during unmarshal (instead of those set in the project meta data)
-    * Ignored marshalling XML.
-    * @since 2.4
-    */
-    public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
-        this.namespaceResolver = namespaceResolver;
-    }
-
+    /**
+     * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
+     * @since 2.3.3
+     * @return
+     */
     public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
         this.mapper = mapper;
     }
 
+    /**
+     * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
+     * @since 2.3.3
+     * @return
+     */
     public NamespacePrefixMapper getNamespacePrefixMapper() {
         return this.mapper;
     }

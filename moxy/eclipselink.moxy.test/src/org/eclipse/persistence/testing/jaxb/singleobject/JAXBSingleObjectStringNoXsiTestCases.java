@@ -33,6 +33,7 @@ import org.xml.sax.InputSource;
 public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObject.xml";
+	protected final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectWrite.xml";
 	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectString.json";
 
 	public JAXBSingleObjectStringNoXsiTestCases(String name) throws Exception {
@@ -42,6 +43,7 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlDocument(XML_RESOURCE_WRITE);
 		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
@@ -75,11 +77,10 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
     	Map props = new HashMap();
 	    	
     	Map namespaces = new HashMap();
-    	namespaces.put("ns0", "rootNamespace");
-
-    	props.put(JAXBContext.NAMESPACES, namespaces);
+    	namespaces.put("rootNamespace", "ns1");
+    	props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaces);
     	
-    	props.put(JAXBContext.INCLUDE_ROOT, true);
+    	props.put(JAXBContext.JSON_INCLUDE_ROOT, true);
 	    return props;
 }
 	

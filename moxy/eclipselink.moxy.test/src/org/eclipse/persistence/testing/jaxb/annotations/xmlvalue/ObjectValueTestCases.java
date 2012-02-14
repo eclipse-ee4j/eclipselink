@@ -31,8 +31,8 @@ public class ObjectValueTestCases extends JAXBTestCases { //JAXBWithJSONTestCase
     @Override
     public void setUp() throws Exception{
         super.setUp();
-        jaxbMarshaller.setProperty(JAXBContext.VALUE_WRAPPER, "value");
-        jaxbUnmarshaller.setProperty(JAXBContext.VALUE_WRAPPER, "value");
+        jaxbMarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "value");
+        jaxbUnmarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "value");
     }
 
     @Override
