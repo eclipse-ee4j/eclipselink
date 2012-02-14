@@ -145,11 +145,13 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 objectValue = cp.next(iterator, session);
          	    marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
             }
+            marshalRecord.endCollection();
+            
             if(textXPathFragment!=null){
             	marshalRecord.endElement(textXPathFragment, namespaceResolver);
             }
         	
-            marshalRecord.endCollection();
+            
         }
         return true;
         

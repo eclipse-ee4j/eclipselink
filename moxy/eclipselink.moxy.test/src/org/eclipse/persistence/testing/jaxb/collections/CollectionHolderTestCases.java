@@ -12,15 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class CollectionHolderTestCases extends JAXBTestCases{
+public class CollectionHolderTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholder.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholder.json";
 
     public CollectionHolderTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = CollectionHolder.class;
         setClasses(classes);

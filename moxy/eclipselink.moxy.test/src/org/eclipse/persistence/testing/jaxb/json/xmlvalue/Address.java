@@ -20,23 +20,7 @@ public class Address {
        
 	@XmlValue
     private List<String> addressInfo;
-   
-    /*
-    public List<String>  getStreets() {
-        return streets;
-    }
-
-    public void setStreet(List<String>  streets) {
-        this.streets = streets;
-    }
-
-    public String getCity() {
-        return city;
-    }
-    	public void setCity(String city) {
-        this.city = city;
-    }
-*/
+      
     public List<String> getAddressInfo() {
 		return addressInfo;
 	}
@@ -45,11 +29,8 @@ public class Address {
 		this.addressInfo = addressInfo;
 	}
 
-
-
     public String toString(){
-        //String s = "Address:" +  getStreet() +" " + getCity();
-    	String s = "Address:" +  " ";
+      	String s = "Address:" +  " ";
     	for(int i=0; i<getAddressInfo().size(); i++){
     		s += " " + getAddressInfo().get(i);
     	}

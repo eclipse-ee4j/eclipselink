@@ -23,16 +23,19 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class CollectionHolderWrappersOverrideTestCases extends JAXBTestCases {
+public class CollectionHolderWrappersOverrideTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderwrappers.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderwrappers.json";
     private final static String BINDINGS = "org/eclipse/persistence/testing/jaxb/collections/override-bindings.xml";
 
     public CollectionHolderWrappersOverrideTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+
         Class[] classes = new Class[1];
         classes[0] = CollectionHolderWrappersInitialized.class;
         setClasses(classes);

@@ -13,15 +13,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class CollectionHolderWrappersNillableInitializedTestCases extends JAXBTestCases {
+public class CollectionHolderWrappersNillableInitializedTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderwrappersnillableinitialized.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderwrappersnillableinitialized.json";
 
     public CollectionHolderWrappersNillableInitializedTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+
         Class[] classes = new Class[1];
         classes[0] = CollectionHolderWrappersNillableInitialized.class;
         setClasses(classes);
