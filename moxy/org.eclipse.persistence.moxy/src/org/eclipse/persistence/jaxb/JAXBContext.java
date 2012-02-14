@@ -638,23 +638,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         @Override
         protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
-            EclipseLinkException sessionLoadingException = null;
-            try {
-                XMLContext xmlContext = new XMLContext(contextPath, classLoader);
-                return new JAXBContextState(xmlContext);
-            } catch (ValidationException vex) {
-                if (vex.getErrorCode() != ValidationException.NO_SESSIONS_XML_FOUND) {
-                    sessionLoadingException = vex;
-                }
-            } catch (SessionLoaderException ex) {
-                sessionLoadingException = ex;
-            } catch (Exception ex) {
-                throw new javax.xml.bind.JAXBException(ex);
-            }
+            boolean foundMetadata = false;
             List<Class> classes = new ArrayList<Class>();
 
             // Check properties map for eclipselink-oxm.xml entries
             Map<String, XmlBindings> xmlBindingMap = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
+            foundMetadata = null != xmlBindingMap && !xmlBindingMap.isEmpty();
             classes = getXmlBindingsClassesFromMap(xmlBindingMap, classLoader, classes);
 
             StringTokenizer tokenizer = new StringTokenizer(contextPath, ":");
@@ -664,6 +653,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                     Class objectFactory = classLoader.loadClass(path + ".ObjectFactory");
                     if (isJAXB2ObjectFactory(objectFactory, classLoader)) {
                         classes.add(objectFactory);
+                        foundMetadata = true;
                     }
                 } catch (Exception ex) {
                     // if there's no object factory, don't worry about it. Check for jaxb.index next
@@ -676,6 +666,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 // Next check for a jaxb.index file in case there's one available
                 InputStream jaxbIndex = classLoader.getResourceAsStream(path.replace('.', '/') + "/jaxb.index");
                 if (jaxbIndex != null) {
+                    foundMetadata = true;
                     BufferedReader reader = new BufferedReader(new InputStreamReader(jaxbIndex));
                     try {
                         String line = reader.readLine();
@@ -692,18 +683,26 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                     }
                 }
             }
-            if (classes.size() == 0) {
-                org.eclipse.persistence.exceptions.JAXBException jaxbException = org.eclipse.persistence.exceptions.JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath);
-                if (sessionLoadingException != null) {
-                    jaxbException.setInternalException(sessionLoadingException);
+            if (foundMetadata) {
+                Class[] classArray = new Class[classes.size()];
+                for (int i = 0; i < classes.size(); i++) {
+                    classArray[i] = (Class) classes.get(i);
                 }
-                throw new javax.xml.bind.JAXBException(jaxbException);
+                return createContextState(classArray, xmlBindingMap);
             }
-            Class[] classArray = new Class[classes.size()];
-            for (int i = 0; i < classes.size(); i++) {
-                classArray[i] = (Class) classes.get(i);
+
+            Exception sessionLoadingException = null;
+            try {
+                XMLContext xmlContext = new XMLContext(contextPath, classLoader);
+                return new JAXBContextState(xmlContext);
+            } catch (Exception exception) {
+                sessionLoadingException = exception;
             }
-            return createContextState(classArray, xmlBindingMap);
+            JAXBException jaxbException = JAXBException.noObjectFactoryOrJaxbIndexInPath(contextPath);
+            if (sessionLoadingException != null) {
+                jaxbException.setInternalException(sessionLoadingException);
+            }
+            throw new javax.xml.bind.JAXBException(jaxbException);
         }
 
         /**
