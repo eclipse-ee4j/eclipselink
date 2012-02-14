@@ -77,11 +77,11 @@
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
         <!-- Defaults of Pre-Set variables -->
-        <property name="compdeps.version"               value="1.0.2"/>
+        <property name="compdeps.version"               value="1.0.3"/>
         <property name="compdeps.qualifier"             value="v${compdeps.build.date}${compdeps.build.time}"/>
         <property name="compdeps.version.string"        value="${compdeps.version}.${compdeps.qualifier}"/>
-        <property name="bld.src.dir"                    value="target"/>
-        <property name="p2repo.dir"                     value="p2repo"/>
+        <property name="bld.src.dir"                    value="${compdeps.build.location}/target"/>
+        <property name="p2repo.dir"                     value="${compdeps.build.location}/p2repo"/>
         <property name="specification.vendor"           value="Eclipse.org - EclipseLink Project"/>
         <echo message="compdeps.version               ='${compdeps.version}'"/>
         <echo message="compdeps.qualifier             ='${compdeps.qualifier}'"/>
@@ -93,9 +93,9 @@
         <!-- Tool definitions -->
         <property name="p2.SDK.install.dir"             value="D:/Indigo-gm/eclipse"/>
         <property name="p2.SDK.plugin.dir"              value="${p2.SDK.install.dir}/plugins"/>
-        <property name="p2.publisher.jar"               value="org.eclipse.equinox.p2.publisher_*.jar"/>
-        <property name="p2.launcher.jar"                value="org.eclipse.equinox.launcher_*.jar"/>
-        <property name="p2.artifact.jar"                value="org.eclipse.equinox.artifact.repository_*.jar"/>
+        <property name="p2.publisher.prefix"            value="org.eclipse.equinox.p2.publisher"/>
+        <property name="p2.launcher.prefix"             value="org.eclipse.equinox.launcher"/>
+        <property name="p2.artifact.prefix"             value="org.eclipse.equinox.artifact.repository"/>
         <available file="${p2.SDK.plugin.dir}" property="sdk.install.exist"/>
         <echo message="p2.SDK.install.dir             ='${p2.SDK.install.dir}'"/>
         <say  message="p2.SDK.plugin.dir              ='${p2.SDK.plugin.dir}'"    if="sdk.install.exist"/>
@@ -108,21 +108,13 @@
         <!-- Input definitions -->
         <property name="p2.feature.dir"                 value="${p2repo.dir}/features"/>
         <property name="p2.bundle.dir"                  value="${p2repo.dir}/plugins"/>
-        <property name="site.dir"                       value="${compdeps.build.location}/${p2repo.dir}"/>
-        <property name="site.dir.url"                   value="file:${site.dir}"/>
-        <property name="site.url"                       value="${site.dir.url}/site.xml"/>
         <echo message="p2.feature.dir                 ='${p2.feature.dir}'"/>
         <echo message="p2.bundle.dir                  ='${p2.bundle.dir}'"/>
-        <echo message="site.dir                       ='${site.dir}'"/>
-        <echo message="site.dir.url                   ='${site.dir.url}'"/>
-        <echo message="site.url                       ='${site.url}'"/>
         <echo message=" ---"/>
 
         <!-- Helper definitions derived from Pre-set variables -->
         <property name="compdeps.build.dir"             value="${p2.feature.dir}"/>
-        <property name="bundle.working.dir"             value="${p2.bundle.dir}"/>
         <echo message="compdeps.build.dir             ='${compdeps.build.dir}'"/>
-        <echo message="bundle.working.dir             ='${bundle.working.dir}'"/>
         <echo message=" ---"/>
 
         <!-- Output definitions -->
@@ -352,22 +344,40 @@
         </copy>
     </target>
 
+    <target name="configure-tooling" depends="init">
+        <selectbundle basename="${p2.launcher.prefix}"   directory="${p2.SDK.plugin.dir}"
+                     criterion="[0.0.1,9.0.0)" property="p2.launcher.jar"
+        />
+        <selectbundle basename="${p2.publisher.prefix}"  directory="${p2.SDK.plugin.dir}"
+                     criterion="[0.0.1,9.0.0)" property="p2.publisher.jar"
+        />
+        <echo message="p2.SDK.plugin.dir ='${p2.SDK.plugin.dir}'"/>
+        <say  message="p2.launcher.jar   ='${p2.launcher.jar}'"                                               if="p2.launcher.jar"/>
+        <say  message="   '${p2.launcher.prefix}_[0.0.1,9.0.0).jar' not found! P2 Generation will fail."  unless="p2.launcher.jar"/>
+        <say  message="p2.publisher.jar  ='${p2.publisher.jar}'"                                              if="p2.publisher.jar"/>
+        <say  message="   '${p2.publisher.prefix}_[0.0.1,9.0.0).jar' not found!P2 Generation will fail."  unless="p2.publisher.jar"/>
+        <condition property="p2.tooling.available">
+            <and>
+                <isset property="p2.launcher.jar"/>
+                <isset property="p2.publisher.jar"/>
+            </and>
+        </condition>
+        <say  message="All P2 Generation libraries not available. Generation aborted!"  unless="p2.tooling.available"/>
+    </target>
 
-    <target name="generate-p2" depends="populate-p2-site">
-        <delete file="${site.dir}/site.xml" quiet="true"/>
+    <target name="generate-p2" if="p2.tooling.available" depends="configure-tooling, populate-p2-site">
+        <delete file="${p2repo.dir}/site.xml" quiet="true"/>
         <filter token="REPOS_URL"          value="${p2.release.repos.url}"/>
         <filter token="VERSION"            value="${compdeps.version}"/>
         <filter token="QUALIFIER"          value="${compdeps.qualifier}"/>
-        <copy todir="${site.dir}" file="${compdeps.build.location}/site.xml" filtering="true"/>
+        <copy todir="${p2repo.dir}" file="${compdeps.build.location}/site.xml" filtering="true"/>
 
         <echo message="java.home         ='${java.home}'"/>
-        <echo message="p2.SDK.plugin.dir ='${p2.SDK.plugin.dir}'"/>
-        <echo message="p2.launcher.jar   ='${p2.launcher.jar}'"/>
-        <echo message="p2.publisher.jar  ='${p2.publisher.jar}'"/>
         <echo message="-----"/>
         <echo message="p2repo.dir           ='${p2repo.dir}'"/>
         <echo message="p2.repos.url         ='${p2.repos.url}'"/>
         <echo message="p2.release.repos.url ='${p2.release.repos.url}'"/>
+        <echo message="-----"/>
         <!-- Metadata generator apparently doesn't rebuild the artifact and content xml files if they already exist -->
         <delete  failonerror="false">
             <fileset dir="${p2repo.dir}" includes="artifact*.*, content*.*"/>
