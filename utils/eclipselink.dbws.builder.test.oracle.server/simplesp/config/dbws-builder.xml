@@ -13,7 +13,7 @@
   </properties>
   <procedure
     name="testEcho"
-    catalogPattern="toplevel"
+    catalogPattern="TOPLEVEL"
     procedurePattern="TESTECHO"
     isSimpleXMLFormat="true"
   />
