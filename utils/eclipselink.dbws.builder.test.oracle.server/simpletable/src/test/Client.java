@@ -58,7 +58,7 @@ public class Client {
                 "<urn:simpletableType>" +
                   "<urn:id>1</urn:id>" +
                   "<urn:name>mike norman</urn:name>" +
-                  "<urn:since>2001-12-25T00:00:00.0-05:00</urn:since>" +
+                  "<urn:since>2001-12-25</urn:since>" +
                 "</urn:simpletableType>" +
               "</theInstance>" +
             "</update_simpletableType>" +
@@ -72,7 +72,7 @@ public class Client {
                 "<urn:simpletableType>" +
                   "<urn:id>4</urn:id>" +
                   "<urn:name>test</urn:name>" +
-                  "<urn:since>2009-03-27T00:00:00.0-05:00</urn:since>" +
+                  "<urn:since>2009-03-27</urn:since>" +
                 "</urn:simpletableType>" +
               "</theInstance>" +
             "</create_simpletableType>" +
@@ -94,7 +94,7 @@ public class Client {
                 "<urn:simpletableType>" +
                   "<urn:id>1</urn:id>" +
                   "<urn:name>mike</urn:name>" +
-                  "<urn:since>2001-12-25T00:00:00.0-05:00</urn:since>" +
+                  "<urn:since>2001-12-25</urn:since>" +
                 "</urn:simpletableType>" +
               "</theInstance>" +
             "</update_simpletableType>" +
@@ -203,7 +203,7 @@ public class Client {
                 "<simpletableType>" +
                     "<id>1</id>" +
                     "<name>mike</name>" +
-                    "<since>2001-12-25T00:00:00</since>" +
+                    "<since>2001-12-25</since>" +
                 "</simpletableType>" +
             "</srvc:result>" +
         "</srvc:findByPrimaryKey_simpletableTypeResponse>";
@@ -214,17 +214,17 @@ public class Client {
                 "<simpletableType>" +
                     "<id>1</id>" +
                     "<name>mike</name>" +
-                    "<since>2001-12-25T00:00:00</since>" +
+                    "<since>2001-12-25</since>" +
                  "</simpletableType>" +
                  "<simpletableType>" +
                     "<id>2</id>" +
                     "<name>blaise</name>" +
-                    "<since>2001-12-25T00:00:00</since>" +
+                    "<since>2001-12-25</since>" +
                  "</simpletableType>" +
                  "<simpletableType>" +
                     "<id>3</id>" +
                     "<name>rick</name>" +
-                    "<since>2001-12-25T00:00:00</since>" +
+                    "<since>2001-12-25</since>" +
                  "</simpletableType>" +
              "</srvc:result>" +
         "</srvc:findAll_simpletableTypeResponse>";
@@ -237,7 +237,7 @@ public class Client {
                 "<simpletableType>" +
                     "<id>1</id>" +
                     "<name>mike norman</name>" +
-                    "<since>2001-12-25T00:00:00</since>" +
+                    "<since>2001-12-25</since>" +
                 "</simpletableType>" +
             "</srvc:result>" +
         "</srvc:findByPrimaryKey_simpletableTypeResponse>";

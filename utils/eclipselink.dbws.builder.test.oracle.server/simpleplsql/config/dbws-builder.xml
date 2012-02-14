@@ -15,5 +15,6 @@
     name="testBoolean"
     catalogPattern="TOPLEVEL"
     procedurePattern="BOOL_IN_TEST"
+	isSimpleXMLFormat="true"
   />
 </dbws-builder>
