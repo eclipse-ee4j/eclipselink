@@ -306,7 +306,13 @@ public class JavaClassImpl implements JavaClass {
         if(jClass.getPackage() != null){
             return jClass.getPackage().getName();
         }else{
-            String className = jClass.getCanonicalName();
+            Class nonInnerClass = jClass;
+            Class enclosingClass = jClass.getEnclosingClass();
+            while(enclosingClass != null){
+            	nonInnerClass = enclosingClass;
+            	enclosingClass = nonInnerClass.getEnclosingClass();
+            }
+            String className = nonInnerClass.getCanonicalName();            
             if(className !=null){
                 int index = className.lastIndexOf(".");
                 if(index > -1){

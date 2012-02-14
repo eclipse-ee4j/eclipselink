@@ -2169,11 +2169,12 @@ public class MappingsGenerator {
         while (javaClasses.hasNext()) {
             String next = (String)javaClasses.next();
             JavaClass javaClass = helper.getJavaClass(next);
-            TypeInfo info = (TypeInfo) this.typeInfo.get(next);
-            NamespaceInfo namespaceInfo = this.packageToPackageInfoMappings.get(javaClass.getPackageName()).getNamespaceInfo();
+            TypeInfo info = (TypeInfo) this.typeInfo.get(next);            
             if (info.isEnumerationType()) {
                 continue;
             }
+            NamespaceInfo namespaceInfo = this.packageToPackageInfoMappings.get(javaClass.getPackageName()).getNamespaceInfo();
+
             XMLDescriptor descriptor = info.getDescriptor();
             if (descriptor != null) {
                 generateMappings(info, descriptor, namespaceInfo);
