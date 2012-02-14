@@ -1,0 +1,33 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
+    <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.Address</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.Department</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.Employee</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.EmploymentPeriod</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.PhoneNumber</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.PhoneNumberPK</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.Project</class>
+		<class>org.eclipse.persistence.testing.models.jpa21.advanced.SmallProject</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        
+		<properties>
+            <property name="eclipselink.session-name" value="default-session"/>
+            <!-- property name="eclipselink.logging.level" value="FINEST"/ -->
+            <property name="eclipselink.logging.timestamp" value="false"/>
+
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="jpa21-model-create.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="jpa21-model-drop.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+			<property name="eclipselink.orm.validate.schema" value="true"/>
+			<property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+        </properties>
+    </persistence-unit>
+    
+</persistence>
