@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.jaxb.dynamic;
 import org.eclipse.persistence.testing.jaxb.dynamic.withstatic.DynamicWithStaticAddressNoPropsTestCases;
 import org.eclipse.persistence.testing.jaxb.dynamic.withstatic.DynamicWithStaticOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.dynamic.withstatic.DynamicWithStaticTestCases;
+import org.eclipse.persistence.testing.jaxb.dynamic.withstatic.StaticWithDynamicTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -34,6 +35,7 @@ public class DynamicJAXBTestSuite extends TestSuite {
         suite.addTestSuite(DynamicWithStaticTestCases.class);
         suite.addTestSuite(DynamicWithStaticAddressNoPropsTestCases.class);
         suite.addTestSuite(DynamicWithStaticOverrideTestCases.class);
+        suite.addTestSuite(StaticWithDynamicTestCases.class);
         return suite;
     }
 
