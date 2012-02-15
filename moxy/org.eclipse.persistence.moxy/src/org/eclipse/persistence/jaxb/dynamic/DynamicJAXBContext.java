@@ -241,7 +241,13 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
                 List<ClassDescriptor> descriptors = p.getOrderedDescriptors();
                 for (ClassDescriptor classDescriptor : descriptors) {
-                    classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
+                    try {
+                        if(null == classDescriptor.getJavaClass()) {
+                            classDescriptor.setJavaClass(classLoader.getParent().loadClass(classDescriptor.getJavaClassName()));
+                        }
+                    } catch(ClassNotFoundException e) {
+                        classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
+                    }
                 }
                 dp = DynamicTypeBuilder.loadDynamicProject(p, null, (DynamicClassLoader) classLoader);
             } catch (Exception e) {

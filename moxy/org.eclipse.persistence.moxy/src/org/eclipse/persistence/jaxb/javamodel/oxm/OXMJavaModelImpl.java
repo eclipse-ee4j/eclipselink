@@ -12,13 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.oxm;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
@@ -43,9 +41,8 @@ import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
  *
  * @see org.eclipse.persistence.jaxb.javamodel.JavaModel
  */
-public class OXMJavaModelImpl implements JavaModel {
+public class OXMJavaModelImpl extends JavaModelImpl implements JavaModel  {
 
-    private ClassLoader classLoader;
     private Map<String, JavaClass> javaModelClasses = new HashMap<String, JavaClass>();
 
     /**
@@ -56,7 +53,7 @@ public class OXMJavaModelImpl implements JavaModel {
      *
      */
     public OXMJavaModelImpl(ClassLoader loader, JavaClass[] javaClasses) {
-        this.classLoader = loader;
+        super(loader);
 
         for (int i = 0; i < javaClasses.length; i++) {
             this.javaModelClasses.put(javaClasses[i].getQualifiedName(), javaClasses[i]);
@@ -86,7 +83,7 @@ public class OXMJavaModelImpl implements JavaModel {
         try {
             Class<?> realClass = PrivilegedAccessHelper.getClassForName(className, true, classLoader);
             if (realClass != null) {
-                JavaModelImpl jm = new JavaModelImpl(this.classLoader);
+                JavaModelImpl jm = new JavaModelImpl(classLoader);
                 JavaClassImpl jc = new JavaClassImpl(realClass, jm);
                 return jc;
             }
@@ -154,18 +151,6 @@ public class OXMJavaModelImpl implements JavaModel {
             return (JaxbClassLoader) parent;
         }
 
-        return null;
-    }
-
-    /**
-     * Return a Java <code>Annotation</code> representation of the given <code>JavaAnnotation</code>.
-     *
-     * @param annotation - the <code>JavaAnnotation</code> to be converted.
-     * @param jClass - the Java <code>Class</code> this annotation belogs to.
-     *
-     * @return always returns <code>null</code> as <code>JavaTypes</code> do not have <code>Annotations</code>.
-     */
-    public Annotation getAnnotation(JavaAnnotation annotation, Class<?> jClass) {
         return null;
     }
 

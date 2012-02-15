@@ -70,6 +70,9 @@ public class JavaClassImpl implements JavaClass {
         isMetadataComplete = false;
     }
 
+    public void setJavaModelImpl(JavaModelImpl javaModel) {
+        this.javaModelImpl = javaModel;
+    }
     public Collection getActualTypeArguments() {
         ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
         if (jType instanceof ParameterizedType) {

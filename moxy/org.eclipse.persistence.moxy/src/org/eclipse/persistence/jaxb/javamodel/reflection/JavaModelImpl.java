@@ -38,7 +38,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
  */
 public class JavaModelImpl implements JavaModel {
 
-    private ClassLoader classLoader;
+    protected ClassLoader classLoader;
     private AnnotationHelper annotationHelper;
     private Map<String, Boolean> metadataCompletePackages;
     

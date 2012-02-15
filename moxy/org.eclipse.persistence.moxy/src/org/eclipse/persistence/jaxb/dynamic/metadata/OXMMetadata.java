@@ -26,6 +26,7 @@ import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaModelInputImpl;
 import org.eclipse.persistence.jaxb.javamodel.oxm.OXMObjectFactoryImpl;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
@@ -47,8 +48,12 @@ public class OXMMetadata extends Metadata {
             try {
                 ((OXMJavaClassImpl) javaClass).setJavaModel(javaModel);
             } catch (ClassCastException cce) {
-                ((OXMObjectFactoryImpl) javaClass).setJavaModel(javaModel);
-                ((OXMObjectFactoryImpl) javaClass).init();
+                try {
+                    ((OXMObjectFactoryImpl) javaClass).setJavaModel(javaModel);
+                    ((OXMObjectFactoryImpl) javaClass).init();
+                } catch(ClassCastException cce2) {
+                    ((JavaClassImpl)javaClass).setJavaModelImpl(javaModel);
+                }
             }
         }
 
@@ -67,7 +72,13 @@ public class OXMMetadata extends Metadata {
                 List<JavaType> javaTypes = b.getJavaTypes().getJavaType();
                 for (Iterator<JavaType> iterator = javaTypes.iterator(); iterator.hasNext();) {
                     JavaType type = iterator.next();
-                    oxmJavaClasses.add(new OXMJavaClassImpl(type));
+                    //Check to see if it's a static class or if should be treated as dynamic
+                    try {
+                        Class staticClass = dynamicClassLoader.getParent().loadClass(type.getName());
+                        oxmJavaClasses.add(new JavaClassImpl(staticClass, null));
+                    } catch(Exception ex) {
+                        oxmJavaClasses.add(new OXMJavaClassImpl(type));
+                    }
                 }
             }
 
