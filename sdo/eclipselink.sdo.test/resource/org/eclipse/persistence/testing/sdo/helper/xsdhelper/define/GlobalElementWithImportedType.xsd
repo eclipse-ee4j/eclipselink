@@ -1,0 +1,9 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.example.org"
+    xmlns:ns0="http://www.example.org/imported"
+    targetNamespace="http://www.example.org"
+    elementFormDefault="qualified">
+    <xsd:import schemaLocation="ImportedType.xsd" namespace="http://www.example.org/imported"/>
+    <xsd:element name="GlobalElement" type="ns0:ImportedType"/>
+</xsd:schema>

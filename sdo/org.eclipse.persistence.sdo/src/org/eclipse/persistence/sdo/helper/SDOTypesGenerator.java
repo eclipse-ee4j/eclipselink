@@ -81,7 +81,7 @@ public class SDOTypesGenerator {
     private Map itemNameToSDOName;
     private boolean processImports;
     private boolean returnAllTypes;
-    private java.util.List namespaceResolvers;
+    private java.util.List<NamespaceResolver> namespaceResolvers;
     private boolean inRestriction;
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
@@ -1470,10 +1470,16 @@ public class SDOTypesGenerator {
 
     private void addRootElementToDescriptor(SDOProperty p, String targetNamespace, String xsdName) {
         if (!p.getType().isDataType()) {
-            NamespaceResolver nr = p.getType().getXmlDescriptor().getNamespaceResolver();
             String prefix = null;
-            if (nr != null) {
-                prefix = nr.resolveNamespaceURI(targetNamespace);
+            if(targetNamespace != null && !XMLConstants.EMPTY_STRING.equals(targetNamespace)) {
+                NamespaceResolver nr = p.getType().getXmlDescriptor().getNamespaceResolver();
+                if (nr != null) {
+                    prefix = nr.resolveNamespaceURI(targetNamespace);
+                    if(null == prefix) {
+                        prefix = nr.generatePrefix();
+                        nr.put(prefix, targetNamespace);
+                    }
+                }
             }
             if ((prefix == null) || prefix.equals(SDOConstants.EMPTY_STRING)) {
                 p.getType().getXmlDescriptor().addRootElement(xsdName);
