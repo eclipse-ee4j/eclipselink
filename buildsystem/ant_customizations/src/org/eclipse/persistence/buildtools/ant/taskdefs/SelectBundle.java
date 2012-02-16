@@ -8,10 +8,12 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * SelectBundle
- *   property to set
- *   basename     (bnd, org.eclipse.equinox) required
- *   separator    (-,_) default to _
- *   criterion    OSGi selection criteria [1.0,2.0) required
+ *   basename     (bnd, org.eclipse.equinox) : required
+ *   criterion    OSGi version selection criteria [1.0,2.0) : required
+ *   separator    separator used between basename and version in filename (such as - or _) : defaults to _
+ *   property     propety to set : required
+ *   includepath  boolean flag, if set will include path and filename in "property" : defaults to 'false'
+ *   versiononly  boolean flag, if set will only set full version of bundle in "property" : defaults to 'false'
  *
  * Contributors:
  *     egwin - initial conception and implementation
@@ -25,6 +27,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.eclipse.persistence.buildtools.helper.Version;
+import org.eclipse.persistence.buildtools.helper.VersionException;
 
 public class SelectBundle extends Task {
     private boolean includepath = false; // whether to include the path (directory property) in the value of property if selection is successful (default: no)
@@ -36,11 +39,12 @@ public class SelectBundle extends Task {
     private String separator = "_";      // the separator used to differentiate basename and jarversion
     private String suffix    = "jar";    // suffix of file to find (default: jar)
 
-    private boolean minInclusive = false;   // local: whether the 'floor' version is inclusive or not "("=true "["=false
-    private boolean maxInclusive = false;   // local: whether the 'ceiling' version is inclusive or not "("=true "["=false
+    private boolean minInclusive = false;   // local: whether the 'floor' version is inclusive or not "["=true "("=false
+    private boolean maxInclusive = false;   // local: whether the 'ceiling' version is inclusive or not "]"=true ")"=false
     private Version minVersion   = null;    // local: the value of the "floor" version
     private Version maxVersion   = null;    // local: the value of the "ceiling" version
-    private String  version      = "";      // the 'version' component of the "bestmatch" string
+    private Version bestVersion  = null;    // the 'version' component of the "bestmatch" string
+    private Version version      = null;    // the 'version' currently being evaluated
 
     private void evaluateCriteria() throws BuildException {
         // ()= includes
@@ -62,12 +66,19 @@ public class SelectBundle extends Task {
             // validate end of string
             if ( !( maxSquareBracket || maxRoundBracket || endInt ) )
                 throw new BuildException("The criterion attribute must end with ),], or a number.", getLocation());
-            // validate basic syntax
+            // validate basic syntax (should add check for multiple ",")
             if((initInt && !endInt) || (!initInt && endInt) || (!initInt && !commapresent) || (initInt && commapresent) )
                 throw new BuildException("The criterion attribute must be a valid OSGi version range string", getLocation());
-            // determine "floor" version
+            // validate range syntax (add check for multiple ",")
+            if(commapresent) {
+                // if multiple comma present
+                if( criterion.substring(criterion.indexOf(',')+1,endIndex).contains(",") )
+                    throw new BuildException("The criterion attribute must be a valid OSGi version range string: multiple comma(,) detected.", getLocation());
+            }
+            // set "inclusion" status
             minInclusive = (minSquareBracket || initInt);
             maxInclusive = (maxSquareBracket || endInt);
+            // determine "floor" version
             //singleton version
             if(initInt) {
                 log("evaluateCriteria: Singleton detected", Project.MSG_VERBOSE);
@@ -108,13 +119,15 @@ public class SelectBundle extends Task {
     }
 
     private String matchCriteria() {
-        String bestMatch = null;       //filename of file selected
+        String bestMatch = null;   //filename of file selected
         String[] filelist = getListOfFiles(directory);
-
+        
+        bestVersion = minVersion;  //Start search with bestVersion set to minimum acceptable
+        log("matchCriteria: bestVersion.getIdentifier='" + bestVersion.getIdentifier() + "'", Project.MSG_VERBOSE);
         log("matchCriteria: basename.length='" + Integer.toString(basename.length()) + "'", Project.MSG_VERBOSE);
         log("matchCriteria: separator.length='" + Integer.toString(separator.length()) + "'", Project.MSG_VERBOSE);
         int relativeVersionIndex = basename.length() + separator.length();
-        log("matchCriteria: relativeVersionIndex(" + Integer.toString(relativeVersionIndex) + ")", Project.MSG_VERBOSE);
+        log("matchCriteria: relativeVersionIndex='" + Integer.toString(relativeVersionIndex) + "' (Should be '" + Integer.toString(basename.length()+separator.length()) + "')", Project.MSG_VERBOSE);
         if( filelist != null ) {
             log("matchCriteria: filelist.length='" + Integer.toString(filelist.length) + "'", Project.MSG_VERBOSE);
             for ( int i=0; i<filelist.length; i++ )
@@ -123,28 +136,61 @@ public class SelectBundle extends Task {
                 log("matchCriteria: versionEndIndex(" + Integer.toString(versionEndIndex)+")", Project.MSG_VERBOSE);
                 log("matchCriteria: filelist["+ Integer.toString(i) + "](" + filelist[i] + ")", Project.MSG_VERBOSE);
                 // Should add try block to test for version exception
-                version = filelist[i].substring(relativeVersionIndex,versionEndIndex);
-
-                log("matchCriteria: version string of found file(" + version + ")", Project.MSG_VERBOSE);
-                if(version.length()>0){
+                try {
+                    version = new Version( filelist[i].substring(relativeVersionIndex,versionEndIndex) );
+                } catch ( VersionException e){
+                    log("matchCriteria: Exception detected -> " + e, Project.MSG_VERBOSE);
+                }
+    
+                log("matchCriteria: version string of found file(" + version.getIdentifier() + ")", Project.MSG_VERBOSE);
+                if(!version.empty()) {
                     if(minInclusive && maxInclusive) {
+                        log("matchCriteria: Test:  " + minVersion.getIdentifier() + " <= " + version.getIdentifier() + " <= " + maxVersion.getIdentifier(), Project.MSG_VERBOSE);
                         if(minVersion.le(version) && maxVersion.ge(version) ){
-                            bestMatch = filelist[i];
+                            log("matchCriteria:      Pass", Project.MSG_VERBOSE);
+                            if( bestVersion.lt(version) ){
+                                log("matchCriteria: " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
+                                bestMatch = filelist[i];
+                                bestVersion = version;
+                            } else
+                                log("matchCriteria: ! " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
                         }
                     }
                     else if (minInclusive && !maxInclusive){
+                        log("matchCriteria: Test:  " + minVersion.getIdentifier() + " <= " + version.getIdentifier() + " < " + maxVersion.getIdentifier(), Project.MSG_VERBOSE);
+                        log("matchCriteria:   Result:  " + Boolean.toString(minVersion.le(version)) + " && " + Boolean.toString(maxVersion.gt(version)), Project.MSG_VERBOSE);
                         if(minVersion.le(version) && maxVersion.gt(version) ){
-                            bestMatch = filelist[i];
+                             log("matchCriteria:      Pass", Project.MSG_VERBOSE);
+                             if( bestVersion.lt(version) ){
+                                log("matchCriteria: " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
+                                bestMatch = filelist[i];
+                                bestVersion = version;
+                             } else
+                                log("matchCriteria: ! " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
                         }
                     }
                     else if (!minInclusive && maxInclusive){
+                        log("matchCriteria: Test:  " + minVersion.getIdentifier() + " < " + version.getIdentifier() + " <= " + maxVersion.getIdentifier(), Project.MSG_VERBOSE);
                         if(minVersion.lt(version) && maxVersion.ge(version) ){
-                            bestMatch = filelist[i];
+                             log("matchCriteria:      Pass", Project.MSG_VERBOSE);
+                             if( bestVersion.lt(version) ){
+                                log("matchCriteria: " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
+                                bestMatch = filelist[i];
+                                bestVersion = version;
+                             } else
+                                log("matchCriteria: ! " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
                         }
                     }
                     else if (!minInclusive && !maxInclusive ){
+                        log("matchCriteria: Test:  " + minVersion.getIdentifier() + " < " + version.getIdentifier() + " < " + maxVersion.getIdentifier(), Project.MSG_VERBOSE);
                         if(minVersion.lt(version) && maxVersion.gt(version) ){
-                            bestMatch = filelist[i];
+                             log("matchCriteria:      Pass", Project.MSG_VERBOSE);
+                             if( bestVersion.lt(version) ){
+                                log("matchCriteria: " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
+                                bestMatch = filelist[i];
+                                bestVersion = version;
+                             } else
+                                log("matchCriteria: ! " + bestVersion.getIdentifier() + " < " + version.getIdentifier(), Project.MSG_VERBOSE);
                         }
                     }
                     log("matchCriteria: Best Match so far(" + bestMatch + ")", Project.MSG_VERBOSE);
@@ -192,7 +238,7 @@ public class SelectBundle extends Task {
                 getProject().setNewProperty(property, directory+"/"+file);
             else {  
                 if (versiononly)
-                    getProject().setNewProperty(property, version);
+                    getProject().setNewProperty(property, bestVersion.getIdentifier() );
                 else   
                     getProject().setNewProperty(property, file);
             }

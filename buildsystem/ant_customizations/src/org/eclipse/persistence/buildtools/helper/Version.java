@@ -36,12 +36,19 @@ public class Version {
         String validated=identifier;
         boolean error=false;
 
+        // clear leading whitespace
+        while ( validated.startsWith(" ") || validated.startsWith("\t") ) 
+            validated=validated.substring(1);
+        // clear trailing whitespace
+        while ( validated.endsWith(" ") || validated.endsWith("\t") ) 
+            validated=validated.substring(0,validated.length() - 1);
+        
         if ( validated.startsWith(".") ) {
-            throw new VersionException("Initial '.' invalids version");
+            throw new VersionException("Initial version tokenizer found (.): Invalid version string '" + validated + "'.");
         }
         else {
             if( validated.endsWith(".") ) {
-                throw new VersionException("Terminating '.' invalids version");
+                throw new VersionException("Terminating version tokenizer found (.): Invalid version string '" + validated + "'.");
             }
             else {
                 int index = 0;
@@ -50,7 +57,7 @@ public class Version {
                 int maxindex = validated.lastIndexOf(".");
                 while( !error && ( (subindex = validated.substring(index).indexOf(".")) >0 || index<maxindex )) {
                     if(count>2 && subindex>0)
-                        throw new VersionException("Maximum tokens (4) exceeded.");
+                        throw new VersionException("Maximum (4) tokens exceeded: Invalid version string '" + validated + "'.");
                     else {
                         index += subindex;
                         indexList[count] = index;
@@ -99,7 +106,7 @@ public class Version {
                     setMajor(Integer.valueOf(identifier));
             }
         } catch ( NumberFormatException e){
-            throw new VersionException("A numeric version token is invalid. " + e.getMessage() + " in \"" + identifier + "\".", e);
+            throw new VersionException("Major.Minor.Micro tokens expected to be numeric. One or more is invalid. " + e.getMessage() + " in \"" + identifier + "\".", e);
         }
         String validIdentifier = getMajorStr() + "." + getMinorStr() + "." + getMicroStr();
         if(getQualifier() != null && getQualifier() != "" ) {
@@ -151,15 +158,27 @@ public class Version {
     public boolean gt( Version comp ) {
         boolean result=false;
 
-        if(this.identifier.compareTo(comp.getIdentifier()) > 0) {
-            result = true;
-        }
+        if(this.major > comp.getMajorInt()) result = true;
+        else if ( (this.major == comp.getMajorInt()) && (this.minor > comp.getMinorInt()) ) result = true;
+             else if ( (this.major == comp.getMajorInt()) && (this.minor == comp.getMinorInt()) && (this.micro > comp.getMicroInt()) ) result=true;
+                  else if ( (this.major == comp.getMajorInt()) && (this.minor == comp.getMinorInt()) && (this.micro == comp.getMicroInt()) && (this.qualifier.compareTo(comp.getQualifier()) > 0) ) result=true;
+
         return result;
     }
     public boolean lt( Version comp ) {
         boolean result=false;
 
-        if(this.identifier.compareTo(comp.getIdentifier()) < 0) {
+        if(this.major < comp.getMajorInt()) result = true;
+        else if ( (this.major == comp.getMajorInt()) && (this.minor < comp.getMinorInt()) ) result = true;
+             else if ( (this.major == comp.getMajorInt()) && (this.minor == comp.getMinorInt()) && (this.micro < comp.getMicroInt()) ) result=true;
+                  else if ( (this.major == comp.getMajorInt()) && (this.minor == comp.getMinorInt()) && (this.micro == comp.getMicroInt()) && (this.qualifier.compareTo(comp.getQualifier()) < 0) ) result=true;
+
+        return result;
+    }
+    public boolean eq( Version comp ) {
+        boolean result=false;
+
+        if( (this.major == comp.getMajorInt()) && (this.minor == comp.getMinorInt()) && (this.micro == comp.getMicroInt()) && (this.qualifier.compareTo(comp.getQualifier()) == 0) ) {
             result = true;
         }
         return result;
@@ -167,67 +186,64 @@ public class Version {
     public boolean ge( Version comp ) {
         boolean result=false;
 
-        if(this.identifier.compareTo(comp.getIdentifier()) >= 0) {
-            result = true;
-        }
+        if( (this.gt(comp) || this.eq(comp) ) ) result = true;
         return result;
     }
     public boolean le( Version comp ) {
         boolean result=false;
 
-        if(this.identifier.compareTo(comp.getIdentifier()) <= 0) {
-            result = true;
-        }
+        if( (this.lt(comp) || this.eq(comp) ) ) result = true;
         return result;
     }
-    public boolean eq( Version comp ) {
+
+    public boolean empty() {
         boolean result=false;
 
-        if(this.identifier.equals(comp.getIdentifier())) {
+        if( (this.major == 0) && (this.minor == 0) && (this.micro == 0) && (this.qualifier.compareTo("") == 0) ) {
             result = true;
         }
         return result;
     }
 
     // Compare version strings
-    public boolean gt( String comp ) {
-        boolean result=false;
-
-        if(this.identifier.compareTo(comp) > 0) {
-            result = true;
-        }
-        return result;
-    }
-    public boolean lt( String comp ) {
-        boolean result=false;
-
-        if(this.identifier.compareTo(comp) < 0) {
-            result = true;
-        }
-        return result;
-    }
-    public boolean ge( String comp ) {
-        boolean result=false;
-
-        if(this.identifier.compareTo(comp) >= 0) {
-            result = true;
-        }
-        return result;
-    }
-    public boolean le( String comp ) {
-        boolean result=false;
-
-        if(this.identifier.compareTo(comp) <= 0) {
-            result = true;
-        }
-        return result;
-    }
-    public boolean eq( String comp ) {
-        boolean result=false;
-
-        if(this.identifier.equals(comp)) {
-            result = true;
-        }
-        return result;
-    }
+    //public boolean gt( String comp ) {
+    //    boolean result=false;
+    //
+    //    if(this.identifier.compareTo(comp) > 0) {
+    //        result = true;
+    //    }
+    //    return result;
+    //}
+    //public boolean lt( String comp ) {
+    //    boolean result=false;
+    //
+    //    if(this.identifier.compareTo(comp) < 0) {
+    //        result = true;
+    //    }
+    //    return result;
+    //}
+    //public boolean ge( String comp ) {
+    //    boolean result=false;
+    //
+    //    if(this.identifier.compareTo(comp) >= 0) {
+    //        result = true;
+    //    }
+    //    return result;
+    //}
+    //public boolean le( String comp ) {
+    //    boolean result=false;
+    //
+    //    if(this.identifier.compareTo(comp) <= 0) {
+    //        result = true;
+    //    }
+    //    return result;
+    //}
+    //public boolean eq( String comp ) {
+    //    boolean result=false;
+    //
+    //    if(this.identifier.equals(comp)) {
+    //        result = true;
+    //    }
+    //    return result;
+    //}
 }
