@@ -17,13 +17,11 @@ package org.eclipse.persistence.platform.database;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Types;
 import java.util.Hashtable;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ValueReadQuery;
 

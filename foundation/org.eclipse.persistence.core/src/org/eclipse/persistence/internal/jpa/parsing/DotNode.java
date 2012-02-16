@@ -16,7 +16,6 @@ import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
