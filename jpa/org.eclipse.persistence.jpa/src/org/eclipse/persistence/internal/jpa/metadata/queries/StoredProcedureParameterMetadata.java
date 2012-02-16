@@ -235,7 +235,10 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      */
     public boolean isOutParameter() {
         String parameterMode = (m_direction == null) ? m_mode : m_direction;
-        return parameterMode != null && ( parameterMode.equals(ParameterMode.OUT.name()) || parameterMode.equals(ParameterMode.INOUT.name()) );
+        return parameterMode != null && ( parameterMode.equals(ParameterMode.OUT.name()) 
+                || parameterMode.equals(ParameterMode.INOUT.name()) 
+                || parameterMode.equals(ParameterMode.REF_CURSOR.name())
+                || parameterMode.equals(Direction.OUT_CURSOR.name()));
     }
     
     /**
