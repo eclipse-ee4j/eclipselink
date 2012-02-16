@@ -81,7 +81,7 @@ public class Client {
             "<srvc:result>" +
               "<simple-xml-format>" +
                 "<simple-xml>" +
-                  "<result>test-Hello</result>" +
+                  "<U>test-Hello</U>" +
                 "</simple-xml>" +
               "</simple-xml-format>" +
             "</srvc:result>" +
