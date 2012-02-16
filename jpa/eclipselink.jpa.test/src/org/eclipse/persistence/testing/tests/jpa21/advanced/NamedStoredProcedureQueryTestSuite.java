@@ -104,7 +104,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * a single result set. 
      */
     public void testQueryUsingPositionalParameterAndSingleResultSet() {
-        if (supportsStoredProcedures()) {
+        // TODO: only works on mysql currently
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
             
@@ -145,145 +146,152 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Test multiple result sets by setting the SQL results set mapping from code.
      */
     public void testQueryWithMultipleResultsFromCode() throws Exception {
-        // SQL result set mapping for employee.
-        SQLResultSetMapping employeeResultSetMapping = new SQLResultSetMapping("EmployeeResultSetMapping");
-        employeeResultSetMapping.addResult(new EntityResult(Employee.class));
-         
-        // SQL result set mapping for address.
-        SQLResultSetMapping addressResultSetMapping = new SQLResultSetMapping("AddressResultSetMapping");
-        addressResultSetMapping.addResult(new EntityResult(Address.class));
-        
-        // SQL result set mapping for project (using inheritance and more complex result)
-        SQLResultSetMapping projectResultSetMapping = new SQLResultSetMapping("ProjectResultSetMapping");
-        EntityResult projectEntityResult = new EntityResult(Project.class);
-        projectResultSetMapping.addResult(projectEntityResult);
-        projectEntityResult = new EntityResult(SmallProject.class);
-        projectEntityResult.addFieldResult(new FieldResult("id", "SMALL_ID"));
-        projectEntityResult.addFieldResult(new FieldResult("name", "SMALL_NAME"));
-        projectEntityResult.addFieldResult(new FieldResult("description", "SMALL_DESCRIPTION"));
-        projectEntityResult.addFieldResult(new FieldResult("teamLeader", "SMALL_TEAMLEAD"));
-        projectEntityResult.addFieldResult(new FieldResult("version", "SMALL_VERSION"));
-        projectEntityResult.setDiscriminatorColumn("SMALL_DESCRIM");
-        projectResultSetMapping.addResult(projectEntityResult);
-        projectResultSetMapping.addResult(new ColumnResult("BUDGET_SUM"));
-         
-        // SQL result set mapping for employee using constructor results.
-        SQLResultSetMapping employeeConstrustorResultSetMapping = new SQLResultSetMapping("EmployeeConstructorResultSetMapping");
-        ConstructorResult constructorResult = new ConstructorResult(EmployeeDetails.class);
-        ColumnResult columnResult = new ColumnResult("EMP_ID");
-        columnResult.getColumn().setType(Integer.class);
-        constructorResult.addColumnResult(columnResult);
-        columnResult = new ColumnResult("F_NAME");
-        columnResult.getColumn().setType(String.class);
-        constructorResult.addColumnResult(columnResult);
-        columnResult = new ColumnResult("L_NAME");
-        columnResult.getColumn().setType(String.class);
-        constructorResult.addColumnResult(columnResult);
-        columnResult = new ColumnResult("R_COUNT");
-        columnResult.getColumn().setType(Integer.class);
-        constructorResult.addColumnResult(columnResult);
-        employeeConstrustorResultSetMapping.addResult(constructorResult);
-        
-        StoredProcedureCall call = new StoredProcedureCall();
-        call.setProcedureName("Read_Multiple_Result_Sets");
-        call.setHasMultipleResultSets(true);
-        call.setReturnMultipleResultSetCollections(true);
-         
-        ResultSetMappingQuery query = new ResultSetMappingQuery(call);
-        query.addSQLResultSetMapping(employeeResultSetMapping);
-        query.addSQLResultSetMapping(addressResultSetMapping);
-        query.addSQLResultSetMapping(projectResultSetMapping);
-        query.addSQLResultSetMapping(employeeConstrustorResultSetMapping);
-         
-        List allResults = (List)getServerSession().executeQuery(query);
-        assertNotNull("No results returned", allResults);
-        assertTrue("Incorrect number of results returned", allResults.size() == 4);
-        
-        // Verify first result set mapping --> Employee
-        List results0 = (List) allResults.get(0);
-        assertNotNull("No Employee results returned", results0);
-        assertTrue("Empty Employee results returned", results0.size() > 0);
-
-        // Verify second result set mapping --> Address
-        List results1 = (List) allResults.get(1);
-        assertNotNull("No Address results returned", results1);
-        assertTrue("Empty Address results returned", results1.size() > 0);
-
-        // Verify third result set mapping --> Project
-        List results2 = (List) allResults.get(2);
-        assertNotNull("No Project results returned", results2);
-        assertTrue("Empty Project results returned", results2.size() > 0);
-
-        for (Object result2 : results2) {
-            Object[] result2Element = (Object[]) result2;
-            assertTrue("Failed to Return 3 items", (result2Element.length == 3));
-            // Using Number as Different db/drivers  can return different types
-            // e.g. Oracle with ijdbc14.jar returns BigDecimal where as Derby 
-            // with derbyclient.jar returns Double. NOTE: the order of checking 
-            // here is valid and as defined by the spec.
-            assertTrue("Failed to return LargeProject", (result2Element[0] instanceof LargeProject));
-            assertTrue("Failed To Return SmallProject", (result2Element[1] instanceof SmallProject));
-            assertTrue("Failed to return column",(result2Element[2] instanceof Number));
-            assertFalse("Returned same data in both result elements",((SmallProject) result2Element[1]).getName().equals(((LargeProject) result2Element[0]).getName()));
+        // TODO: only works on mysql currently
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            // SQL result set mapping for employee.
+            SQLResultSetMapping employeeResultSetMapping = new SQLResultSetMapping("EmployeeResultSetMapping");
+            employeeResultSetMapping.addResult(new EntityResult(Employee.class));
+             
+            // SQL result set mapping for address.
+            SQLResultSetMapping addressResultSetMapping = new SQLResultSetMapping("AddressResultSetMapping");
+            addressResultSetMapping.addResult(new EntityResult(Address.class));
+            
+            // SQL result set mapping for project (using inheritance and more complex result)
+            SQLResultSetMapping projectResultSetMapping = new SQLResultSetMapping("ProjectResultSetMapping");
+            EntityResult projectEntityResult = new EntityResult(Project.class);
+            projectResultSetMapping.addResult(projectEntityResult);
+            projectEntityResult = new EntityResult(SmallProject.class);
+            projectEntityResult.addFieldResult(new FieldResult("id", "SMALL_ID"));
+            projectEntityResult.addFieldResult(new FieldResult("name", "SMALL_NAME"));
+            projectEntityResult.addFieldResult(new FieldResult("description", "SMALL_DESCRIPTION"));
+            projectEntityResult.addFieldResult(new FieldResult("teamLeader", "SMALL_TEAMLEAD"));
+            projectEntityResult.addFieldResult(new FieldResult("version", "SMALL_VERSION"));
+            projectEntityResult.setDiscriminatorColumn("SMALL_DESCRIM");
+            projectResultSetMapping.addResult(projectEntityResult);
+            projectResultSetMapping.addResult(new ColumnResult("BUDGET_SUM"));
+             
+            // SQL result set mapping for employee using constructor results.
+            SQLResultSetMapping employeeConstrustorResultSetMapping = new SQLResultSetMapping("EmployeeConstructorResultSetMapping");
+            ConstructorResult constructorResult = new ConstructorResult(EmployeeDetails.class);
+            ColumnResult columnResult = new ColumnResult("EMP_ID");
+            columnResult.getColumn().setType(Integer.class);
+            constructorResult.addColumnResult(columnResult);
+            columnResult = new ColumnResult("F_NAME");
+            columnResult.getColumn().setType(String.class);
+            constructorResult.addColumnResult(columnResult);
+            columnResult = new ColumnResult("L_NAME");
+            columnResult.getColumn().setType(String.class);
+            constructorResult.addColumnResult(columnResult);
+            columnResult = new ColumnResult("R_COUNT");
+            columnResult.getColumn().setType(Integer.class);
+            constructorResult.addColumnResult(columnResult);
+            employeeConstrustorResultSetMapping.addResult(constructorResult);
+            
+            StoredProcedureCall call = new StoredProcedureCall();
+            call.setProcedureName("Read_Multiple_Result_Sets");
+            call.setHasMultipleResultSets(true);
+            call.setReturnMultipleResultSetCollections(true);
+             
+            ResultSetMappingQuery query = new ResultSetMappingQuery(call);
+            query.addSQLResultSetMapping(employeeResultSetMapping);
+            query.addSQLResultSetMapping(addressResultSetMapping);
+            query.addSQLResultSetMapping(projectResultSetMapping);
+            query.addSQLResultSetMapping(employeeConstrustorResultSetMapping);
+             
+            List allResults = (List)getServerSession().executeQuery(query);
+            assertNotNull("No results returned", allResults);
+            assertTrue("Incorrect number of results returned", allResults.size() == 4);
+            
+            // Verify first result set mapping --> Employee
+            List results0 = (List) allResults.get(0);
+            assertNotNull("No Employee results returned", results0);
+            assertTrue("Empty Employee results returned", results0.size() > 0);
+    
+            // Verify second result set mapping --> Address
+            List results1 = (List) allResults.get(1);
+            assertNotNull("No Address results returned", results1);
+            assertTrue("Empty Address results returned", results1.size() > 0);
+    
+            // Verify third result set mapping --> Project
+            List results2 = (List) allResults.get(2);
+            assertNotNull("No Project results returned", results2);
+            assertTrue("Empty Project results returned", results2.size() > 0);
+    
+            for (Object result2 : results2) {
+                Object[] result2Element = (Object[]) result2;
+                assertTrue("Failed to Return 3 items", (result2Element.length == 3));
+                // Using Number as Different db/drivers  can return different types
+                // e.g. Oracle with ijdbc14.jar returns BigDecimal where as Derby 
+                // with derbyclient.jar returns Double. NOTE: the order of checking 
+                // here is valid and as defined by the spec.
+                assertTrue("Failed to return LargeProject", (result2Element[0] instanceof LargeProject));
+                assertTrue("Failed To Return SmallProject", (result2Element[1] instanceof SmallProject));
+                assertTrue("Failed to return column",(result2Element[2] instanceof Number));
+                assertFalse("Returned same data in both result elements",((SmallProject) result2Element[1]).getName().equals(((LargeProject) result2Element[0]).getName()));
+            }
+            
+            // Verify fourth result set mapping --> Employee Constructor Result
+            List results3 = (List) allResults.get(3);
+            assertNotNull("No Employee constructor results returned", results3);
+            assertTrue("Empty Employee constructor results returned", results3.size() > 0);
         }
-        
-        // Verify fourth result set mapping --> Employee Constructor Result
-        List results3 = (List) allResults.get(3);
-        assertNotNull("No Employee constructor results returned", results3);
-        assertTrue("Empty Employee constructor results returned", results3.size() > 0);
     }
     
     /**
      * Test multiple result sets by setting the SQL results set mapping from annotation.
      */
     public void testQueryWithMultipleResultsFromAnnotations() throws Exception {
-        StoredProcedureQuery multipleResultSetQuery = createEntityManager().createNamedStoredProcedureQuery("ReadUsingMultipleResultSetMappings");
-        
-        // Verify first result set mapping --> Employee
-        List results = multipleResultSetQuery.getResultList();
-        assertNotNull("No Employee results returned", results);
-        assertTrue("Empty Employee results returned", results.size() > 0);
-
-        // Verify second result set mapping --> Address
-        assertTrue("Address results not available", multipleResultSetQuery.hasMoreResults());
-        results = multipleResultSetQuery.getResultList();
-        assertNotNull("No Address results returned", results);
-        assertTrue("Empty Address results returned", results.size() > 0);
-        
-        // Verify third result set mapping --> Project
-        assertTrue("Projects results not available", multipleResultSetQuery.hasMoreResults());
-        results = multipleResultSetQuery.getResultList();
-        assertNotNull("No Project results returned", results);
-        assertTrue("Empty Project results returned", results.size() > 0);
-
-        for (Object result : results) {
-            Object[] resultElement = (Object[]) result;
-            assertTrue("Failed to Return 3 items", (resultElement.length == 3));
-            // Using Number as Different db/drivers  can return different types
-            // e.g. Oracle with ijdbc14.jar returns BigDecimal where as Derby 
-            // with derbyclient.jar returns Double. NOTE: the order of checking 
-            // here is valid and as defined by the spec.
-            assertTrue("Failed to return LargeProject", (resultElement[0] instanceof LargeProject) );
-            assertTrue("Failed To Return SmallProject", (resultElement[1] instanceof SmallProject) );
-            assertTrue("Failed to return column",(resultElement[2] instanceof Number) );
-            assertFalse("Returned same data in both result elements",((SmallProject)resultElement[1]).getName().equals(((LargeProject)resultElement[0]).getName()));
+        // TODO: only works on mysql currently
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            StoredProcedureQuery multipleResultSetQuery = createEntityManager().createNamedStoredProcedureQuery("ReadUsingMultipleResultSetMappings");
+            
+            // Verify first result set mapping --> Employee
+            List results = multipleResultSetQuery.getResultList();
+            assertNotNull("No Employee results returned", results);
+            assertTrue("Empty Employee results returned", results.size() > 0);
+    
+            // Verify second result set mapping --> Address
+            assertTrue("Address results not available", multipleResultSetQuery.hasMoreResults());
+            results = multipleResultSetQuery.getResultList();
+            assertNotNull("No Address results returned", results);
+            assertTrue("Empty Address results returned", results.size() > 0);
+            
+            // Verify third result set mapping --> Project
+            assertTrue("Projects results not available", multipleResultSetQuery.hasMoreResults());
+            results = multipleResultSetQuery.getResultList();
+            assertNotNull("No Project results returned", results);
+            assertTrue("Empty Project results returned", results.size() > 0);
+    
+            for (Object result : results) {
+                Object[] resultElement = (Object[]) result;
+                assertTrue("Failed to Return 3 items", (resultElement.length == 3));
+                // Using Number as Different db/drivers  can return different types
+                // e.g. Oracle with ijdbc14.jar returns BigDecimal where as Derby 
+                // with derbyclient.jar returns Double. NOTE: the order of checking 
+                // here is valid and as defined by the spec.
+                assertTrue("Failed to return LargeProject", (resultElement[0] instanceof LargeProject) );
+                assertTrue("Failed To Return SmallProject", (resultElement[1] instanceof SmallProject) );
+                assertTrue("Failed to return column",(resultElement[2] instanceof Number) );
+                assertFalse("Returned same data in both result elements",((SmallProject)resultElement[1]).getName().equals(((LargeProject)resultElement[0]).getName()));
+            }
+            
+            // Verify fourth result set mapping --> Employee Constructor Result
+            assertTrue("Employee constructor results not available", multipleResultSetQuery.hasMoreResults());
+            results = multipleResultSetQuery.getResultList();
+            assertNotNull("No Employee constructor results returned", results);
+            assertTrue("Empty Employee constructor results returned", results.size() > 0);
+            
+            // Verify there as no more results available
+            assertFalse("More results available", multipleResultSetQuery.hasMoreResults());
         }
-        
-        // Verify fourth result set mapping --> Employee Constructor Result
-        assertTrue("Employee constructor results not available", multipleResultSetQuery.hasMoreResults());
-        results = multipleResultSetQuery.getResultList();
-        assertNotNull("No Employee constructor results returned", results);
-        assertTrue("Empty Employee constructor results returned", results.size() > 0);
-        
-        // Verify there as no more results available
-        assertFalse("More results available", multipleResultSetQuery.hasMoreResults());
     }
     
     /**
      * Tests a NamedStoredProcedureQuery using a result-class. 
      */
     public void testQueryWithResultClass() {
-        if (supportsStoredProcedures()) {
+        // TODO: only works on mysql currently
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
             
@@ -324,7 +332,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a NamedStoredProcedureQuery using a result-class. 
      */
     public void testQueryWithResultClassPositional() {
-        if (supportsStoredProcedures()) {
+        // TODO: only works on mysql currently
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
             
