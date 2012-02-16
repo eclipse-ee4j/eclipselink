@@ -75,7 +75,6 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         "\nBEGIN" +
             "\nY := X;" +
         "\nEND TOPLEVEL_POSITIVE_TEST;";
-
     static final String CREATE_SIGNTYPE_PROC =
         "CREATE OR REPLACE PROCEDURE TOPLEVEL_SIGNTYPE_TEST(X IN SIGNTYPE, Y OUT VARCHAR2) AS" +
         "\nBEGIN" +
@@ -87,7 +86,11 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
 		        "\nY := 'zero';" +
 		    "\nEND IF;"+
         "\nEND TOPLEVEL_SIGNTYPE_TEST;";
-
+    static final String CREATE_ECHOTEST_PROC =
+        "CREATE OR REPLACE PROCEDURE TOPLEVEL_ECHO_TEST(T IN VARCHAR2, U OUT VARCHAR2) AS" +
+        "\nBEGIN" +
+            "\nU := CONCAT('test-' , T);"+
+        "\nEND TOPLEVEL_ECHO_TEST;";
     static final String DROP_BOOL_PROC =
         "DROP PROCEDURE TOPLEVEL_BOOL_TEST";
     static final String DROP_BOOL_IN_PROC =
@@ -102,6 +105,8 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         "DROP PROCEDURE TOPLEVEL_POSITIVE_TEST";
     static final String DROP_SIGNTYPE_PROC =
         "DROP PROCEDURE TOPLEVEL_SIGNTYPE_TEST";
+    static final String DROP_ECHOTEST_PROC =
+        "DROP PROCEDURE TOPLEVEL_ECHO_TEST";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -137,6 +142,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_NATURAL_PROC, ddlDebug);
             runDdl(conn, CREATE_POSITIVE_PROC, ddlDebug);
             runDdl(conn, CREATE_SIGNTYPE_PROC, ddlDebug);
+            runDdl(conn, CREATE_ECHOTEST_PROC, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -198,6 +204,12 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
                    "procedurePattern=\"TOPLEVEL_SIGNTYPE_TEST\" " +
                    "isSimpleXMLFormat=\"true\" " +
 				"/>" +
+               "<procedure " +
+                   "name=\"echoTest\" " +
+                   "catalogPattern=\"TOPLEVEL\" " +
+                   "procedurePattern=\"TOPLEVEL_ECHO_TEST\" " +
+                   "isSimpleXMLFormat=\"true\" " +
+                "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -213,6 +225,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_NATURAL_PROC, ddlDebug);
             runDdl(conn, DROP_POSITIVE_PROC, ddlDebug);
             runDdl(conn, DROP_SIGNTYPE_PROC, ddlDebug);
+            runDdl(conn, DROP_ECHOTEST_PROC, ddlDebug);
         }
     }
 
@@ -327,7 +340,6 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
             "</simple-xml>" +
         "</simple-xml-format>";
 
-
     @Test
     public void testSignType() {
         Invocation invocation = new Invocation("testSignType");
@@ -349,4 +361,24 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
             "</simple-xml>" +
         "</simple-xml-format>";
 
+    @Test
+    public void echoTest() {
+        Invocation invocation = new Invocation("echoTest");
+        invocation.setParameter("T", "Hello");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_TEST_RESULT));
+        assertTrue("Control document not same as instance document. Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String ECHO_TEST_RESULT =
+        REGULAR_XML_HEADER +
+        "<simple-xml-format>" +
+            "<simple-xml>" +
+                "<U>test-Hello</U>" +
+            "</simple-xml>" +
+        "</simple-xml-format>";
 }
