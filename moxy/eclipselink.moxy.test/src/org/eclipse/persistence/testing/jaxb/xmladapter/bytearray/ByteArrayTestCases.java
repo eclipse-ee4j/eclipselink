@@ -13,14 +13,17 @@
 package org.eclipse.persistence.testing.jaxb.xmladapter.bytearray;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class ByteArrayTestCases extends JAXBTestCases {
+public class ByteArrayTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/bytearray.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/bytearray.json";
 
     public ByteArrayTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Root.class;
         setClasses(classes);

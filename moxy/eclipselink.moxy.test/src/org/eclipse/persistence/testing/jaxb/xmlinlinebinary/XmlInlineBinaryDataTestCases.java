@@ -17,14 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlInlineBinaryDataTestCases extends JAXBTestCases{
+public class XmlInlineBinaryDataTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlinlinebinary/xmlinlinebinary.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlinlinebinary/xmlinlinebinary.json";
 	
 	public XmlInlineBinaryDataTestCases(String name) throws Exception {
 		super(name);
-		setControlDocument(XML_RESOURCE);        
+		setControlDocument(XML_RESOURCE);   
+		setControlJSON(JSON_RESOURCE);
 	    Class[] classes = new Class[1];
 	    classes[0] = MyDataPropertyAnnotation.class;
 	    setClasses(classes);

@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
 import javax.xml.bind.JAXBElement;
 
 /**
@@ -20,12 +22,14 @@ import javax.xml.bind.JAXBElement;
  * @author mmacivor
  *
  */
-public class SimpleDocumentByteArrayTestCases extends JAXBTestCases {
+public class SimpleDocumentByteArrayTestCases extends JAXBWithJSONTestCases {
 		private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/simpledocument/bytearrayroot.xml";
+        private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/simpledocument/bytearrayroot.json";
 
 	    public SimpleDocumentByteArrayTestCases(String name) throws Exception {
 	        super(name);
 	        setControlDocument(XML_RESOURCE);        
+            setControlJSON(JSON_RESOURCE);        
 	        Class[] classes = new Class[1];
 	        classes[0] = ByteArrayObjectFactory.class;
 	        setClasses(classes);
