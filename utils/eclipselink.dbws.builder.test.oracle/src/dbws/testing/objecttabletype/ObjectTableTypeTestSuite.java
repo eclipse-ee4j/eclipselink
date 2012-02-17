@@ -59,6 +59,12 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_PERSONTYPE_TABLE =
         "CREATE OR REPLACE TYPE DBWS_PERSONTYPE_TABLE AS TABLE OF DBWS_PERSONTYPE";
+    static final String CREATE_GROUPTYPE =
+        "CREATE OR REPLACE TYPE DBWS_GROUPTYPE AS OBJECT (" +
+            "\nNAME VARCHAR2(20)," +
+            "\nPCOUNT NUMBER," +
+            "\nPTABLE DBWS_PERSONTYPE_TABLE" +
+        "\n)";
     static final String CREATE_GET_PERSONTYPE_PROC =
         "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE(PTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
         "\nBEGIN" +
@@ -86,6 +92,16 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             "\nGET_PERSONTYPE_TABLE(L_DATA);" +
             "\nRETURN L_DATA;" +
         "\nEND GET_PERSONTYPE_TABLE2;";
+    static final String CREATE_GROUPTYPE_PROC =
+        "CREATE OR REPLACE PROCEDURE CREATE_GROUPTYPE(GNAME IN VARCHAR2, PTYPETOADD1 IN DBWS_PERSONTYPE, PTYPETOADD2 IN DBWS_PERSONTYPE, PTYPETOADD3 IN DBWS_PERSONTYPE, NEWGROUP OUT DBWS_GROUPTYPE) AS" +
+        "\nPTABLE DBWS_PERSONTYPE_TABLE;" +
+        "\nBEGIN" +
+            "\nPTABLE := DBWS_PERSONTYPE_TABLE();" +
+            "\nPTABLE := ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD1, PTABLE);" +
+            "\nPTABLE := ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD2, PTABLE);" +
+            "\nPTABLE := ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD3, PTABLE);" +
+            "\nNEWGROUP := DBWS_GROUPTYPE(GNAME, 3, PTABLE);" +
+        "\nEND CREATE_GROUPTYPE;";
     static final String CREATE_ADD_PERSONTYPE_TO_TABLE_PROC =
         "CREATE OR REPLACE PROCEDURE ADD_PERSONTYPE_TO_TABLE(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE, NEWTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
         "\nBEGIN" +
@@ -109,6 +125,10 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         "DROP PROCEDURE ADD_PERSONTYPE_TO_TABLE";
     static final String DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC =
         "DROP FUNCTION ADD_PERSONTYPE_TO_TABLE2";
+    static final String DROP_GROUPTYPE_PROC =
+        "DROP PROCEDURE CREATE_GROUPTYPE";
+    static final String DROP_GROUPTYPE =
+        "DROP TYPE DBWS_GROUPTYPE";
     static final String DROP_PERSONTYPE_TABLE =
         "DROP TYPE DBWS_PERSONTYPE_TABLE";
     static final String DROP_PERSONTYPE =
@@ -143,6 +163,8 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         if (ddlCreate) {
             runDdl(conn, CREATE_PERSONTYPE, ddlDebug);
             runDdl(conn, CREATE_PERSONTYPE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_GROUPTYPE, ddlDebug);
+            runDdl(conn, CREATE_GROUPTYPE_PROC, ddlDebug);
             runDdl(conn, CREATE_GET_PERSONTYPE_PROC, ddlDebug);
             runDdl(conn, CREATE_GET_PERSONTYPE2_FUNC, ddlDebug);
             runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
@@ -194,6 +216,13 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                   "isAdvancedJDBC=\"true\" " +
                   "returnType=\"dbws_persontype_tableType\" " +
               "/>" +
+              "<procedure " +
+	              "name=\"CreateGroupType\" " +
+	              "catalogPattern=\"TOPLEVEL\" " +
+	              "procedurePattern=\"CREATE_GROUPTYPE\" " +
+	              "isAdvancedJDBC=\"true\" " +
+	              "returnType=\"dbws_grouptypeType\" " +
+	          "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -206,6 +235,8 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
             runDdl(conn, DROP_GET_PERSONTYPE2_FUNC, ddlDebug);
             runDdl(conn, DROP_GET_PERSONTYPE_TABLE, ddlDebug);
+            runDdl(conn, DROP_GROUPTYPE_PROC, ddlDebug);
+            runDdl(conn, DROP_GROUPTYPE, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE, ddlDebug);
         }
@@ -317,6 +348,22 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             "<gender>M</gender>" +
             "<incarcerated>1997-12-09</incarcerated>" +
         "</dbws_persontypeType>";
+    static String PTYPE_INPUT2_XML =
+        REGULAR_XML_HEADER +
+        "<dbws_persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
+	        "<name>RICKY</name>" +
+	        "<age>33</age>" +
+	        "<gender>M</gender>" +
+	        "<incarcerated>1985-10-01</incarcerated>" +
+        "</dbws_persontypeType>";
+    static String PTYPE_INPUT3_XML =
+        REGULAR_XML_HEADER +
+        "<dbws_persontypeType xmlns=\"urn:ObjectTableTypeTests\">" +
+	        "<name>BUBBLES</name>" +
+	        "<age>32</age>" +
+	        "<gender>M</gender>" +
+	        "<incarcerated>1990-11-19</incarcerated>" +
+        "</dbws_persontypeType>";
 
     static String PTABLE_INPUT_XML =
         REGULAR_XML_HEADER +
@@ -412,4 +459,54 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     	assertNotNull("No OX descriptor found for alias [" + PERSON_TYPE_TABLE_ALIAS + "]", personTypeTableOXDesc);
     	assertEquals("Expected class name [" + PERSON_TYPE_TABLE_CLASSNAME + "] but was [" + personTypeTableOXDesc.getJavaClassName() + "]", personTypeTableOXDesc.getJavaClassName(), PERSON_TYPE_TABLE_CLASSNAME);
     }
+    
+    @Test
+    public void createGroupTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object personType1 = unmarshaller.unmarshal(new StringReader(PTYPE_INPUT_XML));
+        Object personType2 = unmarshaller.unmarshal(new StringReader(PTYPE_INPUT2_XML));
+        Object personType3 = unmarshaller.unmarshal(new StringReader(PTYPE_INPUT3_XML));
+
+        Invocation invocation = new Invocation("CreateGroupType");
+        invocation.setParameter("GNAME", "MyNewGroup");
+        invocation.setParameter("PTYPETOADD1", personType1);
+        invocation.setParameter("PTYPETOADD2", personType2);
+        invocation.setParameter("PTYPETOADD3", personType3);
+
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(NEW_PTABLE_OUTPUT2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    
+    static String NEW_PTABLE_OUTPUT2_XML =
+        REGULAR_XML_HEADER +
+	    "<dbws_grouptypeType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+		    "<name>MyNewGroup</name>" +
+		    "<pcount>3</pcount>" +
+		    "<ptable>" +
+			    "<item>" +
+				    "<name>COREY</name>" +
+				    "<age>20</age>" +
+				    "<gender>M</gender>" +
+				    "<incarcerated>1997-12-09</incarcerated>" +
+			    "</item>" +
+	            "<item>" +
+	                "<name>RICKY</name>" +
+	                "<age>33</age>" +
+	                "<gender>M</gender>" +
+	                "<incarcerated>1985-10-01</incarcerated>" +
+	            "</item>" +
+	            "<item>" +
+	                "<name>BUBBLES</name>" +
+	                "<age>32</age>" +
+	                "<gender>M</gender>" +
+	                "<incarcerated>1990-11-19</incarcerated>" +
+	            "</item>" +
+		    "</ptable>" +
+	    "</dbws_grouptypeType>";
 }

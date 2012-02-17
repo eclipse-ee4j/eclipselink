@@ -976,9 +976,18 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         	xdesc2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
                             addToOXProjectForVArrayArg(field.getDataType(), oxProject, xdesc2.getJavaClassName(), alias);
                         }
-                        // TODO:  Is this correct?  VArray typically uses <item>, so do we want
-                        //        fieldname/item/text()?
                         buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + TEXT, getAttributeClassForDatabaseType(field.getDataType()));
+                    } else if (field.getDataType() instanceof ObjectTableType) {
+                    	// handle ObjectTableType field
+                        if (buildDescriptor) {
+                        	// need to update the java class name on the descriptor to include package (project) name
+                        	xdesc2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
+                        }
+                        // assumes ObjectTableType has an enclosed ObjectType type
+                        String nestedTypeAlias = ((ObjectTableType) field.getDataType()).getEnclosedType().getTypeName().toLowerCase();
+                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+                        // ObjectType is composite
+                        buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
                     }
                 } else {
                     // direct mapping
@@ -1044,6 +1053,17 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         	addToORProjectForVArrayArg(fType.getDataType(), orProject, ordt2.getJavaClassName(), alias);
                         }
                         buildAndAddArrayMapping(ordt, lFieldName, fieldName, getStructureNameForField(fType, null));
+                    } else if (fType.getDataType() instanceof ObjectTableType) {
+                        // assumes ObjectTableType has an enclosed ObjectType type
+                        if (buildDescriptor) {
+                        	// need to update the java class name on the descriptor to include package (project) name
+                        	ordt2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
+                        }
+                    	ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getDataType()).getEnclosedType();
+                        String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
+                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+                        // ObjectType is composite
+                        buildAndAddObjectArrayMapping(ordt, lFieldName, fieldName, nestedTypeName, nestedTypeAlias.toUpperCase());
                     }
                 } else {
                     // direct mapping
