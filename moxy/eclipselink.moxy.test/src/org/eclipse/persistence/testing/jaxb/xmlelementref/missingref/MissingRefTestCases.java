@@ -20,13 +20,16 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class MissingRefTestCases extends JAXBTestCases {
+public class MissingRefTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/missingRef.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/missingRef.json";
 
 	public MissingRefTestCases(String name) throws Exception {
 		super(name);
         setControlDocument(XML_RESOURCE);        
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = MissingRefObjectFactory.class;
         classes[1] = Person.class;

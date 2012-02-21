@@ -2,9 +2,8 @@
    "employee":{
       "id":"222",
       "name":"Joe Smith",
-      "phone-id":"123",
-      "address-id":"199",
-      "phone-id":"456"
+      "phone-id":["123","456"],
+      "address-id":["199"]
    },
    "address":[
      {"aid":"199",

@@ -15,14 +15,16 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.elementref;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlAdapterElementRefListTestCases extends JAXBTestCases {
+public class XmlAdapterElementRefListTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/transactionsadd.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/transactionsadd.json";
 
     public XmlAdapterElementRefListTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);        
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = TransactionsAdd.class;
         setClasses(classes);
@@ -34,6 +36,17 @@ public class XmlAdapterElementRefListTestCases extends JAXBTestCases {
         txns.add("salesOrderAdd");
         txns.add("invoiceAdd");
         txns.add("salesOrderAdd");
+        ta.txnType = txns;
+        return ta;
+    }
+    
+
+    protected Object getJSONReadControlObject() {
+        TransactionsAdd ta = new TransactionsAdd();
+        List<String> txns = new ArrayList<String>(3);
+        txns.add("salesOrderAdd");
+        txns.add("salesOrderAdd");
+        txns.add("invoiceAdd");        
         ta.txnType = txns;
         return ta;
     }

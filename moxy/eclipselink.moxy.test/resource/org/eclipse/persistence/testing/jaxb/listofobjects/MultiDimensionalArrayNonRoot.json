@@ -9,12 +9,14 @@
          {
 	     "id":1,
 	     "firstName":"Jane",
-	     "lastName":"Doe"
+	     "lastName":"Doe",
+	     "responsibilities":{}
 	 },
 	 {
 	     "id":2,
 	     "firstName":"John",
-	     "lastName":"Smith"	 
+	     "lastName":"Smith",
+	     "responsibilities":{}
 	 }
          ]      
      }

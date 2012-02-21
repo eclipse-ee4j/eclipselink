@@ -85,21 +85,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 return false;
             }
         }
-        String xopPrefix = null;
-        // If the field's resolver is non-null and has an entry for XOP, 
-        // use it - otherwise, create a new resolver, set the XOP entry, 
-        // on it, and use it instead.
-        // We do this to avoid setting the XOP namespace declaration on
-        // a given field or descriptor's resolver, as it is only required
-        // on the current element
-        if (namespaceResolver != null) {
-            xopPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
-        }
-        if (xopPrefix == null || namespaceResolver == null) {
-            xopPrefix = XMLConstants.XOP_PREFIX;
-            marshalRecord.getNamespaceResolver().put(xopPrefix, XMLConstants.XOP_URL);
-        }
-
+  
         ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(collection);
         if (!cp.hasNext(iterator)) {
@@ -115,7 +101,6 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
 
-        marshalRecord.getNamespaceResolver().removeNamespace(XMLConstants.XOP_PREFIX);
         return true;
     }
 
@@ -184,28 +169,9 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         if(objectValue == null) {
             return false;
         }
-        boolean addDeclaration = false;
-        boolean removePrefix = false;
-        String xopPrefix = null;
-        if (namespaceResolver != null) {
-            xopPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
-        }
-        if (xopPrefix == null) {
-            //check for it in the MarshalRecord's NamespaceResolver
-            addDeclaration = true;
-            xopPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.XOP_URL);
-            if (xopPrefix == null) {
-                //if it's still null, add it, and make a note to remove it later
-                removePrefix = true;
-                xopPrefix = XMLConstants.XOP_PREFIX;
-                marshalRecord.getNamespaceResolver().put(xopPrefix, XMLConstants.XOP_URL);
-            }
-            namespaceResolver = marshalRecord.getNamespaceResolver();
-        }
-
         String mimeType = this.xmlBinaryDataCollectionMapping.getMimeType(object);
         if(mimeType == null) {
-            mimeType = "";
+            mimeType = XMLConstants.EMPTY_STRING;
         }
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         if (xmlBinaryDataCollectionMapping.getValueConverter() != null) {
@@ -259,26 +225,41 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 if(c_id == null) {
                     marshalRecord.characters(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
                 } else {
+                	
+                    boolean addDeclaration = false;
+                    String xopPrefix = null;
+
+                    if(marshalRecord.getNamespaceResolver() != null){
+                        xopPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.XOP_URL);
+                    }
+                    if (xopPrefix == null) {
+                        addDeclaration = true;            
+                        xopPrefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.XOP_PREFIX);
+                        marshalRecord.getNamespaceResolver().put(xopPrefix, XMLConstants.XOP_URL);
+                        namespaceResolver = marshalRecord.getNamespaceResolver();
+                    }
+                	
+                	
                     XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
                     xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
                     marshalRecord.openStartElement(xopInclude, namespaceResolver);
-                    marshalRecord.attribute("", "href", "href", c_id);
-                    if (addDeclaration) {
+                    marshalRecord.attribute(XMLConstants.EMPTY_STRING, "href", "href", c_id);
+                    if (addDeclaration) {                    	
                         marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xopPrefix, XMLConstants.XOP_URL);
                         //marshalRecord.attribute(new XPathFragment("@xmlns:" + xopPrefix), namespaceResolver, XMLConstants.XOP_URL);
                     }
                     marshalRecord.closeStartElement();
                     marshalRecord.endElement(xPathFragment, namespaceResolver);
                     //marshal as an attachment.
+                    if (addDeclaration) {
+                        marshalRecord.getNamespaceResolver().removeNamespace(XMLConstants.XOP_PREFIX);
+                    }
                 }
             } else {
                 marshalRecord.characters(((XMLField)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         }
         marshalRecord.endElement(xPathFragment, namespaceResolver);
-        if (removePrefix) {
-            marshalRecord.getNamespaceResolver().removeNamespace(XMLConstants.XOP_PREFIX);
-        }
         return true;
     }
 

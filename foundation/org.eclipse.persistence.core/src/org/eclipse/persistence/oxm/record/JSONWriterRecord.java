@@ -227,8 +227,15 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    public void attribute(String namespaceURI, String localName, String qName, String value) {
-    	attribute(namespaceURI, localName, qName, value, true);
+    public void attribute(String namespaceURI, String localName, String qName, String value) {    	
+    	XPathFragment xPathFragment = new XPathFragment();
+    	xPathFragment.setNamespaceURI(namespaceURI);
+    	xPathFragment.setAttribute(true);
+    	xPathFragment.setLocalName(localName);
+    	
+        openStartElement(xPathFragment, namespaceResolver);
+        characters(null, value, null, false);
+      	endElement(xPathFragment, namespaceResolver);
     }
     
     /**
@@ -250,43 +257,6 @@ public class JSONWriterRecord extends MarshalRecord {
      * override so we don't iterate over namespaces when endPrefixMapping doesn't do anything
      */
     public void endPrefixMappings(NamespaceResolver namespaceResolver) {
-    }
-    
-    private void attribute(String namespaceURI, String localName, String qName, String value, boolean wrapInQuotes) {
-    	 if(namespaceURI != null && namespaceURI == XMLConstants.XMLNS_URL){
-    		 return;
-    	 }
-        try {        	
-            Level position = null;
-            if(!levels.isEmpty()){
-                position = levels.peek();
-                if(position.isFirst()) {
-                    position.setFirst(false);
-                } else {
-                    writer.write(',');
-                    writer.write(' ');
-                }        		
-            }        	
-        	
-            writer.write('"');
-            if(attributePrefix != null){
-            	writer.write(attributePrefix);	
-            }
-            writer.write(localName);
-            writer.write('"');				
-            writer.write(':');
-            if(position != null && position.isCollection()) {
-                writer.write('[');
-            }
-
-            if(wrapInQuotes){
-            	characters(value);
-            }else{
-            	nonStringCharacters(value);
-            }
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     }
     
    
@@ -360,8 +330,7 @@ public class JSONWriterRecord extends MarshalRecord {
     	 if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == XMLConstants.XMLNS_URL){
     		 return;
     	 }
-    	 xPathFragment.setAttribute(true);
-    	 xPathFragment.setAttribute(true);
+    	 xPathFragment.setAttribute(true);    	 
          openStartElement(xPathFragment, namespaceResolver);
          characters(schemaType, value, null, false);
       	 endElement(xPathFragment, namespaceResolver);

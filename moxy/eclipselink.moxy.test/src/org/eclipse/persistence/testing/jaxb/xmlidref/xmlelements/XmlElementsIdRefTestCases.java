@@ -47,6 +47,53 @@ public class XmlElementsIdRefTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
     }
 
+    protected Object getJSONReadControlObject() {
+    
+    	 EmployeeWithElements employee = new EmployeeWithElements();
+         employee.id = CONTROL_ID;
+         employee.name = CONTROL_NAME;
+
+         Root root = new Root();
+         root.employee = employee;
+         root.addresses = new ArrayList<Address>();
+         root.phoneNumbers = new ArrayList<PhoneNumber>();
+         
+         Address address = new Address();
+         address.id = CONTROL_ADD_ID_1;
+         address.street = CONTROL_ADD_STREET_1;
+         address.city = CONTROL_ADD_CITY_1;
+         address.country = CONTROL_ADD_COUNTRY_1;
+         address.zip = CONTROL_ADD_ZIP_1;
+         address.emp = new Vector<EmployeeWithElements>();
+         address.emp.add(employee);
+         root.addresses.add(address);
+         
+         employee.addressOrPhone = new ArrayList<Object>();
+         //employee.address = address;
+         
+         //employee.phones = new ArrayList();
+         
+         PhoneNumber num = new PhoneNumber();
+         num.id = CONTROL_PHONE_ID_1;
+         num.number = CONTROL_PHONE_NUM_1;
+         num.emp = employee;
+         employee.addressOrPhone.add(num);
+         root.phoneNumbers.add(num);
+         
+         num = new PhoneNumber();
+         num.id = CONTROL_PHONE_ID_2;
+         num.number = CONTROL_PHONE_NUM_2;
+         num.emp = employee;
+         employee.addressOrPhone.add(num);
+         
+         employee.addressOrPhone.add(address);
+         
+        
+         root.phoneNumbers.add(num);
+         
+         return root;
+    }
+    
     protected Object getControlObject() {
         EmployeeWithElements employee = new EmployeeWithElements();
         employee.id = CONTROL_ID;

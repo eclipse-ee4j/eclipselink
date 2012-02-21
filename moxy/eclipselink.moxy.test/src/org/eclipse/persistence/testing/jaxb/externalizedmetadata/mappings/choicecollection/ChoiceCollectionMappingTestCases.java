@@ -22,17 +22,19 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlChoiceObjectMappings via eclipselink-oxm.xml
  * 
  */
-public class ChoiceCollectionMappingTestCases extends JAXBTestCases {
+public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choicecollection";
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choicecollection/employee.xml";
-	private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choicecollection/write-employee.xml";	
+	private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choicecollection/write-employee.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choicecollection/employee.json";
+	private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choicecollection/write-employee.json";
     private static final String INT_VAL66 = "66";
     private static final String INT_VAL99 = "99";
     private static final String FLOAT_VAL = "101.1";
@@ -47,6 +49,8 @@ public class ChoiceCollectionMappingTestCases extends JAXBTestCases {
         setContextPath(CONTEXT_PATH);
         setControlDocument(XML_RESOURCE);        
         setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
     }
     
     /**

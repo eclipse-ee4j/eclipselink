@@ -1,0 +1,8 @@
+{"target":{ 
+  "jar":[{
+     "name":"first jar task"
+  }],
+ "javac":[{
+     "name":"first javac task"
+  }]
+}}

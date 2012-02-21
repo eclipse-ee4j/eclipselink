@@ -1,5 +1,8 @@
-<wrapper>
+<wrapper xmlns:xop="http://www.w3.org/2004/08/xop/include">
    <return>
-      <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="abc"/>
+      <xop:Include href="abc"/>
+   </return>
+   <return>
+      <xop:Include href="abc"/>
    </return>
 </wrapper>

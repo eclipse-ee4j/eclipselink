@@ -22,8 +22,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
-// TODO - Uncomment when JSON empty collection marshalling is changed
-public class MultiDimensionalArrayNonRootTestCases extends JAXBTestCases { //JAXBListOfObjectsTestCases {
+public class MultiDimensionalArrayNonRootTestCases extends JAXBListOfObjectsTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/MultiDimensionalArrayNonRoot.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/MultiDimensionalArrayNonRoot.json";
@@ -31,15 +30,13 @@ public class MultiDimensionalArrayNonRootTestCases extends JAXBTestCases { //JAX
     public MultiDimensionalArrayNonRootTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        // TODO - Uncomment when JSON empty collection marshalling is changed
-        //setControlJSON(JSON_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = MultiDimensionalArrayRoot.class;
         setClasses(classes);
     }
 
-    // TODO - Uncomment when JSON empty collection marshalling is changed
-    //@Override
+    @Override
     public List<InputStream> getControlSchemaFiles() {
         List<InputStream> controlSchema = new ArrayList<InputStream>(3);
         controlSchema.add(ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/MultiDimensionalArrayNonRoot1.xsd"));
@@ -48,14 +45,12 @@ public class MultiDimensionalArrayNonRootTestCases extends JAXBTestCases { //JAX
         return controlSchema;
     }
 
-    // TODO - Uncomment when JSON empty collection marshalling is changed
-    //@Override
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return null;
     }
 
-    // TODO - Uncomment when JSON empty collection marshalling is changed
-    //@Override
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return MultiDimensionalArrayRoot.class;
     }
@@ -127,11 +122,10 @@ public class MultiDimensionalArrayNonRootTestCases extends JAXBTestCases { //JAX
         super.xmlToObjectTest(testObject);
     }
     
-    // TODO - Uncomment when JSON empty collection marshalling is changed
-    //@Override    
+    @Override    
     public void jsonToObjectTest(Object testObject) throws Exception {
         testObject = new JAXBElement(new QName("urn:example", "root"), Object.class, testObject);
-        //super.jsonToObjectTest(testObject);
+        super.jsonToObjectTest(testObject);
     }
 
 }

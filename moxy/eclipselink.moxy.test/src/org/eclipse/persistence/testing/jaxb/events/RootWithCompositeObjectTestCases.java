@@ -24,8 +24,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-// TODO - Uncomment when JSON empty collection marshalling is changed
-public class RootWithCompositeObjectTestCases extends JAXBTestCases { //JAXBWithJSONTestCases {
+public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
     public JAXBMarshalListenerImpl listener;
     public JAXBUnmarshalListenerImpl unmarshalListener;
     public ArrayList expectedMarshalEvents;
@@ -40,8 +39,7 @@ public class RootWithCompositeObjectTestCases extends JAXBTestCases { //JAXBWith
         super(name);
         setClasses(new Class[] {Employee.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/events/composite_object.xml");
-        // TODO - Uncomment when JSON empty collection marshalling is changed
-        //setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_object.json");
+        setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_object.json");
 
         expectedMarshalEvents = new ArrayList();
         expectedMarshalEvents.add(JAXBMarshalListenerImpl.EMPLOYEE_BEFORE_MARSHAL);

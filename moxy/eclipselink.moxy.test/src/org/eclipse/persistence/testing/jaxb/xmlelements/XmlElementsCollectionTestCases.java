@@ -47,5 +47,20 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
         employee.choice = choices;
         return employee;
     }
+    
+    protected Object getJSONReadControlObject() {
+    	  EmployeeCollection employee = new EmployeeCollection();
+          employee.id = CONTROL_ID;
+          ArrayList choices = new ArrayList();
+          choices.add(new Integer(12));
+          choices.add(new Integer(5));
+          choices.add("String Value");
+          Address addr = new Address();
+          addr.city = "Ottawa";
+          addr.street = "123 Fake Street";
+          choices.add(addr);          
+          employee.choice = choices;
+          return employee;
+    }
 }
 

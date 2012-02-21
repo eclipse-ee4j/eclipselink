@@ -21,6 +21,7 @@ import java.net.URL;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.xml.sax.InputSource;
@@ -51,6 +52,14 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     
+    protected Marshaller getJSONMarshaller() throws Exception{
+    	return jaxbMarshaller;
+    }
+    
+   protected Unmarshaller getJSONUnmarshaller() throws Exception{
+	   return jaxbUnmarshaller;
+    }
+    
     public void jsonToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -63,80 +72,81 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj, false);
         } else {
-        	assertEquals(getReadControlObject(), testObject);
+        	assertEquals(getJSONReadControlObject(), testObject);
         }
     }
     
     public void testJSONUnmarshalFromInputStream() throws Exception {
-    	jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        Object testObject = jaxbUnmarshaller.unmarshal(inputStream);
+        Object testObject = getJSONUnmarshaller().unmarshal(inputStream);
         inputStream.close();
         jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
-        jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         InputSource inputSource = new InputSource(inputStream);
-        Object testObject = jaxbUnmarshaller.unmarshal(inputSource);
+        Object testObject = getJSONUnmarshaller().unmarshal(inputSource);
         inputStream.close();
         jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromReader() throws Exception {
-        jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Reader reader = new InputStreamReader(inputStream);
-        Object testObject = jaxbUnmarshaller.unmarshal(reader);
+        Object testObject = getJSONUnmarshaller().unmarshal(reader);
         reader.close();
         inputStream.close();
         jsonToObjectTest(testObject);
     }
 
     public void testJSONUnmarshalFromURL() throws Exception {
-        jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         URL url = getJSONURL();
-        Object testObject = jaxbUnmarshaller.unmarshal(url);
+        Object testObject = getJSONUnmarshaller().unmarshal(url);
         jsonToObjectTest(testObject);
     }
+    
 
     public void testJSONMarshalToOutputStream() throws Exception{
-    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        jaxbMarshaller.marshal(getWriteControlObject(), os);
+        getJSONMarshaller().marshal(getWriteControlObject(), os);
         compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
         os.close();
     }
 
     public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
-    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
-    	jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        jaxbMarshaller.marshal(getWriteControlObject(), os);
+        getJSONMarshaller().marshal(getWriteControlObject(), os);
         compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
         os.close();
     }
 
     public void testJSONMarshalToStringWriter() throws Exception{
-    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         StringWriter sw = new StringWriter();
-        jaxbMarshaller.marshal(getWriteControlObject(), sw);
+        getJSONMarshaller().marshal(getWriteControlObject(), sw);
         compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     }
 
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-    	jaxbMarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
-    	jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         StringWriter sw = new StringWriter();
-        jaxbMarshaller.marshal(getWriteControlObject(), sw);
+        getJSONMarshaller().marshal(getWriteControlObject(), sw);
         compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     }
 
@@ -151,7 +161,9 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         assertEquals(expectedString, testString);
     }
 
-
+    protected Object getJSONReadControlObject(){
+    	return getReadControlObject();
+    }
 
     private URL getJSONURL() {
         return Thread.currentThread().getContextClassLoader().getResource(controlJSONLocation);

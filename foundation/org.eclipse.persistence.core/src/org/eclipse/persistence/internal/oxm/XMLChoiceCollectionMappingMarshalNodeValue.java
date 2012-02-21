@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
@@ -115,41 +117,102 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
             }
         }
         
-        while(cp.hasNext(iterator)) {
-            Object nextValue = cp.next(iterator, session);
-            marshalSingleValue(xPathFragment, marshalRecord, object, nextValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
+        if(marshalRecord.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON){
+        	List<NodeValue> nodeValues = new ArrayList();
+            List<List> values = new ArrayList<List>();
+            //sort the elements. Results will be a list of nodevalues and a corresponding list of 
+            //collections associated with those nodevalues
+            while(cp.hasNext(iterator)) {        	    
+        	    Object nextValue = getConvertedValue(cp.next(iterator, session), marshalRecord, session);
+		        NodeValue nodeValue = getNodeValueForValue(nextValue);	     
+		        if(nodeValue != null){        	  
+		            int index = nodeValues.indexOf(nodeValue);
+        	        if(index > -1){
+        	    	    values.get(index).add(nextValue);
+        	        }else{
+        	    	    nodeValues.add(nodeValue);
+        	    	    List valuesList = new ArrayList();
+        	    	    valuesList.add(nextValue);
+        	    	    values.add(valuesList);
+        	        }
+		        }        	  
+            }
+  
+            for(int i =0;i < nodeValues.size(); i++){
+            	NodeValue associatedNodeValue = nodeValues.get(i);            	
+            	List listValue = values.get(i);            	
+            	
+            	XPathFragment frag = associatedNodeValue.getXPathNode().getXPathFragment();
+                if(frag != null){
+                    frag = getOwningFragment(associatedNodeValue, frag);
+                    NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
+                    marshalRecord.startCollection(); 
+                    for(int j=0;j<listValue.size(); j++){              	          
+                        unwrappedNodeValue.marshalSingleValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance());
+                    }
+                    marshalRecord.endCollection();     
+                }            
+            }            
+        }        
+        else{        
+            while(cp.hasNext(iterator)) {
+                Object nextValue = cp.next(iterator, session);
+                marshalSingleValue(xPathFragment, marshalRecord, object, nextValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
+            }
         }
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Converter converter = xmlChoiceCollectionMapping.getConverter();
-        if (null != converter) {
-            if (converter instanceof XMLConverter) {
-                value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
-            } else {
-                value = converter.convertObjectValueToDataValue(value, session);
-            }
-        }
-    	NodeValue associatedNodeValue = null;
-    	XMLField associatedField = null;
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {        
+        value = getConvertedValue(value, marshalRecord, session);
+    	        
     	Object fieldValue = value;
+    	if(value instanceof XMLRoot){
+    		fieldValue = ((XMLRoot)value).getObject();
+    	}else if(value.getClass() == ClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
+    		marshalMixedContent(marshalRecord, (String)value);
+	        return true;
+    	}
+    	    	
+    	NodeValue associatedNodeValue = getNodeValueForValue(value);        	
+    	if(associatedNodeValue != null) {
+        	//Find the correct fragment
+        	XPathFragment frag = associatedNodeValue.getXPathNode().getXPathFragment();
+    		if(frag != null){
+    		    frag = getOwningFragment(associatedNodeValue, frag);
+        	    NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
+        	    unwrappedNodeValue.marshalSingleValue(frag, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
+    		}
+        }
+    	    
+    	return true;
+    }
+    
+    private Object getConvertedValue(Object originalValue,MarshalRecord marshalRecord, AbstractSession session){
+	    Converter converter = xmlChoiceCollectionMapping.getConverter();
+        if (null != converter) {
+          if (converter instanceof XMLConverter) {
+          	return ((XMLConverter)converter).convertObjectValueToDataValue(originalValue, session, marshalRecord.getMarshaller());
+          } else {
+        	  return converter.convertObjectValueToDataValue(originalValue, session);
+         }
+       }
+       return originalValue;    	
+    }
+
+    private NodeValue getNodeValueForValue(Object value){
+    	XMLField associatedField = null;
     	if(value instanceof XMLRoot) {
     		XMLRoot rootValue = (XMLRoot)value;
     		String localName = rootValue.getLocalName();
     		String namespaceUri = rootValue.getNamespaceURI();
-    		fieldValue = rootValue.getObject();
+    		Object fieldValue = rootValue.getObject();
     		associatedField = getFieldForName(localName, namespaceUri);
     		if(associatedField == null) {
     			associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(fieldValue.getClass());
     		}
     	} else {
-    	    if(value.getClass() == ClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
-    	        marshalMixedContent(marshalRecord, (String)value);
-    	        return true;
-    	    } else {
-    	        associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
-    	    }
+    		associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());    		  
     	}
     	if(associatedField == null) {
     	    //check the field associations
@@ -158,31 +221,23 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	        associatedField = sourceFields.get(0);
     	    }
     	}
-    	if(associatedField != null) {
-			associatedNodeValue = this.fieldToNodeValues.get(associatedField);
-		}
-    	
-    	if(associatedNodeValue != null) {
-    		//Find the correct fragment
-    		XPathFragment frag = associatedField.getXPathFragment();
-    		NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
-  		    while(frag != null) {
-   		        if(associatedNodeValue.isOwningNode(frag)) {
-   		            ContainerValue nestedNodeValue = (ContainerValue)unwrappedNodeValue;
-   		            nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
-   		            break;
-   		        }
-   		        frag = frag.getNextFragment();
-                //if next frag is null, call node value before the loop breaks
-   		        if(frag == null) {
-   		            ContainerValue nestedNodeValue = (ContainerValue)associatedNodeValue;
-   		            nestedNodeValue.marshalSingleValue(frag, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
-   		        }
-   		    }
-   		}
-    	return true;
+    	if(associatedField != null){
+    		return fieldToNodeValues.get(associatedField);
+    	}
+    	return null;
     }
-
+    
+    
+    private XPathFragment getOwningFragment(NodeValue nodeValue, XPathFragment frag){
+    	while(frag != null) {
+   	        if(nodeValue.isOwningNode(frag)) {
+   	        	return frag;
+   	        }
+   	        frag = frag.getNextFragment();            
+   		}   
+    	return null;
+    }   
+    
     private void marshalMixedContent(MarshalRecord record, String value) {
         record.characters(value);
     }

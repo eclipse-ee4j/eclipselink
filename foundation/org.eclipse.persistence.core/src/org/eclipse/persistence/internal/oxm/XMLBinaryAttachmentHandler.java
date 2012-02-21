@@ -63,8 +63,8 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
-            this.c_id = atts.getValue("", HREF_ATTRIBUTE_NAME);
-        } else {
+            this.c_id = atts.getValue(XMLConstants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
+        } else if(c_id == null ){        	
             //Return control to the UnmarshalRecord
             XMLReader xmlReader = record.getXMLReader();
             xmlReader.setContentHandler(record);
@@ -75,64 +75,67 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
 
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-    	XMLField xmlField = null;
-    	if(isCollection) {
-            xmlField = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
-        } else {
-            xmlField = (XMLField)((XMLBinaryDataMapping)mapping).getField();
-        }
-        if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
-            //Get the attachment and set it in the object.
-            XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
-            Object data = null;
-            Class attributeClassification = null;
-            if(isCollection) {
-            	attributeClassification = ((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
-            } else {
-                attributeClassification = mapping.getAttributeClassification();
+    	if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {    		
+    	
+        	XMLField xmlField = null;
+    	    if(isCollection) {
+                xmlField = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
+              } else {
+                xmlField = (XMLField)((XMLBinaryDataMapping)mapping).getField();
             }
-            if(attachmentUnmarshaller == null) {
-                //if there's no attachment unmarshaller, it isn't possible to retrieve
-                //the attachment. Throw an exception.
-                throw XMLMarshalException.noAttachmentUnmarshallerSet(this.c_id);
-            }
-            if(attributeClassification.equals(XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER)) {
-                data = attachmentUnmarshaller.getAttachmentAsDataHandler(this.c_id);
-            } else {
-                data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
-            }
-            data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
-            if (this.converter != null) {
-                Converter converter = this.converter;
-                if (converter instanceof XMLConverter) {
-                    data = ((XMLConverter) converter).convertDataValueToObjectValue(data, record.getSession(), record.getUnmarshaller());
+            if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
+                //Get the attachment and set it in the object.
+                XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
+                Object data = null;
+                Class attributeClassification = null;
+                if(isCollection) {
+            	    attributeClassification = ((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
                 } else {
-                    data = converter.convertDataValueToObjectValue(data, record.getSession());
+                    attributeClassification = mapping.getAttributeClassification();
                 }
-            }
-            //check for collection case
-            if (isCollection) {
-                if(data != null) {
-                    record.addAttributeValue((ContainerValue)nodeValue, data);
+                if(attachmentUnmarshaller == null) {
+                    //if there's no attachment unmarshaller, it isn't possible to retrieve
+                    //the attachment. Throw an exception.
+                    throw XMLMarshalException.noAttachmentUnmarshallerSet(this.c_id);
+                }
+                if(attributeClassification.equals(XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER)) {
+                    data = attachmentUnmarshaller.getAttachmentAsDataHandler(this.c_id);
+                } else {
+                    data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
+                }
+                data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
+                if (this.converter != null) {
+                    Converter converter = this.converter;
+                    if (converter instanceof XMLConverter) {
+                        data = ((XMLConverter) converter).convertDataValueToObjectValue(data, record.getSession(), record.getUnmarshaller());
+                    } else {
+                        data = converter.convertDataValueToObjectValue(data, record.getSession());
+                    }
+                }
+                //check for collection case
+                if (isCollection) {
+                    if(data != null) {
+                        record.addAttributeValue((ContainerValue)nodeValue, data);
+                    }
+                } else {
+                    record.setAttributeValue(data, mapping);
+                }
+                //Return control to the UnmarshalRecord
+                if(!xmlField.isSelfField()){
+                    XMLReader xmlReader = record.getXMLReader();
+                    xmlReader.setContentHandler(record);
+                    xmlReader.setLexicalHandler(record);
                 }
             } else {
-                record.setAttributeValue(data, mapping);
+                if(!xmlField.isSelfField()){
+                    //Return control to the parent record
+                    XMLReader xmlReader = record.getXMLReader();
+                    xmlReader.setContentHandler(record);
+                    xmlReader.setLexicalHandler(record);
+                    record.endElement(namespaceURI, localName, qName);
+                }
             }
-            //Return control to the UnmarshalRecord
-            if(!xmlField.isSelfField()){
-                XMLReader xmlReader = record.getXMLReader();
-                xmlReader.setContentHandler(record);
-                xmlReader.setLexicalHandler(record);
-            }
-        } else {
-            if(!xmlField.isSelfField()){
-                //Return control to the parent record
-                XMLReader xmlReader = record.getXMLReader();
-                xmlReader.setContentHandler(record);
-                xmlReader.setLexicalHandler(record);
-                record.endElement(namespaceURI, localName, qName);
-            }
-        }
+    	}
     }
 
     public void processingInstruction(String target, String data) throws SAXException {

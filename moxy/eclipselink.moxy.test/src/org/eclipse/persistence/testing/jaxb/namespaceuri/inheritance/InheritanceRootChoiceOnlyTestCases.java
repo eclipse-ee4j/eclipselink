@@ -14,23 +14,36 @@ package org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.package2.AnotherPackageSubType;
 
 
-public class InheritanceRootChoiceOnlyTestCases extends JAXBTestCases {
+public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
     private static final String  XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/inheritance/choicecollection.xml";
+    private static final String  JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/inheritance/choicecollection.json";
 
     public InheritanceRootChoiceOnlyTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] {RootChoiceOnly.class});
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("rootNamespace","ns0");
+        namespaces.put("uri1", "ns5");
+
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+        jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
     protected Object getControlObject() {
@@ -44,7 +57,9 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBTestCases {
 		AnotherPackageSubType anotherPackageSubType = new AnotherPackageSubType();
 		
 		List choiceList = new ArrayList();
+		choiceList.add(new String("choice string test2"));
 		choiceList.add(anotherPackageSubType);
+		choiceList.add(new Integer(400));
 		choiceList.add(subTypeLevel2);
 		choiceList.add(new String("choice string test"));
 		choiceList.add(new Integer(500));

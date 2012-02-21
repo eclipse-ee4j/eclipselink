@@ -23,15 +23,17 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlElementRef via eclipselink-oxm.xml
  *
  */
-public class XmlElementRefTestCases extends JAXBTestCases {
+public class XmlElementRefTestCases extends JAXBWithJSONTestCases {
     
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo.json";
     private Object writeObject;
     /**
      * This is the preferred (and only) constructor.
@@ -41,6 +43,7 @@ public class XmlElementRefTestCases extends JAXBTestCases {
     public XmlElementRefTestCases(String name)throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { Foo.class });
     }
     

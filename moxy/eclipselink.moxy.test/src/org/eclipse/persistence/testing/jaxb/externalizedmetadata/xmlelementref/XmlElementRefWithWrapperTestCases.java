@@ -26,16 +26,18 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlElementRefWithWrapperTestCases extends JAXBTestCases{
+public class XmlElementRefWithWrapperTestCases extends JAXBWithJSONTestCases{
 
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo-wrapper.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementref/foo-wrapper.json";
 	
     public XmlElementRefWithWrapperTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[] { Foos.class, Bar.class });
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 }
 
 	public Map getProperties(){
