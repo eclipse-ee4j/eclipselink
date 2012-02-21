@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -23,6 +24,8 @@ public class Employee {
     private Address workAddress;
     private Phone phone;
     private Badge badge;
+    private String empCode;
+
 
     public Employee() {
         super();
@@ -77,6 +80,15 @@ public class Employee {
         workAddress = newAddress;
     }
 
+    @XmlAttribute
+    public String getEmpCode() {
+        return empCode;
+    }
+
+    public void setEmpCode(String empCode) {
+        this.empCode = empCode;
+    }
+
     public String toString() {
         return "Employee: " + getID() + ", " + getName();
     }
@@ -92,4 +104,5 @@ public class Employee {
             return false;
         }
     }
+
 }

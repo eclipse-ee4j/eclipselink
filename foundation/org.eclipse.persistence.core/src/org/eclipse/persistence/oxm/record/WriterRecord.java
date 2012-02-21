@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
+import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
@@ -164,7 +165,7 @@ public class WriterRecord extends MarshalRecord {
             writer.write(qName);
             writer.write('=');
             writer.write('\"');
-            writeValue(value);
+            writeValue(value, true);
             writer.write('\"');
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
@@ -233,6 +234,23 @@ public class WriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     protected void writeValue(String value) {
+        writeValue(value, false);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected void writeValue(String value, boolean isAttribute) {
+        CharacterEscapeHandler escapeHandler = marshaller.getCharacterEscapeHandler();
+        if (escapeHandler != null) {
+            try {
+                escapeHandler.escape(value.toCharArray(), 0, value.length(), isAttribute, writer);
+            } catch (IOException e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+            return;
+        }
+
         try {
             if (value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1) {
                   char[] chars = value.toCharArray();

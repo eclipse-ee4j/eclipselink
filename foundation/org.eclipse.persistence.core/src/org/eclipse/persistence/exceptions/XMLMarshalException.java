@@ -48,6 +48,9 @@ public class XMLMarshalException extends ValidationException {
     public static final int SUBCLASS_ATTEMPTED_TO_OVERRIDE_NAMESPACE_DECLARATION = 25029;
     public static final int ERROR_INVOKING_NAMESPACE_PREFIX_MAPPER = 25030;
     public static final int ERROR_PROCESSING_PREFIX_MAPPER = 25031;
+    public static final int ERROR_INVOKING_CHARACTER_ESCAPE_HANDLER = 25032;
+    public static final int ERROR_PROCESSING_CHARACTER_ESCAPE_HANDLER = 25033;
+
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -316,5 +319,22 @@ public class XMLMarshalException extends ValidationException {
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_PROCESSING_PREFIX_MAPPER, args));
         exception.setErrorCode(ERROR_PROCESSING_PREFIX_MAPPER);
         return exception;
-    }    
+    }
+
+    public static XMLMarshalException errorInvokingCharacterEscapeHandler(String methodName, Object handler, Throwable nestedException) {
+        Object[] args = {methodName, handler};
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_INVOKING_CHARACTER_ESCAPE_HANDLER, args));
+        exception.setErrorCode(ERROR_INVOKING_CHARACTER_ESCAPE_HANDLER);
+        exception.setInternalException(nestedException);
+        return exception;
+    }
+
+    public static XMLMarshalException errorProcessingCharacterEscapeHandler(String methodName, Object handler, Throwable nestedException) {
+        Object[] args = {methodName, handler};
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_PROCESSING_CHARACTER_ESCAPE_HANDLER, args));
+        exception.setErrorCode(ERROR_PROCESSING_CHARACTER_ESCAPE_HANDLER);
+        exception.setInternalException(nestedException);
+        return exception;
+    }
+
 }

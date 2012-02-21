@@ -92,6 +92,13 @@ public class EmployeeProject extends Project {
         badgeMapping.setXPath("badge-id");
         descriptor.addMapping(badgeMapping);
 
+        XMLDirectMapping empCodeMapping = new XMLDirectMapping();
+        empCodeMapping.setAttributeName("empCode");
+        empCodeMapping.setGetMethodName("getEmpCode");
+        empCodeMapping.setSetMethodName("setEmpCode");
+        empCodeMapping.setXPath("@empCode");
+        descriptor.addMapping(empCodeMapping);
+
         URL schemaURL = ClassLoader.getSystemResource("org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd");
         XMLSchemaURLReference schemaRef = new XMLSchemaURLReference(schemaURL);
         schemaRef.setType(XMLSchemaReference.ELEMENT);
