@@ -14,16 +14,18 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
 import java.math.BigInteger;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AttributeWithAnonymousTypeTest extends JAXBTestCases {
+public class AttributeWithAnonymousTypeTest extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltype/AttributeWithAnonymousType.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltype/AttributeWithAnonymousType.json";
 
     public AttributeWithAnonymousTypeTest(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Item.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

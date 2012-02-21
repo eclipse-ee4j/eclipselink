@@ -7,18 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AllTestCases extends JAXBTestCases {
+public class AllTestCases extends JAXBWithJSONTestCases {
 
     private static final String OXM_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/all-oxm.xml";
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/all.xml";
     private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/all.xsd";
-
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltype/propOrder/all.json";
     public AllTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class});
+        setClasses(new Class[] {Root.class});        
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

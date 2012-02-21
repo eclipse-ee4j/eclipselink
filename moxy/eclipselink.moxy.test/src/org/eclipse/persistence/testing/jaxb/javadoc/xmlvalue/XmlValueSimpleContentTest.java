@@ -14,18 +14,24 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
 //Example 2
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlValueSimpleContentTest extends JAXBTestCases {
+public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlvalue/xmlvaluesimplecontent.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlvalue/xmlvaluesimplecontent.json";
 
     public XmlValueSimpleContentTest(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = InternationalPrice.class;
         setClasses(classes);
+        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "valuewrapper");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "valuewrapper");
     }
 
     protected Object getControlObject() {

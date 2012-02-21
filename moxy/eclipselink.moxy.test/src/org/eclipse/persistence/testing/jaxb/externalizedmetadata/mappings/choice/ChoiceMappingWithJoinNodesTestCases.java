@@ -22,20 +22,26 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Address;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Client;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.PhoneNumber;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root;
 
-public class ChoiceMappingWithJoinNodesTestCases extends JAXBTestCases{
+public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root.json";
 	
 	public ChoiceMappingWithJoinNodesTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setClasses(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class });
+		jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "value");
+		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "value");
 	}
 
 	protected Object getControlObject() {

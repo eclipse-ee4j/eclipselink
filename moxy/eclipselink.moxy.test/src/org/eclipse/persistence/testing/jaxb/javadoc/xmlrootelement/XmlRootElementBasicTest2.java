@@ -24,16 +24,18 @@ import java.io.FileInputStream;
 
 import java.io.IOException;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 // Example 3
-public class XmlRootElementBasicTest2 extends JAXBTestCases {
+public class XmlRootElementBasicTest2 extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlrootelement/xmlrootelementtest2.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlrootelement/xmlrootelementtest2.json";
 
 	public XmlRootElementBasicTest2(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = USPrice.class;
 		setClasses(classes);

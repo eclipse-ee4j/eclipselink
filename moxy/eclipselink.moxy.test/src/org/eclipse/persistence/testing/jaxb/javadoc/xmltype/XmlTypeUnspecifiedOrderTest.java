@@ -16,15 +16,17 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
 import java.io.IOException;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlTypeUnspecifiedOrderTest extends JAXBTestCases {
+public class XmlTypeUnspecifiedOrderTest extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltype/xmltypeexample2.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltype/xmltypeexample2.json";
 
 	public XmlTypeUnspecifiedOrderTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Address2.class;
 		setClasses(classes);

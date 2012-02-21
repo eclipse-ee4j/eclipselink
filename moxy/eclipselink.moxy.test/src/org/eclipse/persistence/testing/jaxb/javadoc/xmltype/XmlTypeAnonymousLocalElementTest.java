@@ -16,15 +16,17 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
 import java.io.IOException;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlTypeAnonymousLocalElementTest extends JAXBTestCases {
+public class XmlTypeAnonymousLocalElementTest extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltype/xmltypeexample4.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmltype/xmltypeexample4.json";
 
 	public XmlTypeAnonymousLocalElementTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[2];
 		classes[0] = Address4.class;
 		classes[1] = Invoice.class;

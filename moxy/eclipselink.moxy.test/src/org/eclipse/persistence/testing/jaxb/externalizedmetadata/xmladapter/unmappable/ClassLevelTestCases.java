@@ -9,12 +9,12 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1.Container;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2.Unmappable;
 import org.w3c.dom.Document;
 
-public class ClassLevelTestCases extends JAXBTestCases {
+public class ClassLevelTestCases extends JAXBWithJSONTestCases {
     protected Map getProperties() throws Exception{
 
         InputStream inStream1 = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package1/no-adapter.xml");
@@ -45,6 +45,7 @@ public class ClassLevelTestCases extends JAXBTestCases {
         setUp();
         setTypes(new Class[]{Container.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container_class.xml");
+        setControlJSON("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container_class.json");
     }
     
     public Object getControlObject() {

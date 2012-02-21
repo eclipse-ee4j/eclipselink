@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement;
 
 //Example 1
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlRootElementBasicTest extends JAXBTestCases {
+public class XmlRootElementBasicTest extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlrootelement/point2d.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlrootelement/point2d.json";
 
 	public XmlRootElementBasicTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Point2D.class;
 		setClasses(classes);

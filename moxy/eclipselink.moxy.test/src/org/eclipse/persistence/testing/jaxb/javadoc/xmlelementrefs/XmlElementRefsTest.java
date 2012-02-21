@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlelementrefs;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlElementRefsTest extends JAXBTestCases {
+public class XmlElementRefsTest extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelementrefs/xmlelementrefs.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlelementrefs/xmlelementrefs.json";
 
     public XmlElementRefsTest(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);        
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[4];
 
         classes[0] = TransportType.class;
