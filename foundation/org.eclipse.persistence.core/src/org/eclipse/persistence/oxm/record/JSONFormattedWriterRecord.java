@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  * xmlMarshaller.marshal(myObject, jsonFormattedWriterRecord);<br>
  * </code></p>
  * <p>If the marshal(Writer) and setMediaType(MediaType.APPLICATION_JSON) and
- *  setFormattedOutput(true) method is called on XMLMarshaller, then the Writer 
+ *  setFormattedOutput(true) method is called on XMLMarshaller, then the Writer
  *  is automatically wrapped in a JSONFormattedWriterRecord.</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>
@@ -96,16 +96,16 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     writer.write(',');
                 }
             }
-            
+
             if(xPathFragment.nameIsText()){
-         	   if(position != null && position.isCollection() && position.isEmptyCollection()) {
+               if(position != null && position.isCollection() && position.isEmptyCollection()) {
                     writer.write('[');
-                	   position.setEmptyCollection(false);
-                	   position.setNeedToOpenComplex(false);
-                	   return;
-                }                      
+                       position.setEmptyCollection(false);
+                       position.setNeedToOpenComplex(false);
+                       return;
+                }
             }
-            
+
             this.addPositionalNodes(xPathFragment, namespaceResolver);
             if (!isLastEventText) {
                 if (numberOfTabs > 0) {
@@ -115,45 +115,44 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     writeValue(tab());
                 }
             }
-            if(position == null || !position.isCollection() || position.isEmptyCollection()){            	
-            	if(position.isNeedToOpenComplex()){
-            		writer.write('{');
-            		position.setNeedToOpenComplex(false);
-            		position.setNeedToCloseComplex(true);            		
-            	}            	
-                isStartElementOpen = true;
-                writer.write('"');       
-                if(xPathFragment.isAttribute() && attributePrefix != null){
-                	writer.write(attributePrefix);
+            if(position == null || !position.isCollection() || position.isEmptyCollection()){
+                if(position.isNeedToOpenComplex()){
+                    writer.write('{');
+                    position.setNeedToOpenComplex(false);
+                    position.setNeedToCloseComplex(true);
                 }
-                
-                
+                isStartElementOpen = true;
+                writer.write('"');
+                if(xPathFragment.isAttribute() && attributePrefix != null){
+                    writer.write(attributePrefix);
+                }
+
                 if(isNamespaceAware()){
-                	if(xPathFragment.getNamespaceURI() != null){
+                    if(xPathFragment.getNamespaceURI() != null){
                         String prefix = null;
-                    	if(getNamespaceResolver() !=null){
-                	        prefix = getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
-                    	} else if(namespaceResolver != null){
-                	    	prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
-                	    }
-                    	if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
-                    		writer.write(prefix);
-                    		writer.write(getNamespaceSeparator());
-                    	}
+                        if(getNamespaceResolver() !=null){
+                            prefix = getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                        } else if(namespaceResolver != null){
+                            prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                        }
+                        if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
+                            writer.write(prefix);
+                            writer.write(getNamespaceSeparator());
+                        }
                     }
                 }
-                
+
                 writer.write(xPathFragment.getLocalName());
                 writer.write("\" : ");
-            
+
                 if(position != null && position.isCollection()) {
                     writer.write('[');
                 }
                 if(position !=null && position.isEmptyCollection()){
-            	    position.setEmptyCollection(false);
+                    position.setEmptyCollection(false);
                 }
-            }                  
-            
+            }
+
             numberOfTabs++;
             isLastEventText = false;
         } catch (IOException e) {
@@ -226,7 +225,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
-        	nonStringCharacters(node.getNodeValue());
+            nonStringCharacters(node.getNodeValue());
         } else {
             try {
                 FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();
