@@ -38,6 +38,7 @@ import java.lang.reflect.Type;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
+import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -51,6 +52,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.oxm.record.CharacterEscapeHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
 
@@ -84,55 +86,73 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private ValidationEventHandler validationEventHandler;
     private XMLMarshaller xmlMarshaller;
     private JAXBContext jaxbContext;
+
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
-    /** The Constant NAMESPACE_PREFIX_MAPPER.  This can be set to control the prefix and 
+
+    /**
+     * The Constant NAMESPACE_PREFIX_MAPPER.  This can be set to control the prefix and
      * uri pairs used during a marshal operation. Applies to both application/xml and application/json.
-     * Value should be an org.eclipse.persistence.oxm.NamespacePrefixMapper or can be a 
+     * Value should be an org.eclipse.persistence.oxm.NamespacePrefixMapper or can be a
      * Map<String, String> of uris to prefixes.
      * @since 2.3.3
      */
-    public static final String NAMESPACE_PREFIX_MAPPER = JAXBContext.NAMESPACE_PREFIX_MAPPER;   
+    public static final String NAMESPACE_PREFIX_MAPPER = JAXBContext.NAMESPACE_PREFIX_MAPPER;
     private static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
     private static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
-    
-    /**The Constant INDENT_STRING. Property used to set the string used when indenting formatted marshalled documents.
-    * If not set and the default for formatted documents is &quot;   &quot; (three spaces)
-    * @since 2.3.3.
-    */
-    public static final String INDENT_STRING = "eclipselink.indent-string";    
+
+    /**
+     * The Constant INDENT_STRING. Property used to set the string used when indenting formatted marshalled documents.
+     * The default for formatted documents is &quot;   &quot; (three spaces)
+     * @since 2.3.3
+     */
+    public static final String INDENT_STRING = "eclipselink.indent-string";
     private static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
     private static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
-    //XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true
-    private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
-    
-    /** The Constant MEDIA_TYPE. This can be used to set the media type.  
-     * Supported values are "application/xml" and "application/json" 
-     * @since 2.4 
+    /**
+     * The Constant CHARACTER_ESCAPE_HANDLER.  Allows for customization of character escaping when marshalling.
+     * Value should be an implementation of org.eclipse.persistence.oxm.CharacterEscapeHandler.
+     * @since 2.3.3
      */
-    public static final String MEDIA_TYPE = JAXBContext.MEDIA_TYPE;  
-    
-    /** The Constant ID_RESOLVER.  This can be used to specify a custom
-     * IDResolver class, to allow customization of ID/IDREF processing.
-     * @since 2.4 
+    public static final String CHARACTER_ESCAPE_HANDLER = "eclipselink.character-escape-handler";
+    private static final String SUN_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.bind.marshaller.CharacterEscapeHandler";
+    private static final String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
+
+    // XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true.
+    private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
+
+    /**
+     * The Constant MEDIA_TYPE. This can be used to set the media type.
+     * Supported values are "application/xml" and "application/json".
+     * @since 2.4
+     */
+    public static final String MEDIA_TYPE = JAXBContext.MEDIA_TYPE;
+
+    /**
+     * The Constant ID_RESOLVER.  This can be used to specify a custom
+     * IDResolver class, to allow for customization of ID/IDREF processing.
+     * @since 2.4
      */
     public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
-    
-    /** The Constant ATTRIBUTE_PREFIX. This can be used to specify a prefix to prepend
-     * to attributes.  Only applicable if media type ="application/json"
-     * @since 2.4 
-     */ 
+
+    /**
+     * The Constant ATTRIBUTE_PREFIX. This can be used to specify a prefix to prepend
+     * to attributes.  Only applicable if media type is "application/json".
+     * @since 2.4
+     */
     public static final String JSON_ATTRIBUTE_PREFIX = JAXBContext.JSON_ATTRIBUTE_PREFIX;
-    
-    /** The Constant INCLUDE_ROOT. This can be used  to specify if the 
-     * @XmlRootElement should be marshalled.  Only applicable if media type ="application/json"
-     * @since 2.4  
+
+    /**
+     * The Constant INCLUDE_ROOT. This can be used  to specify if the
+     * @XmlRootElement should be marshalled.  Only applicable if media type is "application/json".
+     * @since 2.4
      */
     public static final String JSON_INCLUDE_ROOT =JAXBContext.JSON_INCLUDE_ROOT;
-    
-    /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
-     *  that will be used around things mapped with @XmlValue.  Only applicable if media type ="application/json"
-     *  @since 2.4 
+
+    /**
+     * The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
+     * that will be used around things mapped with @XmlValue.  Only applicable if media type is "application/json".
+     * @since 2.4
      */
     public static final String JSON_VALUE_WRAPPER = JAXBContext.JSON_VALUE_WRAPPER;
 
@@ -152,7 +172,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlMarshaller.setFormattedOutput(false);
         JAXBMarshalListener listener = new JAXBMarshalListener(this);
         xmlMarshaller.setMarshalListener(listener);
-
     }
 
     /**
@@ -653,6 +672,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
             } else if (INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
                 xmlMarshaller.setIndentString((String) value);
+            } else if (CHARACTER_ESCAPE_HANDLER.equals(key)) {
+                xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
+            } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {
+                if (value == null) {
+                    xmlMarshaller.setCharacterEscapeHandler(null);
+                } else {
+                    xmlMarshaller.setCharacterEscapeHandler(new CharacterEscapeHandlerWrapper(value));
+                }
             } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());

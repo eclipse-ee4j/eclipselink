@@ -107,6 +107,7 @@ public class XMLMarshaller implements Cloneable {
     private String valueWrapper;
     private NamespacePrefixMapper mapper;
     private String indentString;
+    private CharacterEscapeHandler charEscapeHandler;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -1588,6 +1589,22 @@ public class XMLMarshaller implements Cloneable {
      */
     public void setIndentString(String s) {
         this.indentString = s;
+    }
+
+    /**
+     * Return this Marshaller's CharacterEscapeHandler.
+     * @since 2.3.3
+     */
+    public CharacterEscapeHandler getCharacterEscapeHandler() {
+        return this.charEscapeHandler;
+    }
+
+    /**
+     * Set this Marshaller's CharacterEscapeHandler.
+     * @since 2.3.3
+     */
+    public void setCharacterEscapeHandler(CharacterEscapeHandler c) {
+        this.charEscapeHandler = c;
     }
 
 }

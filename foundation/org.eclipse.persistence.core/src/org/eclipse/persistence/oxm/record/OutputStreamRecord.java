@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.io.CharArrayWriter;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +24,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
+import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
@@ -40,7 +42,7 @@ import org.xml.sax.ext.LexicalHandler;
  * XMLContext xmlContext = new XMLContext("session-name");<br>
  * XMLMarshaller xmlMarshaller = xmlContext.createMarshaller();<br>
  * OutputStreamRecord record = new OutputStreamRecord();<br>
- * record.setOutputStreamr(myOutputStream);<br>
+ * record.setOutputStream(myOutputStream);<br>
  * xmlMarshaller.marshal(myObject, record);<br>
  * </code></p>
  * <p>If the marshal(OutputStream) and setFormattedOutput(false) method is called on
@@ -192,7 +194,7 @@ public class OutputStreamRecord extends MarshalRecord {
             outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
             outputStreamWrite((byte)'=');
             outputStreamWrite((byte)'"');
-            writeValue(value, true);
+            writeValue(value, true, true);
             outputStreamWrite(CLOSE_ATTRIBUTE_VALUE);
         } catch (UnsupportedEncodingException e) {
             throw XMLMarshalException.marshalException(e);
@@ -253,6 +255,29 @@ public class OutputStreamRecord extends MarshalRecord {
      * INTERNAL:
      */
     protected void writeValue(String value, boolean escapeChars) {
+        writeValue(value, escapeChars, false);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected void writeValue(String value, boolean escapeChars, boolean isAttribute) {
+        if (escapeChars) {
+            CharacterEscapeHandler escapeHandler = marshaller.getCharacterEscapeHandler();
+            if (escapeHandler != null) {
+                try {
+                    CharArrayWriter out = new CharArrayWriter();
+                    escapeHandler.escape(value.toCharArray(), 0, value.length(), isAttribute, out);
+                    byte[] bytes = out.toString().getBytes();
+                    outputStreamWrite(bytes);
+                    out.close();
+                } catch (IOException e) {
+                    throw XMLMarshalException.marshalException(e);
+                }
+                return;
+            }
+        }
+
         // UTF-8 Byte Representations:
         //     0x0 - 0x7F                                 0xxxxxxx
         //    0x80 - 0x7FF                       110yyyxx 10xxxxxx

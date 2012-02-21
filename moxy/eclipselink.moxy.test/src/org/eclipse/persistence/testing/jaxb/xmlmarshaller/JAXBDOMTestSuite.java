@@ -34,6 +34,8 @@ public class JAXBDOMTestSuite extends TestCase {
 				}
         suite.addTestSuite(UnmarshallValidationTestCases.class);
         suite.addTestSuite(MarshallerPropertiesTestCases.class);
+        suite.addTestSuite(CharacterEscapeHandlerTestCases.class);
+        suite.addTestSuite(NonELCharacterEscapeHandlerTestCases.class);
         suite.addTestSuite(MarshallerFormattingTestCases.class);
         suite.addTest(MarshallerEncodingTestCases.suite());
         suite.addTestSuite(MarshallerFragmentTestCases.class);

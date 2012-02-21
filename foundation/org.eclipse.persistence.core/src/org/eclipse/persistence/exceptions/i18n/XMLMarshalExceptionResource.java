@@ -53,7 +53,9 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25028", "No reference descriptor found for mapping {1} due to an unknown xsi:type value: {0}."},
                                            { "25029", "For the prefix [{0}] class [{1}] attempted to assign the namespace URI [{2}], but its parent class [{3}] has already assigned the namespace URI [{4}]."},
                                            { "25030", "An error occured while invoking the {0} method on the custom NamespacePrefixMapper: {1}."},
-                                           { "25031", "An error occured while processing the namespace prefix mapper: {1}. The method {0} was not found."}
+                                           { "25031", "An error occured while processing the namespace prefix mapper: {1}. The method {0} was not found."},
+                                           { "25032", "An error occured while invoking the {0} method on the custom CharacterEscapeHandler: {1}."},
+                                           { "25033", "An error occured while processing the CharacterEscapeHandler: {1}. The method {0} was not found."}
     };
 
     /**
