@@ -95,7 +95,7 @@
     <target name="websphere-setup">
         <echo message="*****Config WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/configWebSphere.py" tofile="${was.home}/bin/configWebSphere.py"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleDriver%%" value="${jdbc.driver.jar}"/>
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleDriver%%" value="${oracle.extensions.jar.dir}/ojdbc6.jar"/>
 		<replace file="${was.home}/bin/configWebSphere.py" token="%%nodeName%%" value="${nodeName}"/>
 		<replace file="${was.home}/bin/configWebSphere.py" token="%%serverName%%" value="${serverName}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbUser%%" value="${db.user}"/>
