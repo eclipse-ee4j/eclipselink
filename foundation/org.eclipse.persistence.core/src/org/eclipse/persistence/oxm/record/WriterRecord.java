@@ -241,7 +241,10 @@ public class WriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     protected void writeValue(String value, boolean isAttribute) {
-        CharacterEscapeHandler escapeHandler = marshaller.getCharacterEscapeHandler();
+        CharacterEscapeHandler escapeHandler = null;
+        if (marshaller != null) {
+            escapeHandler = marshaller.getCharacterEscapeHandler();
+        }
         if (escapeHandler != null) {
             try {
                 escapeHandler.escape(value.toCharArray(), 0, value.length(), isAttribute, writer);
