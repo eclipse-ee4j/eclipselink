@@ -378,4 +378,13 @@ public class EISPlatform extends DatasourcePlatform {
     public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
         throw QueryException.noCallOrInteractionSpecified();
     }
+    
+    /**
+     * INTERNAL:
+     * Return the correct call type for the native query string.
+     * This allows EIS platforms to use different types of native calls.
+     */
+    public DatasourceCall buildNativeCall(String queryString) {
+        return new QueryStringInteraction(queryString);
+    }
 }

@@ -111,6 +111,10 @@ public class MongoInteraction implements Interaction {
             ResourceException resourceException = new ResourceException("Mongo operation must be set");
             throw resourceException;            
         }
+        if (operation == MongoOperation.EVAL) {
+            Object result = this.connection.getDB().eval(mongoSpec.getCode());
+            return buildRecordFromDBObject((DBObject)result);
+        }
         if (collectionName == null) {
             ResourceException resourceException = new ResourceException("DB Collection name must be set");
             throw resourceException;            
@@ -170,6 +174,7 @@ public class MongoInteraction implements Interaction {
                 } finally {
                     cursor.close();
                 }
+
             } else {
                 throw new ResourceException("Invalid operation: " + operation);                
             }

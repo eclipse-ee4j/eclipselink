@@ -895,4 +895,13 @@ public class DatasourcePlatform implements Platform {
     public ValueReadQuery buildSelectQueryForIdentity(String seqName, Integer size) {
         return null;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the correct call type for the native query string.
+     * This allows EIS platforms to use different types of native calls.
+     */
+    public DatasourceCall buildNativeCall(String queryString) {
+        return new SQLCall(queryString);
+    }
 }

@@ -37,6 +37,8 @@ import javax.persistence.TypedQuery;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -206,7 +208,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      */
     public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ReadAllQuery query = new ReadAllQuery(resultClass);
-        query.setSQLString(sqlString);
+        query.setCall(((DatasourcePlatform)session.getPlatform(resultClass)).buildNativeCall(sqlString));
         query.setIsUserDefined(true);
 
         // apply any query hints
@@ -251,7 +253,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         query.setSQLResultSetMappingName(sqlResultSetMappingName);
-        query.setSQLString(sqlString);
+        query.setCall(((DatasourcePlatform)session.getDatasourcePlatform()).buildNativeCall(sqlString));
         query.setIsUserDefined(true);
 
         // apply any query hints

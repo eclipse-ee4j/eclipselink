@@ -28,6 +28,7 @@ import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.QueryStringCall;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoInteractionSpec;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoRecord;
@@ -44,6 +45,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -109,6 +112,10 @@ public class MongoPlatform extends EISPlatform {
         if (spec == null) {
             MongoInteractionSpec mongoSpec = new MongoInteractionSpec();
             Object operation = interaction.getProperty(OPERATION);
+            if (interaction.isQueryStringCall()) {
+                mongoSpec.setCode(((QueryStringCall)interaction).getQueryString());
+                operation = MongoOperation.EVAL;
+            }
             if (operation == null) {
                 throw new EISException("'" + OPERATION + "' property must be set on the query's interation.");
             }
@@ -271,9 +278,6 @@ public class MongoPlatform extends EISPlatform {
             MappedInteraction interaction = new MappedInteraction();
             interaction.setProperty(OPERATION, MongoOperation.FIND);
             interaction.setProperty(COLLECTION, ((EISDescriptor)query.getDescriptor()).getDataTypeName());
-            if (statement.getWhereClause() == null) {
-                return interaction;
-            }
             if (readQuery.getFirstResult() > 0) {
                 interaction.setProperty(SKIP, readQuery.getFirstResult());                
             }
@@ -284,7 +288,9 @@ public class MongoPlatform extends EISPlatform {
                 interaction.setProperty(BATCH_SIZE, readQuery.getMaxRows());                
             }
             DatabaseRecord row = new DatabaseRecord();
-            appendExpressionToQueryRow(statement.getWhereClause(), row, query);
+            if (statement.getWhereClause() != null) {
+                appendExpressionToQueryRow(statement.getWhereClause(), row, query);
+            }
             if (readQuery.hasOrderByExpressions()) {
                 DatabaseRecord sort = new DatabaseRecord();
                 for (Expression orderBy : readQuery.getOrderByExpressions()) {
@@ -415,15 +421,24 @@ public class MongoPlatform extends EISPlatform {
      */
     protected Object extractValueFromExpression(Expression expression, DatabaseQuery query) {
         Object value = null;
+        expression.getBuilder().setSession(query.getSession());
         if (expression.isQueryKeyExpression()) {
             QueryKeyExpression queryKeyExpression = (QueryKeyExpression)expression;
             value = queryKeyExpression.getField();
             if ((queryKeyExpression.getMapping() != null) && queryKeyExpression.getMapping().getDescriptor().isDescriptorTypeAggregate()) {
                 String name = queryKeyExpression.getField().getName();
                 while (queryKeyExpression.getBaseExpression().isQueryKeyExpression()
-                        && ((QueryKeyExpression)queryKeyExpression.getBaseExpression()).getMapping().isAbstractCompositeObjectMapping()) {
+                        && (((QueryKeyExpression)queryKeyExpression.getBaseExpression()).getMapping().isAbstractCompositeObjectMapping()
+                        || ((QueryKeyExpression)queryKeyExpression.getBaseExpression()).getMapping().isAbstractCompositeCollectionMapping()
+                        || ((QueryKeyExpression)queryKeyExpression.getBaseExpression()).getMapping().isAbstractCompositeDirectCollectionMapping())) {
                     queryKeyExpression = (QueryKeyExpression)queryKeyExpression.getBaseExpression();
-                    name = ((AbstractCompositeObjectMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;
+                    if (queryKeyExpression.getMapping().isAbstractCompositeObjectMapping()) {
+                        name = ((AbstractCompositeObjectMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;                        
+                    } else if (queryKeyExpression.getMapping().isAbstractCompositeCollectionMapping()) {
+                        name = ((AbstractCompositeCollectionMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;                        
+                    } else if (queryKeyExpression.getMapping().isAbstractCompositeDirectCollectionMapping()) {
+                        name = ((AbstractCompositeDirectCollectionMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;                        
+                    }
                 }
                 DatabaseField field = new DatabaseField();
                 field.setName(name);

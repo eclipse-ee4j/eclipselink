@@ -26,7 +26,8 @@ import com.mongodb.WriteConcern;
 public class MongoInteractionSpec implements InteractionSpec {
     protected MongoOperation operation;
     protected String collection;
-    
+    protected String code;
+
     /** Operation query options. */
     protected int options;
     
@@ -129,6 +130,14 @@ public class MongoInteractionSpec implements InteractionSpec {
 
     public void setMulti(boolean multi) {
         this.multi = multi;
+    }
+    
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String toString() {

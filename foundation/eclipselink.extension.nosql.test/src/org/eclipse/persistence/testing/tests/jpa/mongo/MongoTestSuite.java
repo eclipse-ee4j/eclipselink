@@ -29,6 +29,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
+import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnection;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
@@ -70,7 +71,9 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testLockError"));
         suite.addTest(new MongoTestSuite("testRefresh"));
         suite.addTest(new MongoTestSuite("testDelete"));
-        suite.addTest(new MongoTestSuite("testJPQL"));
+        suite.addTest(new MongoTestSuite("testSimpleJPQL"));
+        suite.addTest(new MongoTestSuite("testJPQLLike"));
+        suite.addTest(new MongoTestSuite("testComplexJPQL"));
         suite.addTest(new MongoTestSuite("testNativeQuery"));
         suite.addTest(new MongoTestSuite("testExternalFactory"));
         return suite;
@@ -400,7 +403,7 @@ public class MongoTestSuite extends JUnitTestCase {
     /**
      * Test JPQL.
      */
-    public void testJPQL() {
+    public void testSimpleJPQL() {
         // Clear db first.
         testSetup();
         EntityManager em = createEntityManager();
@@ -427,14 +430,14 @@ public class MongoTestSuite extends JUnitTestCase {
                 fail("Expected 9 result: " + results);
             }
             // in
-            query = em.createQuery("Select o from Order o where o.orderedBy in (:by)");
+            query = em.createQuery("Select o from Order o where o.orderedBy in (:by, :by)");
             query.setParameter("by", "ACME");
             results = query.getResultList();
             if (results.size() != 10) {
                 fail("Expected 1 result: " + results);
             }
             // nin
-            query = em.createQuery("Select o from Order o where o.orderedBy not in (:by)");
+            query = em.createQuery("Select o from Order o where o.orderedBy not in (:by, :by)");
             query.setParameter("by", "ACME");
             results = query.getResultList();
             if (results.size() != 0) {
@@ -475,10 +478,95 @@ public class MongoTestSuite extends JUnitTestCase {
             if (results.size() != 1) {
                 fail("Expected 1 result: " + results);
             }
-            // like
-            query = em.createQuery("Select o from Order o where o.orderedBy like :orderedBy");
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Test JPQL.
+     */
+    public void testComplexJPQL() {
+        // Clear db first.
+        testSetup();
+        EntityManager em = createEntityManager();
+        try {
+            // embedded
+            Query query = em.createQuery("Select o from Order o where o.address.city = :city");
+            query.setParameter("city", "Ottawa");
+            List results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            query = em.createQuery("Select o from Order o where o.lineItems.itemName = :name");
+            query.setParameter("name", "stuff");
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            query = em.createQuery("Select o from Order o join o.lineItems l where l.itemName = :name");
+            query.setParameter("name", "stuff");
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            // order by
+            query = em.createQuery("Select o from Order o order by o.address.city");
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            query = em.createQuery("Select o from Order o order by o.orderedBy desc");
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            query = em.createQuery("Select o from Order o order by o.orderedBy desc, o.address.city desc");
+            //query = em.createQuery("Select o from Order o order by o.orderedBy desc, o.address.city asc");
+            // Can't seem to order asc and desc at same time.
+            results = query.getResultList();
+            if (results.size() != 10) {
+                fail("Expected 10 result: " + results);
+            }
+            // select
+            query = em.createQuery("Select o.id from Order o where o.orderedBy like :orderedBy");
             query.setParameter("orderedBy", "ACME");
             results = query.getResultList();
+            if (!(results.get(0) instanceof String)) {
+                fail("Incorrect result: " + results);
+            }
+            query = em.createQuery("Select o.id, o.address.city from Order o where o.orderedBy like :orderedBy");
+            query.setParameter("orderedBy", "ACME");
+            results = query.getResultList();
+            if (!(results.get(0) instanceof Object[])) {
+                fail("Incorrect result: " + results);
+            }
+            // error
+            try {
+                query = em.createQuery("Select count(o) from Order o");
+                query.setParameter("orderedBy", "ACME");
+                results = query.getResultList();
+                fail("Exception expected");
+            } catch (Exception expected) {
+                // OK
+            }
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Test JPQL.
+     */
+    public void testJPQLLike() {
+        // Clear db first.
+        testSetup();
+        EntityManager em = createEntityManager();
+        try {
+            // like
+            Query query = em.createQuery("Select o from Order o where o.orderedBy like :orderedBy");
+            query.setParameter("orderedBy", "ACME");
+            List results = query.getResultList();
             if (results.size() != 10) {
                 fail("Expected 10 result: " + results);
             }
@@ -517,51 +605,6 @@ public class MongoTestSuite extends JUnitTestCase {
             if (results.size() != 10) {
                 fail("Expected 10 result: " + results);
             }
-            // embedded
-            query = em.createQuery("Select o from Order o where o.address.city = :city");
-            query.setParameter("city", "Ottawa");
-            results = query.getResultList();
-            if (results.size() != 10) {
-                fail("Expected 10 result: " + results);
-            }
-            // order by
-            query = em.createQuery("Select o from Order o order by o.address.city");
-            results = query.getResultList();
-            if (results.size() != 10) {
-                fail("Expected 10 result: " + results);
-            }
-            query = em.createQuery("Select o from Order o order by o.orderedBy desc");
-            results = query.getResultList();
-            if (results.size() != 10) {
-                fail("Expected 10 result: " + results);
-            }
-            query = em.createQuery("Select o from Order o order by o.orderedBy desc, o.address.city asc");
-            results = query.getResultList();
-            if (results.size() != 10) {
-                fail("Expected 10 result: " + results);
-            }
-            // select
-            query = em.createQuery("Select o.id from Order o where o.orderedBy like :orderedBy");
-            query.setParameter("orderedBy", "ACME");
-            results = query.getResultList();
-            if (!(results.get(0) instanceof String)) {
-                fail("Incorrect result: " + results);
-            }
-            query = em.createQuery("Select o.id, o.address.city from Order o where o.orderedBy like :orderedBy");
-            query.setParameter("orderedBy", "ACME");
-            results = query.getResultList();
-            if (!(results.get(0) instanceof Object[])) {
-                fail("Incorrect result: " + results);
-            }
-            // error
-            try {
-                query = em.createQuery("Select count(o) from Order o");
-                query.setParameter("orderedBy", "ACME");
-                results = query.getResultList();
-                fail("Exception expected");
-            } catch (Exception expected) {
-                // OK
-            }
         } finally {
             closeEntityManager(em);
         }
@@ -585,6 +628,32 @@ public class MongoTestSuite extends JUnitTestCase {
                 || (!(result.get(0) instanceof Record))
                 || !(((Record)result.get(0)).get("_id").equals(existingOrder.id))) {
             fail("Incorrect result: " + result);
+        }
+        
+        interaction = new MappedInteraction();
+        interaction.setProperty(MongoPlatform.OPERATION, MongoOperation.FIND.name());
+        interaction.setProperty(MongoPlatform.COLLECTION, "ORDER");
+        interaction.setProperty(MongoPlatform.BATCH_SIZE, "10");
+        interaction.setProperty(MongoPlatform.READ_PREFERENCE, "PRIMARY");
+        interaction.addArgumentValue("_id", existingOrder.id);
+        query = em.unwrap(JpaEntityManager.class).createQuery(interaction, Order.class);
+        Order order = (Order)query.getSingleResult();
+        if ((order == null) || (!order.id.equals(existingOrder.id))) {
+            fail("Incorrect result: " + order);
+        }
+        
+        QueryStringInteraction mqlInteraction = new QueryStringInteraction();
+        mqlInteraction.setQueryString("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})");
+        query = em.unwrap(JpaEntityManager.class).createQuery(mqlInteraction, Order.class);
+        order = (Order)query.getSingleResult();
+        if ((order == null) || (!order.id.equals(existingOrder.id))) {
+            fail("Incorrect result: " + order);
+        }
+        
+        query = em.createNativeQuery("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})", Order.class);
+        order = (Order)query.getSingleResult();
+        if ((order == null) || (!order.id.equals(existingOrder.id))) {
+            fail("Incorrect result: " + order);
         }
         
     }

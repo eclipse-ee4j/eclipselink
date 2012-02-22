@@ -1117,8 +1117,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public Query createNativeQuery(String sqlString, Class resultType) {
         try {
             verifyOpen();
-            DatabaseQuery query = createNativeQueryInternal(sqlString, resultType);
-            return new EJBQueryImpl(query, this);
+            return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(resultType, sqlString, this.databaseSession.getLoader(), this.databaseSession), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1395,17 +1394,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         } else {
             return null;
         }
-    }
-    
-    /**
-     * This method is used to create a query using SQL. The class, must be the
-     * expected return type.
-     */
-    protected DatabaseQuery createNativeQueryInternal(String sqlString, Class resultType) {
-        ReadAllQuery query = new ReadAllQuery(resultType);
-        query.setSQLString(sqlString);
-        query.setIsUserDefined(true);
-        return query;
     }
 
     /**

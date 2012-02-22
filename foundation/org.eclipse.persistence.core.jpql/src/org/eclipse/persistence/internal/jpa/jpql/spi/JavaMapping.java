@@ -412,7 +412,9 @@ final class JavaMapping extends AbstractMapping {
 	 * {@inheritDoc}
 	 */
 	public boolean isRelationship() {
-		return mapping.isForeignReferenceMapping();
+		return mapping.isForeignReferenceMapping()
+		        || mapping.isAbstractCompositeCollectionMapping()
+                        || mapping.isAbstractCompositeDirectCollectionMapping();
 	}
 
 	/**

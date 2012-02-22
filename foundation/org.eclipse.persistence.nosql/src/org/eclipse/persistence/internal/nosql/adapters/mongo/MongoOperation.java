@@ -19,5 +19,5 @@ package org.eclipse.persistence.internal.nosql.adapters.mongo;
  * @since EclipseLink 2.4
  */
 public enum MongoOperation {
-    FIND, INSERT, UPDATE, REMOVE
+    FIND, INSERT, UPDATE, REMOVE, EVAL
 }

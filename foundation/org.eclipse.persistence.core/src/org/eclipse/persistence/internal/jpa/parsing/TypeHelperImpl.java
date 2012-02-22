@@ -146,7 +146,7 @@ public class TypeHelperImpl
     public boolean isEmbeddedAttribute(Object ownerClass, String attribute) {
         DatabaseMapping mapping = 
             resolveAttributeMapping(ownerClass, attribute);
-        return (mapping != null) && mapping.isAggregateMapping();
+        return (mapping != null) && mapping.isAggregateObjectMapping();
     }
 
     /** Returns true if the specified type denotes a simple state attribute. */

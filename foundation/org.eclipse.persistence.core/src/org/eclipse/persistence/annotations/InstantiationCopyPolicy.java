@@ -22,16 +22,22 @@ import java.lang.annotation.Target;
 /**
  * An InstantiationCopyPolicy is used to set an 
  * org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy on an 
- * Entity. InstantiationCopyPolicy is the default CopyPolicy in EclipseLink and 
- * therefore this configuration option is only used to override other types of 
- * copy policies
+ * Entity.
+ * 
+ * InstantiationCopyPolicy is the default CopyPolicy if weaving is not used,
+ * or if property access is used.
+ * 
+ * A special CloneCopyPolicy is used if weaving and field access is used.
  * 
  * An InstantiationCopyPolicy should be specified on an Entity,
  * MappedSuperclass or Embeddable.
- * 
+ * <p>
  * Example:
+ * <code><pre>
  * @Entity
  * @InstantiationCopyPolicy 
+ * public class Employee {
+ * </pre></code>
  *
  * @see org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy
  * @see org.eclipse.persistence.annotations.CloneCopyPolicy
