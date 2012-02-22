@@ -32,6 +32,7 @@ public class Parameter {
 
     protected String name;
     protected QName type;
+    protected boolean optional;
 
     /**
      * @return  name of bound argument
@@ -59,6 +60,20 @@ public class Parameter {
      */
     public void setType(QName type) {
         this.type = type;
+    }
+
+    /**
+     * @return  indicates if the argument is optional
+     */
+    public boolean isOptional() {
+        return optional;
+    }
+    /**
+     * Set the optional indicator
+     * @param name
+     */
+    public void setOptional(boolean optional) {
+        this.optional = optional;
     }
 
     public void validate(XRServiceAdapter xrService, String operationName) {

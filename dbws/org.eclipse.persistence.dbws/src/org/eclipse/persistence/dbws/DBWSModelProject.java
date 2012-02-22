@@ -226,6 +226,12 @@ public class DBWSModelProject extends Project {
         type.setAttributeTransformer(qNameTransformer);
         descriptor.addMapping(type);
 
+        XMLDirectMapping optional = new XMLDirectMapping();
+        optional.setAttributeName("optional");
+        optional.setXPath("@optional");
+        optional.setNullValue(false);
+        descriptor.addMapping(optional);
+
         return descriptor;
     }
 

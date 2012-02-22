@@ -32,6 +32,7 @@ import dbws.testing.iottype.IOTTypeTestSuite;
 import dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite;
 import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
 import dbws.testing.objecttype.ObjectTypeTestSuite;
+import dbws.testing.optionalarguments.OptionalArgumentTestSuite;
 import dbws.testing.ordescriptor.ORDescriptorTestSuite;
 import dbws.testing.oxdescriptor.OXDescriptorTestSuite;
 import dbws.testing.plsqlcollection.PLSQLCollectionTestSuite;
@@ -77,7 +78,8 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     TypesTestSuite.class,
     VArrayTestSuite.class,
     VeryLongIdentifierTestSuite.class,
-    WeakRefCursorTestSuite.class
+    WeakRefCursorTestSuite.class,
+	OptionalArgumentTestSuite.class
   }
 )
 public class AllTests {

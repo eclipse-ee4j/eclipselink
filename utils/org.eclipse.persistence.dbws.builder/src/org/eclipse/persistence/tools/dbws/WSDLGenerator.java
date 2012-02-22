@@ -426,6 +426,9 @@ public class WSDLGenerator {
                 requestSequence = new Sequence();
                 for (Parameter p : op.getParameters()) {
                     Element arg = new Element();
+                    if (p.isOptional()) {
+                    	arg.setMinOccurs("0");
+                    }
                     arg.setName(p.getName());
                     if (THE_INSTANCE_NAME.equals(p.getName())) {
                         ComplexType nestedComplexType = new ComplexType();

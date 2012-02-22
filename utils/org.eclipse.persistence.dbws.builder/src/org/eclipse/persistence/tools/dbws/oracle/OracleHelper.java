@@ -277,7 +277,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             }
                         }
                         else {
-                    	xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+                    	    xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
                         }
                     } else {
 	                    // handle PL/SQL records and collections
@@ -307,6 +307,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         parm = new Parameter();
                         parm.setName(argName);
                         parm.setType(xmlType);
+                        
+                        // handle optional arg
+                    	parm.setOptional(arg.optional());
+                        
                         pa = new ProcedureArgument();
                         pa.setName(argName);
                         pa.setParameterName(argName);
@@ -1187,6 +1191,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         dq.setCall(call);
 
         for (ArgumentType arg : procType.getArguments()) {
+        	// handle optional arg
+        	if (arg.optional()) {
+        		call.addOptionalArgument(arg.getArgumentName());
+        	}
+        	
             DatabaseType argType = arg.getDataType();
             ArgumentTypeDirection direction = arg.getDirection();
 

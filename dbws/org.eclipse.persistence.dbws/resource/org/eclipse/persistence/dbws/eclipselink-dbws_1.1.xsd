@@ -64,6 +64,7 @@
       <xsd:element name="name" type="xsd:string" />
       <xsd:element name="type" type="xsd:QName" />
     </xsd:sequence>
+    <xsd:attribute name="optional" type="xsd:boolean" use="optional" />
   </xsd:complexType>
   <xsd:complexType name="query-operation">
     <xsd:complexContent mixed="false">

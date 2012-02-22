@@ -691,10 +691,14 @@ public class Util {
      * Indicates if a given list  of ArgumentTypes contains  one or more
      * PL/SQL arguments, i.e.  PLSQLRecordType, PLSQLCollectionType,  or
      * scalars BOOLEAN_TYPE, BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
+     * 
+     * In addition, an optional argument must be treated as PL/SQL as
+     * default/optional parameter handling is done via 
+     * PLSQLStoredProcedureCall
      */
     public static boolean hasPLSQLArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
-        	if (isArgPLSQL(arg)) {
+        	if (isArgPLSQL(arg) || arg.optional()) {
         		return true;
         	}
         }

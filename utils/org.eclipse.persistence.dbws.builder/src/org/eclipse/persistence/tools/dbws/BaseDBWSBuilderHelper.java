@@ -136,6 +136,9 @@ import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
+import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
+import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs;
+import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs;
 import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
 import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
@@ -981,9 +984,9 @@ public abstract class BaseDBWSBuilderHelper {
                     for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
                         // build list of arguments to process (i.e. build descriptors for)
                         List<ArgumentType> args = getArgumentListForProcedureType(procType);
-                        boolean hasComplexArgs = org.eclipse.persistence.tools.dbws.Util.hasComplexArgs(args);
-                        boolean hasPLSQLArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs(args);
-                        boolean hasPLSQLScalarArgs  = org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs(args);
+                        boolean hasComplexArgs = hasComplexArgs(args);
+                        boolean hasPLSQLArgs = hasPLSQLArgs(args);
+                        boolean hasPLSQLScalarArgs = hasPLSQLScalarArgs(args);
                         // set 'complex' flag on model to indicate complex arg processing is required
                         // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
                         //       model necessarily have complex args, but we will need to know to
