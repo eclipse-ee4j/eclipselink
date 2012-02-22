@@ -30,9 +30,11 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionExcep
 import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
+import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -80,10 +82,8 @@ public class JSONReader extends XMLReaderAdapter {
             JSONLexer lexer = new JSONLexer(charStream);
             TokenRewriteStream tokens = new TokenRewriteStream(lexer);
             JSONParser parser = new JSONParser(tokens);
-            CommonTree commonTree = (CommonTree) parser.object().getTree();
-            contentHandler.startDocument();
+            CommonTree commonTree = (CommonTree) parser.message().getTree();
             parseRoot(commonTree);
-            contentHandler.endDocument();
             if(null != inputStream) {
                 inputStream.close();
             }
@@ -104,6 +104,7 @@ public class JSONReader extends XMLReaderAdapter {
     	}
     		    	
     	if(tree.getType() == JSONLexer.OBJECT){
+    	    contentHandler.startDocument();
     		int children = tree.getChildCount();
     		if(includeRoot){
     			parse((CommonTree) tree.getChild(0));
@@ -114,7 +115,28 @@ public class JSONReader extends XMLReaderAdapter {
     	        }
     			contentHandler.endElement(XMLConstants.EMPTY_STRING,XMLConstants.EMPTY_STRING, null);
     		}
-    	}
+    		contentHandler.endDocument();
+        } else if(tree.getType() == JSONLexer.ARRAY){
+            int size = tree.getChildCount();
+            List list = new ArrayList(size);
+            for(int x=0; x<size; x++) {
+                parseRoot(tree.getChild(x));
+                if(getContentHandler() instanceof SAXUnmarshallerHandler) {
+                    SAXUnmarshallerHandler saxUnmarshallerHandler = (SAXUnmarshallerHandler) contentHandler;
+                    list.add(saxUnmarshallerHandler.getObject());
+                    saxUnmarshallerHandler.setObject(null);
+                } else if(getContentHandler() instanceof UnmarshalRecord) {
+                    UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
+                    list.add(unmarshalRecord.getCurrentObject());
+                    unmarshalRecord.setCurrentObject(null);
+                }
+            }
+            if(getContentHandler() instanceof SAXUnmarshallerHandler) {
+                ((SAXUnmarshallerHandler) getContentHandler()).setObject(list);
+            } else if(getContentHandler() instanceof UnmarshalRecord) {
+                ((UnmarshalRecord) getContentHandler()).setCurrentObject(list);
+            }
+        }
     }
     
     private void parse(Tree tree) throws SAXException {

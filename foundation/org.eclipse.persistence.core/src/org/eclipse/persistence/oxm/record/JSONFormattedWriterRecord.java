@@ -55,7 +55,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     private boolean isLastEventText;
 
     public JSONFormattedWriterRecord() {
-        numberOfTabs = 0;
+        numberOfTabs = 1;
         complexType = true;
         isLastEventText = false;
     }
@@ -66,17 +66,31 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         }
         return tab;
     }
-
     /**
      * INTERNAL:
      */
+    @Override
     public void endDocument() {
         try {
+            if(levels.size() != 1) {
+                writer.write(Helper.cr());
+            }
             super.endDocument();
-            writer.write(Helper.cr());
+            if(levels.isEmpty()) {
+                writer.write(Helper.cr());
+            }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
+    }
+
+    @Override
+    protected void closeComplex() throws IOException {
+        writer.write(Helper.cr());
+        for (int x = 0; x < numberOfTabs; x++) {
+            writeValue(tab());
+        }
+        writer.write('}');
     }
 
     /**
@@ -100,53 +114,37 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             if(xPathFragment.nameIsText()){
                if(position != null && position.isCollection() && position.isEmptyCollection()) {
                     writer.write('[');
-                       position.setEmptyCollection(false);
-                       position.setNeedToOpenComplex(false);
-                       return;
+                    writer.write(' ');
+                    position.setEmptyCollection(false);
+                    position.setNeedToOpenComplex(false);
+                    return;
                 }
             }
 
             this.addPositionalNodes(xPathFragment, namespaceResolver);
-            if (!isLastEventText) {
-                if (numberOfTabs > 0) {
-                    writer.write(Helper.cr());
-                }
-                for (int x = 0; x < numberOfTabs; x++) {
-                    writeValue(tab());
-                }
-            }
             if(position == null || !position.isCollection() || position.isEmptyCollection()){
                 if(position.isNeedToOpenComplex()){
                     writer.write('{');
                     position.setNeedToOpenComplex(false);
                     position.setNeedToCloseComplex(true);
                 }
-                isStartElementOpen = true;
-                writer.write('"');
-                if(xPathFragment.isAttribute() && attributePrefix != null){
-                    writer.write(attributePrefix);
-                }
-
-                if(isNamespaceAware()){
-                    if(xPathFragment.getNamespaceURI() != null){
-                        String prefix = null;
-                        if(getNamespaceResolver() !=null){
-                            prefix = getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
-                        } else if(namespaceResolver != null){
-                            prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
-                        }
-                        if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
-                            writer.write(prefix);
-                            writer.write(getNamespaceSeparator());
-                        }
+            }
+            if (!isLastEventText) {
+                if(position.isCollection() && !position.isEmptyCollection()) {
+                    writer.write(' ');
+                } else {
+                    writer.write(Helper.cr());
+                    for (int x = 0; x < numberOfTabs; x++) {
+                        writeValue(tab());
                     }
                 }
-
-                writer.write(xPathFragment.getLocalName());
-                writer.write("\" : ");
+            }
+            if(position == null || !position.isCollection() || position.isEmptyCollection()){
+                super.writeKey(xPathFragment);
 
                 if(position != null && position.isCollection()) {
                     writer.write('[');
+                    writer.write(' ');
                 }
                 if(position !=null && position.isEmptyCollection()){
                     position.setEmptyCollection(false);
@@ -189,6 +187,33 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         super.endElement(xPathFragment, namespaceResolver);
     }
 
+    @Override
+    public void startCollection() {
+        if(levels.isEmpty()) {
+            try {
+                super.startCollection();
+                writer.write(' ');
+            } catch(IOException e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+        } else {
+            super.startCollection();
+        }
+    }
+
+    @Override
+    public void endCollection() {
+        try {
+            writer.write(' ');
+            super.endCollection();
+            if(levels.size() == 1) {
+                writer.write(Helper.cr());
+            }
+        } catch(IOException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
     /**
      * INTERNAL:
      */
@@ -197,7 +222,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         isLastEventText = true;
         complexType = false;
     }
-
 
     /**
      * Receive notification of a node.
@@ -238,6 +262,16 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             }
         }
     }
+
+    @Override
+    protected void writeKey(XPathFragment xPathFragment) throws IOException {
+        writer.write(Helper.cr());
+        for (int x = 0; x < numberOfTabs; x++) {
+            writeValue(tab());
+        }
+        super.writeKey(xPathFragment);
+    }
+
 
     /**
      * This class will typically be used in conjunction with an XMLFragmentReader.

@@ -16,6 +16,7 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -575,25 +576,6 @@ public class XMLMarshaller implements Cloneable {
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }
 
-        
-        AbstractSession session = null;
-        XMLDescriptor xmlDescriptor = null;
-        if(isXMLRoot){
-        	try{
-        	    session = xmlContext.getSession(((XMLRoot)object).getObject());
-        	    if(session != null){
-        	        xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
-        	    }
-        	}catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((XMLRoot) object)) {
-                	throw marshalException;    
-                }                
-            }
-        }else{
-        	session = xmlContext.getSession(object.getClass());
-        	xmlDescriptor = getDescriptor(object.getClass(), session);
-        }
-
         MarshalRecord writerRecord;
         writer = new BufferedWriter(writer);
         if (isFormattedOutput()) {
@@ -614,6 +596,37 @@ public class XMLMarshaller implements Cloneable {
             }
         }
         writerRecord.setMarshaller(this);
+
+        AbstractSession session = null;
+        XMLDescriptor xmlDescriptor = null;
+        if(isXMLRoot){
+            try{
+                session = xmlContext.getSession(((XMLRoot)object).getObject());
+                if(session != null){
+                    xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+                }
+            }catch (XMLMarshalException marshalException) {
+                if (!isSimpleXMLRoot((XMLRoot) object)) {
+                    throw marshalException;
+                }
+            }
+        }else{
+            if(object instanceof Collection) {
+                try {
+                    writerRecord.startCollection();
+                    for(Object o : (Collection) object) {
+                        marshal(o, writerRecord);
+                    }
+                    writerRecord.endCollection();
+                    writer.flush();
+                } catch(IOException e) {
+                    throw XMLMarshalException.marshalException(e);
+                }
+                return;
+            }
+            session = xmlContext.getSession(object.getClass());
+            xmlDescriptor = getDescriptor(object.getClass(), session);
+        }
 
         //if this is a simple xml root, the session and descriptor will be null
         if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {

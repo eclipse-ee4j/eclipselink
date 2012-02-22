@@ -92,6 +92,8 @@ Whitespace : (' ' | '\r' | '\t' | '\u000C' | '\n')+ { $channel = HIDDEN; } ;
 
 // PARSER
 
+message : object | array;
+
 object : '{' (pair (',' pair)*)? '}' -> ^(OBJECT pair*);
 
 pair :String ':' value -> ^(PAIR String value);
