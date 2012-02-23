@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class CollectionHolderWrappers {
 
-    @XmlElementWrapper(name="collection1-wrapper")
+    @XmlElementWrapper()
     protected List<Integer> collection1;
 
     @XmlElementWrapper(name="collection2-wrapper")

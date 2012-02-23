@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class CollectionHolderWrappersNillable {
 
-    @XmlElementWrapper(name="collection1-wrapper", nillable=true)
+    @XmlElementWrapper(nillable=true)
     protected List<Integer> collection1;
 
     @XmlElementWrapper(name="collection2-wrapper", nillable=true)

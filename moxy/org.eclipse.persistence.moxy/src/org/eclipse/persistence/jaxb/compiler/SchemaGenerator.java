@@ -109,7 +109,6 @@ public class SchemaGenerator {
     private static final String DOT = ".";
     private static final String SKIP = "skip";
     private static final String ENTRY = "entry";
-    private static final String DEFAULT = "##default";
     private static final String GENERATE = "##generate";
     private static final String SCHEMA = "schema";
     private static final String SCHEMA_EXT = ".xsd";
@@ -176,7 +175,7 @@ public class SchemaGenerator {
             org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRE = info.getXmlRootElement();
             rootElement = new Element();
             String elementName = xmlRE.getName();
-            if (elementName.equals(DEFAULT) || elementName.equals(EMPTY_STRING)) {            	
+            if (elementName.equals(XMLProcessor.DEFAULT) || elementName.equals(EMPTY_STRING)) {
             	 try{                
             		 elementName = info.getXmlNameTransformer().transformRootElementName(myClassName);
                  }catch (Exception ex){
@@ -185,7 +184,7 @@ public class SchemaGenerator {
             }
             rootElement.setName(elementName);
             String rootNamespace = xmlRE.getNamespace();
-            if (rootNamespace.equals(DEFAULT)) {
+            if (rootNamespace.equals(XMLProcessor.DEFAULT)) {
                 Schema rootElementSchema = getSchemaForNamespace(namespaceInfo.getNamespace());
                 if (rootElementSchema != null) {
                     rootElementSchema.addTopLevelElement(rootElement);
@@ -1481,15 +1480,12 @@ public class SchemaGenerator {
         XmlElementWrapper wrapper = property.getXmlElementWrapper();
         Element wrapperElement = new Element();
         String name = wrapper.getName();
-        if (name.equals(DEFAULT)) {
-            name = property.getPropertyName();
-        }
         // handle nillable
         wrapperElement.setNillable(wrapper.isNillable());
 
         // namespace in not the target or ##default, create a ref with min/max = 1
         String wrapperNS = wrapper.getNamespace();
-        if (!wrapperNS.equals(DEFAULT) && !wrapperNS.equals(schema.getTargetNamespace())) {
+        if (!wrapperNS.equals(XMLProcessor.DEFAULT) && !wrapperNS.equals(schema.getTargetNamespace())) {
             wrapperElement.setMinOccurs(Occurs.ONE);
             wrapperElement.setMaxOccurs(Occurs.ONE);
 

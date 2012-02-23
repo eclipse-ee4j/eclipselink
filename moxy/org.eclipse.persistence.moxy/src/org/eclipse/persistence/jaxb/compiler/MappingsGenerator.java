@@ -253,7 +253,7 @@ public class MappingsGenerator {
             descriptor.setResultAlwaysXMLRoot(true);
         } else {
             elementName = rootElem.getName();
-            if (elementName.equals("##default")) {                                
+            if (elementName.equals(XMLProcessor.DEFAULT)) {
                 try{                
                     elementName = info.getXmlNameTransformer().transformRootElementName(javaClass.getName());
                 }catch (Exception ex){
@@ -270,7 +270,7 @@ public class MappingsGenerator {
             descriptor.getInstantiationPolicy().useFactoryInstantiationPolicy(info.getObjectFactoryClassName(), info.getFactoryMethodName());
         }
 
-        if (namespace.equals("##default")) {
+        if (namespace.equals(XMLProcessor.DEFAULT)) {
             namespace = namespaceInfo.getNamespace();
         }
 
@@ -967,7 +967,7 @@ public class MappingsGenerator {
         if (property.isSetXmlElementWrapper()) {
             XmlElementWrapper wrapper = property.getXmlElementWrapper();
             String namespace = wrapper.getNamespace();
-            if (namespace.equals("##default")) {
+            if (namespace.equals(XMLProcessor.DEFAULT)) {
                 if (namespaceInfo.isElementFormQualified()) {
                     namespace = namespaceInfo.getNamespace();
                 } else {
@@ -2496,7 +2496,7 @@ public class MappingsGenerator {
             if (property.isSetXmlElementWrapper()) {
                 XmlElementWrapper wrapper = property.getXmlElementWrapper();
                 String namespace = wrapper.getNamespace();
-                if (namespace.equals("##default")) {
+                if (namespace.equals(XMLProcessor.DEFAULT)) {
                     if (namespaceInfo.isElementFormQualified()) {
                         namespace = namespaceInfo.getNamespace();
                     } else {
@@ -2720,7 +2720,7 @@ public class MappingsGenerator {
       	if(next!= null){
               //generate a class/descriptor for this element
               namespaceUri = next.getNamespaceURI();
-              if(namespaceUri == null || namespaceUri.equals("##default")) {
+              if (namespaceUri == null || namespaceUri.equals(XMLProcessor.DEFAULT)) {
                   namespaceUri = "";
               }
       	}
