@@ -146,14 +146,14 @@ public class ContentHandlerRecord extends MarshalRecord {
             return;
         }
         String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
-        if(null != namespaceURI) {
-            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
+        if(null != namespaceURI) {        	
+        	defaultNamespaceDeclaration(namespaceURI);
         }
 
         if(namespaceResolver.hasPrefixesToNamespaces()) {
             for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                String namespacePrefix = entry.getKey();
-                attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
+                String namespacePrefix = entry.getKey();                
+                namespaceDeclaration(namespacePrefix,  entry.getValue());
             }
         }
     }

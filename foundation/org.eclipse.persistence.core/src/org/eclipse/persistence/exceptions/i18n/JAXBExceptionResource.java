@@ -100,7 +100,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50078", "Cannot process external bindings files (XJB).  To use external bindings files, both XSD and XJB must be provided as javax.xml.transform.Sources."},
         {"50079", "Cannot process schemas.  If using schema imports, XSDs must be provided as a javax.xml.transform.Source."},
         {"50080", "XmlLocation is only allowed on properties of type org.xml.sax.Locator, but [{0}] is of type [{1}]."},
-        {"50081", "An exception occurred during schema generation."}
+        {"50081", "An exception occurred during schema generation."},
+        {"50082", "An attempt was made to write a value {0} without a key specified.  Try setting JSON_VALUE_WRAPPER on the JAXBMarshaller"}
     };
 
     /**

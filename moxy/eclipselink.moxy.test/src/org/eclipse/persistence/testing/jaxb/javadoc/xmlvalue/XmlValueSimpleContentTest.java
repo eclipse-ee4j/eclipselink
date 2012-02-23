@@ -14,8 +14,14 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
 //Example 2
 
+import java.io.StringWriter;
+
+import javax.xml.bind.MarshalException;
+
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
@@ -39,5 +45,18 @@ public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
         p.setPrice(123.99);
         p.currency = "CANADIAN DOLLAR";
         return p;
+    }
+    
+    public void testJSONNoValuePropException() throws Exception{
+    	jaxbMarshaller = jaxbContext.createMarshaller();
+    	jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	try{
+    	    jaxbMarshaller.marshal(getControlObject(), new StringWriter());
+    	}catch(MarshalException e){
+    		assertTrue(e.getLinkedException() instanceof JAXBException);
+    		assertTrue(((JAXBException)e.getLinkedException()).getErrorCode() == JAXBException.JSON_VALUE_WRAPPER_REQUIRED);
+    		return;
+    	}
+    	fail("An exception should have occurred");
     }
 }

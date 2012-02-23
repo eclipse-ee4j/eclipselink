@@ -349,14 +349,14 @@ public abstract class AbstractNullPolicy {
             // add new xsi entry into the properties map
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new NamespaceResolver();
-            namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);            
+      	    marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
             // find an existing xsi entry in the map
             xsiPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
             if (null == xsiPrefix) {
-                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);                
+                marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
             }
         }
         return xsiPrefix;

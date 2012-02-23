@@ -98,6 +98,8 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
+        	charactersAllowed = true;
+
             Level position = null;
             if(levels.isEmpty()) {
                 levels.push(new Level(true, true));

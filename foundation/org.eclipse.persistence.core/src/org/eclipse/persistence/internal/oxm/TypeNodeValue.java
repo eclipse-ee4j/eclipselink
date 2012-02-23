@@ -70,8 +70,8 @@ public class TypeNodeValue extends NodeValue {
                 schemaTypePrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_PREFIX);	
             }else{
                 schemaTypePrefix = namespaceResolver.generatePrefix();
-            }
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, schemaTypePrefix, XMLConstants.XMLNS + XMLConstants.COLON + schemaTypePrefix, schemaType.getNamespaceURI());        	
+            }            
+            marshalRecord.namespaceDeclaration(schemaTypePrefix, schemaType.getNamespaceURI());
         }
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeQName, schemaTypePrefix + XMLConstants.COLON + schemaType.getLocalPart());
         marshalRecord.closeStartGroupingElements(groupingFragment);

@@ -111,6 +111,9 @@ public class JAXBException extends EclipseLinkException {
     public static final int XSD_IMPORT_NOT_SOURCE = 50079;
     public static final int INVALID_XMLLOCATION = 50080;
     public static final int EXCEPTION_DURING_SCHEMA_GEN = 50081;
+    public static final int JSON_VALUE_WRAPPER_REQUIRED = 50082;
+    
+
 
     protected JAXBException(String message) {
         super(message);
@@ -1029,5 +1032,17 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(EXCEPTION_DURING_SCHEMA_GEN);
         return validationException;
     }
+    
+    /**
+     * PUBLIC:
+     * Cause: An exception occurred marshalling json
+     */
+    public static JAXBException jsonValuePropertyRequired(Object value) {
+        Object[] args = { value };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, JSON_VALUE_WRAPPER_REQUIRED, args));
+        validationException.setErrorCode(JSON_VALUE_WRAPPER_REQUIRED);
+        return validationException;
+    }
+    
 
 }

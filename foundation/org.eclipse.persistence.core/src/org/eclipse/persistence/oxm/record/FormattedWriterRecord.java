@@ -197,8 +197,8 @@ public class FormattedWriterRecord extends WriterRecord {
             } else {
                 attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
-                if (attr.getNamespaceURI() != null) {
-                    attribute(XMLConstants.XMLNS_URL, XMLConstants.EMPTY_STRING,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                if (attr.getNamespaceURI() != null) {                    
+                    namespaceDeclaration(attr.getPrefix(), attr.getNamespaceURI());
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }

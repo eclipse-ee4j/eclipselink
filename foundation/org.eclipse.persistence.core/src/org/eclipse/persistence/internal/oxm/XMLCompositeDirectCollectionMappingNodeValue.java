@@ -326,8 +326,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                         newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
                         newFragment.setNextFragment(xPathFragment.getNextFragment());
                         marshalRecord.openStartElement(newFragment, namespaceResolver);
-                        isElementOpen = true;
-                        marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + ":" + prefix, namespaceResolver.getDefaultNamespaceURI());
+                        isElementOpen = true;                        
+                        marshalRecord.namespaceDeclaration(prefix,  namespaceResolver.getDefaultNamespaceURI());
                         marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                         xPathFragment = newFragment;
                     } 

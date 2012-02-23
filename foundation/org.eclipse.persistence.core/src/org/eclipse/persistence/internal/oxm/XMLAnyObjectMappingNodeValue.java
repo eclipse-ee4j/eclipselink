@@ -273,8 +273,8 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             value = marshalRecord.getValueToWrite(qname, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
             Namespace generatedNamespace = setupFragment(((XMLRoot) originalValue), xmlRootFragment, marshalRecord);
             getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
-            if (generatedNamespace != null) {
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, generatedNamespace.getPrefix(), XMLConstants.XMLNS + XMLConstants.COLON + generatedNamespace.getPrefix(), generatedNamespace.getNamespaceURI());
+            if (generatedNamespace != null) {                
+                marshalRecord.namespaceDeclaration(generatedNamespace.getPrefix(),  generatedNamespace.getNamespaceURI());
             }
             updateNamespaces(qname, marshalRecord, null);
         }

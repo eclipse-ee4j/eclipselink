@@ -20,6 +20,7 @@ import java.util.Stack;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -66,6 +67,8 @@ public class JSONWriterRecord extends MarshalRecord {
     protected Stack<Level> levels = new Stack<Level>();
     protected static final String NULL="null";
     protected String attributePrefix;
+    protected boolean charactersAllowed = false;
+    	
 
     public JSONWriterRecord(){
         super();
@@ -100,6 +103,12 @@ public class JSONWriterRecord extends MarshalRecord {
         this.writer = writer;
     }
 
+    public void namespaceDeclaration(String prefix, String namespaceURI){
+    }
+    
+    public void defaultNamespaceDeclaration(String defaultNamespace){
+    }
+    
     /**
      * INTERNAL:
      */
@@ -143,6 +152,7 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     private void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean addOpenBrace) {
+    	charactersAllowed = true;
         try {
             Level position = null;
             if(levels.isEmpty()) {
@@ -246,7 +256,7 @@ public class JSONWriterRecord extends MarshalRecord {
      */
     public void closeStartElement() {}
 
-    /**
+	/**
      * INTERNAL:
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
@@ -265,6 +275,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 } else if(position.needToCloseComplex){
                     closeComplex();
                 }
+                charactersAllowed = false;
             }
         } catch (IOException e) {
              throw XMLMarshalException.marshalException(e);
@@ -311,6 +322,9 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
      public void characters(String value) {
+          if(!charactersAllowed){    
+        	   JAXBException.jsonValuePropertyRequired(value);        	   		
+    	   }
            Level position = levels.peek();
            position.setNeedToOpenComplex(false);
            try {
@@ -319,7 +333,7 @@ public class JSONWriterRecord extends MarshalRecord {
                writer.write('"');
            } catch (IOException e) {
                throw XMLMarshalException.marshalException(e);
-           }
+           }         
      }
 
      public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
@@ -332,7 +346,7 @@ public class JSONWriterRecord extends MarshalRecord {
          endElement(xPathFragment, namespaceResolver);
      }
 
-     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){
+     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){    	     	 
          Level position = levels.peek();
          position.setNeedToOpenComplex(false);
          if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
@@ -366,6 +380,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 nonStringCharacters(convertedValue);
             }
         }
+         charactersAllowed = false;
      }
 
      private boolean isNumericOrBooleanType(QName schemaType){
@@ -430,6 +445,9 @@ public class JSONWriterRecord extends MarshalRecord {
      }
 
      protected void nonStringCharacters(String value){
+    	if(!charactersAllowed){    
+    	   throw JAXBException.jsonValuePropertyRequired(value);   
+    	}
         Level position = levels.peek();
         position.setNeedToOpenComplex(false);
         try {

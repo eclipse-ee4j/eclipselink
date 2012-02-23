@@ -99,7 +99,7 @@ public abstract class MappingNodeValue extends NodeValue {
                 }else{            	
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix();              
                 }
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, qname.getNamespaceURI());
+            	marshalRecord.namespaceDeclaration(prefix, qname.getNamespaceURI());
             }
             String typeValue = prefix + XMLConstants.COLON + qname.getLocalPart();
 
@@ -112,12 +112,14 @@ public abstract class MappingNodeValue extends NodeValue {
         if (marshalRecord.getNamespaceResolver() != null) {
             xsiPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
-            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;            
+        	marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+
         }
         if (xsiPrefix == null) {
             xsiPrefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        	marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+
         }
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }

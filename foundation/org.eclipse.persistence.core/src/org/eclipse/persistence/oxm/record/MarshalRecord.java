@@ -158,15 +158,32 @@ public abstract class MarshalRecord extends XMLRecord {
             return;
         }
         String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
-        if(null != namespaceURI) {
-            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
+        if(null != namespaceURI) {            
+            defaultNamespaceDeclaration(namespaceURI);
         }
         if(namespaceResolver.hasPrefixesToNamespaces()) {
             for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                String namespacePrefix = entry.getKey();
-                attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
+                String namespacePrefix = entry.getKey();                
+                namespaceDeclaration(namespacePrefix, entry.getValue());
             }
         }
+    }
+    
+	/**
+	 * Add the specified namespace declaration
+	 * @param prefix
+	 * @param namespaceURI
+	 */
+    public void namespaceDeclaration(String prefix, String namespaceURI){
+        attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespaceURI);
+    }
+    
+    /**
+     * Add the defaultNamespace declaration
+     * @param defaultNamespace
+     */
+    public void defaultNamespaceDeclaration(String defaultNamespace){
+        attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, defaultNamespace);
     }
 
     /**
@@ -252,6 +269,7 @@ public abstract class MarshalRecord extends XMLRecord {
      */
     public abstract void attribute(String namespaceURI, String localName, String qName, String value);
 
+    
     /**
      * Receive notification that all of the attribute events have occurred for
      * the most recent element that has been started.
@@ -326,8 +344,8 @@ public abstract class MarshalRecord extends XMLRecord {
         String namespaceURI = qName.getNamespaceURI();
         if(null == namespaceURI || 0 == namespaceURI.length()) {
             if(getNamespaceResolver() != null && getNamespaceResolver().getDefaultNamespaceURI() != null) {
-                //need to add a default namespace declaration.
-                attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
+                //need to add a default namespace declaration.                
+                defaultNamespaceDeclaration(namespaceURI);
             }
             return qName.getLocalPart();
         } else {
@@ -340,8 +358,8 @@ public abstract class MarshalRecord extends XMLRecord {
             }
             String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
             if(null == prefix) {
-                prefix = namespaceResolver.generatePrefix();
-                attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespaceURI);
+                prefix = namespaceResolver.generatePrefix();                
+                namespaceDeclaration(prefix, namespaceURI);
             }
             if(XMLConstants.EMPTY_STRING.equals(prefix)){
             	return qName.getLocalPart();
@@ -565,14 +583,14 @@ public abstract class MarshalRecord extends XMLRecord {
             // add new xsi entry into the properties map
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new NamespaceResolver();
-            namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-            attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);            
+            namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
             // find an existing xsi entry in the map
             xsiPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
             if (null == xsiPrefix) {
-                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);                
+                namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
             }
         }
         return xsiPrefix;
