@@ -1579,23 +1579,6 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	@Test
 	public void test_NullComparisonExpression_InvalidType_1() throws Exception {
 
-		String query = "SELECT a FROM Address a WHERE a.zip IS NOT NULL";
-		int startPosition = "SELECT a FROM Address a WHERE ".length();
-		int endPosition   = "SELECT a FROM Address a WHERE a.zip".length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.NullComparisonExpression_InvalidType,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_NullComparisonExpression_InvalidType_2() throws Exception {
-
 		String query = "SELECT a FROM Address a WHERE a.customerList IS NOT NULL";
 		List<JPQLQueryProblem> problems = validate(query);
 

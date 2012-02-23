@@ -1637,19 +1637,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(NullComparisonExpression expression) {
-
-		// Null comparisons over instances of embeddable class types are not supported
-		StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getExpression());
-
-		if (pathExpression != null) {
-			IType type = getType(pathExpression);
-
-			if (getEmbeddable(type) != null) {
-				addProblem(pathExpression, NullComparisonExpression_InvalidType, pathExpression.toParsedText());
-				return;
-			}
-		}
-
+		// Nothing semantically to validate, done in the subclass
 		super.visit(expression);
 	}
 
