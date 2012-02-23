@@ -16,6 +16,7 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="CMP3_JIGSAW")
-public class Jigsaw {
+public class Jigsaw implements Serializable {
     
     private int id;
     private List<JigsawPiece> pieces;

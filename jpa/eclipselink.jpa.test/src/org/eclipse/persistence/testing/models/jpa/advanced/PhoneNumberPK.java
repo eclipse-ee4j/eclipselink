@@ -14,7 +14,9 @@
 
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-public class PhoneNumberPK  {
+import java.io.Serializable;
+
+public class PhoneNumberPK implements Serializable {
     public Integer id;
 	public String type;
 
@@ -36,13 +38,39 @@ public class PhoneNumberPK  {
 		this.type = type;
 	}
     
-    /**
-     * equals: Answer true if the ids are equal
-     */
-    public boolean equals(Object anotherPhoneNumber) {
-        if (anotherPhoneNumber.getClass() != PhoneNumberPK.class) {
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-        }
-        return (getId().equals(((PhoneNumberPK)anotherPhoneNumber).getId()));
+        if (getClass() != obj.getClass())
+            return false;
+        PhoneNumberPK other = (PhoneNumberPK) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PhoneNumberPK [id=" + id + ", type=" + type + "]";
     }
 }

@@ -1,5 +1,7 @@
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -7,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 @Entity
-public class ConcurrencyA {
+public class ConcurrencyA implements Serializable{
     
     @Id
     @GeneratedValue

@@ -16,6 +16,7 @@ import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.GenerationType.TABLE;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ import javax.persistence.Version;
 
 @Entity
 @Table(name="CMP3_DEALER")
-public class Dealer {
+public class Dealer implements Serializable {
     private Integer id;
     private Integer version;
     private String firstName;
@@ -118,5 +119,12 @@ public class Dealer {
 
     public void setVersion(Integer version) {
         this.version = version; 
+    }
+
+    @Override
+    public String toString() {
+        return "Dealer [id=" + id + ", version=" + version + ", firstName="
+                + firstName + ", lastName=" + lastName + ", status=" + status
+                + "]";
     }
 }

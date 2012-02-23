@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import static javax.persistence.EnumType.STRING;
 
 @Entity
 @Table(name="VIOLATION")
-public class Violation {
+public class Violation implements Serializable {
     public enum ViolationID {V1, V2, V3, V4}
     
     @Id

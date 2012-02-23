@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +24,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="CMP3_JIGSAW_PIECE")
-public class JigsawPiece {
+public class JigsawPiece implements Serializable {
     
     private int id;
     private int pieceNumber;

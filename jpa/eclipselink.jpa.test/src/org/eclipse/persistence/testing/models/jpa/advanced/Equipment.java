@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +33,7 @@ import static javax.persistence.GenerationType.TABLE;
     query="select * from CMP3_ADV_EQUIP",
     resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Equipment.class
 )
-public class Equipment  {
+public class Equipment implements Serializable {
     private int id;
     private String description;
 	private Department department;

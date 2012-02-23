@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
@@ -20,7 +22,7 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Table(name = "MW")
 @IdClass(org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPK.class)
-public class PartnerLink {
+public class PartnerLink implements Serializable {
     private Man man;
     private Woman woman;
 

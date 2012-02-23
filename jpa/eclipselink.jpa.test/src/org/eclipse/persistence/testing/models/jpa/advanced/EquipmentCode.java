@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -41,7 +43,7 @@ import org.eclipse.persistence.annotations.ReadOnly;
         query="select * from CMP3_ADV_EQUIP_CODE where CODE='C'",
         resultClass=org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode.class)
 })
-public class EquipmentCode  {
+public class EquipmentCode implements Serializable {
     private Integer id;
     private String code;
 

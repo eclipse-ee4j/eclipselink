@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import static javax.persistence.GenerationType.TABLE;
 
+import java.io.Serializable;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
@@ -28,7 +30,7 @@ import javax.persistence.Version;
 @Entity(name="AdvancedCustomer")
 @Access(value=AccessType.PROPERTY)
 @Table(name="CMP3_ADV_CUSTOMER")
-public class Customer {
+public class Customer implements Serializable {
     private Integer id;
     private Integer version;
     private String firstName;
@@ -103,5 +105,11 @@ public class Customer {
     
     public void setVersion(Integer version) {
         this.version = version; 
+    }
+    @Override
+    public String toString() {
+        return "Customer [id=" + id + ", version=" + version + ", firstName="
+                + firstName + ", lastName=" + lastName + ", budget=" + budget
+                + "]";
     }
 }

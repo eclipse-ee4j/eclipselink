@@ -10715,7 +10715,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     //  Bug 307433 - Regression in Auditing Support when using defaults.
-    static class ChangeRecordKeepOldValueListener extends SessionEventAdapter {
+    public static class ChangeRecordKeepOldValueListener extends SessionEventAdapter {
         public UnitOfWorkChangeSet uowChangeSet;
         public void postCalculateUnitOfWorkChangeSet(SessionEvent event) {
             uowChangeSet = (UnitOfWorkChangeSet)event.getProperty("UnitOfWorkChangeSet");

@@ -12,9 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
-public class PartnerLinkPK {
+public class PartnerLinkPK implements Serializable {
     private int manId;
     private Integer womanId;
 
@@ -44,12 +46,36 @@ public class PartnerLinkPK {
         this.womanId = womanId; 
     }
 
-    public boolean equals(Object anotherPartnerLinkPK) {
-        if (anotherPartnerLinkPK.getClass() != PartnerLinkPK.class) {
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + manId;
+        result = prime * result + ((womanId == null) ? 0 : womanId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-        }
-        
-        return getMan() ==(((PartnerLinkPK) anotherPartnerLinkPK).getMan()) && 
-               getWoman().equals(((PartnerLinkPK) anotherPartnerLinkPK).getWoman());
+        if (getClass() != obj.getClass())
+            return false;
+        PartnerLinkPK other = (PartnerLinkPK) obj;
+        if (manId != other.manId)
+            return false;
+        if (womanId == null) {
+            if (other.womanId != null)
+                return false;
+        } else if (!womanId.equals(other.womanId))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PartnerLinkPK [manId=" + manId + ", womanId=" + womanId + "]";
     }
 }

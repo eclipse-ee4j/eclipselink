@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +75,7 @@ public class Department implements Serializable {
 
     public Department(String name) {
         this.name = name;
+        this.employees = new ArrayList();
         this.managers = new Vector();
         this.equipment = new HashMap<Integer, Equipment>();
     }

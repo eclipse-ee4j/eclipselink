@@ -12,13 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.*;
 
 @Entity
-public class Man {
+public class Man implements Serializable {
     private int id;
     private String firstName;
     private String lastName;
@@ -68,5 +70,11 @@ public class Man {
 
     public void setPartnerLink(PartnerLink partnerLink) {
         this.partnerLink = partnerLink;
+    }
+
+    @Override
+    public String toString() {
+        return "Man [id=" + id + ", firstName=" + firstName + ", lastName="
+                + lastName + "]";
     }
 }

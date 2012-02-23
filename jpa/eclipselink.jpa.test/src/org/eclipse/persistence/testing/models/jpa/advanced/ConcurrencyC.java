@@ -1,11 +1,13 @@
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class ConcurrencyC {
+public class ConcurrencyC implements Serializable {
     
     @Id
     @GeneratedValue

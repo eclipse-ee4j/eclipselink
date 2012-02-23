@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -24,7 +26,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="JPA_LOOT")
-public class Loot {
+public class Loot implements Serializable {
     @Id
     @GeneratedValue
     public int id;
