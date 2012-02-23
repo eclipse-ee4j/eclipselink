@@ -2295,7 +2295,12 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(property.getElement(), XmlElementWrapper.class)) {
             XmlElementWrapper wrapper = (XmlElementWrapper) helper.getAnnotation(property.getElement(), XmlElementWrapper.class);
             org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper xmlEltWrapper = new org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper();
-            xmlEltWrapper.setName(wrapper.name());
+
+            String wrapperName = wrapper.name();
+            if (wrapperName.equals(XMLProcessor.DEFAULT)) {
+                wrapperName = info.getXmlNameTransformer().transformElementName(property.getPropertyName());
+            }
+            xmlEltWrapper.setName(wrapperName);
             xmlEltWrapper.setNamespace(wrapper.namespace());
             xmlEltWrapper.setNillable(wrapper.nillable());
             xmlEltWrapper.setRequired(wrapper.required());
