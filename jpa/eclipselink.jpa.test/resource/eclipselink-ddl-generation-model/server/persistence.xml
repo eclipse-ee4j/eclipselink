@@ -19,6 +19,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.MMEntityMapValue</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Inventor</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Patent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PatentInvestigator</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyRecord</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address</class>
