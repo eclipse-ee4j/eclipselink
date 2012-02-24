@@ -176,11 +176,15 @@ public class XMLDescriptor extends ClassDescriptor {
             int index = getTableNames().indexOf(newDefaultRootElement);
             if (index == 0) {
                 return;
-            } else if (index >= 0) {
+            } 
+            DatabaseTable databaseTable = new DatabaseTable();
+            databaseTable.setUseDelimiters(false);
+            databaseTable.setName(newDefaultRootElement);
+            if (index >= 0) {
                 getTables().remove(index);
-                getTables().add(0, new DatabaseTable(newDefaultRootElement));
+                getTables().add(0, databaseTable);
             } else {
-                getTables().add(0, new DatabaseTable(newDefaultRootElement));
+                getTables().add(0, databaseTable);
             }
         }
     }
