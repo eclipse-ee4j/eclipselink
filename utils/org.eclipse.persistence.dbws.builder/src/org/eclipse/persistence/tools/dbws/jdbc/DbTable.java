@@ -10,7 +10,6 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-
 package org.eclipse.persistence.tools.dbws.jdbc;
 
 //javase imports
@@ -35,7 +34,7 @@ public class DbTable extends TableType {
       this.catalog = catalog;
     }
 
-    
+
     public String getType() {
         return type;
     }

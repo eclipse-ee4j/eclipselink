@@ -292,7 +292,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
             QueryOperation qo = new QueryOperation();
             qo.setName(sb.toString());
             QueryHandler qh;
-            if (storedProcedure.isFunction()) {
+            if (storedProcedure.isFunctionType()) {
                 qh = new StoredFunctionQueryHandler();
             }
             else {
@@ -327,7 +327,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
             Result result = null;
-            if (storedProcedure.isFunction()) {
+            if (storedProcedure.isFunctionType()) {
                 FunctionType storedFunction = (FunctionType) storedProcedure;
                 DatabaseType rarg = storedFunction.getReturnArgument();
                 if (rarg.getTypeName().contains("CURSOR")) {
@@ -559,7 +559,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                         }
                         dbColumn.setJDBCType(columnInfo.getInt(COLUMNSINFO_DATA_TYPE));
                         dbColumn.setJDBCTypeName(columnInfo.getString(COLUMNSINFO_TYPE_NAME));
-                        dbColumn.setDataType(buildTypeForJDBCType(dbColumn.getJDBCType(),
+                        dbColumn.setEnclosedType(buildTypeForJDBCType(dbColumn.getJDBCType(),
                             dbPrecision, dbScale));
                         dbTable.getColumns().add(dbColumn);
                     }
@@ -705,7 +705,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                         int precision = procedureColumnsInfo.getInt(PROC_COLS_INFO_PRECISION);
                         int scale = procedureColumnsInfo.getInt(PROC_COLS_INFO_SCALE);
 
-                        dbStoredArgument.setDataType(buildTypeForJDBCType(jdbcType, precision, scale));
+                        dbStoredArgument.setEnclosedType(buildTypeForJDBCType(jdbcType, precision, scale));
 
                         // find matching DbStoredProcedure
                         // this dbStoredArgument belongs to a 'regular' procedure
@@ -731,7 +731,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                             }
                         }
                         if (matchingProc != null) {
-                            if (matchingProc.isFunction() && dbStoredArgument.getArgumentName().equalsIgnoreCase("")) {
+                            if (matchingProc.isFunctionType() && dbStoredArgument.getArgumentName().equalsIgnoreCase("")) {
                                 ((FunctionType)matchingProc).setReturnArgument(dbStoredArgument);
                             }
                             else {

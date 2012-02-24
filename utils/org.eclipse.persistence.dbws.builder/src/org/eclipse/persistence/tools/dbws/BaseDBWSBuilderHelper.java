@@ -163,11 +163,11 @@ import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
-import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.RawType;
 import org.eclipse.persistence.tools.oracleddl.metadata.RealType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
@@ -310,13 +310,13 @@ public abstract class BaseDBWSBuilderHelper {
         RelationalDescriptor desc, DatabasePlatform databasePlatform,
         NamingConventionTransformer nct) {
         String columnName = dbColumn.getFieldName();
-        DatabaseType dataType = dbColumn.getDataType();
+        DatabaseType dataType = dbColumn.getEnclosedType();
         String typeName = getTypeNameForDatabaseType(dataType);
         int jdbcType = getJDBCTypeFromTypeName(typeName);
         String dmdTypeName = getJDBCTypeNameFromType(jdbcType);
         Class<?> attributeClass = null;
-        if ("CHAR".equalsIgnoreCase(dmdTypeName) && dbColumn.getDataType() instanceof SizedType) {
-            SizedType sizedType = (SizedType)dbColumn.getDataType();
+        if ("CHAR".equalsIgnoreCase(dmdTypeName) && dbColumn.getEnclosedType().isSizedType()) {
+            SizedType sizedType = (SizedType)dbColumn.getEnclosedType();
             if (sizedType.getSize() == 1) {
                 attributeClass = Character.class;
             }
@@ -340,14 +340,14 @@ public abstract class BaseDBWSBuilderHelper {
     protected XMLDirectMapping buildOXFieldMappingFromColumn(FieldType dbColumn,
         DatabasePlatform databasePlatform, NamingConventionTransformer nct) {
         String columnName = dbColumn.getFieldName();
-        DatabaseType dataType = dbColumn.getDataType();
+        DatabaseType dataType = dbColumn.getEnclosedType();
         String typeName = getTypeNameForDatabaseType(dataType);
         int jdbcType = getJDBCTypeFromTypeName(typeName);
         String dmdTypeName = getJDBCTypeNameFromType(jdbcType);
         QName qName = getXMLTypeFromJDBCType(jdbcType);
         Class<?> attributeClass;
-        if ("CHAR".equalsIgnoreCase(dmdTypeName) && dbColumn.getDataType() instanceof SizedType) {
-            SizedType sizedType = (SizedType)dbColumn.getDataType();
+        if ("CHAR".equalsIgnoreCase(dmdTypeName) && dbColumn.getEnclosedType().isSizedType()) {
+            SizedType sizedType = (SizedType)dbColumn.getEnclosedType();
             if (sizedType.getSize() == 1) {
                 attributeClass = Character.class;
             }
@@ -413,7 +413,7 @@ public abstract class BaseDBWSBuilderHelper {
                             tableType.getSchema());
                         if (tableNameMatch && schemaNameMatch) {
                             String originalCatalogPattern = tableOperation.getCatalogPattern();
-                            if (tableType instanceof DbTable && originalCatalogPattern != null) {
+                            if (tableType.isDbTableType() && originalCatalogPattern != null) {
                                 boolean catalogNameMatch = sqlMatch(originalCatalogPattern,
                                     ((DbTable)tableType).getCatalog());
                                 if (catalogNameMatch) {
@@ -1043,7 +1043,7 @@ public abstract class BaseDBWSBuilderHelper {
                         dbColumn.setJDBCTypeName(rsMetaData.getColumnTypeName(i));
                         int dbPrecision = rsMetaData.getPrecision(i);
                         int dbScale = rsMetaData.getScale(i);
-                        dbColumn.setDataType(buildTypeForJDBCType(dbColumn.getJDBCType(),
+                        dbColumn.setEnclosedType(buildTypeForJDBCType(dbColumn.getJDBCType(),
                             dbPrecision, dbScale));
                         if (rsMetaData.isNullable(i) == ResultSetMetaData.columnNullable) {
                             dbColumn.unSetNotNull();
@@ -1072,7 +1072,7 @@ public abstract class BaseDBWSBuilderHelper {
      */
     protected static String getTypeNameForDatabaseType(DatabaseType dataType) {
         String typeName = dataType.getTypeName();
-        if (dataType instanceof NumericType) {
+        if (dataType.isNumericType()) {
             NumericType numericDataType = (NumericType)dataType;
             if (numericDataType.getScale() > 0) {
                 typeName = DECIMAL_STR;
@@ -1157,8 +1157,8 @@ public abstract class BaseDBWSBuilderHelper {
      */
     @SuppressWarnings("rawtypes")
 	protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
-        if (dType instanceof ArgumentType) {
-            dType = ((ArgumentType) dType).getDataType();
+        if (dType.isArgumentType()) {
+            dType = ((ArgumentType)dType).getEnclosedType();
         }
         // composite types
         if (dType.isComposite()) {
@@ -1167,29 +1167,29 @@ public abstract class BaseDBWSBuilderHelper {
             String javaTypeName = (dType.getTypeName()).toLowerCase();
 
             // handle PL/SQL types
-            if (dType instanceof PLSQLType) {
+            if (dType.isPLSQLType()) {
                 if (catalog != null) {
                     typeName = (catalog + ".").concat(typeName);
                     compatibleType = (catalog + "_").concat(compatibleType);
                     javaTypeName = (catalog.toLowerCase() + ".").concat(javaTypeName);
                 }
                 // handle PL/SQL record
-                if (dType instanceof PLSQLRecordType) {
+                if (dType.isPLSQLRecordType()) {
                     PLSQLrecord plsqlRec = new PLSQLrecord();
                     plsqlRec.setTypeName(typeName);
                     plsqlRec.setCompatibleType(compatibleType);
                     plsqlRec.setJavaTypeName(javaTypeName);
                     // process fields
                     for (FieldType fld : ((PLSQLRecordType)dType).getFields()) {
-                        if (fld.getDataType() instanceof PrecisionType) {
-                            PrecisionType precisionType = (PrecisionType) fld.getDataType();
+                        if (fld.getEnclosedType().isPrecisionType()) {
+                            PrecisionType precisionType = (PrecisionType)fld.getEnclosedType();
                             plsqlRec.addField(fld.getFieldName(), buildDatabaseTypeFromMetadataType(precisionType),
                                     (int)precisionType.getPrecision(), (int)precisionType.getScale());
-                        } else if (fld.getDataType() instanceof SizedType) {
-                            SizedType sizedType = (SizedType) fld.getDataType();
+                        } else if (fld.getEnclosedType().isSizedType()) {
+                            SizedType sizedType = (SizedType) fld.getEnclosedType();
                             plsqlRec.addField(fld.getFieldName(), buildDatabaseTypeFromMetadataType(sizedType), (int)sizedType.getSize());
                         } else {
-                            plsqlRec.addField(fld.getFieldName(), buildDatabaseTypeFromMetadataType(fld.getDataType(), catalog));
+                            plsqlRec.addField(fld.getFieldName(), buildDatabaseTypeFromMetadataType(fld.getEnclosedType(), catalog));
                         }
                     }
                     return plsqlRec;
@@ -1199,11 +1199,12 @@ public abstract class BaseDBWSBuilderHelper {
                 plsqlCollection.setTypeName(typeName);
                 plsqlCollection.setCompatibleType(compatibleType);
                 plsqlCollection.setJavaTypeName(javaTypeName + COLLECTION_WRAPPER_SUFFIX);
-                plsqlCollection.setNestedType(buildDatabaseTypeFromMetadataType(((PLSQLCollectionType) dType).getNestedType(), catalog));
+                plsqlCollection.setNestedType(buildDatabaseTypeFromMetadataType(
+                    ((PLSQLCollectionType)dType).getEnclosedType(), catalog));
                 return plsqlCollection;
             }
             // handle advanced Oracle types
-            if (dType instanceof VArrayType) {
+            if (dType.isVArrayType()) {
                 OracleArrayType varray = new OracleArrayType();
                 varray.setTypeName(typeName);
                 varray.setCompatibleType(compatibleType);
@@ -1211,7 +1212,7 @@ public abstract class BaseDBWSBuilderHelper {
                 varray.setNestedType(buildDatabaseTypeFromMetadataType(((VArrayType) dType).getEnclosedType(), null));
                 return varray;
             }
-            if (dType instanceof ObjectType) {
+            if (dType.isObjectType()) {
                 OracleObjectType objType = new OracleObjectType();
                 objType.setTypeName(typeName);
                 objType.setCompatibleType(compatibleType);
@@ -1219,11 +1220,11 @@ public abstract class BaseDBWSBuilderHelper {
                 Map<String, org.eclipse.persistence.internal.helper.DatabaseType> fields = objType.getFields();
                 ObjectType oType = (ObjectType) dType;
                 for (FieldType field : oType.getFields()) {
-                    fields.put(field.getFieldName(), buildDatabaseTypeFromMetadataType(field.getDataType()));
+                    fields.put(field.getFieldName(), buildDatabaseTypeFromMetadataType(field.getEnclosedType()));
                 }
                 return objType;
             }
-            if (dType instanceof ObjectTableType) {
+            if (dType.isObjectTableType()) {
                 OracleArrayType tableType = new OracleArrayType();
                 tableType.setTypeName(typeName);
                 tableType.setCompatibleType(compatibleType);
@@ -1239,8 +1240,8 @@ public abstract class BaseDBWSBuilderHelper {
             }
             // TODO - return what here?
             return null;
-        } else if (dType instanceof ScalarDatabaseTypeEnum) {
-            return OraclePLSQLTypes.getDatabaseTypeForCode(((ScalarDatabaseTypeEnum) dType).getTypeName());
+        } else if (dType.isScalar()) {
+            return OraclePLSQLTypes.getDatabaseTypeForCode(((ScalarDatabaseType)dType).getTypeName());
         }
         // scalar types
         return JDBCTypes.getDatabaseTypeForCode(org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName(dType.getTypeName()));
@@ -1315,9 +1316,9 @@ public abstract class BaseDBWSBuilderHelper {
     protected List<ArgumentType> getArgumentListForProcedureType(ProcedureType pType) {
         List<ArgumentType> args = new ArrayList<ArgumentType>();
         // return argument
-        if (pType.isFunction()) {
+        if (pType.isFunctionType()) {
             // assumes that a function MUST have a return type
-            args.add(((FunctionType) pType).getReturnArgument());
+            args.add(((FunctionType)pType).getReturnArgument());
         }
         args.addAll(pType.getArguments());
         return args;

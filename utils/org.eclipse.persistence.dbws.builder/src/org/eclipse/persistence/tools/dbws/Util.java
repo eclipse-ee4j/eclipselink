@@ -77,14 +77,9 @@ import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
-import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
-import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
-import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
-import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
-
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
@@ -610,12 +605,12 @@ public class Util {
      * VArrayType, ObjectType, or NestedTableType
      */
     public static boolean isArgComplex(ArgumentType argument) {
-        DatabaseType argType = argument.getDataType();
-        return argType instanceof PLSQLType
-                || (argType instanceof PLSQLCursorType && !((PLSQLCursorType)argType).isWeaklyTyped())
-                || argType instanceof VArrayType
-                || argType instanceof ObjectType
-                || argType instanceof ObjectTableType;
+        DatabaseType argType = argument.getEnclosedType();
+        return argType.isPLSQLType()
+                || (argType.isPLSQLCursorType() && !((PLSQLCursorType)argType).isWeaklyTyped())
+                || argType.isVArrayType()
+                || argType.isObjectType()
+                || argType.isObjectTableType();
     }
 
     /**
@@ -625,9 +620,8 @@ public class Util {
      * PLS_INTEGER_TYPE, etc.
      */
     public static boolean isArgPLSQL(ArgumentType argument) {
-        DatabaseType argType = argument.getDataType();
-        return argType instanceof PLSQLType
-        		|| isArgPLSQLScalar(argument);
+        DatabaseType argType = argument.getEnclosedType();
+        return argType.isPLSQLType() || isArgPLSQLScalar(argument);
     }
 
     /**
@@ -636,7 +630,7 @@ public class Util {
      * BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
      */
     public static boolean isArgPLSQLScalar(ArgumentType argument) {
-        DatabaseType argType = argument.getDataType();
+        DatabaseType argType = argument.getEnclosedType();
         return argType == ScalarDatabaseTypeEnum.BINARY_INTEGER_TYPE
             || argType == ScalarDatabaseTypeEnum.BOOLEAN_TYPE
             || argType == ScalarDatabaseTypeEnum.NATURAL_TYPE
@@ -658,7 +652,7 @@ public class Util {
         		return true;
         	}
         }
-        if (storedProcedure instanceof FunctionType) {
+        if (storedProcedure.isFunctionType()) {
         	if (isArgComplex(((FunctionType)storedProcedure).getReturnArgument())) {
         		return true;
         	}
@@ -679,7 +673,7 @@ public class Util {
         		return true;
         	}
         }
-        if (storedProcedure instanceof FunctionType) {
+        if (storedProcedure.isFunctionType()) {
         	if (isArgPLSQL(((FunctionType)storedProcedure).getReturnArgument())) {
         		return true;
         	}
@@ -691,9 +685,9 @@ public class Util {
      * Indicates if a given list  of ArgumentTypes contains  one or more
      * PL/SQL arguments, i.e.  PLSQLRecordType, PLSQLCollectionType,  or
      * scalars BOOLEAN_TYPE, BINARY_INTEGER_TYPE, PLS_INTEGER_TYPE, etc.
-     * 
+     *
      * In addition, an optional argument must be treated as PL/SQL as
-     * default/optional parameter handling is done via 
+     * default/optional parameter handling is done via
      * PLSQLStoredProcedureCall
      */
     public static boolean hasPLSQLArgs(List<ArgumentType> arguments) {

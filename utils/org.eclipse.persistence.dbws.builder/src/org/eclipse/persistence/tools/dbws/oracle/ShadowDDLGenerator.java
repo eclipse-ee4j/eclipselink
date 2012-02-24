@@ -22,12 +22,7 @@ import java.util.Stack;
 //EclipseLink imports
 import org.eclipse.persistence.tools.oracleddl.metadata.CharType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
-import org.eclipse.persistence.tools.oracleddl.metadata.DecimalType;
-import org.eclipse.persistence.tools.oracleddl.metadata.DoubleType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
-import org.eclipse.persistence.tools.oracleddl.metadata.FloatType;
-import org.eclipse.persistence.tools.oracleddl.metadata.LongRawType;
-import org.eclipse.persistence.tools.oracleddl.metadata.LongType;
 import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
@@ -148,9 +143,9 @@ public class ShadowDDLGenerator {
 	                        FieldType f = currentRecordType.getFields().get(i);
 	                        if (fieldName.equals(f.getFieldName())) {
 	                            ddlWrapper.ddl += SPACES + fieldName + SINGLE_SPACE;
-	                            DatabaseType fieldDataType = f.getDataType();
+	                            DatabaseType fieldDataType = f.getEnclosedType();
 	                            String fieldShadowName = null;
-	                            if (fieldDataType instanceof PLSQLType) {
+	                            if (fieldDataType.isPLSQLType()) {
 	                                fieldShadowName = ((PLSQLType)fieldDataType).getParentType().
 	                                    getPackageName() + UNDERSCORE + fieldDataType.
 	                                    getTypeName().toUpperCase();
@@ -177,8 +172,8 @@ public class ShadowDDLGenerator {
             }
             if (!ddlWrapper.finished) {
                 String shadowNestedTypeName = null;
-                DatabaseType nestedType = collectionType.getNestedType();
-                if (nestedType instanceof NumericType) {
+                DatabaseType nestedType = collectionType.getEnclosedType();
+                if (nestedType.isNumericType()) {
                     NumericType nDataType = (NumericType)nestedType;
                     if (nDataType.isNumberSynonym()) {
                         shadowNestedTypeName = NUMBER_STR;
@@ -240,21 +235,21 @@ public class ShadowDDLGenerator {
             else if (dataType == ScalarDatabaseTypeEnum.SIMPLE_FLOAT_TYPE) {
                 shadowTypeName = ScalarDatabaseTypeEnum.BINARY_FLOAT_TYPE.getTypeName();
             }
-            else if (dataType instanceof PrecisionType) {
+            else if (dataType.isPrecisionType()) {
                 PrecisionType pDataType = (PrecisionType)dataType;
                 long defaultPrecision = pDataType.getDefaultPrecision();
                 String defaultPrecisionStr = NUMBER_DEFAULTSIZE;
-                if (dataType instanceof NumericType || dataType instanceof DecimalType) {
+                if (dataType.isNumericType() || dataType.isDecimalType()) {
                     shadowTypeName = NUMBER_STR;
                 }
                 else {
                     shadowTypeName = FLOAT_STR;
                     defaultPrecisionStr = FLOAT_DEFAULTSIZE;
-                    if (dataType instanceof FloatType || dataType instanceof DoubleType) {
+                    if (dataType.isFloatType() || dataType.isDoubleType()) {
                         defaultPrecisionStr = DOUBLE_DEFAULTSIZE;
                     }
                 }
-                if (!(dataType instanceof NumericType && ((NumericType)dataType).isNumberSynonym())) {
+                if (!(dataType.isNumericType() && ((NumericType)dataType).isNumberSynonym())) {
                     long precision = pDataType.getPrecision();
                     long scale = pDataType.getScale();
                     if (precision != defaultPrecision) {
@@ -269,13 +264,13 @@ public class ShadowDDLGenerator {
                     shadowTypeName += RBRACKET;
                 }
             }
-            else if (dataType instanceof VarCharType) {
+            else if (dataType.isVarCharType()) {
                 shadowTypeName = VarChar2Type.TYPENAME;
                 VarCharType vcharType = (VarCharType)dataType;
                 long defaultSize = vcharType.getDefaultSize();
                 long size = vcharType.getSize();
                 String sizeStr = Long.toString(size);
-                if (dataType instanceof LongType) {
+                if (dataType.isLongType()) {
                     shadowTypeName = VarChar2Type.TYPENAME;
                     if (size == defaultSize) {
                         sizeStr = LONG_DEFAULTSIZE;
@@ -283,18 +278,18 @@ public class ShadowDDLGenerator {
                 }
                 shadowTypeName += LBRACKET + sizeStr + RBRACKET;
             }
-            else if (dataType instanceof CharType) {
+            else if (dataType.isCharType()) {
                 shadowTypeName = CharType.TYPENAME;
                 long size = ((CharType)dataType).getSize();
                 shadowTypeName += LBRACKET + size + RBRACKET;
             }
-            else if (dataType instanceof SizedType) {
+            else if (dataType.isSizedType()) {
                 shadowTypeName = dataType.getTypeName();
                 SizedType sDataType = (SizedType)dataType;
                 long defaultSize = sDataType.getDefaultSize();
                 String sizeStr = null;
                 long size = sDataType.getSize();
-                if (dataType instanceof LongType) {
+                if (dataType.isLongType()) {
                     shadowTypeName = VarChar2Type.TYPENAME;
                     if (size == defaultSize) {
                         sizeStr = LONG_DEFAULTSIZE;
@@ -304,7 +299,7 @@ public class ShadowDDLGenerator {
                     }
                     shadowTypeName += LBRACKET + sizeStr + RBRACKET;
                 }
-                else if (dataType instanceof LongRawType) {
+                else if (dataType.isLongRawType()) {
                     shadowTypeName = RawType.TYPENAME;
                     if (size == defaultSize) {
                         sizeStr = LONG_DEFAULTSIZE;
@@ -318,7 +313,7 @@ public class ShadowDDLGenerator {
                     shadowTypeName += LBRACKET + size + RBRACKET;
                 }
             }
-            else if (dataType instanceof PLSQLType) {
+            else if (dataType.isPLSQLType()) {
                 shadowTypeName = ((PLSQLType)dataType).getParentType().getPackageName() +
                     UNDERSCORE + dataType.getTypeName();
             }
