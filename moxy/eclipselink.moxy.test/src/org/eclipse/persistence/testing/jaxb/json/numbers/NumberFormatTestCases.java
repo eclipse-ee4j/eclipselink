@@ -1,13 +1,3 @@
-package org.eclipse.persistence.testing.jaxb.json.numbers;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
-
 /*******************************************************************************
  * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
@@ -20,6 +10,16 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
  * Contributors:
  *     Denise Smith - 2.4
  ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.json.numbers;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
+
 public class NumberFormatTestCases extends JAXBWithJSONTestCases {
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/numbers/numberHolder.json";
 	private final static String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/json/numbers/numberHolderWrite.json";

@@ -12,42 +12,62 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.inheritance.ns;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.events.Address;
-import org.eclipse.persistence.testing.jaxb.events.Employee;
-import org.eclipse.persistence.testing.jaxb.events.PhoneNumber;
-import org.w3c.dom.Document;
-
-public class JAXBInheritanceNSTestCases extends JAXBTestCases {
+public class JAXBInheritanceNSTestCases extends JAXBWithJSONTestCases {
 	public JAXBInheritanceNSTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[] {Root.class, SubType.class});
 		setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/ns/inheritanceNS.xml");
+		setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/ns/inheritanceNS.json");
+		
+		Map<String, String> namespaces= new HashMap<String, String>();
+		namespaces.put("rootNamespace","ns0");
+		namespaces.put("someNamespace","ns1");
+		namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL,"xsi");
+		
+		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
-
+	public JAXBMarshaller getJSONMarshaller() throws Exception{
+		Map<String, String> namespaces= new HashMap<String, String>();
+		namespaces.put("rootNamespace","ns0");
+		namespaces.put("someNamespace","ns1");
+		namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL,"xsi");
+		
+		JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+		jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+		jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		return jsonMarshaller;
+	}
+	
 	public Object getControlObject() {
 		Root root = new Root();
 		SubType subType = new SubType();	
 		root.baseTypeThing = subType;
 		return root;
+	}
+	
+	public void testJSONNoNamespacesSet() throws Exception {
+		String controlFile = "org/eclipse/persistence/testing/jaxb/inheritance/ns/inheritanceNSNoNamespaces.json";
+		JAXBMarshaller m = (JAXBMarshaller) jaxbContext.createMarshaller();
+		JAXBUnmarshaller u = (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
+		m.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		u.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		StringWriter sw = new StringWriter();
+		
+		m.marshal(getWriteControlObject(), sw);
+        compareStrings("**testJSONMarshalToStringWriter-NoNamespacesSet**", sw.toString(), controlFile);
+
+        StringReader sr = new StringReader(sw.toString());
+        Object o = u.unmarshal(sr);
+        assertEquals(getReadControlObject(), o);
 	}
 }

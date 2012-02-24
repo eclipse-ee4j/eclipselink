@@ -16,19 +16,21 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.qualified.QualifiedTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.unqualified.a.Customer;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.unqualified.b.Address;
 
-public class UnqualifiedTestCases extends JAXBTestCases {
+public class UnqualifiedTestCases extends JAXBWithJSONTestCases {
 
     private static final String  XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/splitpackage/unqualified/input.xml";
+    private static final String  JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/splitpackage/unqualified/input.json";
     private static final String  XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/splitpackage/unqualified/schema.xsd";
 
     public UnqualifiedTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] {Customer.class});
     }
 

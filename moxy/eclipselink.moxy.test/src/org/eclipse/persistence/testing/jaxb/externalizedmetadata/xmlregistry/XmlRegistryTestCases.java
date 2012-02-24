@@ -24,15 +24,16 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 
 /**
  * Tests XmlRegistry and XmlElementDecl via eclipselink-oxm.xml
  *
  */
-public class XmlRegistryTestCases extends JAXBTestCases {
+public class XmlRegistryTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/foo.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/foo.json";
     
     /**
      * This is the preferred (and only) constructor.
@@ -42,6 +43,7 @@ public class XmlRegistryTestCases extends JAXBTestCases {
     public XmlRegistryTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{ObjectFactory1.class});
     }
     

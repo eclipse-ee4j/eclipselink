@@ -22,12 +22,15 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class CollectionReferenceReadOnlyTestCases extends JAXBTestCases{
+public class CollectionReferenceReadOnlyTestCases extends JAXBWithJSONTestCases{
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.xml";
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/marshal-read-only.xml";
 
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.json";
+    private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/marshal-read-only.json";
+    
     private static final String ADD_ID1 = "a100";
     private static final String ADD_ID2 = "a101";
     private static final String ADD_ID3 = "a102";
@@ -37,6 +40,8 @@ public class CollectionReferenceReadOnlyTestCases extends JAXBTestCases{
 		setClasses(new Class[] { Root.class });
 		setControlDocument(XML_RESOURCE);
 		setWriteControlDocument(XML_WRITE_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+		setWriteControlJSON(JSON_WRITE_RESOURCE);
 	}
 	
 	/**

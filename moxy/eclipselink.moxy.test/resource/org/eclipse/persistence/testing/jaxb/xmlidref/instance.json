@@ -3,8 +3,7 @@
       "id":"222",
       "address-id":"199",
       "name":"Joe Smith",
-      "phone-id":"123",
-      "phone-id":"456"
+      "phone-id":["123","456"]
    },
    "address":[
      {"aid":"199",

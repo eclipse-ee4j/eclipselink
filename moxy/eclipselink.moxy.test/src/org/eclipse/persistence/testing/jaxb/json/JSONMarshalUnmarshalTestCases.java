@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 
+import javax.xml.transform.stream.StreamSource;
+
 import org.xml.sax.InputSource;
 
 public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
@@ -25,7 +27,10 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
 		super(name);
 	}
 	
-
+    public Class getUnmarshalClass(){
+    	return null;
+    }
+	
 	protected void compareStrings(String testName, String testString) {
 	    log(testName);
 		log("Expected (With All Whitespace Removed):");
@@ -39,7 +44,12 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
 		 	
 	public void testJSONUnmarshalFromInputStream() throws Exception {
 	    InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-		Object testObject = jsonUnmarshaller.unmarshal(inputStream);
+	    Object testObject = null;
+	    if(getUnmarshalClass() != null){
+	    	testObject = jsonUnmarshaller.unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+	    }else{
+	    	testObject = jsonUnmarshaller.unmarshal(inputStream);
+	    }
 		inputStream.close();
 		jsonToObjectTest(testObject);
 	}
@@ -47,7 +57,12 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
 	public void testJSONUnmarshalFromInputSource() throws Exception {	
          InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 		 InputSource inputSource = new InputSource(inputStream);
-		 Object testObject = jsonUnmarshaller.unmarshal(inputSource);
+		  Object testObject = null;
+		    if(getUnmarshalClass() != null){
+		    	testObject = jsonUnmarshaller.unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+		    }else{
+		    	testObject = jsonUnmarshaller.unmarshal(inputSource);
+		    }
 		 inputStream.close();
 		 jsonToObjectTest(testObject);
     }
@@ -55,7 +70,12 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
     public void testJSONUnmarshalFromReader() throws Exception {
 	    InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 	    Reader reader = new InputStreamReader(inputStream);
-		Object testObject = jsonUnmarshaller.unmarshal(reader);
+	    Object testObject = null;
+	    if(getUnmarshalClass() != null){
+	    	testObject = jsonUnmarshaller.unmarshal(new StreamSource(reader), getUnmarshalClass());
+	    }else{
+	    	testObject = jsonUnmarshaller.unmarshal(reader);
+	    }
 		reader.close();
 		inputStream.close();
 		jsonToObjectTest(testObject);
@@ -63,7 +83,12 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
 
 	public void testJSONUnmarshalFromURL() throws Exception {
         URL url = getJSONURL();
-        Object testObject = jsonUnmarshaller.unmarshal(url);
+        Object testObject = null;
+	    if(getUnmarshalClass() != null){
+	    	testObject = jsonUnmarshaller.unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
+	    }else{
+	    	testObject = jsonUnmarshaller.unmarshal(url);
+	    }
         jsonToObjectTest(testObject);
     }
 

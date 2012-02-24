@@ -13,19 +13,20 @@
 package org.eclipse.persistence.testing.jaxb.multiplepackage;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.multiplepackage.packagea.ClassA;
 import org.eclipse.persistence.testing.jaxb.multiplepackage.packagea.Root;
 import org.eclipse.persistence.testing.jaxb.multiplepackage.packageb.ClassB;
 
-public class MultiplePackageInfoTestCases extends JAXBTestCases {
+public class MultiplePackageInfoTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/root.xml";
-	private final static int CONTROL_ID = 10;
-
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/root.json";
+	
     public MultiplePackageInfoTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);  
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[3];
         classes[0] = ClassA.class;
         classes[1] = ClassB.class;

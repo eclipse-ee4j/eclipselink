@@ -22,10 +22,11 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class CollectionReferenceWriteOnlyTestCases extends JAXBTestCases{
+public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases{
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.json";
 
     private static final String ADD_ID1 = "a100";
     private static final String ADD_ID2 = "a101";
@@ -35,6 +36,7 @@ public class CollectionReferenceWriteOnlyTestCases extends JAXBTestCases{
 		super(name);
 		setClasses(new Class[] { Root.class });
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
 	
 	 /**

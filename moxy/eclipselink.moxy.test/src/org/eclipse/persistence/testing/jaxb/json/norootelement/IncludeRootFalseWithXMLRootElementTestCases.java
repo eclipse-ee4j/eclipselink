@@ -12,23 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.w3c.dom.Document;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTestCases{
 
 	public IncludeRootFalseWithXMLRootElementTestCases(String name) throws Exception {
 		super(name);
-		setControlJSON(JSON_RESOURCE);
+		setControlJSON(JSON_RESOURCE_NO_ROOT);
+		setWriteControlJSON(JSON_RESOURCE_NO_ROOT);
 		setClasses(new Class[]{AddressWithRootElement.class});		
 	}
 	
@@ -45,5 +37,16 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
 		addr.setStreet("Main street");
 		
 		return addr;
+	}
+	
+	@Override
+	public Class getUnmarshalClass(){
+		return AddressWithRootElement.class;
+	}
+	
+	public Object getReadControlObject(){
+		QName name = new QName("");		
+		JAXBElement jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
+		return jbe;
 	}
 }

@@ -21,7 +21,6 @@ import javax.xml.bind.MarshalException;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {

@@ -20,18 +20,16 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamReader;
 
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Node;
-
-public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsNoJSONTestCases {
+public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsTestCases {
 
     public static String XML_RESOURCE="org/eclipse/persistence/testing/jaxb/listofobjects/bytearray.xml";
+    public static String JSON_RESOURCE="org/eclipse/persistence/testing/jaxb/listofobjects/bytearray.json";
+    
     public JAXBByteArrayWithDataHandlerTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{byte[].class, DataHandler.class});
     }
 
@@ -47,8 +45,13 @@ public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsNoJS
         return new ArrayList<InputStream>();
     }
 
-    @Override
+   @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
+        return byte[].class;
+    }
+   
+    @Override
+	public Class getUnmarshalClass(){
         return byte[].class;
     }
 
@@ -64,13 +67,7 @@ public class JAXBByteArrayWithDataHandlerTestCases extends JAXBListOfObjectsNoJS
     public void testXMLToObjectFromXMLEventReader() throws Exception { 
     }    
     public void testXMLToObjectFromStreamSource() throws Exception { 
-    }    
-    public void testXMLToObjectFromInputStream() throws Exception { 
-    }    
-    public void testXMLToObjectFromURL() throws Exception { 
-    }
-    public void testXMLToObjectFromXMLStreamReaderEx() throws Exception { 
-    }  
+    }       
     public void testUnmarshallerHandler() throws Exception { 
     }      
 }

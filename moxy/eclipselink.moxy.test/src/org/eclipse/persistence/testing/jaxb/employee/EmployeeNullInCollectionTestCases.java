@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.employee;
 
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -20,20 +19,17 @@ import java.util.Calendar;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-public class EmployeeNullInCollectionTestCases extends JAXBTestCases {
+public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.xml";
-    private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.json";
+    private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee_null.xml";   
     private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
     private final static String CONTROL_RESPONSIBILITY2 = "";
     private final static String CONTROL_RESPONSIBILITY3 = null;
@@ -46,10 +42,12 @@ public class EmployeeNullInCollectionTestCases extends JAXBTestCases {
         
         setControlDocument(XML_RESOURCE);  
         setWriteControlDocument(XML_WRITE_RESOURCE);       
+        setControlJSON(JSON_RESOURCE);
         
         Class[] classes = new Class[1];
         classes[0] = Employee_B.class;
         setClasses(classes);
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, Boolean.TRUE);
     }
     
     public void testRoundTrip(){
@@ -82,6 +80,38 @@ public class EmployeeNullInCollectionTestCases extends JAXBTestCases {
         return elem;
     }
     
+    public void testObjectToXMLStreamWriter() throws Exception {
+        if(System.getProperty("java.version").contains("1.6")) {
+            StringWriter writer = new StringWriter();
+            Object objectToWrite = getWriteControlObject();
+            javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+            javax.xml.stream.XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
+ 
+ 
+            getJAXBMarshaller().marshal(objectToWrite, streamWriter);
+        
+        
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+
+            objectToXMLDocumentTest(testDocument);
+        }
+    }
+    
+    public Class getUnmarshalClass(){
+    	return Employee_B.class;
+    }
+    /*
+    public void test(){
+    	super.testJSONUnmarshalFromInputSource()
+    	super.testJSONUnmarshalFromInputStream()
+    	super.testJSONUnmarshalFromReader()
+    	super.testJSONUnmarshalFromURL()
+    }
+    *//*
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(System.getProperty("java.version").contains("1.6")) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -169,7 +199,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBTestCases {
             xmlToObjectTest(testObject);
         }
     } 
-    
+    */
     public void testUnmarshallerHandler() throws Exception {
         //Not Applicable.
     }    

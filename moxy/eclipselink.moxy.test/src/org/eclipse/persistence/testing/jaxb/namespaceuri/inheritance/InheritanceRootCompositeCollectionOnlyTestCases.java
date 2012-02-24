@@ -12,23 +12,59 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.package2.AnotherPackageSubType;
 
 
-public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBTestCases {
+public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSONTestCases {
     private static final String  XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/inheritance/compositecollection.xml";
+    private static final String  JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/inheritance/compositecollection.json";
+    private static final String  JSON_RESOURCE_NO_NS = "org/eclipse/persistence/testing/jaxb/namespaceuri/inheritance/compositecollection_nons.json";
 
     public InheritanceRootCompositeCollectionOnlyTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] {RootCompositeCollectionOnly.class});
+        
+    	Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("uri1", "ns5");
+    	namespaces.put("rootNamespace", "ns0");
+    	namespaces.put("someNamespaceLevel2", "ns3");
+    	namespaces.put("anotherNamespace", "ns2");
+    	namespaces.put("uri3", "ns4");
+    	namespaces.put("someNamespace", "ns1");
+    	namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    protected JAXBMarshaller getJSONMarshaller() throws Exception{
+    	JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+    	jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("uri1", "ns5");
+    	namespaces.put("rootNamespace", "ns0");
+    	namespaces.put("someNamespaceLevel2", "ns3");
+    	namespaces.put("anotherNamespace", "ns2");
+    	namespaces.put("uri3", "ns4");
+    	namespaces.put("someNamespace", "ns1");
+    	namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+    	
+    	jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	return jsonMarshaller;
+    }
+    
     protected Object getControlObject() {
     	RootCompositeCollectionOnly root = new RootCompositeCollectionOnly();
 		SubType subType = new SubType();
@@ -49,4 +85,20 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBTestCas
 				
 		return root;
     }    
+    
+	public void testJSONNoNamespacesSet() throws Exception {
+		JAXBMarshaller m = (JAXBMarshaller) jaxbContext.createMarshaller();
+		JAXBUnmarshaller u = (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
+		m.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		u.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		StringWriter sw = new StringWriter();
+		
+		m.marshal(getWriteControlObject(), sw);
+        compareStrings("**testJSONMarshalToStringWriter-NoNamespacesSet**", sw.toString(), JSON_RESOURCE_NO_NS);
+
+        StringReader sr = new StringReader(sw.toString());
+        Object o = u.unmarshal(sr);
+        assertEquals(getReadControlObject(), o);
+	}
+
 }

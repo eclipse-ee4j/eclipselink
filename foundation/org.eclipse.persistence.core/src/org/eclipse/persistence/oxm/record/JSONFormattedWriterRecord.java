@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.record;
 
 import java.io.IOException;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -98,8 +99,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
-        	charactersAllowed = true;
-
+        	
             Level position = null;
             if(levels.isEmpty()) {
                 levels.push(new Level(true, true));
@@ -115,6 +115,9 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
             if(xPathFragment.nameIsText()){
                if(position != null && position.isCollection() && position.isEmptyCollection()) {
+            	    if(!charactersAllowed){
+              		     throw JAXBException.jsonValuePropertyRequired("[");   
+              	    }
                     writer.write('[');
                     writer.write(' ');
                     position.setEmptyCollection(false);
@@ -155,6 +158,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
             numberOfTabs++;
             isLastEventText = false;
+            charactersAllowed = true;
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

@@ -1,0 +1,9 @@
+{"employee-data":{
+   "id":10,
+   "firstName":"Bob",
+   "lastName":"Smith",
+   "birthday":"2005-05-24T16:06:53.0",
+   "responsibilities":{
+      "responsibility":["Fix Bugs", "", null]
+    }
+}}

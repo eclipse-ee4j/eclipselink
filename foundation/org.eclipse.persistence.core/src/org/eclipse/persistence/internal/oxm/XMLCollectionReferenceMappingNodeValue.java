@@ -205,10 +205,12 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             }
             marshalSingleValue(xPathFragment, marshalRecord, object, stringValueStringBuilder.toString(), session, namespaceResolver, ObjectMarshalContext.getInstance());
         } else {
+            marshalRecord.startCollection(); 
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
                 marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
             }
+            marshalRecord.endCollection();
         }
         return true;
     }

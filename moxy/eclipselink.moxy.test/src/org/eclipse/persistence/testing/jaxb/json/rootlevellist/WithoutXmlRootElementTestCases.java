@@ -16,13 +16,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.testing.jaxb.json.JSONTestCases;
-
-public class WithoutXmlRootElementTestCases extends JSONTestCases {
+import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
+public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCases {
 
     private static final String CONTROL_JSON = "org/eclipse/persistence/testing/jaxb/json/rootlevellist/WithoutXmlRootElement.json";
 
@@ -30,8 +30,14 @@ public class WithoutXmlRootElementTestCases extends JSONTestCases {
         super(name);
         setClasses(new Class[] {WithoutXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
+        jsonUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, Boolean.FALSE);
     }
 
+    @Override
+    public Class getUnmarshalClass(){
+    	return WithoutXmlRootElementRoot.class;
+    }
+    
     @Override
     protected List<WithoutXmlRootElementRoot> getControlObject() {
         List<WithoutXmlRootElementRoot> list = new ArrayList<WithoutXmlRootElementRoot>(2);
@@ -47,9 +53,16 @@ public class WithoutXmlRootElementTestCases extends JSONTestCases {
         return list;
     }
 
+    @Override
+	public Object getReadControlObject() {
+    	JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, getControlObject() );
+    	
+    	return elem;
+    }
+    
     public void testUnmarshal() throws Exception {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        List<WithoutXmlRootElementRoot> test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(inputStream), WithoutXmlRootElementRoot.class).getValue();
+        List<WithoutXmlRootElementRoot>  test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(inputStream), WithoutXmlRootElementRoot.class).getValue();
         inputStream.close();
         List<WithoutXmlRootElementRoot> control = getControlObject();
         for(int x=0; x<control.size(); x++) {

@@ -14,21 +14,22 @@ package org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.qualified
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.qualified.a.Customer;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.qualified.b.Address;
 
-public class QualifiedTestCases extends JAXBTestCases {
+public class QualifiedTestCases extends JAXBWithJSONTestCases {
 
     private static final String  XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/splitpackage/qualified/input.xml";
+    private static final String  JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/splitpackage/qualified/input.json";
     private static final String  XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/splitpackage/qualified/schema.xsd";
 
     public QualifiedTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] {Customer.class});
     }
 

@@ -151,8 +151,7 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    private void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean addOpenBrace) {
-    	charactersAllowed = true;
+    private void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean addOpenBrace) {    	
         try {
             Level position = null;
             if(levels.isEmpty()) {
@@ -170,9 +169,13 @@ public class JSONWriterRecord extends MarshalRecord {
 
             if(xPathFragment.nameIsText()){
                 if(position != null && position.isCollection() && position.isEmptyCollection()) {
+                	if(!charactersAllowed){
+                		 throw JAXBException.jsonValuePropertyRequired("[");   
+                	}
                     writer.write('[');
                     position.setEmptyCollection(false);
                     position.setNeedToOpenComplex(false);
+                    charactersAllowed = true;
                     return;
                 }
             }
@@ -193,6 +196,7 @@ public class JSONWriterRecord extends MarshalRecord {
                     position.setEmptyCollection(false);
                 }
              }
+            charactersAllowed = true;
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

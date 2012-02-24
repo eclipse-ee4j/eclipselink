@@ -23,15 +23,21 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlValueInternationalPriceTestCases extends JAXBTestCases{
+public class XmlValueInternationalPriceTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/intprice.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/intprice.json";
 
 	public XmlValueInternationalPriceTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[] { InternationalPriceNoAnnotation.class });
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+		jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "value");
+		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "value");
 	}
 	
 	   

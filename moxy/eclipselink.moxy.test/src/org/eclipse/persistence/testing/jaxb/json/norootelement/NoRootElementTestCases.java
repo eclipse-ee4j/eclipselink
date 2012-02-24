@@ -12,20 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
-import java.io.StringWriter;
-
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.json.JSONWithUnmarshalToClassTestCases;
+import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
-public class NoRootElementTestCases extends JSONWithUnmarshalToClassTestCases {    
-    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";    
+public class NoRootElementTestCases extends JSONMarshalUnmarshalTestCases{
+    protected final static String JSON_RESOURCE_WITH_ROOT = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressWithRoot.json";
+    protected final static String JSON_RESOURCE_NO_ROOT = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";
     
 	public NoRootElementTestCases(String name) throws Exception {
 	    super(name);
-	    setControlJSON(JSON_RESOURCE);
+	    setControlJSON(JSON_RESOURCE_WITH_ROOT);
+	    setWriteControlJSON(JSON_RESOURCE_NO_ROOT);
 	    setClasses(new Class[]{Address.class});
 	}
 	
@@ -38,20 +37,15 @@ public class NoRootElementTestCases extends JSONWithUnmarshalToClassTestCases {
 		return addr;
 	}
 	
+	@Override
+	public Class getUnmarshalClass(){
+	    return Address.class;	
+	}
+	
 	public Object getReadControlObject(){
-		QName name = new QName("");
+		QName name = new QName("addressWithRootElement");
 		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
 		return jbe;
 	}
-
-	public void testJSONToObjectFromInputSourceWithClass() throws Exception{
-		testJSONToObjectFromInputSourceWithClass(Address.class);
-	    
-	}
- 
-	public void testJSONToObjectFromReaderWithClass() throws Exception{
-		testJSONToObjectFromReaderWithClass(Address.class);
-	}	
-		
 }
 

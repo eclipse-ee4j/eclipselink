@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,14 +19,16 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.json.JSONWithUnmarshalToClassTestCases;
-public class NoRootElementNSTestCases extends JSONWithUnmarshalToClassTestCases {    
+import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
+
+public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {    
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressNS.json";    
     
 	public NoRootElementNSTestCases(String name) throws Exception {
 	    super(name);
 	    setControlJSON(JSON_RESOURCE);
 	    setClasses(new Class[]{Address.class});
+	   
 	}
 
 	public Object getControlObject() {
@@ -39,22 +40,17 @@ public class NoRootElementNSTestCases extends JSONWithUnmarshalToClassTestCases 
 		return addr;
 	}
 	
+	@Override
+	public Class getUnmarshalClass(){
+		return Address.class;
+	}
+	
 	public Object getReadControlObject(){
 		QName name = new QName("");
 		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
 		return jbe;
 	}
 
-	public void testJSONToObjectFromInputSourceWithClass() throws Exception{
-		testJSONToObjectFromInputSourceWithClass(Address.class);
-	    
-	}
- 
-	public void testJSONToObjectFromReaderWithClass() throws Exception{
-		testJSONToObjectFromReaderWithClass(Address.class);
-	}
-
-	 
 	 public Map getProperties(){
 			Map props = new HashMap();
 			
@@ -63,6 +59,7 @@ public class NoRootElementNSTestCases extends JSONWithUnmarshalToClassTestCases 
 			namespaceMap.put("namespace1","ns0");
 			
 			props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaceMap);
+			props.put(JAXBContext.JSON_INCLUDE_ROOT, Boolean.FALSE);
 			return props;
 		}
 

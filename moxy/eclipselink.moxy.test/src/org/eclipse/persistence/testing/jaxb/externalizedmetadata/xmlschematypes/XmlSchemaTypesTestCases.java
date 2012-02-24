@@ -25,15 +25,16 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.Employee;
 
 /**
  * Tests XmlSchemaTypes via eclipselink-oxm.xml
  *
  */
-public class XmlSchemaTypesTestCases extends JAXBTestCases {    
+public class XmlSchemaTypesTestCases extends JAXBWithJSONTestCases {    
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematypes/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlschematypes/employee.json";
     /**
      * This is the preferred (and only) constructor.
      * 
@@ -42,6 +43,7 @@ public class XmlSchemaTypesTestCases extends JAXBTestCases {
     public XmlSchemaTypesTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
     }
 

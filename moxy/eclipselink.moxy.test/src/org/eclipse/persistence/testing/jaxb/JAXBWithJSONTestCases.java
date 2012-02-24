@@ -22,6 +22,7 @@ import java.net.URL;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.xml.sax.InputSource;
@@ -79,17 +80,28 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     public void testJSONUnmarshalFromInputStream() throws Exception {
     	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        Object testObject = getJSONUnmarshaller().unmarshal(inputStream);
+        Object testObject = null;
+        if(getUnmarshalClass() != null){
+        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+        }else{
+            testObject = getJSONUnmarshaller().unmarshal(inputStream);
+        }
         inputStream.close();
         jsonToObjectTest(testObject);
     }
+      
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
     	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         InputSource inputSource = new InputSource(inputStream);
-        Object testObject = getJSONUnmarshaller().unmarshal(inputSource);
+        Object testObject = null;
+        if(getUnmarshalClass() != null){
+        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+        }else{
+            testObject = getJSONUnmarshaller().unmarshal(inputSource);
+        }
         inputStream.close();
         jsonToObjectTest(testObject);
     }
@@ -99,17 +111,31 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Reader reader = new InputStreamReader(inputStream);
-        Object testObject = getJSONUnmarshaller().unmarshal(reader);
+        Object testObject = null;
+        
+        if(getUnmarshalClass() != null){
+        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(reader), getUnmarshalClass());
+        }else{
+            testObject = getJSONUnmarshaller().unmarshal(reader);
+        }
+        
         reader.close();
         inputStream.close();
         jsonToObjectTest(testObject);
     }
+    
 
     public void testJSONUnmarshalFromURL() throws Exception {
     	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
 
         URL url = getJSONURL();
-        Object testObject = getJSONUnmarshaller().unmarshal(url);
+        Object testObject= null;
+        if(getUnmarshalClass() == null){
+        	testObject = getJSONUnmarshaller().unmarshal(url);
+        }else{
+        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
+        }
+        	
         jsonToObjectTest(testObject);
     }
     
@@ -150,10 +176,14 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     }
 
-    private void compareStrings(String test, String testString) {
+    protected void compareStrings(String test, String testString) {
+    	compareStrings(test, testString, getWriteControlJSON());
+    }
+    
+    protected void compareStrings(String test, String testString, String controlFileLocation) {
         log(test);
         log("Expected (With All Whitespace Removed):");
-        String expectedString = loadFileToString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
+        String expectedString = loadFileToString(controlFileLocation).replaceAll("[ \b\t\n\r ]", "");
         log(expectedString);
         log("\nActual (With All Whitespace Removed):");
         testString = testString.replaceAll("[ \b\t\n\r]", "");

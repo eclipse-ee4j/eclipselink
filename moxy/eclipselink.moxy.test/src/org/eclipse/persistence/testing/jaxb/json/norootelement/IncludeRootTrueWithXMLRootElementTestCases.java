@@ -17,11 +17,10 @@ import javax.xml.namespace.QName;
    
 public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalseWithXMLRootElementTestCases{
 	
-	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressWithRoot.json";
-	
 	public IncludeRootTrueWithXMLRootElementTestCases(String name) throws Exception {
 		super(name);
-		setControlJSON(JSON_RESOURCE);
+		setControlJSON(JSON_RESOURCE_WITH_ROOT);
+		setWriteControlJSON(JSON_RESOURCE_WITH_ROOT);
 		setClasses(new Class[]{AddressWithRootElement.class});		
 	}
 	
@@ -30,6 +29,11 @@ public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalse
 	    jsonMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);	    	   
 	    jsonUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);
   	}
+	
+	@Override
+	public Class getUnmarshalClass(){
+		return Address.class;
+	}
 	
 	public Object getReadControlObject() {	
 		QName name = new QName("addressWithRootElement");

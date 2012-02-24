@@ -12,20 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.multiplepackage;
 
-import javax.xml.bind.JAXBContext;
-
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.EmployeeNamespace;
 
-public class MultiplePackageTestCases extends JAXBTestCases {
+public class MultiplePackageTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/dept.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/multiplepackage/dept.json";
 	private final static int CONTROL_ID = 10;
 
     public MultiplePackageTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeNamespace.class;
         classes[1] = Department.class;

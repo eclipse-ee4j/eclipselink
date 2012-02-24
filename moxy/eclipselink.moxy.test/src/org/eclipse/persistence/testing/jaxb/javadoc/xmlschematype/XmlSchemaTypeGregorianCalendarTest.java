@@ -15,15 +15,17 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlschematype;
 //Example 1: Customize mapping of XMLGregorianCalendar at field level 
 
 import java.util.Calendar; 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlSchemaTypeGregorianCalendarTest extends JAXBTestCases {
+public class XmlSchemaTypeGregorianCalendarTest extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlschematype/xmlschematypecalendar.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlschematype/xmlschematypecalendar.json";
 
     public XmlSchemaTypeGregorianCalendarTest(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = USPrice.class;
         setClasses(classes);

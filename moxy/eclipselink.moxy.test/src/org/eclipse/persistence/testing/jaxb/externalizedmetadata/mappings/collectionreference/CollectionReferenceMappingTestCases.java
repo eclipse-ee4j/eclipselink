@@ -22,15 +22,16 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlCollectionReferenceMapping via eclipselink-oxm.xml
  *
  */
-public class CollectionReferenceMappingTestCases extends JAXBTestCases {
+public class CollectionReferenceMappingTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/root.json";
     
     private static final String ADD_ID1 = "a100";
     private static final String ADD_ID2 = "a101";
@@ -45,7 +46,8 @@ public class CollectionReferenceMappingTestCases extends JAXBTestCases {
     public CollectionReferenceMappingTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Root.class});
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);       
+        setControlJSON(JSON_RESOURCE); 
     }
     
 

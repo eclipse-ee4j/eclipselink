@@ -20,23 +20,27 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests relationship mapping configuration via XmlJoinNode & XmlJoinNodes.
  *
  */
-public class XmlJoinNodeTestCases extends JAXBTestCases {
+public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmljoinnode/company.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmljoinnode/company.json";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmljoinnode/";
     private static final String OXM_DOC = PATH + "company-oxm.xml";
     private static final String INVALID_OXM_DOC = PATH + "invalid-xml-join-node-oxm.xml";
@@ -54,7 +58,20 @@ public class XmlJoinNodeTestCases extends JAXBTestCases {
     public XmlJoinNodeTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { Company.class });
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("http://www.example.com", "x");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+    }
+    
+    protected Marshaller getJSONMarshaller() throws Exception{
+    	Marshaller m = jaxbContext.createMarshaller();
+    	Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("http://www.example.com", "x");
+        m.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+        m.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	return m;
     }
     
   
@@ -211,5 +228,7 @@ public class XmlJoinNodeTestCases extends JAXBTestCases {
         assertTrue("Expected an XMLCollectionReferenceMapping for attribute [employees], but was [" + mapping.toString() +"].", mapping instanceof XMLCollectionReferenceMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
+    
+
 
 }
