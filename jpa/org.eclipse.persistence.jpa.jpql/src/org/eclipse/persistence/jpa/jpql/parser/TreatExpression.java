@@ -77,7 +77,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	public void accept(ExpressionVisitor visitor) {
-		acceptUnknownVisitor(visitor);;
+		acceptUnknownVisitor(visitor);
 	}
 
 	/**

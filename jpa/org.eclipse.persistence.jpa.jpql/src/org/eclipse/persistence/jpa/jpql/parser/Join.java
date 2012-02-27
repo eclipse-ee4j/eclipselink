@@ -61,6 +61,11 @@ public final class Join extends AbstractExpression {
 	 */
 	private boolean hasSpaceAfterJoinAssociation;
 
+        /**
+         * Determines whether a whitespace was parsed after the identification variable.
+         */
+        private boolean hasSpaceAfterIdentificationVariable;
+
 	/**
 	 * The {@link Expression} representing the identification variable.
 	 */
@@ -70,6 +75,11 @@ public final class Join extends AbstractExpression {
 	 * The {@link Expression} representing the join association path expression.
 	 */
 	private AbstractExpression joinAssociationPath;
+
+        /**
+         * The {@link Expression} representing the join ON clause.
+         */
+        private AbstractExpression onClause;
 
 	/**
 	 * The actual <b>JOIN</b> identifier found in the string representation of the JPQL query.
@@ -158,6 +168,15 @@ public final class Join extends AbstractExpression {
 		if (identificationVariable != null) {
 			children.add(identificationVariable);
 		}
+
+                if (hasSpaceAfterIdentificationVariable) {
+                        children.add(buildStringExpression(SPACE));
+                }
+
+                // ON clause
+                if (onClause != null) {
+                        children.add(onClause);
+                }
 	}
 
 	/**
@@ -192,6 +211,13 @@ public final class Join extends AbstractExpression {
 		}
 		return identificationVariable;
 	}
+
+        /**
+         * Returns the {@link Expression} that represents the on clause if present.
+         */
+        public Expression getOnClause() {
+                return onClause;
+        }
 
 	/**
 	 * Returns the identifier this expression represents.
@@ -267,6 +293,14 @@ public final class Join extends AbstractExpression {
 		      !joinAssociationPath.isNull();
 	}
 
+        /**
+         * Determines whether the on clause was parsed.
+         */
+        public boolean hasOnClause() {
+                return onClause != null &&
+                      !onClause.isNull();
+        }
+
 	/**
 	 * Determines whether a whitespace was parsed after <b>AS</b>.
 	 *
@@ -276,6 +310,16 @@ public final class Join extends AbstractExpression {
 	public boolean hasSpaceAfterAs() {
 		return hasSpaceAfterAs;
 	}
+
+        /**
+         * Determines whether a whitespace was parsed before <b>ON</b>.
+         *
+         * @return <code>true</code> if there was a whitespace before <b>ON</b>; <code>false</code>
+         * otherwise
+         */
+        public boolean hasSpaceAfterIdentificationVariable() {
+                return hasSpaceAfterIdentificationVariable;
+        }
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>JOIN</b>.
@@ -393,6 +437,13 @@ public final class Join extends AbstractExpression {
 			hasSpaceAfterJoinAssociation = false;
 			wordParser.moveBackward(count);
 		}
+		
+                hasSpaceAfterIdentificationVariable = wordParser.skipLeadingWhitespace() > 0;
+
+		if (wordParser.startsWithIdentifier(ON)) {
+                    onClause = new OnClause(this);
+                    onClause.parse(wordParser, tolerant);
+                }
 	}
 
 	/**
@@ -430,5 +481,14 @@ public final class Join extends AbstractExpression {
 		if (identificationVariable != null) {
 			identificationVariable.toParsedText(writer, actual);
 		}
+
+                if (hasSpaceAfterIdentificationVariable) {
+                        writer.append(SPACE);
+                }
+
+                // ON clause
+                if (onClause != null) {
+                    onClause.toParsedText(writer, actual);
+                }
 	}
 }

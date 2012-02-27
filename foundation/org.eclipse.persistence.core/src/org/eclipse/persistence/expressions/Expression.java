@@ -1624,12 +1624,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p> Example:
      * <pre><blockquote>
      *  Expression address = employee.getAllowingNull("address");
-     *  address.join(address, address.get("city").equal("Ottawa"));
+     *  employee.join(address, address.get("city").equal("Ottawa"));
      *  query.addNonFetchJoin(address);
      * </blockquote></pre>
      */
     public Expression join(Expression target, Expression onClause) {
-        throw new UnsupportedOperationException("anyOfAllowingNone");
+        throw new UnsupportedOperationException("join");
     }
 
     /**
@@ -1640,12 +1640,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p> Example:
      * <pre><blockquote>
      *  Expression address = employee.getAllowingNull("address");
-     *  address.leftJoin(address, address.get("city").equal("Ottawa"));
+     *  employee.leftJoin(address, address.get("city").equal("Ottawa"));
      *  query.addNonFetchJoin(address);
      * </blockquote></pre>
      */
     public Expression leftJoin(Expression target, Expression onClause) {
-        throw new UnsupportedOperationException("anyOfAllowingNone");
+        throw new UnsupportedOperationException("leftJoin");
     }
     
     /**

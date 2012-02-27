@@ -508,4 +508,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 	 */
 	public void visit(WhereClause expression) {
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OnClause expression) {
+        }
 }

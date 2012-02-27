@@ -232,6 +232,13 @@ public interface ExpressionVisitor {
 	 */
 	void visit(HavingClause expression);
 
+        /**
+         * Visits the {@link OnClause} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(OnClause expression);
+
 	/**
 	 * Visits the {@link IdentificationVariable} expression.
 	 *

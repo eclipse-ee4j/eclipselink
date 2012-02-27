@@ -96,6 +96,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OnClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
@@ -700,7 +701,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(CollectionValuedPathExpression expression) {
-		visitPathExpression(expression, nullAllowed, expression.pathSize());
+		visitPathExpression(expression, this.nullAllowed, expression.pathSize());
 	}
 
 	/**
@@ -1164,11 +1165,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(Join expression) {
 		try {
-			nullAllowed = expression.isLeftJoin();
+		        this.nullAllowed = expression.isLeftJoin();
 			expression.getJoinAssociationPath().accept(this);
 		}
 		finally {
-			nullAllowed = false;
+			this.nullAllowed = false;
 		}
 	}
 
@@ -1849,6 +1850,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		expression.getConditionalExpression().accept(this);
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OnClause expression) {
+                expression.getConditionalExpression().accept(this);
+        }
+
 	private void visitInExpression(InExpression expression, Expression stateFieldPathExpression) {
 
 		InExpressionBuilder visitor = inExpressionBuilder();
@@ -2341,10 +2349,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				}
 				else {
 					if (last && nullAllowed) {
-						localExpression = localExpression.getAllowingNull(path);
+                                            localExpression = localExpression.getAllowingNull(path);
 					}
 					else {
-						localExpression = localExpression.get(path);
+                                            localExpression = localExpression.get(path);
 					}
 				}
 			}

@@ -597,4 +597,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 	public void visit(WhereClause expression) {
 		visit((Expression) expression);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OnClause expression) {
+                visit((Expression) expression);
+        }
 }

@@ -244,7 +244,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testAliasedFunction");
         
         tests.add("testSubselectInGroupBy");
-        // TODO - add back when working.
         tests.add("testSubselectInSelect");
         tests.add("testSubselectInFrom");
         tests.add("testParralelFrom");
@@ -272,6 +271,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testOrderByDistinct");
         tests.add("testJoinFetchWithJoin");
         tests.add("testNestedSubqueries");
+        tests.add("testOnClause");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -3346,6 +3346,34 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e join fetch e.address a order by a.city");
         query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Bug 312146
+    // Test join on clause
+    public void testOnClause() {
+        if (!isHermesParser()) {
+            warning("testOnClause only works with Hermes");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e left join e.address a on a.city = 'Ottawa'");
+        int size = query.getResultList().size();
+        query = em.createQuery("Select e from Employee e left join e.address a where a.city = 'Ottawa'");
+        int size2 = query.getResultList().size();
+        if (size == size2) {
+            fail("ON clause did not contain join");
+        }
+        query = em.createQuery("Select e from Employee e join e.address a on (a.city = 'Ottawa')");
+        size = query.getResultList().size();
+        if (size != size2) {
+            fail("ON clause join not used");
+        }
+        query = em.createQuery("Select e from Employee e left join e.manager m on m.id > 0 join m.address a on a.city = 'Ottawa' where a.id > 0");
+        query.getResultList();
+        // TODO
+        //query = em.createQuery("Select e from Employee e left join Employee e2 on e.id = e2.id");
+        //query.getResultList();
         closeEntityManager(em);
     }
 

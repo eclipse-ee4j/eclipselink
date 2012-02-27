@@ -78,6 +78,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OnClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
@@ -1158,6 +1159,13 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OnClause expression) {
+                expression.getConditionalExpression().accept(this);
+        }
 
 	/**
 	 * Visits the given {@link ArithmeticExpression} and create the appropriate {@link Resolver}.

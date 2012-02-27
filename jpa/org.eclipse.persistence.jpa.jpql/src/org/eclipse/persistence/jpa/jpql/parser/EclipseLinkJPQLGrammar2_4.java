@@ -86,6 +86,11 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected void initializeBNFs() {
+
+            registerBNF(new OnClauseBNF());
+
+            // Extend the query BNF to add support for ON
+            addChildBNF(JoinAssociationPathExpressionBNF.ID, OnClauseBNF.ID);
 	}
 
 	/**
@@ -93,6 +98,7 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected void initializeExpressionFactories() {
+            registerFactory(new OnClauseFactory());
 	}
 
 	/**

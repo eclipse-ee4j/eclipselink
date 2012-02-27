@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
@@ -343,6 +344,16 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 			if (queryExpression == null) {
 				queryExpression = queryContext.buildExpression(expression);
 				queryContext.addQueryExpression(variableName, queryExpression);
+				if (expression instanceof Join) {
+				    Join join = (Join)expression;
+				    if (join.hasOnClause()) {
+				        if (join.isLeftJoin()) {
+				            ((QueryKeyExpression)queryExpression).getBaseExpression().leftJoin(queryExpression, queryContext.buildExpression(join.getOnClause()));
+				        } else {
+                                            ((QueryKeyExpression)queryExpression).getBaseExpression().join(queryExpression, queryContext.buildExpression(join.getOnClause()));
+				        }
+				    }
+				}
 			}
 
 			ObjectLevelReadQuery query = (ObjectLevelReadQuery) queryContext.getDatabaseQuery();

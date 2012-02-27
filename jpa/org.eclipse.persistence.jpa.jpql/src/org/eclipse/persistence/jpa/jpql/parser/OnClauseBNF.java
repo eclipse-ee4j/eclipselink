@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,38 +14,35 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The <b>HAVING</b> construct enables conditions to be specified that further restrict the query
- * result as restrictions upon the groups.
- * <p>
- * <div nowrap><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code><p>
+ * The query BNF for the on clause.
+ *
+ * <div nowrap><b>BNF:</b> <code>on_clause ::= ON conditional_expression</code><p>
  *
  * @version 2.4
- * @since 2.3
- * @author Pascal Filion
+ * @since 2.4
+ * @author James
  */
-public final class HavingClause extends AbstractConditionalClause {
+@SuppressWarnings("nls")
+public final class OnClauseBNF extends JPQLQueryBNF {
 
 	/**
-	 * Creates a new <code>HavingClause</code>.
-	 *
-	 * @param parent The parent of this expression
+	 * The unique identifier of this BNF rule.
 	 */
-	HavingClause(AbstractExpression parent) {
-		super(parent, HAVING);
-	}
+	public static final String ID = "where_clause";
 
 	/**
-	 * {@inheritDoc}
+	 * Creates a new <code>WhereClauseBNF</code>.
 	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
+	public OnClauseBNF() {
+		super(ID);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(HavingClauseBNF.ID);
+	protected void initialize() {
+		super.initialize();
+		registerExpressionFactory(OnClauseFactory.ID);
 	}
 }

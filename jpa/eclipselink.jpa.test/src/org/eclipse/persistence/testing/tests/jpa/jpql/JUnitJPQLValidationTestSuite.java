@@ -128,6 +128,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnsupportedCountDistinctOnOuterJoinedCompositePK"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidHint"));
         suite.addTest(new JUnitJPQLValidationTestSuite("invalidCharTest"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("invalidOnClauseTest"));
         
         return suite;
     }
@@ -158,85 +159,44 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         employeePopulator.persistExample(session);
     }
     
-    public void illegalArgumentExceptionTest() 
+    public void ensureInvalid(String jpql) 
     {
-        
-        String ejbqlString = "SELECT FROM EMPLOYEE emp";
-        try 
-        {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
+        try {
+            createEntityManager().createQuery(jpql).getResultList();                
             fail("Illegal Argument Exception must be thrown");
-        }        
-        
-        catch(IllegalArgumentException ex)
-        {     
+        } catch (IllegalArgumentException ex) {     
             Assert.assertTrue(ex.getCause() instanceof JPQLException);            
         }                   
     }
     
-    
-    public void generalExceptionTest()
-    {
-        
-        String ejbqlString = "SELECT FROM EMPLOYEE emp";
-        try 
-        {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Syntax error exception must be thrown");
-        }        
-        
-        catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }              
+    public void illegalArgumentExceptionTest() {
+        ensureInvalid("SELECT FROM EMPLOYEE emp");
     }
     
-    public void recognitionExceptionTest()
-    {
-        
-        String ejbqlString =  "SELECT OBJECT(emp) FROW Employee emp";
-        try 
-        {
-            createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Recognition Exception must be thrown");
-        }        
-        
-        catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }              
+    
+    public void generalExceptionTest() {
+        ensureInvalid("SELECT FROM EMPLOYEE emp");
     }
     
-    public void invalidCharTest()
-    {
-        
-        String ejbqlString =  "Select !e from Employee e where ! e = e";
-        try 
-        {
-            createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Recognition Exception must be thrown");
-        }        
-        catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+    public void recognitionExceptionTest() {
+        ensureInvalid("SELECT OBJECT(emp) FROW Employee emp");
+    }
+    
+    public void invalidCharTest() {
+        ensureInvalid("Select !e from Employee e where ! e = e");
+    }
+    
+    public void invalidOnClauseTest() {
+        if (!isHermesParser()) {
+            warning("invalidOnClauseTest only works with Hermes");
+            return;
         }
+        ensureInvalid("Select e from Employee e on e.id = 5");
+        ensureInvalid("Select e from Employee e on");
     }
     
-   public void missingSelectExceptionTest()
-   {
-        
-        String ejbqlString =  "OBJECT(emp) FROM Employee emp";
-        
-        try 
-        {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
-            fail("Recognition Exception must be thrown");
-        }        
-        
-        catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }    
+   public void missingSelectExceptionTest() {
+       ensureInvalid("OBJECT(emp) FROM Employee emp");
    }
    
    

@@ -63,18 +63,16 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
 
     public static Test suite() {
         TestSuite suite = new TestSuite("PessimisticLocking ExtendedScope TestSuite");
-        if (! (JUnitTestCase.getServerSession()).getPlatform().isSQLServer()) {
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testSetup"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES1"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES2"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES3"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES4"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES5"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES6"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES7"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES8"));
-            suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES9"));
-        }
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testSetup"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES1"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES2"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES3"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES4"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES5"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES6"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES7"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES8"));
+        suite.addTest(new PessimisticLockingExtendedScopeTestSuite("testPESSMISTIC_ES9"));
         return suite;
     }
     
@@ -102,6 +100,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     // will be locked with bidirectional one-to-one mapping without mappedBy
     // (Scenario 1.1)
     public void testPESSMISTIC_ES1() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         final EntyA a = new EntyA();
         
         final Actor actor = new Actor<EntyA>() {
@@ -136,6 +138,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     // Entity relationships for which the locked entity contains the foreign key
     // will be locked with unidirectional one-to-one mapping(Scenario 1.2)
     public void testPESSMISTIC_ES2() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         final EntyA a = new EntyA();
         
         final Actor actor = new Actor<EntyA>() {
@@ -169,6 +175,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     // Entity relationships for which the locked entity contains the foreign key
     // will be locked with unidirectional many-to-one mapping(Scenario 1.3)
     public void testPESSMISTIC_ES3() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         final Equipment eq = new Equipment();
         
         final Actor actor = new Actor<Equipment>() {
@@ -204,6 +214,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     // Entity relationships for which the locked entity contains the foreign key
     // will be locked with bidirectional many-to-one mapping(Scenario 1.4)
     public void testPESSMISTIC_ES4() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         final Employee emp = new Employee();
         
         final Actor actor = new Actor<Employee>() {
@@ -237,6 +251,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     // Relationships owned by the entity that are contained in join tables will
     // be locked with Unidirectional OneToMany mapping (Scenario 2.2)
     public void testPESSMISTIC_ES5() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         final EntyA entyA = new EntyA();
         
         final Actor actor = new Actor<EntyA>() {
@@ -280,6 +298,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     
     //Relationships owned by the entity that are contained in join tables will be locked with Unidirectional ManyToMany mapping (Scenario 2.3)
     public void testPESSMISTIC_ES6() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         final EntyA entyA = new EntyA();
         
         final Actor actor = new Actor<EntyA>() {
@@ -316,7 +338,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
 
 
     
-        /*
+    /*
      * The test should assert that the following phenomenon does not occur
      * after a row has been locked by T1:
      * 
@@ -398,7 +420,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
 
 
     //Bidirectional OneToOne Relationship with target entity has foreign key, entity does not contain the foreign key will not be locked (Scenario 3.1)
-    public void testPESSMISTIC_ES7() throws Exception{
+    public void testPESSMISTIC_ES7() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -457,7 +483,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     }
 
     //Unidirectional OneToMany Relationship, in which entity does not contain the foreign key will not be locked (Scenario 3.2)
-    public void testPESSMISTIC_ES8() throws Exception{
+    public void testPESSMISTIC_ES8() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -483,28 +513,28 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.NORMAL);
             EntityManager em1= createEntityManager();
 
-            try{
+            try {
                 beginTransaction(em1);
                 emp = em1.find(Employee.class, emp.getId());
                 em1.lock(emp, lockMode, properties);
                 EntityManager em2 = createEntityManager();
-                try{
+                try {
                     beginTransaction(em2);
                     emp = em1.find(Employee.class, emp.getId());
                     emp.setDealers(null);
                     commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
+                } catch (javax.persistence.RollbackException ex){
                     fail("it should not throw the exception!!!");
-                }finally{
-                    if (isTransactionActive(em2)){
+                } finally {
+                    if (isTransactionActive(em2)) {
                         rollbackTransaction(em2);
                     }
                     closeEntityManager(em2);
                 }
-            }catch (Exception ex){
+            } catch (Exception ex){
                 fail("it should not throw the exception!!!");
                 throw ex;
-            }finally{
+            } finally {
                 if (isTransactionActive(em1)){
                     rollbackTransaction(em1);
                 }
@@ -514,7 +544,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     }
 
     //Bidirectional ManyToMany Relationship, in which entity does not contain the foreign key will not be locked by default (Scenario 3.3)
-    public void testPESSMISTIC_ES9() throws Exception{
+    public void testPESSMISTIC_ES9() throws Exception {
+        if (getPlatform().isSQLServer()) {
+            warning("This test deadlocks on SQL Server");
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
