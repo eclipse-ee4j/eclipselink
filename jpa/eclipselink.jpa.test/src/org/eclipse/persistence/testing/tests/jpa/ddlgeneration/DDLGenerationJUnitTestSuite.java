@@ -60,6 +60,7 @@ import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Capo;
@@ -1182,7 +1183,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             currentPatent.setId(2);
             em.persist(currentPatent);
             em.flush();
-            em.createNativeQuery("UPDATE PatentInvestigator SET CURRENT_DESRIPTION = 'Current', CURRENT_PATENT = " + currentPatent.getId() + " WHERE ID = " + investigator.getId()).executeUpdate();            
+            em.createNativeQuery("UPDATE " + em.unwrap(ServerSession.class).getDescriptor(PatentInvestigator.class).getDefaultTable().getName() + " SET CURRENT_DESRIPTION = 'Current', CURRENT_PATENT = " + currentPatent.getId() + " WHERE ID = " + investigator.getId()).executeUpdate();            
             em.refresh(investigatorRead);
             assertTrue("after refresh investigatorRead.getLast() == null", investigatorRead.getLast() != null);
             assertTrue("after refresh investigatorRead.getLast.getPatent() == null", investigatorRead.getLast().getPatent() != null);
