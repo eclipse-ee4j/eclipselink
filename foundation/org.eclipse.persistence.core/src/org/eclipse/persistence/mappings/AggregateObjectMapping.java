@@ -1208,15 +1208,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         
         // disallow null for aggregates with target foreign key relationships
-        for (DatabaseMapping mapping: getReferenceDescriptor().getMappings()){
-            if (mapping.isCollectionMapping() || 
-                    (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) || 
-                    mapping.isAbstractCompositeDirectCollectionMapping()) {
-                isNullAllowed = false;
-                Object[] args = new Object[2];
-                args[0] = this;
-                args[1] = mapping;
-                session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_is_null_allowed", args);
+        if (isNullAllowed) {
+            for (DatabaseMapping mapping: getReferenceDescriptor().getMappings()){
+                if (mapping.isCollectionMapping() || 
+                        (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) || 
+                        mapping.isAbstractCompositeDirectCollectionMapping()) {
+                    isNullAllowed = false;
+                    Object[] args = new Object[2];
+                    args[0] = this;
+                    args[1] = mapping;
+                    session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_is_null_allowed", args);
+                }
             }
         }
         
