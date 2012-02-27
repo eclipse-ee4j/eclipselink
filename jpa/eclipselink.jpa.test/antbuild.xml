@@ -624,24 +624,21 @@
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}">
             <!-- 248780: exclude copies of classes from this eclipselink-annotation-model.jar if weaving is disabled in any other jar -->        	
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
-                     includes="org/eclipse/persistence/testing/models/"
-                     excludes="org/eclipse/persistence/testing/models/jpa/xml/**
-                               org/eclipse/persistence/testing/models/jpa/ddlgeneration/**
-                               org/eclipse/persistence/testing/models/jpa/delimited/**
-                               org/eclipse/persistence/testing/models/jpa/extensibility/**
-                               org/eclipse/persistence/testing/models/jpa/validationfailed/**
-                               org/eclipse/persistence/testing/models/jpa/fieldaccess/**
-                               org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
-                               org/eclipse/persistence/testing/models/jpa/metamodel/**
-                               org/eclipse/persistence/testing/models/jpa/partitioned/**
-                               org/eclipse/persistence/testing/models/jpa/plsql/**
-                               org/eclipse/persistence/testing/models/jpa/performance/**
-                               org/eclipse/persistence/testing/models/jpa/performance2/**
-                               org/eclipse/persistence/testing/models/jpa/beanvalidation/**
-                               org/eclipse/persistence/testing/models/jpa/composite/**
-                               org/eclipse/persistence/testing/models/jpa/jaxrs/**
-                               org/eclipse/persistence/testing/models/weaving/**
-                               org/eclipse/persistence/testing/models/jpa21/**"/>
+                     includes="org/eclipse/persistence/testing/models/jpa/advanced/**
+                               org/eclipse/persistence/testing/models/jpa/cacheable/**
+                               org/eclipse/persistence/testing/models/jpa/cascadedeletes/**
+                               org/eclipse/persistence/testing/models/jpa/complexaggregate/**
+                               org/eclipse/persistence/testing/models/jpa/datatypes/**
+                               org/eclipse/persistence/testing/models/jpa/datetime/**
+                               org/eclipse/persistence/testing/models/jpa/inheritance/**
+                               org/eclipse/persistence/testing/models/jpa/inherited/**
+                               org/eclipse/persistence/testing/models/jpa/lob/**
+                               org/eclipse/persistence/testing/models/nativeapitest/**
+                               org/eclipse/persistence/testing/models/jpa/orphanremoval/**
+                               org/eclipse/persistence/testing/models/jpa/privateowned/**
+                               org/eclipse/persistence/testing/models/jpa/relationships/**
+                               org/eclipse/persistence/testing/models/jpa/sessionbean/**
+                               org/eclipse/persistence/testing/models/jpa/virtualattribute/**"/>
         </copy>
         <antcall target="prepare-spring-xmls" inheritRefs="true">
             <param name="MODEL_NAME" value="${eclipselink.annotation.model}"/>
