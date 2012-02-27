@@ -119,14 +119,14 @@
 
 <!-- ================================================================================= -->
 
-    <target name="test-4-eclipselink">
+    <target name="verify-eclipselink-exist">
         <property name="eclipselink.jar" value="eclipselink.jar"/>
         <condition property="eclipselink.exist">
             <available file="${eclipselink.jar}"/>
         </condition>
     </target>
 
-    <target name="generate-eclipselink" unless="eclipselink.exist" depends="test-4-eclipselink">
+    <target name="generate-eclipselink" unless="eclipselink.exist" depends="verify-eclipselink-exist">
         <echo message="EclipseLink jar not found! Building..."/>
         <condition property="eclipselink.build.file"  value="build.xml"
                                                        else="antbuild.xml">
