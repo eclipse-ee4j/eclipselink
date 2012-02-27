@@ -59,11 +59,18 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_PERSONTYPE_TABLE =
         "CREATE OR REPLACE TYPE DBWS_PERSONTYPE_TABLE AS TABLE OF DBWS_PERSONTYPE";
+    static final String CREATE_MYEMPOBJECT =
+        "CREATE OR REPLACE TYPE DBWS_MYEMPOBJECT AS OBJECT (" +
+            "\nEMPNO NUMBER(4)," +
+            "\nENAME VARCHAR2(10)" +
+        "\n)";
+    static final String CREATE_MYEMPOBJECT_TABLE =
+        "CREATE OR REPLACE TYPE DBWS_MYEMPOBJECT_TABLE AS TABLE OF DBWS_MYEMPOBJECT";
     static final String CREATE_GROUPTYPE =
         "CREATE OR REPLACE TYPE DBWS_GROUPTYPE AS OBJECT (" +
             "\nNAME VARCHAR2(20)," +
-            "\nPCOUNT NUMBER," +
-            "\nPTABLE DBWS_PERSONTYPE_TABLE" +
+            "\nECOUNT NUMBER," +
+            "\nETABLE DBWS_MYEMPOBJECT_TABLE" +
         "\n)";
     static final String CREATE_GET_PERSONTYPE_PROC =
         "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE(PTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
@@ -93,14 +100,17 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             "\nRETURN L_DATA;" +
         "\nEND GET_PERSONTYPE_TABLE2;";
     static final String CREATE_GROUPTYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE CREATE_GROUPTYPE(GNAME IN VARCHAR2, PTYPETOADD1 IN DBWS_PERSONTYPE, PTYPETOADD2 IN DBWS_PERSONTYPE, PTYPETOADD3 IN DBWS_PERSONTYPE, NEWGROUP OUT DBWS_GROUPTYPE) AS" +
-        "\nPTABLE DBWS_PERSONTYPE_TABLE;" +
+        "CREATE OR REPLACE PROCEDURE CREATE_GROUPTYPE(GNAME IN VARCHAR2, NEWGROUP OUT DBWS_GROUPTYPE) AS" +
+        "\nETABLE DBWS_MYEMPOBJECT_TABLE;" +
         "\nBEGIN" +
-            "\nPTABLE := DBWS_PERSONTYPE_TABLE();" +
-            "\nPTABLE := ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD1, PTABLE);" +
-            "\nPTABLE := ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD2, PTABLE);" +
-            "\nPTABLE := ADD_PERSONTYPE_TO_TABLE2(PTYPETOADD3, PTABLE);" +
-            "\nNEWGROUP := DBWS_GROUPTYPE(GNAME, 3, PTABLE);" +
+            "\nETABLE := DBWS_MYEMPOBJECT_TABLE();" +
+            "\nETABLE.EXTEND;" +
+            "\nETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(20, 'COREY');" +
+            "\nETABLE.EXTEND;" +
+            "\nETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(33, 'RICKY');" +
+            "\nETABLE.EXTEND;" +
+            "\nETABLE(ETABLE.COUNT) := DBWS_MYEMPOBJECT(32, 'BUBBLES');" +
+            "\nNEWGROUP := DBWS_GROUPTYPE(GNAME, 3, ETABLE);" +
         "\nEND CREATE_GROUPTYPE;";
     static final String CREATE_ADD_PERSONTYPE_TO_TABLE_PROC =
         "CREATE OR REPLACE PROCEDURE ADD_PERSONTYPE_TO_TABLE(PTYPETOADD IN DBWS_PERSONTYPE, OLDTABLE IN DBWS_PERSONTYPE_TABLE, NEWTABLE OUT DBWS_PERSONTYPE_TABLE) AS" +
@@ -129,6 +139,10 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         "DROP PROCEDURE CREATE_GROUPTYPE";
     static final String DROP_GROUPTYPE =
         "DROP TYPE DBWS_GROUPTYPE";
+    static final String DROP_MYEMPOBJECT_TABLE =
+        "DROP TYPE DBWS_MYEMPOBJECT_TABLE";
+    static final String DROP_MYEMPOBJECT =
+        "DROP TYPE DBWS_MYEMPOBJECT";
     static final String DROP_PERSONTYPE_TABLE =
         "DROP TYPE DBWS_PERSONTYPE_TABLE";
     static final String DROP_PERSONTYPE =
@@ -163,6 +177,8 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         if (ddlCreate) {
             runDdl(conn, CREATE_PERSONTYPE, ddlDebug);
             runDdl(conn, CREATE_PERSONTYPE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_MYEMPOBJECT, ddlDebug);
+            runDdl(conn, CREATE_MYEMPOBJECT_TABLE, ddlDebug);
             runDdl(conn, CREATE_GROUPTYPE, ddlDebug);
             runDdl(conn, CREATE_GROUPTYPE_PROC, ddlDebug);
             runDdl(conn, CREATE_GET_PERSONTYPE_PROC, ddlDebug);
@@ -237,6 +253,8 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_GET_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_GROUPTYPE_PROC, ddlDebug);
             runDdl(conn, DROP_GROUPTYPE, ddlDebug);
+            runDdl(conn, DROP_MYEMPOBJECT_TABLE, ddlDebug);
+            runDdl(conn, DROP_MYEMPOBJECT, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE, ddlDebug);
         }
@@ -462,16 +480,8 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     
     @Test
     public void createGroupTypeTest() {
-        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
-        Object personType1 = unmarshaller.unmarshal(new StringReader(PTYPE_INPUT_XML));
-        Object personType2 = unmarshaller.unmarshal(new StringReader(PTYPE_INPUT2_XML));
-        Object personType3 = unmarshaller.unmarshal(new StringReader(PTYPE_INPUT3_XML));
-
         Invocation invocation = new Invocation("CreateGroupType");
         invocation.setParameter("GNAME", "MyNewGroup");
-        invocation.setParameter("PTYPETOADD1", personType1);
-        invocation.setParameter("PTYPETOADD2", personType2);
-        invocation.setParameter("PTYPETOADD3", personType3);
 
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -479,34 +489,46 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(NEW_PTABLE_OUTPUT2_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(NEW_ETABLE_OUTPUT2_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     
-    static String NEW_PTABLE_OUTPUT2_XML =
+    static String ETYPE_INPUT_XML =
+        REGULAR_XML_HEADER +
+        "<dbws_myempobjectType xmlns=\"urn:ObjectTableTypeTests\">" +
+            "<empno>20</empno>" +
+            "<ename>COREY</ename>" +
+        "</dbws_myempobjectType>";
+    static String ETYPE_INPUT2_XML =
+        REGULAR_XML_HEADER +
+        "<dbws_myempobjectType xmlns=\"urn:ObjectTableTypeTests\">" +
+            "<empno>33</empno>" +
+	        "<ename>RICKY</ename>" +
+        "</dbws_myempobjectType>";
+    static String ETYPE_INPUT3_XML =
+        REGULAR_XML_HEADER +
+        "<dbws_myempobjectType xmlns=\"urn:ObjectTableTypeTests\">" +
+            "<empno>32</empno>" +
+	        "<ename>BUBBLES</ename>" +
+        "</dbws_myempobjectType>";
+    static String NEW_ETABLE_OUTPUT2_XML =
         REGULAR_XML_HEADER +
 	    "<dbws_grouptypeType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
 		    "<name>MyNewGroup</name>" +
-		    "<pcount>3</pcount>" +
-		    "<ptable>" +
+		    "<ecount>3</ecount>" +
+		    "<etable>" +
 			    "<item>" +
-				    "<name>COREY</name>" +
-				    "<age>20</age>" +
-				    "<gender>M</gender>" +
-				    "<incarcerated>1997-12-09</incarcerated>" +
+			        "<empno>20</empno>" +
+				    "<ename>COREY</ename>" +
 			    "</item>" +
 	            "<item>" +
-	                "<name>RICKY</name>" +
-	                "<age>33</age>" +
-	                "<gender>M</gender>" +
-	                "<incarcerated>1985-10-01</incarcerated>" +
+			        "<empno>33</empno>" +
+				    "<ename>RICKY</ename>" +
 	            "</item>" +
 	            "<item>" +
-	                "<name>BUBBLES</name>" +
-	                "<age>32</age>" +
-	                "<gender>M</gender>" +
-	                "<incarcerated>1990-11-19</incarcerated>" +
+			        "<empno>32</empno>" +
+				    "<ename>BUBBLES</ename>" +
 	            "</item>" +
-		    "</ptable>" +
+		    "</etable>" +
 	    "</dbws_grouptypeType>";
 }

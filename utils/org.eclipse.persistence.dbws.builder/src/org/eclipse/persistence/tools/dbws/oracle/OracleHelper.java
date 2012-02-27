@@ -988,11 +988,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         if (buildDescriptor) {
                         	// need to update the java class name on the descriptor to include package (project) name
                         	xdesc2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
+                        	// make sure the descriptor is built for the enclosed ObjectType
+                        	addToOXProjectForObjectTableTypeArg(field.getEnclosedType(), oxProject, targetTypeName2, alias);
                         }
                         // assumes ObjectTableType has an enclosed ObjectType type
                         String nestedTypeAlias = ((ObjectTableType) field.getEnclosedType()).getEnclosedType().getTypeName().toLowerCase();
                         String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
-                        // ObjectType is composite
                         buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
                     }
                 } else {
@@ -1064,11 +1065,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         if (buildDescriptor) {
                         	// need to update the java class name on the descriptor to include package (project) name
                         	ordt2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
+                        	// make sure the descriptor is built for the enclosed ObjectType
+                        	addToORProjectForObjectTableTypeArg(fType.getEnclosedType(), orProject, targetTypeName2, alias);
                         }
                     	ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getEnclosedType()).getEnclosedType();
                         String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
                         String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
-                        // ObjectType is composite
                         buildAndAddObjectArrayMapping(ordt, lFieldName, fieldName, nestedTypeName, nestedTypeAlias.toUpperCase());
                     }
                 } else {
