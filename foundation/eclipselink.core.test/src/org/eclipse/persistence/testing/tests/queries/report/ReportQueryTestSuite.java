@@ -107,6 +107,9 @@ public class ReportQueryTestSuite extends TestSuite {
         //bug 4942640
         addTest(new ReportQueryAndExistsSubQuery());
         addTest(new ReportQueryAndExistsSubQueryWithWhereClause());
+        
+        // bug 372526
+        addTest(new ReportQueryRetrievePrimaryKeysCursorTest());
     }
 
     private void addCountDirectCollectionTest() {
