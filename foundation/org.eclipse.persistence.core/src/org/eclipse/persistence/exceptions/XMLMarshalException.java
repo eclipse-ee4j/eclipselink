@@ -50,7 +50,9 @@ public class XMLMarshalException extends ValidationException {
     public static final int ERROR_PROCESSING_PREFIX_MAPPER = 25031;
     public static final int ERROR_INVOKING_CHARACTER_ESCAPE_HANDLER = 25032;
     public static final int ERROR_PROCESSING_CHARACTER_ESCAPE_HANDLER = 25033;
-
+    public static final int ERROR_INVOKING_ID_RESOLVER = 25034;
+    public static final int ERROR_PROCESSING_ID_RESOLVER = 25035;
+    public static final int WRAPPED_ID_RESOLVER_WITH_MULTI_ID = 25036;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -334,6 +336,29 @@ public class XMLMarshalException extends ValidationException {
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_PROCESSING_CHARACTER_ESCAPE_HANDLER, args));
         exception.setErrorCode(ERROR_PROCESSING_CHARACTER_ESCAPE_HANDLER);
         exception.setInternalException(nestedException);
+        return exception;
+    }
+
+    public static XMLMarshalException errorInvokingIDResolver(String methodName, Object resolver, Throwable nestedException) {
+        Object[] args = {methodName, resolver};
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_INVOKING_ID_RESOLVER, args));
+        exception.setErrorCode(ERROR_INVOKING_ID_RESOLVER);
+        exception.setInternalException(nestedException);
+        return exception;
+    }
+
+    public static XMLMarshalException errorProcessingIDResolver(String methodName, Object resolver, Throwable nestedException) {
+        Object[] args = {methodName, resolver};
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_PROCESSING_ID_RESOLVER, args));
+        exception.setErrorCode(ERROR_PROCESSING_ID_RESOLVER);
+        exception.setInternalException(nestedException);
+        return exception;
+    }
+
+    public static XMLMarshalException wrappedIDResolverWithMultiID(String keyString, Object resolver) {
+        Object[] args = {keyString, resolver};
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, WRAPPED_ID_RESOLVER_WITH_MULTI_ID, args));
+        exception.setErrorCode(WRAPPED_ID_RESOLVER_WITH_MULTI_ID);
         return exception;
     }
 

@@ -42,10 +42,10 @@ import javax.xml.validation.Schema;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
@@ -57,6 +57,7 @@ import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 
@@ -86,12 +87,22 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
 
+    /**
+     * The Constant ID_RESOLVER.  This can be used to specify a custom
+     * IDResolver class, to allow customization of ID/IDREF processing.
+     * @since 2.3.3
+     */
+    public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
+    private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
+    private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
+
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
         validationEventHandler = new DefaultValidationEventHandler();
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
+        xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
     }
 
     private XMLInputFactory getXMLInputFactory() {
@@ -661,8 +672,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public void setProperty(String key, Object value) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
+        } else if (JAXBContext.ID_RESOLVER.equals(key)) {
+            setIDResolver((IDResolver) value);
+        } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
+            setIDResolver(new IDResolverWrapper(value));
+        } else {
+            throw new PropertyException(key, value);
         }
-        throw new PropertyException(key, value);
     }
 
     public Object getProperty(String key) throws PropertyException {
@@ -832,6 +848,27 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else {
             return new UnmarshalException(xmlMarshalException);
         }
+    }
+
+    /**
+     * Return this Unmarshaller's custom IDResolver.
+     * 
+     * @see IDResolver
+     * @since 2.3.3
+     * @return the custom IDResolver, or null if one has not been specified.
+     */
+    public IDResolver getIDResolver() {
+        return getXMLUnmarshaller().getIDResolver();
+    }
+
+    /**
+     * Set this Unmarshaller's custom IDResolver.
+     * 
+     * @see IDResolver
+     * @since 2.3.3
+     */
+    public void setIDResolver(IDResolver idResolver) {
+        getXMLUnmarshaller().setIDResolver(idResolver);
     }
 
 }

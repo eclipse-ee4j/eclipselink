@@ -35,10 +35,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.exceptions.SessionLoaderException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
@@ -123,6 +120,13 @@ import org.eclipse.persistence.sessions.Session;
  */
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
+
+    /**
+     * The Constant ID_RESOLVER.  This can be used to specify a custom
+     * IDResolver class, to allow customization of ID/IDREF processing.
+     * @since 2.3.3
+     */
+    public static final String ID_RESOLVER = "eclipselink.id-resolver";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {

@@ -18,6 +18,8 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.xmlelementref.ns.XmlElementRefWithNamespaceTests;
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.idresolver.IDResolverTestCases;
+import org.eclipse.persistence.testing.jaxb.idresolver.NonELIDResolverTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.JAXBInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
@@ -119,6 +121,9 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.multiplepackage.MultiplePackageInfoTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.attachments.contenttype.ContentTypeTestCases.class);
         suite.addTestSuite(XmlElementRefWithNamespaceTests.class);
+        suite.addTestSuite(IDResolverTestCases.class);
+        suite.addTestSuite(NonELIDResolverTestCases.class);
+
         return suite;
     }
 

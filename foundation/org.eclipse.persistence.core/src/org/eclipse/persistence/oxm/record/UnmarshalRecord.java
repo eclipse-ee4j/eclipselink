@@ -428,8 +428,11 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startDocument() throws SAXException {
+        if (getUnmarshaller().getIDResolver() != null && getParentRecord() == null) {
+            getUnmarshaller().getIDResolver().startDocument(getUnmarshaller().getErrorHandler());
+        }
     }
-    
+
     private void initializeRecord(Attributes attrs) throws SAXException{
         this.setAttributes(attrs);
     	XMLDescriptor xmlDescriptor = (XMLDescriptor) treeObjectBuilder.getDescriptor();    	
@@ -521,7 +524,11 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void endDocument() throws SAXException {
-        if (null != selfRecords) {
+        if (getUnmarshaller().getIDResolver() != null && getParentRecord() == null) {
+            getUnmarshaller().getIDResolver().endDocument();
+        }
+
+    	if (null != selfRecords) {
             for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
                 UnmarshalRecord selfRecord = selfRecords.get(x);
                 if(selfRecord != null){
@@ -606,18 +613,36 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 if(null != primaryKeyFields) {
                     int primaryKeyFieldsSize = primaryKeyFields.size();
                     if (primaryKeyFieldsSize > 0) {
-                        Object pk = treeObjectBuilder.extractPrimaryKeyFromObject(currentObject, session);
+                        CacheId pk = (CacheId) treeObjectBuilder.extractPrimaryKeyFromObject(currentObject, session);
                         for (int x=0; x<primaryKeyFieldsSize; x++) {
-                            Object value = ((CacheId)pk).getPrimaryKey()[x];
+                            Object value = pk.getPrimaryKey()[x];
                             if (null == value) {
                                 XMLField pkField = (XMLField) xmlDescriptor.getPrimaryKeyFields().get(x);
-                                ((CacheId)pk).set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
+                                pk.set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
                             }
                         }
                         CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
                         key.setRecord(this);
                         key.setObject(currentObject);
                         key.releaseDeferredLock();
+
+                        if (getUnmarshaller().getIDResolver() != null) {
+                            try {
+                                if (primaryKeyFieldsSize > 1) {
+                                    Map<String, Object> idWrapper = new HashMap<String, Object>();
+                                    for (int x = 0; x < primaryKeyFieldsSize; x++) {
+                                        String idName = xmlDescriptor.getPrimaryKeyFieldNames().elementAt(x);
+                                        Object idValue = pk.getPrimaryKey()[x];
+                                        idWrapper.put(idName, idValue);
+                                    }
+                                    getUnmarshaller().getIDResolver().bind(idWrapper, currentObject);
+                                } else {
+                                    getUnmarshaller().getIDResolver().bind(pk.getPrimaryKey()[0], currentObject);
+                                }
+                            } catch (SAXException e) {
+                                throw XMLMarshalException.unmarshalException(e);
+                            }
+                        }
                     }
                 }
             }

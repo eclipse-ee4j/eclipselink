@@ -102,6 +102,7 @@ public class XMLUnmarshaller implements Cloneable {
 
     private Class unmappedContentHandlerClass;
     private StrBuffer stringBuffer;
+    private IDResolver idResolver;
 
     static {
         try {
@@ -206,7 +207,7 @@ public class XMLUnmarshaller implements Cloneable {
     public void resolveReferences(AbstractSession unitOfWork) {
         ReferenceResolver resolver = ReferenceResolver.getInstance(unitOfWork);
         if (resolver != null) {
-            resolver.resolveReferences(unitOfWork);
+            resolver.resolveReferences(unitOfWork, getIDResolver());
         }
     }
 
@@ -653,6 +654,25 @@ public class XMLUnmarshaller implements Cloneable {
         clone.setUnmarshalListener(unmarshalListener);
         clone.setValidationMode(getValidationMode());
         return clone;
+    }
+
+    /**
+     * Return this Unmarshaller's custom IDResolver.
+     * @see IDResolver
+     * @since 2.3.3
+     * @return the custom IDResolver, or null if one has not been specified.
+     */
+    public IDResolver getIDResolver() {
+        return idResolver;
+    }
+
+    /**
+     * Set this Unmarshaller's custom IDResolver.
+     * @see IDResolver
+     * @since 2.3.3
+     */
+    public void setIDResolver(IDResolver idResolver) {
+        this.idResolver = idResolver;
     }
 
 }

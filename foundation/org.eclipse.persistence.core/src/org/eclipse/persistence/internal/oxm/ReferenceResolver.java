@@ -16,15 +16,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.Callable;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
@@ -179,7 +183,7 @@ public class ReferenceResolver {
      * INTERNAL:
      * @param session typically will be a unit of work
      */
-    public void resolveReferences(AbstractSession session) {
+    public void resolveReferences(AbstractSession session, IDResolver userSpecifiedResolver) {
         for (int x = 0, referencesSize = references.size(); x < referencesSize; x++) {
             Reference reference = (Reference) references.get(x);
             Object referenceSourceObject = reference.getSourceObject();
@@ -230,7 +234,32 @@ public class ReferenceResolver {
                 }
             } else if (reference.getMapping() instanceof XMLObjectReferenceMapping) {
                 CacheId primaryKey = (CacheId) reference.getPrimaryKey();
-                Object value = getValue(session, reference, primaryKey);
+                Object value = null;
+                if (userSpecifiedResolver != null) {
+                    final Callable c;
+                    try {
+                        if (primaryKey.getPrimaryKey().length > 1) {
+                            Map<String, Object> idWrapper = new HashMap<String, Object>();
+                            for (int y = 0; y < primaryKey.getPrimaryKey().length; y++) {
+                                XMLObjectReferenceMapping refMapping = (XMLObjectReferenceMapping) reference.getMapping();
+                                String idName = refMapping.getReferenceDescriptor().getPrimaryKeyFieldNames().elementAt(y);
+                                Object idValue = primaryKey.getPrimaryKey()[y];
+                                idWrapper.put(idName, idValue);
+                            }
+                            c = userSpecifiedResolver.resolve(idWrapper, reference.getTargetClass());
+                        } else {
+                            c = userSpecifiedResolver.resolve(primaryKey.getPrimaryKey()[0], reference.getTargetClass());
+                        }
+                        if (c != null) {
+                            value = c.call();
+                        }
+                    } catch (Exception e) {
+                        throw XMLMarshalException.unmarshalException(e);
+                    }
+                } else {
+                    value = getValue(session, reference, primaryKey);
+                }
+
                 XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping)reference.getMapping();
                 if (value != null) {
                     mapping.setAttributeValueInObject(reference.getSourceObject(), value);
