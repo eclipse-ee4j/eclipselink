@@ -25,7 +25,9 @@ class Box {
             @XmlElementRef(name = "apple", type = Apple.class),
             @XmlElementRef(name = "appleRef", type = AppleRef.class),
             @XmlElementRef(name = "orange", type = Orange.class),
-            @XmlElementRef(name = "orangeRef", type = OrangeRef.class) })
+            @XmlElementRef(name = "orangeRef", type = OrangeRef.class),
+            @XmlElementRef(name = "melon", type = Melon.class),
+            @XmlElementRef(name = "melonRef", type = MelonRef.class) })
     List<Object> fruits = new ArrayList<Object>();
 
     @Override

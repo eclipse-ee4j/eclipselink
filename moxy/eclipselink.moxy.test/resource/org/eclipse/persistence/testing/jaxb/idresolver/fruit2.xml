@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fruitOrder>
+   <box>
+      <melonRef>
+         <ref>M1</ref>
+      </melonRef>
+      <melonRef>
+         <ref>M2</ref>
+      </melonRef>
+      <melon id="M1">
+         <type>Watermelon</type>
+      </melon>
+      <melon id="M2">
+         <type>Cantaloupe</type>
+      </melon>
+   </box>
+   <box>
+      <melonRef>
+         <ref>M3</ref>
+      </melonRef>
+      <melon id="M3">
+         <type>Honeydew</type>
+      </melon>
+   </box>
+</fruitOrder>

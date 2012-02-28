@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
  * </p>
  *
  * @see JAXBUnmarshaller
+ * @since 2.3.3
  */
 public abstract class IDResolver extends org.eclipse.persistence.oxm.IDResolver {
 

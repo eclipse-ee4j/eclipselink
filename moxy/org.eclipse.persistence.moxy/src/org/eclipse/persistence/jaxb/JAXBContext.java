@@ -122,48 +122,55 @@ import org.eclipse.persistence.sessions.Session;
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
 	
-    /** The Constant MEDIA_TYPE. This can be used as the property name with 
+    /**
+     * The Constant MEDIA_TYPE. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
      * the properties supplied during JAXBContext creation to set the media type.  
-     * Supported values are "application/xml" and "application/json" 
+     * Supported values are "application/xml" and "application/json".
      * @since 2.4 
      */
     public static final String MEDIA_TYPE = "eclipselink.media-type";
     
-    /** The Constant ATTRIBUTE_PREFIX. This can be used as the property name with 
+    /**
+     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
      * the properties supplied during JAXBContext creation to specify a prefix to prepend
-     * to attributes.  No effect when media type is "application/xml" 
+     * to attributes.  No effect when media type is "application/xml".
      * @since 2.4 
      */ 
     public static final String JSON_ATTRIBUTE_PREFIX = "eclipselink.json.attribute-prefix";    
         
-    /** The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the namespace prefixes used 
-     * while marshalling to XML.  Used for both marshal and unmarshal when mediaType is set to application/json.
-     * Value is a Map<String, String> of uris to prefixes or an implementation of org.eclipse.persistence.oxm.NamespacePrefixMapper
-     * @since 2.4 
+    /**
+     * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the namespace prefixes used 
+     * while marshalling to XML.  Used for both marshal and unmarshal when mediaType is set to "application/json".
+     * Value is either a Map<String, String> of URIs to prefixes, or an implementation of 
+     * org.eclipse.persistence.oxm.NamespacePrefixMapper.
+     * @since 2.3.3 
      */
     public static final String NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
     
-    /** The Constant INCLUDE_ROOT. This can be used as the property name with 
+    /**
+     * The Constant JSON_INCLUDE_ROOT. This can be used as the property name with 
      * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
      * the properties supplied during JAXBContext creation to specify if the 
      * @XmlRootElement should be marshalled/unmarshalled.  Not applicable if 
-     * eclipselink.media-type is set to "application/xml" 
+     * eclipselink.media-type is set to "application/xml".
      * @since 2.4 
      */
     public static final String JSON_INCLUDE_ROOT = "eclipselink.json.include-root";
     
-    /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
-     *  that will be used around things mapped with @XmlValue.  Not applicable if the
-     *  eclipselink.media.type is set to "application/xml"
-     *  @since 2.4  
+    /**
+     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
+     * that will be used around things mapped with @XmlValue.  Not applicable if the
+     * eclipselink.media.type is set to "application/xml".
+     * @since 2.4  
      */
     public static final String JSON_VALUE_WRAPPER = "eclipselink.json.value-wrapper";
 
-    /** The Constant ID_RESOLVER.  This can be used to specify a custom
+    /**
+     * The Constant ID_RESOLVER.  This can be used to specify a custom
      * IDResolver class, to allow customization of ID/IDREF processing.
-     * @since 2.4 
+     * @since 2.3.3 
      */
     public static final String ID_RESOLVER = "eclipselink.id-resolver";
 

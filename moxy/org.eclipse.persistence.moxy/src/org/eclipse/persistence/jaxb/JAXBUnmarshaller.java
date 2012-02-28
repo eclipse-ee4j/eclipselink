@@ -70,6 +70,7 @@ import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 
@@ -102,40 +103,48 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private String attributePrefix;
     private boolean includeRoot;
     
-    /** The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a   
-     *  a Map<String, String> of uris to prefixes.  Alternatively can be an implementation 
-     *  of org.eclipse.persistence.oxm.NamespacePrefixMapper 
+    /**
+     * The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a   
+     * a Map<String, String> of uris to prefixes.  Alternatively can be an implementation 
+     * of org.eclipse.persistence.oxm.NamespacePrefixMapper.
      * @since 2.4      
      */
-    public static final String JSON_NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
+    public static final String JSON_NAMESPACE_PREFIX_MAPPER = JAXBContext.NAMESPACE_PREFIX_MAPPER;
     
-    /** The Constant MEDIA_TYPE. This can be used to set the media type.  
-     * Supported values are "application/xml" and "application/json" 
+    /**
+     * The Constant MEDIA_TYPE. This can be used to set the media type.  
+     * Supported values are "application/xml" and "application/json".
      * @since 2.4 
      */
     public static final String MEDIA_TYPE = JAXBContext.MEDIA_TYPE;
     
-    /** The Constant ID_RESOLVER.  This can be used to specify a custom
+    /**
+     * The Constant ID_RESOLVER.  This can be used to specify a custom
      * IDResolver class, to allow customization of ID/IDREF processing.
-     * @since 2.4 
+     * @since 2.3.3
      */
     public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
+    private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
+    private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
     
-    /** The Constant ATTRIBUTE_PREFIX. This can be used to specify a prefix that 
-     * is prepended to attributes.  Only applicable if media type ="application/json"
+    /**
+     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used to specify a prefix that 
+     * is prepended to attributes.  Only applicable if media type is "application/json".
      * @since 2.4  
      */ 
     public static final String JSON_ATTRIBUTE_PREFIX = JAXBContext.JSON_ATTRIBUTE_PREFIX;
     
-    /** The Constant INCLUDE_ROOT. This can be used  to specify if the root element 
-     * should be unmarshalled.  Only applicable if media type ="application/json"
+    /**
+     * The Constant JSON_INCLUDE_ROOT. This can be used  to specify if the root element 
+     * should be unmarshalled.  Only applicable if media type is "application/json".
      * @since 2.4   
      */
-    public static final String JSON_INCLUDE_ROOT =JAXBContext.JSON_INCLUDE_ROOT;
+    public static final String JSON_INCLUDE_ROOT = JAXBContext.JSON_INCLUDE_ROOT;
     
-    /** The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
-     *  that will be used around things mapped with @XmlValue.  Only applicable if media type ="application/json"
-     *  @since 2.4  
+    /**
+     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
+     * that will be used around things mapped with @XmlValue.  Only applicable if media type is "application/json".
+     * @since 2.4  
      */
     public static final String JSON_VALUE_WRAPPER = JAXBContext.JSON_VALUE_WRAPPER;
     
@@ -805,6 +814,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
         	xmlUnmarshaller.setValueWrapper((String)value); 
         } else if (JAXBContext.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
+        } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
+            setIDResolver(new IDResolverWrapper(value));
         } else {
             throw new PropertyException(key, value);
         }
@@ -1007,7 +1018,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
      * Return this Unmarshaller's custom IDResolver.
      * 
      * @see IDResolver
-     * @since 2.4
+     * @since 2.3.3
      * @return the custom IDResolver, or null if one has not been specified.
      */
     public IDResolver getIDResolver() {
@@ -1018,7 +1029,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
      * Set this Unmarshaller's custom IDResolver.
      * 
      * @see IDResolver
-     * @since 2.4
+     * @since 2.3.3
      */
     public void setIDResolver(IDResolver idResolver) {
         getXMLUnmarshaller().setIDResolver(idResolver);

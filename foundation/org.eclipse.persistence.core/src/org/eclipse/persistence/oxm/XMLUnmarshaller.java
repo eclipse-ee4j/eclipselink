@@ -700,7 +700,7 @@ public class XMLUnmarshaller implements Cloneable {
     /**
      * Return this Unmarshaller's custom IDResolver.
      * @see IDResolver
-     * @since 2.4
+     * @since 2.3.3
      * @return the custom IDResolver, or null if one has not been specified.
      */
     public IDResolver getIDResolver() {
@@ -710,7 +710,7 @@ public class XMLUnmarshaller implements Cloneable {
     /**
      * Set this Unmarshaller's custom IDResolver.
      * @see IDResolver
-     * @since 2.4
+     * @since 2.3.3
      */
     public void setIDResolver(IDResolver idResolver) {
         this.idResolver = idResolver;

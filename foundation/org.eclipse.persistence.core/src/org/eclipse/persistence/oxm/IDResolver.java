@@ -33,6 +33,7 @@ import org.xml.sax.SAXException;
  * </p>
  *
  * @see XMLUnmarshaller
+ * @since 2.3.3
  */
 public abstract class IDResolver {
 

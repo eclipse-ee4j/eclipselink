@@ -90,11 +90,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
 
     /**
-     * The Constant NAMESPACE_PREFIX_MAPPER.  This can be set to control the prefix and
-     * uri pairs used during a marshal operation. Applies to both application/xml and application/json.
-     * Value should be an org.eclipse.persistence.oxm.NamespacePrefixMapper or can be a
-     * Map<String, String> of uris to prefixes.
-     * @since 2.3.3
+     * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the namespace prefixes used 
+     * while marshalling to XML.  Used for both marshal and unmarshal when mediaType is set to "application/json".
+     * Value is either a Map<String, String> of URIs to prefixes, or an implementation of 
+     * org.eclipse.persistence.oxm.NamespacePrefixMapper.
+     * @since 2.3.3 
      */
     public static final String NAMESPACE_PREFIX_MAPPER = JAXBContext.NAMESPACE_PREFIX_MAPPER;
     private static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
@@ -102,7 +102,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     /**
      * The Constant INDENT_STRING. Property used to set the string used when indenting formatted marshalled documents.
-     * The default for formatted documents is &quot;   &quot; (three spaces)
+     * The default for formatted documents is &quot;   &quot; (three spaces).
      * @since 2.3.3
      */
     public static final String INDENT_STRING = "eclipselink.indent-string";
@@ -131,26 +131,26 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     /**
      * The Constant ID_RESOLVER.  This can be used to specify a custom
      * IDResolver class, to allow for customization of ID/IDREF processing.
-     * @since 2.4
+     * @since 2.3.3
      */
     public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
 
     /**
-     * The Constant ATTRIBUTE_PREFIX. This can be used to specify a prefix to prepend
+     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used to specify a prefix to prepend
      * to attributes.  Only applicable if media type is "application/json".
      * @since 2.4
      */
     public static final String JSON_ATTRIBUTE_PREFIX = JAXBContext.JSON_ATTRIBUTE_PREFIX;
 
     /**
-     * The Constant INCLUDE_ROOT. This can be used  to specify if the
+     * The Constant JSON_INCLUDE_ROOT. This can be used  to specify if the
      * @XmlRootElement should be marshalled.  Only applicable if media type is "application/json".
      * @since 2.4
      */
-    public static final String JSON_INCLUDE_ROOT =JAXBContext.JSON_INCLUDE_ROOT;
+    public static final String JSON_INCLUDE_ROOT = JAXBContext.JSON_INCLUDE_ROOT;
 
     /**
-     * The Constant VALUE_WRAPPER.  This can be used to specify the wrapper
+     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
      * that will be used around things mapped with @XmlValue.  Only applicable if media type is "application/json".
      * @since 2.4
      */

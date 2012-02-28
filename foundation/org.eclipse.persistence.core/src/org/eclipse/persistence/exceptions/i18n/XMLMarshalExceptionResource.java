@@ -55,7 +55,10 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25030", "An error occured while invoking the {0} method on the custom NamespacePrefixMapper: {1}."},
                                            { "25031", "An error occured while processing the namespace prefix mapper: {1}. The method {0} was not found."},
                                            { "25032", "An error occured while invoking the {0} method on the custom CharacterEscapeHandler: {1}."},
-                                           { "25033", "An error occured while processing the CharacterEscapeHandler: {1}. The method {0} was not found."}
+                                           { "25033", "An error occured while processing the CharacterEscapeHandler: {1}. The method {0} was not found."},
+                                           { "25034", "An error occured while invoking the {0} method on the custom IDResolver: {1}."},
+                                           { "25035", "An error occured while processing the IDResolver: {1}. The method {0} was not found."},
+                                           { "25036", "The custom IDResolver {1} does not support multiple XML IDs {0}.  Custom IDResolvers must be subclasses org.eclipse.persistence.jaxb.IDResolver if multiple IDs are used."}
     };
 
     /**
