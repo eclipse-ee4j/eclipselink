@@ -327,9 +327,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (XMLField)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
                 objectBuilder.buildRow(marshalRecord, value, session, marshaller, null, WriteType.UNDEFINED);
                 marshalRecord.afterContainmentMarshal(object, value);
+                marshalRecord.endElement(rootFragment, namespaceResolver);
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
 
-                marshalRecord.endElement(rootFragment, namespaceResolver);
             }
         }
         return true;
