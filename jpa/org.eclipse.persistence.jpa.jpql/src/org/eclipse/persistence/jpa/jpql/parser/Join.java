@@ -52,6 +52,11 @@ public final class Join extends AbstractExpression {
 	private boolean hasSpaceAfterAs;
 
 	/**
+	 * Determines whether a whitespace was parsed after the identification variable.
+	 */
+	private boolean hasSpaceAfterIdentificationVariable;
+
+	/**
 	 * Determines whether a whitespace was parsed after <b>JOIN</b>.
 	 */
 	private boolean hasSpaceAfterJoin;
@@ -60,11 +65,6 @@ public final class Join extends AbstractExpression {
 	 * Determines whether a whitespace was parsed after the join association path expression.
 	 */
 	private boolean hasSpaceAfterJoinAssociation;
-
-        /**
-         * Determines whether a whitespace was parsed after the identification variable.
-         */
-        private boolean hasSpaceAfterIdentificationVariable;
 
 	/**
 	 * The {@link Expression} representing the identification variable.
@@ -76,15 +76,21 @@ public final class Join extends AbstractExpression {
 	 */
 	private AbstractExpression joinAssociationPath;
 
-        /**
-         * The {@link Expression} representing the join ON clause.
-         */
-        private AbstractExpression onClause;
-
 	/**
 	 * The actual <b>JOIN</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String joinIdentifier;
+
+	/**
+	 * The {@link Expression} representing the join <b>ON</b> clause.
+	 */
+	private AbstractExpression onClause;
+
+	/**
+	 * Make sure when parsing the identification variable with tolerance turned on, a the join
+	 * condition identifier <b>ON</b> is not parsed.
+	 */
+	private boolean parsingIdentificationVariable;
 
 	/**
 	 * Creates a new <code>Join</code>.
@@ -118,6 +124,7 @@ public final class Join extends AbstractExpression {
 	protected void addChildrenTo(Collection<Expression> children) {
 		children.add(getJoinAssociationPath());
 		children.add(getIdentificationVariable());
+		children.add(getOnClause());
 	}
 
 	/**
@@ -169,14 +176,14 @@ public final class Join extends AbstractExpression {
 			children.add(identificationVariable);
 		}
 
-                if (hasSpaceAfterIdentificationVariable) {
-                        children.add(buildStringExpression(SPACE));
-                }
+		if (hasSpaceAfterIdentificationVariable) {
+			children.add(buildStringExpression(SPACE));
+		}
 
-                // ON clause
-                if (onClause != null) {
-                        children.add(onClause);
-                }
+		// ON clause
+		if (onClause != null) {
+			children.add(onClause);
+		}
 	}
 
 	/**
@@ -212,13 +219,6 @@ public final class Join extends AbstractExpression {
 		return identificationVariable;
 	}
 
-        /**
-         * Returns the {@link Expression} that represents the on clause if present.
-         */
-        public Expression getOnClause() {
-                return onClause;
-        }
-
 	/**
 	 * Returns the identifier this expression represents.
 	 *
@@ -239,6 +239,18 @@ public final class Join extends AbstractExpression {
 			joinAssociationPath = buildNullExpression();
 		}
 		return joinAssociationPath;
+	}
+
+	/**
+	 * Returns the {@link Expression} that represents the <b>ON</b> clause if present.
+	 *
+	 * @return The expression that was parsed representing the identification variable
+	 */
+	public Expression getOnClause() {
+		if (onClause == null) {
+			onClause = buildNullExpression();
+		}
+		return onClause;
 	}
 
 	/**
@@ -293,13 +305,15 @@ public final class Join extends AbstractExpression {
 		      !joinAssociationPath.isNull();
 	}
 
-        /**
-         * Determines whether the on clause was parsed.
-         */
-        public boolean hasOnClause() {
-                return onClause != null &&
-                      !onClause.isNull();
-        }
+	/**
+	 * Determines whether the <b>ON</b> clause was parsed.
+	 *
+	 * @return <code>true</code> if the <b>ON</b> clause was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasOnClause() {
+		return onClause != null &&
+		      !onClause.isNull();
+	}
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>AS</b>.
@@ -311,15 +325,15 @@ public final class Join extends AbstractExpression {
 		return hasSpaceAfterAs;
 	}
 
-        /**
-         * Determines whether a whitespace was parsed before <b>ON</b>.
-         *
-         * @return <code>true</code> if there was a whitespace before <b>ON</b>; <code>false</code>
-         * otherwise
-         */
-        public boolean hasSpaceAfterIdentificationVariable() {
-                return hasSpaceAfterIdentificationVariable;
-        }
+	/**
+	 * Determines whether a whitespace was parsed before <b>ON</b>.
+	 *
+	 * @return <code>true</code> if there was a whitespace before <b>ON</b>; <code>false</code>
+	 * otherwise
+	 */
+	public boolean hasSpaceAfterIdentificationVariable() {
+		return hasSpaceAfterIdentificationVariable;
+	}
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>JOIN</b>.
@@ -362,10 +376,20 @@ public final class Join extends AbstractExpression {
 	 */
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		// Make sure when parsing the identification variable with tolerance turned on,
+		// a the join condition identifier ON is not parsed
+		if (parsingIdentificationVariable &&
+		    word.equalsIgnoreCase(ON)) {
+
+			return true;
+		}
+
 		return word.equalsIgnoreCase(AS)    ||
 		       word.equalsIgnoreCase(INNER) ||
 		       word.equalsIgnoreCase(JOIN)  ||
 		       word.equalsIgnoreCase(LEFT)  ||
+		       word.equalsIgnoreCase(OUTER) ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 
@@ -411,6 +435,8 @@ public final class Join extends AbstractExpression {
 		}
 
 		// Parse the identification variable
+		parsingIdentificationVariable = true;
+
 		if (tolerant) {
 			identificationVariable = parse(
 				wordParser,
@@ -427,23 +453,39 @@ public final class Join extends AbstractExpression {
 			}
 		}
 
+		parsingIdentificationVariable = false;
+
 		// A JOIN FETCH without '[AS] identification_variable' will not keep the
 		// whitespace after the join association for backward compatibility (for now)
 		if (!hasAs &&
 		    hasSpaceAfterJoinAssociation   &&
 		    identificationVariable == null &&
-		    hasFetch()) {
+		    hasFetch() &&
+		   !wordParser.startsWithIdentifier(ON)) {
 
 			hasSpaceAfterJoinAssociation = false;
 			wordParser.moveBackward(count);
+			count = 0;
 		}
-		
-                hasSpaceAfterIdentificationVariable = wordParser.skipLeadingWhitespace() > 0;
+		else {
+			count = wordParser.skipLeadingWhitespace();
+		}
 
-		if (wordParser.startsWithIdentifier(ON)) {
-                    onClause = new OnClause(this);
-                    onClause.parse(wordParser, tolerant);
-                }
+		// Parse 'ON' clause
+		if (tolerant) {
+			onClause = parse(wordParser, getQueryBNF(OnClauseBNF.ID), tolerant);
+		}
+		else if (wordParser.startsWithIdentifier(ON)) {
+			onClause = new OnClause(this);
+			onClause.parse(wordParser, tolerant);
+		}
+
+		if (onClause != null) {
+			hasSpaceAfterIdentificationVariable = (count > 0);
+		}
+		else {
+			wordParser.moveBackward(count);
+		}
 	}
 
 	/**
@@ -482,13 +524,13 @@ public final class Join extends AbstractExpression {
 			identificationVariable.toParsedText(writer, actual);
 		}
 
-                if (hasSpaceAfterIdentificationVariable) {
-                        writer.append(SPACE);
-                }
+		if (hasSpaceAfterIdentificationVariable) {
+			writer.append(SPACE);
+		}
 
-                // ON clause
-                if (onClause != null) {
-                    onClause.toParsedText(writer, actual);
-                }
+		// ON clause
+		if (onClause != null) {
+			onClause.toParsedText(writer, actual);
+		}
 	}
 }

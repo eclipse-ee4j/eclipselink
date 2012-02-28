@@ -13,12 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.WordParser;
+
 /**
- * Returns an expression that allows a join ON clause to be defined.
+ * Returns an expression that allows a join <b>ON</b> clause to be defined.
  * <p>
- * New to EclipseLink 2.4.
+ * New to EclipseLink 2.4 and JPA 2.1.
  *
- * <div nowrap><b>BNF:</b> <code>join_on ::= ON conditional_expression</code>
+ * <div nowrap><b>BNF:</b> <code>join_condition ::= ON conditional_expression</code>
  * <p>
  * Example: <code>SELECT e FROM Employee e LEFT JOIN e.projects p ON p.budget > 10000</code>
  *
@@ -29,7 +31,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 public final class OnClause extends AbstractConditionalClause {
 
 	/**
-	 * Creates a new <code>TreatExpression</code>.
+	 * Creates a new <code>OnClause</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
@@ -37,12 +39,12 @@ public final class OnClause extends AbstractConditionalClause {
 		super(parent, ON);
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void accept(ExpressionVisitor visitor) {
-                visitor.visit(this);
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void accept(ExpressionVisitor visitor) {
+		visitor.visit(this);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -50,5 +52,18 @@ public final class OnClause extends AbstractConditionalClause {
 	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(OnClauseBNF.ID);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return word.equalsIgnoreCase(LEFT)  ||
+		       word.equalsIgnoreCase(OUTER) ||
+		       word.equalsIgnoreCase(FETCH) ||
+		       word.equalsIgnoreCase(INNER) ||
+		       word.equalsIgnoreCase(JOIN)  ||
+             super.isParsingComplete(wordParser, word, expression);
 	}
 }

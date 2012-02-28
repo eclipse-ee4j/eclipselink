@@ -93,13 +93,26 @@ public final class ComparisonExpression extends CompoundExpression {
 	 */
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		// TODO: This should be handled differently since it has the knowledge of parent expression
 		return wordParser.character() == RIGHT_PARENTHESIS ||
-		       word.equalsIgnoreCase(OR)                   ||
-		       word.equalsIgnoreCase(AND)                  ||
-		       word.equalsIgnoreCase(WHEN)                 ||
-		       word.equalsIgnoreCase(THEN)                 ||
-		       word.equalsIgnoreCase(ELSE)                 ||
-		       word.equalsIgnoreCase(END)                  ||
+
+		       // This happens when parsing a logical expression
+		       word.equalsIgnoreCase(OR)  ||
+		       word.equalsIgnoreCase(AND) ||
+
+		       // This happens when parsing a conditional expression in a CASE expression
+		       word.equalsIgnoreCase(WHEN) ||
+		       word.equalsIgnoreCase(THEN) ||
+		       word.equalsIgnoreCase(ELSE) ||
+		       word.equalsIgnoreCase(END)  ||
+
+		       // This happens when parsing a conditional expression in a join condition
+		       word.equalsIgnoreCase(LEFT)  ||
+		       word.equalsIgnoreCase(OUTER) ||
+		       word.equalsIgnoreCase(INNER) ||
+		       word.equalsIgnoreCase(JOIN)  ||
+
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 

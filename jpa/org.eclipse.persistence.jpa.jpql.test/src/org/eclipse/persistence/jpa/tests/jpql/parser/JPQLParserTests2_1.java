@@ -13,28 +13,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
-import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
-import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * The root test suite containing the test suites that define how to test the parser with various
- * JPA versions and extensions.
+ * This test suite tests the JPQL queries written for JPA 2.1 and tests them with the JPQL grammar
+ * defined for JPA 2.1 as well as with the additional support EclipseLink 2.4 or later offers.
  *
  * @version 2.4
  * @since 2.4
- * @author Pascal Filion
  */
-@SuiteClasses({
-	AllJPQLParserTests1_0.class,
-	AllJPQLParserTests2_0.class,
-	AllJPQLParserTests2_1.class,
-	AllEclipseLinkJPQLParser2_1Tests.class
-})
-@RunWith(JPQLTestRunner.class)
-public final class AllJPQLParserTests {
+@SuiteClasses
+({
+	// Test the parser with hundreds of JPQL queries
+//	JPQLQueriesTest2_1.class,
 
-	private AllJPQLParserTests() {
+	// Individual unit-tests
+	OnClauseTest.class,
+})
+public final class JPQLParserTests2_1 {
+
+	private JPQLParserTests2_1() {
 		super();
 	}
 }

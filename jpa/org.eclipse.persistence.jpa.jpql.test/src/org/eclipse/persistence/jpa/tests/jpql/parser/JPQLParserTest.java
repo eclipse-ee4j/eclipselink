@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,6 +79,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OnClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
@@ -638,11 +639,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester innerJoin(ExpressionTester collectionPath,
 	                                      ExpressionTester identificationVariable) {
 
+		return innerJoin(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoin(ExpressionTester collectionPath,
+	                                      ExpressionTester identificationVariable,
+	                                      ExpressionTester joinCondition) {
+
 		return join(
 			INNER_JOIN,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -651,7 +664,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return innerJoin(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoin(ExpressionTester collectionPath,
+	                                      String identificationVariable,
+	                                      ExpressionTester joinCondition) {
+
+		return innerJoin(
+			collectionPath,
+			variable(identificationVariable),
+			nullExpression()
 		);
 	}
 
@@ -659,19 +684,43 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                      String identificationVariable) {
 
 		return innerJoin(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoin(String collectionPath,
+	                                      String identificationVariable,
+	                                      ExpressionTester joinCondition) {
+
+		return innerJoin(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
 	protected static JoinTester innerJoinAs(ExpressionTester collectionPath,
 	                                        ExpressionTester identificationVariable) {
 
+		return innerJoinAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinAs(ExpressionTester collectionPath,
+	                                        ExpressionTester identificationVariable,
+	                                        ExpressionTester joinCondition) {
+
 		return join(
 			INNER_JOIN,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -680,7 +729,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return innerJoinAs(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinAs(ExpressionTester collectionPath,
+	                                        String identificationVariable,
+	                                        ExpressionTester joinCondition) {
+
+		return innerJoinAs(
+			collectionPath,
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -688,8 +749,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                        String identificationVariable) {
 
 		return innerJoinAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinAs(String collectionPath,
+	                                        String identificationVariable,
+	                                        ExpressionTester joinCondition) {
+
+		return innerJoinAs(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -703,11 +776,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath,
 	                                           ExpressionTester identificationVariable) {
 
+		return innerJoinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath,
+	                                           ExpressionTester identificationVariable,
+	                                           ExpressionTester joinCondition) {
+
 		return join(
 			INNER_JOIN_FETCH,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -716,7 +801,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return innerJoinFetch(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath,
+	                                           String identificationVariable,
+	                                           ExpressionTester joinCondition) {
+
+		return innerJoinFetch(
+			collectionPath,
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -730,14 +827,27 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                           String identificationVariable) {
 
 		return innerJoinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinFetch(String collectionPath,
+	                                           String identificationVariable,
+	                                           ExpressionTester joinCondition) {
+
+		return innerJoinFetch(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			nullExpression()
 		);
 	}
 
 	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath) {
 		return innerJoinFetchAs(
 			collectionPath,
+			nullExpression(),
 			nullExpression()
 		);
 	}
@@ -745,11 +855,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
 	                                             ExpressionTester identificationVariable) {
 
+		return innerJoinFetchAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
+	                                             ExpressionTester identificationVariable,
+	                                             ExpressionTester joinCondition) {
+
 		return join(
 			INNER_JOIN_FETCH,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -758,7 +880,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return innerJoinFetchAs(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
+	                                             String identificationVariable,
+	                                             ExpressionTester joinCondition) {
+
+		return innerJoinFetchAs(
+			collectionPath,
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -772,8 +906,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                             String identificationVariable) {
 
 		return innerJoinFetchAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester innerJoinFetchAs(String collectionPath,
+	                                             String identificationVariable,
+	                                             ExpressionTester joinCondition) {
+
+		return innerJoinFetchAs(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -809,10 +955,22 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                 ExpressionTester identificationVariable) {
 
 		return join(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester join(ExpressionTester collectionPath,
+	                                 ExpressionTester identificationVariable,
+	                                 ExpressionTester joinCondition) {
+
+		return join(
 			JOIN,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -821,20 +979,34 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return join(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester join(ExpressionTester collectionPath,
+	                                 String identificationVariable,
+	                                 ExpressionTester joinCondition) {
+
+		return join(
+			collectionPath,
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
 	private static JoinTester join(String joinType,
 	                               ExpressionTester collectionPath,
 	                               boolean hasAs,
-	                               ExpressionTester identificationVariable) {
+	                               ExpressionTester identificationVariable,
+	                               ExpressionTester joinCondition) {
 
 		return new JoinTester(
 			joinType,
 			collectionPath,
 			hasAs,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -842,19 +1014,43 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                 String identificationVariable) {
 
 		return join(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester join(String collectionPath,
+	                                 String identificationVariable,
+	                                 ExpressionTester joinCondition) {
+
+		return join(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
 	protected static JoinTester joinAs(ExpressionTester collectionPath,
 	                                   ExpressionTester identificationVariable) {
 
+		return joinAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinAs(ExpressionTester collectionPath,
+	                                   ExpressionTester identificationVariable,
+	                                   ExpressionTester joinCondition) {
+
 		return join(
 			JOIN,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -863,7 +1059,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return joinAs(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinAs(ExpressionTester collectionPath,
+	                                   String identificationVariable,
+	                                   ExpressionTester joinCondition) {
+
+		return joinAs(
+			collectionPath,
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -871,8 +1079,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                   String identificationVariable) {
 
 		return joinAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinAs(String collectionPath,
+	                                   String identificationVariable,
+	                                   ExpressionTester joinCondition) {
+
+		return joinAs(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -888,11 +1108,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester joinFetch(ExpressionTester collectionPath,
 	                                      ExpressionTester identificationVariable) {
 
+		return joinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinFetch(ExpressionTester collectionPath,
+	                                      ExpressionTester identificationVariable,
+	                                      ExpressionTester joinCondition) {
+
 		return join(
 			JOIN_FETCH,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -901,7 +1133,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return joinFetch(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinFetch(ExpressionTester collectionPath,
+	                                      String identificationVariable,
+	                                      ExpressionTester joinCondition) {
+
+		return joinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
 		);
 	}
 
@@ -920,14 +1164,37 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	protected static JoinTester joinFetch(String collectionPath,
+	                                      String identificationVariable,
+	                                      ExpressionTester joinCondition) {
+
+		return joinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
 	protected static JoinTester joinFetchAs(ExpressionTester collectionPath,
 	                                        ExpressionTester identificationVariable) {
+
+		return joinFetchAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinFetchAs(ExpressionTester collectionPath,
+	                                        ExpressionTester identificationVariable,
+	                                        ExpressionTester joinCondition) {
 
 		return join(
 			JOIN_FETCH,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -936,7 +1203,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return joinFetchAs(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinFetchAs(ExpressionTester collectionPath,
+	                                        String identificationVariable,
+	                                        ExpressionTester joinCondition) {
+
+		return joinFetchAs(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -944,8 +1223,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                        String identificationVariable) {
 
 		return joinFetchAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester joinFetchAs(String collectionPath,
+	                                        String identificationVariable,
+	                                        ExpressionTester joinCondition) {
+
+		return joinFetchAs(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -962,11 +1253,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester leftJoin(ExpressionTester collectionPath,
 	                                     ExpressionTester identificationVariable) {
 
+		return leftJoin(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoin(ExpressionTester collectionPath,
+	                                     ExpressionTester identificationVariable,
+	                                     ExpressionTester joinCondition) {
+
 		return join(
 			LEFT_JOIN,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			nullExpression()
 		);
 	}
 
@@ -975,7 +1278,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return leftJoin(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoin(ExpressionTester collectionPath,
+	                                     String identificationVariable,
+	                                     ExpressionTester joinCondition) {
+
+		return leftJoin(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -983,19 +1298,43 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                     String identificationVariable) {
 
 		return leftJoin(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoin(String collectionPath,
+	                                     String identificationVariable,
+	                                     ExpressionTester joinCondition) {
+
+		return leftJoin(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
 	protected static JoinTester leftJoinAs(ExpressionTester collectionPath,
 	                                       ExpressionTester identificationVariable) {
 
+		return leftJoinAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinAs(ExpressionTester collectionPath,
+	                                       ExpressionTester identificationVariable,
+	                                       ExpressionTester joinCondition) {
+
 		return join(
 			LEFT_JOIN,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1004,7 +1343,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return leftJoinAs(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinAs(ExpressionTester collectionPath,
+	                                       String identificationVariable,
+	                                       ExpressionTester joinCondition) {
+
+		return leftJoinAs(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1012,8 +1363,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                       String identificationVariable) {
 
 		return leftJoinAs(
-			collectionPath(collectionPath),
-			variable(identificationVariable)
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinAs(String collectionPath,
+	                                       String identificationVariable,
+	                                       ExpressionTester joinCondition) {
+
+		return leftJoinAs(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1029,11 +1392,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath,
 	                                          ExpressionTester identificationVariable) {
 
+		return leftJoinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath,
+	                                          ExpressionTester identificationVariable,
+	                                          ExpressionTester joinCondition) {
+
 		return join(
 			LEFT_JOIN_FETCH,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1042,7 +1417,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return leftJoinFetch(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath,
+	                                          String identificationVariable,
+	                                          ExpressionTester joinCondition) {
+
+		return leftJoinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
 		);
 	}
 
@@ -1061,14 +1448,37 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	protected static JoinTester leftJoinFetch(String collectionPath,
+	                                          String identificationVariable,
+	                                          ExpressionTester joinCondition) {
+
+		return leftJoinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
 	protected static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
 	                                            ExpressionTester identificationVariable) {
+
+		return leftJoinFetchAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
+	                                            ExpressionTester identificationVariable,
+	                                            ExpressionTester joinCondition) {
 
 		return join(
 			LEFT_JOIN_FETCH,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1077,7 +1487,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return leftJoinFetchAs(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
+	                                            String identificationVariable,
+	                                            ExpressionTester joinCondition) {
+
+		return leftJoinFetchAs(
+			collectionPath,
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -1085,19 +1507,43 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                            String identificationVariable) {
 
 		return leftJoinFetchAs(
-			collectionPath(collectionPath),
-			variable(identificationVariable)
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftJoinFetchAs(String collectionPath,
+	                                            String identificationVariable,
+	                                            ExpressionTester joinCondition) {
+
+		return leftJoinFetchAs(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
 	protected static JoinTester leftOuterJoin(ExpressionTester collectionPath,
 	                                          ExpressionTester identificationVariable) {
 
+		return leftOuterJoin(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoin(ExpressionTester collectionPath,
+	                                          ExpressionTester identificationVariable,
+	                                          ExpressionTester joinCondition) {
+
 		return join(
 			LEFT_OUTER_JOIN,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1106,7 +1552,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return leftOuterJoin(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoin(ExpressionTester collectionPath,
+	                                          String identificationVariable,
+	                                          ExpressionTester joinCondition) {
+
+		return leftOuterJoin(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1114,19 +1572,43 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                          String identificationVariable) {
 
 		return leftOuterJoin(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoin(String collectionPath,
+	                                          String identificationVariable,
+	                                          ExpressionTester joinCondition) {
+
+		return leftOuterJoin(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
 	protected static JoinTester leftOuterJoinAs(ExpressionTester collectionPath,
 	                                            ExpressionTester identificationVariable) {
 
+		return leftOuterJoinAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinAs(ExpressionTester collectionPath,
+	                                            ExpressionTester identificationVariable,
+	                                            ExpressionTester joinCondition) {
+
 		return join(
 			LEFT_OUTER_JOIN,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1134,8 +1616,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                            String identificationVariable) {
 
 		return leftOuterJoinAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinAs(String collectionPath,
+	                                            String identificationVariable,
+	                                            ExpressionTester joinCondition) {
+
+		return leftOuterJoinAs(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -1151,11 +1645,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
 	                                               ExpressionTester identificationVariable) {
 
+		return leftOuterJoinFetch(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
+	                                               ExpressionTester identificationVariable,
+	                                               ExpressionTester joinCondition) {
+
 		return join(
 			LEFT_OUTER_JOIN_FETCH,
 			collectionPath,
 			false,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1164,7 +1670,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return leftOuterJoinFetch(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
+	                                               String identificationVariable,
+	                                               ExpressionTester joinCondition) {
+
+		return leftOuterJoinFetch(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1178,8 +1696,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                               String identificationVariable) {
 
 		return leftOuterJoinFetch(
-			collectionPath(collectionPath),
-			variable(identificationVariable)
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinFetch(String collectionPath,
+	                                               String identificationVariable,
+	                                               ExpressionTester joinCondition) {
+
+		return leftOuterJoinFetch(
+			collectionPath,
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1193,11 +1723,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
 	                                                 ExpressionTester identificationVariable) {
 
+		return leftOuterJoinFetchAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
+	                                                 ExpressionTester identificationVariable,
+	                                                 ExpressionTester joinCondition) {
+
 		return join(
 			LEFT_OUTER_JOIN_FETCH,
 			collectionPath,
 			true,
-			identificationVariable
+			identificationVariable,
+			joinCondition
 		);
 	}
 
@@ -1206,7 +1748,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		return leftOuterJoinFetchAs(
 			collectionPath,
-			variable(identificationVariable)
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
+	                                                 String identificationVariable,
+	                                                 ExpressionTester joinCondition) {
+
+		return leftOuterJoinFetchAs(
+			collectionPath,
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -1214,8 +1768,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                                 String identificationVariable) {
 
 		return leftOuterJoinFetchAs(
+			collectionPath,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	protected static JoinTester leftOuterJoinFetchAs(String collectionPath,
+	                                                 String identificationVariable,
+	                                                 ExpressionTester joinCondition) {
+
+		return leftOuterJoinFetchAs(
 			collectionPath(collectionPath),
-			variable(identificationVariable)
+			variable(identificationVariable),
+			joinCondition
 		);
 	}
 
@@ -1501,6 +2067,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static ObjectExpressionTester object(String identificationVariable) {
 		return object(variable(identificationVariable));
+	}
+
+	protected static OnClauseTester on(ExpressionTester conditionalExpression) {
+		return new OnClauseTester(conditionalExpression);
 	}
 
 	protected static OrExpressionTester or(ExpressionTester leftExpression,
@@ -4367,25 +4937,30 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		private boolean hasAs;
 		public boolean hasSpaceAfterAs;
+		public boolean hasSpaceAfterIdentificationVariable;
 		public boolean hasSpaceAfterJoin;
 		public boolean hasSpaceAfterJoinAssociation;
 		private ExpressionTester identificationVariable;
 		private ExpressionTester joinAssociationPath;
 		private String joinType;
+		private ExpressionTester joinCondition;
 
 		protected JoinTester(String joinType,
 		                     ExpressionTester joinAssociationPath,
 		                     boolean hasAs,
-		                     ExpressionTester identificationVariable) {
+		                     ExpressionTester identificationVariable,
+		                     ExpressionTester joinCondition) {
 
 			super();
-			this.joinType                     = joinType;
-			this.hasSpaceAfterJoin            = true;
-			this.joinAssociationPath          = joinAssociationPath;
-			this.hasAs                        = hasAs;
-			this.hasSpaceAfterAs              = hasAs;
-			this.identificationVariable       = identificationVariable;
-			this.hasSpaceAfterJoinAssociation = !joinAssociationPath.isNull();
+			this.joinType                            = joinType;
+			this.hasSpaceAfterJoin                   = true;
+			this.joinAssociationPath                 = joinAssociationPath;
+			this.hasAs                               = hasAs;
+			this.hasSpaceAfterAs                     = hasAs;
+			this.identificationVariable              = identificationVariable;
+			this.hasSpaceAfterJoinAssociation        = !joinAssociationPath.isNull();
+			this.hasSpaceAfterIdentificationVariable = !identificationVariable.isNull() && !joinCondition.isNull();
+			this.joinCondition                       = joinCondition;
 		}
 
 		public void test(Expression expression) {
@@ -4395,15 +4970,17 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			assertEquals(toString(), join.toParsedText());
 			assertEquals(joinType, join.getIdentifier());
 
-			assertEquals(hasSpaceAfterJoin,                join.hasSpaceAfterJoin());
-			assertEquals(!joinAssociationPath.isNull(),    join.hasJoinAssociationPath());
-			assertEquals(hasAs,                            join.hasAs());
-			assertEquals(hasSpaceAfterAs,                  join.hasSpaceAfterAs());
-			assertEquals(hasSpaceAfterJoinAssociation,     join.hasSpaceAfterJoinAssociation());
-			assertEquals(!identificationVariable.isNull(), join.hasIdentificationVariable());
+			assertEquals(hasSpaceAfterJoin,                   join.hasSpaceAfterJoin());
+			assertEquals(!joinAssociationPath.isNull(),       join.hasJoinAssociationPath());
+			assertEquals(hasAs,                               join.hasAs());
+			assertEquals(hasSpaceAfterAs,                     join.hasSpaceAfterAs());
+			assertEquals(hasSpaceAfterJoinAssociation,        join.hasSpaceAfterJoinAssociation());
+			assertEquals(!identificationVariable.isNull(),    join.hasIdentificationVariable());
+			assertEquals(hasSpaceAfterIdentificationVariable, join.hasSpaceAfterIdentificationVariable());
 
 			joinAssociationPath.test(join.getJoinAssociationPath());
 			identificationVariable.test(join.getIdentificationVariable());
+			joinCondition.test(join.getOnClause());
 		}
 
 		@Override
@@ -4424,6 +5001,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 				sb.append(SPACE);
 			}
 			sb.append(identificationVariable);
+			if (hasSpaceAfterIdentificationVariable) {
+				sb.append(SPACE);
+			}
+			sb.append(joinCondition);
 			return sb.toString();
 		}
 	}
@@ -4833,6 +5414,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		@Override
 		protected String identifier() {
 			return OBJECT;
+		}
+	}
+
+	protected static final class OnClauseTester extends AbstractConditionalClauseTester {
+
+		protected OnClauseTester(ExpressionTester conditionalExpression) {
+			super(conditionalExpression);
+		}
+
+		@Override
+		protected Class<? extends AbstractConditionalClause> expressionType() {
+			return OnClause.class;
+		}
+
+		@Override
+		protected String identifier() {
+			return ON;
 		}
 	}
 

@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.spi;
 
-
 /**
  * An enumeration listing the various releases of the Java Persistence specification.
  *
@@ -37,12 +36,12 @@ public enum JPAVersion {
 	/**
 	 * The constant for the Java Persistence version 2.0.
 	 */
-	VERSION_2_0(2.0);
+	VERSION_2_0(2.0),
 
 	/**
 	 * The constant for the Java Persistence version 2.1.
 	 */
-//	VERSION_2_1(2.1);
+	VERSION_2_1(2.1);
 
 	/**
 	 * The real version number.
