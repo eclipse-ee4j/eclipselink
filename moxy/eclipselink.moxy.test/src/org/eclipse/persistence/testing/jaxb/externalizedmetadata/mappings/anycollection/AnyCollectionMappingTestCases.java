@@ -22,14 +22,15 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlAnyCollectionMapping via eclipselink-oxm.xml
  *
  */
-public class AnyCollectionMappingTestCases extends JAXBTestCases {
+public class AnyCollectionMappingTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anycollection/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anycollection/employee.json";
     
     private static final String STUFF = "Some Stuff";
     
@@ -42,6 +43,7 @@ public class AnyCollectionMappingTestCases extends JAXBTestCases {
     public AnyCollectionMappingTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
     }
 

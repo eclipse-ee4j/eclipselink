@@ -13,25 +13,36 @@
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlanyelement;
 // Example1
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class XmlAnyElementCollectionModelTest extends JAXBTestCases {
+public class XmlAnyElementCollectionModelTest extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyelement/xmlanyelementmodel.xml";
     private final static String XML_CHILD_ELEMENTS = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyelement/xmlanyelementmodel_child_elements_all.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyelement/xmlanyelementmodel.json";
     
     public XmlAnyElementCollectionModelTest(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = XmlAnyElementCollectionModel.class;
-        setClasses(classes);
+        setClasses(classes);        
+    }
+    
+    public Map getProperties(){
+    	Map props = new HashMap();
+    	props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+    	return props;
     }
 
     protected Object getControlObject() {

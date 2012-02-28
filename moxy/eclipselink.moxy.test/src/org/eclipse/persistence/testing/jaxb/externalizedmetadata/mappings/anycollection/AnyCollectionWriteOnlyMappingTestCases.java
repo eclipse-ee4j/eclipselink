@@ -22,18 +22,19 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AnyCollectionWriteOnlyMappingTestCases extends JAXBTestCases{
+public class AnyCollectionWriteOnlyMappingTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anycollection/write-only-employee.xml";
-    private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anycollection/write-only-employee.xml";
 
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anycollection/write-only-employee.json";
+    
     private static final String STUFF = "Some Stuff";
         
 	public AnyCollectionWriteOnlyMappingTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
-		setWriteControlDocument(XML_WRITE_RESOURCE);
+		setControlJSON(JSON_RESOURCE);	
 		setClasses(new Class[] { Employee.class });
 	}
 	

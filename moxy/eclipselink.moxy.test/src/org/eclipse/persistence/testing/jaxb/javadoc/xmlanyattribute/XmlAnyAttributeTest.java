@@ -13,24 +13,45 @@
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlanyattribute;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlAnyAttributeTest extends JAXBTestCases{
+public class XmlAnyAttributeTest extends JAXBWithJSONTestCases{
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyattribute/xmlanyattribute.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlanyattribute/xmlanyattribute.json";
 	
 	public XmlAnyAttributeTest(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = XmlAnyAttributeModel.class;
 		setClasses(classes);
+		
+		jaxbUnmarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+		Map<String, String> namespaces = new HashMap<String, String>();
+		namespaces.put("www.example.com","ns0");
+		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 
+	public JAXBMarshaller getJSONMarshaller() throws Exception{
+		JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+		jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		jsonMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+		Map<String, String> namespaces = new HashMap<String, String>();
+		namespaces.put("www.example.com","ns0");
+		
+		jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+		return jsonMarshaller;
+	}
+	
 	protected Object getControlObject() {
 
 		XmlAnyAttributeModel model = new XmlAnyAttributeModel();

@@ -12,18 +12,30 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlanyelement.domhandler;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import java.util.HashMap;
+import java.util.Map;
 
-public class DOMHandlerTestCases extends JAXBTestCases {
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
+public class DOMHandlerTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/domhandler/input.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/domhandler/input.json";
 
     public DOMHandlerTestCases(String name) throws Exception {
         super(name);
         this.setClasses(new Class[] {Root.class});
         this.setControlDocument(XML_RESOURCE);
+        this.setControlJSON(JSON_RESOURCE);
     }
 
+    public Map getProperties(){
+    	Map props = new HashMap();
+    	props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+    	return props;
+    }
+    
     @Override
     protected Root getControlObject() {
         Root root = new Root();

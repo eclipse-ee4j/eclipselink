@@ -23,17 +23,20 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlAnyElement via eclipselink-oxm.xml
  *
  */
-public class XmlAnyAttributeTestCases extends JAXBTestCases {
+public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyattribute/employee.json";
     public static final String RETURN_STRING = "Giggity";
     
     /**
@@ -44,7 +47,26 @@ public class XmlAnyAttributeTestCases extends JAXBTestCases {
     public XmlAnyAttributeTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
+        
+    	Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("www.example.com","ns0");
+    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+    }
+    
+    public JAXBMarshaller getJSONMarshaller() throws Exception{
+    	
+    	Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("www.example.com","ns0");
+    	
+    	JAXBMarshaller jsonMarhsaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+    	jsonMarhsaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	jsonMarhsaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	jsonMarhsaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+
+    	return jsonMarhsaller;
     }
     
     public Map getProperties(){

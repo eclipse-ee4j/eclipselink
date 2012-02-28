@@ -268,9 +268,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     }
 
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
+    	QName qname = null;
         if (xmlRootFragment != null) {
-            QName qname = ((XMLRoot) originalValue).getSchemaType();
-            value = marshalRecord.getValueToWrite(qname, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+            qname = ((XMLRoot) originalValue).getSchemaType();
             Namespace generatedNamespace = setupFragment(((XMLRoot) originalValue), xmlRootFragment, marshalRecord);
             getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
             if (generatedNamespace != null) {                
@@ -278,11 +278,11 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             }
             updateNamespaces(qname, marshalRecord, null);
         }
-
-        if (value instanceof String) {
-            marshalRecord.characters((String) value);
+        
+        if (value instanceof org.w3c.dom.Node) {
+        	marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());        
         } else {
-            marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());
+            marshalRecord.characters(qname, value, null, false);
         }
 
         if (xmlRootFragment != null) {
@@ -311,8 +311,8 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         XMLDescriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);
         if (referenceDescriptor == null) {
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 
-            QName qname = new QName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName());
-            referenceDescriptor = xmlContext.getDescriptor(qname);
+            XPathQName xpathQName = new XPathQName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), unmarshalRecord.isNamespaceAware());
+            referenceDescriptor = xmlContext.getDescriptor(xpathQName);
             // Check if descriptor is for a wrapper, if it is null it out and let continue
             if (referenceDescriptor != null && referenceDescriptor.isWrapper()) {
                 referenceDescriptor = null;

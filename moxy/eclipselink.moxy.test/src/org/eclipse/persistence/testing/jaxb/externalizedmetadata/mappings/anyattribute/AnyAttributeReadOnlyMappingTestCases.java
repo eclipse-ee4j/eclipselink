@@ -23,12 +23,15 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AnyAttributeReadOnlyMappingTestCases extends JAXBTestCases{
+public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/read-only-employee.xml";
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/marshal-read-only-employee.xml";
-
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/read-only-employee.json";
+    private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/marshal-read-only-employee.json";
     private static final String FNAME = "Joe";
     private static final String LNAME = "Oracle";
     private static final String FIRST_NAME = "first-name";
@@ -39,9 +42,26 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBTestCases{
 		super(name);
 		setControlDocument(XML_RESOURCE);
 		setWriteControlDocument(XML_WRITE_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+		setWriteControlJSON(JSON_WRITE_RESOURCE);
 		setClasses(new Class[] { Employee.class });
+		
+		Map<String, String> namespaces = new HashMap<String, String>();
+	    namespaces.put("http://www.example.com/other", "ns0");	       
+	    jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 	
+	
+	  public JAXBMarshaller getJSONMarshaller() throws Exception{
+	    	JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+	    	jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+	    	 Map<String, String> namespaces = new HashMap<String, String>();
+	         namespaces.put("http://www.example.com/other", "ns0");
+	    	
+	    	jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+	    	return jsonMarshaller;
+
+	    }
 	 public Map getProperties(){
 			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/read-only-employee-oxm.xml");
 

@@ -300,10 +300,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);
             
             QName schemaType = getSchemaType((XMLField) xmlCompositeCollectionMapping.getField(), value, session);
-            String stringValue = marshalRecord.getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeCollectionMapping.getField()));
-
-            marshalRecord.characters(stringValue);
+            marshalRecord.characters(schemaType, value, null, false);            
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
         return true;

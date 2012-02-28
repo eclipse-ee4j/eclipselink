@@ -90,6 +90,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             }
         }
         Object objectValue;
+        marshalRecord.startCollection();
         while (cp.hasNext(iterator)) {
             objectValue = cp.next(iterator, session);
             if(xmlAnyCollectionMapping.getConverter() != null) {
@@ -97,6 +98,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             }
             marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
+        marshalRecord.endCollection();
 
         return true;
     }
@@ -334,19 +336,18 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
+    	 QName qname = null;
         if (xmlRootFragment != null) {
-            QName qname = ((XMLRoot) originalValue).getSchemaType();
-            value = marshalRecord.getValueToWrite(qname, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
-
+            qname = ((XMLRoot) originalValue).getSchemaType();
+        
             Namespace generatedNamespace = setupFragment((XMLRoot) originalValue, xmlRootFragment, marshalRecord);
             getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
             if (generatedNamespace != null) {
                 marshalRecord.namespaceDeclaration(generatedNamespace.getPrefix(),  generatedNamespace.getNamespaceURI());
             }
-            updateNamespaces(qname, marshalRecord, null);                        
+            updateNamespaces(qname, marshalRecord, null);     
         }
-
-        marshalRecord.characters((String) value);
+        marshalRecord.characters(qname, value, null, false);
 
         if (xmlRootFragment != null) {
             marshalRecord.endElement(xmlRootFragment, namespaceResolver);

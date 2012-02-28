@@ -24,7 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -32,8 +32,9 @@ import org.w3c.dom.Element;
  * Tests XmlAnyObjectMapping via eclipselink-oxm.xml
  *
  */
-public class AnyObjectMappingTestCases extends JAXBTestCases {
+public class AnyObjectMappingTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/employee.json";
     
     private static final String STUFF = "Some Stuff";
     private static final String OTHER = "ns0:other";
@@ -47,6 +48,7 @@ public class AnyObjectMappingTestCases extends JAXBTestCases {
     public AnyObjectMappingTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
     }
 

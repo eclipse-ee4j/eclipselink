@@ -19,8 +19,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.javadoc.xmlattribute.USPrice;
-
 @XmlRootElement
 public class XmlAnyAttributeModel {
 

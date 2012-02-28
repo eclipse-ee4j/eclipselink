@@ -23,15 +23,18 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlAnyAttributeMapping via eclipselink-oxm.xml
  *
  */
-public class AnyAttributeSubTypeMappingTestCases extends JAXBTestCases {
+public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
     
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/subtype-map.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/subtype-map.json";
     
     private static final String NAME_1 = "Joe";
     private static final String NAME_2 = "Bob";
@@ -47,8 +50,24 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBTestCases {
     public AnyAttributeSubTypeMappingTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{XmlAnyAttributeSubTypeMapModel.class});
+        
+    	Map<String, String> namespaces = new HashMap<String, String>();
+	    namespaces.put("http://www.example.com/other", "ns0");
+	    jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
+    
+    public JAXBMarshaller getJSONMarshaller() throws Exception{
+        JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+        jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("http://www.example.com/other", "ns0");
+	    	
+        jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+        return jsonMarshaller;
+
+	  }    
     
     /**
      * Create the control XmlAnyAttributeSubTypeMapModel.

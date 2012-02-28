@@ -24,14 +24,18 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class AnyObjectReadOnlyMappingTestCases extends JAXBTestCases{
+public class AnyObjectReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/read-only-employee.xml";
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/marshal-read-only-employee.xml";
 
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/read-only-employee.json";
+    private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyobject/marshal-read-only-employee.json";
+
+    
     private static final String STUFF = "Some Stuff";
     private static final String OTHER = "ns0:other";
     private static final String OTHER_NS = "http://www.example.com/other";
@@ -40,6 +44,8 @@ public class AnyObjectReadOnlyMappingTestCases extends JAXBTestCases{
 		super(name);
 		setControlDocument(XML_RESOURCE);
 		setWriteControlDocument(XML_WRITE_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+		setWriteControlJSON(JSON_WRITE_RESOURCE);
 		setClasses(new Class[] { Employee.class });
 	}
 	

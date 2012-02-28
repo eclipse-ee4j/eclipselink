@@ -23,7 +23,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
@@ -290,67 +289,11 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      */
     private class FormattedWriterRecordContentHandler extends WriterRecordContentHandler {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
-        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-            try {
-                if (isStartElementOpen) {
-                    writer.write('>');
-                }
-                if (!isLastEventText) {
-                    writer.write(Helper.cr());
-                    for (int x = 0; x < numberOfTabs; x++) {
-                        writeValue(tab());
-                    }
-                }
-                writer.write('<');
-                writer.write(qName);
-                numberOfTabs++;
-                isStartElementOpen = true;
-                isLastEventText = false;
-                // Handle attributes
-                handleAttributes(atts);
-                // Handle prefix mappings
-                writePrefixMappings();
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
-        }
-
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-            try {
-                isLastEventText = false;
-                numberOfTabs--;
-                if (isStartElementOpen) {
-                    writer.write('/');
-                    writer.write('>');
-                    isStartElementOpen = false;
-                    complexType = true;
-                    return;
-                }
-                if (complexType) {
-                    writer.write(Helper.cr());
-                    for (int x = 0; x < numberOfTabs; x++) {
-                        writeValue(tab());
-                    }
-                } else {
-                    complexType = true;
-                }
-                super.endElement(namespaceURI, localName, qName);
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
-        }
-
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            if (isProcessingCData) {
-                cdata(new String (ch, start, length));
-                return;
-            }
-            if (new String(ch).trim().length() == 0) {
-                return;
-            }
-            super.characters(ch, start, length);
-            isLastEventText = true;
-            complexType = false;
+        	XPathFragment xPathFragment = new XPathFragment(localName);
+        	xPathFragment.setNamespaceURI(namespaceURI);
+        	
+        	JSONFormattedWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
         }
 
     // --------------------- LEXICALHANDLER METHODS --------------------- //

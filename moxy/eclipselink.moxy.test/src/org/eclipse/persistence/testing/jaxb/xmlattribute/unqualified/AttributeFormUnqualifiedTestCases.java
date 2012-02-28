@@ -16,15 +16,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AttributeFormUnqualifiedTestCases extends JAXBTestCases{
+public class AttributeFormUnqualifiedTestCases extends JAXBWithJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/form_unqualified.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/form_unqualified.json";
 	private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/form_unqualified.xsd";
 	
 	public AttributeFormUnqualifiedTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setClasses(new Class[]{TestObject.class});
 	}
 

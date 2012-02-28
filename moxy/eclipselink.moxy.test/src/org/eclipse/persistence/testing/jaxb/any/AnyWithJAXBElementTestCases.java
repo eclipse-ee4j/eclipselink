@@ -12,9 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.any;
 
-import java.io.InputStream;
-import java.util.Calendar;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -23,14 +20,16 @@ import javax.xml.namespace.QName;
 
 import junit.textui.TestRunner;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AnyWithJAXBElementTestCases extends JAXBTestCases{
+public class AnyWithJAXBElementTestCases extends JAXBWithJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/any/any.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/any/any.json";
 
 	public AnyWithJAXBElementTestCases(String name) throws Exception {
             super(name);
-	    setControlDocument(XML_RESOURCE);        
+	        setControlDocument(XML_RESOURCE);   
+	        setControlJSON(JSON_RESOURCE);
             Class[] classes = new Class[2];
             classes[0] = ObjectFactory.class;
             classes[1] = Root.class;

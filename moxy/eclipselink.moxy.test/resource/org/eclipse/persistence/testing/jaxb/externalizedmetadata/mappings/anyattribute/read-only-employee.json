@@ -1,0 +1,8 @@
+{"employee":{
+    "read-only":{
+      "stuff":{
+      	 "ns0.last-name":"Oracle",
+         "ns0.first-name":"Joe"
+       }
+       }
+}}

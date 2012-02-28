@@ -23,15 +23,18 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlAnyAttributeMapping via eclipselink-oxm.xml
  *
  */
-public class AnyAttributeMappingTestCases extends JAXBTestCases {
+public class AnyAttributeMappingTestCases extends JAXBWithJSONTestCases {
     
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/employee.json";
     
     private static final String FNAME = "Joe";
     private static final String LNAME = "Oracle";
@@ -47,9 +50,26 @@ public class AnyAttributeMappingTestCases extends JAXBTestCases {
     public AnyAttributeMappingTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("http://www.example.com/other", "ns0");
+        namespaces.put("http://www.example.com/stuff", "s");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    public JAXBMarshaller getJSONMarshaller() throws Exception{
+    	JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+    	jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	 Map<String, String> namespaces = new HashMap<String, String>();
+         namespaces.put("http://www.example.com/other", "ns0");
+         namespaces.put("http://www.example.com/stuff", "s");
+    	
+    	jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	return jsonMarshaller;
+
+    }
+    
     /**
      * Create the control Employee.
      */

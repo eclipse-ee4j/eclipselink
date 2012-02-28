@@ -14,8 +14,6 @@ package org.eclipse.persistence.oxm.record;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 import javax.xml.namespace.QName;
@@ -387,6 +385,7 @@ public class JSONWriterRecord extends MarshalRecord {
          charactersAllowed = false;
      }
 
+     
      private boolean isNumericOrBooleanType(QName schemaType){
          if(schemaType == null){
              return false;
@@ -620,53 +619,25 @@ public class JSONWriterRecord extends MarshalRecord {
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      */
     protected class WriterRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
-        Map<String, String> prefixMappings;
 
         WriterRecordContentHandler() {
-            prefixMappings = new HashMap<String, String>();
         }
 
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-            try {
-                if (isStartElementOpen) {
-                    writer.write('>');
-                }
-
-                writer.write('<');
-                writer.write(qName);
-                isStartElementOpen = true;
-                // Handle attributes
-                handleAttributes(atts);
-                // Handle prefix mappings
-                writePrefixMappings();
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
+            	XPathFragment xPathFragment = new XPathFragment(localName);
+            	xPathFragment.setNamespaceURI(namespaceURI);
+            	openStartElement(xPathFragment, namespaceResolver);
         }
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-            try {
-                if (isStartElementOpen) {
-                    writer.write('/');
-                    writer.write('>');
-                } else {
-                        writer.write('<');
-                        writer.write('/');
-                        writer.write(qName);
-                        writer.write('>');
-                }
-                isStartElementOpen = false;
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
+        	XPathFragment xPathFragment = new XPathFragment(localName);
+        	xPathFragment.setNamespaceURI(namespaceURI);
+        	
+        	JSONWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
         }
 
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
-            String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
-            if(namespaceUri == null || !namespaceUri.equals(uri)) {
-                prefixMappings.put(prefix, uri);
-            }
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
@@ -674,34 +645,12 @@ public class JSONWriterRecord extends MarshalRecord {
             characters(characters);
         }
 
-        public void characters(CharSequence characters) throws SAXException {
-            if (isProcessingCData) {
-                cdata(characters.toString());
-                return;
-            }
-
-            if (isStartElementOpen) {
-                try {
-                    writer.write('>');
-                    isStartElementOpen = false;
-                } catch (IOException e) {
-                    throw XMLMarshalException.marshalException(e);
-                }
-            }
-            writeValue(characters.toString());
+        public void characters(CharSequence characters) throws SAXException {        	
+        	JSONWriterRecord.this.characters(characters.toString());      
         }
 
         // --------------------- LEXICALHANDLER METHODS --------------------- //
         public void comment(char[] ch, int start, int length) throws SAXException {
-            try {
-                if (isStartElementOpen) {
-                    writer.write('>');
-                    isStartElementOpen = false;
-                }
-                writeComment(ch, start, length);
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
 
         public void startCDATA() throws SAXException {
@@ -713,33 +662,7 @@ public class JSONWriterRecord extends MarshalRecord {
         }
 
         // --------------------- CONVENIENCE METHODS --------------------- //
-        protected void writePrefixMappings() {
-            try {
-                if (!prefixMappings.isEmpty()) {
-                    for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
-                        String prefix = keys.next();
-                        writer.write(' ');
-                        writer.write(XMLConstants.XMLNS);
-                        if(null != prefix && prefix.length() > 0) {
-                            writer.write(XMLConstants.COLON);
-                            writer.write(prefix);
-                        }
-                        writer.write('=');
-                        writer.write('"');
-                        String uri = prefixMappings.get(prefix);
-                        if(null != uri) {
-                            writer.write(prefixMappings.get(prefix));
-                        }
-                        writer.write('"');
-                    }
-                    prefixMappings.clear();
-                }
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
-        }
-
-        protected void handleAttributes(Attributes atts) {
+           protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
                 String qName = atts.getQName(i);
                 if((qName != null && (qName.startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || qName.equals(XMLConstants.XMLNS)))) {
@@ -749,31 +672,15 @@ public class JSONWriterRecord extends MarshalRecord {
             }
         }
 
-        protected void writeComment(char[] chars, int start, int length) {
-            try {
-                writer.write('<');
-                writer.write('!');
-                writer.write('-');
-                writer.write('-');
-                for (int x = start; x < length; x++) {
-                    writer.write(chars[x]);
-                }
-                writer.write('-');
-                writer.write('-');
-                writer.write('>');
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
+        protected void writeComment(char[] chars, int start, int length) {        
         }
-
+       
         protected void writeCharacters(char[] chars, int start, int length) {
-            try {
-                for (int x = start; x < length; x++) {
-                    writer.write(chars[x]);
-                }
-            } catch (IOException e) {
+        	try {
+				characters(chars, start, length);
+			} catch (SAXException e) {
                 throw XMLMarshalException.marshalException(e);
-            }
+			}           
         }
         // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
         public void endPrefixMapping(String prefix) throws SAXException {}

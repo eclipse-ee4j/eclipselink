@@ -12,32 +12,42 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlanyelement.ns.qualified;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.sax.SAXSource;
 
-import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-public class XMLAnyElementNamespaceTestCases extends JAXBTestCases {
+public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/ns/qualified/customer.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/ns/qualified/customer.json";
 
     public XMLAnyElementNamespaceTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Customer.class;
         setClasses(classes);
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("namespace","ns1");
+       namespaces.put("someuri","ns2");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+    }
+    
+    protected JAXBMarshaller getJSONMarshaller() throws Exception{
+    	   Map<String, String> namespaces = new HashMap<String, String>();
+           namespaces.put("namespace","ns1");
+           namespaces.put("someuri","ns2");
+           JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+           jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+           jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+           return jsonMarshaller;
     }
 
     protected Object getControlObject() {
