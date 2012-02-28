@@ -11523,6 +11523,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testLazyOneToOneFetchInitialization() {
+        if (!isWeavingEnabled()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         Room room = null;
         try {
