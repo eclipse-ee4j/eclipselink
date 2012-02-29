@@ -15,8 +15,6 @@ package org.eclipse.persistence.testing.jaxb.json.characters;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
@@ -31,7 +29,7 @@ public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
 	protected Object getControlObject() {
 		EscapeCharacterHolder holder = new EscapeCharacterHolder();
 		
-		holder.stringValue = "a\"a\\a/a\ba\fa\na\ra\t\b\u0003\u001Caaa\\";
+		holder.stringValue = "a\"a\\a/a\ba\fa\na\ra\t\b\u0003\u001Caaa\\TESThttp://this/is/my/test";
 		
 		List<Character> characters = new ArrayList<Character>(); 
 		characters.add(new Character('a'));

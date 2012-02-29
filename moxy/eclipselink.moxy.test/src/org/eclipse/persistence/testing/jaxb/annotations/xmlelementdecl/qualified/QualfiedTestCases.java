@@ -12,20 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qualified;
 
-import java.math.BigDecimal;
-
 import javax.xml.bind.JAXBElement;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.oxm.xmlmarshaller.setschemas.SetXmlSchemaTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class QualfiedTestCases extends JAXBTestCases {
+public class QualfiedTestCases extends JAXBWithJSONTestCases {
 
     private static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlelementdecl/qualified.xml";
+    private static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlelementdecl/qualified.json";
 
     public QualfiedTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] {ComplexType.class, ObjectFactory.class});
     }
 

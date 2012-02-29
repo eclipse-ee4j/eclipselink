@@ -22,17 +22,19 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
 /**
  * Tests XmlBinaryDataCollectionMappings via eclipselink-oxm.xml
  * 
  */
-public class BinaryDataCollectionMappingTestCases extends JAXBTestCases {
+public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases {
     
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/mydata.xml";
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/write-mydata.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/mydata.json";
+    private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/write-mydata.json";
     private static final byte[] BYTES0123 = new byte[] { 0, 1, 2, 3 };
     private static final byte[] BYTES1234 = new byte[] { 1, 2, 3, 4 };
     private static final byte[] BYTES2345 = new byte[] { 2, 3, 4, 5 };
@@ -48,6 +50,8 @@ public class BinaryDataCollectionMappingTestCases extends JAXBTestCases {
         setClasses(new Class[] { MyData.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
     }
    
 

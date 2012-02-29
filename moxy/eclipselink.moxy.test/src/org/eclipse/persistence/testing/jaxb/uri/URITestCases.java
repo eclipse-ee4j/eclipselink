@@ -19,17 +19,18 @@ import java.net.URISyntaxException;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class URITestCases extends JAXBTestCases{
+public class URITestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/uri/uri.xml";
-	//private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/uri.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/uri/uri.json";
 		
 	public URITestCases(String name) throws Exception {
 	    super(name);
 		setClasses(new Class[]{});
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		//setWriteControlDocument(XML_WRITE_RESOURCE);
 	}
 		
@@ -46,13 +47,8 @@ public class URITestCases extends JAXBTestCases{
 		return jbe;
 	}
 	
-	public void testXMLToObjectFromInputStream() throws Exception {	}
-    public void testRoundTrip() throws Exception{}
-    public void testXMLToObjectFromURL() throws Exception {}
-    public void testXMLToObjectFromXMLStreamReader() throws Exception {}
-    public void testXMLToObjectFromNode() throws Exception {}
-    public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {}
-    public void testXMLToObjectFromXMLEventReader() throws Exception {}
-    public void testUnmarshallerHandler() throws Exception {}
+    public boolean isUnmarshalTest() {
+        return false;
+    }
 
 }

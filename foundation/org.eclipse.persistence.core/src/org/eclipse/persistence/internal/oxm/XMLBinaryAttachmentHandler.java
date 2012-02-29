@@ -62,8 +62,15 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
     }
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
-            this.c_id = atts.getValue(XMLConstants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
+    	
+    	if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
+    		if(record.isNamespaceAware()){
+    			if(XMLConstants.XOP_URL.equals(namespaceURI)){
+    				this.c_id = atts.getValue(XMLConstants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
+    			}
+    		}else{
+    			this.c_id = atts.getValue(XMLConstants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);	
+    		}
         } else if(c_id == null ){        	
             //Return control to the UnmarshalRecord
             XMLReader xmlReader = record.getXMLReader();
@@ -75,15 +82,16 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
 
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-    	if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {    		
-    	
         	XMLField xmlField = null;
     	    if(isCollection) {
                 xmlField = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
               } else {
                 xmlField = (XMLField)((XMLBinaryDataMapping)mapping).getField();
             }
-            if(XMLConstants.XOP_URL.equals(namespaceURI) && (INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName))) {
+    	    if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
+    	    	if(record.isNamespaceAware() && !XMLConstants.XOP_URL.equals(namespaceURI)){
+    	    		return;
+    	    	}
                 //Get the attachment and set it in the object.
                 XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
                 Object data = null;
@@ -126,7 +134,7 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
                     xmlReader.setContentHandler(record);
                     xmlReader.setLexicalHandler(record);
                 }
-            } else {
+            } else if(c_id == null){
                 if(!xmlField.isSelfField()){
                     //Return control to the parent record
                     XMLReader xmlReader = record.getXMLReader();
@@ -135,7 +143,6 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
                     record.endElement(namespaceURI, localName, qName);
                 }
             }
-    	}
     }
 
     public void processingInstruction(String target, String data) throws SAXException {

@@ -14,17 +14,20 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.choice;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AdapterWithElementsTestCases extends JAXBTestCases {
-    public AdapterWithElementsTestCases(String name) throws Exception {
+public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
+
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/choice.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/choice.json";
+    
+	public AdapterWithElementsTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[] {Foo.class, BarA.class, BarB.class, BarC.class};
         setClasses(classes);
     }
-
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/choice.xml";
 
     protected Object getControlObject() {
         // TODO Auto-generated method stub

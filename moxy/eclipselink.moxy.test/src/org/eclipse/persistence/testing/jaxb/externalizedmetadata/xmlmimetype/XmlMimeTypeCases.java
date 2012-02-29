@@ -24,13 +24,15 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlMimeType via eclipselink-oxm.xml
  *
  */
-public class XmlMimeTypeCases extends JAXBTestCases {    
+public class XmlMimeTypeCases extends JAXBWithJSONTestCases {    
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/att-types.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmimetype/att-types.json";
     
     /**
      * This is the preferred (and only) constructor.
@@ -40,6 +42,7 @@ public class XmlMimeTypeCases extends JAXBTestCases {
     public XmlMimeTypeCases(String name) throws Exception {
         super(name);        
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { AttTypes.class });
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 

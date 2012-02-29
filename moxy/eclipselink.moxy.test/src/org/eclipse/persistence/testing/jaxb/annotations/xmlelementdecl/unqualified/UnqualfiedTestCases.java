@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.unqualif
 
 import javax.xml.bind.JAXBElement;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class UnqualfiedTestCases extends JAXBTestCases {
+public class UnqualfiedTestCases extends JAXBWithJSONTestCases {
 
     private static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlelementdecl/unqualified.xml";
+    private static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlelementdecl/unqualified.json";
 
     public UnqualfiedTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] {ComplexType.class, ObjectFactory.class});
     }
 

@@ -17,15 +17,17 @@ import java.util.ArrayList;
 import javax.activation.DataHandler;
 
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class InlineDataHandlerCollectionTestCases extends JAXBTestCases {
+public class InlineDataHandlerCollectionTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlinlinebinary/inlinedatahandlercollection.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlinlinebinary/inlinedatahandlercollection.json";
     
     public InlineDataHandlerCollectionTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Root.class;
         setClasses(classes);

@@ -31,6 +31,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     protected String controlJSONLocation;
     private String controlJSONWriteLocation;
+    private String controlJSONWriteFormattedLocation;
 
     public JAXBWithJSONTestCases(String name) throws Exception {
         super(name);
@@ -43,6 +44,10 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     public void setWriteControlJSON(String location) {
         this.controlJSONWriteLocation = location;        
     }
+
+    public void setWriteControlFormattedJSON(String location) {
+        this.controlJSONWriteFormattedLocation= location;        
+    }
     
     public String getWriteControlJSON(){
     	if(controlJSONWriteLocation != null){
@@ -52,6 +57,13 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	}
     }
 
+    public String getWriteControlJSONFormatted(){
+    	if(controlJSONWriteFormattedLocation != null){
+    		return controlJSONWriteFormattedLocation;
+    	}else{    	
+    	    return getWriteControlJSON();
+    	}
+    }
     
     protected Marshaller getJSONMarshaller() throws Exception{
     	return jaxbMarshaller;
@@ -78,65 +90,73 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
     
     public void testJSONUnmarshalFromInputStream() throws Exception {
-    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        Object testObject = null;
-        if(getUnmarshalClass() != null){
-        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
-        }else{
-            testObject = getJSONUnmarshaller().unmarshal(inputStream);
-        }
-        inputStream.close();
-        jsonToObjectTest(testObject);
+    	if(isUnmarshalTest()){
+	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+	        Object testObject = null;
+	        if(getUnmarshalClass() != null){
+	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+	        }else{
+	            testObject = getJSONUnmarshaller().unmarshal(inputStream);
+	        }
+	        inputStream.close();
+	        jsonToObjectTest(testObject);
+    	}
     }
       
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
-    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
-
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        InputSource inputSource = new InputSource(inputStream);
-        Object testObject = null;
-        if(getUnmarshalClass() != null){
-        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
-        }else{
-            testObject = getJSONUnmarshaller().unmarshal(inputSource);
-        }
-        inputStream.close();
-        jsonToObjectTest(testObject);
+    	if(isUnmarshalTest()){
+	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	
+	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+	        InputSource inputSource = new InputSource(inputStream);
+	        Object testObject = null;
+	        if(getUnmarshalClass() != null){
+	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+	        }else{
+	            testObject = getJSONUnmarshaller().unmarshal(inputSource);
+	        }
+	        inputStream.close();
+	        jsonToObjectTest(testObject);
+    	}
     }
 
     public void testJSONUnmarshalFromReader() throws Exception {
-    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
-
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        Reader reader = new InputStreamReader(inputStream);
-        Object testObject = null;
-        
-        if(getUnmarshalClass() != null){
-        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(reader), getUnmarshalClass());
-        }else{
-            testObject = getJSONUnmarshaller().unmarshal(reader);
-        }
-        
-        reader.close();
-        inputStream.close();
-        jsonToObjectTest(testObject);
+    	if(isUnmarshalTest()){
+	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	
+	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+	        Reader reader = new InputStreamReader(inputStream);
+	        Object testObject = null;
+	        
+	        if(getUnmarshalClass() != null){
+	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(reader), getUnmarshalClass());
+	        }else{
+	            testObject = getJSONUnmarshaller().unmarshal(reader);
+	        }
+	        
+	        reader.close();
+	        inputStream.close();
+	        jsonToObjectTest(testObject);
+    	}
     }
     
 
     public void testJSONUnmarshalFromURL() throws Exception {
-    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
-
-        URL url = getJSONURL();
-        Object testObject= null;
-        if(getUnmarshalClass() == null){
-        	testObject = getJSONUnmarshaller().unmarshal(url);
-        }else{
-        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
-        }
-        	
-        jsonToObjectTest(testObject);
+    	if(isUnmarshalTest()){
+	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	
+	        URL url = getJSONURL();
+	        Object testObject= null;
+	        if(getUnmarshalClass() == null){
+	        	testObject = getJSONUnmarshaller().unmarshal(url);
+	        }else{
+	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
+	        }
+	        	
+	        jsonToObjectTest(testObject);
+    	}
     }
     
 
@@ -155,7 +175,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         getJSONMarshaller().marshal(getWriteControlObject(), os);
-        compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+        compareStrings("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted());
         os.close();
     }
 
@@ -172,8 +192,8 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         StringWriter sw = new StringWriter();
-        getJSONMarshaller().marshal(getWriteControlObject(), sw);
-        compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
+        getJSONMarshaller().marshal(getWriteControlObject(), sw);        
+        compareStrings("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted());
     }
 
     protected void compareStrings(String test, String testString) {
@@ -182,11 +202,26 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     
     protected void compareStrings(String test, String testString, String controlFileLocation) {
         log(test);
-        log("Expected (With All Whitespace Removed):");
-        String expectedString = loadFileToString(controlFileLocation).replaceAll("[ \b\t\n\r ]", "");
+        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+            log("Expected (With All Whitespace Removed):");
+        }else{
+        	log("Expected");
+        }
+        
+        String expectedString = loadFileToString(controlFileLocation);
+        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+        	expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
+        }
         log(expectedString);
-        log("\nActual (With All Whitespace Removed):");
-        testString = testString.replaceAll("[ \b\t\n\r]", "");
+        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+            log("\nActual (With All Whitespace Removed):");
+        }else{
+        	log("\nActual");
+        }
+        
+        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+            testString = testString.replaceAll("[ \b\t\n\r]", "");
+        }
         log(testString);
         assertEquals(expectedString, testString);
     }

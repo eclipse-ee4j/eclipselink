@@ -1,0 +1,8 @@
+{"root":{
+    "type":"testObject",
+    "byteArrayListTest":["313233343536373839","313233343536373839"],
+    "byteArrayTest":"313233343536373839",
+    "booleanTest":true,
+    "booleanListTest":[false, true],
+    "fld1":0
+}}

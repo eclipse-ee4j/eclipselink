@@ -15,16 +15,18 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.emptystr
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class EmptyStringNSTestCases extends JAXBTestCases {
+public class EmptyStringNSTestCases extends JAXBWithJSONTestCases {
 
     private static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlelementdecl/emptystringns.xml";
+    private static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlelementdecl/emptystringns.json";
 
     public EmptyStringNSTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[] {TestObject.class, ObjectFactory.class});
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[] {TestObject.class, ObjectFactory.class});        
     }
 
     @Override

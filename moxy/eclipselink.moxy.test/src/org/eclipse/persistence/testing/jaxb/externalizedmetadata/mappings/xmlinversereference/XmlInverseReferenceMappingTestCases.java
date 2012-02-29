@@ -27,13 +27,14 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  *
  */
-public class XmlInverseReferenceMappingTestCases extends JAXBTestCases {
+public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.json";
     private static final String CONTROL_ID = "a222";
     private static final String CONTROL_NAME = "Joe Smith";
     private static final String CONTROL_ADD_ID_1 = "a199";
@@ -54,6 +55,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBTestCases {
     public XmlInverseReferenceMappingTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Root.class});
     }
 

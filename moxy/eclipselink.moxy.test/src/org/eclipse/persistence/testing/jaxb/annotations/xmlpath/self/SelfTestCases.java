@@ -12,15 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.self;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class SelfTestCases extends JAXBTestCases {
+public class SelfTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/self.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/self.json";
 
     public SelfTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setTypes(new Class[] {PaymentInf.class});
     }
 

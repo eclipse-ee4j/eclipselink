@@ -1,0 +1,36 @@
+{"root":{
+    "employee":{
+       "id":"a222",
+       "address-id":"a199",
+       "name":"Joe Smith",
+       "phone-id":["a123", "a456"]
+    },
+    "address":[
+    {
+       "aid":"a199",
+       "street":"Some Other St.",
+       "city":"Anyothertown",
+       "country":"Canada",
+       "zip":"X0X0X0"
+    },
+    {
+    "aid":"a99",
+       "street":"Some St.",
+       "city":"Anytown",
+       "country":"Canada",
+       "zip":"X0X0X0"
+    }
+    ],
+    "phone-number":[
+      {
+         "id":"a123",
+	 "number":"613-123-4567"
+      },
+      {
+         "id":"a456",
+	 "number":"613-234-5678"
+      }
+    ]
+   
+  }
+}

@@ -21,6 +21,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
@@ -151,12 +152,15 @@ public class JSONWriterRecord extends MarshalRecord {
      */
     private void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean addOpenBrace) {    	
         try {
+        	Level newLevel = null;
             Level position = null;
             if(levels.isEmpty()) {
-                levels.push(new Level(true, true));
+            	newLevel = new Level(true, true);
+                levels.push(newLevel);
             } else {
                 position = levels.peek();
-                levels.push(new Level(true, true));
+                newLevel = new Level(true, true);
+                levels.push(newLevel);
                 if(position.isFirst()) {
                     position.setFirst(false);
                 } else {
@@ -164,7 +168,7 @@ public class JSONWriterRecord extends MarshalRecord {
                     writer.write(' ');
                 }
             }
-
+            
             if(xPathFragment.nameIsText()){
                 if(position != null && position.isCollection() && position.isEmptyCollection()) {
                 	if(!charactersAllowed){
@@ -177,21 +181,28 @@ public class JSONWriterRecord extends MarshalRecord {
                     return;
                 }
             }
+            
+         
 
             if(position == null || !position.isCollection() || position.isEmptyCollection()){
-                if(position !=null && position.needToOpenComplex){
-                    writer.write('{');
-                    position.needToOpenComplex = false;
-                    position.needToCloseComplex = true;
-                }
-
-                writeKey(xPathFragment);
-
-                if((xPathFragment.getNextFragment() == null || xPathFragment.getNextFragment().nameIsText()) && position != null && position.isCollection()) {
-                   writer.write('[');
-                }
+            	   if(position !=null && position.needToOpenComplex){
+                       writer.write('{');
+                       position.needToOpenComplex = false;
+                       position.needToCloseComplex = true;
+                   }
+                   writeKey(xPathFragment);
+             
                 if(position !=null && position.isEmptyCollection()){
-                    position.setEmptyCollection(false);
+               	    XPathFragment nextFragment =xPathFragment.getNextFragment();
+                	
+                    if(nextFragment !=null && !nextFragment.nameIsText()&& !nextFragment.isAttribute()){ 
+               		newLevel.setEmptyCollection(true);
+                    	newLevel.setCollection(true);
+                    	position.setEmptyCollection(false);
+                   }else{
+                		writer.write('[');
+                		position.setEmptyCollection(false);
+                	}
                 }
              }
             charactersAllowed = true;
@@ -325,7 +336,7 @@ public class JSONWriterRecord extends MarshalRecord {
      */
      public void characters(String value) {
           if(!charactersAllowed){    
-        	   JAXBException.jsonValuePropertyRequired(value);        	   		
+        	   throw JAXBException.jsonValuePropertyRequired(value);        	   		
     	   }
            Level position = levels.peek();
            position.setNeedToOpenComplex(false);
@@ -351,6 +362,10 @@ public class JSONWriterRecord extends MarshalRecord {
      public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){    	     	 
          Level position = levels.peek();
          position.setNeedToOpenComplex(false);
+         if(mimeType != null) {
+             value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                     value, marshaller, mimeType).getData();
+         }
          if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);
              characters((String)convertedValue);

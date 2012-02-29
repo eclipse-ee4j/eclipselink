@@ -15,15 +15,22 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlElementsJoinNodeTestCases extends JAXBTestCases {
+public class XmlElementsJoinNodeTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root.json";
     
     public XmlElementsJoinNodeTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{ Root.class });
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "value");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "value");
+       
     }
     
     public Object getControlObject() {

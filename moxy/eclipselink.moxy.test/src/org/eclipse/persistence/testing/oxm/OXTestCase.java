@@ -406,14 +406,21 @@ public abstract class OXTestCase extends XMLTestCase {
     
     protected String loadFileToString(String fileName){
         StringBuffer sb = new StringBuffer();
+        String lineSep = System.getProperty("line.separator");
+
         try {            
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String str;
-            while (bufferedReader.ready()) {
-                sb.append(bufferedReader.readLine());
+            //Don't add teh lineSep the first time
+            if(bufferedReader.ready()){
+            	sb.append(bufferedReader.readLine());
             }
+            while (bufferedReader.ready()) {         
+            	sb.append(lineSep);
+                sb.append(bufferedReader.readLine());                
+            }          
             bufferedReader.close();
             inputStreamReader.close();
             inputStream.close();

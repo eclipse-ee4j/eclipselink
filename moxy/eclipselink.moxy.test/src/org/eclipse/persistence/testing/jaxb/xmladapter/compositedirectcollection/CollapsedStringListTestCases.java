@@ -12,24 +12,34 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class CollapsedStringListTestCases extends JAXBTestCases {
+public class CollapsedStringListTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE_READ = "org/eclipse/persistence/testing/jaxb/xmladapter/collapsedstring_read_list.xml"; 
     private static final String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmladapter/collapsedstring_write_list.xml"; 
 
+    private static final String JSON_RESOURCE_READ = "org/eclipse/persistence/testing/jaxb/xmladapter/collapsedstring_read_list.json"; 
+    private static final String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmladapter/collapsedstring_write_list.json";
+    private static final String JSON_RESOURCE_WRITE_FORMATTED = "org/eclipse/persistence/testing/jaxb/xmladapter/collapsedstring_write_list_formatted.json";
+    
     public CollapsedStringListTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE_READ);
+        setWriteControlDocument(XML_RESOURCE_WRITE);
+        setControlJSON(JSON_RESOURCE_READ);
+        setWriteControlJSON(JSON_RESOURCE_WRITE);
+        setWriteControlFormattedJSON(JSON_RESOURCE_WRITE_FORMATTED);
         setClasses(new Class[] {CollapsedStringListRoot.class});
     }
 
+    public boolean shouldRemoveEmptyTextNodesFromControlDoc() {
+        return false;
+    }
+    
     @Override
     protected Object getControlObject() {
         CollapsedStringListRoot root = new CollapsedStringListRoot();
@@ -45,12 +55,5 @@ public class CollapsedStringListTestCases extends JAXBTestCases {
         return root;
     }
 
-    @Override
-    protected Document getWriteControlDocument() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_WRITE);
-        Document writeDocument = parser.parse(inputStream);
-        inputStream.close();
-        return writeDocument;
-    }
 
 }

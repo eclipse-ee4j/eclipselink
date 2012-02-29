@@ -1,0 +1,15 @@
+{"foo":{
+   "barA":"Adapted String",
+   "barB":[{
+      "a":"adapted-a",
+      "b":"adapted-c"
+   }],
+   "collection-string":["test string"],
+   "barC":[{
+      "a":"a",
+      "b":"b"
+   }],
+   "int":[123]
+}}
+
+

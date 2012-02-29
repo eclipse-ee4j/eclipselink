@@ -22,13 +22,14 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests xml-transformation.
  */
-public class XmlTransformationTestCases extends JAXBTestCases {
+public class XmlTransformationTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.json";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.xsd";
     
     private static final String EMP_NAME = "John Smith";
@@ -38,6 +39,7 @@ public class XmlTransformationTestCases extends JAXBTestCases {
     public XmlTransformationTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Employee.class});
     }
 

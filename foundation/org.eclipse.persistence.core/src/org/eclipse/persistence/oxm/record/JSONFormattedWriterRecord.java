@@ -98,13 +98,15 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
-        	
+        	Level newLevel = null;
             Level position = null;
             if(levels.isEmpty()) {
-                levels.push(new Level(true, true));
+            	newLevel = new Level(true, true);
+                levels.push(newLevel);
             } else {
                 position = levels.peek();
-                levels.push(new Level(true, true));
+                newLevel = new Level(true, true);
+                levels.push(newLevel);
                 if(position.isFirst()) {
                     position.setFirst(false);
                 } else {
@@ -145,13 +147,16 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             }
             if(position == null || !position.isCollection() || position.isEmptyCollection()){
                 super.writeKey(xPathFragment);
-
-                if(position != null && position.isCollection()) {
-                    writer.write('[');
-                    writer.write(' ');
-                }
                 if(position !=null && position.isEmptyCollection()){
-                    position.setEmptyCollection(false);
+                   XPathFragment nextFragment =xPathFragment.getNextFragment();                	
+                   if(newLevel != null && nextFragment !=null && !nextFragment.nameIsText()&& !nextFragment.isAttribute()){                    
+               		    newLevel.setEmptyCollection(true);
+                    	newLevel.setCollection(true);
+               	   }else{
+               		    writer.write('[');
+                        writer.write(' ');
+               	   }
+               	   position.setEmptyCollection(false);
                 }
             }
 

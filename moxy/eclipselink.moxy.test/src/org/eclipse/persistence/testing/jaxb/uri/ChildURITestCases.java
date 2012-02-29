@@ -19,19 +19,18 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-public class ChildURITestCases extends JAXBTestCases{
+public class ChildURITestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/uri/childuri.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/uri/childuri.json";
 		
 	public ChildURITestCases(String name) throws Exception {
 	    super(name);
 		setClasses(new Class[]{TestObject.class});
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
 		
 	public Object getControlObject(){	

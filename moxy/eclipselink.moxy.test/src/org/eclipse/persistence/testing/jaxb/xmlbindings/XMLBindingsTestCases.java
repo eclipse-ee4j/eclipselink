@@ -20,16 +20,18 @@ import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XMLBindingsTestCases extends JAXBTestCases{
+public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlbindings/bindings.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlbindings/bindings.json";
 	
 	public XMLBindingsTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[]{XmlBindings.class});
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
 
 	protected Object getControlObject() {
@@ -49,7 +51,7 @@ public class XMLBindingsTestCases extends JAXBTestCases{
 		xmlBindings.setJavaTypes(types);
 		return xmlBindings;
 	}
-	
+		
 	public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -80,4 +82,26 @@ public class XMLBindingsTestCases extends JAXBTestCases{
         assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getValue().getJavaAttribute(), actualBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getValue().getJavaAttribute());
     }
 
+	
+	   public void jsonToObjectTest(Object testObject) throws Exception {
+	        log("\n**xmlToObjectTest**");
+	        log("Expected:");
+	        log(getReadControlObject().toString());
+	        log("Actual:");
+	        log(testObject.toString());
+
+	        XmlBindings expectedBindings = (XmlBindings)getJSONReadControlObject();
+	        XmlBindings actualBindings = (XmlBindings)testObject;
+	        assertEquals(expectedBindings.getPackageName(), actualBindings.getPackageName());
+	        assertEquals(1, actualBindings.getJavaTypes().getJavaType().size());
+	        
+	        assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getClass(), actualBindings.getJavaTypes().getJavaType().get(0).getClass());
+	        assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getName(), actualBindings.getJavaTypes().getJavaType().get(0).getName());
+	        
+	        assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().size(), actualBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().size());
+	        assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getName(), actualBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getName());
+	        assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getDeclaredType(), actualBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getDeclaredType());
+	        assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getValue().getJavaAttribute(), actualBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getValue().getJavaAttribute());
+
+	    }
 }

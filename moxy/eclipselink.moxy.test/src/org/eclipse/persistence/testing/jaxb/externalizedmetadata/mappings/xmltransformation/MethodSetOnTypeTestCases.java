@@ -20,10 +20,11 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class MethodSetOnTypeTestCases extends JAXBTestCases{
+public class MethodSetOnTypeTestCases extends JAXBWithJSONTestCases{
 	  private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.xml";
+	  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/employee.json";
 
 	  private static final String EMP_NAME = "John Smith";
 	  private static final String START = "9:00AM";
@@ -32,6 +33,7 @@ public class MethodSetOnTypeTestCases extends JAXBTestCases{
 	  public MethodSetOnTypeTestCases(String name) throws Exception {
 	       super(name);
 	       setControlDocument(XML_RESOURCE);
+	       setControlJSON(JSON_RESOURCE);
 	       setClasses(new Class[]{Employee.class});
 	   }
 

@@ -96,11 +96,12 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 return false;
             }
         }
+        marshalRecord.startCollection();
         while (cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, session);
             marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
-
+        marshalRecord.endCollection();
         return true;
     }
 

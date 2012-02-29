@@ -16,15 +16,14 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.xml.bind.JAXBContext;
-
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.employee.Employee;
 
-public class DifferentClassLoaderTestCases extends JAXBTestCases {
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
+public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/classloader/classloader.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/classloader/classloader.json";
 
 	private Class rootClass;
 	
@@ -32,7 +31,8 @@ public class DifferentClassLoaderTestCases extends JAXBTestCases {
 		super(name);
 		 
 	    setControlDocument(XML_RESOURCE);  
-	        
+	    setControlJSON(JSON_RESOURCE);
+	    
 	    Class[] classes = new Class[2];
 	 
 	    URL[] urls = new URL[1];	

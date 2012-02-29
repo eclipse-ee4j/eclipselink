@@ -12,45 +12,33 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.Property;
 import org.eclipse.persistence.jaxb.compiler.TypeInfo;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty.Address;
-import org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty.Employee;
-import org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty.PhoneNumber;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class PropertyTypeTestCases extends JAXBTestCases {
+public class PropertyTypeTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/propertyType.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/propertyType.json";
 
     public PropertyTypeTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { TestObject.class });
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     public Object getControlObject() {

@@ -1,0 +1,14 @@
+{"root":{
+   "orders":{
+      "order":[{
+         "id":"123",
+         "item-id":"456"
+       }]
+   },
+   "customers":{
+      "customer":[{
+          "order-id":"123",
+	  "value":"value"
+   }]
+   }
+}}

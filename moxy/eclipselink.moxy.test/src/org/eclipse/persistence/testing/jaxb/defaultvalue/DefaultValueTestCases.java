@@ -12,17 +12,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.defaultvalue;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class DefaultValueTestCases extends JAXBTestCases {
+public class DefaultValueTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/defaultvalue/emptyObject.xml";
     private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/defaultvalue/defaultWrite.xml";
-
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/defaultvalue/emptyObject.json";
+    private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/defaultvalue/defaultWrite.json";
+    
     public DefaultValueTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setWriteControlJSON(JSON_WRITE_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = TestObject.class;
         setClasses(classes);
