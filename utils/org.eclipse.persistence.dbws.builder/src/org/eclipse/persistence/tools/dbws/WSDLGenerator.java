@@ -92,8 +92,7 @@ public class WSDLGenerator {
     public static final String REQUEST_SUFFIX = "Request";
     public static final String RESPONSE_SUFFIX = "Response";
     public static final String SOAP_STYLE = "document";
-    public static final String SOAP11_HTTP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
-    public static final String SOAP12_HTTP_TRANSPORT = "http://www.w3.org/2003/05/soap/bindings/HTTP/";
+    public static final String SOAP_HTTP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
     public static final String SOAP_USE = "literal";
     public static final String TAG_SCHEMA = "schema";
     public static final String TAG_SOAP_ADDRESS = "address";
@@ -164,13 +163,13 @@ public class WSDLGenerator {
             soap = registry.createExtension(Binding.class, new QName(
                 SOAP_12_NAMESPACE_URI, TAG_SOAP_BINDING));
             ((SOAP12Binding)soap).setStyle(SOAP_STYLE);
-            ((SOAP12Binding)soap).setTransportURI(SOAP12_HTTP_TRANSPORT);
+            ((SOAP12Binding)soap).setTransportURI(SOAP_HTTP_TRANSPORT);
         }
         else {
             soap = registry.createExtension(Binding.class, new QName(SOAP_11_NAMESPACE_URI,
                 TAG_SOAP_BINDING));
             ((SOAPBinding)soap).setStyle(SOAP_STYLE);
-            ((SOAPBinding)soap).setTransportURI(SOAP11_HTTP_TRANSPORT);
+            ((SOAPBinding)soap).setTransportURI(SOAP_HTTP_TRANSPORT);
         }
         Binding binding = def.createBinding();
         binding.setUndefined(false);
