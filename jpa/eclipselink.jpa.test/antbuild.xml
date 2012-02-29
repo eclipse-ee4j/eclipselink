@@ -2112,14 +2112,14 @@
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
-    <target name="server-deploy">
+    <target name="server-deploy" depends="detect-os">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
 
-    <target name="server-undeploy">
+    <target name="server-undeploy" depends="detect-os">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
         </ant>
