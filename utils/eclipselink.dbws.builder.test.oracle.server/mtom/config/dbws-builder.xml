@@ -10,6 +10,7 @@
     <property name="platformClassname">@DB_PLATFORM@</property>
     <property name="dataSource">@DATASOURCE@</property>
     <property name="wsdlLocationURI">@WSDL_LOCATION@</property>
+    <property name="useSOAP12">true</property>
   </properties>
   <table
     schemaPattern="@DB_USER@"

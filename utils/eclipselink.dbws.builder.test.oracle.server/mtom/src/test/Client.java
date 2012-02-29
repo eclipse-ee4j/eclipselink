@@ -46,7 +46,7 @@ public class Client {
 
         QName qname = new QName("urn:mtomService", "mtomServicePort");
         Service service = Service.create(new QName("urn:mtom", "mtomService"));
-        service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + hostname + ":" + port + "/mtom/mtom");
+        service.addPort(qname, SOAPBinding.SOAP12HTTP_BINDING, "http://" + hostname + ":" + port + "/mtom/mtom");
         Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
 
         // TEST FINDALL
