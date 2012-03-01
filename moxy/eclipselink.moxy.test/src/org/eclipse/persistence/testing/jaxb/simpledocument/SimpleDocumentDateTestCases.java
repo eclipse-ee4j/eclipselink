@@ -12,7 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
 import javax.xml.bind.JAXBElement;
 
 import java.util.Calendar;
@@ -23,13 +24,14 @@ import java.util.Date;
  * @author mmacivor
  *
  */
-public class SimpleDocumentDateTestCases extends JAXBTestCases {
+public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
 		private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/simpledocument/dateroot.xml";
-
+		private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/simpledocument/dateroot.json";
 		
 	    public SimpleDocumentDateTestCases(String name) throws Exception {
 	        super(name);
-	        setControlDocument(XML_RESOURCE);        
+	        setControlDocument(XML_RESOURCE);   
+	        setControlJSON(JSON_RESOURCE);
 	        Class[] classes = new Class[1];
 	        classes[0] = DateObjectFactory.class;
 	        setClasses(classes);

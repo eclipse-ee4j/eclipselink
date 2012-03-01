@@ -14,18 +14,13 @@ package org.eclipse.persistence.testing.jaxb.schemagen.scope;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MySchemaOutputResolver;
-
-public class SchemaGenScopeTestCases extends JAXBTestCases{
+public class SchemaGenScopeTestCases extends JAXBWithJSONTestCases{
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/scope/scope.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/scope/scope.json";
 
 	public SchemaGenScopeTestCases(String name) throws Exception {
 		super(name);
@@ -34,6 +29,7 @@ public class SchemaGenScopeTestCases extends JAXBTestCases{
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[2];
 		classes[0] = ClassA.class;
 		classes[1] = ObjectFactory.class;

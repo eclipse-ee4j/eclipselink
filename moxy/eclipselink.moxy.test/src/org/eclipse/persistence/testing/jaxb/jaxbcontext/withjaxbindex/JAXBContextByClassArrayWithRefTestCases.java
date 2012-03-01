@@ -19,7 +19,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /*
  * For a context created by class[] with a jaxb.index in the package we should process all classes in the array
@@ -27,8 +27,9 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
  * In this case since there is an XmlElementRef we SHOULD process the ObjectFactory class and include ClassB (which is only referenced in ObjectFactory)
  * We should also NOT process those listed in the jaxb.index (in this case ClassC)
  */
-public class JAXBContextByClassArrayWithRefTestCases  extends JAXBTestCases{
+public class JAXBContextByClassArrayWithRefTestCases  extends JAXBWithJSONTestCases{
 	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.xml";
+	 protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithref.json";
 
 		public JAXBContextByClassArrayWithRefTestCases(String name) throws Exception {
 			super(name);
@@ -36,6 +37,7 @@ public class JAXBContextByClassArrayWithRefTestCases  extends JAXBTestCases{
 		
 		public void setUp() throws Exception {
 	        setControlDocument(XML_RESOURCE);
+	        setControlJSON(JSON_RESOURCE);
 		    super.setUp();
 		    Class[] classes = new Class[]{ClassAWithElementRef.class};
 		    setTypes(classes);

@@ -14,20 +14,42 @@ package org.eclipse.persistence.testing.jaxb.namespaceuri.xml;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XMLNamespaceTestCases extends JAXBTestCases{
+public class XMLNamespaceTestCases extends JAXBWithJSONTestCases{
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/xml/xmlnamespace.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/xml/xmlnamespace.json";
 	
 	public XMLNamespaceTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[]{Address.class});
     	setControlDocument(XML_RESOURCE);
+    	setControlJSON(JSON_RESOURCE);
+    	
+    	Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("http://www.w3.org/XML/1998/namespace","xml");
+    	namespaces.put("myns","ns0");
+    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 
+	protected JAXBMarshaller getJSONMarshaller() throws Exception {
+		JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+		jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("http://www.w3.org/XML/1998/namespace","xml");
+    	namespaces.put("myns","ns0");
+    	jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	return jsonMarshaller;
+
+	}
+	
 	@Override
 	protected Object getControlObject() {
 		Address addr = new Address();

@@ -14,23 +14,41 @@ package org.eclipse.persistence.testing.jaxb.schemagen.imports.inheritance;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.inheritance.child.Child;
 
-public class InheritanceImportsTestCases extends JAXBTestCases{
+public class InheritanceImportsTestCases extends JAXBWithJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/inheritance/child.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/inheritance/child.json";
 	
 	public InheritanceImportsTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[]{Child.class});
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+	
+		
+		Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("childnamespace","ns0");
+    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 
+	protected JAXBMarshaller getJSONMarshaller() throws Exception {
+		JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
+		jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		Map<String, String> namespaces = new HashMap<String, String>();
+    	namespaces.put("childnamespace","ns0");
+    	jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	return jsonMarshaller;
+
+	}
+	
 	protected Object getControlObject() {
 		Child c = new Child();
 		c.childThing = "childValue"; 			

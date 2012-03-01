@@ -24,18 +24,20 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyCalendar;
 import org.w3c.dom.Document;
 
-public class XmlAdapterUnspecifiedClassTestCases extends JAXBTestCases{
+public class XmlAdapterUnspecifiedClassTestCases extends JAXBWithJSONTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/packagelevel/unspecified/employee.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/packagelevel/unspecified/employee.json";
     
     public XmlAdapterUnspecifiedClassTestCases(String name) throws Exception {
         super(name);		
     }
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         super.setUp();
         Type[] types = new Type[1];
         types[0] = Employee.class;

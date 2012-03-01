@@ -24,7 +24,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
 /*
@@ -34,8 +34,9 @@ import org.w3c.dom.Document;
  * ObjectFactory class and include ClassB (which is only referenced in ObjectFactory)
  * We should also NOT process those listed in the jaxb.index (in this case ClassC)
  */
-public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBTestCases{
+public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBWithJSONTestCases{
 	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefbindings.xml";
+	 protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextbycontextpathwithrefbindings.json";
 
 		public JAXBContextByClassArrayWithRefInBindingsTestCases(String name) throws Exception {
 			super(name);
@@ -43,6 +44,7 @@ public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBTest
 		
 		public void setUp() throws Exception {
 	        setControlDocument(XML_RESOURCE);
+	        setControlJSON(JSON_RESOURCE);
 		    super.setUp();
 		    Class[] classes = new Class[]{ClassA.class};
 		    setTypes(classes);

@@ -3,16 +3,18 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.lis
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlAdapterListsTestCases extends JAXBTestCases{
+public class XmlAdapterListsTestCases extends JAXBWithJSONTestCases{
   
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/list/multiplebar.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/list/multiplebar.json";
     
     public XmlAdapterListsTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{FooWithBars.class, Bar.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
   
 	protected Object getControlObject() {
