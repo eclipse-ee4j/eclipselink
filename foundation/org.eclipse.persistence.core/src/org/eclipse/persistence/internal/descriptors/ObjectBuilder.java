@@ -2165,6 +2165,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                 }
                                 mappingCopyGroup.setSession(copyGroup.getSession());
                             }
+                        } else if (mapping.isAggregateObjectMapping()) {
+                            mappingCopyGroup = new CopyGroup();
                         }
                         if(shouldCopy || isVisiting) {
                             // TODO: optimization: (even when isVisiting == true) redefine buildCopy to take shouldCopy and don't copy if not required.

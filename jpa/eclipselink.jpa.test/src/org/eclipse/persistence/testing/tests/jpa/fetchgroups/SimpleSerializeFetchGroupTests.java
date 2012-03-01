@@ -31,6 +31,7 @@ import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -44,6 +45,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
@@ -98,6 +100,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             suite.addTest(new SimpleSerializeFetchGroupTests("copyNoCascade"));
             suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadePrivateParts"));
             suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyEmbedded"));
         }
         
         return suite;
@@ -1525,6 +1528,21 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             errorMsg = '\n' + errorMsg;
             fail(errorMsg);
         }
+    }
+    
+    @Test
+    public void copyEmbedded() {
+        Employee emp = new Employee();
+        emp.setPeriod(new EmploymentPeriod(Helper.dateFromYearMonthDate(1993, 0, 1), Helper.dateFromYearMonthDate(1996, 11, 31)));
+
+        CopyGroup group = new CopyGroup();
+        group.addAttribute("period");
+        
+        EntityManager em = createEntityManager();
+        Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
+        
+        assertTrue("!emp.getPeriod().equals(empCopy.getPeriod())", emp.getPeriod().equals(empCopy.getPeriod()));
+        assertHasFetchGroup(empCopy);
     }
     
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
