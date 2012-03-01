@@ -8,6 +8,7 @@ import java.util.Iterator;
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
@@ -21,7 +22,7 @@ import javax.xml.ws.soap.SOAPBinding;
 
 public class Client {
     static final String SOAP_FINDBYPK_REQUEST =
-        "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<env:Envelope xmlns:env=\"" + SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE + "\">" +
           "<env:Body>" +
             "<findByPrimaryKey_mtomType xmlns=\"urn:mtomService\" xmlns:urn=\"urn:mtom\">" +
               "<id>3</id>" +
@@ -29,7 +30,7 @@ public class Client {
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_FINDALL_REQUEST =
-        "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<env:Envelope xmlns:env=\"" + SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE + "\">" +
           "<env:Body>" +
             "<findAll_mtomType xmlns=\"urn:mtomService\" xmlns:urn=\"urn:mtom\"/>" +
           "</env:Body>" +
@@ -129,7 +130,7 @@ public class Client {
 
     static SOAPMessage createSOAPMessage(String message) {
         try {
-            MessageFactory factory = MessageFactory.newInstance();
+            MessageFactory factory =  MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
             SOAPMessage soapMessage = factory.createMessage();
             soapMessage.getSOAPPart().setContent((Source)new StreamSource(new StringReader(message)));
             soapMessage.saveChanges();

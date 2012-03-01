@@ -129,6 +129,13 @@ public class DBWSTestSuite {
     public static final String SQLCOLLECTION_SERVICE_NAMESPACE = SQLCOLLECTION_NAMESPACE + "Service";
     public static final String SQLCOLLECTION_SERVICE = SQLCOLLECTION + "Service";
     public static final String SQLCOLLECTION_SERVICE_PORT = SQLCOLLECTION_SERVICE + "Port";
+    
+    public static final String SOAP12 = "soap12";
+    public static final String SOAP12_TEST = SOAP12 + "Test";
+    public static final String SOAP12_SERVICE = SOAP12 + "Service";
+    public static final String SOAP12_NAMESPACE = "urn:" + SOAP12;
+    public static final String SOAP12_SERVICE_NAMESPACE = "urn:" + SOAP12_SERVICE;
+    public static final String SOAP12_PORT = SOAP12_SERVICE + "Port";
 
     //shared JUnit fixtures
     public static Connection conn = AllTests.conn;

@@ -38,6 +38,7 @@ import dbws.testing.secondarysql.SecondarySQLTestSuite;
 import dbws.testing.simplesp.SimpleSPTestSuite;
 import dbws.testing.simpletable.SimpleTableTestSuite;
 import dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite;
+import dbws.testing.soap12.SOAP12TestSuite;
 import dbws.testing.sqlascollection.SQLAsCollectionTestSuite;
 import dbws.testing.updatefault.UpdateFaultTestSuite;
 import static dbws.testing.DBWSTestSuite.buildConnection;
@@ -58,6 +59,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     SimpleSPTestSuite.class,
     SimpleTableTestSuite.class,
     SimpleTableWithNestedSQLTestSuite.class,
+    SOAP12TestSuite.class,
     SQLAsCollectionTestSuite.class,
     UpdateFaultTestSuite.class
 })
