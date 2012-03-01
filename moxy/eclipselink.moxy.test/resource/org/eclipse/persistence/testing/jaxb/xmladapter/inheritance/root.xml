@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<root><foo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="bar"><bar>baz</bar></foo></root>
