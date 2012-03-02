@@ -1164,6 +1164,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         try{
             beginTransaction(em);
             PatentInvestigator investigator = new PatentInvestigator();
+            investigator.setId(1);
             Patent lastPatent = new Patent();
             lastPatent.setId(1);
             investigator.setLastCompleted(new PatentInvestigation("Last", lastPatent));
