@@ -26,7 +26,6 @@ public class DDLGenerationServerTestSuite extends TestSuite {
         TestSuite suite = new TestSuite();
         suite.setName("DDLGeneration ServerTestSuite");
         suite.addTest(DDLGenerationTestSuite.suite());
-        suite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
         suite.addTest(DDLTablePerClassTestSuite.suite());
         suite.addTest(DDLTableSuffixTestSuite.suite());
         return suite;
