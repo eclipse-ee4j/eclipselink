@@ -28,14 +28,14 @@ import org.xml.sax.InputSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 
 /**
  * This class should not be used directly - only it's subclasses should
  * be setup and used for testing.
  */
-public class JAXBElementTestCases extends JAXBTestCases {
+public class JAXBElementTestCases extends JAXBWithJSONTestCases {
 	protected final static String CONTROL_PERSON_NAME = "Joe Smith";
 	protected final static String CONTROL_NAMESPACE_URI = "test";	
 	protected String resourceName;
@@ -134,31 +134,6 @@ public class JAXBElementTestCases extends JAXBTestCases {
             xmlToObjectTest(testObject);
         }
     }    
-
-    public void xmlToObjectTest(Object testObject) throws Exception {
-    /*	JAXBElement testObj = (JAXBElement ) testObject;
-        JAXBElement controlObj = (JAXBElement) getReadControlObject();
-
-        log("\n**testXMLDocumentToObject**");
-        log("Expected:");
-        log("uri=" + controlObj.getName().getNamespaceURI() +  
-        	", prefix=" + controlObj.getName().getPrefix() + 
-            ", localname=" + controlObj.getName().getLocalPart() + 
-            ", object=" + controlObj.getValue());
-        log("Actual:");
-        log("uri=" + testObj.getName().getNamespaceURI() +  
-            ", prefix=" + testObj.getName().getPrefix() + 
-        	", localname=" + testObj.getName().getLocalPart() + 
-        	", object=" + testObj.getValue());
-
-        
-        this.assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
-        this.assertEquals(controlObj.getName().getPrefix(), testObj.getName().getPrefix());
-        this.assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
-        this.assertEquals(controlObj.getValue(), testObj.getValue());
-        */
-    	super.xmlToObjectTest(testObject);
-    }
 
     public void testObjectToStringWriter() throws Exception {
         StringWriter writer = new StringWriter();

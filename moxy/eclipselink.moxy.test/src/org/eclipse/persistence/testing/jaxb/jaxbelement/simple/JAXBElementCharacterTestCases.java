@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -23,10 +22,12 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;
 
 public class JAXBElementCharacterTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/character.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/character.json";
 
 	public JAXBElementCharacterTestCases(String name) throws Exception {
 		super(name);
-		setControlDocument(XML_RESOURCE);	
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setTargetClass(Character.class);		
 	}
 
@@ -35,6 +36,10 @@ public class JAXBElementCharacterTestCases extends JAXBElementTestCases {
         classes[0] = Character.class;
         return classes;
     }
+	
+	public Class getUnmarshalClass(){
+		return Character.class;
+	}
 	
 	protected Object getControlObject() {		
 		Character character = new Character('s');

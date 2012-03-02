@@ -14,24 +14,28 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Map;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;
-import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 
 public class JAXBElementByteArrayAttachmentTestCases  extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/bytearrayattachment.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/bytearrayattachment.json";
     
     public JAXBElementByteArrayAttachmentTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setTargetClass(byte[].class);       
     }
 
+	
+	public Class getUnmarshalClass(){
+		return byte[].class;
+	}
+	
+    
     public void setUp() throws Exception{
         super.setUp();          
         jaxbMarshaller.setAttachmentMarshaller(new MyJAXBAttachmentMarshaller(new byte[] {0, 1, 2, 3}));

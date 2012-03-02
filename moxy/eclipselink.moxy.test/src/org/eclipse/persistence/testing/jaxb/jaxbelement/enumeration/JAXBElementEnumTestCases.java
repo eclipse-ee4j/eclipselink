@@ -20,18 +20,22 @@ import javax.xml.namespace.QName;
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;
-import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 import org.w3c.dom.Document;
 
 public class JAXBElementEnumTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/enum/coin.xml";
-    private final static String CONTROL_ELEMENT_NAME = "coin";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/enum/coin.json";
     private final static Class targetClass = Coin.class;
 
     public JAXBElementEnumTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setTargetClass(targetClass);
+    }
+    
+    public Class getUnmarshalClass(){
+    	return targetClass;
     }
 
     public static void main(String[] args) {

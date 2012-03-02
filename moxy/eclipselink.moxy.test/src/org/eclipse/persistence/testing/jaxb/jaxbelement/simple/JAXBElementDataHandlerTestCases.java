@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
-import java.io.IOException;
-
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -22,12 +20,20 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;
 
 public class JAXBElementDataHandlerTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/datahandler.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/datahandler.json";
 
 	public JAXBElementDataHandlerTestCases(String name) throws Exception {
 		super(name);
-		setControlDocument(XML_RESOURCE);	
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setTargetClass(DataHandler.class);		
 	}
+	
+	
+	public Class getUnmarshalClass(){
+		return DataHandler.class;
+	}
+	
 
 	public void setUp() throws Exception{
 		super.setUp();			

@@ -12,16 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.jaxbelement.subclass;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class JAXBElementSubclassTestCases extends JAXBTestCases {
+public class JAXBElementSubclassTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/subclass/root.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/subclass/root.json";
 
     public JAXBElementSubclassTestCases(String name) throws Exception {
         super(name);
         this.setClasses(new Class[] {SubClass.class, ObjectFactory.class});
         this.setControlDocument(XML_RESOURCE);
+        this.setControlJSON(JSON_RESOURCE);
     }
 
     @Override

@@ -14,17 +14,19 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.subclass;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.Coin;
 
-public class JAXBElementSubclassEnumTestCases extends JAXBTestCases {
+public class JAXBElementSubclassEnumTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/subclass/enum.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/subclass/enum.json";
 
     public JAXBElementSubclassEnumTestCases(String name) throws Exception {
         super(name);
         this.setClasses(new Class[] {SubClassEnum.class, ObjectFactoryEnum.class});
         this.setControlDocument(XML_RESOURCE);
+        this.setControlJSON(JSON_RESOURCE);
     }
 
     @Override

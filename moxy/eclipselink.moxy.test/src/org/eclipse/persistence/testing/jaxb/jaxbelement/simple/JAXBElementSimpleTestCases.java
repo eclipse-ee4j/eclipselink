@@ -21,14 +21,22 @@ import org.w3c.dom.Document;
 
 public class JAXBElementSimpleTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/employee.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/employee.json";
     private final static String CONTROL_ELEMENT_NAME = "employee-name";
     private final static Class targetClass = String.class;
 
     public JAXBElementSimpleTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setTargetClass(targetClass);
     }
+    
+	
+	public Class getUnmarshalClass(){
+		return targetClass;
+	}
+	
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases" };

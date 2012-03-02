@@ -14,24 +14,27 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;
-import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 
 public class JAXBElementBase64TestCases  extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/bytearray.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/simple/bytearray.json";
 
 	public JAXBElementBase64TestCases(String name) throws Exception {
 		super(name);
-		setControlDocument(XML_RESOURCE);	
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setTargetClass(byte[].class);		
 	}
-
+	
+	public Class getUnmarshalClass(){
+		return byte[].class;
+	}
+	
 	public Class[] getClasses(){
     	Class[] classes = new Class[1];
         classes[0] = byte[].class;

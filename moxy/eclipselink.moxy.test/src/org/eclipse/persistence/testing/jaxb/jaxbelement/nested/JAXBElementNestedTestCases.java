@@ -16,17 +16,15 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.nested;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import junit.textui.TestRunner;
 
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class JAXBElementNestedTestCases extends JAXBTestCases {
+public class JAXBElementNestedTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/nested/root.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/nested/root.json";
 
 	public JAXBElementNestedTestCases(String name) throws Exception {
 		super(name);
@@ -35,6 +33,7 @@ public class JAXBElementNestedTestCases extends JAXBTestCases {
 		classes[1] = Root.class;
 		setClasses(classes);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
 
 	public Object getWriteControlObject() {
@@ -72,6 +71,31 @@ public class JAXBElementNestedTestCases extends JAXBTestCases {
 			Element elem = doc.createElementNS("someuri", "ns0:elem2");
 			elem.setAttributeNS(XMLConstants.XMLNS_URL,XMLConstants.XMLNS + ":ns0", "someuri");
 			
+			QName qname = new QName("someuri", "elem2");
+
+			JAXBElement jaxbElement = new JAXBElement(qname, Object.class, elem);
+			root.setElem1(jaxbElement);
+
+		} catch (Exception e) {
+			fail("An exception occurred in getControlObject");
+			e.printStackTrace();
+		}
+		return root;
+	}
+	
+	public Object getJSONReadControlObject() {
+		//no namespace info
+		Root root = new Root();
+
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+		builderFactory.setNamespaceAware(true);
+		builderFactory.setIgnoringElementContentWhitespace(true);
+		Document doc;
+		try {
+			doc = builderFactory.newDocumentBuilder().newDocument();
+			
+			Element elem = doc.createElement("elem2");
+						
 			QName qname = new QName("someuri", "elem2");
 
 			JAXBElement jaxbElement = new JAXBElement(qname, Object.class, elem);

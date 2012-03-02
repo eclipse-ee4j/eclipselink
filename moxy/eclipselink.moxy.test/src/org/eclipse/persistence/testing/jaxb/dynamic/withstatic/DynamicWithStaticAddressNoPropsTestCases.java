@@ -21,11 +21,13 @@ import java.util.Map;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class DynamicWithStaticAddressNoPropsTestCases extends JAXBTestCases {
+public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCases {
 
 //  private DynamicJAXBContext jaxbContext;
   private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/withstatic/";
@@ -33,12 +35,14 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBTestCases {
   // Schema files used to test each feature
   private static final String NO_PROPS = RESOURCE_DIR + "address-no-props-oxm.xml";
   private static final String CONTROL_DOC = RESOURCE_DIR + "customer1.xml";
+  private static final String JSON_CONTROL_DOC = RESOURCE_DIR + "customer1.json";
   private static final String PACKAGE = "org.eclipse.persistence.testing.jaxb.dynamic.withstatic";
 
   public DynamicWithStaticAddressNoPropsTestCases(String name) throws Exception {
       super(name);
       setupContext();
       setControlDocument(CONTROL_DOC);
+      setControlJSON(JSON_CONTROL_DOC);
   }
 
   public String getName() {
@@ -87,6 +91,9 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBTestCases {
       setProject(xmlContext.getSession(0).getProject());
       jaxbMarshaller = jaxbContext.createMarshaller();
       jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+      
+      jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "value");
+      jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "value");
   }
   
   public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
@@ -97,6 +104,16 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBTestCases {
       log(testObject.toString());
       
       compareDynamicEntities(testObject, controlObject);
+  }
+  
+  public void jsonToObjectTest(Object testObject) throws Exception {	  
+      log("\n**xmlToObjectTest**");
+      log("Expected:");
+      log(getJSONReadControlObject().toString());
+      log("Actual:");
+      log(testObject.toString());
+      
+      compareDynamicEntities(testObject, getJSONReadControlObject());
   }
 
   private void compareDynamicEntities(Object testObject, Object controlObject) {
