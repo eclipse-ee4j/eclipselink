@@ -43,6 +43,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
@@ -1539,7 +1540,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         group.addAttribute("period");
         
         EntityManager em = createEntityManager();
-        Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
+        Employee empCopy = (Employee) em.unwrap(ServerSession.class).copy(emp, group);
         
         assertTrue("!emp.getPeriod().equals(empCopy.getPeriod())", emp.getPeriod().equals(empCopy.getPeriod()));
         assertHasFetchGroup(empCopy);
