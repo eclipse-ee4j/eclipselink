@@ -365,6 +365,9 @@
             name="dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite"
           />
           <test
+            name="dbws.testing.soap12.SOAP12TestSuite"
+          />
+          <test
             name="dbws.testing.sqlascollection.SQLAsCollectionTestSuite"
           />
           <test
