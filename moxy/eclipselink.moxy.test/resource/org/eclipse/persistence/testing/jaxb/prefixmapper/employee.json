@@ -1,0 +1,13 @@
+{"newPrefix.employee":{
+   "firstName":"John",
+   "lastName":"Doe",
+   "address":"123 Fake Street",
+   "employeeId":4321,
+   "manager":{
+      "xsi.type":"newPrefix.emp-type",
+      "firstName":"Bob",
+      "lastName":"Jones",
+      "address":"234 Some Street",
+      "employeeId":9876
+	  }
+}}

@@ -13,16 +13,20 @@
 package org.eclipse.persistence.testing.jaxb.prefixmapper;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class PrefixMapperTestCases extends JAXBTestCases {
+public class PrefixMapperTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.json";
     public PrefixMapperTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
         jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

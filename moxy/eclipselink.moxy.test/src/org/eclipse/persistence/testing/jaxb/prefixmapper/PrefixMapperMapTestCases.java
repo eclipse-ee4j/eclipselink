@@ -16,12 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class PrefixMapperMapTestCases extends JAXBTestCases {
+public class PrefixMapperMapTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.json";
     public PrefixMapperMapTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
@@ -32,7 +34,10 @@ public class PrefixMapperMapTestCases extends JAXBTestCases {
         map.put("my.uri", "somePrefix");
         
         jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, map);
+        
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, map);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override
