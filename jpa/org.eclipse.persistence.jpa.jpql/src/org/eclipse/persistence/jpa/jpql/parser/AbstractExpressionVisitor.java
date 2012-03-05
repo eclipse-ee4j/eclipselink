@@ -191,6 +191,12 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 	public void visit(FromClause expression) {
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(FunctionExpression expression) {
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */

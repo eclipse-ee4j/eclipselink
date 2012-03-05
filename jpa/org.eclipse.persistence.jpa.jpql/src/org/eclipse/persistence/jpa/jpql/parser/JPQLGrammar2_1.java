@@ -402,11 +402,18 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeBNFs() {
 
+                registerBNF(new FunctionExpressionBNF());
+                registerBNF(new FunctionItemBNF());
 		registerBNF(new OnClauseBNF());
 		registerBNF(new TreatExpressionBNF());
 
 		// Extend the query BNF to add support for ON
 		addChildBNF(JoinAssociationPathExpressionBNF.ID, OnClauseBNF.ID);
+
+                // Extend the query BNF to add support for FUNCTION
+                addChildBNF(FunctionsReturningDatetimeBNF.ID, FunctionExpressionBNF.ID);
+                addChildBNF(FunctionsReturningNumericsBNF.ID, FunctionExpressionBNF.ID);
+                addChildBNF(FunctionsReturningStringsBNF.ID,  FunctionExpressionBNF.ID);
 	}
 
 	/**
@@ -415,6 +422,7 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeExpressionFactories() {
 
+                registerFactory(new FunctionExpressionFactory());
 		registerFactory(new OnClauseFactory());
 		registerFactory(new TreatExpressionFactory());
 	}
@@ -425,9 +433,11 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
+                registerIdentifierRole(Expression.FUNCTION,  IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
 		registerIdentifierRole(Expression.ON,    IdentifierRole.COMPOUND_FUNCTION); // ON x
 		registerIdentifierRole(Expression.TREAT, IdentifierRole.COMPOUND_FUNCTION); // TREAT(x AS y)
 
+                registerIdentifierVersion(Expression.FUNCTION,    JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(Expression.ON,    JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(Expression.TREAT, JPAVersion.VERSION_2_1);
 	}

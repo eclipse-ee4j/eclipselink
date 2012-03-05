@@ -227,6 +227,13 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 		visit((Expression) expression);
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(FunctionExpression expression) {
+            visit((Expression) expression);
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */

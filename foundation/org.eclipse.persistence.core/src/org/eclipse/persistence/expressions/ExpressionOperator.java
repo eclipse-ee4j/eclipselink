@@ -36,14 +36,16 @@ public class ExpressionOperator implements Serializable {
     /** Required for serialization compatibility. */
     static final long serialVersionUID = -7066100204792043980L;
     protected int selector;
+    protected String name;
     protected String[] databaseStrings;
     protected boolean isPrefix = false;
     protected boolean isRepeating = false;
     protected Class nodeClass;
     protected int type;
     protected int[] argumentIndices = null;
-    protected static Map allOperators = initializeOperators();
-    protected static Map platformOperatorNames = initializePlatformOperatorNames();
+    protected static Map<Integer, ExpressionOperator> allOperators = initializeOperators();
+    protected static Map<String, Integer> platformOperatorSelectors = initializePlatformOperatorSelectors();
+    protected static Map<Integer, String> platformOperatorNames = initializePlatformOperatorNames();
     protected String[] javaStrings;
     /** Allow operator to disable binding. */
     protected boolean isBindingSupported = true;
@@ -339,6 +341,15 @@ public class ExpressionOperator implements Serializable {
      */
     public static void addOperator(ExpressionOperator exOperator) {
         allOperators.put(Integer.valueOf(exOperator.getSelector()), exOperator);
+    }
+
+    /**
+     * ADVANCED:
+     * Define a name for a user defined operator.
+     */
+    public static void registerOperator(int selector, String name) {
+        platformOperatorNames.put(selector, name);
+        platformOperatorSelectors.put(name, selector);
     }
 
     /**
@@ -1138,10 +1149,14 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * ADVANCED:
-     * Return the hashtable of all operators.
+     * Return the map of all operators.
      */
-    public static Map getAllOperators() {
+    public static Map<Integer, ExpressionOperator> getAllOperators() {
         return allOperators;
+    }
+    
+    public static Map<String, Integer> getPlatformOperatorSelectors() {
+        return platformOperatorSelectors;
     }
 
     /**
@@ -1167,10 +1182,10 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
-     * Lookup the operator with the given name.
+     * Lookup the operator with the given id.
      */
     public static ExpressionOperator getOperator(Integer selector) {
-        return (ExpressionOperator)getAllOperators().get(selector);
+        return getAllOperators().get(selector);
     }
 
     /**
@@ -1181,6 +1196,22 @@ public class ExpressionOperator implements Serializable {
         return selector;
     }
 
+    /**
+     * INTERNAL:
+     * Return the name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+    
     /**
      * ADVANCED:
      * Return the type of function.
@@ -1326,8 +1357,8 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
-    public static Map initializePlatformOperatorNames() {
-        Map platformOperatorNames = new HashMap();
+    public static Map<Integer, String> initializePlatformOperatorNames() {
+        Map<Integer, String> platformOperatorNames = new HashMap<Integer, String>();
         platformOperatorNames.put(Integer.valueOf(ToUpperCase), "ToUpperCase");
         platformOperatorNames.put(Integer.valueOf(ToLowerCase), "ToLowerCase");
         platformOperatorNames.put(Integer.valueOf(Chr), "Chr");
@@ -1416,6 +1447,99 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Integer.valueOf(SDO_FILTER), "MDSYS.SDO_FILTER");
         platformOperatorNames.put(Integer.valueOf(SDO_NN), "MDSYS.SDO_NN");
         platformOperatorNames.put(Integer.valueOf(NullIf), "NullIf");
+        return platformOperatorNames;
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize a mapping to the platform operator names for usage with exceptions.
+     */
+    public static Map<String, Integer> initializePlatformOperatorSelectors() {
+        Map<String, Integer> platformOperatorNames = new HashMap<String, Integer>();
+        platformOperatorNames.put("ToUpperCase", Integer.valueOf(ToUpperCase));
+        platformOperatorNames.put("ToLowerCase", Integer.valueOf(ToLowerCase));
+        platformOperatorNames.put("Chr", Integer.valueOf(Chr));
+        platformOperatorNames.put("Concat", Integer.valueOf(Concat));
+        platformOperatorNames.put("Coalesce", Integer.valueOf(Coalesce));
+        platformOperatorNames.put("Case", Integer.valueOf(Case));
+        platformOperatorNames.put("HexToRaw", Integer.valueOf(HexToRaw));
+        platformOperatorNames.put("Initcap", Integer.valueOf(Initcap));
+        platformOperatorNames.put("Instring", Integer.valueOf(Instring));
+        platformOperatorNames.put("Soundex", Integer.valueOf(Soundex));
+        platformOperatorNames.put("LeftPad", Integer.valueOf(LeftPad));
+        platformOperatorNames.put("LeftTrim", Integer.valueOf(LeftTrim));
+        platformOperatorNames.put("RightPad", Integer.valueOf(RightPad));
+        platformOperatorNames.put("RightTrim", Integer.valueOf(RightTrim));
+        platformOperatorNames.put("Substring", Integer.valueOf(Substring));
+        platformOperatorNames.put("Translate", Integer.valueOf(Translate));
+        platformOperatorNames.put("Ascii", Integer.valueOf(Ascii));
+        platformOperatorNames.put("Length", Integer.valueOf(Length));
+        platformOperatorNames.put("CharIndex", Integer.valueOf(CharIndex));
+        platformOperatorNames.put("CharLength", Integer.valueOf(CharLength));
+        platformOperatorNames.put("Difference", Integer.valueOf(Difference));
+        platformOperatorNames.put("Reverse", Integer.valueOf(Reverse));
+        platformOperatorNames.put("Replicate", Integer.valueOf(Replicate));
+        platformOperatorNames.put("Right", Integer.valueOf(Right));
+        platformOperatorNames.put("Locate", Integer.valueOf(Locate));
+        platformOperatorNames.put("ToNumber", Integer.valueOf(ToNumber));
+        platformOperatorNames.put("ToChar", Integer.valueOf(ToChar));
+        platformOperatorNames.put("AddMonths", Integer.valueOf(AddMonths));
+        platformOperatorNames.put("DateToString", Integer.valueOf(DateToString));
+        platformOperatorNames.put("MonthsBetween", Integer.valueOf(MonthsBetween));
+        platformOperatorNames.put("NextDay", Integer.valueOf(NextDay));
+        platformOperatorNames.put("RoundDate", Integer.valueOf(RoundDate));
+        platformOperatorNames.put("AddDate", Integer.valueOf(AddDate));
+        platformOperatorNames.put("DateName", Integer.valueOf(DateName));
+        platformOperatorNames.put("DatePart", Integer.valueOf(DatePart));
+        platformOperatorNames.put("DateDifference", Integer.valueOf(DateDifference));
+        platformOperatorNames.put("TruncateDate", Integer.valueOf(TruncateDate));
+        platformOperatorNames.put("NewTime", Integer.valueOf(NewTime));
+        platformOperatorNames.put("Nvl", Integer.valueOf(Nvl));
+        platformOperatorNames.put("NewTime", Integer.valueOf(NewTime));
+        platformOperatorNames.put("Ceil", Integer.valueOf(Ceil));
+        platformOperatorNames.put("Cos", Integer.valueOf(Cos));
+        platformOperatorNames.put("Cosh", Integer.valueOf(Cosh));
+        platformOperatorNames.put("Abs", Integer.valueOf(Abs));
+        platformOperatorNames.put("Acos", Integer.valueOf(Acos));
+        platformOperatorNames.put("Asin", Integer.valueOf(Asin));
+        platformOperatorNames.put("Atan", Integer.valueOf(Atan));
+        platformOperatorNames.put("Exp", Integer.valueOf(Exp));
+        platformOperatorNames.put("Sqrt", Integer.valueOf(Sqrt));
+        platformOperatorNames.put("Floor", Integer.valueOf(Floor));
+        platformOperatorNames.put("Ln", Integer.valueOf(Ln));
+        platformOperatorNames.put("Log", Integer.valueOf(Log));
+        platformOperatorNames.put("Mod", Integer.valueOf(Mod));
+        platformOperatorNames.put("Power", Integer.valueOf(Power));
+        platformOperatorNames.put("Round", Integer.valueOf(Round));
+        platformOperatorNames.put("Sign", Integer.valueOf(Sign));
+        platformOperatorNames.put("Sin", Integer.valueOf(Sin));
+        platformOperatorNames.put("Sinh", Integer.valueOf(Sinh));
+        platformOperatorNames.put("Tan", Integer.valueOf(Tan));
+        platformOperatorNames.put("Tanh", Integer.valueOf(Tanh));
+        platformOperatorNames.put("Trunc", Integer.valueOf(Trunc));
+        platformOperatorNames.put("Greatest", Integer.valueOf(Greatest));
+        platformOperatorNames.put("Least", Integer.valueOf(Least));
+        platformOperatorNames.put("Add", Integer.valueOf(Add));
+        platformOperatorNames.put("Subtract", Integer.valueOf(Subtract));
+        platformOperatorNames.put("Divide", Integer.valueOf(Divide));
+        platformOperatorNames.put("Multiply", Integer.valueOf(Multiply));
+        platformOperatorNames.put("Atan2", Integer.valueOf(Atan2));
+        platformOperatorNames.put("Cot", Integer.valueOf(Cot));
+        platformOperatorNames.put("Deref", Integer.valueOf(Deref));
+        platformOperatorNames.put("Ref", Integer.valueOf(Ref));
+        platformOperatorNames.put("RefToHex", Integer.valueOf(RefToHex));
+        platformOperatorNames.put("Value", Integer.valueOf(Value));
+        platformOperatorNames.put("Extract", Integer.valueOf(Extract));
+        platformOperatorNames.put("ExtractValue", Integer.valueOf(ExtractValue));
+        platformOperatorNames.put("ExistsNode", Integer.valueOf(ExistsNode));
+        platformOperatorNames.put("GetStringVal", Integer.valueOf(GetStringVal));
+        platformOperatorNames.put("GetNumberVal", Integer.valueOf(GetNumberVal));
+        platformOperatorNames.put("IsFragment", Integer.valueOf(IsFragment));
+        platformOperatorNames.put("SDO_WITHIN_DISTANCE", Integer.valueOf(SDO_WITHIN_DISTANCE));
+        platformOperatorNames.put("SDO_RELATE", Integer.valueOf(SDO_RELATE));
+        platformOperatorNames.put("SDO_FILTER", Integer.valueOf(SDO_FILTER));
+        platformOperatorNames.put("SDO_NN", Integer.valueOf(SDO_NN));
+        platformOperatorNames.put("NullIf", Integer.valueOf(NullIf));
         return platformOperatorNames;
     }
 
@@ -2269,6 +2393,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
+        exOperator.setName(databaseName);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
         v.addElement(databaseName + "(");
         v.addElement(")");
@@ -2397,6 +2522,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
+        exOperator.setName(dbString);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
         v.addElement(dbString + "(");
         v.addElement(", ");
@@ -2416,6 +2542,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
+        exOperator.setName(dbString);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
         v.addElement(dbString + "(");
         v.addElement(", ");

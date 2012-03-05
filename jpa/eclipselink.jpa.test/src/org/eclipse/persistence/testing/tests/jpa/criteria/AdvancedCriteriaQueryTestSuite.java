@@ -51,6 +51,7 @@ import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.ScrollableCursor;
@@ -138,8 +139,9 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsEmpty"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testNeg"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMember"));
-    suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMemberEntity"));
-    suite.addTest(new AdvancedCriteriaQueryTestSuite("testNullRestrictionGetRestriction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMemberEntity"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testNullRestrictionGetRestriction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testFromToExpression"));
         
         return suite;
     }
@@ -762,6 +764,23 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             TypedQuery<Employee> tquery = em.createQuery(cquery);
             List<Employee> result = tquery.getResultList();
         // No assert as version is not actually a mapped field in dealer.
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testFromToExpression() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            JpaCriteriaBuilder cb = (JpaCriteriaBuilder)em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = cb.createQuery(Employee.class);
+            Root<Employee> emp = cquery.from(Employee.class);
+            cquery.where(cb.fromExpression(cb.toExpression(emp).get("id").notNull()));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            List<Employee> result = tquery.getResultList();
+            result.size();
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

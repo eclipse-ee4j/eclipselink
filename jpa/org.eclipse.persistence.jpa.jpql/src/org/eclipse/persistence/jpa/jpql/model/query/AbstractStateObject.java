@@ -546,7 +546,7 @@ public abstract class AbstractStateObject implements StateObject {
 	 *
 	 * @param expression The parsed object when a JPQL query is parsed
 	 */
-	protected void setExpression(Expression expression) {
+	public void setExpression(Expression expression) {
 		this.expression = expression;
 	}
 

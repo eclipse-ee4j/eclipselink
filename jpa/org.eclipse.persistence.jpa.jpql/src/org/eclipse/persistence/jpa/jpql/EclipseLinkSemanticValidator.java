@@ -16,10 +16,14 @@ package org.eclipse.persistence.jpa.jpql;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
 /**
@@ -139,6 +143,30 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		// Nothing to validate semantically
 		super.visit(expression);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+                // Nothing to validate semantically
+                super.visit(expression);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+                // Nothing to validate semantically
+                super.visit(expression);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+                // Nothing to validate semantically
+                super.visit(expression);
+        }
 
 	/**
 	 * {@inheritDoc}

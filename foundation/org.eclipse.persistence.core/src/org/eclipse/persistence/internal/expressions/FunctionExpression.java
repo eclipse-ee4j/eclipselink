@@ -419,11 +419,17 @@ public class FunctionExpression extends BaseExpression {
             List<DatabaseField> sourceFields = null;
             List<DatabaseField> targetFields = null;
             if ((mapping != null) && mapping.isOneToOneMapping()
+                    && (!((OneToOneMapping)mapping).hasRelationTableMechanism())
                     && (!((OneToOneMapping)mapping).hasCustomSelectionQuery())) {
                 base = (ObjectExpression)base.getBaseExpression();
                 descriptor = mapping.getReferenceDescriptor();
-                sourceFields = new ArrayList(((OneToOneMapping)mapping).getTargetToSourceKeyFields().values());
-                targetFields = new ArrayList(((OneToOneMapping)mapping).getTargetToSourceKeyFields().keySet());
+                Map<DatabaseField, DatabaseField> targetToSourceKeyFields = ((OneToOneMapping)mapping).getTargetToSourceKeyFields();
+                sourceFields = new ArrayList(targetToSourceKeyFields.size());
+                targetFields = new ArrayList(targetToSourceKeyFields.size());
+                for (Map.Entry<DatabaseField, DatabaseField> entry : targetToSourceKeyFields.entrySet()) {
+                    sourceFields.add(entry.getValue());
+                    targetFields.add(entry.getKey());
+                }
             } else {
                 mapping = null;
                 descriptor = base.getDescriptor();

@@ -1166,6 +1166,7 @@ public abstract class Expression implements Serializable, Cloneable {
          */
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setSelector(ExpressionOperator.Decode);
+        anOperator.setName("DECODE");
         anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         anOperator.setType(ExpressionOperator.FunctionOperator);
         anOperator.bePrefix();
@@ -1682,6 +1683,26 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * ADVANCED:
+     * This can be used for accessing user defined operators that have arguments.
+     * The operator must be defined in ExpressionOperator to be able to reference it.
+     * @see ExpressionOperator
+     * <p> Example:
+     * <pre><blockquote>
+     *  List arguments = new ArrayList();
+     *  arguments.add("blee");
+     *  builder.get("name").operator("FOO_BAR", arguments).greaterThan(100);
+     * </blockquote></pre>
+     */
+    public Expression operator(String name, List arguments) {
+        Integer selector = ExpressionOperator.getPlatformOperatorSelectors().get(name);
+        if (selector == null) {
+            return getFunctionWithArguments(name, arguments);
+        }
+        return getFunction(selector, arguments);
+    }
+
+    /**
+     * ADVANCED:
      * This can be used for accessing user defined functions that have arguments.
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
@@ -1745,6 +1766,33 @@ public abstract class Expression implements Serializable, Cloneable {
             v.add(", ");
         }
         v.add(")");
+        anOperator.printsAs(v);
+        anOperator.bePrefix();
+        anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+
+        return anOperator.expressionForArguments(this, arguments);
+    }
+
+    /**
+     * ADVANCED:
+     * Parse the SQL for parameter and return a custom function expression
+     * using a custom operator that will print itself as the SQL.
+     * Arguments are passed using '?', and must match the number of arguments.
+     */
+    public Expression sql(String sql, List arguments) {
+        ExpressionOperator anOperator = new ExpressionOperator();
+        anOperator.setType(ExpressionOperator.FunctionOperator);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(arguments.size());
+        int start = 0;
+        int index = sql.indexOf('?');
+        while (index != -1) {
+            v.add(sql.substring(start, index));
+            start = index + 1;
+            index = sql.indexOf('?', start);
+        }
+        if (start <= sql.length()) {
+            v.add(sql.substring(start, sql.length()));
+        }
         anOperator.printsAs(v);
         anOperator.bePrefix();
         anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);

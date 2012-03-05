@@ -13,10 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 
@@ -82,6 +85,30 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		super.visit(expression);
 		visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+                super.visit(expression);
+                visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+                super.visit(expression);
+                visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+                super.visit(expression);
+                visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+        }
 
 	/**
 	 * {@inheritDoc}
@@ -166,6 +193,27 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		public void visit(FuncExpression expression) {
 			expression.getParent().accept(this);
 		}
+		
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(SQLExpression expression) {
+                        expression.getParent().accept(this);
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(OperatorExpression expression) {
+                        expression.getParent().accept(this);
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(ColumnExpression expression) {
+                        expression.getParent().accept(this);
+                }
 
 		/**
 		 * {@inheritDoc}
@@ -184,6 +232,27 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		public void visit(FuncExpression expression) {
 			visitAbstractSingleEncapsulatedExpression(expression);
 		}
+		
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(SQLExpression expression) {
+                        visitAbstractSingleEncapsulatedExpression(expression);
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(ColumnExpression expression) {
+                        visitAbstractSingleEncapsulatedExpression(expression);
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(OperatorExpression expression) {
+                        visitAbstractSingleEncapsulatedExpression(expression);
+                }
 
 		/**
 		 * {@inheritDoc}
@@ -201,6 +270,27 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		public void visit(FuncExpression expression) {
 			complete = expression.hasRightParenthesis();
 		}
+		
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(SQLExpression expression) {
+                        complete = expression.hasRightParenthesis();
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(ColumnExpression expression) {
+                        complete = expression.hasRightParenthesis();
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(OperatorExpression expression) {
+                        complete = expression.hasRightParenthesis();
+                }
 
 		/**
 		 * {@inheritDoc}

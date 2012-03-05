@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class FuncExpression extends AbstractSingleEncapsulatedExpression {
+public class FuncExpression extends AbstractSingleEncapsulatedExpression {
 
 	/**
 	 * The name of the SQL function.

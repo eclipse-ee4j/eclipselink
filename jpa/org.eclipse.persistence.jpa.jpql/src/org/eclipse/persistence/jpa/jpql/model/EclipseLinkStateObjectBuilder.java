@@ -17,13 +17,19 @@ import org.eclipse.persistence.jpa.jpql.EclipseLinkLiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractIdentificationVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.ColumnExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.FuncExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.JoinStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.OperatorExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.SQLExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SelectClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TreatExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
 /**
@@ -77,6 +83,51 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 		this.stateObject = stateObject;
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+
+                ColumnExpressionStateObject stateObject = new ColumnExpressionStateObject(
+                        parent,
+                        expression.getUnquotedColumn(),
+                        buildChildren(expression.getExpression())
+                );
+
+                stateObject.setExpression(expression);
+                this.stateObject = stateObject;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+
+                SQLExpressionStateObject stateObject = new SQLExpressionStateObject (
+                        parent,
+                        expression.getUnquotedSQL(),
+                        buildChildren(expression.getExpression())
+                );
+
+                stateObject.setExpression(expression);
+                this.stateObject = stateObject;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+
+                OperatorExpressionStateObject stateObject = new OperatorExpressionStateObject (
+                        parent,
+                        expression.getUnquotedOperator(),
+                        buildChildren(expression.getExpression())
+                );
+
+                stateObject.setExpression(expression);
+                this.stateObject = stateObject;
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -97,6 +148,27 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 		public void visit(FuncExpression expression) {
 			// Nothing to do
 		}
+		
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(SQLExpression expression) {
+                        // Nothing to do
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(ColumnExpression expression) {
+                        // Nothing to do
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(OperatorExpression expression) {
+                        // Nothing to do
+                }
 
 		/**
 		 * {@inheritDoc}
@@ -129,6 +201,27 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 		public void visit(FuncExpression expression) {
 			this.stateObject = buildStateObjectImp(expression);
 		}
+		
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(SQLExpression expression) {
+                        this.stateObject = buildStateObjectImp(expression);
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(ColumnExpression expression) {
+                        this.stateObject = buildStateObjectImp(expression);
+                }
+                
+                /**
+                 * {@inheritDoc}
+                 */
+                public void visit(OperatorExpression expression) {
+                        this.stateObject = buildStateObjectImp(expression);
+                }
 
 		/**
 		 * {@inheritDoc}

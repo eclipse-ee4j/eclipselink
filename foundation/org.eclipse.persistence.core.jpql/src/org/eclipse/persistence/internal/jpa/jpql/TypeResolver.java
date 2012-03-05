@@ -51,6 +51,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
@@ -67,6 +68,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
@@ -93,11 +95,13 @@ import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OnClause;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -785,9 +789,37 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(FuncExpression expression) {
+	public void visit(FunctionExpression expression) {
 		type = Object.class;
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(FuncExpression expression) {
+                type = Object.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+                type = Object.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+                type = Object.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+                type = Object.class;
+        }
 
 	/**
 	 * {@inheritDoc}

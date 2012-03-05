@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CollectionJoin;
@@ -58,9 +57,10 @@ import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
 
-public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
+public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     
     public static final String CONCAT = "concat";
     public static final String SIZE = "size";
@@ -2213,7 +2213,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
      */
     public <T> Expression<T> function(String name, Class<T> type, Expression<?>... args){
         if (args != null && args.length > 0){
-        Vector<org.eclipse.persistence.expressions.Expression> params = new Vector<org.eclipse.persistence.expressions.Expression>();
+        List<org.eclipse.persistence.expressions.Expression> params = new ArrayList<org.eclipse.persistence.expressions.Expression>();
         for (int index = 1; index < args.length; ++index){
             Expression x = args[index];
             if (((InternalSelection)x).isFrom()){
@@ -2226,6 +2226,33 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         }else{
             return new FunctionExpressionImpl<T>(metamodel, type, new ExpressionBuilder().getFunction(name), new ArrayList(0), name);
         }
+    }
+
+    /**
+     * ADVANCED:
+     * Allow a Criteria Expression to be built from a EclipseLink native API Expression object.
+     * This allows for an extended functionality supported in EclipseLink Expressions to be used in Criteria.
+     */
+    public <T> Expression<T> fromExpression(org.eclipse.persistence.expressions.Expression expression, Class<T> type) {
+        return new FunctionExpressionImpl<T>(this.metamodel, type, expression, new ArrayList(0));
+    }
+
+    /**
+     * ADVANCED:
+     * Allow a Criteria Expression to be built from a EclipseLink native API Expression object.
+     * This allows for an extended functionality supported in EclipseLink Expressions to be used in Criteria.
+     */
+    public Expression fromExpression(org.eclipse.persistence.expressions.Expression expression) {
+        return new FunctionExpressionImpl(this.metamodel, Object.class, expression, new ArrayList(0));
+    }
+    
+    /**
+     * ADVANCED:
+     * Allow a Criteria Expression to be converted to a EclipseLink native API Expression object.
+     * This allows for roots and paths defined in the Criteria to be used with EclipseLink native API Expresions.
+     */
+    public org.eclipse.persistence.expressions.Expression toExpression(Expression expression) {
+        return ((SelectionImpl)expression).getCurrentNode();
     }
     
     /**

@@ -109,8 +109,8 @@ public interface SessionLog extends Cloneable {
     public static final String JPA = "jpa";
     public static final String EJB = "ejb";
     public static final String DMS = "dms";
-    public static final String EJB_OR_METADATA = "ejb_or_metadata";
-    public static final String METAMODEL = "jpa_metamodel";
+    public static final String EJB_OR_METADATA = "metadata";
+    public static final String METAMODEL = "metamodel";
     public static final String WEAVER = "weaver";
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";

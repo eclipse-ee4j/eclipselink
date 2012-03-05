@@ -71,7 +71,7 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	 * {@inheritDoc}
 	 */
 	public JPAVersion getJPAVersion() {
-		return JPAVersion.VERSION_2_0;
+		return JPAVersion.VERSION_2_1;
 	}
 
 	/**
@@ -87,10 +87,37 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeBNFs() {
 
+                registerBNF(new FunctionExpressionBNF());
+                registerBNF(new FunctionItemBNF());
+                registerBNF(new SQLExpressionBNF());
+                registerBNF(new OperatorExpressionBNF());
+                registerBNF(new SQLItemBNF());
 		registerBNF(new OnClauseBNF());
+                registerBNF(new ColumnExpressionBNF());
 
 		// Extend the query BNF to add support for ON
 		addChildBNF(JoinAssociationPathExpressionBNF.ID, OnClauseBNF.ID);
+
+                // Extend the query BNF to add support for FUNCTION
+                addChildBNF(FunctionsReturningDatetimeBNF.ID, FunctionExpressionBNF.ID);
+                addChildBNF(FunctionsReturningNumericsBNF.ID, FunctionExpressionBNF.ID);
+                addChildBNF(FunctionsReturningStringsBNF.ID,  FunctionExpressionBNF.ID);
+
+                // Extend the query BNF to add support for SQL
+                addChildBNF(FunctionsReturningDatetimeBNF.ID, SQLExpressionBNF.ID);
+                addChildBNF(FunctionsReturningNumericsBNF.ID, SQLExpressionBNF.ID);
+                addChildBNF(FunctionsReturningStringsBNF.ID,  SQLExpressionBNF.ID);
+                addChildBNF(SimpleConditionalExpressionBNF.ID,  SQLExpressionBNF.ID);
+                
+                // Extend the query BNF to add support for SQL
+                addChildBNF(FunctionsReturningDatetimeBNF.ID, OperatorExpressionBNF.ID);
+                addChildBNF(FunctionsReturningNumericsBNF.ID, OperatorExpressionBNF.ID);
+                addChildBNF(FunctionsReturningStringsBNF.ID,  OperatorExpressionBNF.ID);
+                
+                // Extend the query BNF to add support for COLUMN
+                addChildBNF(FunctionsReturningDatetimeBNF.ID, ColumnExpressionBNF.ID);
+                addChildBNF(FunctionsReturningNumericsBNF.ID, ColumnExpressionBNF.ID);
+                addChildBNF(FunctionsReturningStringsBNF.ID,  ColumnExpressionBNF.ID);
 	}
 
 	/**
@@ -98,6 +125,10 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected void initializeExpressionFactories() {
+                registerFactory(new FunctionExpressionFactory());
+                registerFactory(new SQLExpressionFactory());
+                registerFactory(new ColumnExpressionFactory());
+                registerFactory(new OperatorExpressionFactory());
 		registerFactory(new OnClauseFactory());
 	}
 
@@ -107,8 +138,16 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
+                registerIdentifierRole(Expression.COLUMN,  IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
+                registerIdentifierRole(Expression.OPERATOR,  IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
+                registerIdentifierRole(Expression.SQL,  IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
+	        registerIdentifierRole(Expression.FUNCTION,  IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
 		registerIdentifierRole(Expression.ON, IdentifierRole.COMPOUND_FUNCTION); // ON x
 
+                registerIdentifierVersion(Expression.SQL, JPAVersion.VERSION_2_1);
+                registerIdentifierVersion(Expression.COLUMN, JPAVersion.VERSION_2_1);
+                registerIdentifierVersion(Expression.OPERATOR, JPAVersion.VERSION_2_1);
+                registerIdentifierVersion(Expression.FUNCTION, JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(Expression.ON, JPAVersion.VERSION_2_1);
 	}
 

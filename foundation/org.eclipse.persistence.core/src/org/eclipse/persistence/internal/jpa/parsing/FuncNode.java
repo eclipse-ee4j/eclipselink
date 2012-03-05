@@ -13,8 +13,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
 
@@ -69,7 +69,7 @@ public class FuncNode extends FunctionalExpressionNode {
             return context.getBaseExpression().getFunction(this.name);
         }
         
-        Vector vExpressions = new Vector(size - 1);
+        List vExpressions = new ArrayList(size - 1);
         Expression base = this.parameters.get(0).generateExpression(context);
         for(int i=1; i < size; i++) {
             Expression child = this.parameters.get(i).generateExpression(context);

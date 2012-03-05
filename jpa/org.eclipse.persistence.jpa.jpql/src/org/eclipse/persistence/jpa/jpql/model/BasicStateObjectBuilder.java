@@ -51,6 +51,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.EntityTypeLiteralStateObject
 import org.eclipse.persistence.jpa.jpql.model.query.EntryExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ExistsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.FromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.FunctionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.GroupByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.HavingClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableDeclarationStateObject;
@@ -138,6 +139,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
@@ -942,6 +944,21 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 		stateObject = null;
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(FunctionExpression expression) {
+
+                FunctionExpressionStateObject stateObject = new FunctionExpressionStateObject(
+                        parent,
+                        expression.getUnquotedFunctionName(),
+                        buildChildren(expression.getExpression())
+                );
+
+                stateObject.setExpression(expression);
+                this.stateObject = stateObject;
+        }
+        
 	/**
 	 * {@inheritDoc}
 	 */

@@ -629,8 +629,10 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 			if (expression.getOrdering() == Ordering.DESC) {
 				query.addOrdering(queryExpression.descending());
 			}
-			else {
-				query.addOrdering(queryExpression.ascending());
+			else if (expression.getOrdering() == Ordering.ASC) {
+                                query.addOrdering(queryExpression.ascending());
+                        } else {
+				query.addOrdering(queryExpression);
 			}
 		}
 	}

@@ -27,6 +27,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -50,7 +52,9 @@ import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
@@ -275,6 +279,13 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		query.addAttribute(" MapEntry", queryExpression);
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(FunctionExpression expression) {
+            visit((FuncExpression)expression);
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -283,6 +294,33 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		Expression queryExpression = queryContext.buildExpression(expression, type);
 		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(ColumnExpression expression) {
+                Expression queryExpression = queryContext.buildExpression(expression, type);
+                query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(SQLExpression expression) {
+                Expression queryExpression = queryContext.buildExpression(expression, type);
+                query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(OperatorExpression expression) {
+                Expression queryExpression = queryContext.buildExpression(expression, type);
+                query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression);
+        }
 
 	/**
 	 * {@inheritDoc}

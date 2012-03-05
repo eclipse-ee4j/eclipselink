@@ -272,6 +272,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testJoinFetchWithJoin");
         tests.add("testNestedSubqueries");
         tests.add("testOnClause");
+        tests.add("testFUNCTIONWithStoredFunc");
+        tests.add("testSQLCast");
+        tests.add("testOPERATOR");
+        tests.add("testCOLUMN");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -3153,6 +3157,96 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
     }
 
+    /* Test FUNCTION with stored function 'StoredFunction_In'*/
+    public void testFUNCTIONWithStoredFunc() {
+        if (!isHermesParser()) {
+            warning("testJoinFetchAlias only works with Hermes");
+            return;
+        }
+        if (!supportsStoredFunctions()) {
+            warning("this test is not suitable for running on dbs that don't support stored function");
+            return;
+        } else {
+            String jpql = "SELECT e.id FROM Employee e WHERE e.salary = FUNCTION('StoredFunction_In', 75)";
+            EntityManager em = createEntityManager();
+            Query query;
+            try {
+                query = em.createQuery(jpql);
+                List result = query.getResultList();
+                Employee emp = em.find(Employee.class, result.get(0));
+                assertTrue("FUNCTION is not working properly with stored function.", emp.getSalary()==75000);
+
+                query = em.createQuery("SELECT FUNCTION('StoredFunction_In', e.id) + 5 FROM Employee e WHERE FUNCTION('StoredFunction_In', 75) + 5 = e.salary");
+                query.getResultList();
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    /* Test SQL with CAST*/
+    public void testSQLCast() {
+        if (!isHermesParser()) {
+            warning("testSQLCast only works with Hermes");
+            return;
+        }
+        if (!getPlatform().isOracle()) {
+            warning("testSQLCast only works with Oracle");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select SQL('CAST(? AS INTEGER)', e.id) from Employee e where SQL('CAST(? AS INTEGER)', e.id) > 0");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by SQL('? NULLS LAST', e.id)");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e where e.id > 0 AND SQL('? = ? + ?', e.id, e.id, e.id)");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e where SQL('1 = 1')");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e where SQL('? = ?', 1, 2)");
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    /* Test SQL with CAST*/
+    public void testCOLUMN() {
+        if (!isHermesParser()) {
+            warning("CAST only works with Hermes");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select COLUMN('F_NAME', e) from Employee e where COLUMN('EMP_ID', e) > 0");
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    /* Test OPERATOR with CAST*/
+    public void testOPERATOR() {
+        if (!isHermesParser()) {
+            warning("testOPERATOR only works with Hermes");
+            return;
+        }
+        if (!getPlatform().isOracle()) {
+            warning("testOPERATOR only works with Oracle");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select OPERATOR('Ceil', e.id) from Employee e where OPERATOR('Least', e.id, 0) > 0");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by OPERATOR('Mod', e.id, 2)");
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
     /* Test FUNC with specific MySQL functions*/
     public void testFuncWithMySQLFuncs(){
         if(!getServerSession().getPlatform().isMySQL()) {
@@ -3369,7 +3463,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         if (size != size2) {
             fail("ON clause join not used");
         }
-        query = em.createQuery("Select e from Employee e left join e.manager m on m.id > 0 join m.address a on a.city = 'Ottawa' where a.id > 0");
+        query = em.createQuery("Select e from Employee e left join e.manager m on m.id > 0 join m.address a on a.city = 'Ottawa' where a.city <> 'Ottawa'");
         query.getResultList();
         // TODO
         //query = em.createQuery("Select e from Employee e left join Employee e2 on e.id = e2.id");

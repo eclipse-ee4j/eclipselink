@@ -211,6 +211,13 @@ public interface ExpressionVisitor {
 	 */
 	void visit(ExistsExpression expression);
 
+        /**
+         * Visits the {@link FunctionExpression} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(FunctionExpression expression);
+
 	/**
 	 * Visits the {@link FromClause} expression.
 	 *

@@ -4732,6 +4732,13 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			// but there are exception, such as the functions (AVG, COUNT, MIN, MAX, SUM)
 			return 0;
 		}
+		
+                public String leftParenthesisMissingKey() {
+                    return MissingLeftParenthesis;
+                }
+                public String rightParenthesisMissingKey() {
+                        return MissingRightParenthesis;
+                }
 	}
 
 	protected abstract class AbstractTripleEncapsulatedExpressionHelper<T extends AbstractTripleEncapsulatedExpression>

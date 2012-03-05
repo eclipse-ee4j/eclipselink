@@ -13,8 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
 /**
@@ -40,6 +43,27 @@ public class EclipseLinkResolverBuilder extends ResolverBuilder
 	public void visit(FuncExpression expression) {
 		resolver = buildClassResolver(Object.class);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+                resolver = buildClassResolver(Object.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+                resolver = buildClassResolver(Object.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+                resolver = buildClassResolver(Object.class);
+        }
 
 	/**
 	 * {@inheritDoc}

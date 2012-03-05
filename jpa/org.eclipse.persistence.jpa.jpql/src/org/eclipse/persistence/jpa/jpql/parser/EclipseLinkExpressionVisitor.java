@@ -29,6 +29,27 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(FuncExpression expression);
+	
+        /**
+         * Visits the {@link ColumnExpression} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(ColumnExpression expression);
+	
+        /**
+         * Visits the {@link SQLExpression} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(SQLExpression expression);
+        
+        /**
+         * Visits the {@link OperatorExpression} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(OperatorExpression expression);
 
 	/**
 	 * Visits the {@link TreatExpression} expression.

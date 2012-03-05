@@ -216,6 +216,20 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"FUNC_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the FUNC expression."},
 			{"FUNC_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the FUNC expression."},
 
+                        // Generic
+                        {"INVALID_JPA_PLATFORM",      "Expression can only be used when the platform is EclipseLink."},
+                        {"MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the expression."},
+                        {"MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the expression."},
+
+                        // SQLExpression - Grammar
+                        {"SQL_EXPRESSION_MISSING_SQL",     "The SQL value must be specified."},
+                        
+                        // ColumnExpression - Grammar
+                        {"COLUMN_EXPRESSION_MISSING_COLUMN",     "The COLUMN name must be specified."},
+                        
+                        // OperatorExpression - Grammar
+                        {"OPERATOR_EXPRESSION_MISSING_OPERATOR",     "The OPERATOR name must be specified."},
+                        
 			// GroupByClause - Grammar
 			{"GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA",  "The select expression cannot end with a comma."},
 			{"GROUP_BY_CLAUSE_GROUP_BY_ITEM_IS_MISSING_COMMA", "The GROUP BY clause has ''{0}'' and ''{1}'' that are not separated by a comma."},

@@ -13,8 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
 /**
@@ -45,6 +48,33 @@ public final class EclipseLinkLiteralVisitor extends LiteralVisitor
 			literal = expression.getFunctionName();
 		}
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+                if (type == LiteralType.STRING_LITERAL) {
+                        literal = expression.getSQL();
+                }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+                if (type == LiteralType.STRING_LITERAL) {
+                        literal = expression.getOperator();
+                }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+                if (type == LiteralType.STRING_LITERAL) {
+                        literal = expression.getColumn();
+                }
+        }
 
 	/**
 	 * {@inheritDoc}

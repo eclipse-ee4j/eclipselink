@@ -214,6 +214,11 @@ public interface Expression {
 	 */
 	String FUNC = "FUNC";
 
+        /**
+         * The constant 'FUNCTION', part of JPA 2.1.
+         */
+        String FUNCTION = "FUNCTION";
+
 	/**
 	 * The constant for '>'.
 	 */
@@ -339,6 +344,16 @@ public interface Expression {
 	 */
 	String LIKE = "LIKE";
 
+        /**
+         * The constant 'SQL', which is an EclipseLink specific identifier that was added in version 2.4.
+         */
+        String SQL = "SQL";
+        
+        /**
+         * The constant 'COLUMN', which is an EclipseLink specific identifier that was added in version 2.4.
+         */
+        String COLUMN = "COLUMN";
+        
 	/**
 	 * The constant for 'LOCATE'.
 	 */
@@ -477,6 +492,11 @@ public interface Expression {
 	 */
 	String ORDER_BY = "ORDER BY";
 
+        /**
+         * The constant 'OPERATOR', which is an EclipseLink specific identifier that was added in version 2.4.
+         */
+        String OPERATOR = "OPERATOR";
+        
 	/**
 	 * The constant for 'OUTER'.
 	 */

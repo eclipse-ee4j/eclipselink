@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseParentVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
@@ -23,6 +24,8 @@ import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameterBNF;
+import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
@@ -93,6 +96,78 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		};
 	}
 
+        protected AbstractSingleEncapsulatedExpressionHelper<SQLExpression> buildSQLExpressionHelper() {
+                return new AbstractSingleEncapsulatedExpressionHelper<SQLExpression>() {
+                        @Override
+                        public String expressionInvalidKey() {
+                                return null; // Not used
+                        }
+                        @Override
+                        public String expressionMissingKey() {
+                                return SQLExpression_MissingSQL;
+                        }
+                        @Override
+                        public boolean hasExpression(SQLExpression expression) {
+                                // A SQL expression can have no arguments
+                                return true;
+                        }
+                        @Override
+                        public boolean isValidExpression(SQLExpression expression) {
+                                return true;
+                        }
+                };
+        }
+
+        protected AbstractSingleEncapsulatedExpressionHelper<ColumnExpression> buildColumnExpressionHelper() {
+                return new AbstractSingleEncapsulatedExpressionHelper<ColumnExpression>() {
+                        @Override
+                        public String expressionInvalidKey() {
+                                return null; // Not used
+                        }
+                        @Override
+                        public String expressionMissingKey() {
+                                return ColumnExpression_MissingColumn;
+                        }
+                        @Override
+                        public boolean hasExpression(ColumnExpression expression) {
+                                // TODO: must have one argument
+                                return true;
+                        }
+                        @Override
+                        public boolean isValidExpression(ColumnExpression expression) {
+                                return true;
+                        }
+                };
+        }
+
+        protected AbstractSingleEncapsulatedExpressionHelper<OperatorExpression> buildOperatorExpressionHelper() {
+                return new AbstractSingleEncapsulatedExpressionHelper<OperatorExpression>() {
+                        @Override
+                        public String expressionInvalidKey() {
+                                return null; // Not used
+                        }
+                        @Override
+                        public String expressionMissingKey() {
+                                return OperatorExpression_MissingOperator;
+                        }
+                        @Override
+                        public boolean hasExpression(OperatorExpression expression) {
+                                // A SQL expression can have no arguments
+                                return true;
+                        }
+                        @Override
+                        public boolean isValidExpression(OperatorExpression expression) {
+                                return true;
+                        }
+                        public String leftParenthesisMissingKey() {
+                                return MissingLeftParenthesis;
+                        }
+                        public String rightParenthesisMissingKey() {
+                                return MissingRightParenthesis;
+                        }
+                };
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -110,6 +185,33 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		}
 		return helper;
 	}
+
+        protected AbstractSingleEncapsulatedExpressionHelper<ColumnExpression> columnExpressionHelper() {
+                AbstractSingleEncapsulatedExpressionHelper<ColumnExpression> helper = getHelper(COLUMN);
+                if (helper == null) {
+                        helper = buildColumnExpressionHelper();
+                        registerHelper(COLUMN, helper);
+                }
+                return helper;
+        }
+
+        protected AbstractSingleEncapsulatedExpressionHelper<SQLExpression> sqlExpressionHelper() {
+                AbstractSingleEncapsulatedExpressionHelper<SQLExpression> helper = getHelper(SQL);
+                if (helper == null) {
+                        helper = buildSQLExpressionHelper();
+                        registerHelper(SQL, helper);
+                }
+                return helper;
+        }
+
+        protected AbstractSingleEncapsulatedExpressionHelper<OperatorExpression> operatorExpressionHelper() {
+                AbstractSingleEncapsulatedExpressionHelper<OperatorExpression> helper = getHelper(OPERATOR);
+                if (helper == null) {
+                        helper = buildOperatorExpressionHelper();
+                        registerHelper(OPERATOR, helper);
+                }
+                return helper;
+        }
 
 	protected FuncExpressionVisitor funcExpressionVisitor() {
 		if (funcExpressionVisitor == null) {
@@ -180,6 +282,117 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 
 		super.visit(expression);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+
+                if (canParseJPA2Identifiers()) {
+                        validateAbstractSingleEncapsulatedExpression(expression, sqlExpressionHelper());
+
+                        // Missing SQL function name
+                        if (expression.hasLeftParenthesis()) {
+                                String sql = expression.getSQL();
+
+                                if (ExpressionTools.stringIsEmpty(sql)) {
+                                        int startPosition = position(expression) + SQL.length();
+
+                                        if (expression.hasLeftParenthesis()) {
+                                                startPosition++;
+                                        }
+
+                                        int endPosition   = startPosition;
+                                        addProblem(expression, startPosition, endPosition, SQLExpression_MissingSQL);
+                                }
+                        }
+                }
+                // Invalid EclipseLink version
+                else if (getGrammar() == EclipseLinkJPQLGrammar2_4.instance()) {
+                        // TODO
+                        addProblem(expression, InvalidJPAPlatform);
+                }
+                // Invalid platform
+                else {
+                        addProblem(expression, InvalidJPAPlatform);
+                }
+
+                super.visit(expression);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+
+                if (canParseJPA2Identifiers()) {
+                        validateAbstractSingleEncapsulatedExpression(expression, operatorExpressionHelper());
+
+                        // Missing SQL function name
+                        if (expression.hasLeftParenthesis()) {
+                                String sql = expression.getOperator();
+
+                                if (ExpressionTools.stringIsEmpty(sql)) {
+                                        int startPosition = position(expression) + OPERATOR.length();
+
+                                        if (expression.hasLeftParenthesis()) {
+                                                startPosition++;
+                                        }
+
+                                        int endPosition   = startPosition;
+                                        addProblem(expression, startPosition, endPosition, OperatorExpression_MissingOperator);
+                                }
+                        }
+                }
+                // Invalid EclipseLink version
+                else if (getGrammar() == EclipseLinkJPQLGrammar2_4.instance()) {
+                        // TODO
+                        addProblem(expression, InvalidJPAPlatform);
+                }
+                // Invalid platform
+                else {
+                        addProblem(expression, InvalidJPAPlatform);
+                }
+
+                super.visit(expression);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+
+                if (canParseJPA2Identifiers()) {
+                        validateAbstractSingleEncapsulatedExpression(expression, columnExpressionHelper());
+
+                        // Missing column name
+                        if (expression.hasLeftParenthesis()) {
+                                String sql = expression.getColumn();
+
+                                if (ExpressionTools.stringIsEmpty(sql)) {
+                                        int startPosition = position(expression) + OPERATOR.length();
+
+                                        if (expression.hasLeftParenthesis()) {
+                                                startPosition++;
+                                        }
+
+                                        int endPosition   = startPosition;
+                                        addProblem(expression, startPosition, endPosition, ColumnExpression_MissingColumn);
+                                }
+                        }
+                }
+                // Invalid EclipseLink version
+                else if (getGrammar() == EclipseLinkJPQLGrammar2_4.instance()) {
+                        // TODO
+                        addProblem(expression, InvalidJPAPlatform);
+                }
+                // Invalid platform
+                else {
+                        addProblem(expression, InvalidJPAPlatform);
+                }
+
+                super.visit(expression);
+        }
 
 	/**
 	 * {@inheritDoc}

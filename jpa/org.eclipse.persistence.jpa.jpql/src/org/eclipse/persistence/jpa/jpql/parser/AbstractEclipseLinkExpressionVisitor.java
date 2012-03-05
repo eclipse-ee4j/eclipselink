@@ -28,6 +28,24 @@ public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpre
 	 */
 	public void visit(FuncExpression expression) {
 	}
+	
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+        }
+	
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+        }
 
 	/**
 	 * {@inheritDoc}

@@ -30,6 +30,27 @@ public abstract class AbstractEclipseLinkTraverseChildrenVisitor extends Abstrac
 	public void visit(FuncExpression expression) {
 		visit((Expression) expression);
 	}
+	
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+                visit((Expression) expression);
+        }
+	
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+                visit((Expression) expression);
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+                visit((Expression) expression);
+        }
 
 	/**
 	 * {@inheritDoc}

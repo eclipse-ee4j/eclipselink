@@ -129,6 +129,10 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidHint"));
         suite.addTest(new JUnitJPQLValidationTestSuite("invalidCharTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("invalidOnClauseTest"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("invalidSQLExpressionTest"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("invalidColumnExpressionTest"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("invalidFunctionExpressionTest"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("invalidOperatorExpressionTest"));
         
         return suite;
     }
@@ -193,6 +197,57 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         ensureInvalid("Select e from Employee e on e.id = 5");
         ensureInvalid("Select e from Employee e on");
+        ensureInvalid("Select e from Employee e like");
+        ensureInvalid("Select e from Employee e upper");
+        ensureInvalid("Select e from Employee e case");
+        ensureInvalid("Select e from Employee e select");
+    }
+    
+    public void invalidSQLExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidSQLExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where sql");
+        ensureInvalid("Select e from Employee e where sql(");
+        ensureInvalid("Select e from Employee e where sql()");
+        ensureInvalid("Select e from Employee e where sql(')");
+    }
+    
+    public void invalidColumnExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidColumnExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where column");
+        ensureInvalid("Select e from Employee e where column(");
+        ensureInvalid("Select e from Employee e where column()");
+        ensureInvalid("Select e from Employee e where column(')");
+        ensureInvalid("Select e from Employee e where column('foo')");
+        ensureInvalid("Select e from Employee e where column('foo', e.id, e.id)");
+        ensureInvalid("Select e from Employee e where column('foo', 5)");
+    }
+    
+    public void invalidOperatorExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidColumnExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where operator");
+        ensureInvalid("Select e from Employee e where operator(");
+        ensureInvalid("Select e from Employee e where operator()");
+        ensureInvalid("Select e from Employee e where operator(')");
+    }
+    
+    public void invalidFunctionExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidFunctionExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where function");
+        ensureInvalid("Select e from Employee e where function(");
+        ensureInvalid("Select e from Employee e where function()");
+        ensureInvalid("Select e from Employee e where function(')");
     }
     
    public void missingSelectExceptionTest() {

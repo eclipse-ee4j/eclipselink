@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,30 +16,25 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The <b>LOWER</b> function converts a string to lower case and it returns a string.
+ * This expression adds support to call native database functions.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= LOWER(string_primary)</code><p>
+ * New to EclipseLink 2.4, JPA 2.1.
+ *
+ * <div nowrap><b>BNF:</b> <code>func_expression ::= FUNCTION('function_name' {, func_item}*)</code><p>
  *
  * @version 2.4
- * @since 2.3
- * @author Pascal Filion
+ * @since 2.4
+ * @author James
  */
-public final class LowerExpression extends AbstractSingleEncapsulatedExpression {
+public final class FunctionExpression extends FuncExpression {
 
 	/**
-	 * Creates a new <code>LowerExpression</code>.
+	 * Creates a new <code>FuncExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 */
-	public LowerExpression(AbstractExpression parent) {
+	public FunctionExpression(AbstractExpression parent) {
 		super(parent);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
 	}
 
 	/**
@@ -47,7 +42,7 @@ public final class LowerExpression extends AbstractSingleEncapsulatedExpression 
 	 */
 	@Override
 	public String encapsulatedExpressionBNF() {
-		return InternalLowerExpressionBNF.ID;
+		return FunctionItemBNF.ID;
 	}
 
 	/**
@@ -55,7 +50,7 @@ public final class LowerExpression extends AbstractSingleEncapsulatedExpression 
 	 */
 	@Override
 	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(FunctionsReturningStringsBNF.ID);
+		return getQueryBNF(FunctionExpressionBNF.ID);
 	}
 
 	/**
@@ -63,6 +58,6 @@ public final class LowerExpression extends AbstractSingleEncapsulatedExpression 
 	 */
 	@Override
 	protected String parseIdentifier(WordParser wordParser) {
-		return LOWER;
+		return FUNCTION;
 	}
 }

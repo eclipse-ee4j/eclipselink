@@ -30,6 +30,27 @@ public abstract class AbstractEclipseLinkTraverseParentVisitor extends AbstractT
 	public void visit(FuncExpression expression) {
 		expression.getParent().accept(this);
 	}
+	
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ColumnExpression expression) {
+                expression.getParent().accept(this);
+        }
+	
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(SQLExpression expression) {
+                expression.getParent().accept(this);
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(OperatorExpression expression) {
+                expression.getParent().accept(this);
+        }
 
 	/**
 	 * {@inheritDoc}

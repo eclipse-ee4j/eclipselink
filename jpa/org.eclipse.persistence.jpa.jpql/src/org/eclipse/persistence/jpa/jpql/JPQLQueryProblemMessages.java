@@ -132,9 +132,15 @@ public interface JPQLQueryProblemMessages {
 	String ExistsExpression_MissingLeftParenthesis = "EXISTS_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String ExistsExpression_MissingRightParenthesis = "EXISTS_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String FuncExpression_InvalidJPAPlatform = "FUNC_EXPRESSION_INVALID_JPA_PLATFORM";
+        String InvalidJPAPlatform = "INVALID_JPA_PLATFORM";
 	String FuncExpression_MissingFunctionName = "FUNC_EXPRESSION_MISSING_FUNCTION_NAME";
+        String OperatorExpression_MissingOperator = "OPERATOR_EXPRESSION_MISSING_OPERATOR";
+        String SQLExpression_MissingSQL = "SQL_EXPRESSION_MISSING_SQL";
+        String ColumnExpression_MissingColumn = "COLUMN_EXPRESSION_MISSING_COLUMN";
 	String FuncExpression_MissingLeftParenthesis = "FUNC_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String FuncExpression_MissingRightParenthesis = "FUNC_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+        String MissingLeftParenthesis = "MISSING_LEFT_PARENTHESIS";
+        String MissingRightParenthesis = "MISSING_RIGHT_PARENTHESIS";
 	String GroupByClause_GroupByItemEndsWithComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA";
 	String GroupByClause_GroupByItemIsMissingComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_IS_MISSING_COMMA";
 	String GroupByClause_GroupByItemMissing = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_MISSING";
