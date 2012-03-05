@@ -134,6 +134,9 @@
         <condition property="session.bean" value="deptApp/org.eclipse.persistence.testing.sdo.server.DeptServiceBean/remote-org.eclipse.persistence.testing.sdo.server.DeptService">
             <contains string="${server.name}" substring="jboss"/>
         </condition>
+        <condition property="session.bean" value="DeptServiceBean#org.eclipse.persistence.testing.sdo.server.DeptService">
+            <contains string="${server.name}" substring="glassfish"/>
+        </condition>
     </target>
 
     <target name="create-ejb-stubs" depends="detect-server" if="is.websphere">

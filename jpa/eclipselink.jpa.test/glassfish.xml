@@ -113,6 +113,7 @@
         <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib/ext"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" tofile="${glassfish.home}/modules/commonj.sdo.jar" overwrite="true"/>
         <antcall target="copy-eclipselink-to-glassfish2" inheritRefs="true"/>
         <antcall target="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" inheritRefs="true"/>
     </target>
@@ -141,7 +142,8 @@
                           org.eclipse.persistence.jpa.modelgen_*.jar
                           org.eclipse.persistence.dbws_*.jar
                           org.eclipse.persistence.oracle_*.jar
-                          org.eclipse.persistence.moxy_*.jar"
+                          org.eclipse.persistence.moxy_*.jar
+                          org.eclipse.persistence.sdo_*.jar"
                 excludes="org.eclipse.persistence.*.source*.jar"/>
         </copy>
     </target>
