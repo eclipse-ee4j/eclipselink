@@ -167,15 +167,18 @@
         </exec>
     </target>
     
-    <!--
-        This target is to create connection pool and managed datasource required for running JPA tests on the SunAS9 server, and start Derby database
-        Note: SunAS9 server must be running.
-    -->
-    <target name="glassfish-setup">
+    <target name="glassfish-create-password-file">
         <echo message="Removing the ${user.home}/.asadminpass"/>
         <delete file="${user.home}/.asadminpass" verbose="true" failonerror="false"/>        
         <echo message="Writing out the glassfish admin password to ${adminpassfile}"/>
         <echo file="${adminpassfile}" append="false">AS_ADMIN_PASSWORD=${server.pwd}</echo>
+    </target>
+
+    <!--
+        This target is to create connection pool and managed datasource required for running JPA tests on the SunAS9 server, and start Derby database
+        Note: SunAS9 server must be running.
+    -->
+    <target name="glassfish-setup" depends="glassfish-create-password-file">
         <echo message="glassfish.db.info == ${glassfish.db.info}"/>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-connection-pool"/>
