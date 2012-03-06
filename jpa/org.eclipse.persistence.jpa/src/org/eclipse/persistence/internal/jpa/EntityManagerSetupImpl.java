@@ -419,6 +419,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         try {
             Map deployProperties = mergeMaps(additionalProperties, persistenceUnitInfo.getProperties());
             translateOldProperties(deployProperties, session);
+            if (processor.getMetadataSource() != null) {
+                Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, realClassLoader, session.getSessionLog());
+                if (metadataProperties != null && !metadataProperties.isEmpty()) {
+                    translateOldProperties(metadataProperties, session);
+                    deployProperties = mergeMaps(metadataProperties, deployProperties);
+                }
+            }
             if (isComposite()) {
                 updateCompositeMembersProperties(deployProperties);
             }
@@ -1272,7 +1279,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         PersistenceUnitTransactionType transactionType=null;
                         //bug 5867753: find and override the transaction type
                         String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
-                        if ( transTypeString != null ){
+                        if (transTypeString != null && transTypeString.length() > 0) {
                             transactionType=PersistenceUnitTransactionType.valueOf(transTypeString);
                         } else if (persistenceUnitInfo!=null){
                             transactionType=persistenceUnitInfo.getTransactionType();
@@ -1695,7 +1702,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         PersistenceUnitTransactionType transactionType = this.persistenceUnitInfo.getTransactionType();
         //bug 5867753: find and override the transaction type using properties
         String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, m, this.session);
-        if (transTypeString != null) {
+        if (transTypeString != null && transTypeString.length() > 0) {
             transactionType = PersistenceUnitTransactionType.valueOf(transTypeString);
         }
         //find the jta datasource

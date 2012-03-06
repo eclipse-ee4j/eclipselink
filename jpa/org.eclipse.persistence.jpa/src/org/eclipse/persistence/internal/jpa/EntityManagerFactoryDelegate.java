@@ -181,15 +181,15 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                     // splitProperties[0] contains
                     // supportedNonServerSessionProperties; [1] - all the rest.
                     Map[] splitProperties = EntityManagerFactoryProvider.splitSpecifiedProperties(properties, supportedNonServerSessionProperties);
-                    // keep only non server session properties - the rest will
-                    // be either cached in the server session or ignored
-                    properties = splitProperties[0];
                     Map serverSessionProperties = splitProperties[1];
                     // the call to setupImpl.deploy() finishes the session creation
                     DatabaseSessionImpl tempSession = setupImpl.deploy(realLoader, serverSessionProperties);
                     // discard all but non server session properties from server
                     // session properties.
                     Map tempProperties = EntityManagerFactoryProvider.keepSpecifiedProperties(tempSession.getProperties(), supportedNonServerSessionProperties);
+                    // keep only non server session properties - the rest will
+                    // be either cached in the server session or ignored
+                    properties = splitProperties[0];
                     // properties override server session properties
                     Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(properties, tempProperties);
                     processProperties(propertiesToProcess);
@@ -327,7 +327,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 return value;
             }
         }
-        return getDatabaseSession().getProperty(name);
+        DatabaseSessionImpl tempSession = this.session;
+        if (tempSession != null) {
+            return tempSession.getProperty(name);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -556,7 +561,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
         }
-        return Collections.unmodifiableMap(EntityManagerFactoryProvider.mergeMaps(properties, this.getDatabaseSession().getProperties()));
+        DatabaseSessionImpl tempSession = this.session;
+        if (tempSession != null) {
+            return Collections.unmodifiableMap(EntityManagerFactoryProvider.mergeMaps(properties, tempSession.getProperties()));
+        } else {
+            return Collections.unmodifiableMap(properties);
+        }
     }
 
     /**

@@ -21,11 +21,15 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.extensibility.Employee;
 import org.eclipse.persistence.testing.models.jpa.extensibility.Address;
@@ -78,6 +82,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             suite.addTest(new ExtensibilityTests("testExistingEntityManagerAfterRefresh"));
             suite.addTest(new ExtensibilityTests("testSetupImplRefresh"));
             suite.addTest(new ExtensibilityTests("testRCMRefreshCommand"));
+            suite.addTest(new ExtensibilityTests("testMetadatasourceProperties"));
         }
         return suite;
     }
@@ -117,11 +122,12 @@ public class ExtensibilityTests extends JUnitTestCase {
     }
     
     public void testSetup() {
-        new ExtensibilityTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        ServerSession serverSession = getServerSession(getPersistenceUnitName());
+        new ExtensibilityTableCreator().replaceTables(serverSession);
 
         // Force uppercase for Postgres.
-        if (getServerSession().getPlatform().isPostgreSQL()) {
-            getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+        if (serverSession.getPlatform().isPostgreSQL()) {
+            serverSession.getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
     }
     
@@ -531,5 +537,68 @@ public class ExtensibilityTests extends JUnitTestCase {
             deleteEmployeeData(em);
         }
     }
+
+    public void testMetadatasourceProperties(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        JpaEntityManagerFactory jpaEmf = JpaHelper.getEntityManagerFactory(em);
+        ServerSession originalSession = jpaEmf.getServerSession(); 
+        String sessionName = originalSession.getName();
+        
+        // cleanUpProperties will be used to return the factory back to its original state
+        String[] propertyNames = {"javax.persistence.transactionType", "javax.persistence.jtaDataSource", "javax.persistence.nonJtaDataSource"};
+        HashMap cleanUpProperties = new HashMap(propertyNames.length);
+        for (int i=0; i < propertyNames.length; i++) {
+            Object value = originalSession.getProperty(propertyNames[i]);
+            if (value == null) {
+                // that would remove the property
+                value = "";
+            }
+            cleanUpProperties.put(propertyNames[i], value);
+        }
+        cleanUpProperties.put(PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE, "");
+        
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE, "extension.properties");
+        jpaEmf.refreshMetadata(properties);
+
+        try {
+            em = emf.createEntityManager();
+            fail("PersistenceException was expected");
+        } catch (PersistenceException ex) {
+            // exception expected because extension.properties contains bogus settings:
+            //   javax.persistence.transactionType=JTA
+            //   javax.persistence.jtaDataSource=MyJtaDataSource
+            //   javax.persistence.nonJtaDataSource=MyNonJtaDataSource
+            // Examine the session to see whether these settings were applied
+            // Note that because session login has failed the session is not accessible from emf, only directly from emSetupImpls. 
+            String errorMsg = "";
+            ServerSession serverSession = (ServerSession)EntityManagerFactoryProvider.emSetupImpls.get(sessionName).getSession();
+            if (!serverSession.getLogin().shouldUseExternalTransactionController()) {
+                errorMsg += "External tarnsaction controller was expected; ";
+            }
+            Connector mainConnector = serverSession.getLogin().getConnector(); 
+            if (!(mainConnector instanceof JNDIConnector)) {
+                errorMsg += "Main JNDIConnector was expected; ";
+            } else {
+                if (!((JNDIConnector)mainConnector).getName().equals("MyJtaDataSource")) {
+                    errorMsg += "MyJtaDataSource was expected; ";
+                }
+            }
+            Connector readConnector = ((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).getConnector(); 
+            if (!(readConnector instanceof JNDIConnector)) {
+                errorMsg += "Read JNDIConnector was expected; ";
+            } else {
+                if (!((JNDIConnector)readConnector).getName().equals("MyNonJtaDataSource")) {
+                    errorMsg += "MyNonJtaDataSource was expected; ";
+                }
+            }
+        } finally {
+            // clean-up: back to the original settings
+            jpaEmf.refreshMetadata(cleanUpProperties);
+            emf.createEntityManager();
+        }
+    }
+
 }
 

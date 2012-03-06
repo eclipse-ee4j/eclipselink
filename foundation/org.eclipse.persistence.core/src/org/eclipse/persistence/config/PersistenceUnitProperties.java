@@ -1734,6 +1734,15 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE_XML_URL = "eclipselink.metadata-source.xml.url";
 
     /**
+     * The property <code>"eclipselink.metadata-repository.properties.file"</code>
+     * 
+     * <p>Specifies the name of the metadata repository properties file to read from using classloader to find the resource</p>
+     * 
+     * @see #METADATA_SOURCE
+     */
+    public static final String METADATA_SOURCE_PROPERTIES_FILE = "eclipselink.metadata-source.properties.file";
+    
+    /**
      * The property <code>"eclipselink.application-location"</code>
      * 
      * <p>Specifies the file system directory location where 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,7 +19,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -35,7 +38,7 @@ import org.eclipse.persistence.logging.SessionLog;
 public class XMLMetadataSource extends MetadataSourceAdapter {
     
     /**
-     * This class returns a Reader for an EclipseLink-ORM.xml.  It will use the 
+     * This method returns a Reader for an EclipseLink-ORM.xml.  It will use the 
      * PersistenceUnitProperties.METADATA_SOURCE_XML_URL property if available to create an 
      * InputStreamReader from a URL, and if not available, use the 
      * PersistenceUnitProperties.METADATA_SOURCE_XML_FILE property will be used to get a file
@@ -72,26 +75,15 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
             String mappingFileName = EntityManagerFactoryProvider.getConfigPropertyAsString(
                     PersistenceUnitProperties.METADATA_SOURCE_XML_FILE,
                     properties);
-            try {
-                Enumeration<URL> mappingFileURLs = classLoader.getResources(mappingFileName);
-                
-                if (!mappingFileURLs.hasMoreElements()){
-                    mappingFileURLs = classLoader.getResources("/./" + mappingFileName);
-                }
-                
-                if (mappingFileURLs.hasMoreElements()) {
-                    URL nextURL = mappingFileURLs.nextElement();
-    
-                    if (mappingFileURLs.hasMoreElements()) {
-                        // Switched to warning, same file can be on the classpath twice in some deployments,
-                        // should not be an error.
-                        log.logThrowable(SessionLog.FINER, SessionLog.EJB_OR_METADATA, ValidationException.nonUniqueRepositoryFileName(mappingFileName));
+            if (mappingFileName != null && mappingFileName.length() > 0) {
+                try {
+                    URL fileURL = getFileURL(mappingFileName, classLoader, log);
+                    if (fileURL != null) {
+                        reader = new InputStreamReader(fileURL.openStream());
                     }
-
-                    reader = new InputStreamReader(nextURL.openStream());
-                } 
-            } catch (IOException exception) {
-                throw ValidationException.fileError(exception);
+                } catch (IOException exception) {
+                    throw ValidationException.fileError(exception);
+                }
             }
         }
         if (reader == null) {
@@ -134,5 +126,67 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      */
     public String getRepositoryName() {
         return getClass().getSimpleName();
+    }
+
+    /**
+     * PUBLIC: This method is responsible for returning additional persistence
+     * unit property overrides. It is called on initial deployment of the
+     * persistence unit and when the persistence unit is reloaded to allow
+     * customization of the persistence unit above and beyond what is packaged
+     * in the persistence.xml and what is code into the application.
+     * <p>
+     * <b>IMPORTANT</b>: Although any property can be changed using this
+     * approach it is important that users of this feature ensure compatible
+     * configurations are supplied. As an example; overriding an application to
+     * use RESOURCE_LOCAL when it was coded to use JTA would result in changes
+     * not be written to the database.
+     * 
+     * PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE property will be used to get a file
+     * resource from the classloader. Properties are read from the file.
+     * If the property either not specified or contains an empty string then returns null.
+     * 
+     * @since EclipseLink 2.4
+     */
+    public Map<String, Object> getPropertyOverrides(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
+        String propertiesFileName = EntityManagerFactoryProvider.getConfigPropertyAsString(
+                PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE,
+                properties);
+        if (propertiesFileName == null || propertiesFileName.length() == 0) {
+            return null;
+        }
+        
+        try {
+            URL fileURL = getFileURL(propertiesFileName, classLoader, log);
+            if (fileURL != null) {
+                Properties propertiesFromFile = new Properties();        
+                propertiesFromFile.load(fileURL.openStream());
+                if (!propertiesFromFile.isEmpty()) {
+                    return new HashMap(propertiesFromFile);
+                }
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+        return null;
+    }
+    
+    protected static URL getFileURL(String fileName, ClassLoader classLoader, SessionLog log) throws IOException {
+        Enumeration<URL> fileURLs = classLoader.getResources(fileName);
+        
+        if (!fileURLs.hasMoreElements()){
+            fileURLs = classLoader.getResources("/./" + fileName);
+        }
+        
+        if (fileURLs.hasMoreElements()) {
+            URL nextURL = fileURLs.nextElement();   
+            if (fileURLs.hasMoreElements()) {
+                // Switched to warning, same file can be on the classpath twice in some deployments,
+                // should not be an error.
+                log.logThrowable(SessionLog.FINER, SessionLog.EJB_OR_METADATA, ValidationException.nonUniqueRepositoryFileName(fileName));
+            }
+            return nextURL;
+        } else {
+            return null;
+        }
     }
 }
