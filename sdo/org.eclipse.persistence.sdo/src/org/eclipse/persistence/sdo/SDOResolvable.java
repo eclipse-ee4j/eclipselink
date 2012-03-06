@@ -28,7 +28,6 @@ import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
 import commonj.sdo.impl.ExternalizableDelegator;
-import commonj.sdo.impl.HelperProvider;
 
 /**
  * INTERNAL:
@@ -125,7 +124,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
     private transient HelperContext aHelperContext;
 
     public SDOResolvable() {
-        aHelperContext = HelperProvider.getDefaultContext();
+        aHelperContext = SDOHelperContext.getHelperContext();
     }
 
     /**
