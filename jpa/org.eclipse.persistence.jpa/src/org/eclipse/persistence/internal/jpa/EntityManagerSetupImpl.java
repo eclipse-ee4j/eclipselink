@@ -419,13 +419,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         try {
             Map deployProperties = mergeMaps(additionalProperties, persistenceUnitInfo.getProperties());
             translateOldProperties(deployProperties, session);
-            if (processor.getMetadataSource() != null) {
-                Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, realClassLoader, session.getSessionLog());
-                if (metadataProperties != null && !metadataProperties.isEmpty()) {
-                    translateOldProperties(metadataProperties, session);
-                    deployProperties = mergeMaps(metadataProperties, deployProperties);
-                }
-            }
             if (isComposite()) {
                 updateCompositeMembersProperties(deployProperties);
             }
@@ -438,6 +431,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 if (isComposite()) {
                                     deployCompositeMembers(deployProperties, realClassLoader);
                                 } else {
+                                    if (processor.getMetadataSource() != null) {
+                                        Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, realClassLoader, session.getSessionLog());
+                                        if (metadataProperties != null && !metadataProperties.isEmpty()) {
+                                            translateOldProperties(metadataProperties, session);
+                                            deployProperties = mergeMaps(metadataProperties, deployProperties);
+                                        }
+                                    }
                                     // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                                     processor.setClassLoader(realClassLoader);
                                     processor.createDynamicClasses();
