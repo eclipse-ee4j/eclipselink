@@ -93,7 +93,7 @@ public abstract class ObjectExpression extends DataExpression {
      * Add the expression as a derived child of this expression.
      * i.e. e.get("name"), "name" is a derived child of "e".
      */
-    public void addDerivedExpression(Expression addThis) {
+    public synchronized void addDerivedExpression(Expression addThis) {
         if (this.derivedExpressions == null) {
             this.derivedExpressions = new ArrayList();
         }
@@ -236,6 +236,21 @@ public abstract class ObjectExpression extends DataExpression {
         throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
     }
     
+    public List<Expression> copyDerivedExpressions(Map alreadyDone) {
+        if (this.derivedExpressions == null) {
+            return null;
+        }
+        List<Expression> derivedExpressionsCopy;
+        synchronized(this) {
+            derivedExpressionsCopy = new ArrayList(this.derivedExpressions);
+        }
+        List<Expression> result = new ArrayList(derivedExpressionsCopy.size());
+        for (Expression exp : derivedExpressionsCopy) {
+            result.add(exp.copiedVersionFrom(alreadyDone));
+        }
+        return result;
+    }
+
     public QueryKeyExpression derivedExpressionNamed(String attributeName) {
         QueryKeyExpression existing = existingDerivedExpressionNamed(attributeName);
         if (existing != null) {
@@ -266,7 +281,11 @@ public abstract class ObjectExpression extends DataExpression {
         if (this.derivedExpressions == null) {
             return null;
         }
-        for (Expression derivedExpression : this.derivedExpressions) {
+        List<Expression> derivedExpressionsCopy;
+        synchronized(this) {
+            derivedExpressionsCopy = new ArrayList(this.derivedExpressions);
+        }
+        for (Expression derivedExpression : derivedExpressionsCopy) {
             QueryKeyExpression exp = (QueryKeyExpression)derivedExpression;
             if (exp.getName().equals(attributeName)) {
                 return exp;
@@ -512,7 +531,7 @@ public abstract class ObjectExpression extends DataExpression {
     @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        this.derivedExpressions = copyCollection(this.derivedExpressions, alreadyDone);
+        this.derivedExpressions = copyDerivedExpressions(alreadyDone);
         if (this.onClause != null) {
             this.onClause = this.onClause.copiedVersionFrom(alreadyDone);
         }

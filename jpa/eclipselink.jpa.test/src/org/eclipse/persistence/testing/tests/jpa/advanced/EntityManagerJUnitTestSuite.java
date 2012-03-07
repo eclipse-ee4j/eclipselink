@@ -396,6 +396,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testEMFBuiltWithSession");
         tests.add("testLazyOneToOneFetchInitialization");
         tests.add("testSequenceObjectWithSchemaName");
+        tests.add("testSharedExpressionInQueries");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -11614,6 +11615,125 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    public void testSharedExpressionInQueries() {
+        // the test spawns threads.
+        if (! isOnServer()) {
+            return;
+        }
+        getServerSession().getProject().getJPQLParseCache().getCache().clear();
+        
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e FROM Employee e");
+        query.getResultList();
+        em.close();
+        Runnable[] runnables = {
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.manager");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.address");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.manager");
+                query.setHint(QueryHints.FETCH, "e.address");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.manager");
+                query.setHint(QueryHints.FETCH, "e.address");
+                query.setHint(QueryHints.FETCH, "e.projects.teamLeader");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.address");
+                query.setHint(QueryHints.FETCH, "e.manager");
+                query.setHint(QueryHints.FETCH, "e.projects.teamMembers");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.managedEmployees");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.responsibilities");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.phoneNumbers");
+                query.getResultList();
+                em.close();
+            };},
+            new Runnable() {public void run(){
+                EntityManager em = createEntityManager();
+                Query query = em.createQuery("SELECT e FROM Employee e");
+                query.setHint(QueryHints.FETCH, "e.dealers");
+                query.getResultList();
+                em.close();
+            };},
+        };
+        
+        Thread[] threads = new Thread[runnables.length];
+        Exception exceptions[] = new Exception[runnables.length]; 
+        for (int i=0; i < runnables.length; i++) {
+            threads[i] = new Thread(runnables[i], Integer.toString(i));
+        }
+
+        for (int i=0; i < runnables.length; i++) {
+            threads[i].start();
+        }
+        
+        boolean exceptionInThread = false;
+        for (int i=0; i < runnables.length; i++) {
+            try {
+                threads[i].join();
+            } catch (Exception ex) {
+                exceptionInThread = true;
+                exceptions[i] = ex;
+            }
+        }
+        
+        if (exceptionInThread) {
+            String errorMsg = "";
+            for (int i=0; i < exceptions.length; i++) {
+                if (exceptions[i] != null) {
+                    errorMsg += i + ": " + exceptions[i] + "\n";
+                }
+            }
+            fail(errorMsg);
+        }        
+    }
+    
     public static class TableQualifierSessionCustomizer implements SessionCustomizer {
         public static Map<String, String> database_properties = JUnitTestCaseHelper.getDatabaseProperties();
         
