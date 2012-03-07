@@ -73,7 +73,7 @@ public abstract class ObjectExpression extends DataExpression {
         return super.equals(expression) && (shouldUseOuterJoin() == ((ObjectExpression)expression).shouldUseOuterJoin());
     }
 
-    public void addDerivedExpression(Expression addThis) {
+    public synchronized void addDerivedExpression(Expression addThis) {
         if (derivedExpressions == null) {
             derivedExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         }
@@ -219,6 +219,22 @@ public abstract class ObjectExpression extends DataExpression {
         throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
     }
     
+    public Vector copyDerivedExpressions(Map alreadyDone) {
+        if (this.derivedExpressions == null) {
+            return null;
+        }
+        Vector derivedExpressionsCopy;
+        synchronized(this) {
+            derivedExpressionsCopy = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.derivedExpressions);
+        }
+        Vector result = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(derivedExpressionsCopy.size());
+        for (Enumeration e = derivedExpressionsCopy.elements(); e.hasMoreElements();) {
+            Expression exp = (Expression)e.nextElement();
+            result.addElement(exp.copiedVersionFrom(alreadyDone));
+        }
+        return result;
+    }
+
     public QueryKeyExpression derivedExpressionNamed(String attributeName) {
         QueryKeyExpression existing = existingDerivedExpressionNamed(attributeName);
         if (existing != null) {
@@ -249,7 +265,11 @@ public abstract class ObjectExpression extends DataExpression {
         if (derivedExpressions == null) {
             return null;
         }
-        for (Enumeration e = derivedExpressions.elements(); e.hasMoreElements();) {
+        Vector derivedExpressionsCopy;
+        synchronized(this) {
+            derivedExpressionsCopy = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.derivedExpressions);
+        }
+        for (Enumeration e = derivedExpressionsCopy.elements(); e.hasMoreElements();) {
             QueryKeyExpression exp = (QueryKeyExpression)e.nextElement();
             if (exp.getName().equals(attributeName)) {
                 return exp;
@@ -467,7 +487,7 @@ public abstract class ObjectExpression extends DataExpression {
      */
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        derivedExpressions = copyCollection(derivedExpressions, alreadyDone);
+        derivedExpressions = copyDerivedExpressions(alreadyDone);
     }
 
     /**

@@ -357,9 +357,9 @@ public class ExpressionBuilder extends ObjectExpression {
         // Now need to copy over the derived expressions, etc.
         if (this.derivedExpressions != null) {
             if (copy.derivedExpressions == null) {
-                copy.derivedExpressions = copyCollection(this.derivedExpressions, alreadyDone);
+                copy.derivedExpressions = copyDerivedExpressions(alreadyDone);
             } else {
-                copy.derivedExpressions.addAll(copyCollection(this.derivedExpressions, alreadyDone));
+                copy.derivedExpressions.addAll(copyDerivedExpressions(alreadyDone));
             }
         }
 
