@@ -59,6 +59,9 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         String msg = null;
         String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/employee.xml";
         String tmpdir = System.getenv("T_WORK");
+        if (tmpdir == null) {
+            tmpdir = System.getProperty("java.io.tmpdir");
+        }
 
         try {
             Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class, MyTestType.class };

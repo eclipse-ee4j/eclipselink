@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -47,7 +48,7 @@ import org.xml.sax.SAXException;
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
-    private String tab;
+    private byte[] tab;
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
@@ -59,9 +60,13 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         isLastEventText = false;
     }
 
-    private String tab() {
+    private byte[] tab() {
         if (tab == null) {
-            tab = getMarshaller().getIndentString();
+            String sTab = getMarshaller().getIndentString(); 
+            // Escape the tab using writeValue
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            writeValue(sTab, true, false, baos);
+            tab = baos.toByteArray();
         }
         return tab;
     }
@@ -270,7 +275,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
     private void outputStreamWriteTab() {
         for (int x = 0; x < numberOfTabs; x++) {
-            writeValue(tab(), true);
+            outputStreamWrite(tab());
         }
     }
 
