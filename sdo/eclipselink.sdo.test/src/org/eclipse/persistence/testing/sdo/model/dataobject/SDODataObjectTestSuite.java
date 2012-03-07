@@ -74,7 +74,7 @@ public class SDODataObjectTestSuite {
         suite.addTest(new TestSuite(SetAndGetWithManyPropertyViaPathTestCases.class));
 
         suite.addTest(new TestSuite(OpenSequencedTypeTestCases.class));
-        
+        suite.addTest(new TestSuite(NewerContextTestCases.class));
         return suite;
     }
 }
