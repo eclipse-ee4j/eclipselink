@@ -2319,7 +2319,7 @@
 
         <copy todir="${eclipselink.jpa.test}/stage/" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
-                <include name="extension*.xml"/>
+                <include name="extension*.*"/>
             </fileset>
         </copy>
 
@@ -2434,7 +2434,7 @@
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
     </target>
     <target name="copy-jaxb-properties-file-for-jaxrs" if="is.jaxrs.testing.on.glassfish">
-	<copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="stage/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
+    <copy file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/jaxb.properties" todir="stage/org/eclipse/persistence/testing/models/jpa/jaxrs"/>
     </target>
     <target name="create-ejb-jar-with-static-weaving" if="is.static.server.weaving">
         <antcall target="remove-composite-classes"/>
@@ -3105,7 +3105,7 @@
 
     <target name="server-test-extensibility">
         <copy todir="${eclipselink.jpa.test}/resource/eclipselink-extensibility-model/server"  overwrite="true">
-            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-extensibility-model/repository" includes="extension*.xml"/>
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-extensibility-model/repository" includes="extension*.*"/>
         </copy>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="extensibility"/>
