@@ -436,6 +436,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int VPD_MULTIPLE_IDENTIFIERS_SPECIFIED = 7343;
     public static final int VPD_NOT_SUPPORTED = 7344;
     
+    public static final int MISSING_PROPERTIES_FILE_FOR_METADATA_SOURCE = 7345;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -1383,6 +1385,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_XML_FILE_FOR_METADATA_SOURCE, args));
         validationException.setErrorCode(MISSING_XML_FILE_FOR_METADATA_SOURCE);
+        return validationException;
+    }
+    
+    public static ValidationException missingPropertiesFileForMetadataRepositoryConfig(String fileName){
+        Object[] args = {fileName};
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_PROPERTIES_FILE_FOR_METADATA_SOURCE, args));
+        validationException.setErrorCode(MISSING_PROPERTIES_FILE_FOR_METADATA_SOURCE);
         return validationException;
     }
     

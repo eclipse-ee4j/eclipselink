@@ -162,12 +162,15 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
                 propertiesFromFile.load(fileURL.openStream());
                 if (!propertiesFromFile.isEmpty()) {
                     return new HashMap(propertiesFromFile);
+                } else {
+                    return null;
                 }
+            } else {
+                throw ValidationException.missingPropertiesFileForMetadataRepositoryConfig(propertiesFileName);
             }
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
-        return null;
     }
     
     protected static URL getFileURL(String fileName, ClassLoader classLoader, SessionLog log) throws IOException {
