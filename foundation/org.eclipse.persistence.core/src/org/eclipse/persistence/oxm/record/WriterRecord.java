@@ -165,7 +165,7 @@ public class WriterRecord extends MarshalRecord {
             writer.write(qName);
             writer.write('=');
             writer.write('\"');
-            writeValue(value, true);
+            writeValue(value, true, this.writer);
             writer.write('\"');
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
@@ -234,13 +234,13 @@ public class WriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     protected void writeValue(String value) {
-        writeValue(value, false);
+        writeValue(value, false, this.writer);
     }
 
     /**
      * INTERNAL:
      */
-    protected void writeValue(String value, boolean isAttribute) {
+    protected void writeValue(String value, boolean isAttribute, Writer writer) {
         CharacterEscapeHandler escapeHandler = null;
         if (marshaller != null) {
             escapeHandler = marshaller.getCharacterEscapeHandler();

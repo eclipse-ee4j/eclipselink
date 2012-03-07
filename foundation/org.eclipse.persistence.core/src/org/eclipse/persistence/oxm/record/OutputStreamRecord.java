@@ -194,7 +194,7 @@ public class OutputStreamRecord extends MarshalRecord {
             outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
             outputStreamWrite((byte)'=');
             outputStreamWrite((byte)'"');
-            writeValue(value, true, true);
+            writeValue(value, true, true, this.outputStream);
             outputStreamWrite(CLOSE_ATTRIBUTE_VALUE);
         } catch (UnsupportedEncodingException e) {
             throw XMLMarshalException.marshalException(e);
@@ -255,13 +255,13 @@ public class OutputStreamRecord extends MarshalRecord {
      * INTERNAL:
      */
     protected void writeValue(String value, boolean escapeChars) {
-        writeValue(value, escapeChars, false);
+        writeValue(value, escapeChars, false, this.outputStream);
     }
 
     /**
      * INTERNAL:
      */
-    protected void writeValue(String value, boolean escapeChars, boolean isAttribute) {
+    protected void writeValue(String value, boolean escapeChars, boolean isAttribute, OutputStream os) {
         if (escapeChars) {
             CharacterEscapeHandler escapeHandler = marshaller.getCharacterEscapeHandler();
             if (escapeHandler != null) {
@@ -290,47 +290,46 @@ public class OutputStreamRecord extends MarshalRecord {
                     if((character >= Character.MIN_HIGH_SURROGATE) && (character <= Character.MAX_LOW_SURROGATE)) {
                         int uc = (((character & 0x3ff) << 10) | (value.charAt(++x) & 0x3ff)) + 0x10000;
                         // 11110zzz
-                        outputStreamWrite((byte)(0xF0 | ((uc >> 18))));
+                        outputStreamWrite((byte)(0xF0 | ((uc >> 18))), os);
                         // 10zzyyyy
-                        outputStreamWrite((byte)(0x80 | ((uc >> 12) & 0x3F)));
+                        outputStreamWrite((byte)(0x80 | ((uc >> 12) & 0x3F)), os);
                         // 10yyyyxx
-                        outputStreamWrite((byte)(0x80 | ((uc >> 6) & 0x3F)));
+                        outputStreamWrite((byte)(0x80 | ((uc >> 6) & 0x3F)), os);
                         // 10xxxxxx
-                        outputStreamWrite((byte)(0x80 + (uc & 0x3F)));
+                        outputStreamWrite((byte)(0x80 + (uc & 0x3F)), os);
                        continue;
                     } else {
                         // 1110yyyy
-                        outputStreamWrite((byte)(0xE0 + (character >> 12)));
+                        outputStreamWrite((byte)(0xE0 + (character >> 12)), os);
                     }
                     // 10yyyyxx
-                    outputStreamWrite((byte)(0x80 + ((character >> 6) & 0x3F)));
+                    outputStreamWrite((byte)(0x80 + ((character >> 6) & 0x3F)), os);
                 } else {
                     // 110yyyxx
-                    outputStreamWrite((byte)(0xC0 + (character >> 6)));
+                    outputStreamWrite((byte)(0xC0 + (character >> 6)), os);
                 }
-                // outputStreamWrite((byte)(0x80 + (character & 0x3F)));
-                outputStreamWrite((byte)(0x80 + (character & 0x3F)));
+                outputStreamWrite((byte)(0x80 + (character & 0x3F)), os);
             } else {
                 // 0xxxxxxx
                 if(escapeChars) {
                     switch (character) {
                     case '&': {
-                        outputStreamWrite(AMP);
+                        outputStreamWrite(AMP, os);
                         break;
                     }
                     case '<': {
-                        outputStreamWrite(LT);
+                        outputStreamWrite(LT, os);
                         break;
                     }
                     case '"': {
-                        outputStreamWrite(QUOT);
+                        outputStreamWrite(QUOT, os);
                         break;
                     }
                     default:
-                        outputStreamWrite((byte) character);
+                        outputStreamWrite((byte) character, os);
                     }
                 } else {
-                    outputStreamWrite((byte) character);
+                    outputStreamWrite((byte) character, os);
                 }
             }
         }
@@ -542,13 +541,26 @@ public class OutputStreamRecord extends MarshalRecord {
     }
 
     protected void outputStreamWrite(byte[] bytes) {
+        outputStreamWrite(bytes, this.outputStream);
+    }
+
+    protected void outputStreamWrite(byte[] bytes, OutputStream os) {
+        if (os != this.outputStream) {
+            // Not using our buffer
+            try {
+                os.write(bytes);
+                return;
+            } catch (IOException e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+        }
         int bytesLength = bytes.length;
         if(bufferIndex + bytesLength >= BUFFER_SIZE) {
             try {
-                outputStream.write(buffer, 0, bufferIndex);
+                os.write(buffer, 0, bufferIndex);
                 bufferIndex = 0;
                 if(bytesLength > BUFFER_SIZE) {
-                    outputStream.write(bytes);
+                    os.write(bytes);
                     return;
                 }
             } catch(IOException e) {
@@ -560,9 +572,22 @@ public class OutputStreamRecord extends MarshalRecord {
     }
 
     protected void outputStreamWrite(byte aByte) {
+        outputStreamWrite(aByte, this.outputStream);
+    }
+
+    protected void outputStreamWrite(byte aByte, OutputStream os) {
+        if (os != this.outputStream) {
+            // Not using our buffer
+            try {
+                os.write(aByte);
+                return;
+            } catch (IOException e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+        }
         if(bufferIndex == BUFFER_SIZE) {
             try {
-                outputStream.write(buffer, 0, BUFFER_SIZE);
+                os.write(buffer, 0, BUFFER_SIZE);
                 bufferIndex = 0;
             } catch(IOException e) {
                 throw XMLMarshalException.marshalException(e);

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.io.CharArrayWriter;
 import java.io.IOException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -61,7 +62,11 @@ public class FormattedWriterRecord extends WriterRecord {
 
     private String tab() {
         if (tab == null) {
-            tab = getMarshaller().getIndentString();
+            CharArrayWriter out = new CharArrayWriter();
+            // Escape the tab using writeValue
+            writeValue(getMarshaller().getIndentString(), false, out);
+            out.close();
+            tab = out.toString();
         }
         return tab;
     }
@@ -91,7 +96,7 @@ public class FormattedWriterRecord extends WriterRecord {
                     writer.write(Helper.cr());
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                    writeValue(tab());
+                    writer.write(tab());
                 }
             }
             isStartElementOpen = true;
@@ -116,7 +121,7 @@ public class FormattedWriterRecord extends WriterRecord {
             }
             writer.write(Helper.cr());
             for (int x = 0; x < numberOfTabs; x++) {
-                writeValue(tab());
+            	writer.write(tab());
             }
             super.element(frag);
         } catch (IOException e) {
@@ -140,7 +145,7 @@ public class FormattedWriterRecord extends WriterRecord {
             if (complexType) {
                 writer.write(Helper.cr());
                 for (int x = 0; x < numberOfTabs; x++) {
-                    writeValue(tab());
+                	writer.write(tab());
                 }
             } else {
                 complexType = true;
@@ -236,7 +241,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 if (!isLastEventText) {
                     writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                        writeValue(tab());
+                    	writer.write(tab());
                     }
                 }
                 writer.write('<');
@@ -267,7 +272,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 if (complexType) {
                     writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                        writeValue(tab());
+                    	writer.write(tab());
                     }
                 } else {
                     complexType = true;
