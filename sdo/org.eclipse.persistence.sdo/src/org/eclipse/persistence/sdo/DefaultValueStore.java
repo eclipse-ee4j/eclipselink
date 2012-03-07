@@ -56,7 +56,14 @@ public class DefaultValueStore implements ValueStore {
     }
 
     public boolean isSetDeclaredProperty(int propertyIndex) {
-        return getTypePropertiesIsSetStatus()[propertyIndex];
+        boolean[] typePropertiesIsSetStatus = getTypePropertiesIsSetStatus();
+        if(propertyIndex >= typePropertiesIsSetStatus.length) {
+            // New properties have been added to the type since the DataObject
+            // was created so return false to indicate that the new property has
+            // not been set.
+            return false;
+        }
+        return typePropertiesIsSetStatus[propertyIndex];
     }
 
     public boolean isSetOpenContentProperty(Property property) {
