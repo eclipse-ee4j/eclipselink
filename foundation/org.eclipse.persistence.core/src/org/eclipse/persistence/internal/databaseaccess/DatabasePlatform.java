@@ -151,8 +151,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** bug 4241441: Allow custom batch writing to enable batching with optimistic locking**/
     protected boolean usesNativeBatchWriting;
 
-    /** Allow configuration option to use where clause joining or From clause joining**/
+    /** Allow configuration option to use Where clause outer joining or From clause joining. **/
     protected Boolean printOuterJoinInWhereClause;
+
+    /** Allow configuration option to use Where clause joining or From clause joining. **/
+    protected Boolean printInnerJoinInWhereClause;
     
     /** Allow for the code that is used for preparing cursored outs for a storedprocedure to be settable. **/
     protected int cursorCode;
@@ -899,7 +902,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesJDBCBatchWriting(usesJDBCBatchWriting());
         databasePlatform.setUsesNativeBatchWriting(usesNativeBatchWriting());
         databasePlatform.setUsesStreamsForBinding(usesStreamsForBinding());
-        databasePlatform.printOuterJoinInWhereClause = this.printOuterJoinInWhereClause; 
+        databasePlatform.printOuterJoinInWhereClause = this.printOuterJoinInWhereClause;
+        databasePlatform.printInnerJoinInWhereClause = this.printInnerJoinInWhereClause;
         //use the variable directly to avoid custom platform strings - only want to copy user set values.
         //specifically used for login platform detection
         databasePlatform.setTableCreationSuffix(this.tableCreationSuffix);
@@ -1858,6 +1862,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setUsesStreamsForBinding(boolean usesStreamsForBinding) {
         this.usesStreamsForBinding = usesStreamsForBinding;
     }
+    
     /**
      * PUBLIC:
      * Changes the way that OuterJoins are done on the database.  With a value of 
@@ -1869,6 +1874,17 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setPrintOuterJoinInWhereClause(boolean printOuterJoinInWhereClause) {
         this.printOuterJoinInWhereClause = Boolean.valueOf(printOuterJoinInWhereClause);
     }
+    
+    /**
+     * PUBLIC:
+     * Changes the way that inner joins are printed in generated SQL for the database.
+     * With a value of true, inner joins are printed in the WHERE clause,
+     * if false, inner joins are printed in the FROM clause.
+     */
+    public void setPrintInnerJoinInWhereClause(boolean printInnerJoinInWhereClause) {
+        this.printInnerJoinInWhereClause = Boolean.valueOf(printInnerJoinInWhereClause);
+    }
+    
     public void setUsesStringBinding(boolean aBool) {
         usesStringBinding = aBool;
     }
@@ -1969,6 +1985,18 @@ public class DatabasePlatform extends DatasourcePlatform {
             this.printOuterJoinInWhereClause = Boolean.FALSE;
         }
         return this.printOuterJoinInWhereClause;
+    }
+
+    /**
+     * This allows which clause inner joins are printed into in SQL generation.
+     * By default most platforms put inner joins in the WHERE clause.
+     * If set to false, inner joins will be printed in the FROM clause.
+     */
+    public boolean shouldPrintInnerJoinInWhereClause() {
+        if (this.printInnerJoinInWhereClause == null) {
+            return true;
+        }
+        return this.printInnerJoinInWhereClause;
     }
 
     /**

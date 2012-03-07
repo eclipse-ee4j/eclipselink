@@ -262,7 +262,7 @@ public class ExpressionBuilder extends ObjectExpression {
         // Normalize the ON clause if present.  Need to use rebuild, not twist as parameters are real parameters.
         if (this.onClause != null) {
             this.onClause = this.onClause.normalize(normalizer);
-            if (shouldUseOuterJoin()) {
+            if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
                 normalizer.getStatement().getOuterJoinExpressions().add(this);
                 normalizer.getStatement().getOuterJoinedMappingCriteria().add(null);
                 normalizer.getStatement().getOuterJoinedAdditionalJoinCriteria().add(null);

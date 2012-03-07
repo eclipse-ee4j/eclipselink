@@ -719,8 +719,9 @@ public class RelationExpression extends CompoundExpression {
         //                                        AND (t0.MANAGER_ID = t1.EMP_ID))
         if // If setting two query keys to equal the user probably intends a proper join.
             //.equal(anyOf() or get())
-            (first.isExpressionBuilder() && this.secondChild.isQueryKeyExpression() && 
-             !((QueryKeyExpression)this.secondChild).hasDerivedExpressions()) { //The right side is not used for anything else.
+            (first.isExpressionBuilder() && this.secondChild.isQueryKeyExpression()
+                    &&  (!((QueryKeyExpression)this.secondChild).hasDerivedExpressions()) // The right side is not used for anything else.
+                    && normalizer.getSession().getPlatform().shouldPrintInnerJoinInWhereClause()) {
             first = (ExpressionBuilder)first.normalize(normalizer);
 
             // If FK joins go in the WHERE clause, want to get hold of it and

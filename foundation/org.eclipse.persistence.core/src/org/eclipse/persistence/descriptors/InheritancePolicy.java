@@ -1151,7 +1151,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
             
             // Clone the multitenant policy and set on child descriptor.
             if (getParentDescriptor().hasMultitenantPolicy()) {
-                MultitenantPolicy clonedMultitenantPolicy = (MultitenantPolicy) getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
+                MultitenantPolicy clonedMultitenantPolicy = getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
                 getDescriptor().setMultitenantPolicy(clonedMultitenantPolicy);
             }
             

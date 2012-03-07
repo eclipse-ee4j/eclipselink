@@ -376,9 +376,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (buildShallowOriginal) {
             descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);
         } else if (executionSession.isUnitOfWork()) {
-            descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
+            descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
         } else {
-            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey), databaseRow, nestedQuery, joinManager, refreshing, executionSession);
+            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, refreshing, executionSession);
         }
         return aggregate;
     }
@@ -390,21 +390,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @param owningCacheKey - the cache key holding the object to extract the aggregate from
      * @return
      */
-    protected CacheKey buildWrapperCacheKeyForAggregate(CacheKey owningCacheKey){
-        if (isMapKeyMapping){
+    protected CacheKey buildWrapperCacheKeyForAggregate(CacheKey owningCacheKey, boolean targetIsProtected) {
+        if (!targetIsProtected || this.isMapKeyMapping || (owningCacheKey == null)) {
             return owningCacheKey;
         }
-        CacheKey aggregateKey = null;
-        if (owningCacheKey != null){
-            Object object = owningCacheKey.getObject();
-            if (owningCacheKey.getObject() != null){
-                Object aggregate = getAttributeValueFromObject(object);
-                aggregateKey = new CacheKey(null, aggregate, null);
-                aggregateKey.setProtectedForeignKeys(owningCacheKey.getProtectedForeignKeys());
-                aggregateKey.setRecord(owningCacheKey.getRecord());
-                aggregateKey.setIsolated(owningCacheKey.isIsolated());
-                aggregateKey.setReadTime(owningCacheKey.getReadTime());
-            }
+        CacheKey aggregateKey = owningCacheKey;
+        Object object = owningCacheKey.getObject();
+        if (owningCacheKey.getObject() != null) {
+            Object aggregate = getAttributeValueFromObject(object);
+            aggregateKey = new CacheKey(null, aggregate, null);
+            aggregateKey.setProtectedForeignKeys(owningCacheKey.getProtectedForeignKeys());
+            aggregateKey.setRecord(owningCacheKey.getRecord());
+            aggregateKey.setIsolated(owningCacheKey.isIsolated());
+            aggregateKey.setReadTime(owningCacheKey.getReadTime());
         }
         return aggregateKey;
     }

@@ -167,10 +167,10 @@ public class QueryKeyExpression extends ObjectExpression {
         Vector tables = getDescriptor().getTables();
         // skip the main table - start with i=1
         int tablesSize = tables.size();
-        if (shouldUseOuterJoin()) {
+        if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
             for (int i=1; i < tablesSize; i++) {
                 DatabaseTable table = (DatabaseTable)tables.elementAt(i);
-                Expression joinExpression = (Expression)getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
+                Expression joinExpression = getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
             }
@@ -691,28 +691,25 @@ public class QueryKeyExpression extends ObjectExpression {
                 statement.getOuterJoinedMappingCriteria().add(mappingExpression);
                 normalizer.addAdditionalExpression(mappingExpression.and(additionalExpressionCriteria()));
                 return this;
-            } else if ((shouldUseOuterJoin() || isUsingOuterJoinForMultitableInheritance()) && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause())) {
-                if(shouldUseOuterJoin()) {
-                    statement.getOuterJoinExpressions().add(this);
-                    statement.getOuterJoinedMappingCriteria().add(mappingExpression);
-                    statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
-                    statement.getDescriptorsForMultitableInheritanceOnly().add(null);
-                    if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
-                        Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, base);
-                        if (historyCriteria != null) {
-                            normalizer.addAdditionalExpression(historyCriteria);
-                        }
-                    }
-                    return this;
-                } else {
-                    if (isUsingOuterJoinForMultitableInheritance()) {
-                        statement.getOuterJoinExpressions().add(null);
-                        statement.getOuterJoinedMappingCriteria().add(null);
-                        statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
-                        statement.getDescriptorsForMultitableInheritanceOnly().add(mapping.getReferenceDescriptor());
-                        // fall through to the main case
+            } else if ((shouldUseOuterJoin() && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause()))
+                    || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
+                statement.getOuterJoinExpressions().add(this);
+                statement.getOuterJoinedMappingCriteria().add(mappingExpression);
+                statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
+                statement.getDescriptorsForMultitableInheritanceOnly().add(null);
+                if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
+                    Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, base);
+                    if (historyCriteria != null) {
+                        normalizer.addAdditionalExpression(historyCriteria);
                     }
                 }
+                return this;
+            } else if (isUsingOuterJoinForMultitableInheritance() && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause())) {
+                statement.getOuterJoinExpressions().add(null);
+                statement.getOuterJoinedMappingCriteria().add(null);
+                statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
+                statement.getDescriptorsForMultitableInheritanceOnly().add(mapping.getReferenceDescriptor());
+                // fall through to the main case
             }
             
             // This must be added even if outer. Actually it should be converted to use a right outer join, but that gets complex
@@ -1296,7 +1293,10 @@ public class QueryKeyExpression extends ObjectExpression {
      * @return DatabaseTable
      */    
     public DatabaseTable getSourceTable() {
-        if(getMapping() != null) {
+        if (getBaseExpression().isExpressionBuilder() && getBuilder().hasViewTable()) {
+            return getBuilder().getViewTable();
+        }
+        if (getMapping() != null) {
             // Grab the source table from the mapping not just the first table 
             // from the descriptor. In an joined inheritance hierarchy, the
             // fk used in the outer join may be from a subclasses's table.

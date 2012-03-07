@@ -3109,12 +3109,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (isChild) {
             additionalTablesSize = tableSize - getInheritancePolicy().getParentDescriptor().getTables().size();
         }
-        if (additionalTablesSize < 1) {
+        if (tableSize <= 1) {
             return;
         }
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression joinExpression = getQueryManager().getMultipleTableJoinExpression();
-        for (int index = tableSize - additionalTablesSize; index < tableSize; index++) {
+        for (int index = 1; index < tableSize; index++) {
             DatabaseTable table = getTables().get(index);
             Map<DatabaseField, DatabaseField> oldKeyMapping = getAdditionalTablePrimaryKeyFields().get(table);
             if (oldKeyMapping != null) {
@@ -3137,9 +3137,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
                         joinExpression = keyJoinExpression.and(joinExpression);
                     }
                     getQueryManager().getTablesJoinExpressions().put(table, keyJoinExpression);
-                    if (isChild) {
-                        getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, keyJoinExpression);
-                    }
                 }
             } else {
                 // If the user has specified a custom multiple table join then we do not assume that the secondary tables have identically named pk as the primary table.
@@ -3164,9 +3161,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     joinExpression = keyJoinExpression.and(joinExpression);
                 }
                 getQueryManager().getTablesJoinExpressions().put(table, keyJoinExpression);
-                if (isChild) {
-                    getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, keyJoinExpression);
-                }
             }
         }
         if (joinExpression != null) {
@@ -3175,13 +3169,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getQueryManager().hasCustomMultipleTableJoinExpression()) {
             Map tablesJoinExpressions = SQLSelectStatement.mapTableToExpression(joinExpression, getTables());
             getQueryManager().getTablesJoinExpressions().putAll(tablesJoinExpressions);
-            if (isChild) {
-                for (int index = tableSize - additionalTablesSize; index < tableSize; index++) {
-                    DatabaseTable table = getTables().get(index);
-                    getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, (Expression)tablesJoinExpressions.get(table));
-                }
+        }
+        if (isChild && (additionalTablesSize > 0)) {
+            for (int index = tableSize - additionalTablesSize; index < tableSize; index++) {
+                DatabaseTable table = getTables().get(index);
+                getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, getQueryManager().getTablesJoinExpressions().get(table));
             }
-        }        
+        }
     }
 
     /**

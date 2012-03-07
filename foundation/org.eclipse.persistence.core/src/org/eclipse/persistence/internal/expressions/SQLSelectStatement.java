@@ -237,6 +237,7 @@ public class SQLSelectStatement extends SQLStatement {
      * ADVANCED:
      * Appends the SQL standard outer join clause, and some variation per platform.
      * Most platforms use this syntax, support is also offered for Oracle to join in the where clause (although it should use the FROM clause as the WHERE clause is obsolete).
+     * This is also used for inner joins when configured in the platform.
      */
     public void appendFromClauseForOuterJoin(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables) throws IOException {
         Writer writer = printer.getWriter();
@@ -261,6 +262,7 @@ public class SQLSelectStatement extends SQLStatement {
         
         for (OuterJoinExpressionHolder holder : outerJoinExpressionHolders) {
             ObjectExpression outerExpression = holder.joinExpression;
+            boolean isOuterJoin = (outerExpression ==  null) || outerExpression.shouldUseOuterJoin();
             int index = holder.index;
             DatabaseTable targetTable = holder.targetTable;
             DatabaseTable sourceTable = holder.sourceTable;
@@ -305,7 +307,11 @@ public class SQLSelectStatement extends SQLStatement {
                             Expression onExpression = getOuterJoinedMappingCriteria().get(index);
         
                             DatabaseTable newAlias = onExpression.aliasForTable(targetTable);
-                            writer.write(" LEFT OUTER JOIN ");
+                            if (isOuterJoin) {
+                                writer.write(" LEFT OUTER JOIN ");
+                            } else {
+                                writer.write(" JOIN ");                                
+                            }
                             targetTable.printSQL(printer);
                             writer.write(" ");
                             if (newAlias.isDecorated()) {
@@ -320,7 +326,11 @@ public class SQLSelectStatement extends SQLStatement {
                             // Must outerjoin each of the targets tables.
                             // The first table is joined with the mapping join criteria,
                             // the rest of the tables are joined with the additional join criteria.
-                            writer.write(" LEFT OUTER JOIN ");
+                            if (isOuterJoin) {
+                                writer.write(" LEFT OUTER JOIN ");
+                            } else {
+                                writer.write(" JOIN ");                                
+                            }
                             if (hasAdditionalJoinExpressions && platform.supportsNestingOuterJoins()) {
                                 writer.write("(");
                             }
@@ -381,8 +391,12 @@ public class SQLSelectStatement extends SQLStatement {
                         if (isMapKeyObject) {
                             relationToKeyJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(3));
                         }
-                        
-                        writer.write(" LEFT OUTER JOIN ");
+
+                        if ((outerExpression !=  null) && outerExpression.shouldUseOuterJoin()) {
+                            writer.write(" LEFT OUTER JOIN ");
+                        } else {
+                            writer.write(" JOIN ");
+                        }
                         if (platform.supportsNestingOuterJoins()) {
                             writer.write("(");                            
                         }
@@ -401,7 +415,7 @@ public class SQLSelectStatement extends SQLStatement {
                         
                         if (isMapKeyObject) {
                             // Append join to map key.
-                            if (!session.getPlatform().supportsANSIInnerJoinSyntax()) {
+                            if (isOuterJoin && !session.getPlatform().supportsANSIInnerJoinSyntax()) {
                                 writer.write(" LEFT OUTER");
                             }
                             writer.write(" JOIN ");
@@ -420,8 +434,8 @@ public class SQLSelectStatement extends SQLStatement {
                                 holder.mapKeyHolder.printAdditionalJoins(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                             }
                         }
-                        
-                        if (!session.getPlatform().supportsANSIInnerJoinSyntax()) {
+
+                        if (isOuterJoin && !session.getPlatform().supportsANSIInnerJoinSyntax()) {
                             // if the DB does not support 'JOIN', do a left outer
                             // join instead. This will give the same result because
                             // the left table is a join table and has therefore
@@ -505,7 +519,7 @@ public class SQLSelectStatement extends SQLStatement {
         if (hasOuterJoinExpressions()) {
             if (session.getPlatform().isInformixOuterJoin()) {
                 appendFromClauseForInformixOuterJoin(printer, outerJoinedAliases);
-            } else if (!session.getPlatform().shouldPrintOuterJoinInWhereClause()) {
+            } else if (!session.getPlatform().shouldPrintOuterJoinInWhereClause() || !session.getPlatform().shouldPrintInnerJoinInWhereClause()) {
                 appendFromClauseForOuterJoin(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
             }
             firstTable = false;

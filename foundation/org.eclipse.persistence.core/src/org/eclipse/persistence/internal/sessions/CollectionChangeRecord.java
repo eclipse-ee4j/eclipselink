@@ -529,7 +529,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
        } else {
            List originalList = (List)currentCollection;
            for (int i = this.orderedChangeObjectList.size() - 1; i>=0; i--) {
-               OrderedChangeObject  orderedChange = (OrderedChangeObject)orderedChangeObjectList.get(i);
+               OrderedChangeObject  orderedChange = this.orderedChangeObjectList.get(i);
                Object obj = orderedChange.getAddedOrRemovedObject();
                Integer index = orderedChange.getIndex();
                int changeType = orderedChange.getChangeType();

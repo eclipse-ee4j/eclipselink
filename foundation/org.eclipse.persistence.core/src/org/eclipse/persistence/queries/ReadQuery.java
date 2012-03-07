@@ -247,9 +247,9 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     public boolean isDefaultPropertiesQuery() {
         return super.isDefaultPropertiesQuery()
-            && (getMaxRows() == 0)
-            && (getFirstResult() == 0)
-            && (getFetchSize() == 0);
+            && (this.maxRows == 0)
+            && (this.firstResult == 0)
+            && (this.fetchSize == 0);
     }
     
     /**

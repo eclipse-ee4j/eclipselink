@@ -109,7 +109,7 @@ public class CursoredStream extends Cursor {
         countOperator.bePrefix();
         countOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         Expression firstFieldExpression = builder.getField(((DatabaseField)includeFields.get(0)).getQualifiedName());
-        return countOperator.expressionForArguments(firstFieldExpression, new Vector(0));
+        return countOperator.expressionForArguments(firstFieldExpression, new ArrayList(0));
 
     }
 

@@ -74,8 +74,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected transient String additionalCriteria;
     protected transient Expression additionalJoinExpression;
     protected transient Expression multipleTableJoinExpression;
-    protected transient Map queries;
-    protected transient Map tablesJoinExpressions;
+    protected transient Map<String, List<DatabaseQuery>> queries;
+    protected transient Map<DatabaseTable, Expression> tablesJoinExpressions;
     /** PERF: Update call cache for avoiding regenerated update SQL. */
     protected transient ConcurrentFixedCache cachedUpdateCalls;
     /** PERF: Expression query call cache for avoiding regenerated dynamic query SQL. */
@@ -447,7 +447,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      *
      * @see #getAllQueries()
      */
-    public Map getQueries() {
+    public Map<String, List<DatabaseQuery>> getQueries() {
         return queries;
     }
 
@@ -578,7 +578,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * @see #getQuery(String)
      */
     public DatabaseQuery getLocalQueryByArgumentTypes(String name, List argumentTypes) {
-        List queries = (List)getQueries().get(name);
+        List<DatabaseQuery> queries = getQueries().get(name);
 
         if (queries == null) {
             return null;
@@ -586,12 +586,10 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
         // Short circuit the simple, most common case of only one query.
         if (queries.size() == 1) {
-            return (DatabaseQuery)queries.get(0);
+            return queries.get(0);
         }
 
-        for (Iterator queriesEnum = queries.iterator(); queriesEnum.hasNext();) {
-            DatabaseQuery query = (DatabaseQuery)queriesEnum.next();
-
+        for (DatabaseQuery query : queries) {
             // BUG#2698755
             // This check was backward, we default the type to Object
             // Was checking Object is descendant of String not other way.
@@ -1409,9 +1407,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Used in case descriptor has additional tables:
      * each additional table mapped to an expression joining it.
      */
-    public Map getTablesJoinExpressions() {
-        if(tablesJoinExpressions == null) {
-            tablesJoinExpressions = new HashMap();
+    public Map<DatabaseTable, Expression> getTablesJoinExpressions() {
+        if (tablesJoinExpressions == null) {
+            tablesJoinExpressions = new HashMap<DatabaseTable, Expression>();
         }
         return tablesJoinExpressions;
     }

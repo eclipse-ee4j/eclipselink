@@ -255,7 +255,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         ObjectLevelReadQuery query = (ObjectLevelReadQuery) object;
         // Only check expression queries for now.
-        if ((!isExpressionQuery()) || (!isDefaultPropertiesQuery()) || (!query.isDefaultPropertiesQuery())) {
+        if ((!isExpressionQuery()) || (!isDefaultPropertiesQuery())) {
             return this == object;
         }
         if (!getExpressionBuilder().equals(query.getExpressionBuilder())) {

@@ -792,11 +792,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         }
 
         Object object = writeQuery.getObject();
-        CacheKey cacheKey = null;
-        ObjectChangeSet changeSet = writeQuery.getObjectChangeSet();
-        if (changeSet != null){
-            cacheKey = changeSet.getActiveCacheKey();
-        }
 
         ObjectChangeSet objectChangeSet = null;
         if (getSession().isUnitOfWork()) {

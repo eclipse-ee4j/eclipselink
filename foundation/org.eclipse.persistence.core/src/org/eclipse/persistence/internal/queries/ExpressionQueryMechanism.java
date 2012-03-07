@@ -390,7 +390,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                 }
                 if (sourceFields != null) {
-                    DatabaseTable targetTable = ((DatabaseField)targetFields.get(0)).getTable();
+                    DatabaseTable targetTable = targetFields.get(0).getTable();
                     SQLDeleteAllStatementForTempTable deleteStatement 
                         =  buildDeleteAllStatementForTempTable(rootTable, sourceFields, targetTable, targetFields);
                     deleteStatements.addElement(deleteStatement);
